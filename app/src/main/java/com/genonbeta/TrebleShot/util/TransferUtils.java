@@ -21,7 +21,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Interrupter;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,13 +123,13 @@ public class TransferUtils
         return assignees.size() == 0 ? null : assignees.get(0);
     }
 
-    public static ShowingAssignee fetchFirstAssignee(SnackbarSupport snackbar, AccessDatabase database, long groupId)
+    public static ShowingAssignee fetchFirstAssignee(SnackbarPlacementProvider snackbar,
+                                                     AccessDatabase database, long groupId)
     {
         ShowingAssignee assignee = fetchFirstAssignee(database, groupId);
 
         if (assignee == null) {
-            snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)
-                    .show();
+            snackbar.createSnackbar(R.string.mesg_noReceiverOrSender).show();
             return null;
         }
 

@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -42,7 +42,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShareActivity extends Activity implements SnackbarSupport, Activity.OnPreloadArgumentWatcher,
+public class ShareActivity extends Activity implements SnackbarPlacementProvider, Activity.OnPreloadArgumentWatcher,
         WorkerService.OnAttachListener
 {
     public static final String TAG = "ShareActivity";

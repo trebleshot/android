@@ -43,20 +43,18 @@ import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.FileShortcutObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileListFragment extends GroupEditableListFragment<FileListAdapter.GenericFileHolder,
+abstract public class FileListFragment extends GroupEditableListFragment<FileListAdapter.GenericFileHolder,
         GroupEditableListAdapter.GroupViewHolder, FileListAdapter>
 {
     public static final String TAG = FileListFragment.class.getSimpleName();
@@ -174,7 +172,8 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
         setDefaultOrderingCriteria(FileListAdapter.MODE_SORT_ORDER_ASCENDING);
         setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(FileListAdapter.MODE_GROUP_BY_DEFAULT);
-        setDefaultSelectionCallback(new SelectionCallback(this));
+        // TODO: 22.02.2020 Implement default selection callback installation
+        //setDefaultSelectionCallback(new SelectionCallback(this));
 
         if (getArguments() != null) {
             if (getArguments().containsKey(ARG_SELECT_BY_CLICK))
@@ -286,8 +285,8 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
                 registerLayoutViewClicks(clazz);
 
                 clazz.getView().findViewById(R.id.layout_image).setOnClickListener(v -> {
-                    if (getSelectionConnection() != null)
-                        getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                    if (getEngineConnection() != null)
+                        getEngineConnection().setSelected(clazz.getAdapterPosition());
                 });
 
                 clazz.getView().findViewById(R.id.menu).setOnClickListener(v -> {
@@ -333,8 +332,7 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
                             .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
                     menuItself.findItem(R.id.action_mode_file_toggle_shortcut)
                             .setVisible(!isFile)
-                            .setTitle(shortcutObject == null
-                                    ? R.string.butn_addShortcut
+                            .setTitle(shortcutObject == null ? R.string.butn_addShortcut
                                     : R.string.butn_removeShortcut);
 
                     popupMenu.setOnMenuItemClickListener(item -> {
@@ -507,13 +505,14 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
             if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-            else if (fileInfo instanceof FileListAdapter.FileHolder
-                    && mSelectByClick && getSelectionConnection() != null)
-                return getSelectionConnection().setSelected(holder);
+            else if (fileInfo instanceof FileListAdapter.FileHolder && mSelectByClick && getEngineConnection() != null)
+                return getEngineConnection().setSelected(holder);
             else if (fileInfo instanceof FileListAdapter.DirectoryHolder
                     || fileInfo instanceof FileListAdapter.WritablePathHolder) {
                 FileListFragment.this.goPath(fileInfo.file);
 
+                // TODO: 22.02.2020 Show help dialog if not shown before and selection is not activated.
+                /*
                 if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated()
                         && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection",
                         false))
@@ -522,7 +521,7 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
                                     .edit()
                                     .putBoolean("helpFolderSelection", true)
                                     .apply())
-                            .show();
+                            .show();*/
             } else
                 return super.performLayoutClick(holder);
 
@@ -541,10 +540,8 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
             FileListAdapter.GenericFileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
 
             if ((fileHolder instanceof FileListAdapter.DirectoryHolder
-                    || fileHolder instanceof FileListAdapter.WritablePathHolder
-            )
-                    && getSelectionConnection() != null
-                    && getSelectionConnection().setSelected(holder))
+                    || fileHolder instanceof FileListAdapter.WritablePathHolder)
+                    && getEngineConnection() != null && getEngineConnection().setSelected(holder))
                 return true;
         } catch (NotReadyException e) {
             e.printStackTrace();
@@ -588,6 +585,8 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
         void onPathChanged(DocumentFile file);
     }
 
+    /*
+
     private static class SelectionCallback extends SharingActionModeCallback<FileListAdapter.GenericFileHolder>
     {
         private FileListFragment mFragment;
@@ -611,13 +610,13 @@ public class FileListFragment extends GroupEditableListFragment<FileListAdapter.
         {
             int id = item.getItemId();
 
-            if (getFragment().getSelectionConnection().getSelectedItemList().size() == 0)
+            if (getFragment().getEngineConnection().getSelectedItemList().size() == 0)
                 return super.onActionMenuItemSelected(context, actionMode, item);
 
-            if (!handleEditingAction(id, mFragment, getFragment().getSelectionConnection().getSelectedItemList()))
+            if (!handleEditingAction(id, mFragment, getFragment().getEngineConnection().getSelectedItemList()))
                 return super.onActionMenuItemSelected(context, actionMode, item);
 
             return true;
         }
-    }
+    }*/
 }

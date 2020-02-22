@@ -43,8 +43,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -58,7 +57,7 @@ import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_S
  */
 public class ActiveConnectionListFragment extends EditableListFragment<
         ActiveConnectionListAdapter.EditableNetworkInterface, EditableListAdapter.EditableViewHolder,
-        ActiveConnectionListAdapter> implements TitleSupport, IconSupport
+        ActiveConnectionListAdapter> implements IconProvider
 {
     private IntentFilter mFilter = new IntentFilter();
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -151,8 +150,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
             clazz.getView().findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
             clazz.getView().findViewById(R.id.selector).setOnClickListener(
                     v -> {
-                        if (getSelectionConnection() != null)
-                            getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                        if (getEngineConnection() != null)
+                            getEngineConnection().setSelected(clazz.getAdapterPosition());
                     });
         };
 
@@ -189,7 +188,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_webShare);
     }

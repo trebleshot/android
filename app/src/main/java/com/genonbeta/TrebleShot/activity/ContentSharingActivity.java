@@ -30,14 +30,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter.StableItem;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
-import com.genonbeta.android.framework.object.Selectable;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
-import com.genonbeta.android.framework.widget.PowerfulActionMode.SelectorConnection;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.google.android.material.tabs.TabLayout;
 
 /**
@@ -48,9 +45,10 @@ public class ContentSharingActivity extends Activity
 {
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
-    private PowerfulActionMode mMode;
-    private SharingActionModeCallback<Shareable> mSelectionCallback;
+    // TODO: 22.02.2020 Back to the code. Search for 'mSelectionCallback'
+    //private SharingActionModeCallback<Shareable> mSelectionCallback;
     private Activity.OnBackPressedListener mBackPressedListener;
+    private PerformerEngine mPerformerEngine = new PerformerEngine();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -66,12 +64,10 @@ public class ContentSharingActivity extends Activity
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
-        mMode = findViewById(R.id.activity_content_sharing_action_mode);
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
-        mSelectionCallback = new SharingActionModeCallback<>(null);
-        final SelectorConnection<Shareable> selectorConnection = new SelectorConnection<>(mMode, mSelectionCallback);
+        //mSelectionCallback = new SharingActionModeCallback<>(null);
 
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this,
                 getSupportFragmentManager())
@@ -82,8 +78,8 @@ public class ContentSharingActivity extends Activity
                 Fragment fragment = item.getInitiatedItem();
                 EditableListFragmentImpl<Shareable> fragmentImpl = (EditableListFragmentImpl<Shareable>) fragment;
 
-                fragmentImpl.setSelectionCallback(mSelectionCallback);
-                fragmentImpl.setSelectorConnection(selectorConnection);
+                // TODO: 22.02.2020 Set selection callback for selection connection
+                //fragmentImpl.setSelectionCallback(mSelectionCallback);
 
                 if (viewPager.getCurrentItem() == item.getCurrentPosition())
                     attachListeners(fragmentImpl);
@@ -152,16 +148,14 @@ public class ContentSharingActivity extends Activity
     public void onBackPressed()
     {
         if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
-            if (mMode.hasActive(mSelectionCallback))
-                mMode.finish(mSelectionCallback);
-            else
+            // TODO: 22.02.2020 Implement back button closes active selection process
                 super.onBackPressed();
         }
     }
 
     public void attachListeners(EditableListFragmentImpl<Shareable> fragment)
     {
-        mSelectionCallback.updateProvider(fragment);
+        //mSelectionCallback.updateProvider(fragment);
         mBackPressedListener = fragment instanceof Activity.OnBackPressedListener ? (OnBackPressedListener) fragment
                 : null;
     }

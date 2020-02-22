@@ -42,23 +42,22 @@ import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferListFragment
-        extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder, TransferListAdapter>
-        implements TitleSupport, Activity.OnBackPressedListener
+public class TransferListFragment extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem,
+        GroupEditableListAdapter.GroupViewHolder, TransferListAdapter> implements TitleProvider,
+        Activity.OnBackPressedListener
 {
     public static final String TAG = "TransferListFragment";
 
@@ -95,7 +94,7 @@ public class TransferListFragment
         setDefaultOrderingCriteria(TransferListAdapter.MODE_SORT_ORDER_ASCENDING);
         setDefaultSortingCriteria(TransferListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(TransferListAdapter.MODE_GROUP_BY_DEFAULT);
-        setDefaultSelectionCallback(new SelectionCallback(this));
+        // TODO: 22.02.2020 Default selection callback
     }
 
     @Override
@@ -130,24 +129,19 @@ public class TransferListFragment
     @Override
     public TransferListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
-        {
-            @Override
-            public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
-            {
-                if (!clazz.isRepresentative()) {
-                    registerLayoutViewClicks(clazz);
+        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
+            if (!clazz.isRepresentative()) {
+                registerLayoutViewClicks(clazz);
 
-                    clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+                clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
                     {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            if (getSelectionConnection() != null)
-                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                        }
-                    });
-                }
+                        if (getEngineConnection() != null)
+                            getEngineConnection().setSelected(clazz.getAdapterPosition());
+                    }
+                });
             }
         };
 
@@ -204,15 +198,16 @@ public class TransferListFragment
     {
         String path = getAdapter().getPath();
 
+        // TODO: 22.02.2020 Check if selection mode is active
+        /*
         if (path == null) {
-            if (getSelectionCallback() != null
-                    && getSelectionConnection() != null
-                    && getSelectionConnection().getMode().hasActive(getSelectionCallback())) {
-                getSelectionConnection().getMode().finish(getSelectionCallback());
+            if (getSelectionCallback() != null && getEngineConnection() != null
+                    && getEngineConnection().getMode().hasActive(getSelectionCallback())) {
+                getEngineConnection().getMode().finish(getSelectionCallback());
                 return true;
             } else
                 return false;
-        }
+        }*/
 
         int slashPos = path.lastIndexOf(File.separator);
 
@@ -231,7 +226,7 @@ public class TransferListFragment
 
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_transfers);
     }
@@ -299,7 +294,10 @@ public class TransferListFragment
                 getAdapter().setPath(transferObject.directory);
                 refreshList();
 
-                if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
+                // TODO: 22.02.2020 Check if selection callback is activated
+                /*
+                if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated()
+                        && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
                     createSnackbar(R.string.mesg_helpFolderSelection)
                             .setAction(R.string.butn_gotIt, new View.OnClickListener()
                             {
@@ -312,7 +310,7 @@ public class TransferListFragment
                                             .apply();
                                 }
                             })
-                            .show();
+                            .show();*/
             } else
                 return super.performLayoutClick(holder);
 
@@ -482,6 +480,7 @@ public class TransferListFragment
             getActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());
     }
 
+    /*
     private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferListAdapter.AbstractGenericItem>
     {
         private TransferListAdapter mAdapter;
@@ -505,7 +504,7 @@ public class TransferListFragment
         {
             int id = item.getItemId();
 
-            final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+            final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getEngineConnection().getSelectedItemList());
 
             if (id == R.id.action_mode_transfer_delete)
                 DialogUtils.showRemoveTransferObjectListDialog(getFragment().getActivity(), selectionList);
@@ -514,5 +513,5 @@ public class TransferListFragment
 
             return true;
         }
-    }
+    }*/
 }

@@ -28,13 +28,11 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
 import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
-public class VideoListFragment
-        extends GalleryGroupEditableListFragment<VideoListAdapter.VideoHolder, GroupEditableListAdapter.GroupViewHolder, VideoListAdapter>
-        implements TitleSupport
+public class VideoListFragment extends GalleryGroupEditableListFragment<VideoListAdapter.VideoHolder,
+        GroupEditableListAdapter.GroupViewHolder, VideoListAdapter>
 {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -62,8 +60,8 @@ public class VideoListFragment
     {
         super.onResume();
 
-        getContext().getContentResolver()
-                .registerContentObserver(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, true, getDefaultContentObserver());
+        getContext().getContentResolver().registerContentObserver(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                true, getDefaultContentObserver());
     }
 
     @Override
@@ -71,8 +69,7 @@ public class VideoListFragment
     {
         super.onPause();
 
-        getContext().getContentResolver()
-                .unregisterContentObserver(getDefaultContentObserver());
+        getContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 
     @Override
@@ -91,8 +88,8 @@ public class VideoListFragment
                 clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
                         ? R.id.selectorContainer : R.id.selector)
                         .setOnClickListener(v -> {
-                            if (getSelectionConnection() != null)
-                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                            if (getEngineConnection() != null)
+                                getEngineConnection().setSelected(clazz.getAdapterPosition());
                         });
             }
         };
@@ -111,21 +108,20 @@ public class VideoListFragment
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return getSelectionConnection() != null
-                ? getSelectionConnection().setSelected(holder)
+        return getEngineConnection() != null
+                ? getEngineConnection().setSelected(holder)
                 : performLayoutClickOpen(holder);
     }
 
     @Override
     public int onGridSpanSize(int viewType, int currentSpanSize)
     {
-        return viewType == VideoListAdapter.VIEW_TYPE_TITLE
-                ? currentSpanSize
+        return viewType == VideoListAdapter.VIEW_TYPE_TITLE ? currentSpanSize
                 : super.onGridSpanSize(viewType, currentSpanSize);
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_video);
     }

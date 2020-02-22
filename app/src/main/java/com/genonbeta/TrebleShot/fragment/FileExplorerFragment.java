@@ -29,9 +29,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
-import com.genonbeta.TrebleShot.ui.callback.DetachListener;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -43,8 +41,7 @@ import java.util.ArrayList;
  * Date: 5/30/17 10:47 AM
  */
 
-public class FileExplorerFragment extends FileListFragment implements Activity.OnBackPressedListener, DetachListener,
-        IconSupport, TitleSupport
+public class FileExplorerFragment extends FileListFragment implements Activity.OnBackPressedListener, IconProvider
 {
     public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
@@ -171,7 +168,7 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_fileExplorer);
     }

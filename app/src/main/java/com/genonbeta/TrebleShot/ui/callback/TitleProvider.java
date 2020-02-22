@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,14 +18,9 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import android.content.Context;
 
-/**
- * created by: Veli
- * date: 19.11.2017 18:07
- */
-
-public interface PowerfulActionModeSupport
+public interface TitleProvider
 {
-    PowerfulActionMode getPowerfulActionMode();
+    CharSequence getDistinctiveTitle(Context context);
 }

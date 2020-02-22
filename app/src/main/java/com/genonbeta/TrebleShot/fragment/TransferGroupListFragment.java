@@ -23,8 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -35,22 +33,15 @@ import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,7 +50,7 @@ import java.util.Map;
  */
 
 public class TransferGroupListFragment extends GroupEditableListFragment<PreloadedGroup,
-        GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter> implements IconSupport, TitleSupport
+        GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter> implements IconProvider
 {
     private SQLQuery.Select mSelect;
     private IntentFilter mFilter = new IntentFilter();
@@ -90,7 +81,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
-        setDefaultSelectionCallback(new SelectionCallback(this));
+        // TODO: 22.02.2020 Add the default selection callback
         setUseDefaultPaddingDecoration(true);
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
@@ -174,8 +165,8 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
                 registerLayoutViewClicks(clazz);
 
                 clazz.getView().findViewById(R.id.layout_image).setOnClickListener(v -> {
-                    if (getSelectionConnection() != null)
-                        getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                    if (getEngineConnection() != null)
+                        getEngineConnection().setSelected(clazz.getAdapterPosition());
                 });
             }
         };
@@ -210,7 +201,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_transfers);
     }
@@ -226,6 +217,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         return this;
     }
 
+    /*
     private static class SelectionCallback extends EditableListFragment.SelectionCallback<PreloadedGroup>
     {
         public SelectionCallback(EditableListFragmentImpl<PreloadedGroup> fragment)
@@ -253,7 +245,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         {
             int id = item.getItemId();
 
-            List<PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+            List<PreloadedGroup> selectionList = new ArrayList<>(getFragment().getEngineConnection().getSelectedItemList());
 
             if (id == R.id.action_mode_group_delete)
                 DialogUtils.showRemoveTransferGroupListDialog(getFragment().getActivity(), selectionList);
@@ -275,5 +267,5 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
 
             return true;
         }
-    }
+    }*/
 }

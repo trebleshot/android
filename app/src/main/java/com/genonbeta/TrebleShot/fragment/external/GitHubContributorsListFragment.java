@@ -48,33 +48,23 @@ import java.util.List;
  * date: 16.03.2018 15:46
  */
 
-public class GitHubContributorsListFragment
-        extends DynamicRecyclerViewFragment<GitHubContributorsListFragment.ContributorObject, RecyclerViewAdapter.ViewHolder, GitHubContributorsListFragment.ContributorListAdapter>
+public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
+        GitHubContributorsListFragment.ContributorObject, RecyclerViewAdapter.ViewHolder,
+        GitHubContributorsListFragment.ContributorListAdapter>
 {
     @Override
     public ContributorListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
-        {
-            @Override
-            public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
-            {
-                clazz.getView().findViewById(R.id.visitView).setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        final ContributorObject contributorObject = getAdapter().getList().get(clazz.getAdapterPosition());
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> clazz.getView()
+                .findViewById(R.id.visitView).setOnClickListener((View.OnClickListener) v -> {
+                    final ContributorObject contributorObject = getAdapter().getList().get(clazz.getAdapterPosition());
 
-                        if (getContext() == null)
-                            return;
+                    if (getContext() == null)
+                        return;
 
-                        getContext().startActivity(new Intent(Intent.ACTION_VIEW)
-                                .setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
-                    }
+                    getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
                 });
-            }
-        };
 
         return new ContributorListAdapter(getContext())
         {
@@ -94,14 +84,7 @@ public class GitHubContributorsListFragment
 
         useEmptyActionButton(true);
         getEmptyActionButton().setText(R.string.butn_refresh);
-        getEmptyActionButton().setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                refreshList();
-            }
-        });
+        getEmptyActionButton().setOnClickListener(v -> refreshList());
 
         setEmptyImage(R.drawable.ic_github_circle_white_24dp);
         setEmptyText(getString(R.string.mesg_noInternetConnection));

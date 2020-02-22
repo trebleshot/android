@@ -29,8 +29,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
@@ -79,14 +79,14 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
                 Fragment fragment = getItem(iterator);
                 TabLayout.Tab tab = tabLayout.newTab();
 
-                if (fragment instanceof IconSupport && icons)
-                    tab.setIcon(((IconSupport) fragment).getIconRes());
+                if (fragment instanceof IconProvider && icons)
+                    tab.setIcon(((IconProvider) fragment).getIconRes());
 
                 if (!stableItem.iconOnly && text)
                     if (stableItem.title != null && stableItem.title.length() > 0)
                         tab.setText(stableItem.title);
-                    else if (fragment instanceof TitleSupport)
-                        tab.setText(((TitleSupport) fragment).getTitle(getContext()));
+                    else if (fragment instanceof TitleProvider)
+                        tab.setText(((TitleProvider) fragment).getDistinctiveTitle(getContext()));
 
                 tabLayout.addTab(tab);
             }
@@ -102,16 +102,16 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 
                 if (stableItem.title != null && stableItem.title.length() > 0)
                     menuTitle = stableItem.title;
-                else if (fragment instanceof TitleSupport)
-                    menuTitle = ((TitleSupport) fragment).getTitle(getContext());
+                else if (fragment instanceof TitleProvider)
+                    menuTitle = ((TitleProvider) fragment).getDistinctiveTitle(getContext());
                 else
                     menuTitle = String.valueOf(iterator);
 
                 MenuItem menuItem = bottomNavigationView.getMenu()
                         .add(0, iterator, iterator, menuTitle);
 
-                if (fragment instanceof IconSupport)
-                    menuItem.setIcon(((IconSupport) fragment).getIconRes());
+                if (fragment instanceof IconProvider)
+                    menuItem.setIcon(((IconProvider) fragment).getIconRes());
             }
     }
 
@@ -172,8 +172,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
     {
         Fragment fragment = getItem(position);
 
-        return fragment instanceof TitleSupport
-                ? ((TitleSupport) fragment).getTitle(getContext())
+        return fragment instanceof TitleProvider ? ((TitleProvider) fragment).getDistinctiveTitle(getContext())
                 : super.getPageTitle(position);
     }
 

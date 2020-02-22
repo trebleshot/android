@@ -29,12 +29,12 @@ import androidx.viewpager.widget.ViewPager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class HomeFragment extends com.genonbeta.android.framework.app.Fragment implements TitleSupport, SnackbarSupport,
-        com.genonbeta.android.framework.app.FragmentImpl, Activity.OnBackPressedListener
+public class HomeFragment extends com.genonbeta.android.framework.app.Fragment implements SnackbarPlacementProvider,
+        TitleProvider, com.genonbeta.android.framework.app.FragmentImpl, Activity.OnBackPressedListener
 {
     private ViewPager mViewPager;
     private SmartFragmentPagerAdapter mAdapter;
@@ -87,7 +87,7 @@ public class HomeFragment extends com.genonbeta.android.framework.app.Fragment i
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_home);
     }

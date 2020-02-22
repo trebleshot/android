@@ -43,11 +43,12 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-public class AddDevicesToTransferActivity extends Activity implements SnackbarSupport, WorkerService.OnAttachListener
+public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider,
+        WorkerService.OnAttachListener
 {
     public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 

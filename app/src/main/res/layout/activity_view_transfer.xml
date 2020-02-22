@@ -30,15 +30,8 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
-
-        <com.genonbeta.android.framework.widget.PowerfulActionMode
-            android:id="@+id/activity_transaction_action_mode"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:visibility="gone" />
 
         <TextView
             android:id="@+id/activity_transaction_no_devices_warning"

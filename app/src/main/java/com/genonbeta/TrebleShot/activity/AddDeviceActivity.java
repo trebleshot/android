@@ -47,12 +47,12 @@ import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -60,9 +60,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class AddDeviceActivity
-        extends Activity
-        implements SnackbarSupport
+public class AddDeviceActivity extends Activity implements SnackbarPlacementProvider
 {
     public static final String ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT";
     public static final String EXTRA_FRAGMENT_ENUM = "extraFragmentEnum";
@@ -264,8 +262,8 @@ public class AddDeviceActivity
             ((DeviceSelectionSupport) fragment).setDeviceSelectedListener(mDeviceSelectionListener);
 
         if (getSupportActionBar() != null) {
-            mToolbarLayout.setTitle(fragment instanceof TitleSupport
-                    ? ((TitleSupport) fragment).getTitle(AddDeviceActivity.this)
+            mToolbarLayout.setTitle(fragment instanceof TitleProvider
+                    ? ((TitleProvider) fragment).getDistinctiveTitle(AddDeviceActivity.this)
                     : getString(R.string.butn_addDevices));
         }
 

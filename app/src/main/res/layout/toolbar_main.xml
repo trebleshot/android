@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
-        <com.genonbeta.android.framework.widget.PowerfulActionMode
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/content_powerful_action_mode"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"

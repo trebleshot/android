@@ -43,10 +43,8 @@ import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
-import com.genonbeta.TrebleShot.ui.callback.DetachListener;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegisteredErrorListener;
@@ -59,8 +57,8 @@ import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.Editable
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.HotspotNetwork;
 
 public class NetworkDeviceListFragment extends EditableListFragment<EditableNetworkDevice,
-        EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter> implements TitleSupport, DetachListener,
-        IconSupport, AddDeviceActivity.DeviceSelectionSupport
+        EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter> implements IconProvider,
+        AddDeviceActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -301,12 +299,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
             getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
     }
 
-    @Override
-    public void onPrepareDetach()
-    {
-        showCustomView(false);
-    }
-
     public void checkRefreshing()
     {
         if (mSwipeRefreshLayout != null)
@@ -333,7 +325,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_useKnownDevice);
     }

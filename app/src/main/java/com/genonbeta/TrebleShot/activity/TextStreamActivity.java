@@ -26,12 +26,13 @@ import androidx.appcompat.widget.Toolbar;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
-import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
-public class TextStreamActivity extends Activity implements PowerfulActionModeSupport
+public class TextStreamActivity extends Activity implements PerformerEngineProvider
 {
-    private PowerfulActionMode mActionMode;
+    private PerformerEngine mPerformerEngine = new PerformerEngine();
     private TextStreamListFragment mStreamListFragment;
 
     @Override
@@ -43,7 +44,6 @@ public class TextStreamActivity extends Activity implements PowerfulActionModeSu
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mActionMode = findViewById(R.id.action_mode);
         mStreamListFragment = (TextStreamListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.activity_text_stream_fragment);
 
@@ -51,17 +51,12 @@ public class TextStreamActivity extends Activity implements PowerfulActionModeSu
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        mActionMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(!started
-                ? View.VISIBLE : View.GONE));
     }
 
     @Override
     public void onBackPressed()
     {
-        if (mActionMode.hasActive(mStreamListFragment.getSelectionCallback()))
-            mActionMode.finish(mStreamListFragment.getSelectionCallback());
-        else
+        // TODO: 22.02.2020 Add the condition to remmove the active selection session
             super.onBackPressed();
     }
 
@@ -79,8 +74,8 @@ public class TextStreamActivity extends Activity implements PowerfulActionModeSu
     }
 
     @Override
-    public PowerfulActionMode getPowerfulActionMode()
+    public IPerformerEngine getPerformerEngine()
     {
-        return mActionMode;
+        return mPerformerEngine;
     }
 }

@@ -18,12 +18,14 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
-/**
- * created by: Veli
- * date: 19.11.2017 20:16
- */
+import androidx.annotation.DrawableRes;
 
-public interface DetachListener
+/**
+ * created by: veli
+ * date: 9/3/18 11:13 PM
+ */
+public interface IconProvider
 {
-    void onPrepareDetach();
+    @DrawableRes
+    int getIconRes();
 }

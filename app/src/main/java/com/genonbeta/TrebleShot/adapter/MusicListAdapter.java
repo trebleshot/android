@@ -65,7 +65,8 @@ public class MusicListAdapter
                 new String[]{String.valueOf(1)},
                 null);
 
-        Cursor albumCursor = mResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, null);
+        Cursor albumCursor = mResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null,
+                null, null, null);
 
         if (albumCursor != null) {
             if (albumCursor.moveToFirst()) {
@@ -74,7 +75,8 @@ public class MusicListAdapter
                 int titleIndex = albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
 
                 do {
-                    albumList.put(albumCursor.getInt(idIndex), new AlbumHolder(albumCursor.getInt(idIndex), albumCursor.getString(titleIndex), albumCursor.getString(artIndex)));
+                    albumList.put(albumCursor.getInt(idIndex), new AlbumHolder(albumCursor.getInt(idIndex),
+                            albumCursor.getString(titleIndex), albumCursor.getString(artIndex)));
                 } while (albumCursor.moveToNext());
             }
 
@@ -94,18 +96,13 @@ public class MusicListAdapter
                 int typeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
                 do {
-                    lister.offerObliged(this, new SongHolder(
-                            songCursor.getLong(idIndex),
-                            songCursor.getString(nameIndex),
-                            songCursor.getString(artistIndex),
-                            songCursor.getString(songIndex),
-                            extractFolderName(songCursor.getString(folderIndex)),
-                            songCursor.getString(typeIndex),
-                            songCursor.getInt(albumIndex),
-                            albumList.get(songCursor.getInt(albumIndex)),
-                            songCursor.getLong(dateIndex) * 1000,
-                            songCursor.getLong(sizeIndex),
-                            Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + songCursor.getInt(idIndex))));
+                    lister.offerObliged(this, new SongHolder(songCursor.getLong(idIndex),
+                            songCursor.getString(nameIndex), songCursor.getString(artistIndex),
+                            songCursor.getString(songIndex), extractFolderName(songCursor.getString(folderIndex)),
+                            songCursor.getString(typeIndex), songCursor.getInt(albumIndex),
+                            albumList.get(songCursor.getInt(albumIndex)), songCursor.getLong(dateIndex) * 1000,
+                            songCursor.getLong(sizeIndex), Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/"
+                            + songCursor.getInt(idIndex))));
                 }
                 while (songCursor.moveToNext());
             }
@@ -125,7 +122,8 @@ public class MusicListAdapter
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         if (viewType == VIEW_TYPE_REPRESENTATIVE)
-            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false),
+                    R.id.layout_list_title_text);
 
         return new GroupViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
     }

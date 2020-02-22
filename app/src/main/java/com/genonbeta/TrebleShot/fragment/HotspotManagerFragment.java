@@ -43,8 +43,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.google.zxing.BarcodeFormat;
@@ -57,9 +57,8 @@ import org.json.JSONObject;
  * created by: veli
  * date: 11/04/18 20:53
  */
-public class HotspotManagerFragment
-        extends com.genonbeta.android.framework.app.Fragment
-        implements TitleSupport, IconSupport
+public class HotspotManagerFragment extends com.genonbeta.android.framework.app.Fragment implements IconProvider,
+        TitleProvider
 {
     public static final int REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 643;
 
@@ -199,7 +198,7 @@ public class HotspotManagerFragment
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_startHotspot);
     }

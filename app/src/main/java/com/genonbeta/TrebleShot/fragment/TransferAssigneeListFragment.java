@@ -36,7 +36,6 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
@@ -47,7 +46,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee,
-        EditableListAdapter.EditableViewHolder, TransferAssigneeListAdapter> implements TitleSupport
+        EditableListAdapter.EditableViewHolder, TransferAssigneeListAdapter>
 {
     public static final String ARG_GROUP_ID = "groupId";
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
@@ -174,7 +173,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_deviceList);
     }

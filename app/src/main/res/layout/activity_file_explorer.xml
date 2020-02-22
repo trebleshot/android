@@ -34,12 +34,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
-        <com.genonbeta.android.framework.widget.PowerfulActionMode
-            android:id="@+id/activity_file_explorer_action_mode"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:visibility="gone" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout

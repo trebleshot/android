@@ -46,10 +46,11 @@ import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.ByteArrayOutputStream;
@@ -58,13 +59,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener,
-        PowerfulActionModeSupport
+        PerformerEngineProvider
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
     private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
-    private PowerfulActionMode mActionMode;
+    private PerformerEngine mPerformerEngine = new PerformerEngine();
     private HomeFragment mHomeFragment;
 
     private long mExitPressTime;
@@ -81,7 +82,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         setSupportActionBar(toolbar);
 
         mHomeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_home_fragment);
-        mActionMode = findViewById(R.id.content_powerful_action_mode);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
@@ -99,8 +99,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         });
 
         mNavigationView.setNavigationItemSelectedListener(this);
-        mActionMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(!started ? View.VISIBLE
-                : View.GONE));
 
         if (UpdateUtils.hasNewVersion(this))
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
@@ -318,9 +316,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
     }
 
     @Override
-    public PowerfulActionMode getPowerfulActionMode()
+    public IPerformerEngine getPerformerEngine()
     {
-        return mActionMode;
+        return mPerformerEngine;
     }
 
     private void highlightUpdater(String availableVersion)

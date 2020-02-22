@@ -107,7 +107,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             return new GroupViewHolder(getInflater().inflate(noPadding ? R.layout.layout_list_title_no_padding
                     : R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
         else if (viewType == VIEW_TYPE_ACTION_BUTTON)
-            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_action_button, parent, false), R.id.text);
+            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_action_button, parent,
+                    false), R.id.text);
 
         throw new IllegalArgumentException(viewType + " is not defined in defaults");
     }
@@ -133,12 +134,12 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         }
     }
 
-    public String getRepresentativeText(Merger merger)
+    public String getRepresentativeText(Merger<? extends T> merger)
     {
         if (merger instanceof DateMerger)
-            return String.valueOf(getSectionNameDate(((DateMerger) merger).getTime()));
+            return String.valueOf(getSectionNameDate(((DateMerger<?>) merger).getTime()));
         else if (merger instanceof StringMerger)
-            return ((StringMerger) merger).getString();
+            return ((StringMerger<?>) merger).getString();
 
         return merger.toString();
     }
@@ -150,12 +151,10 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         if (object.isGroupRepresentative())
             return object.getRepresentativeText();
 
-        switch (getGroupBy()) {
-            case MODE_GROUP_BY_DATE:
-                return getSectionNameDate(object.getComparableDate());
-            default:
-                return super.getSectionName(position, object);
-        }
+        if (getGroupBy() == MODE_GROUP_BY_DATE)
+            return getSectionNameDate(object.getComparableDate());
+
+        return super.getSectionName(position, object);
     }
 
     public interface GroupEditable extends Editable
@@ -192,7 +191,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             this.representativeText = representativeText;
         }
 
-        public GroupShareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
+        public GroupShareable(long id, String friendlyName, String fileName, String mimeType, long date, long size,
+                              Uri uri)
         {
             super(id, friendlyName, fileName, mimeType, date, size, uri);
         }
@@ -336,8 +336,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         {
             if (mMode == MODE_GROUP_BY_DATE)
                 offer(object, new DateMerger<>(object.getComparableDate()));
-            else if (mMode == MODE_GROUP_BY_NOTHING
-                    || mCustomLister == null
+            else if (mMode == MODE_GROUP_BY_NOTHING || mCustomLister == null
                     || !mCustomLister.onCustomGroupListing(this, mMode, object))
                 mNoGroupingList.add(object);
         }

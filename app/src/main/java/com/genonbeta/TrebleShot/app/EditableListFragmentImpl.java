@@ -18,18 +18,22 @@
 
 package com.genonbeta.TrebleShot.app;
 
+import android.content.Context;
 import android.net.Uri;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.app.ListFragmentImpl;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.PerformerListener;
 
 /**
  * created by: veli
  * date: 14/04/18 10:35
  */
-public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>
+public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>, PerformerListener,
+        TitleProvider
 {
     boolean applyViewingChanges(int gridSize);
 
@@ -49,11 +53,7 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 
     int getOrderingCriteria();
 
-    PowerfulActionMode.SelectorConnection<T> getSelectionConnection();
-
-    EditableListFragment.SelectionCallback<T> getSelectionCallback();
-
-    void setSelectionCallback(EditableListFragment.SelectionCallback<T> selectionCallback);
+    IEngineConnection<T> getEngineConnection();
 
     int getSortingCriteria();
 
@@ -68,6 +68,4 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
     boolean loadIfRequested();
 
     boolean openUri(Uri uri);
-
-    void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection);
 }

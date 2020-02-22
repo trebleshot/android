@@ -41,7 +41,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
@@ -56,7 +56,7 @@ import org.json.JSONObject;
  * Date: 1/19/17 5:05 PM
  */
 
-public class TextEditorActivity extends Activity implements SnackbarSupport
+public class TextEditorActivity extends Activity implements SnackbarPlacementProvider
 {
     public static final String TAG = TextEditorActivity.class.getSimpleName();
     public static final String ACTION_EDIT_TEXT = "genonbeta.intent.action.EDIT_TEXT";

@@ -46,8 +46,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -60,7 +60,7 @@ import org.json.JSONObject;
 
 import java.net.UnknownHostException;
 
-public class NetworkManagerFragment extends Fragment implements TitleSupport, IconSupport
+public class NetworkManagerFragment extends Fragment implements TitleProvider, IconProvider
 {
     private final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -173,7 +173,7 @@ public class NetworkManagerFragment extends Fragment implements TitleSupport, Ic
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_useExistingNetwork);
     }

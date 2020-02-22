@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferPathResolverRecyclerAdapter;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 
 import java.io.File;
 
@@ -37,9 +36,7 @@ import java.io.File;
  * created by: veli
  * date: 3/11/19 7:37 PM
  */
-public class TransferFileExplorerFragment
-        extends TransferListFragment
-        implements TitleSupport
+public class TransferFileExplorerFragment extends TransferListFragment
 {
     private RecyclerView mPathView;
     private TransferPathResolverRecyclerAdapter mPathAdapter;
@@ -101,7 +98,7 @@ public class TransferFileExplorerFragment
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_files);
     }

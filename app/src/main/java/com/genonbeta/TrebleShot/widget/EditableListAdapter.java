@@ -303,11 +303,11 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
     public synchronized void syncSelectionList(List<T> itemList)
     {
-        if (getFragment() == null || getFragment().getSelectionConnection() == null)
+        if (getFragment() == null || getFragment().getEngineConnection() == null)
             return;
 
         for (T item : itemList)
-            item.setSelectableSelected(mFragment.getSelectionConnection().isSelected(item));
+            item.setSelectableSelected(mFragment.getEngineConnection().isSelected(item));
     }
 
     public static class EditableViewHolder extends ViewHolder

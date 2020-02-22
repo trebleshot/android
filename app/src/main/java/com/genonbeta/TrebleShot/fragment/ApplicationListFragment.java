@@ -29,14 +29,13 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
 
 public class ApplicationListFragment extends GroupEditableListFragment<ApplicationListAdapter.PackageHolder,
-        GroupEditableListAdapter.GroupViewHolder, ApplicationListAdapter> implements TitleSupport
+        GroupEditableListAdapter.GroupViewHolder, ApplicationListAdapter>
 {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -80,8 +79,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
 
                 clazz.getView().findViewById(R.id.selector).setOnClickListener(
                         v -> {
-                            if (getSelectionConnection() != null)
-                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                            if (getEngineConnection() != null)
+                                getEngineConnection().setSelected(clazz.getAdapterPosition());
                         });
             }
         };
@@ -100,8 +99,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return getSelectionConnection() != null
-                ? getSelectionConnection().setSelected(holder)
+        return getEngineConnection() != null
+                ? getEngineConnection().setSelected(holder)
                 : performLayoutClickOpen(holder);
     }
 
@@ -140,7 +139,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_application);
     }

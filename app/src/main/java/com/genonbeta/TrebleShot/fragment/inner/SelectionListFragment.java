@@ -27,8 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -40,9 +40,8 @@ import java.util.List;
  * created by: veli
  * date: 9/3/18 10:17 PM
  */
-public class SelectionListFragment
-        extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder, SelectionListFragment.MyAdapter>
-        implements IconSupport, TitleSupport
+public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder,
+        SelectionListFragment.MyAdapter> implements IconProvider, TitleProvider
 {
     @Override
     public MyAdapter onAdapter()
@@ -112,7 +111,7 @@ public class SelectionListFragment
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_files);
     }

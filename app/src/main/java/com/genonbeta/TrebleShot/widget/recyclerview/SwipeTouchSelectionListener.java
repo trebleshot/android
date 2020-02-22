@@ -52,7 +52,7 @@ public class SwipeTouchSelectionListener<T extends Editable>
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e)
     {
         if (MotionEvent.ACTION_DOWN == e.getAction()) {
-            mActivationWaiting = mListFragment.getSelectionConnection() != null;
+            mActivationWaiting = mListFragment.getEngineConnection() != null;
             mConsistentX = (int) (e.getX() / 10);
             mConsistentY = (int) (e.getY() / 10);
         } else if (MotionEvent.ACTION_MOVE == e.getAction() && mActivationWaiting
@@ -104,7 +104,7 @@ public class SwipeTouchSelectionListener<T extends Editable>
                                         boolean selected = currentPos > mLastPosition ? mStartPosition <= i
                                                 : mStartPosition >= i;
 
-                                        boolean selectionResult = mListFragment.getSelectionConnection().setSelected(
+                                        boolean selectionResult = mListFragment.getEngineConnection().setSelected(
                                                 mListFragment.getAdapterImpl().getItem(i), selected);
 
                                         EditableListAdapter.ViewHolder viewHolder = (EditableListAdapter.ViewHolder)

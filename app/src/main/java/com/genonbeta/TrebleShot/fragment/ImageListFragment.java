@@ -32,13 +32,11 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
-public class ImageListFragment
-        extends GalleryGroupEditableListFragment<ImageListAdapter.ImageHolder, GroupEditableListAdapter.GroupViewHolder, ImageListAdapter>
-        implements TitleSupport
+public class ImageListFragment extends GalleryGroupEditableListFragment<ImageListAdapter.ImageHolder,
+        GroupEditableListAdapter.GroupViewHolder, ImageListAdapter>
 {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -93,8 +91,8 @@ public class ImageListFragment
                 clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
                         ? R.id.selectorContainer : R.id.selector)
                         .setOnClickListener(v -> {
-                            if (getSelectionConnection() != null)
-                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                            if (getEngineConnection() != null)
+                                getEngineConnection().setSelected(clazz.getAdapterPosition());
                         });
             }
         };
@@ -113,13 +111,13 @@ public class ImageListFragment
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return getSelectionConnection() != null
-                ? getSelectionConnection().setSelected(holder)
+        return getEngineConnection() != null
+                ? getEngineConnection().setSelected(holder)
                 : performLayoutClickOpen(holder);
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_photo);
     }

@@ -40,15 +40,16 @@ import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ import java.util.List;
  * Date: 5/23/17 1:43 PM
  */
 
-public class ViewTransferActivity extends Activity implements PowerfulActionModeSupport, SnackbarSupport
+public class ViewTransferActivity extends Activity implements PerformerEngineProvider, SnackbarPlacementProvider
 {
     public static final String TAG = ViewTransferActivity.class.getSimpleName();
 
@@ -74,7 +75,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
     private OnBackPressedListener mBackPressedListener;
     private PreloadedGroup mGroup;
     private TransferObject mTransferObject;
-    private PowerfulActionMode mMode;
+    private PerformerEngine mPerformerEngine = new PerformerEngine();
     private ShowingAssignee mAssignee;
     private String mDirectory;
     private MenuItem mCnTestMenu;
@@ -155,8 +156,6 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_view_transfer);
-
-        mMode = findViewById(R.id.activity_transaction_action_mode);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -258,9 +257,6 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
             }
 
             attachListeners(fragment);
-
-            mMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(
-                    !started ? View.VISIBLE : View.GONE));
         }
     }
 
@@ -442,9 +438,9 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
     }
 
     @Override
-    public PowerfulActionMode getPowerfulActionMode()
+    public IPerformerEngine getPerformerEngine()
     {
-        return mMode;
+        return mPerformerEngine;
     }
 
     public void reconstructGroup()

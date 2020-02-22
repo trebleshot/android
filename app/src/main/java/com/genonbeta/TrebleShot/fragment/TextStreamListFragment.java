@@ -23,32 +23,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,9 +47,8 @@ import java.util.Map;
  * date: 30.12.2017 13:25
  */
 
-public class TextStreamListFragment
-        extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
-        implements IconSupport, TitleSupport
+public class TextStreamListFragment extends GroupEditableListFragment<TextStreamObject,
+        GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter> implements IconProvider
 {
     private StatusReceiver mStatusReceiver = new StatusReceiver();
 
@@ -71,7 +61,7 @@ public class TextStreamListFragment
         setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
-        setDefaultSelectionCallback(new SelectionCallback(this));
+        // TODO: 22.02.2020 set default selection callback
     }
 
     @Override
@@ -180,11 +170,12 @@ public class TextStreamListFragment
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_textStream);
     }
 
+    /*
     private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
     {
         public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
@@ -205,7 +196,7 @@ public class TextStreamListFragment
         {
             int id = item.getItemId();
 
-            List<TextStreamObject> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+            List<TextStreamObject> selectionList = getFragment().getEngineConnection().getSelectedItemList();
 
             if (id == R.id.action_mode_text_stream_delete) {
                 AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
@@ -229,7 +220,7 @@ public class TextStreamListFragment
 
             return true;
         }
-    }
+    }*/
 
     private class StatusReceiver extends BroadcastReceiver
     {

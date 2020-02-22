@@ -42,8 +42,8 @@ import java.util.List;
  * created by: veli
  * date: 9/12/18 5:51 PM
  */
-public class GitHubChangelogListFragment
-        extends DynamicRecyclerViewFragment<GitHubChangelogListFragment.VersionObject, RecyclerViewAdapter.ViewHolder, GitHubChangelogListFragment.VersionListAdapter>
+public class GitHubChangelogListFragment extends DynamicRecyclerViewFragment<GitHubChangelogListFragment.VersionObject,
+        RecyclerViewAdapter.ViewHolder, GitHubChangelogListFragment.VersionListAdapter>
 {
     @Override
     public VersionListAdapter onAdapter()

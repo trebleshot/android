@@ -52,9 +52,9 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.android.framework.util.Interrupter;
@@ -77,8 +77,8 @@ import static com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegister
  * created by: veli
  * date: 12/04/18 17:21
  */
-public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.Fragment implements TitleSupport,
-        UITask, IconSupport, AddDeviceActivity.DeviceSelectionSupport
+public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.Fragment implements TitleProvider,
+        UITask, IconProvider, AddDeviceActivity.DeviceSelectionSupport
 {
     public static final String TAG = "BarcodeConnectFragment";
 
@@ -376,7 +376,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_scanQrCode);
     }

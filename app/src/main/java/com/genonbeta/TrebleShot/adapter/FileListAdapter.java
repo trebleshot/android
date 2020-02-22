@@ -560,9 +560,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
         }
     }
 
-    public static class StorageHolder
-            extends DirectoryHolder
-            implements StorageHolderImpl
+    public static class StorageHolder extends DirectoryHolder implements StorageHolderImpl
     {
         public StorageHolder(DocumentFile file, String info, int iconRes)
         {

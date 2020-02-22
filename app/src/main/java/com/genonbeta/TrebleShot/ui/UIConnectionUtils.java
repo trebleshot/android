@@ -42,7 +42,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.*;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,11 +56,11 @@ public class UIConnectionUtils
 {
     public static final String TAG = "UIConnectionUtils";
 
-    private SnackbarSupport mSnackbarSupport;
+    private SnackbarPlacementProvider mSnackbarSupport;
     private boolean mWirelessEnableRequested = false;
     private ConnectionUtils mConnectionUtils;
 
-    public UIConnectionUtils(ConnectionUtils connectionUtils, SnackbarSupport snackbarSupport)
+    public UIConnectionUtils(ConnectionUtils connectionUtils, SnackbarPlacementProvider snackbarSupport)
     {
         mConnectionUtils = connectionUtils;
         mSnackbarSupport = snackbarSupport;
@@ -105,7 +105,7 @@ public class UIConnectionUtils
         return mConnectionUtils;
     }
 
-    public SnackbarSupport getSnackbarSupport()
+    public SnackbarPlacementProvider getSnackbarSupport()
     {
         return mSnackbarSupport;
     }

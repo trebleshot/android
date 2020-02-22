@@ -26,17 +26,15 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.IconProvider;
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.android.framework.app.Fragment;
 
 /**
  * created by: veli
  * date: 9/4/18 12:03 AM
  */
-public class TextViewerFragment
-        extends Fragment
-        implements IconSupport, TitleSupport
+public class TextViewerFragment extends Fragment implements IconProvider, TitleProvider
 {
     private TextView mMainText;
 
@@ -76,7 +74,7 @@ public class TextViewerFragment
     }
 
     @Override
-    public CharSequence getTitle(Context context)
+    public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_shareTextShort);
     }
