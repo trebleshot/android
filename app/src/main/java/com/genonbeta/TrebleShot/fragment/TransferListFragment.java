@@ -132,16 +132,8 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
-
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        if (getEngineConnection() != null)
-                            getEngineConnection().setSelected(clazz.getAdapterPosition());
-                    }
-                });
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
+                        true));
             }
         };
 

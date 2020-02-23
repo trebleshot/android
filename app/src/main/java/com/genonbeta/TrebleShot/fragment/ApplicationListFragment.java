@@ -75,7 +75,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
                 registerLayoutViewClicks(clazz);
 
                 clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
-                clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz));
+                clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
             }
         };
 
@@ -93,8 +93,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return getEngineConnection() != null ? getEngineConnection().setSelected(holder)
-                : performLayoutClickOpen(holder);
+        return performLayoutClickOpen(holder);
     }
 
     @Override

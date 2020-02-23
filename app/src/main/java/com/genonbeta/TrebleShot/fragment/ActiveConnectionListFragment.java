@@ -150,11 +150,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
             registerLayoutViewClicks(clazz);
 
             clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
-            clazz.itemView.findViewById(R.id.selector).setOnClickListener(
-                    v -> {
-                        if (getEngineConnection() != null)
-                            getEngineConnection().setSelected(clazz.getAdapterPosition());
-                    });
+            clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
         };
 
         return new ActiveConnectionListAdapter(getActivity())

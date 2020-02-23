@@ -34,6 +34,8 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.DirectoryHolder;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.WritablePathHolder;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -284,11 +286,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> {
-                    if (getEngineConnection() != null)
-                        getEngineConnection().setSelected(clazz.getAdapterPosition());
-                });
-
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz, true));
                 clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                     final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(
                             clazz.getAdapterPosition());
@@ -329,7 +327,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                             .setVisible(FileUtils.getApplicationDirectory(getContext()).getUri()
                                     .equals(fileHolder.file.getUri()));
                     menuItself.findItem(R.id.action_mode_file_eject_directory)
-                            .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
+                            .setVisible(fileHolder instanceof WritablePathHolder);
                     menuItself.findItem(R.id.action_mode_file_toggle_shortcut)
                             .setVisible(!isFile)
                             .setTitle(shortcutObject == null ? R.string.butn_addShortcut
@@ -343,17 +341,15 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
                         if (id == R.id.action_mode_file_open) {
                             performLayoutClickOpen(clazz);
-                        } else if (id == R.id.action_mode_file_show
-                                && fileHolder.file.getParentFile() != null) {
+                        } else if (id == R.id.action_mode_file_show && fileHolder.file.getParentFile() != null) {
                             goPath(fileHolder.file.getParentFile());
                         } else if (id == R.id.action_mode_file_eject_directory
-                                && fileHolder instanceof FileListAdapter.WritablePathHolder) {
+                                && fileHolder instanceof WritablePathHolder) {
                             AppUtils.getDatabase(getContext()).remove(
-                                    ((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
+                                    ((WritablePathHolder) fileHolder).pathObject);
                             AppUtils.getDatabase(getContext()).broadcast();
                         } else if (id == R.id.action_mode_file_toggle_shortcut) {
-                            shortcutItem(shortcutObject != null
-                                    ? shortcutObject
+                            shortcutItem(shortcutObject != null ? shortcutObject
                                     : new FileShortcutObject(fileHolder.friendlyName, fileHolder.file.getUri()));
                         } else if (id == R.id.action_mode_file_change_save_path) {
                             startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
@@ -505,10 +501,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
             if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-            else if (fileInfo instanceof FileListAdapter.FileHolder && mSelectByClick && getEngineConnection() != null)
-                return getEngineConnection().setSelected(holder);
-            else if (fileInfo instanceof FileListAdapter.DirectoryHolder
-                    || fileInfo instanceof FileListAdapter.WritablePathHolder) {
+            else if (fileInfo instanceof FileListAdapter.FileHolder && mSelectByClick)
+                return setItemSelected(holder, true);
+            else if (fileInfo instanceof DirectoryHolder || fileInfo instanceof WritablePathHolder) {
                 FileListFragment.this.goPath(fileInfo.file);
 
                 // TODO: 22.02.2020 Show help dialog if not shown before and selection is not activated.
@@ -539,9 +534,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
         try {
             FileListAdapter.GenericFileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
 
-            if ((fileHolder instanceof FileListAdapter.DirectoryHolder
-                    || fileHolder instanceof FileListAdapter.WritablePathHolder)
-                    && getEngineConnection() != null && getEngineConnection().setSelected(holder))
+            // FIXME: 23.02.2020 Ensure this doesn't have any problem
+            if ((fileHolder instanceof DirectoryHolder || fileHolder instanceof WritablePathHolder)
+                    && setItemSelected(holder))
                 return true;
         } catch (NotReadyException e) {
             e.printStackTrace();

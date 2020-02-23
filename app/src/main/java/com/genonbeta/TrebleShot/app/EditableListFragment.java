@@ -612,6 +612,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                 ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() : 1;
     }
 
+    public boolean invokeClickListener(V holder, boolean longClick)
+    {
+        return mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, longClick);
+    }
+
     public boolean isTwoRowLayout()
     {
         return AppUtils.getDefaultPreferences(getContext()).getBoolean("two_row_layout", true);
@@ -661,15 +666,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean performLayoutClick(V holder)
     {
-        return setItemSelected(holder) || (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(
-                this, holder, false)) || onDefaultClickAction(holder);
+        return setItemSelected(holder) || invokeClickListener(holder, false) || onDefaultClickAction(holder);
     }
 
     public boolean performLayoutLongClick(V holder)
     {
-        return (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder,
-                true)) || onDefaultLongClickAction(holder) || getEngineConnection() != null
-                && getEngineConnection().setSelected(holder);
+        return invokeClickListener(holder, true) || onDefaultLongClickAction(holder)
+                || setItemSelected(holder, true);
     }
 
     public boolean performLayoutClickOpen(V holder)
@@ -750,11 +753,24 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean setItemSelected(V holder)
     {
-        if (!getEngineConnection().setSelected(holder))
+        return setItemSelected(holder, false);
+    }
+
+    public boolean setItemSelected(V holder, boolean force)
+    {
+        if (getEngineConnection().getHostList().size() <= 0 && !force)
             return false;
 
+        try {
+            holder.setSelected(getEngineConnection().setSelected(holder));
+            return true;
+        } catch (SelectableNotFoundException e) {
+            e.printStackTrace();
+        } catch (CouldNotAlterException e) {
+            e.printStackTrace();
+        }
 
-        return true;
+        return false;
     }
 
     @Override

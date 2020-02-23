@@ -116,7 +116,7 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
         return context.getString(R.string.text_files);
     }
 
-    public boolean updateSelection(boolean selectAll)
+    public void updateSelection(boolean selectAll)
     {
         if (getAdapter() != null) {
             synchronized (getAdapter().getList()) {
@@ -125,10 +125,7 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
             }
 
             getAdapter().notifyDataSetChanged();
-            return true;
         }
-
-        return false;
     }
 
     public static class MyAdapter extends RecyclerViewAdapter<Selectable, RecyclerViewAdapter.ViewHolder>

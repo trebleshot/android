@@ -83,12 +83,8 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
                 visitView.setOnClickListener(v -> performLayoutClickOpen(clazz));
                 visitView.setOnLongClickListener(v -> performLayoutLongClick(clazz));
 
-                clazz.itemView.findViewById(getAdapter().isGridLayoutRequested()
-                        ? R.id.selectorContainer : R.id.selector)
-                        .setOnClickListener(v -> {
-                            if (getEngineConnection() != null)
-                                getEngineConnection().setSelected(clazz.getAdapterPosition());
-                        });
+                clazz.itemView.findViewById(getAdapter().isGridLayoutRequested() ? R.id.selectorContainer
+                        : R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
             }
         };
 
@@ -106,9 +102,7 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return getEngineConnection() != null
-                ? getEngineConnection().setSelected(holder)
-                : performLayoutClickOpen(holder);
+        return performLayoutClickOpen(holder);
     }
 
     @Override

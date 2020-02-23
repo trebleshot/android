@@ -163,11 +163,8 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
-
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> {
-                    if (getEngineConnection() != null)
-                        getEngineConnection().setSelected(clazz.getAdapterPosition());
-                });
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
+                        true));
             }
         };
 

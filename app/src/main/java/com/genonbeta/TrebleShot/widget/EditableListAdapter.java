@@ -304,6 +304,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public synchronized void syncSelectionList(List<T> itemList)
     {
         for (T item : itemList)
-            item.setSelectableSelected(mFragment.getEngineConnection().isSelected(item));
+            item.setSelectableSelected(mFragment.getEngineConnection().isSelectedOnHost(item));
     }
 }
