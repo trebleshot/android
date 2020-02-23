@@ -110,7 +110,7 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return performLayoutClickOpen(holder);
+        return setItemSelected(holder, true) || performLayoutClickOpen(holder);
     }
 
     @Override

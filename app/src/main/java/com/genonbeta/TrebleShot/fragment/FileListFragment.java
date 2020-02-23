@@ -68,9 +68,6 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
     public final static String EXTRA_FILE_NAME = "extraFile";
     public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
 
-    public final static String ARG_SELECT_BY_CLICK = "argSelectByClick";
-
-    private boolean mSelectByClick = false;
     private DocumentFile mLastKnownPath;
     private IntentFilter mIntentFilter = new IntentFilter();
     private MediaScannerConnection mMediaScanner;
@@ -152,8 +149,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                 public void onFileRenameCompleted(Context context)
                 {
                     context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null
-                                    ? null
+                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null ? null
                                     : adapter.getPath().getUri()));
                 }
             }).show();
@@ -176,11 +172,6 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
         setDefaultGroupingCriteria(FileListAdapter.MODE_GROUP_BY_DEFAULT);
         // TODO: 22.02.2020 Implement default selection callback installation
         //setDefaultSelectionCallback(new SelectionCallback(this));
-
-        if (getArguments() != null) {
-            if (getArguments().containsKey(ARG_SELECT_BY_CLICK))
-                mSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
-        }
     }
 
     @Override
@@ -501,8 +492,8 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
             if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-            else if (fileInfo instanceof FileListAdapter.FileHolder && mSelectByClick)
-                return setItemSelected(holder, true);
+            else if (fileInfo instanceof FileListAdapter.FileHolder)
+                return setItemSelected(holder);
             else if (fileInfo instanceof DirectoryHolder || fileInfo instanceof WritablePathHolder) {
                 FileListFragment.this.goPath(fileInfo.file);
 

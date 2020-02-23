@@ -87,15 +87,15 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             }
         };
 
-        Bundle fileExplorerArgs = new Bundle();
-        fileExplorerArgs.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
 
-        pagerAdapter.add(new StableItem(0, ApplicationListFragment.class, null));
-        pagerAdapter.add(new StableItem(1, FileExplorerFragment.class, fileExplorerArgs).setTitle(getString(
+        pagerAdapter.add(new StableItem(0, ApplicationListFragment.class, arguments));
+        pagerAdapter.add(new StableItem(1, FileExplorerFragment.class, arguments).setTitle(getString(
                 R.string.text_files)));
-        pagerAdapter.add(new StableItem(2, AudioListFragment.class, null));
-        pagerAdapter.add(new StableItem(3, ImageListFragment.class, null));
-        pagerAdapter.add(new StableItem(4, VideoListFragment.class, null));
+        pagerAdapter.add(new StableItem(2, AudioListFragment.class, arguments));
+        pagerAdapter.add(new StableItem(3, ImageListFragment.class, arguments));
+        pagerAdapter.add(new StableItem(4, VideoListFragment.class, arguments));
 
         pagerAdapter.createTabs(tabLayout, false, true);
         viewPager.setAdapter(pagerAdapter);

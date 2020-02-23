@@ -65,6 +65,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>,
         PerformerEngineProvider
 {
+    public final static String ARG_SELECT_BY_CLICK = "argSelectByClick";
+
     private IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
     private FilteringDelegate<T> mFilteringDelegate;
     private Snackbar mRefreshDelayedSnackbar;
@@ -74,6 +76,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     private boolean mUseDefaultPaddingDecoration = false;
     private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
     private boolean mTwoRowLayoutState = false;
+    private boolean mSelectByClick = false;
     private float mDefaultPaddingDecorationSize = -1;
     private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
     private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
@@ -122,6 +125,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         mTwoRowLayoutState = isTwoRowLayout();
         mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(getContext()));
         mEngineConnection.setSelectableProvider(getAdapterImpl());
+
+        if (getArguments() != null)
+            mSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
     }
 
     @Override
@@ -637,6 +643,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         mRefreshRequested = requested;
     }
 
+    public boolean isSelectByClick() {
+        return mSelectByClick;
+    }
+
     public boolean isSortingSupported()
     {
         return mSortingSupported;
@@ -753,7 +763,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean setItemSelected(V holder)
     {
-        return setItemSelected(holder, false);
+        return setItemSelected(holder, isSelectByClick());
     }
 
     public boolean setItemSelected(V holder, boolean force)
