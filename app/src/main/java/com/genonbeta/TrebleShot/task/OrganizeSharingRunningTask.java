@@ -45,7 +45,7 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.activity.ShareActivity.*;
 
-public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareActivity>
+public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningTask<ShareActivity>
 {
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;

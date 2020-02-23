@@ -34,6 +34,7 @@ import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Lister;
 import com.genonbeta.android.framework.util.listing.Merger;
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -175,7 +176,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     }
 
-    public static class GroupShareable extends Shareable implements GroupEditable
+    abstract public static class GroupShareable extends Shareable implements GroupEditable
     {
         public int viewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
         public String representativeText;
@@ -254,7 +255,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         }
     }
 
-    public static class GroupViewHolder extends EditableListAdapter.EditableViewHolder
+    public static class GroupViewHolder extends RecyclerViewAdapter.ViewHolder
     {
         private TextView mRepresentativeText;
         private int mRequestCode;
@@ -267,7 +268,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
         public GroupViewHolder(View itemView, int resRepresentativeText)
         {
-            this(itemView, (TextView) itemView.findViewById(resRepresentativeText));
+            this(itemView, itemView.findViewById(resRepresentativeText));
         }
 
         public GroupViewHolder(View itemView)

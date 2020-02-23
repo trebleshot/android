@@ -39,9 +39,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class MusicListAdapter
-        extends GroupEditableListAdapter<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<MusicListAdapter.SongHolder>
+public class AudioListAdapter
+        extends GroupEditableListAdapter<AudioListAdapter.AudioItemHolder, GroupEditableListAdapter.GroupViewHolder>
+        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<AudioListAdapter.AudioItemHolder>
 {
     public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_NOTHING + 1;
     public static final int MODE_GROUP_BY_ARTIST = MODE_GROUP_BY_ALBUM + 1;
@@ -49,14 +49,14 @@ public class MusicListAdapter
 
     private ContentResolver mResolver;
 
-    public MusicListAdapter(Context context)
+    public AudioListAdapter(Context context)
     {
         super(context, MODE_GROUP_BY_ARTIST);
         mResolver = context.getContentResolver();
     }
 
     @Override
-    protected void onLoad(GroupLister<SongHolder> lister)
+    protected void onLoad(GroupLister<AudioItemHolder> lister)
     {
         Map<Integer, AlbumHolder> albumList = new ArrayMap<>();
         Cursor songCursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -96,7 +96,7 @@ public class MusicListAdapter
                 int typeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
                 do {
-                    lister.offerObliged(this, new SongHolder(songCursor.getLong(idIndex),
+                    lister.offerObliged(this, new AudioItemHolder(songCursor.getLong(idIndex),
                             songCursor.getString(nameIndex), songCursor.getString(artistIndex),
                             songCursor.getString(songIndex), extractFolderName(songCursor.getString(folderIndex)),
                             songCursor.getString(typeIndex), songCursor.getInt(albumIndex),
@@ -112,9 +112,9 @@ public class MusicListAdapter
     }
 
     @Override
-    protected SongHolder onGenerateRepresentative(String representativeText)
+    protected AudioItemHolder onGenerateRepresentative(String representativeText)
     {
-        return new SongHolder(representativeText);
+        return new AudioItemHolder(representativeText);
     }
 
     @NonNull
@@ -132,8 +132,8 @@ public class MusicListAdapter
     public void onBindViewHolder(@NonNull final GroupViewHolder holder, int position)
     {
         try {
-            final SongHolder object = getItem(position);
-            final View parentView = holder.getView();
+            final AudioItemHolder object = getItem(position);
+            final View parentView = holder.itemView;
 
             if (!holder.tryBinding(object)) {
                 ImageView image = parentView.findViewById(R.id.image);
@@ -168,27 +168,27 @@ public class MusicListAdapter
                         .centerCrop()
                         .into(image);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }
 
     @Override
-    public boolean onCustomGroupListing(GroupLister<SongHolder> lister, int mode, SongHolder object)
+    public boolean onCustomGroupListing(GroupLister<AudioItemHolder> lister, int mode, AudioItemHolder object)
     {
         if (mode == MODE_GROUP_BY_ALBUM)
-            lister.offer(object, new StringMerger<SongHolder>(object.albumHolder.title));
+            lister.offer(object, new StringMerger<AudioItemHolder>(object.albumHolder.title));
         else if (mode == MODE_GROUP_BY_ARTIST)
-            lister.offer(object, new StringMerger<SongHolder>(object.artist));
+            lister.offer(object, new StringMerger<AudioItemHolder>(object.artist));
         else if (mode == MODE_GROUP_BY_FOLDER)
-            lister.offer(object, new StringMerger<SongHolder>(object.folder));
+            lister.offer(object, new StringMerger<AudioItemHolder>(object.folder));
         else
             return false;
 
         return true;
     }
 
-    public GroupLister<SongHolder> createLister(List<SongHolder> loadedList, int groupBy)
+    public GroupLister<AudioItemHolder> createLister(List<AudioItemHolder> loadedList, int groupBy)
     {
         return super.createLister(loadedList, groupBy)
                 .setCustomLister(this);
@@ -208,7 +208,7 @@ public class MusicListAdapter
 
     @NonNull
     @Override
-    public String getSectionName(int position, SongHolder object)
+    public String getSectionName(int position, AudioItemHolder object)
     {
         if (!object.isGroupRepresentative()) {
             if (getGroupBy() == MODE_GROUP_BY_ARTIST)
@@ -222,7 +222,7 @@ public class MusicListAdapter
         return super.getSectionName(position, object);
     }
 
-    public static class SongHolder extends GroupEditableListAdapter.GroupShareable
+    public static class AudioItemHolder extends GroupEditableListAdapter.GroupShareable
     {
         public String artist;
         public String song;
@@ -230,13 +230,13 @@ public class MusicListAdapter
         public int albumId;
         public AlbumHolder albumHolder;
 
-        public SongHolder(String representativeText)
+        public AudioItemHolder(String representativeText)
         {
             super(VIEW_TYPE_REPRESENTATIVE, representativeText);
         }
 
-        public SongHolder(long id, String displayName, String artist, String song, String folder, String mimeType,
-                          int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
+        public AudioItemHolder(long id, String displayName, String artist, String song, String folder, String mimeType,
+                               int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
         {
             super(id, song + " - " + artist, displayName, mimeType, date, size, uri);
 

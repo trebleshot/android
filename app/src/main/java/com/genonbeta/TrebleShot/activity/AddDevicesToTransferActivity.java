@@ -200,7 +200,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
+    protected void onPreviousRunningTask(@Nullable WorkerService.BaseAttachableRunningTask task)
     {
         super.onPreviousRunningTask(task);
 
@@ -272,8 +272,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     {
         AddDeviceRunningTask task = new AddDeviceRunningTask(mGroup, device, connection);
 
-        task.setTitle(getString(R.string.mesg_communicating))
-                .setAnchorListener(this)
+        task.setAnchorListener(this)
+                .setTitle(getString(R.string.mesg_communicating))
                 .setContentIntent(this, getIntent())
                 .run(this);
 

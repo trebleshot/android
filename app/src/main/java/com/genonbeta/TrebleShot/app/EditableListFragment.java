@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.app;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -41,10 +42,11 @@ import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
-import com.genonbeta.TrebleShot.widget.recyclerview.SwipeTouchSelectionListener;
+import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.util.actionperformer.*;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -58,11 +60,12 @@ import java.util.Map;
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T extends Editable, V extends EditableListAdapter.EditableViewHolder,
+abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder,
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
-        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>
+        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>,
+        PerformerEngineProvider
 {
-    private IEngineConnection<T> mEngineConnection;
+    private IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
     private FilteringDelegate<T> mFilteringDelegate;
     private Snackbar mRefreshDelayedSnackbar;
     private boolean mRefreshRequested = false;
@@ -117,9 +120,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         super.onCreate(savedInstanceState);
         getAdapter().setFragment(this);
         mTwoRowLayoutState = isTwoRowLayout();
-        mEngineConnection = new EngineConnection<>(getDistinctiveTitle(getContext()));
+        mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(getContext()));
         mEngineConnection.setSelectableProvider(getAdapterImpl());
-        mEngineConnection.setSelectableHost(this::getSelectableList);
     }
 
     @Override
@@ -150,8 +152,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         // same instance is used.
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
-        getListView().addOnItemTouchListener(new SwipeTouchSelectionListener<>(this));
+        getListView().addOnItemTouchListener(new SwipeSelectionListener<>(this));
     }
+
 
     @Override
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
@@ -165,7 +168,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
         // TODO: 1/18/19 Something like onSetListView method would be more safe to set the layout manager etc.
         recyclerView.setLayoutManager(onLayoutManager());
-
         listViewContainer.addView(view);
 
         return recyclerView;
@@ -200,6 +202,28 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
         if (mTwoRowLayoutState != isTwoRowLayout())
             toggleTwoRowLayout();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        if (getPerformerEngine() != null)
+            getPerformerEngine().ensureSlot(this, getEngineConnection());
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        if (getPerformerEngine() != null)
+            getPerformerEngine().removeSlot(getEngineConnection());
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -664,8 +688,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public void registerLayoutViewClicks(final V holder)
     {
-        holder.getClickableView().setOnClickListener(v -> performLayoutClick(holder));
-        holder.getClickableView().setOnLongClickListener(v -> performLayoutLongClick(holder));
+        holder.itemView.setOnClickListener(v -> performLayoutClick(holder));
+        holder.itemView.setOnLongClickListener(v -> performLayoutLongClick(holder));
     }
 
     @Override
@@ -726,9 +750,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public boolean setItemSelected(V holder)
     {
-        // TODO: 22.02.2020 Back on implementing the selection through internal callbacks
-        /*return getSelectionCallback() != null && getSelectionCallback().setItemSelected(holder.getAdapterPosition());*/
-        return false;
+        if (!getEngineConnection().setSelected(holder))
+            return false;
+
+
+        return true;
     }
 
     @Override
@@ -758,7 +784,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         applyViewingChanges(getOptimumGridSize(), true);
     }
 
-    public interface LayoutClickListener<V extends EditableListAdapter.EditableViewHolder>
+    // FIXME: 23.02.2020 Do not use the assumed list fragment
+    public interface LayoutClickListener<V extends RecyclerViewAdapter.ViewHolder>
     {
         boolean onLayoutClick(EditableListFragment listFragment, V holder, boolean longClick);
     }

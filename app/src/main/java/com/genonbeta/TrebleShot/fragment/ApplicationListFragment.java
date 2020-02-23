@@ -74,14 +74,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.getView().findViewById(R.id.visitView).setOnClickListener(
-                        v -> performLayoutClickOpen(clazz));
-
-                clazz.getView().findViewById(R.id.selector).setOnClickListener(
-                        v -> {
-                            if (getEngineConnection() != null)
-                                getEngineConnection().setSelected(clazz.getAdapterPosition());
-                        });
+                clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
+                clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz));
             }
         };
 
@@ -134,7 +128,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
         super.onPrepareOptionsMenu(menu);
 
         MenuItem menuSystemApps = menu.findItem(R.id.show_system_apps);
-        menuSystemApps.setChecked(AppUtils.getDefaultPreferences(getContext()).getBoolean("show_system_apps", false));
+        menuSystemApps.setChecked(AppUtils.getDefaultPreferences(getContext()).getBoolean("show_system_apps",
+                false));
     }
 
     @Override
@@ -162,7 +157,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
                 Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
 
             return true;
-        } catch (Exception e) {
+        } catch (Exception ignore) {
         }
 
         return false;

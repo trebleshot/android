@@ -33,15 +33,16 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.tabs.TabLayout;
 
 /**
  * created by: veli
  * date: 13/04/18 19:45
  */
-public class ContentSharingActivity extends Activity
+public class ContentSharingActivity extends Activity implements PerformerEngineProvider
 {
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
@@ -92,7 +93,7 @@ public class ContentSharingActivity extends Activity
         pagerAdapter.add(new StableItem(0, ApplicationListFragment.class, null));
         pagerAdapter.add(new StableItem(1, FileExplorerFragment.class, fileExplorerArgs).setTitle(getString(
                 R.string.text_files)));
-        pagerAdapter.add(new StableItem(2, MusicListFragment.class, null));
+        pagerAdapter.add(new StableItem(2, AudioListFragment.class, null));
         pagerAdapter.add(new StableItem(3, ImageListFragment.class, null));
         pagerAdapter.add(new StableItem(4, VideoListFragment.class, null));
 
@@ -158,5 +159,11 @@ public class ContentSharingActivity extends Activity
         //mSelectionCallback.updateProvider(fragment);
         mBackPressedListener = fragment instanceof Activity.OnBackPressedListener ? (OnBackPressedListener) fragment
                 : null;
+    }
+
+    @Override
+    public IPerformerEngine getPerformerEngine()
+    {
+        return mPerformerEngine;
     }
 }

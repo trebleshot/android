@@ -215,8 +215,8 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)));
         } else if (id == R.id.menu_action_share_trebleshot) {
             startActivityForResult(new Intent(TextEditorActivity.this, AddDeviceActivity.class)
-                            .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
-                                    AddDeviceActivity.RequestType.RETURN_RESULT), REQUEST_CODE_CHOOSE_DEVICE);
+                    .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
+                            AddDeviceActivity.RequestType.RETURN_RESULT), REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
                 MultiFormatWriter formatWriter = new MultiFormatWriter();

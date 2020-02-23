@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.net.NetworkInterface;
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ import java.util.List;
  * created by: veli
  * date: 4/7/19 10:35 PM
  */
-public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConnectionListAdapter.EditableNetworkInterface, EditableListAdapter.EditableViewHolder>
+public class ActiveConnectionListAdapter extends EditableListAdapter<
+        ActiveConnectionListAdapter.EditableNetworkInterface, RecyclerViewAdapter.ViewHolder>
 {
     public ActiveConnectionListAdapter(Context context)
     {
@@ -65,21 +67,20 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
 
     @NonNull
     @Override
-    public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new EditableViewHolder(getInflater().inflate(R.layout.list_active_connection,
+        return new ViewHolder(getInflater().inflate(R.layout.list_active_connection,
                 parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EditableViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
     {
         try {
             EditableNetworkInterface object = getItem(position);
-            View parentView = holder.getView();
 
-            TextView text1 = parentView.findViewById(R.id.text);
-            TextView text2 = parentView.findViewById(R.id.text2);
+            TextView text1 = holder.itemView.findViewById(R.id.text);
+            TextView text2 = holder.itemView.findViewById(R.id.text2);
 
             text1.setText(object.getSelectableTitle());
             text2.setText(TextUtils.makeWebShareLink(getContext(), NetworkUtils.getFirstInet4Address(object)

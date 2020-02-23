@@ -124,7 +124,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
             final PreloadedGroup object = getItem(position);
 
             if (!holder.tryBinding(object)) {
-                final View parentView = holder.getView();
+                final View parentView = holder.itemView;
                 @ColorInt
                 int appliedColor;
                 int percentage = (int) (object.percentage() * 100);
@@ -178,7 +178,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
                 } else
                     progressBar.setProgressTintList(ColorStateList.valueOf(appliedColor));
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

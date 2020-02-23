@@ -146,9 +146,9 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
         {
             final ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_selection, parent, false));
-            final AppCompatCheckBox checkBox = holder.getView().findViewById(R.id.checkbox);
+            final AppCompatCheckBox checkBox = holder.itemView.findViewById(R.id.checkbox);
 
-            holder.getView().setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
+            holder.itemView.setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
 
             checkBox.setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
 
@@ -159,8 +159,8 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
         public void onBindViewHolder(@NonNull ViewHolder holder, int position)
         {
             final Selectable selectable = getList().get(position);
-            final AppCompatCheckBox checkBox = holder.getView().findViewById(R.id.checkbox);
-            final TextView text1 = holder.getView().findViewById(R.id.text);
+            final AppCompatCheckBox checkBox = holder.itemView.findViewById(R.id.checkbox);
+            final TextView text1 = holder.itemView.findViewById(R.id.text);
 
             text1.setText(selectable.getSelectableTitle());
             checkBox.setChecked(selectable.isSelectableSelected());

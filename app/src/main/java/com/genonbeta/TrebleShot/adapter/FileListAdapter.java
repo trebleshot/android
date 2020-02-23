@@ -109,7 +109,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
 
                                 if (data != null)
                                     existingObject = new TransferObject(data);
-                            } catch (Exception e) {
+                            } catch (Exception ignored) {
                             }
 
                             lister.offerObliged(this, new ReceivedFileHolder(getContext(), file, existingObject));
@@ -292,14 +292,14 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
             final GenericFileHolder object = getItem(position);
 
             if (!holder.tryBinding(object)) {
-                final View parentView = holder.getView();
+                final View parentView = holder.itemView;
 
                 ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
 
-                holder.getView().setSelected(object.isSelectableSelected());
+                holder.setSelected(object.isSelectableSelected());
 
                 text1.setText(object.friendlyName);
                 text2.setText(object.info);
@@ -310,7 +310,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                 } else
                     image.setImageDrawable(null);
             } else if (holder.getItemViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
-                ((ImageView) holder.getView().findViewById(R.id.icon)).setImageResource(object.iconRes);
+                ((ImageView) holder.itemView.findViewById(R.id.icon)).setImageResource(object.iconRes);
         } catch (NotReadyException e) {
             e.printStackTrace();
         }

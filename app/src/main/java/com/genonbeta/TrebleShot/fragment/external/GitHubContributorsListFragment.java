@@ -55,7 +55,7 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
     @Override
     public ContributorListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> clazz.getView()
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> clazz.itemView
                 .findViewById(R.id.visitView).setOnClickListener((View.OnClickListener) v -> {
                     final ContributorObject contributorObject = getAdapter().getList().get(clazz.getAdapterPosition());
 
@@ -130,8 +130,8 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
         public void onBindViewHolder(@NonNull ViewHolder holder, int position)
         {
             final ContributorObject contributorObject = getList().get(position);
-            TextView textView = holder.getView().findViewById(R.id.text);
-            ImageView imageView = holder.getView().findViewById(R.id.image);
+            TextView textView = holder.itemView.findViewById(R.id.text);
+            ImageView imageView = holder.itemView.findViewById(R.id.image);
 
             textView.setText(contributorObject.name);
 

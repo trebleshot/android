@@ -79,13 +79,11 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                View visitView = clazz.getView().findViewById(R.id.visitView);
-                visitView.setOnClickListener(
-                        v -> performLayoutClickOpen(clazz));
-
+                View visitView = clazz.itemView.findViewById(R.id.visitView);
+                visitView.setOnClickListener(v -> performLayoutClickOpen(clazz));
                 visitView.setOnLongClickListener(v -> performLayoutLongClick(clazz));
 
-                clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
+                clazz.itemView.findViewById(getAdapter().isGridLayoutRequested()
                         ? R.id.selectorContainer : R.id.selector)
                         .setOnClickListener(v -> {
                             if (getEngineConnection() != null)

@@ -50,6 +50,7 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegisteredErrorListener;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
@@ -57,7 +58,7 @@ import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.Editable
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.HotspotNetwork;
 
 public class NetworkDeviceListFragment extends EditableListFragment<EditableNetworkDevice,
-        EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter> implements IconProvider,
+        RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider,
         AddDeviceActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
@@ -204,10 +205,10 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     @Override
     public NetworkDeviceListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = clazz -> {
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> {
             registerLayoutViewClicks(clazz);
 
-            clazz.getView().findViewById(R.id.menu).setOnClickListener(v -> {
+            clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                 openInfo(getAdapter().getList().get(clazz.getAdapterPosition()));
             });
         };
@@ -216,7 +217,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
         {
             @NonNull
             @Override
-            public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
             }
@@ -224,7 +225,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     }
 
     @Override
-    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
     {
         final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
 

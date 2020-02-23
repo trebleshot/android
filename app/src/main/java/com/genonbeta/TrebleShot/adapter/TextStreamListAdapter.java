@@ -74,7 +74,7 @@ public class TextStreamListAdapter
             TextStreamObject object = getItem(position);
 
             if (!holder.tryBinding(object)) {
-                View parentView = holder.getView();
+                View parentView = holder.itemView;
                 String text = object.text.replace("\n", " ");
 
                 TextView text1 = parentView.findViewById(R.id.text);
@@ -90,7 +90,7 @@ public class TextStreamListAdapter
                 if (getGroupBy() != MODE_GROUP_BY_DATE)
                     text3.setText(getSectionNameDate(object.date));
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }

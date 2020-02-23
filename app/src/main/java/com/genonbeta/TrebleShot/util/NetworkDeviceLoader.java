@@ -120,7 +120,7 @@ public class NetworkDeviceLoader
 
         try {
             database.reconstruct(device);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         device.brand = deviceInfo.getString(Keyword.DEVICE_INFO_BRAND);

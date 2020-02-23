@@ -91,7 +91,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, final int position)
     {
         try {
-            final View parentView = holder.getView();
+            final View parentView = holder.itemView;
             final PackageHolder object = getItem(position);
 
             if (!holder.tryBinding(object)) {

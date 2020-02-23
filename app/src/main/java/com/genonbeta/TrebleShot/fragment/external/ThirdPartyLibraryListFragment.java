@@ -49,7 +49,7 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
     public LicencesAdapter onAdapter()
     {
         final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions =
-                clazz -> clazz.getView().findViewById(R.id.menu).setOnClickListener(v -> {
+                clazz -> clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                     final ModuleItem moduleItem = getAdapter().getList().get(clazz.getAdapterPosition());
 
                     PopupMenu popupMenu = new PopupMenu(getContext(), v);
@@ -112,8 +112,8 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
         public void onBindViewHolder(@NonNull ViewHolder holder, int position)
         {
             ModuleItem item = getList().get(position);
-            TextView text1 = holder.getView().findViewById(R.id.text);
-            TextView text2 = holder.getView().findViewById(R.id.text2);
+            TextView text1 = holder.itemView.findViewById(R.id.text);
+            TextView text2 = holder.itemView.findViewById(R.id.text2);
 
             text1.setText(item.moduleName);
 
@@ -160,7 +160,7 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
                     returnedList.add(new ModuleItem(dependenciesArray.getJSONObject(i)));
 
                 return returnedList;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             return new ArrayList<>();

@@ -52,6 +52,7 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.WorkerService.BaseAttachableRunningTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.io.FileInputStream;
@@ -66,7 +67,7 @@ public abstract class Activity extends AppCompatActivity
 
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
 
-    private final List<WorkerService.RunningTask> mAttachedTasks = new ArrayList<>();
+    private final List<BaseAttachableRunningTask> mAttachedTasks = new ArrayList<>();
     private AlertDialog mOngoingRequest;
     private IntentFilter mFilter = new IntentFilter();
     private boolean mDarkThemeRequested = false;
@@ -191,7 +192,7 @@ public abstract class Activity extends AppCompatActivity
         super.onStop();
 
         synchronized (mAttachedTasks) {
-            for (WorkerService.RunningTask task : mAttachedTasks) {
+            for (BaseAttachableRunningTask task : mAttachedTasks) {
                 task.detachAnchor();
             }
 
@@ -208,7 +209,7 @@ public abstract class Activity extends AppCompatActivity
         super.onDestroy();
     }
 
-    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
+    protected void onPreviousRunningTask(@Nullable BaseAttachableRunningTask task)
     {
 
     }
@@ -330,7 +331,7 @@ public abstract class Activity extends AppCompatActivity
 
     }
 
-    public void attachRunningTask(WorkerService.RunningTask task)
+    public void attachRunningTask(BaseAttachableRunningTask task)
     {
         synchronized (mAttachedTasks) {
             mAttachedTasks.add(task);
@@ -365,12 +366,14 @@ public abstract class Activity extends AppCompatActivity
                 WorkerService.RunningTask task = workerService
                         .findTaskByHash(WorkerService.intentHash(getIntent()));
 
-                onPreviousRunningTask(task);
+                if (task instanceof BaseAttachableRunningTask) {
+                    BaseAttachableRunningTask attachable = (BaseAttachableRunningTask) task;
+                    onPreviousRunningTask(attachable);
 
-                if (task != null)
                     synchronized (mAttachedTasks) {
-                        attachRunningTask(task);
+                        attachRunningTask(attachable);
                     }
+                }
 
                 unbindService(this);
             }

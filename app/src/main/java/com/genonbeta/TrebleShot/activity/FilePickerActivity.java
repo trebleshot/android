@@ -125,29 +125,24 @@ public class FilePickerActivity extends Activity
                         getSupportActionBar().setSubtitle(R.string.text_chooseFolder);
                 }
 
-                mFileExplorerFragment.setLayoutClickListener(new EditableListFragment.LayoutClickListener<GroupEditableListAdapter.GroupViewHolder>()
-                {
-                    @Override
-                    public boolean onLayoutClick(EditableListFragment listFragment, GroupEditableListAdapter.GroupViewHolder holder, boolean longClick)
-                    {
-                        if (longClick)
-                            return false;
-
-                        try {
-                            FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment
-                                    .getAdapter()
-                                    .getItem(holder.getAdapterPosition());
-
-                            if (fileHolder instanceof FileListAdapter.FileHolder) {
-                                finishWithResult(((FileListAdapter.FileHolder) fileHolder).file);
-                                return true;
-                            }
-                        } catch (NotReadyException e) {
-                            e.printStackTrace();
-                        }
-
+                mFileExplorerFragment.setLayoutClickListener((listFragment, holder, longClick) -> {
+                    if (longClick)
                         return false;
+
+                    try {
+                        FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment
+                                .getAdapter()
+                                .getItem(holder.getAdapterPosition());
+
+                        if (fileHolder instanceof FileListAdapter.FileHolder) {
+                            finishWithResult(((FileListAdapter.FileHolder) fileHolder).file);
+                            return true;
+                        }
+                    } catch (NotReadyException e) {
+                        e.printStackTrace();
                     }
+
+                    return false;
                 });
             } else
                 finish();

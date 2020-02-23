@@ -175,7 +175,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
+    protected void onPreviousRunningTask(@Nullable WorkerService.BaseAttachableRunningTask task)
     {
         super.onPreviousRunningTask(task);
 
@@ -185,8 +185,8 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         } else {
             mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames, getIntent(), mContainableList);
 
-            mTask.setTitle(getString(R.string.mesg_organizingFiles))
-                    .setAnchorListener(this)
+            mTask.setAnchorListener(this)
+                    .setTitle(getString(R.string.mesg_organizingFiles))
                     .setContentIntent(this, getIntent())
                     .run(this);
 

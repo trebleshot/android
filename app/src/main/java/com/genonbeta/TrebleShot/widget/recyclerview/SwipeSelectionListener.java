@@ -26,14 +26,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**
  * created by: veli
  * date: 3/11/19 1:02 AM
  */
-public class SwipeTouchSelectionListener<T extends Editable>
-        implements RecyclerView.OnItemTouchListener
+public class SwipeSelectionListener<T extends Editable> implements RecyclerView.OnItemTouchListener
 {
     private boolean mSelectionActivated = false;
     private boolean mActivationWaiting = true;
@@ -43,7 +42,7 @@ public class SwipeTouchSelectionListener<T extends Editable>
     private int mConsistentY = 0;
     private EditableListFragmentImpl<T> mListFragment;
 
-    public SwipeTouchSelectionListener(EditableListFragmentImpl<T> fragment)
+    public SwipeSelectionListener(EditableListFragmentImpl<T> fragment)
     {
         mListFragment = fragment;
     }
@@ -75,8 +74,7 @@ public class SwipeTouchSelectionListener<T extends Editable>
             View view = mListFragment.getListView().findChildViewUnder(e.getX(), e.getY());
 
             if (view != null) {
-                EditableListAdapter.EditableViewHolder holder
-                        = (EditableListAdapter.EditableViewHolder) mListFragment.getListView()
+                RecyclerViewAdapter.ViewHolder holder = (RecyclerViewAdapter.ViewHolder) mListFragment.getListView()
                         .findContainingViewHolder(view);
 
                 if (holder != null) {
@@ -107,11 +105,11 @@ public class SwipeTouchSelectionListener<T extends Editable>
                                         boolean selectionResult = mListFragment.getEngineConnection().setSelected(
                                                 mListFragment.getAdapterImpl().getItem(i), selected);
 
-                                        EditableListAdapter.ViewHolder viewHolder = (EditableListAdapter.ViewHolder)
-                                                rv.findViewHolderForAdapterPosition(i);
+                                        RecyclerViewAdapter.ViewHolder viewHolder = (RecyclerViewAdapter.ViewHolder) rv
+                                                .findViewHolderForAdapterPosition(i);
 
-                                        if (viewHolder != null)
-                                            viewHolder.getView().setSelected(selectionResult && selected);
+                                        if (viewHolder != null && selectionResult)
+                                            viewHolder.setSelected(selected);
                                     }
                                 } catch (NotReadyException e1) {
                                     // do nothing

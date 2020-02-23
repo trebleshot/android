@@ -284,12 +284,12 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.getView().findViewById(R.id.layout_image).setOnClickListener(v -> {
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> {
                     if (getEngineConnection() != null)
                         getEngineConnection().setSelected(clazz.getAdapterPosition());
                 });
 
-                clazz.getView().findViewById(R.id.menu).setOnClickListener(v -> {
+                clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                     final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(
                             clazz.getAdapterPosition());
                     final FileShortcutObject shortcutObject;

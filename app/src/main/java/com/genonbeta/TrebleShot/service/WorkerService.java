@@ -231,7 +231,7 @@ public class WorkerService extends Service
         void onAttachedToTask(RunningTask task);
     }
 
-    public abstract static class RunningTask<T extends OnAttachListener> extends InterruptAwareJob
+    public abstract static class RunningTask extends InterruptAwareJob
     {
         private Interrupter mInterrupter;
         private WorkerService mService;
@@ -242,37 +242,12 @@ public class WorkerService extends Service
         private int mHash = 0;
         private DynamicNotification mNotification;
         private PendingIntent mActivityIntent;
-        private T mAnchorListener;
-
-        public RunningTask()
-        {
-
-        }
 
         abstract protected void onRun();
 
-        public void onInterrupted()
+        protected void onInterrupted()
         {
 
-        }
-
-        public Interrupter getInterrupter()
-        {
-            if (mInterrupter == null)
-                mInterrupter = new Interrupter();
-
-            return mInterrupter;
-        }
-
-        public RunningTask<T> setInterrupter(Interrupter interrupter)
-        {
-            mInterrupter = interrupter;
-            return this;
-        }
-
-        public void detachAnchor()
-        {
-            mAnchorListener = null;
         }
 
         @Override
@@ -284,51 +259,10 @@ public class WorkerService extends Service
             return super.hashCode();
         }
 
-        @Override
-        public boolean equals(@Nullable Object obj)
-        {
-            if (obj instanceof RunningTask && mActivityIntent != null) {
-                RunningTask other = (RunningTask) obj;
-                return mHash != 0 && other.mHash != 0 && mHash == other.mHash;
-            }
-
-            return super.equals(obj);
-        }
-
-        @Nullable
-        public T getAnchorListener()
-        {
-            return mAnchorListener;
-        }
-
-        public RunningTask<T> setAnchorListener(T listener)
-        {
-            mAnchorListener = listener;
-            listener.onAttachedToTask(this);
-
-            return this;
-        }
-
         @Nullable
         public PendingIntent getContentIntent()
         {
             return mActivityIntent;
-        }
-
-        public RunningTask<T> setContentIntent(PendingIntent intent)
-        {
-            mActivityIntent = intent;
-            return this;
-        }
-
-        protected WorkerService getService()
-        {
-            return mService;
-        }
-
-        private void setService(@Nullable WorkerService service)
-        {
-            mService = service;
         }
 
         public int getIconRes()
@@ -336,26 +270,27 @@ public class WorkerService extends Service
             return mIconRes;
         }
 
-        public RunningTask<T> setIconRes(int iconRes)
+        public Interrupter getInterrupter()
         {
-            mIconRes = iconRes;
-            return this;
+            if (mInterrupter == null)
+                mInterrupter = new Interrupter();
+
+            return mInterrupter;
         }
 
-        public String getTitle()
+        protected WorkerService getService()
         {
-            return mTitle;
-        }
-
-        public RunningTask<T> setTitle(String title)
-        {
-            mTitle = title;
-            return this;
+            return mService;
         }
 
         public String getStatusText()
         {
             return mStatusText;
+        }
+
+        public String getTitle()
+        {
+            return mTitle;
         }
 
         public boolean publishStatusText(String text)
@@ -369,13 +304,6 @@ public class WorkerService extends Service
                 return true;
             }
             return false;
-        }
-
-        public RunningTask<T> setContentIntent(Context context, Intent intent)
-        {
-            mHash = intentHash(intent);
-            setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
-            return this;
         }
 
         protected void run()
@@ -407,6 +335,70 @@ public class WorkerService extends Service
 
             return context.bindService(new Intent(context, WorkerService.class), serviceConnection,
                     Context.BIND_AUTO_CREATE);
+        }
+
+        public RunningTask setContentIntent(PendingIntent intent)
+        {
+            mActivityIntent = intent;
+            return this;
+        }
+
+        public RunningTask setContentIntent(Context context, Intent intent)
+        {
+            mHash = intentHash(intent);
+            return setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
+        }
+
+        public RunningTask setIconRes(int iconRes)
+        {
+            mIconRes = iconRes;
+            return this;
+        }
+
+        public RunningTask setInterrupter(Interrupter interrupter)
+        {
+            mInterrupter = interrupter;
+            return this;
+        }
+
+        private void setService(@Nullable WorkerService service)
+        {
+            mService = service;
+        }
+
+        public RunningTask setTitle(String title)
+        {
+            mTitle = title;
+            return this;
+        }
+    }
+
+    abstract public static class BaseAttachableRunningTask extends RunningTask
+    {
+        abstract public void detachAnchor();
+    }
+
+    abstract public static class AttachableRunningTask<T extends OnAttachListener> extends BaseAttachableRunningTask
+    {
+        private T mAnchorListener;
+
+        @Override
+        public void detachAnchor()
+        {
+            mAnchorListener = null;
+        }
+
+        @Nullable
+        public T getAnchorListener()
+        {
+            return mAnchorListener;
+        }
+
+        public AttachableRunningTask<T> setAnchorListener(T listener)
+        {
+            mAnchorListener = listener;
+            listener.onAttachedToTask(this);
+            return this;
         }
     }
 

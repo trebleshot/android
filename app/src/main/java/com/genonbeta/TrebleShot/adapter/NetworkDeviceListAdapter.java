@@ -42,13 +42,14 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice,
-        EditableListAdapter.EditableViewHolder>
+        RecyclerViewAdapter.ViewHolder>
 {
     private ConnectionUtils mConnectionUtils;
     private TextDrawable.IShapeBuilder mIconBuilder;
@@ -94,19 +95,19 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
     @NonNull
     @Override
-    public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(
+        return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(
                 isHorizontalOrientation() || isGridLayoutRequested() ? R.layout.list_network_device_grid
                         : R.layout.list_network_device, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EditableListAdapter.EditableViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
     {
         try {
             NetworkDevice device = getItem(position);
-            View parentView = holder.getView();
+            View parentView = holder.itemView;
             boolean hotspotNetwork = device instanceof NetworkSpecifier;
 
             TextView deviceText = parentView.findViewById(R.id.text2);

@@ -44,7 +44,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesToTransferActivity>
+public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<AddDevicesToTransferActivity>
 {
     private TransferGroup mGroup;
     private NetworkDevice mDevice;

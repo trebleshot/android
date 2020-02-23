@@ -141,7 +141,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
 
                 if (relatedAssignees.size() == 0)
                     database.remove(transferGroup);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
 
             }
         }

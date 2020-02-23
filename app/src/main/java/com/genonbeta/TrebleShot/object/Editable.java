@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.object;
 
+import com.genonbeta.android.database.BaseDatabaseObject;
 import com.genonbeta.android.framework.object.Selectable;
 
 /**

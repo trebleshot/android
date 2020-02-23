@@ -109,9 +109,9 @@ public class GitHubChangelogListFragment extends DynamicRecyclerViewFragment<Git
         public void onBindViewHolder(@NonNull ViewHolder holder, int position)
         {
             final VersionObject versionObject = getList().get(position);
-            ImageView imageCheck = holder.getView().findViewById(R.id.image_check);
-            TextView text1 = holder.getView().findViewById(R.id.text1);
-            TextView text2 = holder.getView().findViewById(R.id.text2);
+            ImageView imageCheck = holder.itemView.findViewById(R.id.image_check);
+            TextView text1 = holder.itemView.findViewById(R.id.text1);
+            TextView text2 = holder.itemView.findViewById(R.id.text2);
 
             text1.setText(versionObject.name);
             text2.setText(versionObject.changes);

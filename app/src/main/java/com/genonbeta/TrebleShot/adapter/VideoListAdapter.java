@@ -70,7 +70,7 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     {
         try {
             final VideoHolder object = this.getItem(position);
-            final View parentView = holder.getView();
+            final View parentView = holder.itemView;
 
             if (!holder.tryBinding(object)) {
                 ViewGroup container = parentView.findViewById(R.id.container);
@@ -91,7 +91,7 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
                         .centerCrop()
                         .into(image);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

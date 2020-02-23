@@ -193,7 +193,7 @@ public class AccessDatabase extends SQLiteDatabase
         if (activity == null || activity.isFinishing())
             return;
 
-        new WorkerService.RunningTask<WorkerService.OnAttachListener>()
+        new WorkerService.RunningTask()
         {
             @Override
             protected void onRun()
@@ -207,12 +207,12 @@ public class AccessDatabase extends SQLiteDatabase
         }.setTitle(activity.getString(textRes)).run(activity);
     }
 
-    public void removeAsynchronous(Activity activity, final DatabaseObject object)
+    public void removeAsynchronous(Activity activity, final DatabaseObject<?> object)
     {
         doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(object));
     }
 
-    public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject> objects)
+    public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject<?>> objects)
     {
         doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(objects, (total, current) -> {
             task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles, current, total));

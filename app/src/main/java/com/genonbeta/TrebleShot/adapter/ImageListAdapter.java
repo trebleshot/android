@@ -101,7 +101,7 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
     {
         try {
-            final View parentView = holder.getView();
+            final View parentView = holder.itemView;
             final ImageHolder object = getItem(position);
 
             if (!holder.tryBinding(object)) {
@@ -121,7 +121,7 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
                         .centerCrop()
                         .into(image);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }

@@ -151,7 +151,7 @@ abstract public class HotspotUtils
                 }, new Handler(Looper.myLooper()));
 
                 return true;
-            } catch (Throwable e) {
+            } catch (Throwable ignored) {
             }
 
             return false;

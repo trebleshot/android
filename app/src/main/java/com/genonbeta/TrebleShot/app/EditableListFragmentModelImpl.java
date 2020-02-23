@@ -19,12 +19,13 @@
 package com.genonbeta.TrebleShot.app;
 
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**
  * created by: veli
  * date: 8/24/18 1:36 PM
  */
-public interface EditableListFragmentModelImpl<V extends EditableListAdapter.EditableViewHolder>
+public interface EditableListFragmentModelImpl<V extends RecyclerViewAdapter.ViewHolder>
 {
     void setLayoutClickListener(EditableListFragment.LayoutClickListener<V> clickListener);
 }

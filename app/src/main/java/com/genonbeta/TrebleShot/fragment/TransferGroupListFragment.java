@@ -164,7 +164,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.getView().findViewById(R.id.layout_image).setOnClickListener(v -> {
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> {
                     if (getEngineConnection() != null)
                         getEngineConnection().setSelected(clazz.getAdapterPosition());
                 });
@@ -188,7 +188,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         try {
             ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).id);
             return true;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         return false;

@@ -133,7 +133,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
@@ -315,7 +315,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                 return super.performLayoutClick(holder);
 
             return true;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 

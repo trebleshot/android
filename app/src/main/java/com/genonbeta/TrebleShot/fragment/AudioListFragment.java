@@ -27,15 +27,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
+import com.genonbeta.TrebleShot.adapter.AudioListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
 
-public class MusicListFragment extends GroupEditableListFragment<MusicListAdapter.SongHolder,
-        GroupEditableListAdapter.GroupViewHolder, MusicListAdapter>
+public class AudioListFragment extends GroupEditableListFragment<AudioListAdapter.AudioItemHolder,
+        GroupEditableListAdapter.GroupViewHolder, AudioListAdapter>
 {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -43,7 +43,7 @@ public class MusicListFragment extends GroupEditableListFragment<MusicListAdapte
         super.onCreate(savedInstanceState);
 
         setFilteringSupported(true);
-        setDefaultGroupingCriteria(MusicListAdapter.MODE_GROUP_BY_ALBUM);
+        setDefaultGroupingCriteria(AudioListAdapter.MODE_GROUP_BY_ALBUM);
     }
 
     @Override
@@ -77,30 +77,30 @@ public class MusicListFragment extends GroupEditableListFragment<MusicListAdapte
     {
         super.onGroupingOptions(options);
 
-        options.put(getString(R.string.text_groupByNothing), MusicListAdapter.MODE_GROUP_BY_NOTHING);
-        options.put(getString(R.string.text_groupByDate), MusicListAdapter.MODE_GROUP_BY_DATE);
-        options.put(getString(R.string.text_groupByAlbum), MusicListAdapter.MODE_GROUP_BY_ALBUM);
-        options.put(getString(R.string.text_groupByArtist), MusicListAdapter.MODE_GROUP_BY_ARTIST);
-        options.put(getString(R.string.text_groupByFolder), MusicListAdapter.MODE_GROUP_BY_FOLDER);
+        options.put(getString(R.string.text_groupByNothing), AudioListAdapter.MODE_GROUP_BY_NOTHING);
+        options.put(getString(R.string.text_groupByDate), AudioListAdapter.MODE_GROUP_BY_DATE);
+        options.put(getString(R.string.text_groupByAlbum), AudioListAdapter.MODE_GROUP_BY_ALBUM);
+        options.put(getString(R.string.text_groupByArtist), AudioListAdapter.MODE_GROUP_BY_ARTIST);
+        options.put(getString(R.string.text_groupByFolder), AudioListAdapter.MODE_GROUP_BY_FOLDER);
     }
 
     @Override
-    public MusicListAdapter onAdapter()
+    public AudioListAdapter onAdapter()
     {
         final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.getView().findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
+                clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
 
-                clazz.getView().findViewById(R.id.selector).setOnClickListener(v -> {
+                clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> {
                     if (getEngineConnection() != null)
                         getEngineConnection().setSelected(clazz.getAdapterPosition());
                 });
             }
         };
 
-        return new MusicListAdapter(getActivity())
+        return new AudioListAdapter(getActivity())
         {
             @NonNull
             @Override

@@ -286,7 +286,7 @@ public class WebShareServer extends NanoHTTPD
                             Intent openIntent = FileUtils.getOpenIntent(mContext, destFile);
                             notification.setContentIntent(PendingIntent.getActivity(mContext,
                                     AppUtils.getUniqueNumber(), openIntent, 0));
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
 
                         notification.show();

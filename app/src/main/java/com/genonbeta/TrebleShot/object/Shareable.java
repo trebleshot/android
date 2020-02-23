@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.util.TextUtils;
  * date: 19.11.2017 16:50
  */
 
-public class Shareable implements Editable
+abstract public class Shareable implements Editable
 {
     public long id;
     public String friendlyName;

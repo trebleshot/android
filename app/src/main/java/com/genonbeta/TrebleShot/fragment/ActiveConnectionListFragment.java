@@ -48,6 +48,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_STATE_CHANGED;
 
@@ -56,7 +57,7 @@ import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_S
  * date: 4/7/19 10:59 PM
  */
 public class ActiveConnectionListFragment extends EditableListFragment<
-        ActiveConnectionListAdapter.EditableNetworkInterface, EditableListAdapter.EditableViewHolder,
+        ActiveConnectionListAdapter.EditableNetworkInterface, RecyclerViewAdapter.ViewHolder,
         ActiveConnectionListAdapter> implements IconProvider
 {
     private IntentFilter mFilter = new IntentFilter();
@@ -96,7 +97,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     @Override
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
-        CoordinatorLayout view = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.layout_active_connection, null, false);
+        CoordinatorLayout view = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.layout_active_connection,
+                null, false);
         final CardView webShareInfo = view.findViewById(R.id.card_web_share_info);
         Button webShareInfoHideButton = view.findViewById(R.id.card_web_share_info_hide_button);
         final String helpWebShareInfo = "help_webShareInfo";
@@ -144,11 +146,11 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     @Override
     public ActiveConnectionListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = clazz -> {
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> {
             registerLayoutViewClicks(clazz);
 
-            clazz.getView().findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
-            clazz.getView().findViewById(R.id.selector).setOnClickListener(
+            clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
+            clazz.itemView.findViewById(R.id.selector).setOnClickListener(
                     v -> {
                         if (getEngineConnection() != null)
                             getEngineConnection().setSelected(clazz.getAdapterPosition());
@@ -159,7 +161,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         {
             @NonNull
             @Override
-            public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
             }
@@ -167,7 +169,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     }
 
     @Override
-    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
     {
         try {
             ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
@@ -194,7 +196,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     }
 
     @Override
-    public boolean performLayoutClickOpen(EditableListAdapter.EditableViewHolder holder)
+    public boolean performLayoutClickOpen(RecyclerViewAdapter.ViewHolder holder)
     {
         if (!super.performLayoutClickOpen(holder)) {
             try {

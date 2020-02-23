@@ -22,6 +22,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -120,6 +121,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
     public Object instantiateItem(@NonNull ViewGroup container, int position)
     {
         Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        Log.d(SmartFragmentPagerAdapter.class.getSimpleName(), "instantiateItem: " + fragment.getClass().getName());
 
         StableItem stableItem = getStableItem(position);
         stableItem.mInitiatedItem = fragment;

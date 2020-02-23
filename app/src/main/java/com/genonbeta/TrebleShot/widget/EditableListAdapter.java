@@ -43,7 +43,7 @@ import java.util.List;
  * date: 12.01.2018 16:55
  */
 
-abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
+abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
         extends RecyclerViewAdapter<T, V> implements EditableListAdapterImpl<T>, SectionTitleProvider
 {
     public static final int VIEW_TYPE_DEFAULT = 0;
@@ -305,31 +305,5 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     {
         for (T item : itemList)
             item.setSelectableSelected(mFragment.getEngineConnection().isSelected(item));
-    }
-
-    public static class EditableViewHolder extends ViewHolder
-    {
-        private View mClickableView;
-
-        public EditableViewHolder(View itemView)
-        {
-            super(itemView);
-        }
-
-        public View getClickableView()
-        {
-            return mClickableView == null ? getView() : mClickableView;
-        }
-
-        public EditableViewHolder setClickableView(int resId)
-        {
-            return setClickableView(getView().findViewById(resId));
-        }
-
-        public EditableViewHolder setClickableView(View clickableLayout)
-        {
-            mClickableView = clickableLayout;
-            return this;
-        }
     }
 }

@@ -453,7 +453,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
             final AbstractGenericItem object = getItem(position);
 
             if (!holder.tryBinding(object)) {
-                final View parentView = holder.getView();
+                final View parentView = holder.itemView;
 
                 @ColorInt
                 int appliedColor;

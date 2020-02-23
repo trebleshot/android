@@ -40,13 +40,14 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**
  * created by: veli
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee,
-        EditableListAdapter.EditableViewHolder, TransferAssigneeListAdapter>
+        RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
 {
     public static final String ARG_GROUP_ID = "groupId";
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
@@ -110,10 +111,10 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     @Override
     public TransferAssigneeListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> actions = clazz -> {
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> actions = clazz -> {
             registerLayoutViewClicks(clazz);
 
-            clazz.getView().findViewById(R.id.menu).setOnClickListener(
+            clazz.itemView.findViewById(R.id.menu).setOnClickListener(
                     v -> showPopupMenu(clazz, v));
         };
 
@@ -121,7 +122,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         {
             @NonNull
             @Override
-            public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
             }
@@ -143,7 +144,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     }
 
     @Override
-    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
     {
         try {
             ShowingAssignee assignee = getAdapter().getItem(holder);
@@ -159,9 +160,9 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     }
 
     @Override
-    public boolean onDefaultLongClickAction(EditableListAdapter.EditableViewHolder holder)
+    public boolean onDefaultLongClickAction(RecyclerViewAdapter.ViewHolder holder)
     {
-        showPopupMenu(holder, holder.getView());
+        showPopupMenu(holder, holder.itemView);
         return true;
     }
 
@@ -189,7 +190,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         return mHeldGroup;
     }
 
-    private void showPopupMenu(EditableListAdapter.EditableViewHolder clazz, View v)
+    private void showPopupMenu(RecyclerViewAdapter.ViewHolder clazz, View v)
     {
         final ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
