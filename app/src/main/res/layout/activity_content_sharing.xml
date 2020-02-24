@@ -51,10 +51,6 @@
         tools:context=".activity.ContentSharingActivity"
         tools:showIn="@layout/activity_content_sharing">
 
-        <androidx.appcompat.widget.ActionMenuView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,6 +60,12 @@
                 android:id="@+id/activity_content_sharing_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <androidx.appcompat.widget.ActionMenuView
+                    android:id="@+id/menu_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal|bottom"/>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

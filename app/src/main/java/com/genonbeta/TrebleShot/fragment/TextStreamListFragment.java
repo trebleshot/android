@@ -67,7 +67,8 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     @Override
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
-        FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null, false);
+        FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null,
+                false);
         FloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
 
         listViewContainer.addView(view);

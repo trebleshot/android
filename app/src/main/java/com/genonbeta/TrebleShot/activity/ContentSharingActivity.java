@@ -21,8 +21,12 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -33,6 +37,9 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
+import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
@@ -42,7 +49,8 @@ import com.google.android.material.tabs.TabLayout;
  * created by: veli
  * date: 13/04/18 19:45
  */
-public class ContentSharingActivity extends Activity implements PerformerEngineProvider
+public class ContentSharingActivity extends Activity implements PerformerEngineProvider,
+        PerformerMenu.Callback
 {
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
@@ -57,6 +65,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_sharing);
 
+        ActionMenuView menuView = findViewById(R.id.menu_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -64,6 +73,11 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
+
+        PerformerMenu performerMenu = new PerformerMenu(this, this);
+
+        performerMenu.load(menuView.getMenu());
+        performerMenu.setUp(mPerformerEngine);
 
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
@@ -150,8 +164,39 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     {
         if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
             // TODO: 22.02.2020 Implement back button closes active selection process
-                super.onBackPressed();
+            super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
+    {
+        inflater.inflate(R.menu.action_mode_share, targetMenu);
+        return true;
+    }
+
+    @Override
+    public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
+    {
+        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public boolean onPerformerMenuItemSelection(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
+                                                int position)
+    {
+        return true;
+    }
+
+    @Override
+    public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
+                                            IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
+                                            int position)
+    {
+        Toast.makeText(this, "Total items: " + engine.getSelectionList().size() + "; owner: " +
+                owner.getDefinitiveTitle(), Toast.LENGTH_SHORT).show();
     }
 
     public void attachListeners(EditableListFragmentImpl<Shareable> fragment)

@@ -239,6 +239,7 @@ public abstract class Activity extends AppCompatActivity
                             .load(chosenImageUri)
                             .centerCrop()
                             .override(200, 200)
+                            // TODO: 23.02.2020 Is there any other target that takes less space?
                             .into(new Target<Drawable>()
                             {
                                 @Override

@@ -33,6 +33,7 @@ import androidx.collection.ArrayMap;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -45,6 +46,7 @@ import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.*;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
@@ -224,6 +226,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         super.onDetach();
         if (getPerformerEngine() != null)
             getPerformerEngine().removeSlot(getEngineConnection());
+    }
+
+    @Override
+    public void onSelected(IPerformerEngine engine, IBaseEngineConnection owner, Selectable selectable,
+                           boolean isSelected, int position)
+    {
+
     }
 
     @Override
@@ -409,13 +418,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         });
 
         return layoutManager;
-    }
-
-    @Override
-    public boolean onSelection(IPerformerEngine engine, IBaseEngineConnection owner, Selectable selectable,
-                               boolean isSelected, int position)
-    {
-        return false;
     }
 
     protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, Map<String, Integer> options)
@@ -643,7 +645,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         mRefreshRequested = requested;
     }
 
-    public boolean isSelectByClick() {
+    public boolean isSelectByClick()
+    {
         return mSelectByClick;
     }
 
@@ -768,7 +771,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean setItemSelected(V holder, boolean force)
     {
-        if (getEngineConnection().getHostList().size() <= 0 && !force)
+        if (getEngineConnection().getSelectedItemList().size() <= 0 && !force)
             return false;
 
         try {
@@ -824,117 +827,26 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 
-    /*
-    public static class SelectionCallback<T extends Editable> implements PerformerListener.Callback<T>
+    public static class SelectionCallback implements PerformerMenu.Callback
     {
-        private EditableListFragmentImpl<T> mFragment;
-
-        public SelectionCallback(EditableListFragmentImpl<T> fragment)
-        {
-            updateProvider(fragment);
-        }
-
-        public EditableListAdapterImpl<T> getAdapter()
-        {
-            return mFragment.getAdapterImpl();
-        }
-
-        public EditableListFragmentImpl<T> getFragment()
-        {
-            return mFragment;
-        }
-
-        public boolean isSelectionActivated()
-        {
-            return mFragment.getEngineConnection() != null
-                    && mFragment.getEngineConnection().selectionActive();
-        }
-
         @Override
-        public List<T> getSelectableList()
+        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater,
+                                                 Menu targetMenu)
         {
-            return getAdapter().getList();
-        }
-
-        public boolean setItemSelected(int position)
-        {
-            return isSelectionActivated() && mFragment.getEngineConnection().setSelected(position);
-        }
-
-        public void setSelection(boolean selection, List<T> selectableList)
-        {
-            for (T selectable : selectableList)
-                mFragment.getEngineConnection().setSelected(selectable, selection);
-        }
-
-        public boolean setSelection()
-        {
-            boolean allSelected = mFragment.getEngineConnection().getSelectedItemList().size() != getSelectableList().size();
-
-            setSelection(allSelected);
-
-            return allSelected;
-        }
-
-        public void setSelection(boolean selection)
-        {
-            setSelection(selection, getSelectableList());
-
-            // One-by-one calling caused an ANR
-            getAdapter().syncSelectionList();
-            getAdapter().notifyItemRangeChanged(0, getSelectableList().size());
-        }
-
-        public void updateProvider(EditableListFragmentImpl<T> fragment)
-        {
-            mFragment = fragment;
-        }
-
-        private void updateSelectionTitle(PowerfulActionMode actionMode)
-        {
-            int selectedSize = mFragment.getEngineConnection()
-                    .getSelectedItemList()
-                    .size();
-
-            actionMode.setTitle(String.valueOf(selectedSize));
-        }
-
-        @Override
-        public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-        {
-            updateSelectionTitle(actionMode);
+            inflater.inflate(R.menu.action_mode_abs_editable, targetMenu);
             return true;
         }
 
-        @Override
-        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-        {
-            actionMode.getMenuInflater().inflate(R.menu.action_mode_abs_editable, menu);
-            return false;
-        }
+
 
         @Override
-        public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
-        {
-            updateSelectionTitle(actionMode);
-
-            if (position != -1) {
-                getAdapter().syncSelectionList();
-                getAdapter().notifyItemChanged(position);
-            }
-        }
-
-        @Override
-        public boolean onActionMenuItemSelected(final Context context, PowerfulActionMode actionMode, MenuItem item)
+        public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
         {
             int id = item.getItemId();
-
-            if (id == R.id.action_mode_abs_editable_select_all)
-                setSelection(true);
-            else if (id == R.id.action_mode_abs_editable_select_none)
-                setSelection(false);
-            else if (id == R.id.action_mode_abs_editable_preview_selections)
-                new SelectionEditorDialog<>(mFragment.getActivity(), mFragment.getEngineConnection().getSelectedItemList())
+            if (id == R.id.action_mode_abs_editable_select_all) {
+            } else if (id == R.id.action_mode_abs_editable_select_none) {
+            } else if (id == R.id.action_mode_abs_editable_preview_selections) {
+                /*new SelectionEditorDialog<>(mFragment.getActivity(), performerMenu)
                         .setOnDismissListener(new DialogInterface.OnDismissListener()
                         {
                             @Override
@@ -951,18 +863,38 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                             }
 
                         })
-                        .show();
+                        .show();*/
+            }
+
 
             return false;
         }
 
         @Override
-        public void onFinish(Context context, PowerfulActionMode actionMode)
+        public boolean onPerformerMenuItemSelection(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                    IBaseEngineConnection owner, Selectable selectable,
+                                                    boolean isSelected, int position)
         {
-            setSelection(false);
-
-            mFragment.getEngineConnection().getSelectedItemList().clear();
-            mFragment.loadIfRequested();
+            return false;
         }
-    }*/
+
+        @Override
+        public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
+                                                int position)
+        {
+
+        }
+
+        /*
+        @Override
+        public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
+        {
+
+            if (position != -1) {
+                getAdapter().syncSelectionList();
+                getAdapter().notifyItemChanged(position);
+            }
+        }*/
+    }
 }
