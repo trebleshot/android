@@ -21,10 +21,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
@@ -36,10 +33,9 @@ import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter.StableItem;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.*;
-import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.ui.PerformerMenu;
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
@@ -49,8 +45,7 @@ import com.google.android.material.tabs.TabLayout;
  * created by: veli
  * date: 13/04/18 19:45
  */
-public class ContentSharingActivity extends Activity implements PerformerEngineProvider,
-        PerformerMenu.Callback
+public class ContentSharingActivity extends Activity implements PerformerEngineProvider
 {
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
@@ -74,7 +69,8 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
-        PerformerMenu performerMenu = new PerformerMenu(this, this);
+        SharingPerformerMenuCallback menuCallback = new SharingPerformerMenuCallback(this, this);
+        PerformerMenu performerMenu = new PerformerMenu(this, menuCallback);
 
         performerMenu.load(menuView.getMenu());
         performerMenu.setUp(mPerformerEngine);
@@ -91,13 +87,16 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             public void onItemInstantiated(StableItem item)
             {
                 Fragment fragment = item.getInitiatedItem();
-                EditableListFragmentImpl<Shareable> fragmentImpl = (EditableListFragmentImpl<Shareable>) fragment;
 
-                // TODO: 22.02.2020 Set selection callback for selection connection
-                //fragmentImpl.setSelectionCallback(mSelectionCallback);
+                if (fragment instanceof EditableListFragmentImpl<?>) {
+                    EditableListFragmentImpl<?> fragmentImpl = (EditableListFragmentImpl<?>) fragment;
 
-                if (viewPager.getCurrentItem() == item.getCurrentPosition())
-                    attachListeners(fragmentImpl);
+                    // TODO: 22.02.2020 Set selection callback for selection connection
+                    //fragmentImpl.setSelectionCallback(mSelectionCallback);
+
+                    if (viewPager.getCurrentItem() == item.getCurrentPosition())
+                        attachListeners(fragmentImpl);
+                }
             }
         };
 
@@ -121,15 +120,18 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             public void onTabSelected(TabLayout.Tab tab)
             {
                 viewPager.setCurrentItem(tab.getPosition());
+                Fragment fragment = pagerAdapter.getItem(tab.getPosition());
 
-                final EditableListFragmentImpl<Shareable> fragment = (EditableListFragmentImpl<Shareable>) pagerAdapter
-                        .getItem(tab.getPosition());
+                if (fragment instanceof EditableListFragmentImpl<?>) {
+                    EditableListFragmentImpl<?> editableListFragment = (EditableListFragmentImpl<?>) fragment;
+                    EditableListAdapterImpl<?> adapter = editableListFragment.getAdapterImpl();
 
-                attachListeners(fragment);
+                    attachListeners(editableListFragment);
 
-                if (fragment.getAdapterImpl() != null)
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> fragment.getAdapterImpl()
-                            .notifyAllSelectionChanges(), 200);
+                    if (editableListFragment.getAdapterImpl() != null)
+                        new Handler(Looper.getMainLooper()).postDelayed(adapter::notifyAllSelectionChanges,
+                                200);
+                }
             }
 
             @Override
@@ -168,44 +170,14 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         }
     }
 
-    @Override
-    public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
-    {
-        inflater.inflate(R.menu.action_mode_share, targetMenu);
-        return true;
-    }
-
-    @Override
-    public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
-    {
-        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
-    @Override
-    public boolean onPerformerMenuItemSelection(PerformerMenu performerMenu, IPerformerEngine engine,
-                                                IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
-                                                int position)
-    {
-        return true;
-    }
-
-    @Override
-    public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
-                                            IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
-                                            int position)
-    {
-        Toast.makeText(this, "Total items: " + engine.getSelectionList().size() + "; owner: " +
-                owner.getDefinitiveTitle(), Toast.LENGTH_SHORT).show();
-    }
-
-    public void attachListeners(EditableListFragmentImpl<Shareable> fragment)
+    public void attachListeners(EditableListFragmentImpl<?> fragment)
     {
         //mSelectionCallback.updateProvider(fragment);
-        mBackPressedListener = fragment instanceof Activity.OnBackPressedListener ? (OnBackPressedListener) fragment
-                : null;
+        mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
+                ? (OnBackPressedListener) fragment : null;
     }
 
+    @Nullable
     @Override
     public IPerformerEngine getPerformerEngine()
     {

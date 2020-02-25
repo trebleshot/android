@@ -64,8 +64,7 @@ import java.util.Map;
 
 abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder,
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
-        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>,
-        PerformerEngineProvider
+        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>
 {
     public final static String ARG_SELECT_BY_CLICK = "argSelectByClick";
 
@@ -127,6 +126,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         mTwoRowLayoutState = isTwoRowLayout();
         mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(getContext()));
         mEngineConnection.setSelectableProvider(getAdapterImpl());
+        mEngineConnection.addSelectionListener(this);
 
         if (getArguments() != null)
             mSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
@@ -229,8 +229,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     }
 
     @Override
-    public void onSelected(IPerformerEngine engine, IBaseEngineConnection owner, Selectable selectable,
-                           boolean isSelected, int position)
+    public void onSelected(IPerformerEngine engine, IEngineConnection<T> owner, T selectable, boolean isSelected,
+                           int position)
     {
 
     }
@@ -813,10 +813,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         applyViewingChanges(getOptimumGridSize(), true);
     }
 
-    // FIXME: 23.02.2020 Do not use the assumed list fragment
     public interface LayoutClickListener<V extends RecyclerViewAdapter.ViewHolder>
     {
-        boolean onLayoutClick(EditableListFragment listFragment, V holder, boolean longClick);
+        boolean onLayoutClick(EditableListFragmentImpl<?> listFragment, V holder, boolean longClick);
     }
 
     public interface FilteringDelegate<T extends Editable>
@@ -827,43 +826,47 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 
-    public static class SelectionCallback implements PerformerMenu.Callback
+    public static class SelectionCallback<T extends Editable> implements PerformerMenu.Callback
     {
+        private Activity mActivity;
+        private PerformerEngineProvider mProvider;
+
+        public SelectionCallback(Activity activity, PerformerEngineProvider provider)
+        {
+            mActivity = activity;
+            mProvider = provider;
+        }
+
         @Override
-        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater,
-                                                 Menu targetMenu)
+        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
         {
             inflater.inflate(R.menu.action_mode_abs_editable, targetMenu);
             return true;
         }
 
-
-
         @Override
         public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
         {
             int id = item.getItemId();
+
             if (id == R.id.action_mode_abs_editable_select_all) {
             } else if (id == R.id.action_mode_abs_editable_select_none) {
             } else if (id == R.id.action_mode_abs_editable_preview_selections) {
-                /*new SelectionEditorDialog<>(mFragment.getActivity(), performerMenu)
-                        .setOnDismissListener(new DialogInterface.OnDismissListener()
-                        {
-                            @Override
-                            public void onDismiss(DialogInterface dialog)
-                            {
-                                List<T> selectedItems = new ArrayList<>(mFragment.getEngineConnection().getSelectedItemList());
+                new SelectionEditorDialog(mActivity, mProvider)
+                        .setOnDismissListener(dialog -> {
+                            // FIXME: 25.02.2020 Uncomment and apply new changes
+                            /*
+                            List<T> selectedItems = new ArrayList<>(mFragment.getEngineConnection()
+                                    .getSelectedItemList());
 
-                                for (T selectable : selectedItems)
-                                    if (!selectable.isSelectableSelected())
-                                        mFragment.getEngineConnection().setSelected(selectable, false);
+                            for (T selectable : selectedItems)
+                                if (!selectable.isSelectableSelected())
+                                    mFragment.getEngineConnection().setSelected(selectable, false);
 
-                                // Position cannot be assumed that is why we need to request a refresh
-                                getAdapter().notifyAllSelectionChanges();
-                            }
-
+                            // Position cannot be assumed that is why we need to request a refresh
+                            mFragment.getAdapterImpl().notifyAllSelectionChanges();*/
                         })
-                        .show();*/
+                        .show();
             }
 
 
@@ -885,16 +888,5 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         {
 
         }
-
-        /*
-        @Override
-        public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
-        {
-
-            if (position != -1) {
-                getAdapter().syncSelectionList();
-                getAdapter().notifyItemChanged(position);
-            }
-        }*/
     }
 }

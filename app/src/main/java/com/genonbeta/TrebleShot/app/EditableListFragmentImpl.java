@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.app.ListFragmentImpl;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.genonbeta.android.framework.util.actionperformer.PerformerListener;
 import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
 
@@ -33,8 +34,8 @@ import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
  * created by: veli
  * date: 14/04/18 10:35
  */
-public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>, PerformerListener,
-        TitleProvider
+public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>, PerformerEngineProvider,
+        IEngineConnection.SelectionListener<T>, TitleProvider
 {
     boolean applyViewingChanges(int gridSize);
 

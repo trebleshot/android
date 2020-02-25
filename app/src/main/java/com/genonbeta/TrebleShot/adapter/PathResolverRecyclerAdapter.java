@@ -36,7 +36,7 @@ import java.util.List;
  * Date: 5/29/17 4:29 PM
  */
 
-abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder>
+abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder<T>>
 {
     private List<Holder.Index<T>> mList = new ArrayList<>();
     private OnClickListener<T> mClickListener;
@@ -56,9 +56,9 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 
     @NonNull
     @Override
-    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public Holder<T> onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
+        return new Holder<T>(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
     }
 
     @Override

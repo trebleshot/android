@@ -18,8 +18,16 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
-public class SharingPerformerMenuCallback extends EditableListFragment.SelectionCallback
+public class SharingPerformerMenuCallback extends EditableListFragment.SelectionCallback<Shareable>
 {
+    public SharingPerformerMenuCallback(Activity activity, PerformerEngineProvider provider)
+    {
+        super(activity, provider);
+    }
 }

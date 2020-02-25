@@ -157,11 +157,6 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
         return R.drawable.ic_folder_white_24dp;
     }
 
-    public PathResolverRecyclerAdapter getPathAdapter()
-    {
-        return mPathAdapter;
-    }
-
     public RecyclerView getPathView()
     {
         return mPathView;

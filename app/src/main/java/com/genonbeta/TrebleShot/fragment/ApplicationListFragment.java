@@ -31,6 +31,8 @@ import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 
 import java.util.Map;
 

@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,27 +41,35 @@ import java.util.List;
  * date: 5.01.2018 10:38
  */
 
-public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Builder
+public class SelectionEditorDialog extends AlertDialog.Builder
 {
-    private List<T> mList;
     private LayoutInflater mLayoutInflater;
     private SelfAdapter mAdapter;
-    private ListView mListView;
+    private PerformerEngineProvider mProvider;
+    private List<MappedSelectable<?>> mList = new ArrayList<>();
 
-    public SelectionEditorDialog(Context context, List<T> list)
+    public SelectionEditorDialog(Activity activity, PerformerEngineProvider provider)
     {
-        super(context);
+        super(activity);
 
-        mList = list;
-        mLayoutInflater = LayoutInflater.from(context);
-
-        View view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false);
-
-        mListView = view.findViewById(R.id.listView);
+        mProvider = provider;
+        mLayoutInflater = LayoutInflater.from(activity);
         mAdapter = new SelfAdapter();
 
-        mListView.setAdapter(mAdapter);
-        mListView.setDividerHeight(0);
+        IPerformerEngine engine = provider.getPerformerEngine();
+        if (engine != null)
+            for (IBaseEngineConnection baseEngineConnection : engine.getConnectionList()) {
+                if (engine instanceof IEngineConnection<?>) {
+                    IEngineConnection<?> connection = (IEngineConnection<?>) baseEngineConnection;
+                    addToMappedObjectList(connection, connection.getAvailableList());
+                }
+            }
+
+        View view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false);
+        ListView listView = view.findViewById(R.id.listView);
+
+        listView.setAdapter(mAdapter);
+        listView.setDividerHeight(0);
 
         if (mList.size() > 0)
             setView(view);
@@ -76,10 +89,16 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
         removeSign.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
     }
 
+    private <T extends Selectable> void addToMappedObjectList(IEngineConnection<? extends T> connection,
+                                                              List<? extends T> list)
+    {
+    }
+
     public void massCheck(boolean check)
     {
-        for (Selectable selectable : mList)
-            selectable.setSelectableSelected(check);
+        for (MappedSelectable<?> map : mList) {
+            //map.engineConnection.setSelected(map.selectable);
+        }
 
         mAdapter.notifyDataSetChanged();
     }
@@ -133,6 +152,18 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
             convertView.setOnClickListener(v -> checkReversed(removalSignView, selectable));
 
             return convertView;
+        }
+    }
+
+    public static class MappedSelectable<T extends Selectable>
+    {
+        public IEngineConnection<?> engineConnection;
+        public T selectable;
+
+        public MappedSelectable(T selectable, IEngineConnection<? extends T> engineConnection)
+        {
+            this.selectable = selectable;
+            this.engineConnection = engineConnection;
         }
     }
 }
