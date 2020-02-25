@@ -18,39 +18,39 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:orientation="vertical">
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/fixConnectionButton"
-            style="?borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:text="@string/butn_addDevices" />
+                android:id="@+id/fixConnectionButton"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/butn_addDevices"/>
 
     </LinearLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/app_bar"
-        android:layout_alignParentTop="true">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/app_bar"
+            android:layout_alignParentTop="true">
 
         <fragment
-            android:id="@+id/devicesFragment"
-            android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+                android:id="@+id/devicesFragment"
+                android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

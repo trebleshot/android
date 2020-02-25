@@ -165,8 +165,9 @@
     <string name="mesg_organizingFiles">整理您的文件</string>
     <string name="text_communicationService">通信服务</string>
     <string name="text_notAllowedHelp">检查您是否在 %1$s 上被允许
-\n 
-\n设备 &gt; %2$s &gt; 允许连接 &gt; （打勾）</string>
+        \n
+        \n设备 &gt; %2$s &gt; 允许连接 &gt; （打勾）
+    </string>
     <string name="mesg_pathSaved">该文件夹已保存</string>
     <string name="butn_search">搜索</string>
     <string name="butn_changeConnection">更改连接</string>
@@ -262,7 +263,7 @@
     <string name="mesg_fileSaved">文件已保存</string>
     <string name="butn_sortBy">排序方式</string>
     <string name="butn_sortOrder">顺序/倒序</string>
-    <string name="text_sortOrderAscending">"顺序排列  ↑"</string>
+    <string name="text_sortOrderAscending">"顺序排列 ↑"</string>
     <string name="text_sortOrderDescending">倒序排列 ↓</string>
     <string name="text_sortByName">文件名</string>
     <string name="text_sortByDate">日期</string>
@@ -382,7 +383,7 @@
     <string name="text_killServiceAfterLeavingSummary">如果没有正在进行的任务将停止通讯</string>
     <string name="text_killServiceAfterLeaving">关闭应用时停止服务</string>
     <string name="text_emptySymbol">-</string>
-    <string name="text_transferStatusFiles">"已传输 %1d  共 %2d"</string>
+    <string name="text_transferStatusFiles">"已传输 %1d 共 %2d"</string>
     <string name="text_donate">帮助开发</string>
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
     <string name="butn_donate">帮助开发</string>
@@ -391,9 +392,10 @@
     <string name="butn_pause">暂停</string>
     <string name="butn_retry">重试</string>
     <string name="mesg_noPendingTransferObjectExists">无正在等待的传输。使用“重试接收”选项以继续被中断的传输。</string>
-    <string name="mesg_notSavingToChosenLocation">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。 
-\n 
-\n %s</string>
+    <string name="mesg_notSavingToChosenLocation">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。
+        \n
+        \n %s
+    </string>
     <string name="butn_changelog">更新日志</string>
     <string name="text_changelog">更新日志</string>
     <string name="mesg_versionUpdatedChangelog">你已经更新TrebleShot，您想要查看更新了什么吗？</string>
@@ -482,7 +484,8 @@
     <string name="text_dowloadTrebleshotAndroid">下载运行于Android的TrebleShot</string>
     <string name="text_listEmptyConnection">你连接的网络在此出现</string>
     <string name="mesg_errorNotAnIpAddress">不是IP地址
-\n(如 192.168.1.2)</string>
+        \n(如 192.168.1.2)
+    </string>
     <string name="ques_shareAsApkOrLink">以链接分享还是以安装包分享？</string>
     <string name="butn_asApk">作为安装包</string>
     <string name="butn_asLink">作为链接</string>

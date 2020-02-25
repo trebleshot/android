@@ -103,7 +103,8 @@
     <string name="butn_multiSelect">اختيار متعدد</string>
     <string name="butn_receive">استلام</string>
     <string name="butn_block">حظر</string>
-    <string name="text_aboutSummary">هذا البرنامج تم تطويره من قبل مؤسسة البرمجيات الحرة Genonbeta Libre Software Org</string>
+    <string name="text_aboutSummary">هذا البرنامج تم تطويره من قبل مؤسسة البرمجيات الحرة Genonbeta Libre Software Org
+    </string>
     <string name="butn_appLaunch">تشغيل</string>
     <string name="ques_launchApplication">هل تريد بدء تشغيل هذا التطبيق؟</string>
     <string name="mesg_launchApplicationError">لا يمكن تشغيل هذا التطبيق</string>
@@ -152,15 +153,18 @@
     <string name="text_error">خطأ</string>
     <string name="ques_why">لماذا؟</string>
     <string name="text_notAllowedHelp">تحقق إذا كان مسموح لك في %1$s
-\n
-\nأجهزة &gt; %2$s &gt; السماح للاتصال &gt; (التحقق من ذلك)</string>
+        \n
+        \nأجهزة &gt; %2$s &gt; السماح للاتصال &gt; (التحقق من ذلك)
+    </string>
     <string name="butn_saveTo">حفظ إلى</string>
     <string name="mesg_secureExit">اضغط مرة أخرى للخروج</string>
     <string name="butn_create">أنشئ</string>
     <string name="text_createFolder">إنشاء مجلد</string>
     <string name="mesg_fileAlreadyExists">الملف موجود مسبقا</string>
     <string name="mesg_folderCreateError">تعذر إنشاء المجلد</string>
-    <string name="text_requestPermissionStorageSummary">يسمح هذا الإذن تريبليشوت بالقراءة والكتابة على مساحة تخزين الجهاز الخاص بك لاستلام ومشاركة الملفات.</string>
+    <string name="text_requestPermissionStorageSummary">يسمح هذا الإذن تريبليشوت بالقراءة والكتابة على مساحة تخزين
+        الجهاز الخاص بك لاستلام ومشاركة الملفات.
+    </string>
     <string name="butn_settings">الإعدادات</string>
     <string name="butn_selectThis">اختر هذا</string>
     <string name="butn_newFile">ملف جديد</string>
@@ -183,7 +187,9 @@
     <string name="text_chooseFile">اختر ملف</string>
     <string name="mesg_pathSameError">لا يمكنك تحديد المجلد القديم</string>
     <string name="ques_checkOldFiles">هل تريد نقل الملفات؟</string>
-    <string name="text_checkOldFiles">يمكنك نقل الملفات المرتبطة المكتملة والناقصة إلى هذا المجلد، سيستغرق ذلك بعض الوقت حسب أحجامها</string>
+    <string name="text_checkOldFiles">يمكنك نقل الملفات المرتبطة المكتملة والناقصة إلى هذا المجلد، سيستغرق ذلك بعض الوقت
+        حسب أحجامها
+    </string>
     <string name="mesg_newFilesReceived">قد تم إستلام ملفات جديدة</string>
     <string name="butn_show">عرض</string>
     <string name="text_preparingFiles">إعداد الملفات</string>
@@ -203,14 +209,18 @@
     <string name="text_shareTextShort">نص</string>
     <string name="butn_feelLucky">شعور محظوظ</string>
     <string name="butn_connectionList">الاتصالات</string>
-    <string name="text_automaticNetworkConnectionFailed">لم تعمل أيا من الاتصالات لهذا لجهاز. ربما تم تغيير عنوان الجهاز الخاص به. حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.</string>
+    <string name="text_automaticNetworkConnectionFailed">لم تعمل أيا من الاتصالات لهذا لجهاز. ربما تم تغيير عنوان الجهاز
+        الخاص به. حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.
+    </string>
     <string name="text_automaticNetworkConnectionOngoing">سوف يقرر تريبليشوت لك</string>
     <string name="butn_retryReceiving">إعادة المحاولة للجميع</string>
     <string name="butn_ask">اسأل</string>
     <string name="text_permissionRequest">طلب الإذن</string>
     <string name="text_requestPermissionStorage">إذن التخزين</string>
     <string name="text_requestPermissionReadPhoneState">إذن لقراءة حالة الهاتف</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">تريبليشوت يحتاج الرقم التسلسلي للهاتف الخاص بك لإنشاء رقم هوية طويلة الأمد للجهاز الخاص بك، مما يساعد الأجهزة ألاخرى لتتعرف عليك</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">تريبليشوت يحتاج الرقم التسلسلي للهاتف الخاص بك لإنشاء رقم
+        هوية طويلة الأمد للجهاز الخاص بك، مما يساعد الأجهزة ألاخرى لتتعرف عليك
+    </string>
     <string name="text_mediaDirectory">دليل الوسائط</string>
     <string name="text_emulatedMediaDirectory">تمت محاكاة (%s)</string>
     <string name="mesg_notEnoughSpace">لا توجد مساحة كافية</string>
@@ -244,9 +254,13 @@
     <string name="text_trebleshotHotspot">نقطة وصول تريبليشوت</string>
     <string name="butn_connect">اتصال</string>
     <string name="butn_disconnect">قطع الاتصال</string>
-    <string name="text_trebleshotHotspotDescription">"يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة  التي تم إنشاؤها بواسطة تطبيق تريبليشوت على جهاز قريب."</string>
+    <string name="text_trebleshotHotspotDescription">"يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة التي تم إنشاؤها
+        بواسطة تطبيق تريبليشوت على جهاز قريب."
+    </string>
     <string name="mesg_connectingToSelfHotspot">الاتصال بواسطة نقطة وصول تريبليشوت</string>
-    <string name="mesg_warningHotspotMobileActive">قد تستخدم الأجهزة المتصلة البيانات الخلوية. ربما تحتاج إلى إيقاف تشغيلها.</string>
+    <string name="mesg_warningHotspotMobileActive">قد تستخدم الأجهزة المتصلة البيانات الخلوية. ربما تحتاج إلى إيقاف
+        تشغيلها.
+    </string>
     <string name="butn_skip">تخطي</string>
     <string name="mesg_scanningSelfHotspot">البحث عن نقطة وصول تعمل بواسطة تريبليشوت</string>
     <string name="mesg_suggestSelfHotspot">يمكنك تشغيل الواي فاي للبحث عن نقطة وصول تعمل بواسطة تريبليشوت</string>
@@ -267,7 +281,8 @@
     <string name="mesg_ongoingUpdateDownload">تحميل الإصدار الجديد</string>
     <string name="butn_gotIt">فهمت ذلك</string>
     <string name="mesg_helpFolderSelection">لتحديد مجلد، انقر فوق أيقونته</string>
-    <string name="mesg_hotspotCreatedInfo">إتصل بـ %s في إعدادات الواي فاي أو إرسل ملفات عن طريق %s عبر تريبليشوت</string>
+    <string name="mesg_hotspotCreatedInfo">إتصل بـ %s في إعدادات الواي فاي أو إرسل ملفات عن طريق %s عبر تريبليشوت
+    </string>
     <string name="butn_selectAll">تحديد الكل</string>
     <string name="butn_selectNone">لا تحدد شيئا</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
@@ -289,7 +304,9 @@
     <string name="text_sortByName">الاسم</string>
     <string name="text_sortByDate">التاريخ</string>
     <string name="text_sortBySize">الحجم</string>
-    <string name="text_trustZoneDeviceNotice">السماح لهذا الجهاز بتلقي الملفات الواردة تلقائيا عندما تكون المنطقة الموثوقة مشغّلة</string>
+    <string name="text_trustZoneDeviceNotice">السماح لهذا الجهاز بتلقي الملفات الواردة تلقائيا عندما تكون المنطقة
+        الموثوقة مشغّلة
+    </string>
     <string name="text_allowingToConnectNotice">السماح للاتصالات عبر هذا الجهاز</string>
     <string name="butn_resetToDefault">إعادة التعيين إلى الافتراضي</string>
     <string name="text_resetPreferencesToDefaultSummary">سيطبق هذا الإعدادات المبدئية</string>
@@ -310,7 +327,9 @@
     <string name="text_secondCountShort">%d ثانية</string>
     <string name="butn_exit">خروج</string>
     <string name="butn_queueCounted">قائمة الانتظار (%d)</string>
-    <string name="text_previewThenProceedNotice">الرجاء التحقق من التحديدات الخاصة بك بالنقر فوق زر \"قائمة انتظار\" للمتابعة</string>
+    <string name="text_previewThenProceedNotice">الرجاء التحقق من التحديدات الخاصة بك بالنقر فوق زر \"قائمة انتظار\"
+        للمتابعة
+    </string>
     <string name="mesg_updateDownloadComplete">تم تلقي التحديث بنجاح و حفظه في الملفات الواردة</string>
     <string name="text_listEmptyFiles">لا توجد ملفات هنا</string>
     <string name="text_listEmptyImage">لا توجد صور هنا</string>
@@ -387,15 +406,21 @@
     <string name="text_changelog">سجل التغييرات</string>
     <string name="mesg_noInternetConnection">ذلك يتطلب اتصالا بالإنترنت</string>
     <string name="text_emptySymbol">-</string>
-    <string name="mesg_versionUpdatedChangelogRejected">"يمكنك دائما الإطلاع على \'سجل التغييرات\' في  قسم \'عن التطبيق\'"</string>
+    <string name="mesg_versionUpdatedChangelogRejected">"يمكنك دائما الإطلاع على \'سجل التغييرات\' في قسم \'عن
+        التطبيق\'"
+    </string>
     <string name="text_applyDarkTheme">الوضع الداكن</string>
     <string name="butn_allow">السماح</string>
     <string name="butn_telegram_channel">قناة تلغرام</string>
-    <string name="mesg_noPendingTransferObjectExists">لم يتبقى اي نقل معلق. لاستئناف الملفات التي تمت مقاطعتها ، استخدم الخيار \"أعاده محاولة التلقي\".</string>
-    <string name="mesg_notSavingToChosenLocation">المجلد المطلوب غير قابل للوصول. سيتم حفظ الملفات إلى المجلد الافتراضي. 
-\n 
-\n% s</string>
-    <string name="mesg_versionUpdatedChangelog">لقد قمتَ بتحديث تريبلشوت ، هل تود استعراض ما الجديد في هذا الإصدار؟</string>
+    <string name="mesg_noPendingTransferObjectExists">لم يتبقى اي نقل معلق. لاستئناف الملفات التي تمت مقاطعتها ، استخدم
+        الخيار \"أعاده محاولة التلقي\".
+    </string>
+    <string name="mesg_notSavingToChosenLocation">المجلد المطلوب غير قابل للوصول. سيتم حفظ الملفات إلى المجلد الافتراضي.
+        \n
+        \n% s
+    </string>
+    <string name="mesg_versionUpdatedChangelog">لقد قمتَ بتحديث تريبلشوت ، هل تود استعراض ما الجديد في هذا الإصدار؟
+    </string>
     <string name="text_applyDarkThemeSummary">استخدم سمة داكنة</string>
     <string name="text_listEmptyTransfer">"كافة التحويلات ستظهر هنا "</string>
     <string name="text_transfers">التحويلات</string>
@@ -461,19 +486,34 @@
     <string name="text_or">أو</string>
     <string name="text_visitWebShareAddress">زُر هذا الرابط على متصفحك</string>
     <string name="text_dowloadTrebleshotAndroid">تنزيل تريبل شوت للأندرويد</string>
-    <string name="mesg_errorNotAnIpAddress">ليس عنوان IP 
-\n(مثل 192.168.1.2)</string>
-    <string name="text_addDeviceHelp">باضافه الاجهزه ، يمكنك مشاركه نفس الملفات مع المزيد من الاجهزه. سيتم اعادتك إلى النقل عندما يتم ذلك.</string>
-    <string name="text_connectionHelp">اختر خيارا للاتصال بالجهاز الآخر. علي سبيل المثال ، إذا كان الجهاز الآخر يظهر رمز الاستجابة السريعة ، استخدم الخيار رمز QR المسح الضوئي.</string>
-    <string name="ques_connectionWizardUseHotspot">هل تريد ان يتصل الجهاز الآخر بهذا الجهاز بنقطه الاتصال (الربط) ؟ إذا كنت لا تعرف النقطة الساخنة ، فانقر علي \"نعم\".</string>
-    <string name="ques_connectionWizardUseNetwork">هل تريد استخدام جهاز التوجيه الخاص بك أو اي شبكه Wi-fi تتصل بها أنت وصديقك ؟</string>
+    <string name="mesg_errorNotAnIpAddress">ليس عنوان IP
+        \n(مثل 192.168.1.2)
+    </string>
+    <string name="text_addDeviceHelp">باضافه الاجهزه ، يمكنك مشاركه نفس الملفات مع المزيد من الاجهزه. سيتم اعادتك إلى
+        النقل عندما يتم ذلك.
+    </string>
+    <string name="text_connectionHelp">اختر خيارا للاتصال بالجهاز الآخر. علي سبيل المثال ، إذا كان الجهاز الآخر يظهر رمز
+        الاستجابة السريعة ، استخدم الخيار رمز QR المسح الضوئي.
+    </string>
+    <string name="ques_connectionWizardUseHotspot">هل تريد ان يتصل الجهاز الآخر بهذا الجهاز بنقطه الاتصال (الربط) ؟ إذا
+        كنت لا تعرف النقطة الساخنة ، فانقر علي \"نعم\".
+    </string>
+    <string name="ques_connectionWizardUseNetwork">هل تريد استخدام جهاز التوجيه الخاص بك أو اي شبكه Wi-fi تتصل بها أنت
+        وصديقك ؟
+    </string>
     <string name="ques_connectionWizardUseKnownDevices">هل تريد الوصول إلى أجهزتك التي تم الاتصال بها مسبقا ؟</string>
-    <string name="text_hotspotStartedExternallyNotice">وقد بدات النقطة الساخنة خارجيا. لاستخدام رمز الاستجابة السريعة ، يجب ان تبدا هنا.</string>
+    <string name="text_hotspotStartedExternallyNotice">وقد بدات النقطة الساخنة خارجيا. لاستخدام رمز الاستجابة السريعة ،
+        يجب ان تبدا هنا.
+    </string>
     <string name="text_textMillisecond">%d مللي ثانيه</string>
     <string name="text_amoledOptimizedBlackTheme">تحسين شاشات AMOLED</string>
-    <string name="mesg_errorNotTrusted">"يجب تعيين هذا الجهاز علي انه جهاز trustzone  علي جهاز الاستقبال للقيام بهذه العملية."</string>
+    <string name="mesg_errorNotTrusted">"يجب تعيين هذا الجهاز علي انه جهاز trustzone علي جهاز الاستقبال للقيام بهذه
+        العملية."
+    </string>
     <string name="text_webShareNoContentNotice">استخدم خيار \"مشاركه علي المتصفح\" لرؤية عمليات النقل هنا!</string>
-    <string name="text_webShareInfo">تمكين مشاركه الويب لعمليات النقل بشكل فردي وزيارة اي ارتباط ويب موضح أدناه مع جهاز متصل بنفس الشبكة.</string>
+    <string name="text_webShareInfo">تمكين مشاركه الويب لعمليات النقل بشكل فردي وزيارة اي ارتباط ويب موضح أدناه مع جهاز
+        متصل بنفس الشبكة.
+    </string>
     <string name="text_listEmptyConnection">تظهر الشبكات التي تتصل بها هنا</string>
     <string name="ques_shareAsApkOrLink">مشاركة ملف التثبيت او الرابط؟</string>
     <string name="butn_asApk">ملف التثبيت</string>

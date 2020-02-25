@@ -168,9 +168,9 @@
     <!-- prototype end -->
 
     <!-- generalization start -->
-    <style name="Theme.TrebleShot.Base" parent="Theme.Prototype.TrebleShot.Base" />
+    <style name="Theme.TrebleShot.Base" parent="Theme.Prototype.TrebleShot.Base"/>
 
-    <style name="Theme.TrebleShot.Dark.Base" parent="Theme.Prototype.TrebleShot.Dark.Base" />
+    <style name="Theme.TrebleShot.Dark.Base" parent="Theme.Prototype.TrebleShot.Dark.Base"/>
 
     <style name="Theme.TrebleShot.Base.NoActionBar" parent="@style/Theme.TrebleShot.Base">
         <item name="windowActionBar">false</item>

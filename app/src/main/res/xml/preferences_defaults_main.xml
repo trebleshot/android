@@ -20,76 +20,76 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="scan_devices_auto"/>
+            android:defaultValue="false"
+            android:key="scan_devices_auto"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="trust_always"/>
+            android:defaultValue="false"
+            android:key="trust_always"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="hotspot_trust"/>
+            android:defaultValue="true"
+            android:key="hotspot_trust"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="kill_service_on_exit"/>
+            android:defaultValue="true"
+            android:key="kill_service_on_exit"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="qr_trust" />
+            android:defaultValue="true"
+            android:key="qr_trust"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="notification_vibrate"/>
+            android:defaultValue="true"
+            android:key="notification_vibrate"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="notification_sound"/>
+            android:defaultValue="true"
+            android:key="notification_sound"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="notification_light"/>
-    
-    <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="notification_vibrate"/>
+            android:defaultValue="true"
+            android:key="notification_light"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="notification_sound"/>
+            android:defaultValue="true"
+            android:key="notification_vibrate"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="notification_light"/>
+            android:defaultValue="true"
+            android:key="notification_sound"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="nsd_enabled"/>
+            android:defaultValue="true"
+            android:key="notification_light"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="developer_mode"/>
+            android:defaultValue="true"
+            android:key="nsd_enabled"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="custom_fonts"/>
+            android:defaultValue="false"
+            android:key="developer_mode"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="allow_autoconnect"/>
+            android:defaultValue="false"
+            android:key="custom_fonts"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="show_system_apps"/>
+            android:defaultValue="false"
+            android:key="allow_autoconnect"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
-        android:key="dark_theme"/>
+            android:defaultValue="false"
+            android:key="show_system_apps"/>
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="load_thumbnails" />
+            android:defaultValue="false"
+            android:key="dark_theme"/>
+
+    <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="load_thumbnails"/>
 
 
 </androidx.preference.PreferenceScreen>

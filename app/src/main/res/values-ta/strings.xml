@@ -242,15 +242,22 @@
     <string name="text_textStream">உரை தொடர்</string>
     <string name="text_pendingTransfers">நிலுவையிலுள்ள பரிமாற்றங்கள்</string>
     <string name="mesg_groupOngoingNotice">கோப்பு பரிமாற்றத்திற்க்கு முன் %s முடியும் வரை காத்திருக்கிறது</string>
-    <string name="text_removeCertainPendingTransfersSummary">இது நிலுவையிலுள்ள அனைத்து பரிமாற்றங்களையும் நீக்கிவிடும்</string>
+    <string name="text_removeCertainPendingTransfersSummary">இது நிலுவையிலுள்ள அனைத்து பரிமாற்றங்களையும் நீக்கிவிடும்
+    </string>
     <string name="text_chooserTargetService">Device தேர்வை வழங்குபவர்</string>
-    <string name="text_requestPermissionStorageSummary">இந்த அனுமதி TrebleShot ற்க்கு உங்கள் கருவி சேமிப்பை சேர்க்கவும் எடுக்கவும் பயன்படுத்தப்படும்.</string>
+    <string name="text_requestPermissionStorageSummary">இந்த அனுமதி TrebleShot ற்க்கு உங்கள் கருவி சேமிப்பை சேர்க்கவும்
+        எடுக்கவும் பயன்படுத்தப்படும்.
+    </string>
     <string name="text_defaultFolder">பொதுவான அடைவு</string>
     <string name="text_fileExplorer">கோப்புகளை கண்டுபிடி</string>
-    <string name="text_checkOldFiles">முழுவதுமாகவும், பாதியும் முடிந்த கோப்புகளை இங்கு சேர்க்கலாம். இது கோப்பு அளவினை பொறுத்தவரை சில நேரங்கள் எடுக்கும்</string>
+    <string name="text_checkOldFiles">முழுவதுமாகவும், பாதியும் முடிந்த கோப்புகளை இங்கு சேர்க்கலாம். இது கோப்பு அளவினை
+        பொறுத்தவரை சில நேரங்கள் எடுக்கும்
+    </string>
     <string name="text_longAgo">முன்னொரு நாள்</string>
     <string name="text_interfaceEthernet">Cable இணைப்பு</string>
-    <string name="text_automaticNetworkConnectionFailed">Device உடன் இணைய முடியவில்லை. அதன் முகவரி மாற்றப்பட்டிருக்கலாம். TrebleShot ஐ on செய்து முயற்சி செய்யவும்.</string>
+    <string name="text_automaticNetworkConnectionFailed">Device உடன் இணைய முடியவில்லை. அதன் முகவரி
+        மாற்றப்பட்டிருக்கலாம். TrebleShot ஐ on செய்து முயற்சி செய்யவும்.
+    </string>
     <string name="text_mediaDirectory">மீடியா அடைவு</string>
     <string name="text_transactionGroupDetails">பரிமாற்ற குழு விவரம்</string>
     <string name="text_communicationServiceStop">Session-ஐ முடிக்க இங்கு தட்டவும்</string>
@@ -269,7 +276,9 @@
     <string name="butn_trustZoneDevice">TrustZone கருவியாக ஆக்கு</string>
     <string name="mesg_scanningSelfHotspot">Trebleshot Hotspot-ஐ தேடுகிறது</string>
     <string name="mesg_suggestSelfHotspot">நீங்கள் Trebleshot Hotspot-ஐ தேடுவதற்க்கு Wi-Fi-ஐ ஆன் செய்யலாம்</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Trebleshot Hotspot-ஐ தேடி உருவாக்குவதற்க்கு அனுமதிக்கவும்</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Trebleshot Hotspot-ஐ தேடி உருவாக்குவதற்க்கு
+        அனுமதிக்கவும்
+    </string>
     <string name="mesg_stoppingSelfHotspot">Trebleshot Hotspot-ஐ நிறுத்துகிறது</string>
     <string name="mesg_startingSelfHotspot">Trebleshot Hotspot-ஐ தொடங்குகிறது</string>
     <string name="text_previewAndEditList">சரிபார் மற்றும் தொகு</string>
@@ -278,14 +287,18 @@
     <string name="butn_selectAll">அனைத்தயும் தேர்ந்தெடு</string>
     <string name="butn_check">குறி இடு</string>
     <string name="butn_uncheck">குறி நீக்கு</string>
-    <string name="ques_connectionWizardUseHotspot">மற்ற கருவிகளுடன் Hotspot மூலம் இணைய வேண்டுமா\? Hotspot என்னவென்று தெரியவில்லை என்றால் Yes-ஐ அழுத்தவும்.</string>
+    <string name="ques_connectionWizardUseHotspot">மற்ற கருவிகளுடன் Hotspot மூலம் இணைய வேண்டுமா\? Hotspot என்னவென்று
+        தெரியவில்லை என்றால் Yes-ஐ அழுத்தவும்.
+    </string>
     <string name="ques_connectionWizardUseNetwork">நீங்கள் Router அல்லது Wi-Fi பயன்படுத்த வேண்டுமா\?</string>
     <string name="ques_connectionWizardUseKnownDevices">முன்னே இணைந்த கருவிகளை பார்க்க வேண்டுமா\?</string>
     <string name="butn_yes">ஆம்</string>
     <string name="butn_no">இல்லை</string>
     <string name="text_manageDevices">கருவிகள்</string>
     <string name="mesg_locationPermissionRequiredAny">உங்கள் Location சேவையை ஆன் செய்யவும்</string>
-    <string name="text_saveAnywaySummary">அனுப்பியவருக்கு கோப்பு எங்கு இருக்கிறது என தெரியவில்லை. இருப்பினும் நீங்கள் அதை சேமிக்கலாம்</string>
+    <string name="text_saveAnywaySummary">அனுப்பியவருக்கு கோப்பு எங்கு இருக்கிறது என தெரியவில்லை. இருப்பினும் நீங்கள்
+        அதை சேமிக்கலாம்
+    </string>
     <string name="butn_sortOrder">வரிசைப்படுத்தும் விதம்</string>
     <string name="text_sortOrderAscending">பெரியன முதல்</string>
     <string name="text_sortOrderDescending">சிறியன முதல்</string>
@@ -309,7 +322,9 @@
     <string name="text_notificationSettings">அறிவிப்பு அமைப்புகள்</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">மற்றொரு சாதனத்தில் அனைத்தையும் சரி செய்துவிட்டீரா\?</string>
     <string name="ques_connectionWizardIsThereQRCode">நீங்கள் QR Code பார்க்க முடிகிறதா\?</string>
-    <string name="text_hotspotStartedExternallyNotice">Hotspot வெளியே துவக்கப்பட்டது. QR Code பயன்படுத்த அதனை இங்கேயே துவக்கவும்.</string>
+    <string name="text_hotspotStartedExternallyNotice">Hotspot வெளியே துவக்கப்பட்டது. QR Code பயன்படுத்த அதனை இங்கேயே
+        துவக்கவும்.
+    </string>
     <string name="text_shortcut">குறுக்குவழி</string>
     <string name="butn_addShortcut">குறுக்குவழியை சேர்</string>
     <string name="butn_removeShortcut">குறுக்குவழியை நீக்கு</string>
@@ -334,14 +349,20 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">அல்லது</string>
     <string name="text_visitWebShareAddress">உலாவி மூலம் இந்த Link-ஐ பார்க்கவும்</string>
-    <string name="text_notAllowedHelp">"%1$s  ற்க்கு நீங்கள் அனுமதிக்கப்ப்ட்டுள்ளீர்களா
-\n
-\nசாதனங்கள் &gt; %2$s &gt; இணைக்க அனுமதி &gt; (பாருங்கள்)"</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">Trebleshot உங்கள் கைபேசியின் சீரியல் எண்ணை எடுக்க அனுமதி தேவை</string>
+    <string name="text_notAllowedHelp">"%1$s ற்க்கு நீங்கள் அனுமதிக்கப்ப்ட்டுள்ளீர்களா
+        \n
+        \nசாதனங்கள் &gt; %2$s &gt; இணைக்க அனுமதி &gt; (பாருங்கள்)"
+    </string>
+    <string name="text_requestPermissionReadPhoneStateSummary">Trebleshot உங்கள் கைபேசியின் சீரியல் எண்ணை எடுக்க அனுமதி
+        தேவை
+    </string>
     <string name="mesg_clipboardUpdateNotice">தொடரை மாற்றுங்கள் அல்லது வெளியேற மீண்டும் அழுத்துங்கள்</string>
     <string name="mesg_providerNotAllowedError">முதன்மை அடைவு மற்ற செயலிகளுக்கு அனுமதி இல்லை</string>
-    <string name="text_trebleshotHotspotDescription">நீங்கள் இந்த இணைப்பின் மூலம் கோப்புகளை பரிமாற்றிக்கொள்ளலாம்.</string>
-    <string name="mesg_warningHotspotMobileActive">இணைக்கப்பட்டுள்ள சாதனங்கள் உங்கள் மொபைல் டேடாவை பயன்படுத்தக்கூடும். நீங்கள் அதை முடக்குங்கள்.</string>
+    <string name="text_trebleshotHotspotDescription">நீங்கள் இந்த இணைப்பின் மூலம் கோப்புகளை பரிமாற்றிக்கொள்ளலாம்.
+    </string>
+    <string name="mesg_warningHotspotMobileActive">இணைக்கப்பட்டுள்ள சாதனங்கள் உங்கள் மொபைல் டேடாவை பயன்படுத்தக்கூடும்.
+        நீங்கள் அதை முடக்குங்கள்.
+    </string>
     <string name="mesg_scanningDevicesSelfHotspot">Trebleshot Hotspot மூலம் சாதனங்களை தேடுகிறது</string>
     <string name="text_fileRoot">கோப்பு மூலம்</string>
     <string name="mesg_versionNotSupported">பரிந்துரைக்கப்பட்ட Versionற்க்கு பதிவேற்றம் செய்யுங்கள்.</string>
@@ -427,7 +448,8 @@
     <string name="text_addDevicesToTransfer">சாதனங்களை சேர்த்து, பரிமாறவும்</string>
     <string name="text_noDeviceForTransfer">பரிமாற்றத்திற்க்காக எந்த சாதனமும் சேர்க்கப்படவில்லை</string>
     <string name="text_changelog">மாற்றக்குறிப்புகள்</string>
-    <string name="mesg_versionUpdatedChangelogRejected">மாற்றக்குறிப்புகளை \"எங்களைப் பற்றி\" பிரிவிலிருந்து பெறலாம்</string>
+    <string name="mesg_versionUpdatedChangelogRejected">மாற்றக்குறிப்புகளை \"எங்களைப் பற்றி\" பிரிவிலிருந்து பெறலாம்
+    </string>
     <string name="mesg_noInternetConnection">இதற்கு இணைய சேவை தேவை</string>
     <string name="text_applyDarkTheme">Dark mode</string>
     <string name="text_applyDarkThemeSummary">Dark Style Theme-ஐ பயன்படுத்தவும்</string>
@@ -449,21 +471,28 @@
     <string name="ques_needHelp">உதவி வேண்டுமா\?</string>
     <string name="text_connectionWizard">இணைப்பு உதவி</string>
     <string name="mesg_errorNotAnIpAddress">IP Address இல்லை
-\n(192.168.1.2 போல)</string>
+        \n(192.168.1.2 போல)
+    </string>
     <string name="butn_changeMode">நிலையை மாற்று</string>
     <string name="text_networkServiceDiscoverySummary">NSD கண்டறிதலை அதிகரிக்கும்</string>
     <string name="text_easyDiscoveryHelp">இரண்டு சாதனங்களும் ஒரே நெட்வொர்கில் இருந்தால் Scan செய்யவும்</string>
-    <string name="mesg_noPendingTransferObjectExists">நிலுவையிலுள்ள பரிமாற்றங்கள் ஏதுமில்லை. நிருத்தப்பட்ட கோப்புகளை மீண்டும் தொடர, \'Retry Receiving\'ஐ பயன் படுத்தவும்.</string>
+    <string name="mesg_noPendingTransferObjectExists">நிலுவையிலுள்ள பரிமாற்றங்கள் ஏதுமில்லை. நிருத்தப்பட்ட கோப்புகளை
+        மீண்டும் தொடர, \'Retry Receiving\'ஐ பயன் படுத்தவும்.
+    </string>
     <string name="mesg_notSavingToChosenLocation">கோப்புகள் பொதுவான அடைவில் சேமிக்கப்படும்
-\n
-\n%s</string>
-    <string name="mesg_versionUpdatedChangelog">TrebleShot புதுப்பிக்கப்பட்டது, புதிதாக என்ன இருக்கிறது என பார்க்க வேண்டுமா\?</string>
+        \n
+        \n%s
+    </string>
+    <string name="mesg_versionUpdatedChangelog">TrebleShot புதுப்பிக்கப்பட்டது, புதிதாக என்ன இருக்கிறது என பார்க்க
+        வேண்டுமா\?
+    </string>
     <string name="butn_useExistingNetwork">ஏற்கனவே இருக்கும் நெட்வொர்குகளை பயன்படுத்தவும்</string>
     <string name="text_addDeviceHelp">சாதனங்களை சேர்ப்பதன் மூலம், நீங்கள் பல்வேறு சாதனங்களுடன் பகிர முடியும்.</string>
     <string name="text_shortcuts">குறுக்கு வழிகள்</string>
     <string name="butn_changeSavePath">சேமிப்பு பாதையை மாற்று</string>
     <string name="mesg_fileReceiveFilesLeftError">சில கோப்புகள் பரிமாற்றம் தோல்வியடைந்தது</string>
-    <string name="text_connectionHelp">மற்ற சாதனங்களுடன் இணைப்பதற்க்கு நீங்கள் ஏதேனும் ஒரு வழியை தேர்வு செய்யவும்.</string>
+    <string name="text_connectionHelp">மற்ற சாதனங்களுடன் இணைப்பதற்க்கு நீங்கள் ஏதேனும் ஒரு வழியை தேர்வு செய்யவும்.
+    </string>
     <string name="mesg_errorNotTrustZoneDevice">சாதனம் TrustZone-ஆக அமைக்கப்பட வேண்டும்.</string>
     <string name="text_webShareNoContentNotice">உலாவியில் பகிரும் சேவையை பயன்படுத்தவும்!</string>
     <string name="text_webShareInfo">தனிப்பட்ட பரிமாற்றத்திற்காக Web Sharing துவக்கிவைக்கவும்.</string>

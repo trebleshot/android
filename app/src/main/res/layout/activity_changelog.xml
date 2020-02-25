@@ -18,18 +18,18 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
     <fragment
-        android:id="@+id/activity_changelog_fragment_changelog"
-        android:name="com.genonbeta.TrebleShot.fragment.external.GitHubChangelogListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="changeLogFragment" />
+            android:id="@+id/activity_changelog_fragment_changelog"
+            android:name="com.genonbeta.TrebleShot.fragment.external.GitHubChangelogListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="changeLogFragment"/>
 
     <View
-        style="@style/DividerStyle"
-        android:layout_gravity="bottom" />
+            style="@style/DividerStyle"
+            android:layout_gravity="bottom"/>
 
 </FrameLayout>

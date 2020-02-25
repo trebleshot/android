@@ -19,10 +19,10 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/actions_selection_list_check_all"
-        android:title="@string/butn_check"/>
+            android:id="@+id/actions_selection_list_check_all"
+            android:title="@string/butn_check"/>
 
     <item
-        android:id="@+id/actions_selection_list_undo_all"
-        android:title="@string/butn_uncheck"/>
+            android:id="@+id/actions_selection_list_undo_all"
+            android:title="@string/butn_uncheck"/>
 </menu>

@@ -18,10 +18,10 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/show_help"
-        android:icon="@drawable/ic_help_circle_white_24dp"
-        android:title="@string/butn_help"
-        app:showAsAction="always" />
+            android:id="@+id/show_help"
+            android:icon="@drawable/ic_help_circle_white_24dp"
+            android:title="@string/butn_help"
+            app:showAsAction="always"/>
 </menu>

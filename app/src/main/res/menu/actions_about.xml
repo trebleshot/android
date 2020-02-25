@@ -18,11 +18,11 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/actions_about_feedback"
-        android:icon="@drawable/ic_email_white_24dp"
-        android:title="@string/butn_feedbackContact"
-        app:showAsAction="always" />
+            android:id="@+id/actions_about_feedback"
+            android:icon="@drawable/ic_email_white_24dp"
+            android:title="@string/butn_feedbackContact"
+            app:showAsAction="always"/>
 
 </menu>

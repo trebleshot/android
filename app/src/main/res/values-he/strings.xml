@@ -148,16 +148,19 @@
     <string name="text_transactionViewer">הצגת העברה</string>
     <string name="text_error">שגיאה</string>
     <string name="ques_why">מדוע\?</string>
-    <string name="text_notAllowedHelp">נא לבדוק אם מותר לך תחת %1$s 
-\n
-\nמכשירים &gt; %2$s &gt; לאפשר חיבור &gt; (לסמן את זה)</string>
+    <string name="text_notAllowedHelp">נא לבדוק אם מותר לך תחת %1$s
+        \n
+        \nמכשירים &gt; %2$s &gt; לאפשר חיבור &gt; (לסמן את זה)
+    </string>
     <string name="butn_saveTo">שמירה אל</string>
     <string name="mesg_secureExit">יש ללחוץ שוב כדי לצאת</string>
     <string name="butn_create">יצירה</string>
     <string name="text_createFolder">יצירת תיקייה</string>
     <string name="mesg_fileAlreadyExists">הקובץ כבר קיים</string>
     <string name="mesg_folderCreateError">לא ניתן ליצור את התיקייה</string>
-    <string name="text_requestPermissionStorageSummary">הרשאה זו מאפשרת ל־TrebleShot לקרוא ולכתוב לאחסון במכשיר שלך לטובת קבלה ושיתוף של קבצים.</string>
+    <string name="text_requestPermissionStorageSummary">הרשאה זו מאפשרת ל־TrebleShot לקרוא ולכתוב לאחסון במכשיר שלך
+        לטובת קבלה ושיתוף של קבצים.
+    </string>
     <string name="butn_settings">הגדרות</string>
     <string name="butn_selectThis">לבחור את זה</string>
     <string name="butn_newFile">קובץ חדש</string>
@@ -180,7 +183,9 @@
     <string name="text_chooseFile">בחירת קובץ</string>
     <string name="mesg_pathSameError">לא ניתן לבחור את התיקייה הישנה</string>
     <string name="ques_checkOldFiles">להעביר קבצים\?</string>
-    <string name="text_checkOldFiles">ניתן להעביר קבצים משוייכים שהושלמו באופן מלא או למחצה לתיקייה זו, פעולה זו עשויה לארוך זמן מה בהתאם לגדלים</string>
+    <string name="text_checkOldFiles">ניתן להעביר קבצים משוייכים שהושלמו באופן מלא או למחצה לתיקייה זו, פעולה זו עשויה
+        לארוך זמן מה בהתאם לגדלים
+    </string>
     <string name="mesg_newFilesReceived">התקבלו קבצים חדשים</string>
     <string name="butn_show">הצגה</string>
     <string name="text_preparingFiles">הקבצים בהכנה</string>
@@ -200,14 +205,18 @@
     <string name="text_shareTextShort">טקסט</string>
     <string name="butn_feelLucky">יותר מזל משכל</string>
     <string name="butn_connectionList">חיבורים</string>
-    <string name="text_automaticNetworkConnectionFailed">אף אחד מהחיבורים לא הצליח עבור ההתקן. יכול להיות שהכתובת שלו השתנתה. כדאי לנסות להתחבר מחדש לרשת בזמן ש־TrebleShot פתוח.</string>
+    <string name="text_automaticNetworkConnectionFailed">אף אחד מהחיבורים לא הצליח עבור ההתקן. יכול להיות שהכתובת שלו
+        השתנתה. כדאי לנסות להתחבר מחדש לרשת בזמן ש־TrebleShot פתוח.
+    </string>
     <string name="text_automaticNetworkConnectionOngoing">ההחלטה תתקבל על ידי TrebleShot</string>
     <string name="butn_retryReceiving">לנסות הכול שוב</string>
     <string name="butn_ask">לשאול</string>
     <string name="text_permissionRequest">בקשת הרשאות</string>
     <string name="text_requestPermissionStorage">הרשאה לאחסון</string>
     <string name="text_requestPermissionReadPhoneState">הרשאה לקרוא את מצב הטלפון</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">ל־TrebleShot נדרשת גישה למספר הסידורי של המכשיר שלך כדי ליצור מספר זיהוי לטווח ארוך שמסייע למכשירים אחרים לזהות אותך</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">ל־TrebleShot נדרשת גישה למספר הסידורי של המכשיר שלך כדי
+        ליצור מספר זיהוי לטווח ארוך שמסייע למכשירים אחרים לזהות אותך
+    </string>
     <string name="text_mediaDirectory">תיקיית מדיה</string>
     <string name="text_emulatedMediaDirectory">מדומה (%s)</string>
     <string name="mesg_notEnoughSpace">אין די מקום</string>
@@ -241,16 +250,21 @@
     <string name="text_trebleshotHotspot">נקודה חמה של TrebleShot</string>
     <string name="butn_connect">חיבור</string>
     <string name="butn_disconnect">ניתוק</string>
-    <string name="text_trebleshotHotspotDescription">ניתן לשלוח קבצים ישירות דרך הרשת הפתוחה הזאת שנוצרה על ידי מכשיר קרוב עם TrebleShot.</string>
+    <string name="text_trebleshotHotspotDescription">ניתן לשלוח קבצים ישירות דרך הרשת הפתוחה הזאת שנוצרה על ידי מכשיר
+        קרוב עם TrebleShot.
+    </string>
     <string name="mesg_connectingToSelfHotspot">מתבצעת התחברות לנקודה החמה של TrebleShot</string>
-    <string name="mesg_warningHotspotMobileActive">התקנים מחוברים עשויים להשתמש בגלישה הסלולרית שלך. אולי מוטב לכבות אותה.</string>
+    <string name="mesg_warningHotspotMobileActive">התקנים מחוברים עשויים להשתמש בגלישה הסלולרית שלך. אולי מוטב לכבות
+        אותה.
+    </string>
     <string name="butn_skip">דילוג</string>
     <string name="mesg_scanningSelfHotspot">מתבצע חיפוש אחר נקודה חמה של TrebleShot</string>
     <string name="mesg_suggestSelfHotspot">ניתן להפעיל רשת אלחוטית כדי לחפש אחר נקודה חמה של TrebleShot</string>
     <string name="butn_enable">הפעלה</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">לאפשר ל־TrebleShot לחפש וליצור נקודה חמה</string>
     <string name="butn_locationSettings">מיקום</string>
-    <string name="mesg_locationDisabledSelfHotspot">יש להפעיל שירותי מיקום כדי לצפות בתוצאות הסריקה וליצור נקודה חמה</string>
+    <string name="mesg_locationDisabledSelfHotspot">יש להפעיל שירותי מיקום כדי לצפות בתוצאות הסריקה וליצור נקודה חמה
+    </string>
     <string name="mesg_scanningDevicesSelfHotspot">מתבצע איתור אחר מכשירים דרך נקודה חמה של TrebleShot</string>
     <string name="mesg_stoppingSelfHotspot">הנקודה החמה של TrebleShot מופסקת</string>
     <string name="mesg_startingSelfHotspot">הנקודה החמה של TrebleShot מופעלת</string>
@@ -264,7 +278,9 @@
     <string name="mesg_ongoingUpdateDownload">הגרסה החדשה מתקבלת</string>
     <string name="butn_gotIt">הבנתי</string>
     <string name="mesg_helpFolderSelection">כדי לבחור בתיקייה, יש לגעת בסמל שלה</string>
-    <string name="mesg_hotspotCreatedInfo">התחברות ל־„%s” תחת „הגדרות רשת אלחוטית” או שליחת קבצים דרך „%s” בתוך TrebleShot</string>
+    <string name="mesg_hotspotCreatedInfo">התחברות ל־„%s” תחת „הגדרות רשת אלחוטית” או שליחת קבצים דרך „%s” בתוך
+        TrebleShot
+    </string>
     <string name="butn_selectAll">לבחור הכול</string>
     <string name="butn_selectNone">לא לבחור כלום</string>
     <string name="butn_previewSelections">תצוגה מקדימה של בחירות</string>
@@ -382,10 +398,13 @@
     <string name="butn_open">פתיחה</string>
     <string name="butn_pause">השהיה</string>
     <string name="butn_retry">ניסיון חוזר</string>
-    <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות. כדי להמשיך קבצים שנקטעו, יש להשתמש באפשרות ‚לנסות לקבל שוב’.</string>
-    <string name="mesg_notSavingToChosenLocation">"התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל. 
-\n  
-\n%s"</string>
+    <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות. כדי להמשיך קבצים שנקטעו, יש להשתמש
+        באפשרות ‚לנסות לקבל שוב’.
+    </string>
+    <string name="mesg_notSavingToChosenLocation">"התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל.
+        \n
+        \n%s"
+    </string>
     <string name="butn_changelog">יומן שינויים</string>
     <string name="text_changelog">יומן שינויים</string>
     <string name="mesg_versionUpdatedChangelog">עדכנת את TrebleShot, מעניין אותך לראות מה חדש\?</string>
@@ -426,17 +445,27 @@
     <string name="mesg_wifiEnableFailed">לא ניתן להפעיל את התקשורת האלחוטית.</string>
     <string name="mesg_turningWiFiOn">התקשורת האלחוטית מופעלת</string>
     <string name="mesg_locationPermissionRequiredAny">יש להפעיל את שירות המיקום כדי להמשיך</string>
-    <string name="text_connectionHelp">נא לבחור באפשרות כדי להתחבר למכשיר השני. למשל, אם המכשיר מציג קוד QR ניתן להשתמש באפשרות לסריקת QR.</string>
-    <string name="ques_connectionWizardUseNetwork">האם להשתמש בנתב שלך או בכל רשת אלחוטית אחרת שאליה מחובר המכשיר שלך והמכשירים של החברים שלך\?</string>
+    <string name="text_connectionHelp">נא לבחור באפשרות כדי להתחבר למכשיר השני. למשל, אם המכשיר מציג קוד QR ניתן להשתמש
+        באפשרות לסריקת QR.
+    </string>
+    <string name="ques_connectionWizardUseNetwork">האם להשתמש בנתב שלך או בכל רשת אלחוטית אחרת שאליה מחובר המכשיר שלך
+        והמכשירים של החברים שלך\?
+    </string>
     <string name="mesg_connectToWiFiNetworkHelp">יש להתחבר לרשת אלחוטית כדי להמשיך</string>
     <string name="mesg_removing">מתבצעת הסרה… עשוי לארוך זמן מה</string>
     <string name="butn_help">עזרה</string>
     <string name="butn_choose">בחירה</string>
     <string name="butn_fixConnection">תיקון החיבור</string>
-    <string name="text_addDeviceHelp">כאשר מתווספים מכשירים, אותם הקבצים משותפים עם מכשירים נוספים. עם סיום ההעברה היישומון יחזור אליה.</string>
-    <string name="ques_connectionWizardUseHotspot">לאפשר למכשירים אחרים להתחבר למכשיר הזה עם נקודה חמה (קשירה)\? אם לא ברור לך ממה זו נקודה חמה, מוטב לבחור באפשרות כן.</string>
+    <string name="text_addDeviceHelp">כאשר מתווספים מכשירים, אותם הקבצים משותפים עם מכשירים נוספים. עם סיום ההעברה
+        היישומון יחזור אליה.
+    </string>
+    <string name="ques_connectionWizardUseHotspot">לאפשר למכשירים אחרים להתחבר למכשיר הזה עם נקודה חמה (קשירה)\? אם לא
+        ברור לך ממה זו נקודה חמה, מוטב לבחור באפשרות כן.
+    </string>
     <string name="butn_never">לעולם לא</string>
-    <string name="text_hotspotStartedExternallyNotice">הנקודה החמה הופעלה באופן חיצוני. כדי להשתמש בקוד ה־QR יש להפעיל אותה מכאן.</string>
+    <string name="text_hotspotStartedExternallyNotice">הנקודה החמה הופעלה באופן חיצוני. כדי להשתמש בקוד ה־QR יש להפעיל
+        אותה מכאן.
+    </string>
     <string name="text_shortcut">קיצור דרך</string>
     <string name="butn_addShortcut">הוספת קיצור דרך</string>
     <string name="butn_removeShortcut">הסרת קיצור דרך</string>
@@ -468,11 +497,14 @@
     <string name="mode_webShareAddress">http://%s:%d/‎</string>
     <string name="text_or">או</string>
     <string name="text_visitWebShareAddress">יש לבקר בקישור הזה עם הדפדפן שלך</string>
-    <string name="text_webShareInfo">עליך להפעיל שיתוף רשת להעברות בודדות ולבקר בקישור שמופיע להלן ממכשיר שמחובר לאותה הרשת.</string>
+    <string name="text_webShareInfo">עליך להפעיל שיתוף רשת להעברות בודדות ולבקר בקישור שמופיע להלן ממכשיר שמחובר לאותה
+        הרשת.
+    </string>
     <string name="text_dowloadTrebleshotAndroid">הורדת TrebleShot ל־Android</string>
     <string name="text_listEmptyConnection">רשתות שבאפשרותך להתחבר אליהן מופיעות כאן</string>
     <string name="mesg_errorNotAnIpAddress">לא כתובת IP
-\n(כגון 192.168.1.2)</string>
+        \n(כגון 192.168.1.2)
+    </string>
     <string name="ques_shareAsApkOrLink">לשתף כ־APK או כקישור\?</string>
     <string name="butn_asApk">כ־APK</string>
     <string name="butn_asLink">כקישור</string>

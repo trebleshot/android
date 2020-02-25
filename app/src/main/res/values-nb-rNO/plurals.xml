@@ -17,52 +17,53 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<resources><plurals name="ques_deleteFile">
-	<item quantity="one">Ønsker du å slette denne fila?</item>
-	<item quantity="other">Ønsker du å slette %d filer?</item>
-</plurals>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">Ønsker du å slette denne fila?</item>
+        <item quantity="other">Ønsker du å slette %d filer?</item>
+    </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="one">Ei fil har blitt mottatt</item>
-	<item quantity="other">%d filer har blitt mottatt</item>
-</plurals>
+        <item quantity="one">Ei fil har blitt mottatt</item>
+        <item quantity="other">%d filer har blitt mottatt</item>
+    </plurals>
     <plurals name="text_itemSelected">
-	<item quantity="one">Ei fil valgt</item>
-	<item quantity="other">%d filer valgt</item>
-</plurals>
+        <item quantity="one">Ei fil valgt</item>
+        <item quantity="other">%d filer valgt</item>
+    </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">Denne ventende overføringen vil bli fjernet</item>
-	<item quantity="other">%d ventende overføringer vil bli fjernet</item>
-</plurals>
+        <item quantity="one">Denne ventende overføringen vil bli fjernet</item>
+        <item quantity="other">%d ventende overføringer vil bli fjernet</item>
+    </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">Én tilkobling</item>
-	<item quantity="other">%d tilkoblinger</item>
-</plurals>
+        <item quantity="one">Én tilkobling</item>
+        <item quantity="other">%d tilkoblinger</item>
+    </plurals>
     <plurals name="ques_receiveMultipleFiles">
-	<item quantity="one">Ta imot denne fila?</item>
-	<item quantity="other">Ta imot %d filer?</item>
-</plurals>
-<plurals name="text_files">
-	<item quantity="one">Ei fil</item>
-	<item quantity="other">%d filer</item>
-</plurals>
+        <item quantity="one">Ta imot denne fila?</item>
+        <item quantity="other">Ta imot %d filer?</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">Ei fil</item>
+        <item quantity="other">%d filer</item>
+    </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="one">Ett sekund siden</item>
-	<item quantity="other">%d sekunder siden</item>
-</plurals>
+        <item quantity="one">Ett sekund siden</item>
+        <item quantity="other">%d sekunder siden</item>
+    </plurals>
     <plurals name="text_minutesAgo">
-	<item quantity="one">Ett minutt siden</item>
-	<item quantity="other">%d minutter siden</item>
-</plurals>
-<plurals name="text_fileDeletionCompleted">
-	<item quantity="one">Ei fil har blitt slettet</item>
-	<item quantity="other">%d filer har blitt slettet</item>
-</plurals>
-<plurals name="text_gridRow">
-	<item quantity="one">Enkelt rad</item>
-	<item quantity="other">%d rader</item>
-</plurals>
+        <item quantity="one">Ett minutt siden</item>
+        <item quantity="other">%d minutter siden</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">Ei fil har blitt slettet</item>
+        <item quantity="other">%d filer har blitt slettet</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Enkelt rad</item>
+        <item quantity="other">%d rader</item>
+    </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">Enkelt deling</item>
-	<item quantity="other">Deler med %d enheter</item>
-</plurals>
+        <item quantity="one">Enkelt deling</item>
+        <item quantity="other">Deler med %d enheter</item>
+    </plurals>
 </resources>

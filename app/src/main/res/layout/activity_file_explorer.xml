@@ -18,36 +18,36 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     xmlns:tools="http://schemas.android.com/tools"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
+                                                     android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.ContentSharingActivity"
-        tools:showIn="@layout/activity_content_sharing">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".activity.ContentSharingActivity"
+            tools:showIn="@layout/activity_content_sharing">
 
         <fragment
-            android:id="@+id/activity_file_explorer_fragment_files"
-            android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+                android:id="@+id/activity_file_explorer_fragment_files"
+                android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

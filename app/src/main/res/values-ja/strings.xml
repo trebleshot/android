@@ -121,7 +121,7 @@
     <string name="butn_multiSelect">複数選択</string>
     <string name="butn_receive">受信</string>
     <string name="butn_block">ブロック</string>
-    <string name="text_aboutSummary">"このソフトウェアは Genonbeta ibre Software Org  によって開発されました"</string>
+    <string name="text_aboutSummary">"このソフトウェアは Genonbeta ibre Software Org によって開発されました"</string>
     <string name="butn_appLaunch">起動</string>
     <string name="ques_launchApplication">このアプリを起動しますか\?</string>
     <string name="mesg_launchApplicationError">このアプリは起動できません</string>
@@ -168,21 +168,27 @@
     <string name="text_transactionViewer">転送の保留中</string>
     <string name="ques_why">なぜ?</string>
     <string name="text_notAllowedHelp">%1$s で許可されているか確認してください
-\n 
-\nデバイス &gt; %2$s &gt; 接続を許可 &gt; (チェックしてください)</string>
+        \n
+        \nデバイス &gt; %2$s &gt; 接続を許可 &gt; (チェックしてください)
+    </string>
     <string name="butn_saveTo">保存...</string>
     <string name="mesg_secureExit">もう一度押すと終了します</string>
     <string name="butn_create">作成</string>
     <string name="text_createFolder">フォルダーを作成</string>
     <string name="mesg_fileAlreadyExists">ファイルがすでに存在します</string>
     <string name="mesg_folderCreateError">フォルダーを作成できません</string>
-    <string name="text_requestPermissionStorageSummary">このアクセス許可は、TrebleShot がデバイスのストレージを読み取り、書き込みして、ファイルを受信して共有できるようにします。</string>
+    <string name="text_requestPermissionStorageSummary">このアクセス許可は、TrebleShot
+        がデバイスのストレージを読み取り、書き込みして、ファイルを受信して共有できるようにします。
+    </string>
     <string name="butn_settings">設定</string>
     <string name="butn_selectThis">これを選択</string>
     <string name="butn_newFile">新しいファイル</string>
     <string name="butn_keepFile">残す</string>
     <string name="text_fixFileSaveLocation">保存場所を修正</string>
-    <string name="text_fileConflictNoChoice">%s ファイル用に選択したフォルダーは現在利用できません。現在のファイル名がデフォルトフォルダー内のファイルと競合します。同じファイルの部分的に受信したバージョンの場合は \'残す\' を選択するか、\'新しいファイル\' を選択して新しいファイルを生成します</string>
+    <string name="text_fileConflictNoChoice">%s
+        ファイル用に選択したフォルダーは現在利用できません。現在のファイル名がデフォルトフォルダー内のファイルと競合します。同じファイルの部分的に受信したバージョンの場合は \'残す\' を選択するか、\'新しいファイル\'
+        を選択して新しいファイルを生成します
+    </string>
     <string name="text_fileConflictUseDefault">%s ファイル用に選択したフォルダーは現在利用できません。デフォルトフォルダーを使用します</string>
     <string name="mesg_currentPathUnavailable">このフォルダーは使用できません</string>
     <string name="text_defaultFolder">デフォルトのフォルダー</string>
@@ -203,7 +209,8 @@
     <string name="text_chooseFile">ファイルを選択</string>
     <string name="mesg_pathSameError">古いフォルダは選択できません</string>
     <string name="ques_checkOldFiles">ファイルを移動しますか\?</string>
-    <string name="text_checkOldFiles">完了したファイル、および部分的に完了したファイルに関連付けられたファイルを、このフォルダーに移動することができます。サイズによって時間がかかることがあります</string>
+    <string name="text_checkOldFiles">完了したファイル、および部分的に完了したファイルに関連付けられたファイルを、このフォルダーに移動することができます。サイズによって時間がかかることがあります
+    </string>
     <string name="mesg_newFilesReceived">新しいファイルを受信しました</string>
     <string name="butn_show">表示</string>
     <string name="text_preparingFiles">ファイルの準備中</string>
@@ -224,7 +231,9 @@
     <string name="text_interfaceUnknown">不明な接続</string>
     <string name="text_shareTextShort">テキスト</string>
     <string name="butn_connectionList">接続</string>
-    <string name="text_automaticNetworkConnectionFailed">デバイスに接続できません。アドレスが変更された可能性があります。TrebleShot が開いている間、ネットワークに再接続してください。</string>
+    <string name="text_automaticNetworkConnectionFailed">デバイスに接続できません。アドレスが変更された可能性があります。TrebleShot
+        が開いている間、ネットワークに再接続してください。
+    </string>
     <string name="text_automaticNetworkConnectionOngoing">最良の接続を選択します</string>
     <string name="butn_retryReceiving">受信を再試行します</string>
     <string name="text_permissionRequest">権限の要求</string>

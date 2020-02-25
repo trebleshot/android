@@ -17,41 +17,41 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/actions_abs_editable_filter"
-        android:icon="@drawable/ic_search_white_24dp"
-        android:orderInCategory="80"
-        android:title="@string/butn_search"
-        android:visible="false"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="always" />
+            android:id="@+id/actions_abs_editable_filter"
+            android:icon="@drawable/ic_search_white_24dp"
+            android:orderInCategory="80"
+            android:title="@string/butn_search"
+            android:visible="false"
+            app:actionViewClass="androidx.appcompat.widget.SearchView"
+            app:showAsAction="always"/>
 
     <item
-        android:id="@+id/actions_abs_editable_multi_select"
-        android:icon="@drawable/ic_format_list_checks_white_24dp"
-        android:orderInCategory="10"
-        android:title="@string/butn_multiSelect" />
+            android:id="@+id/actions_abs_editable_multi_select"
+            android:icon="@drawable/ic_format_list_checks_white_24dp"
+            android:orderInCategory="10"
+            android:title="@string/butn_multiSelect"/>
 
     <item
-        android:id="@+id/actions_abs_editable_grid_size"
-        android:orderInCategory="90"
-        android:title="@string/butn_gridSize">
-        <menu />
+            android:id="@+id/actions_abs_editable_grid_size"
+            android:orderInCategory="90"
+            android:title="@string/butn_gridSize">
+        <menu/>
     </item>
 
     <item
-        android:id="@+id/actions_abs_editable_sort_by"
-        android:orderInCategory="100"
-        android:title="@string/butn_sortBy"
-        android:visible="false">
+            android:id="@+id/actions_abs_editable_sort_by"
+            android:orderInCategory="100"
+            android:title="@string/butn_sortBy"
+            android:visible="false">
         <menu>
             <item
-                android:id="@+id/actions_abs_editable_order_by"
-                android:orderInCategory="900"
-                android:title="@string/butn_sortOrder">
-                <menu />
+                    android:id="@+id/actions_abs_editable_order_by"
+                    android:orderInCategory="900"
+                    android:title="@string/butn_sortOrder">
+                <menu/>
             </item>
         </menu>
     </item>

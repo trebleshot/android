@@ -18,15 +18,15 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:icon="@drawable/ic_short_text_white_24dp"
-        android:title="@string/butn_changeMode"
-        app:showAsAction="always"
-        android:id="@+id/change_mode"/>
+            android:icon="@drawable/ic_short_text_white_24dp"
+            android:title="@string/butn_changeMode"
+            app:showAsAction="always"
+            android:id="@+id/change_mode"/>
     <item
-        android:icon="@drawable/ic_help_circle_white_24dp"
-        android:title="@string/butn_help"
-        app:showAsAction="always"
-        android:id="@+id/show_help"/>
+            android:icon="@drawable/ic_help_circle_white_24dp"
+            android:title="@string/butn_help"
+            app:showAsAction="always"
+            android:id="@+id/show_help"/>
 </menu>

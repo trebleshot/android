@@ -18,17 +18,17 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/layout_welcome_page_5_text"
-        style="@style/TextAppearance.Primary.Big"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="@string/text_introAllSet"
-        android:textSize="@dimen/font_size_title" />
+            android:id="@+id/layout_welcome_page_5_text"
+            style="@style/TextAppearance.Primary.Big"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/text_introAllSet"
+            android:textSize="@dimen/font_size_title"/>
 
 </RelativeLayout>

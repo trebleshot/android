@@ -19,17 +19,17 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_mode_group_delete"
-        android:icon="@drawable/ic_delete_white_24dp"
-        android:showAsAction="ifRoom"
-        android:title="@string/butn_delete"/>
+            android:id="@+id/action_mode_group_delete"
+            android:icon="@drawable/ic_delete_white_24dp"
+            android:showAsAction="ifRoom"
+            android:title="@string/butn_delete"/>
 
     <item
-        android:id="@+id/action_mode_group_serve_on_web"
-        android:title="@string/butn_shareOnBrowser"/>
+            android:id="@+id/action_mode_group_serve_on_web"
+            android:title="@string/butn_shareOnBrowser"/>
 
     <item
-        android:id="@+id/action_mode_group_hide_on_web"
-        android:title="@string/butn_hideOnBrowser"/>
+            android:id="@+id/action_mode_group_hide_on_web"
+            android:title="@string/butn_hideOnBrowser"/>
 
 </menu>

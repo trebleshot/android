@@ -17,45 +17,45 @@
   -->
 
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector"
-    style="@style/ListContentLayoutStyle">
-
-    <ImageView
-        android:id="@+id/menu"
-        style="@style/OverflowButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="center_vertical"/>
-
-    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="13dp"
-        android:layout_marginRight="13dp"
-        android:layout_toLeftOf="@id/menu"
-        android:layout_toStartOf="@id/menu"
-        android:orientation="vertical">
+        android:background="?rectSelector"
+        style="@style/ListContentLayoutStyle">
+
+    <ImageView
+            android:id="@+id/menu"
+            style="@style/OverflowButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="13dp"
+            android:layout_marginRight="13dp"
+            android:layout_toLeftOf="@id/menu"
+            android:layout_toStartOf="@id/menu"
+            android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text"
-            style="@style/TextAppearance.Primary.Normal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="3" />
+                android:id="@+id/text"
+                style="@style/TextAppearance.Primary.Normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3"/>
 
         <View
-            android:layout_width="wrap_content"
-            android:layout_height="4dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="4dp"/>
 
         <TextView
-            android:id="@+id/text2"
-            style="@style/TextAppearance.Secondary.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Secondary.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

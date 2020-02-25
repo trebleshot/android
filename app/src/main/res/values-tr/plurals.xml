@@ -19,9 +19,9 @@
 
 <resources>
     <plurals name="ques_deleteFile">
-	<item quantity="one">Bu dosyayı silmek istiyor musunuz?</item>
-	<item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
-</plurals>
+        <item quantity="one">Bu dosyayı silmek istiyor musunuz?</item>
+        <item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
+    </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
         <item quantity="one">%d dosya alındı</item>
         <item quantity="other">%d dosya alındı</item>
@@ -31,9 +31,9 @@
         <item quantity="other">%d dosya seçildi</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">Bekleyen bu aktarım kaldırılacak</item>
-	<item quantity="other">%d bekleyen aktarım kaldırılacak</item>
-</plurals>
+        <item quantity="one">Bekleyen bu aktarım kaldırılacak</item>
+        <item quantity="other">%d bekleyen aktarım kaldırılacak</item>
+    </plurals>
     <plurals name="text_availableConnections">
         <item quantity="one">%d bağlantı</item>
         <item quantity="other">%d bağlantı</item>
@@ -55,15 +55,15 @@
         <item quantity="other">%d dakika önce</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-	<item quantity="one">%d dosya silindi</item>
-	<item quantity="other">%d dosya silindi</item>
-</plurals>
-<plurals name="text_gridRow">
-	<item quantity="one">Tek sütun</item>
-	<item quantity="other">%d sütun</item>
-</plurals>
+        <item quantity="one">%d dosya silindi</item>
+        <item quantity="other">%d dosya silindi</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Tek sütun</item>
+        <item quantity="other">%d sütun</item>
+    </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">Tekli paylaşım</item>
-	<item quantity="other">%d cihazla paylaşım</item>
-</plurals>
+        <item quantity="one">Tekli paylaşım</item>
+        <item quantity="other">%d cihazla paylaşım</item>
+    </plurals>
 </resources>

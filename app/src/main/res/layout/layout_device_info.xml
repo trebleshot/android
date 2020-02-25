@@ -17,92 +17,92 @@
   -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="24dp"
-        android:paddingTop="30dp"
-        android:minWidth="300dp"
-        android:paddingRight="24dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingTop="30dp"
+            android:minWidth="300dp"
+            android:paddingRight="24dp">
 
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="@dimen/icon_size_list_giant"
-            android:layout_height="@dimen/icon_size_list_giant"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="15dp" />
+                android:id="@+id/image"
+                android:layout_width="@dimen/icon_size_list_giant"
+                android:layout_height="@dimen/icon_size_list_giant"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="15dp"/>
 
         <TextView
-            android:id="@+id/text1"
-            style="@style/TextAppearance.Primary.Big.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginBottom="15dp"
-            android:text="@string/text_unknown" />
+                android:id="@+id/text1"
+                style="@style/TextAppearance.Primary.Big.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/text_unknown"/>
 
         <TextView
-            android:id="@+id/notSupportedText"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:maxLines="5"
-            android:text="@string/text_versionNotSupported"
-            android:visibility="gone" />
+                android:id="@+id/notSupportedText"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:maxLines="5"
+                android:text="@string/text_versionNotSupported"
+                android:visibility="gone"/>
 
         <TextView
-            style="@style/TextAppearance.Primary.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_deviceModelInfo" />
+                style="@style/TextAppearance.Primary.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_deviceModelInfo"/>
 
         <TextView
-            android:id="@+id/modelText"
-            style="@style/TextAppearance.Secondary.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                android:id="@+id/modelText"
+                style="@style/TextAppearance.Secondary.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="15dp" />
+                android:layout_width="match_parent"
+                android:layout_height="15dp"/>
 
         <TextView
-            style="@style/TextAppearance.Primary.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_version" />
+                style="@style/TextAppearance.Primary.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_version"/>
 
         <TextView
-            android:id="@+id/versionText"
-            style="@style/TextAppearance.Secondary.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                android:id="@+id/versionText"
+                style="@style/TextAppearance.Secondary.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/accessSwitch"
-            style="@style/TextAppearance.Primary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:text="@string/text_allowToConnect" />
+                android:id="@+id/accessSwitch"
+                style="@style/TextAppearance.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="@string/text_allowToConnect"/>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/trustSwitch"
-            style="@style/TextAppearance.Primary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:text="@string/butn_trustDevice" />
+                android:id="@+id/trustSwitch"
+                style="@style/TextAppearance.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="@string/butn_trustDevice"/>
 
     </LinearLayout>
 </ScrollView>

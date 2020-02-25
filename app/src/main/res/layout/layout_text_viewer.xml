@@ -18,21 +18,21 @@
   -->
 
 <ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/layout_text_viewer_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp"
-            style="@style/TextAppearance.Primary"/>
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/layout_text_viewer_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="24dp"
+                style="@style/TextAppearance.Primary"/>
 
     </LinearLayout>
 </ScrollView>

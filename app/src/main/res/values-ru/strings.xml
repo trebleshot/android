@@ -119,7 +119,9 @@
     <string name="text_noNetworkAvailable">Сеть не доступна</string>
     <string name="mesg_secureExit">Нажмите еще раз, чтобы выйти</string>
     <string name="mesg_folderCreateError">Папка не может быть создана</string>
-    <string name="text_requestPermissionStorageSummary">Это разрешение позволит TrebleShot читать и записывать файлы на хранилище устройства для принятия и отправки файлов.</string>
+    <string name="text_requestPermissionStorageSummary">Это разрешение позволит TrebleShot читать и записывать файлы на
+        хранилище устройства для принятия и отправки файлов.
+    </string>
     <string name="butn_newFile">Новый файл</string>
     <string name="mesg_currentPathUnavailable">Эта папка не может быть использована</string>
     <string name="text_storage">Хранилище</string>
@@ -180,14 +182,19 @@
     <string name="butn_connect">Соединиться</string>
     <string name="butn_disconnect">Разъединиться</string>
     <string name="mesg_connectingToSelfHotspot">Присоединение к точке доступа TrebleShot</string>
-    <string name="mesg_warningHotspotMobileActive">Присоединенные устройства могут использовать вашу передачу мобильных данных. Вы можете отключить ее.</string>
+    <string name="mesg_warningHotspotMobileActive">Присоединенные устройства могут использовать вашу передачу мобильных
+        данных. Вы можете отключить ее.
+    </string>
     <string name="mesg_suggestSelfHotspot">Вы можете включить Wi-Fi, чтобы найти точку доступа TrebleShot</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Разрешить TrebleShot искать и создавать точки доступа</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Разрешить TrebleShot искать и создавать точки доступа
+    </string>
     <string name="mesg_stoppingSelfHotspot">Остановить точку доступа TrebleShot</string>
     <string name="mesg_startingSelfHotspot">Запустить точку доступа TrebleShot</string>
     <string name="butn_check">Отметить</string>
     <string name="butn_uncheck">Снять флажок</string>
-    <string name="mesg_versionNotSupported">Пожалуйста, обновитесь до поддерживаемой версии, затем повторите сканирование устройств.</string>
+    <string name="mesg_versionNotSupported">Пожалуйста, обновитесь до поддерживаемой версии, затем повторите
+        сканирование устройств.
+    </string>
     <string name="mesg_ongoingUpdateDownload">Скачивание новой версии</string>
     <string name="butn_gotIt">Хорошо</string>
     <string name="mesg_helpFolderSelection">Чтобы выбрать папку, нажмите на ее иконку</string>
@@ -215,7 +222,9 @@
     <string name="text_listEmptyMusic">Нет мелодий</string>
     <string name="text_internalStorage">Внутреннее хранилище</string>
     <string name="text_hotspotStartsTrustZone">Точка доступа также включает TrustZone</string>
-    <string name="text_qrCodeAvailableHelp">Сканируйте этот код, чтобы обмениваться файлами и соединяться с устройствами</string>
+    <string name="text_qrCodeAvailableHelp">Сканируйте этот код, чтобы обмениваться файлами и соединяться с
+        устройствами
+    </string>
     <string name="butn_qrScanToSend">Сканируйте QR-код, чтобы отправить</string>
     <string name="text_translateTrebleshot">Помогите нам перевести</string>
     <string name="text_contributors">Сделали возможным</string>
@@ -226,7 +235,9 @@
     <string name="butn_skip">Пропустить</string>
     <string name="mesg_scanningSelfHotspot">Поиск точки доступа TrebleShot</string>
     <string name="butn_enable">Активировать</string>
-    <string name="mesg_locationDisabledSelfHotspot">Включите службу местоположения для просмотра результатов сканирования и создания точки доступа</string>
+    <string name="mesg_locationDisabledSelfHotspot">Включите службу местоположения для просмотра результатов
+        сканирования и создания точки доступа
+    </string>
     <string name="ques_why">Почему\?</string>
     <string name="text_longAgo">Давно</string>
     <string name="butn_block">Блокировать</string>
@@ -251,9 +262,13 @@
     <string name="text_chooserTargetService">Выбор устройства</string>
     <string name="text_transactionViewer">Просмотреть транзакцию</string>
     <string name="butn_selectThis">Выбрать</string>
-    <string name="text_checkOldFiles">Вы можете переместить связанные файлы в эту папку, в том числе частично загруженные, что может занять некоторое время</string>
+    <string name="text_checkOldFiles">Вы можете переместить связанные файлы в эту папку, в том числе частично
+        загруженные, что может занять некоторое время
+    </string>
     <string name="text_preparingFiles">Подготовка файлов</string>
-    <string name="text_automaticNetworkConnectionFailed">Подключение не удалось. Адрес устройства мог измениться. Попробуйте переподключиться к сети, пока TrebleShot открыт.</string>
+    <string name="text_automaticNetworkConnectionFailed">Подключение не удалось. Адрес устройства мог измениться.
+        Попробуйте переподключиться к сети, пока TrebleShot открыт.
+    </string>
     <string name="butn_ask">Запросить</string>
     <string name="text_permissionRequest">Запрос разрешений</string>
     <string name="text_mediaDirectory">Медиа</string>
@@ -263,7 +278,9 @@
     <string name="butn_typeNewEntry">Создать новую запись</string>
     <string name="mesg_clipboardUpdateNotice">Проверьте текст или нажмите снова для выхода</string>
     <string name="mesg_textSaveNotice">Сохраните текст или нажмите снова для выхода</string>
-    <string name="text_trebleshotHotspotDescription">Вы можете отправить файлы напрямую через открытую сеть, созданную устройством с TrebleShot поблизости.</string>
+    <string name="text_trebleshotHotspotDescription">Вы можете отправить файлы напрямую через открытую сеть, созданную
+        устройством с TrebleShot поблизости.
+    </string>
     <string name="butn_locationSettings">Местоположение</string>
     <string name="mesg_scanningDevicesSelfHotspot">Поиск устройств в сети TrebleShot</string>
     <string name="text_findDevicesHint">Нет похожих устройств</string>
@@ -271,8 +288,9 @@
     <string name="mesg_organizingFiles">Готовлю файлы</string>
     <string name="text_communicationService">Сервис отправки</string>
     <string name="text_notAllowedHelp">Проверьте, разрешение на %1$s
-\n
-\nУстройства &gt; %2$s &gt; Разрешить подключение &gt; (установите флажок)</string>
+        \n
+        \nУстройства &gt; %2$s &gt; Разрешить подключение &gt; (установите флажок)
+    </string>
     <string name="mesg_pathSaved">Папка сохранена</string>
     <string name="text_savingDetails">" Сохранение дополнительной информации"</string>
     <string name="text_flagPending">Ожидание</string>
@@ -281,14 +299,18 @@
     <string name="text_flagResume">Возобновить</string>
     <string name="text_unknown">Неизвестно</string>
     <string name="butn_retryReceiving">Повторить получение</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot нужен доступ с серийному номерку устройства для создания долгосрочного идентификатора, который поможет другим устройствам распознать вас</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot нужен доступ с серийному номерку устройства
+        для создания долгосрочного идентификатора, который поможет другим устройствам распознать вас
+    </string>
     <string name="text_emulatedMediaDirectory">Эмулировать (%s)</string>
     <string name="text_savePath">Сохранить в</string>
     <string name="text_transactionGroupDetails">Детали группы операции</string>
     <string name="butn_trustDevice">Установить как устройство TrustZone</string>
     <string name="text_uncheckedItemsNotice">Снимите метки с предметов, чтобы удалить их</string>
     <string name="mesg_connectionUpdated">Переключаюсь на \"%s\"</string>
-    <string name="mesg_hotspotCreatedInfo">Подключитесь к \"%s\" в \"Настройках Wi-Fi\" или отправляйте файлы через \"%s\" внутри TrebleShot</string>
+    <string name="mesg_hotspotCreatedInfo">Подключитесь к \"%s\" в \"Настройках Wi-Fi\" или отправляйте файлы через
+        \"%s\" внутри TrebleShot
+    </string>
     <string name="butn_previewSelections">Предварительный выбор</string>
     <string name="mesg_deviceConnectionError">Ошибка соединения с \"%s\" через \"%s\"</string>
     <string name="mesg_retryReceivingNotice">TrebleShot будет повторять получение прерванных операций</string>
@@ -298,7 +320,9 @@
     <string name="butn_saveAnyway">Сохранить в любом случае</string>
     <string name="text_receivedSize">Полученный размер</string>
     <string name="mesg_notValidTransfer">Передача окончена</string>
-    <string name="text_saveAnywaySummary">Отправитель не знает, где находится файл, но вы все равно можете сохранить его</string>
+    <string name="text_saveAnywaySummary">Отправитель не знает, где находится файл, но вы все равно можете сохранить
+        его
+    </string>
     <string name="mesg_fileSaved">Файл сохранён</string>
     <string name="text_resetPreferencesToDefaultSummary">Это будет применять начальные настройки</string>
     <string name="text_workerService">Рабочий сервис</string>
@@ -322,7 +346,8 @@
     <string name="butn_ejectDirectory">Отсоединить папку</string>
     <string name="text_movedCacheFiles">Файлы кэша перемещены</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone также будет запущен</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Настройте точку доступа, чтобы другие могли подключаться к вам</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Настройте точку доступа, чтобы другие могли подключаться к вам
+    </string>
     <string name="text_scanQRCodeHelp">Сканируйте QR-код на экране устройства отправителя.</string>
     <string name="butn_qrToggle">Переключить видимость QR-кода</string>
     <string name="text_notificationSettingsSummary">Открыть настройки уведомлений</string>
@@ -372,14 +397,19 @@
     <string name="butn_open">Открыть</string>
     <string name="butn_pause">Пауза</string>
     <string name="butn_retry">Повторить</string>
-    <string name="mesg_noPendingTransferObjectExists">Не осталось ожидающегося получения. Чтобы повторить, используйте параметр «Повторить получение».</string>
-    <string name="mesg_notSavingToChosenLocation">Ваша нужная папка недоступна. Файлы будут сохранены в папку по умолчанию.
-\n
-\n%s</string>
+    <string name="mesg_noPendingTransferObjectExists">Не осталось ожидающегося получения. Чтобы повторить, используйте
+        параметр «Повторить получение».
+    </string>
+    <string name="mesg_notSavingToChosenLocation">Ваша нужная папка недоступна. Файлы будут сохранены в папку по
+        умолчанию.
+        \n
+        \n%s
+    </string>
     <string name="butn_changelog">Информация об изменениях</string>
     <string name="text_changelog">Информация об изменениях</string>
     <string name="mesg_versionUpdatedChangelog">Вы обновили TrebleShot, хотите посмотреть, что нового\?</string>
-    <string name="mesg_versionUpdatedChangelogRejected">Вы всегда можете найти «Журнал изменений» в разделе «О нас».</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Вы всегда можете найти «Журнал изменений» в разделе «О нас».
+    </string>
     <string name="mesg_noInternetConnection">Это требует подключения к интернету</string>
     <string name="text_applyDarkTheme">Тёмная тема</string>
     <string name="text_applyDarkThemeSummary">"Использовать тёмную тему "</string>
@@ -395,7 +425,9 @@
     <string name="mesg_sent">Отправлено</string>
     <string name="text_sendText">Послать сообщение</string>
     <string name="butn_start">Начать</string>
-    <string name="text_addDeviceHelp">Добавляя устройства, вы делитесь одинаковыми файлами с несколькими устройствами. Вы вернетесь к переводу, когда это будет сделано.</string>
+    <string name="text_addDeviceHelp">Добавляя устройства, вы делитесь одинаковыми файлами с несколькими устройствами.
+        Вы вернетесь к переводу, когда это будет сделано.
+    </string>
     <string name="text_downloads">Загрузки</string>
     <string name="text_documents">Документы</string>
     <string name="text_shortcuts">Ярлыки</string>
@@ -403,14 +435,22 @@
     <string name="butn_changeSavePath">Изменить путь сохранения</string>
     <string name="mesg_fileReceiveFilesLeftError">Не удалось получить некоторые файлы</string>
     <string name="text_send">Отправить</string>
-    <string name="text_connectionHelp">Выберите опцию для подключения к другому устройству. Например, если на другом устройстве отображается QR-код, используйте параметр \"Сканировать QR-код\".</string>
+    <string name="text_connectionHelp">Выберите опцию для подключения к другому устройству. Например, если на другом
+        устройстве отображается QR-код, используйте параметр \"Сканировать QR-код\".
+    </string>
     <string name="ques_needHelp">Нужна помощь\?</string>
     <string name="text_connectionWizard">Мастер подключения</string>
-    <string name="ques_connectionWizardIsOtherDeviceReady">Вы только что отправляли файлы на другое устройство\?</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Вы только что отправляли файлы на другое устройство\?
+    </string>
     <string name="ques_connectionWizardIsThereQRCode">Вы видите QR-код (штрих-код) на своем экране\?</string>
-    <string name="ques_connectionWizardUseHotspot">Хотите ли вы, чтобы другое устройство подключилось к этому устройству через точку доступа (модем)\? Если вы не знаете, что такое точка доступа, нажмите Да.</string>
-    <string name="ques_connectionWizardUseNetwork">Вы хотите использовать свой роутер или любую сеть Wi-Fi, к которой вы и ваш друг подключены\?</string>
-    <string name="ques_connectionWizardUseKnownDevices">Хотите получить доступ к ранее подключенным устройствам\?</string>
+    <string name="ques_connectionWizardUseHotspot">Хотите ли вы, чтобы другое устройство подключилось к этому устройству
+        через точку доступа (модем)\? Если вы не знаете, что такое точка доступа, нажмите Да.
+    </string>
+    <string name="ques_connectionWizardUseNetwork">Вы хотите использовать свой роутер или любую сеть Wi-Fi, к которой вы
+        и ваш друг подключены\?
+    </string>
+    <string name="ques_connectionWizardUseKnownDevices">Хотите получить доступ к ранее подключенным устройствам\?
+    </string>
     <string name="butn_yes">Да</string>
     <string name="butn_no">Нет</string>
     <string name="text_loadThumbnails">Загрузить миниатюры</string>
@@ -419,14 +459,18 @@
     <string name="text_search">Поиск</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi не включён.</string>
     <string name="mesg_turningWiFiOn">Включение Wi-Fi</string>
-    <string name="mesg_locationPermissionRequiredAny">Сначала включите службу определения местоположения, чтобы продолжить</string>
+    <string name="mesg_locationPermissionRequiredAny">Сначала включите службу определения местоположения, чтобы
+        продолжить
+    </string>
     <string name="mesg_connectToWiFiNetworkHelp">Подключитесь к сети Wi-Fi, чтобы продолжить</string>
     <string name="mesg_removing">Удаление... Может занять много времени</string>
     <string name="butn_help">Помощь!</string>
     <string name="butn_choose">Выберите</string>
     <string name="butn_fixConnection">Исправьте соединение</string>
     <string name="butn_never">Никогда</string>
-    <string name="text_hotspotStartedExternallyNotice">Точка доступа была запущена извне. Чтобы использовать QR-код, вы должны запустить его здесь.</string>
+    <string name="text_hotspotStartedExternallyNotice">Точка доступа была запущена извне. Чтобы использовать QR-код, вы
+        должны запустить его здесь.
+    </string>
     <string name="text_shortcut">Ярлык</string>
     <string name="butn_addShortcut">Добавить ярлык</string>
     <string name="butn_removeShortcut">Удалить ярлык</string>
@@ -440,21 +484,28 @@
     <string name="mesg_waiting">Ожидания</string>
     <string name="text_amoledOptimizedBlackTheme">Оптимизировать для AMOLED-экранов</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Используйте более темные цвета</string>
-    <string name="mesg_errorNotTrusted">Это устройство должно быть установлено как устройство TrustZone на приемном устройстве для выполнения этой операции.</string>
+    <string name="mesg_errorNotTrusted">Это устройство должно быть установлено как устройство TrustZone на приемном
+        устройстве для выполнения этой операции.
+    </string>
     <string name="butn_enterIpAddress">Введите IP-адрес</string>
     <string name="butn_webShare">Поделиться через браузер</string>
-    <string name="text_webShareNoContentNotice">Используйте опцию «Поделиться в браузере», чтобы увидеть здесь передачу!</string>
+    <string name="text_webShareNoContentNotice">Используйте опцию «Поделиться в браузере», чтобы увидеть здесь
+        передачу!
+    </string>
     <string name="butn_shareOnBrowser">Поделиться в браузере</string>
     <string name="butn_hideOnBrowser">Скрыть в браузере</string>
     <string name="text_transferSharedOnBrowser">Поделиться в браузере</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">или же</string>
     <string name="text_visitWebShareAddress">Перейдите по этой ссылке в вашем браузере</string>
-    <string name="text_webShareInfo">Включите общий доступ к Интернету для отправки по отдельности и перейдите по любой веб-ссылке, указаннойниже, на устройстве, подключенном к той же сети.</string>
+    <string name="text_webShareInfo">Включите общий доступ к Интернету для отправки по отдельности и перейдите по любой
+        веб-ссылке, указаннойниже, на устройстве, подключенном к той же сети.
+    </string>
     <string name="text_dowloadTrebleshotAndroid">Скачать TrebleShot для Android</string>
     <string name="text_listEmptyConnection">Сети, которые вы подключаете, появляются здесь</string>
     <string name="mesg_errorNotAnIpAddress">Не тот IP-адрес
-\n(например, 192.168.1.2)</string>
+        \n(например, 192.168.1.2)
+    </string>
     <string name="ques_shareAsApkOrLink">Поделиться как APK или ссылка\?</string>
     <string name="butn_asApk">Как APK</string>
     <string name="butn_asLink">Как ссылка</string>

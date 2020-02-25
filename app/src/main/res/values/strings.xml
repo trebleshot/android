@@ -24,7 +24,8 @@
     mesg_ : text used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
     text_ : any kind of text that doesn't belong to the prefixes above
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
---><resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="text_appName" translatable="false">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
@@ -148,18 +149,22 @@
     <string name="text_transactionViewer">View transaction</string>
     <string name="text_error">Error</string>
     <string name="ques_why">Why?</string>
-    <string name="text_notAllowedHelp">Check if you are allowed on %1$s \n\nDevices &gt; %2$s &gt; Allow to connect &gt; (check it)</string>
+    <string name="text_notAllowedHelp">Check if you are allowed on %1$s \n\nDevices &gt; %2$s &gt; Allow to connect &gt;
+        (check it)
+    </string>
     <string name="butn_saveTo">Save to</string>
     <string name="mesg_secureExit">Press again to exit</string>
     <string name="butn_create">Create</string>
     <string name="text_createFolder">Create folder</string>
     <string name="mesg_fileAlreadyExists">File already exists</string>
     <string name="mesg_folderCreateError">Folder could not be created</string>
-    <string name="text_requestPermissionStorageSummary">This permission allows TrebleShot to read and write to your device\'s storage for receiving and sharing files.</string>
+    <string name="text_requestPermissionStorageSummary">This permission allows TrebleShot to read and write to your
+        device\'s storage for receiving and sharing files.
+    </string>
     <string name="butn_settings">Settings</string>
     <string name="butn_selectThis">Select this</string>
     <string name="butn_newFile">New file</string>
-    <string name="mesg_currentPathUnavailable">This folder cannot be used </string>
+    <string name="mesg_currentPathUnavailable">This folder cannot be used</string>
     <string name="text_defaultFolder">Default Folder</string>
     <string name="text_storage">Storage</string>
     <string name="text_shareFiles">Share files</string>
@@ -178,7 +183,9 @@
     <string name="text_chooseFile">Choose file</string>
     <string name="mesg_pathSameError">You can not select the old folder</string>
     <string name="ques_checkOldFiles">Move files?</string>
-    <string name="text_checkOldFiles">You can move associated files completed and partly completed to this folder and this may take some time depending on the sizes</string>
+    <string name="text_checkOldFiles">You can move associated files completed and partly completed to this folder and
+        this may take some time depending on the sizes
+    </string>
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>
     <string name="text_preparingFiles">Preparing files</string>
@@ -197,14 +204,18 @@
     <string name="text_interfaceUnknown">Unknown connection</string>
     <string name="text_shareTextShort">Text</string>
     <string name="butn_connectionList">Connections</string>
-    <string name="text_automaticNetworkConnectionFailed">Could not connect the device. Its address may have changed. Try reconnecting to the network while TrebleShot is open.</string>
+    <string name="text_automaticNetworkConnectionFailed">Could not connect the device. Its address may have changed. Try
+        reconnecting to the network while TrebleShot is open.
+    </string>
     <string name="text_automaticNetworkConnectionOngoing">Choosing the best connection</string>
     <string name="butn_retryReceiving">Retry receiving</string>
     <string name="butn_ask">Ask</string>
     <string name="text_permissionRequest">Permission request</string>
     <string name="text_requestPermissionStorage">Storage permission</string>
     <string name="text_requestPermissionReadPhoneState">Permission to read phone state</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot needs to access your device\'s serial number to create a long-term identity number, helping other devices recognize you</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot needs to access your device\'s serial number
+        to create a long-term identity number, helping other devices recognize you
+    </string>
     <string name="text_mediaDirectory">Media directory</string>
     <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
     <string name="mesg_notEnoughSpace">Not enough space</string>
@@ -231,16 +242,21 @@
     <string name="text_trebleshotHotspot">TrebleShot hotspot</string>
     <string name="butn_connect">Connect</string>
     <string name="butn_disconnect">Disconnect</string>
-    <string name="text_trebleshotHotspotDescription">You can send files directly via this open network created by a nearby TrebleShot device.</string>
+    <string name="text_trebleshotHotspotDescription">You can send files directly via this open network created by a
+        nearby TrebleShot device.
+    </string>
     <string name="mesg_connectingToSelfHotspot">Connecting to the TrebleShot hotspot</string>
-    <string name="mesg_warningHotspotMobileActive">Connected devices may use your cellular data. You may want to turn it off.</string>
+    <string name="mesg_warningHotspotMobileActive">Connected devices may use your cellular data. You may want to turn it
+        off.
+    </string>
     <string name="butn_skip">Skip</string>
     <string name="mesg_scanningSelfHotspot">Searching for TrebleShot hotspot</string>
     <string name="mesg_suggestSelfHotspot">You can enable Wi-Fi to search for a TrebleShot hotspot</string>
     <string name="butn_enable">Enable</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Allow TrebleShot to search and create hotspot</string>
     <string name="butn_locationSettings">Location</string>
-    <string name="mesg_locationDisabledSelfHotspot">Enable location service to see scan results and create hotspot</string>
+    <string name="mesg_locationDisabledSelfHotspot">Enable location service to see scan results and create hotspot
+    </string>
     <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot hotspot</string>
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
@@ -255,7 +271,9 @@
     <string name="mesg_ongoingUpdateDownload">Downloading the new version</string>
     <string name="butn_gotIt">Got it</string>
     <string name="mesg_helpFolderSelection">To select a folder, tap its icon</string>
-    <string name="mesg_hotspotCreatedInfo">Connect to \"%s\" in \"Wi-Fi settings\" or send files via \"%s\" inside TrebleShot</string>
+    <string name="mesg_hotspotCreatedInfo">Connect to \"%s\" in \"Wi-Fi settings\" or send files via \"%s\" inside
+        TrebleShot
+    </string>
     <string name="butn_selectAll">Select all</string>
     <string name="butn_selectNone">Select none</string>
     <string name="butn_previewSelections">Preview selections</string>
@@ -367,20 +385,26 @@
     <string name="butn_open">Open</string>
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>
-    <string name="mesg_noPendingTransferObjectExists">No pending transfer left. To resume interrupted files, use \'Retry receiving\' option.</string>
-    <string name="mesg_notSavingToChosenLocation">Your desired folder is not accessible. Files will be saved to the default folder.
-\n
-\n%s</string>
+    <string name="mesg_noPendingTransferObjectExists">No pending transfer left. To resume interrupted files, use \'Retry
+        receiving\' option.
+    </string>
+    <string name="mesg_notSavingToChosenLocation">Your desired folder is not accessible. Files will be saved to the
+        default folder.
+        \n
+        \n%s
+    </string>
     <string name="butn_changelog">Changelog</string>
     <string name="text_changelog">Changelog</string>
-    <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot, would you like to see what\'s new\?</string>
-    <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section</string>
+    <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot, would you like to see what\'s new\?
+    </string>
+    <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section
+    </string>
     <string name="mesg_noInternetConnection">This requires internet connection</string>
     <string name="text_applyDarkTheme">Dark mode</string>
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
     <string name="butn_allow">Allow</string>
     <string name="butn_telegram_channel">Telegram channel</string>
-    <string name="mode_middleDot" translatable="false"> · </string>
+    <string name="mode_middleDot" translatable="false">·</string>
     <string name="text_listEmptyTransfer">All transfers appear here</string>
     <string name="text_transfers">Transfers</string>
     <string name="butn_connectionDetails">Connections details</string>
@@ -395,7 +419,9 @@
     <string name="mesg_sent">Sent</string>
     <string name="text_sendText">Send text</string>
     <string name="butn_start">Start</string>
-    <string name="text_addDeviceHelp">By adding devices, you share the same files with more devices. You will be taken back to the transfer when it is done.</string>
+    <string name="text_addDeviceHelp">By adding devices, you share the same files with more devices. You will be taken
+        back to the transfer when it is done.
+    </string>
     <string name="text_downloads">Downloads</string>
     <string name="text_documents">Documents</string>
     <string name="text_shortcuts">Shortcuts</string>
@@ -404,14 +430,21 @@
     <string name="mesg_fileReceiveFilesLeftError">Failed to receive some files</string>
     <string name="text_send">Send</string>
     <string name="butn_send" translatable="false">@string/text_send</string>
-    <string name="text_connectionHelp">Choose an option to connect to the other device. For instance, if the other device is showing a QR code, use Scan QR code option.</string>
+    <string name="text_connectionHelp">Choose an option to connect to the other device. For instance, if the other
+        device is showing a QR code, use Scan QR code option.
+    </string>
     <string name="ques_needHelp">Need a helping hand?</string>
     <string name="text_connectionWizard">Connection wizard</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Have you just set things up on the other device?</string>
     <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (barcode) on its screen?</string>
-    <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
-    <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your friend connected to?</string>
-    <string name="ques_connectionWizardUseKnownDevices">Do you want to access your previously contacted devices?</string>
+    <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot
+        (tethering)? If you don\'t know what hotspot is, tap to Yes.
+    </string>
+    <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your
+        friend connected to?
+    </string>
+    <string name="ques_connectionWizardUseKnownDevices">Do you want to access your previously contacted devices?
+    </string>
     <string name="butn_yes">Yes</string>
     <string name="butn_no">No</string>
     <string name="text_loadThumbnails">Load thumbnails</string>
@@ -427,7 +460,9 @@
     <string name="text_help" translatable="false">@string/butn_help</string>
     <string name="butn_choose">Choose</string>
     <string name="butn_never">Never</string>
-    <string name="text_hotspotStartedExternallyNotice">The hotspot was started externally. To use QR code, you should start it here. </string>
+    <string name="text_hotspotStartedExternallyNotice">The hotspot was started externally. To use QR code, you should
+        start it here.
+    </string>
     <string name="text_shortcut">Shortcut</string>
     <string name="butn_addShortcut">Add shortcut</string>
     <string name="butn_removeShortcut">Remove shortcut</string>
@@ -449,7 +484,8 @@
     <string name="mesg_waiting">Waiting</string>
     <string name="text_amoledOptimizedBlackTheme">Optimize for AMOLED Screens</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Use darker colors</string>
-    <string name="mesg_errorNotTrusted">This device is not trusted on the other device. Set as trusted to use this.</string>
+    <string name="mesg_errorNotTrusted">This device is not trusted on the other device. Set as trusted to use this.
+    </string>
     <string name="butn_enterIpAddress">Enter IP Address</string>
     <string name="text_enterIpAddress" translatable="false">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Web Share</string>
@@ -462,11 +498,13 @@
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
     <string name="text_webShareInfo">Enable web-sharing for transfers individually and visit any web-link shown below
-        with a device that is connected to the same network.</string>
+        with a device that is connected to the same network.
+    </string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
     <string name="mesg_errorNotAnIpAddress">Not an IP Address
-\n(like 192.168.1.2)</string>
+        \n(like 192.168.1.2)
+    </string>
     <string name="ques_shareAsApkOrLink">Share as APK or link?</string>
     <string name="butn_asApk">As APK</string>
     <string name="butn_asLink">As a link</string>

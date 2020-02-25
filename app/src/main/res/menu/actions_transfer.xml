@@ -18,49 +18,49 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/actions_transfer_toggle"
-        android:title="@string/butn_receive"
-        android:visible="false"
-        app:showAsAction="always" />
+            android:id="@+id/actions_transfer_toggle"
+            android:title="@string/butn_receive"
+            android:visible="false"
+            app:showAsAction="always"/>
 
     <item
-        android:id="@+id/actions_transfer_sender_add_device"
-        android:title="@string/butn_addDevices"
-        android:visible="false" />
+            android:id="@+id/actions_transfer_sender_add_device"
+            android:title="@string/butn_addDevices"
+            android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transfer_test_connection"
-        android:title="@string/butn_connectionTest"
-        android:visible="false" />
+            android:id="@+id/actions_transfer_test_connection"
+            android:title="@string/butn_connectionTest"
+            android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transfer_receiver_show_files"
-        android:title="@string/butn_showFiles"
-        android:visible="false" />
+            android:id="@+id/actions_transfer_receiver_show_files"
+            android:title="@string/butn_showFiles"
+            android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transfer_receiver_retry_receiving"
-        android:title="@string/butn_retryReceiving"
-        android:visible="false" />
+            android:id="@+id/actions_transfer_receiver_retry_receiving"
+            android:title="@string/butn_retryReceiving"
+            android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transfer_toggle_browser_share"
-        android:title="@string/butn_shareOnBrowser"
-        android:visible="false" />
+            android:id="@+id/actions_transfer_toggle_browser_share"
+            android:title="@string/butn_shareOnBrowser"
+            android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transfer_remove"
-        android:title="@string/butn_remove"
-        android:visible="true" />
+            android:id="@+id/actions_transfer_remove"
+            android:title="@string/butn_remove"
+            android:visible="true"/>
 
     <item
-        android:id="@+id/actions_transfer_limit_to"
-        android:orderInCategory="110"
-        android:title="@string/text_limitTo"
-        android:visible="false">
-        <menu />
+            android:id="@+id/actions_transfer_limit_to"
+            android:orderInCategory="110"
+            android:title="@string/text_limitTo"
+            android:visible="false">
+        <menu/>
     </item>
 </menu>

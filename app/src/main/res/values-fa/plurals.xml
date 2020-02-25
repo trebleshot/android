@@ -40,7 +40,7 @@
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="one">دریافت این فایل؟</item>
-        <item quantity="other">"دریافت فایل های  %d ؟"</item>
+        <item quantity="other">"دریافت فایل های %d ؟"</item>
     </plurals>
     <plurals name="text_files">
         <item quantity="one">%d فایل</item>

@@ -23,29 +23,29 @@
         <item quantity="other">Do you want to delete %d files?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="one">%d file has been received</item>
-	<item quantity="other">%d files have been received</item>
-</plurals>
+        <item quantity="one">%d file has been received</item>
+        <item quantity="other">%d files have been received</item>
+    </plurals>
     <plurals name="text_itemSelected">
-	<item quantity="one">%d file is selected</item>
-	<item quantity="other">%d files are selected</item>
-</plurals>
+        <item quantity="one">%d file is selected</item>
+        <item quantity="other">%d files are selected</item>
+    </plurals>
     <plurals name="text_removeQueueSummary">
         <item quantity="one">This pending transfer will be removed</item>
         <item quantity="other">%d pending transfers will be removed</item>
     </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">%d connection</item>
-	<item quantity="other">%d connections</item>
-</plurals>
+        <item quantity="one">%d connection</item>
+        <item quantity="other">%d connections</item>
+    </plurals>
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="one">Receive this file?</item>
         <item quantity="other">Receive %d files?</item>
     </plurals>
     <plurals name="text_files">
-	<item quantity="one">%d file</item>
-	<item quantity="other">%d files</item>
-</plurals>
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
     <plurals name="text_secondsAgo">
         <item quantity="one">A second ago</item>
         <item quantity="other">%d seconds ago</item>
@@ -55,9 +55,9 @@
         <item quantity="other">%d minutes ago</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-	<item quantity="one">%d file has been deleted</item>
-	<item quantity="other">%d files have been deleted</item>
-</plurals>
+        <item quantity="one">%d file has been deleted</item>
+        <item quantity="other">%d files have been deleted</item>
+    </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">Single row</item>
         <item quantity="other">%d rows</item>

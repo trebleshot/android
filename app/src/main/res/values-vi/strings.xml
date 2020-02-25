@@ -20,7 +20,8 @@
 <resources>
     <string name="text_notificationChannelLow">Thông báo thứ cấp</string>
     <string name="butn_mountDirectory">Mount thư mục</string>
-    <string name="mesg_versionUpdatedChangelogRejected">Bạn có thể tìm mục \'Có gì mới\' trong khu \'Thông tin\'</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Bạn có thể tìm mục \'Có gì mới\' trong khu \'Thông tin\'
+    </string>
     <string name="text_navigationDrawerClose">Đóng ngăn điều hướng</string>
     <string name="text_notificationChannelHigh">Thông báo quan trọng</string>
     <string name="mesg_scanningDevices">Đang tìm các thiết bị lân cận</string>
@@ -29,10 +30,15 @@
     <string name="text_emulatedMediaDirectory">Giả lập (%s)</string>
     <string name="text_sortByName">Tên</string>
     <string name="text_fileStatus">Trạng thái file</string>
-    <string name="mesg_noPendingTransferObjectExists">Chuyển file hoàn tất. Để chuyển tiếp file bị gián đoan, chọn \"Tiếp tục nhận\".</string>
-    <string name="mesg_hotspotCreatedInfo">Kết nối với \"%s\" trong \"Tuỳ chọn Wi-fi\" hoặc gửi file qua \"%s\" trong TrebleShot</string>
+    <string name="mesg_noPendingTransferObjectExists">Chuyển file hoàn tất. Để chuyển tiếp file bị gián đoan, chọn
+        \"Tiếp tục nhận\".
+    </string>
+    <string name="mesg_hotspotCreatedInfo">Kết nối với \"%s\" trong \"Tuỳ chọn Wi-fi\" hoặc gửi file qua \"%s\" trong
+        TrebleShot
+    </string>
     <string name="text_chooseFolder">Chọn thư mục</string>
-    <string name="mesg_versionUpdatedChangelog">TrebleShot đã cập nhật, bạn có muốn xem những thay đổi mới không\?</string>
+    <string name="mesg_versionUpdatedChangelog">TrebleShot đã cập nhật, bạn có muốn xem những thay đổi mới không\?
+    </string>
     <string name="butn_close">Đóng</string>
     <string name="butn_singleRow">Một hàng</string>
     <string name="butn_proceed">Tiến hành</string>
@@ -40,7 +46,9 @@
     <string name="text_useVibration">Rung và hiện thông báo phía trên</string>
     <string name="butn_disconnect">Ngắt kết nối</string>
     <string name="text_advanced">Nâng cao</string>
-    <string name="text_requestPermissionStorageSummary">Quyền này cho phép TrebleShot đọc và viết vào bộ nhớ để nhận và chuyển file.</string>
+    <string name="text_requestPermissionStorageSummary">Quyền này cho phép TrebleShot đọc và viết vào bộ nhớ để nhận và
+        chuyển file.
+    </string>
     <string name="mesg_organizingFiles">Sắp xếp file</string>
     <string name="butn_scan">Scan</string>
     <string name="ques_why">Tại sao\?</string>
@@ -63,7 +71,9 @@
     <string name="text_storagePath">Nơi lưu file</string>
     <string name="text_file">File</string>
     <string name="butn_copyHere">Copy ở đây</string>
-    <string name="text_checkOldFiles">Bạn có thể di chuyển file hoàn thành và chưa hoàn thành vào thư mục này và tuỳ theo dung lượng file có thể tốn chút thời gian</string>
+    <string name="text_checkOldFiles">Bạn có thể di chuyển file hoàn thành và chưa hoàn thành vào thư mục này và tuỳ
+        theo dung lượng file có thể tốn chút thời gian
+    </string>
     <string name="text_listEmptyTransfer">Các lượt chuyển sẽ vào đây</string>
     <string name="text_default">Mặc định</string>
     <string name="butn_showFiles">Hiện file</string>
@@ -107,9 +117,12 @@
     <string name="text_fileMime">Loại file</string>
     <string name="mesg_errorHotspotPermission">TrebleShot cần quyền để tạo hotspot</string>
     <string name="text_autoStartSummary">Kích hoạt liên lạc khi phát hiện kết nối mới</string>
-    <string name="text_connectionHelp">Chọn phương thức kết nối với thiết bị chủ. Ví dụ, nếu thiết bị đó hiện ra mã QR, chọn Scan mã QR.</string>
+    <string name="text_connectionHelp">Chọn phương thức kết nối với thiết bị chủ. Ví dụ, nếu thiết bị đó hiện ra mã QR,
+        chọn Scan mã QR.
+    </string>
     <string name="text_listEmptyApp">Không có app</string>
-    <string name="ques_connectionWizardUseKnownDevices">Bạn muốn kết nối với các máy đã kết nối trước đây không\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">Bạn muốn kết nối với các máy đã kết nối trước đây không\?
+    </string>
     <string name="butn_changeConnection">Đổi kết nối</string>
     <string name="mesg_fileReceiveError">Không nhận được %s.</string>
     <string name="text_receivedSize">Dung lượng đã nhận</string>
@@ -160,7 +173,8 @@
     <string name="text_cameraPermissionRequired">Cần quyền camera</string>
     <string name="mesg_completing">Đang hoàn thành</string>
     <string name="mesg_errorNotAnIpAddress">Không phải địa chỉ IP
-\n(như 192.168.1.2)</string>
+        \n(như 192.168.1.2)
+    </string>
     <string name="butn_scanQrCode">Scan mã QR</string>
     <string name="text_qrCodeAvailableHelp">Scan mã này để chia sẻ và kết nối thiết bị</string>
     <string name="butn_stopHotspot">Tắt hotspot</string>
@@ -171,13 +185,17 @@
     <string name="butn_uncheck">Bỏ tích</string>
     <string name="text_linkTrebleshot">Chia sẻ qua TrebleShot! Tải ở đây: %s</string>
     <string name="mesg_folderCreateError">Không tạo được thư mục</string>
-    <string name="text_trebleshotHotspotDescription">Bạn có thể gửi file trưc tiếp qua mạng được mở bởi một thiết bị TrebleShot khác.</string>
+    <string name="text_trebleshotHotspotDescription">Bạn có thể gửi file trưc tiếp qua mạng được mở bởi một thiết bị
+        TrebleShot khác.
+    </string>
     <string name="text_trustZoneDeviceNotice">Tự động nhận file khi TrustZone đang bật</string>
     <string name="butn_cancelSending">Ngưng chuyển</string>
     <string name="butn_sortOrder">Thứ tự sắp xếp</string>
     <string name="text_interfaceEthernet">Ethernet</string>
     <string name="text_flagRunning">Đang chạy</string>
-    <string name="mesg_warningHotspotMobileActive">Các thiết bị đang kết nối có thể đang dùng dữ liệu của bạn. Xin hãy cân nhắc tắt dữ liệu.</string>
+    <string name="mesg_warningHotspotMobileActive">Các thiết bị đang kết nối có thể đang dùng dữ liệu của bạn. Xin hãy
+        cân nhắc tắt dữ liệu.
+    </string>
     <string name="butn_retry">Thử lại</string>
     <string name="butn_retryReceiving">Tiếp tục nhận</string>
     <string name="mesg_formatNotSupported">Định dạng không hỗ trợ</string>
@@ -190,7 +208,9 @@
     <string name="text_useSounds">Âm thanh</string>
     <string name="text_home">Nhà</string>
     <string name="butn_stop">Dừng</string>
-    <string name="ques_connectionWizardUseNetwork">Bạn muốn dùng router hay mạng Wi-fi mà máy bạn và máy kia đã cùng kết nối không\?</string>
+    <string name="ques_connectionWizardUseNetwork">Bạn muốn dùng router hay mạng Wi-fi mà máy bạn và máy kia đã cùng kết
+        nối không\?
+    </string>
     <string name="butn_groupBy">Nhóm theo</string>
     <string name="text_noNetworkAvailable">Mạng không khả dụng</string>
     <string name="butn_download">Tải</string>
@@ -215,9 +235,10 @@
     <string name="text_emptySearchResult">Không có kết quả nào cho \"%s\"</string>
     <string name="ques_shareAsApkOrLink">Chia sẻ bằng APK hay link\?</string>
     <string name="butn_settings">Tuỳ chọn</string>
-    <string name="mesg_notSavingToChosenLocation">Thư mục đã chọn không khả dụng. File sẽ được lưu vào thư mục mặc định. 
-\n 
-\n%s</string>
+    <string name="mesg_notSavingToChosenLocation">Thư mục đã chọn không khả dụng. File sẽ được lưu vào thư mục mặc định.
+        \n
+        \n%s
+    </string>
     <string name="text_receivedTextSummary">Đã nhận văn bản clipboard</string>
     <string name="mesg_openFailure">Không thể mở \"%s\"</string>
     <string name="text_internalStorage">Bộ nhớ trong</string>
@@ -317,7 +338,9 @@
     <string name="butn_appLaunch">Khởi động</string>
     <string name="ques_saveAnyway">Vẫn lưu\?</string>
     <string name="text_textStream">Văn bản</string>
-    <string name="mesg_errorNotTrusted">Thiết bị này cần được đặt làm thiết bị TrustZone trên thiết bị nhận để thực hiện thao tác này.</string>
+    <string name="mesg_errorNotTrusted">Thiết bị này cần được đặt làm thiết bị TrustZone trên thiết bị nhận để thực hiện
+        thao tác này.
+    </string>
     <string name="text_emptySymbol">-</string>
     <string name="text_photo">Ảnh</string>
     <string name="butn_hideOnBrowser">Dấu trên trình duyệt</string>
@@ -331,14 +354,18 @@
     <string name="text_loadThumbnails">Hiện hình nhỏ</string>
     <string name="text_image">Hình ảnh</string>
     <string name="mesg_scanCompleted">Scan hoàn tất</string>
-    <string name="ques_connectionWizardUseHotspot">Bạn muốn thiết bị đầu kia kết nối với thiết bị này qua hotspot (tethering) không\? Nếu bạn không biết hotspot là gì, chọn Có.</string>
+    <string name="ques_connectionWizardUseHotspot">Bạn muốn thiết bị đầu kia kết nối với thiết bị này qua hotspot
+        (tethering) không\? Nếu bạn không biết hotspot là gì, chọn Có.
+    </string>
     <string name="text_thirdPartyLibraries">Thư viện bên thứ ba</string>
     <string name="text_applyDarkTheme">Chế độ ban đêm</string>
     <string name="text_sortOrderDescending">Nhỏ trước ↓</string>
     <string name="butn_cancel">Huỷ</string>
     <string name="mesg_connectionUpdated">Đang trao đổi qua mạng \"%s\"</string>
     <string name="text_introMakeItYours">Cá nhân hoá</string>
-    <string name="text_webShareInfo">Bật chia sẻ qua mạng cho từng lượt chuyển và mở bất kỳ link nào dưới đây bằng thiết bị đã kết nối với mạng này.</string>
+    <string name="text_webShareInfo">Bật chia sẻ qua mạng cho từng lượt chuyển và mở bất kỳ link nào dưới đây bằng thiết
+        bị đã kết nối với mạng này.
+    </string>
     <string name="text_transactionViewer">Xem lượt chuyển</string>
     <string name="butn_locationSettings">Vị trí</string>
     <string name="text_savingDetails">Lưu chi tiết</string>
@@ -353,7 +380,9 @@
     <string name="mesg_pathSameError">Không thể chọn thư mục cũ</string>
     <string name="text_findDevicesHint">Không có thiết bị quen</string>
     <string name="text_shortcuts">Lối tắt</string>
-    <string name="text_hotspotStartedExternallyNotice">Hotspot đã được bật từ bên ngoài. Để dùng mã QR, xin bắt đầu từ đây.</string>
+    <string name="text_hotspotStartedExternallyNotice">Hotspot đã được bật từ bên ngoài. Để dùng mã QR, xin bắt đầu từ
+        đây.
+    </string>
     <string name="ques_connectionWizardIsThereQRCode">Bạn thấy có mã QR (mã vạch) trên màn hình bên kia không\?</string>
     <string name="text_useLights">Đèn</string>
     <string name="mesg_stopping">Đang dừng</string>
@@ -379,7 +408,9 @@
     <string name="butn_rename">Đổi tên</string>
     <string name="text_network">Mạng</string>
     <string name="butn_pause">Tạm dừng</string>
-    <string name="text_automaticNetworkConnectionFailed">Không thể kết nối với thiết bị. Địa chỉ của nó có thể đã thay đổi. Thử kết nối lại vào mạng khi TrebleShot đang chạy.</string>
+    <string name="text_automaticNetworkConnectionFailed">Không thể kết nối với thiết bị. Địa chỉ của nó có thể đã thay
+        đổi. Thử kết nối lại vào mạng khi TrebleShot đang chạy.
+    </string>
     <string name="butn_open">Mở</string>
     <string name="text_unknown">Không biết</string>
     <string name="butn_shareWithTrebleshot">Chia sẻ qua TrebleShot</string>
@@ -400,7 +431,9 @@
     <string name="ques_removeTransfer">Xoá lượt chuyển\?</string>
     <string name="butn_seeSourceCode">Xem mã nguồn</string>
     <string name="text_pendingTransfers">File đang chuyển</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot cần biết số sêri của thiết bị bạn để tạo số định danh dài hạn, giúp các thiết bị khác nhận diện bạn</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot cần biết số sêri của thiết bị bạn để tạo số
+        định danh dài hạn, giúp các thiết bị khác nhận diện bạn
+    </string>
     <string name="text_shortcut">Lối tắt</string>
     <string name="butn_delete">Xoá</string>
     <string name="mesg_secureExit">Nhấn một lần nữa để thoát</string>
@@ -437,7 +470,9 @@
     <string name="butn_removeShortcut">Xoá lối tắt</string>
     <string name="mesg_deviceConnectionError">Kết nối với \"%s\" qua \"%s\" không thành công</string>
     <string name="butn_queueCounted">Đang đợi (%d)</string>
-    <string name="text_addDeviceHelp">Khi thêm thiết bị, bạn có thể chia sẻ cùng 1 file với nhiều thiết bị. Bạn sẽ quay trở về lượt chuyển khi hoàn tất.</string>
+    <string name="text_addDeviceHelp">Khi thêm thiết bị, bạn có thể chia sẻ cùng 1 file với nhiều thiết bị. Bạn sẽ quay
+        trở về lượt chuyển khi hoàn tất.
+    </string>
     <string name="text_listEmptyTextStream">Văn bản hiện ở đây</string>
     <string name="text_search">Tìm kiếm</string>
     <string name="mesg_waiting">Đang chờ</string>
@@ -450,8 +485,9 @@
     <string name="text_dayCountShort">%d ng</string>
     <string name="text_saveAnywaySummary">Bên gửi không biết vị trí của file, nhưng bạn vẫn có thể lưu nó</string>
     <string name="text_notAllowedHelp">Kiểm tra được cho phép trên %1$s
-\n
-\nThiết bị &gt; %2$s &gt; Cho phép kết nối (xin kiểm tra)</string>
+        \n
+        \nThiết bị &gt; %2$s &gt; Cho phép kết nối (xin kiểm tra)
+    </string>
     <string name="butn_checkForUpdates">Cập nhật phiên bản mới</string>
     <string name="text_receivedFiles">File đã nhận</string>
     <string name="text_transferStatusFiles">%1d trong %2d</string>

@@ -17,52 +17,53 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<resources><plurals name="ques_deleteFile">
-	<item quantity="one">Diese Datei löschen\?</item>
-	<item quantity="other">%d Dateien löschen\?</item>
-</plurals>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">Diese Datei löschen\?</item>
+        <item quantity="other">%d Dateien löschen\?</item>
+    </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="one">%d Datei wurde empfangen</item>
-	<item quantity="other">%d Dateien wurden empfangen</item>
-</plurals>
+        <item quantity="one">%d Datei wurde empfangen</item>
+        <item quantity="other">%d Dateien wurden empfangen</item>
+    </plurals>
     <plurals name="text_itemSelected">
-	<item quantity="one">%d Datei ausgewählt</item>
-	<item quantity="other">%d Dateien ausgewählt</item>
-</plurals>
+        <item quantity="one">%d Datei ausgewählt</item>
+        <item quantity="other">%d Dateien ausgewählt</item>
+    </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">Diese wartende Übertragung wird entfernt</item>
-	<item quantity="other">%d wartende Übertragungen werden entfernt</item>
-</plurals>
+        <item quantity="one">Diese wartende Übertragung wird entfernt</item>
+        <item quantity="other">%d wartende Übertragungen werden entfernt</item>
+    </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">%d Verbindung</item>
-	<item quantity="other">%d Verbindungen</item>
-</plurals>
+        <item quantity="one">%d Verbindung</item>
+        <item quantity="other">%d Verbindungen</item>
+    </plurals>
     <plurals name="ques_receiveMultipleFiles">
-	<item quantity="one">Datei empfangen?</item>
-	<item quantity="other">%d Dateien empfangen?</item>
-</plurals>
+        <item quantity="one">Datei empfangen?</item>
+        <item quantity="other">%d Dateien empfangen?</item>
+    </plurals>
     <plurals name="text_files">
-	<item quantity="one">%d Datei</item>
-	<item quantity="other">%d Dateien</item>
-</plurals>
+        <item quantity="one">%d Datei</item>
+        <item quantity="other">%d Dateien</item>
+    </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="one">Vor einer Sekunde</item>
-	<item quantity="other">Vor %d Sekunden</item>
-</plurals>
+        <item quantity="one">Vor einer Sekunde</item>
+        <item quantity="other">Vor %d Sekunden</item>
+    </plurals>
     <plurals name="text_minutesAgo">
-	<item quantity="one">Vor einer Minute</item>
-	<item quantity="other">Vor %d Minuten</item>
-</plurals>
+        <item quantity="one">Vor einer Minute</item>
+        <item quantity="other">Vor %d Minuten</item>
+    </plurals>
     <plurals name="text_fileDeletionCompleted">
-	<item quantity="one">%d Datei gelöscht</item>
-	<item quantity="other">%d Dateien gelöscht</item>
-</plurals>
-<plurals name="text_gridRow">
-	<item quantity="one">Eine Zeile</item>
-	<item quantity="other">%d Zeilen</item>
-</plurals>
+        <item quantity="one">%d Datei gelöscht</item>
+        <item quantity="other">%d Dateien gelöscht</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Eine Zeile</item>
+        <item quantity="other">%d Zeilen</item>
+    </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">Teile mit einem Gerät</item>
-	<item quantity="other">Teile mit %d Geräten</item>
-</plurals>
+        <item quantity="one">Teile mit einem Gerät</item>
+        <item quantity="other">Teile mit %d Geräten</item>
+    </plurals>
 </resources>

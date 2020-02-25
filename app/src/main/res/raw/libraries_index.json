@@ -1,904 +1,904 @@
 {
-    "dependencies": [
-        {
-            "moduleName": "androidx.activity:activity",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.0.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.annotation:annotation",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.1.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.appcompat:appcompat",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.appcompat:appcompat-resources",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.arch.core:core-common",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.arch.core:core-runtime",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.asynclayoutinflater:asynclayoutinflater",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.cardview:cardview",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.collection:collection",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.1.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.concurrent:concurrent-futures",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "1.0.0-beta01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.coordinatorlayout:coordinatorlayout",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.1.0-beta01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.core:core",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.2.0-alpha01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.cursoradapter:cursoradapter",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.customview:customview",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.documentfile:documentfile",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.drawerlayout:drawerlayout",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.fragment:fragment",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.interpolator:interpolator",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.legacy:legacy-support-core-ui",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.legacy:legacy-support-core-utils",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.lifecycle:lifecycle-common",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.lifecycle:lifecycle-common-java8",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.lifecycle:lifecycle-livedata",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.lifecycle:lifecycle-livedata-core",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.lifecycle:lifecycle-runtime",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.lifecycle:lifecycle-viewmodel",
-            "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
-            "moduleVersion": "2.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.loader:loader",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.localbroadcastmanager:localbroadcastmanager",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.preference:preference",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.print:print",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.recyclerview:recyclerview",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.1.0-beta01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.savedstate:savedstate",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.0.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.slidingpanelayout:slidingpanelayout",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.swiperefreshlayout:swiperefreshlayout",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.transition:transition",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.1",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.vectordrawable:vectordrawable",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.vectordrawable:vectordrawable-animated",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.1.0-rc01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.versionedparcelable:versionedparcelable",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.1.0-beta01",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.viewpager2:viewpager2",
-            "moduleUrl": "https://developer.android.com/jetpack/androidx",
-            "moduleVersion": "1.0.0-alpha06",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "androidx.viewpager:viewpager",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.analytics-library:protos",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.analytics-library:shared",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.analytics-library:tracker",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:apksig",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:apkzlib",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:builder",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:builder-model",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:builder-test-api",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:gradle-api",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.build:manifest-merger",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.ddms:ddmlib",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.external.com-intellij:intellij-core",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.external.com-intellij:kotlin-compiler",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.external.org-jetbrains:uast",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.layoutlib:layoutlib-api",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.lint:lint",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.lint:lint-api",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.lint:lint-checks",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.lint:lint-gradle",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools.lint:lint-gradle-api",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools:annotations",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools:common",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools:dvlib",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools:repository",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools:sdk-common",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.android.tools:sdklib",
-            "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.4.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.anjlab.android.iab.v3:library",
-            "moduleUrl": "https://github.com/anjlab/android-inapp-billing-v3",
-            "moduleVersion": "1.0.44",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.genonbeta.android:framework",
-            "moduleUrl": "https://github.com/genonbeta/framework-android",
-            "moduleVersion": "1.0.2.8",
-            "moduleLicense": "General Public Licence, Version 2.0",
-            "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
-        },
-        {
-            "moduleName": "com.genonbeta.android:gdatabase",
-            "moduleUrl": "https://github.com/genonbeta/GDatabase",
-            "moduleVersion": "1.0.2.6.2",
-            "moduleLicense": "General Public Licence, Version 2.0",
-            "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
-        },
-        {
-            "moduleName": "com.genonbeta.coolsocket:main",
-            "moduleUrl": "https://github.com/genonbeta/CoolSocket",
-            "moduleVersion": "1.0.3.2",
-            "moduleLicense": "General Public Licence, Version 2.0",
-            "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
-        },
-        {
-            "moduleName": "com.github.bumptech.glide:annotations",
-            "moduleUrl": "https://github.com/bumptech/glide",
-            "moduleVersion": "4.8.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.github.bumptech.glide:compiler",
-            "moduleUrl": "https://github.com/bumptech/glide",
-            "moduleVersion": "4.8.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.github.bumptech.glide:disklrucache",
-            "moduleUrl": "https://github.com/bumptech/glide",
-            "moduleVersion": "4.8.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.github.bumptech.glide:gifdecoder",
-            "moduleUrl": "https://github.com/bumptech/glide",
-            "moduleVersion": "4.8.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.github.bumptech.glide:glide",
-            "moduleUrl": "https://github.com/bumptech/glide",
-            "moduleVersion": "4.8.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.github.bumptech.glide:okhttp3-integration",
-            "moduleUrl": "https://github.com/bumptech/glide",
-            "moduleVersion": "4.8.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.github.kevinsawicki:http-request",
-            "moduleUrl": "https://github.com/kevinsawicki/http-request",
-            "moduleVersion": "6.0",
-            "moduleLicense": "MIT License",
-            "moduleLicenseUrl": "http://www.opensource.org/licenses/mit-license.php"
-        },
-        {
-            "moduleName": "com.google.android.material:material",
-            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.1.0-alpha08",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.code.findbugs:jsr305",
-            "moduleUrl": "http://findbugs.sourceforge.net/",
-            "moduleVersion": "3.0.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.code.gson:gson",
-            "moduleVersion": "2.8.0",
-            "moduleLicense": "Apache 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.errorprone:error_prone_annotations",
-            "moduleVersion": "2.1.3",
-            "moduleLicense": "Apache 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.guava:guava",
-            "moduleUrl": "https://github.com/google/guava/",
-            "moduleVersion": "26.0-jre",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.guava:listenablefuture",
-            "moduleVersion": "1.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.j2objc:j2objc-annotations",
-            "moduleUrl": "https://github.com/google/j2objc/",
-            "moduleVersion": "1.1",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.jimfs:jimfs",
-            "moduleUrl": "http://www.google.com/",
-            "moduleVersion": "1.1",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.protobuf:protobuf-java",
-            "moduleUrl": "https://developers.google.com/protocol-buffers/",
-            "moduleVersion": "3.4.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.google.zxing:core",
-            "moduleVersion": "3.3.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.googlecode.json-simple:json-simple",
-            "moduleUrl": "http://code.google.com/p/json-simple/",
-            "moduleVersion": "1.1",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.squareup.okhttp3:okhttp",
-            "moduleVersion": "3.9.1",
-            "moduleLicense": "Apache 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.squareup.okio:okio",
-            "moduleVersion": "1.13.0",
-            "moduleLicense": "Apache 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.squareup:javawriter",
-            "moduleUrl": "http://github.com/square/javawriter/",
-            "moduleVersion": "2.5.0",
-            "moduleLicense": "Apache 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "com.sun.activation:javax.activation",
-            "moduleUrl": "http://www.oracle.com",
-            "moduleVersion": "1.2.0",
-            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
-            "moduleLicenseUrl": "http://opensource.org/licenses/CDDL-1.0"
-        },
-        {
-            "moduleName": "com.sun.istack:istack-commons-runtime",
-            "moduleUrl": "http://www.oracle.com/",
-            "moduleVersion": "2.21",
-            "moduleLicense": "https://glassfish.java.net/public/CDDL+GPL_1_1.html, https://glassfish.java.net/public/CDDL+GPL_1_1.html"
-        },
-        {
-            "moduleName": "com.sun.xml.fastinfoset:FastInfoset",
-            "moduleUrl": "http://www.oracle.com",
-            "moduleVersion": "1.2.13",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.opensource.org/licenses/apache2.0.php"
-        },
-        {
-            "moduleName": "com.velitasali.tools.android:zxing",
-            "moduleUrl": "https://github.com/velitasali/ZXingIncremented",
-            "moduleVersion": "3.6.3",
-            "moduleLicense": "General Public Licence, Version 3.0",
-            "moduleLicenseUrl": "https://www.gnu.org/licenses/gpl.html"
-        },
-        {
-            "moduleName": "commons-codec:commons-codec",
-            "moduleUrl": "http://commons.apache.org/proper/commons-codec/",
-            "moduleVersion": "1.10",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "commons-logging:commons-logging",
-            "moduleUrl": "http://commons.apache.org/proper/commons-logging/",
-            "moduleVersion": "1.2",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "it.unimi.dsi:fastutil",
-            "moduleUrl": "http://fasutil.di.unimi.it/",
-            "moduleVersion": "7.2.0",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        {
-            "moduleName": "javax.inject:javax.inject",
-            "moduleUrl": "http://code.google.com/p/atinject/",
-            "moduleVersion": "1",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "javax.xml.bind:jaxb-api",
-            "moduleUrl": "http://www.oracle.com/",
-            "moduleVersion": "2.2.12-b140109.1041",
-            "moduleLicense": "https://glassfish.java.net/public/CDDL+GPL_1_1.html, https://glassfish.java.net/public/CDDL+GPL_1_1.html"
-        },
-        {
-            "moduleName": "junit:junit",
-            "moduleUrl": "http://junit.org",
-            "moduleVersion": "4.12",
-            "moduleLicense": "Eclipse Public License 1.0",
-            "moduleLicenseUrl": "http://www.eclipse.org/legal/epl-v10.html"
-        },
-        {
-            "moduleName": "net.sf.jopt-simple:jopt-simple",
-            "moduleUrl": "http://pholser.github.com/jopt-simple",
-            "moduleVersion": "4.9",
-            "moduleLicense": "The MIT License",
-            "moduleLicenseUrl": "http://www.opensource.org/licenses/mit-license.php"
-        },
-        {
-            "moduleName": "net.sf.kxml:kxml2",
-            "moduleUrl": "http://kxml.sourceforge.net/",
-            "moduleVersion": "2.3.0",
-            "moduleLicense": "Public Domain",
-            "moduleLicenseUrl": "http://creativecommons.org/licenses/publicdomain"
-        },
-        {
-            "moduleName": "org.apache.commons:commons-compress",
-            "moduleUrl": "http://commons.apache.org/proper/commons-compress/",
-            "moduleVersion": "1.12",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.apache.httpcomponents:httpclient",
-            "moduleUrl": "http://hc.apache.org/httpcomponents-client",
-            "moduleVersion": "4.5.6",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.apache.httpcomponents:httpcore",
-            "moduleUrl": "http://hc.apache.org/httpcomponents-core-ga",
-            "moduleVersion": "4.4.10",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.apache.httpcomponents:httpmime",
-            "moduleUrl": "http://hc.apache.org/httpcomponents-client",
-            "moduleVersion": "4.5.6",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.bouncycastle:bcpkix-jdk15on",
-            "moduleUrl": "http://www.bouncycastle.org/java.html",
-            "moduleVersion": "1.56",
-            "moduleLicense": "Bouncy Castle Licence",
-            "moduleLicenseUrl": "http://www.bouncycastle.org/licence.html"
-        },
-        {
-            "moduleName": "org.bouncycastle:bcprov-jdk15on",
-            "moduleUrl": "http://www.bouncycastle.org/java.html",
-            "moduleVersion": "1.56",
-            "moduleLicense": "Bouncy Castle Licence",
-            "moduleLicenseUrl": "http://www.bouncycastle.org/licence.html"
-        },
-        {
-            "moduleName": "org.checkerframework:checker-qual",
-            "moduleUrl": "https://checkerframework.org",
-            "moduleVersion": "2.5.2",
-            "moduleLicense": "The MIT License",
-            "moduleLicenseUrl": "http://opensource.org/licenses/MIT"
-        },
-        {
-            "moduleName": "org.codehaus.groovy:groovy-all",
-            "moduleUrl": "http://groovy-lang.org",
-            "moduleVersion": "2.4.15",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.codehaus.mojo:animal-sniffer-annotations",
-            "moduleVersion": "1.14",
-            "moduleLicense": "MIT license",
-            "moduleLicenseUrl": "http://www.opensource.org/licenses/mit-license.php"
-        },
-        {
-            "moduleName": "org.glassfish.jaxb:jaxb-core",
-            "moduleVersion": "2.2.11",
-            "moduleLicense": "CDDL+GPL License",
-            "moduleLicenseUrl": "http://glassfish.java.net/public/CDDL+GPL_1_1.html"
-        },
-        {
-            "moduleName": "org.glassfish.jaxb:jaxb-runtime",
-            "moduleVersion": "2.2.11",
-            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
-            "moduleLicenseUrl": "http://opensource.org/licenses/CDDL-1.0"
-        },
-        {
-            "moduleName": "org.glassfish.jaxb:txw2",
-            "moduleVersion": "2.2.11",
-            "moduleLicense": "CDDL+GPL License",
-            "moduleLicenseUrl": "http://glassfish.java.net/public/CDDL+GPL_1_1.html"
-        },
-        {
-            "moduleName": "org.hamcrest:hamcrest-core",
-            "moduleVersion": "1.3",
-            "moduleLicense": "New BSD License",
-            "moduleLicenseUrl": "http://www.opensource.org/licenses/bsd-license.php"
-        },
-        {
-            "moduleName": "org.jetbrains.kotlin:kotlin-reflect",
-            "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.3.31",
-            "moduleLicense": "The Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
-            "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.3.31",
-            "moduleLicense": "The Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-common",
-            "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.3.31",
-            "moduleLicense": "The Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
-            "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.3.31",
-            "moduleLicense": "The Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-            "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.3.31",
-            "moduleLicense": "The Apache License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.jetbrains.trove4j:trove4j",
-            "moduleVersion": "20160824"
-        },
-        {
-            "moduleName": "org.jetbrains:annotations",
-            "moduleUrl": "http://www.jetbrains.org",
-            "moduleVersion": "13.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.json:json",
-            "moduleUrl": "https://github.com/douglascrockford/JSON-java",
-            "moduleVersion": "20180130",
-            "moduleLicense": "The JSON License",
-            "moduleLicenseUrl": "http://json.org/license.html"
-        },
-        {
-            "moduleName": "org.jvnet.staxex:stax-ex",
-            "moduleUrl": "http://stax-ex.java.net/",
-            "moduleVersion": "1.7.7",
-            "moduleLicense": "Dual license consisting of the CDDL v1.1 and GPL v2",
-            "moduleLicenseUrl": "https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html"
-        },
-        {
-            "moduleName": "org.nanohttpd:nanohttpd",
-            "moduleVersion": "2.2.0",
-            "moduleLicense": "The BSD 3-Clause License",
-            "moduleLicenseUrl": "http://opensource.org/licenses/BSD-3-Clause"
-        },
-        {
-            "moduleName": "org.ow2.asm:asm",
-            "moduleUrl": "http://asm.objectweb.org",
-            "moduleVersion": "6.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.ow2.asm:asm-analysis",
-            "moduleUrl": "http://asm.objectweb.org",
-            "moduleVersion": "6.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.ow2.asm:asm-commons",
-            "moduleUrl": "http://asm.objectweb.org",
-            "moduleVersion": "6.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.ow2.asm:asm-tree",
-            "moduleUrl": "http://asm.objectweb.org",
-            "moduleVersion": "6.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.ow2.asm:asm-util",
-            "moduleUrl": "http://asm.objectweb.org",
-            "moduleVersion": "6.0",
-            "moduleLicense": "The Apache Software License, Version 2.0",
-            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        }
-    ]
+  "dependencies": [
+    {
+      "moduleName": "androidx.activity:activity",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.0.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.annotation:annotation",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.1.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.appcompat:appcompat",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.appcompat:appcompat-resources",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.arch.core:core-common",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.arch.core:core-runtime",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.asynclayoutinflater:asynclayoutinflater",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.cardview:cardview",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.collection:collection",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.1.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.concurrent:concurrent-futures",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "1.0.0-beta01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.coordinatorlayout:coordinatorlayout",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.1.0-beta01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.core:core",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.2.0-alpha01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.cursoradapter:cursoradapter",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.customview:customview",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.documentfile:documentfile",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.drawerlayout:drawerlayout",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.fragment:fragment",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.interpolator:interpolator",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.legacy:legacy-support-core-ui",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.legacy:legacy-support-core-utils",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.lifecycle:lifecycle-common",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.lifecycle:lifecycle-common-java8",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.lifecycle:lifecycle-livedata",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.lifecycle:lifecycle-livedata-core",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.lifecycle:lifecycle-runtime",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.lifecycle:lifecycle-viewmodel",
+      "moduleUrl": "https://developer.android.com/topic/libraries/architecture/index.html",
+      "moduleVersion": "2.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.loader:loader",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.localbroadcastmanager:localbroadcastmanager",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.preference:preference",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.print:print",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.recyclerview:recyclerview",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.1.0-beta01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.savedstate:savedstate",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.0.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.slidingpanelayout:slidingpanelayout",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.swiperefreshlayout:swiperefreshlayout",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.transition:transition",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.1",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.vectordrawable:vectordrawable",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.vectordrawable:vectordrawable-animated",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.1.0-rc01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.versionedparcelable:versionedparcelable",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.1.0-beta01",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.viewpager2:viewpager2",
+      "moduleUrl": "https://developer.android.com/jetpack/androidx",
+      "moduleVersion": "1.0.0-alpha06",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "androidx.viewpager:viewpager",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.0.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.analytics-library:protos",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.analytics-library:shared",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.analytics-library:tracker",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:apksig",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "3.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:apkzlib",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "3.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:builder",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "3.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:builder-model",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "3.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:builder-test-api",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "3.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:gradle-api",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "3.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.build:manifest-merger",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.ddms:ddmlib",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.external.com-intellij:intellij-core",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.external.com-intellij:kotlin-compiler",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.external.org-jetbrains:uast",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.layoutlib:layoutlib-api",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.lint:lint",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.lint:lint-api",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.lint:lint-checks",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.lint:lint-gradle",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools.lint:lint-gradle-api",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools:annotations",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools:common",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools:dvlib",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools:repository",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools:sdk-common",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.android.tools:sdklib",
+      "moduleUrl": "https://developer.android.com/studio",
+      "moduleVersion": "26.4.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.anjlab.android.iab.v3:library",
+      "moduleUrl": "https://github.com/anjlab/android-inapp-billing-v3",
+      "moduleVersion": "1.0.44",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.genonbeta.android:framework",
+      "moduleUrl": "https://github.com/genonbeta/framework-android",
+      "moduleVersion": "1.0.2.8",
+      "moduleLicense": "General Public Licence, Version 2.0",
+      "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
+    },
+    {
+      "moduleName": "com.genonbeta.android:gdatabase",
+      "moduleUrl": "https://github.com/genonbeta/GDatabase",
+      "moduleVersion": "1.0.2.6.2",
+      "moduleLicense": "General Public Licence, Version 2.0",
+      "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
+    },
+    {
+      "moduleName": "com.genonbeta.coolsocket:main",
+      "moduleUrl": "https://github.com/genonbeta/CoolSocket",
+      "moduleVersion": "1.0.3.2",
+      "moduleLicense": "General Public Licence, Version 2.0",
+      "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
+    },
+    {
+      "moduleName": "com.github.bumptech.glide:annotations",
+      "moduleUrl": "https://github.com/bumptech/glide",
+      "moduleVersion": "4.8.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.github.bumptech.glide:compiler",
+      "moduleUrl": "https://github.com/bumptech/glide",
+      "moduleVersion": "4.8.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.github.bumptech.glide:disklrucache",
+      "moduleUrl": "https://github.com/bumptech/glide",
+      "moduleVersion": "4.8.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.github.bumptech.glide:gifdecoder",
+      "moduleUrl": "https://github.com/bumptech/glide",
+      "moduleVersion": "4.8.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.github.bumptech.glide:glide",
+      "moduleUrl": "https://github.com/bumptech/glide",
+      "moduleVersion": "4.8.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.github.bumptech.glide:okhttp3-integration",
+      "moduleUrl": "https://github.com/bumptech/glide",
+      "moduleVersion": "4.8.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.github.kevinsawicki:http-request",
+      "moduleUrl": "https://github.com/kevinsawicki/http-request",
+      "moduleVersion": "6.0",
+      "moduleLicense": "MIT License",
+      "moduleLicenseUrl": "http://www.opensource.org/licenses/mit-license.php"
+    },
+    {
+      "moduleName": "com.google.android.material:material",
+      "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+      "moduleVersion": "1.1.0-alpha08",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.code.findbugs:jsr305",
+      "moduleUrl": "http://findbugs.sourceforge.net/",
+      "moduleVersion": "3.0.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.code.gson:gson",
+      "moduleVersion": "2.8.0",
+      "moduleLicense": "Apache 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.errorprone:error_prone_annotations",
+      "moduleVersion": "2.1.3",
+      "moduleLicense": "Apache 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.guava:guava",
+      "moduleUrl": "https://github.com/google/guava/",
+      "moduleVersion": "26.0-jre",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.guava:listenablefuture",
+      "moduleVersion": "1.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.j2objc:j2objc-annotations",
+      "moduleUrl": "https://github.com/google/j2objc/",
+      "moduleVersion": "1.1",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.jimfs:jimfs",
+      "moduleUrl": "http://www.google.com/",
+      "moduleVersion": "1.1",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.protobuf:protobuf-java",
+      "moduleUrl": "https://developers.google.com/protocol-buffers/",
+      "moduleVersion": "3.4.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.google.zxing:core",
+      "moduleVersion": "3.3.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.googlecode.json-simple:json-simple",
+      "moduleUrl": "http://code.google.com/p/json-simple/",
+      "moduleVersion": "1.1",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.squareup.okhttp3:okhttp",
+      "moduleVersion": "3.9.1",
+      "moduleLicense": "Apache 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.squareup.okio:okio",
+      "moduleVersion": "1.13.0",
+      "moduleLicense": "Apache 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.squareup:javawriter",
+      "moduleUrl": "http://github.com/square/javawriter/",
+      "moduleVersion": "2.5.0",
+      "moduleLicense": "Apache 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "com.sun.activation:javax.activation",
+      "moduleUrl": "http://www.oracle.com",
+      "moduleVersion": "1.2.0",
+      "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
+      "moduleLicenseUrl": "http://opensource.org/licenses/CDDL-1.0"
+    },
+    {
+      "moduleName": "com.sun.istack:istack-commons-runtime",
+      "moduleUrl": "http://www.oracle.com/",
+      "moduleVersion": "2.21",
+      "moduleLicense": "https://glassfish.java.net/public/CDDL+GPL_1_1.html, https://glassfish.java.net/public/CDDL+GPL_1_1.html"
+    },
+    {
+      "moduleName": "com.sun.xml.fastinfoset:FastInfoset",
+      "moduleUrl": "http://www.oracle.com",
+      "moduleVersion": "1.2.13",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.opensource.org/licenses/apache2.0.php"
+    },
+    {
+      "moduleName": "com.velitasali.tools.android:zxing",
+      "moduleUrl": "https://github.com/velitasali/ZXingIncremented",
+      "moduleVersion": "3.6.3",
+      "moduleLicense": "General Public Licence, Version 3.0",
+      "moduleLicenseUrl": "https://www.gnu.org/licenses/gpl.html"
+    },
+    {
+      "moduleName": "commons-codec:commons-codec",
+      "moduleUrl": "http://commons.apache.org/proper/commons-codec/",
+      "moduleVersion": "1.10",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "commons-logging:commons-logging",
+      "moduleUrl": "http://commons.apache.org/proper/commons-logging/",
+      "moduleVersion": "1.2",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "it.unimi.dsi:fastutil",
+      "moduleUrl": "http://fasutil.di.unimi.it/",
+      "moduleVersion": "7.2.0",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    {
+      "moduleName": "javax.inject:javax.inject",
+      "moduleUrl": "http://code.google.com/p/atinject/",
+      "moduleVersion": "1",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "javax.xml.bind:jaxb-api",
+      "moduleUrl": "http://www.oracle.com/",
+      "moduleVersion": "2.2.12-b140109.1041",
+      "moduleLicense": "https://glassfish.java.net/public/CDDL+GPL_1_1.html, https://glassfish.java.net/public/CDDL+GPL_1_1.html"
+    },
+    {
+      "moduleName": "junit:junit",
+      "moduleUrl": "http://junit.org",
+      "moduleVersion": "4.12",
+      "moduleLicense": "Eclipse Public License 1.0",
+      "moduleLicenseUrl": "http://www.eclipse.org/legal/epl-v10.html"
+    },
+    {
+      "moduleName": "net.sf.jopt-simple:jopt-simple",
+      "moduleUrl": "http://pholser.github.com/jopt-simple",
+      "moduleVersion": "4.9",
+      "moduleLicense": "The MIT License",
+      "moduleLicenseUrl": "http://www.opensource.org/licenses/mit-license.php"
+    },
+    {
+      "moduleName": "net.sf.kxml:kxml2",
+      "moduleUrl": "http://kxml.sourceforge.net/",
+      "moduleVersion": "2.3.0",
+      "moduleLicense": "Public Domain",
+      "moduleLicenseUrl": "http://creativecommons.org/licenses/publicdomain"
+    },
+    {
+      "moduleName": "org.apache.commons:commons-compress",
+      "moduleUrl": "http://commons.apache.org/proper/commons-compress/",
+      "moduleVersion": "1.12",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.apache.httpcomponents:httpclient",
+      "moduleUrl": "http://hc.apache.org/httpcomponents-client",
+      "moduleVersion": "4.5.6",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.apache.httpcomponents:httpcore",
+      "moduleUrl": "http://hc.apache.org/httpcomponents-core-ga",
+      "moduleVersion": "4.4.10",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.apache.httpcomponents:httpmime",
+      "moduleUrl": "http://hc.apache.org/httpcomponents-client",
+      "moduleVersion": "4.5.6",
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.bouncycastle:bcpkix-jdk15on",
+      "moduleUrl": "http://www.bouncycastle.org/java.html",
+      "moduleVersion": "1.56",
+      "moduleLicense": "Bouncy Castle Licence",
+      "moduleLicenseUrl": "http://www.bouncycastle.org/licence.html"
+    },
+    {
+      "moduleName": "org.bouncycastle:bcprov-jdk15on",
+      "moduleUrl": "http://www.bouncycastle.org/java.html",
+      "moduleVersion": "1.56",
+      "moduleLicense": "Bouncy Castle Licence",
+      "moduleLicenseUrl": "http://www.bouncycastle.org/licence.html"
+    },
+    {
+      "moduleName": "org.checkerframework:checker-qual",
+      "moduleUrl": "https://checkerframework.org",
+      "moduleVersion": "2.5.2",
+      "moduleLicense": "The MIT License",
+      "moduleLicenseUrl": "http://opensource.org/licenses/MIT"
+    },
+    {
+      "moduleName": "org.codehaus.groovy:groovy-all",
+      "moduleUrl": "http://groovy-lang.org",
+      "moduleVersion": "2.4.15",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.codehaus.mojo:animal-sniffer-annotations",
+      "moduleVersion": "1.14",
+      "moduleLicense": "MIT license",
+      "moduleLicenseUrl": "http://www.opensource.org/licenses/mit-license.php"
+    },
+    {
+      "moduleName": "org.glassfish.jaxb:jaxb-core",
+      "moduleVersion": "2.2.11",
+      "moduleLicense": "CDDL+GPL License",
+      "moduleLicenseUrl": "http://glassfish.java.net/public/CDDL+GPL_1_1.html"
+    },
+    {
+      "moduleName": "org.glassfish.jaxb:jaxb-runtime",
+      "moduleVersion": "2.2.11",
+      "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
+      "moduleLicenseUrl": "http://opensource.org/licenses/CDDL-1.0"
+    },
+    {
+      "moduleName": "org.glassfish.jaxb:txw2",
+      "moduleVersion": "2.2.11",
+      "moduleLicense": "CDDL+GPL License",
+      "moduleLicenseUrl": "http://glassfish.java.net/public/CDDL+GPL_1_1.html"
+    },
+    {
+      "moduleName": "org.hamcrest:hamcrest-core",
+      "moduleVersion": "1.3",
+      "moduleLicense": "New BSD License",
+      "moduleLicenseUrl": "http://www.opensource.org/licenses/bsd-license.php"
+    },
+    {
+      "moduleName": "org.jetbrains.kotlin:kotlin-reflect",
+      "moduleUrl": "https://kotlinlang.org/",
+      "moduleVersion": "1.3.31",
+      "moduleLicense": "The Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
+      "moduleUrl": "https://kotlinlang.org/",
+      "moduleVersion": "1.3.31",
+      "moduleLicense": "The Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-common",
+      "moduleUrl": "https://kotlinlang.org/",
+      "moduleVersion": "1.3.31",
+      "moduleLicense": "The Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
+      "moduleUrl": "https://kotlinlang.org/",
+      "moduleVersion": "1.3.31",
+      "moduleLicense": "The Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+      "moduleUrl": "https://kotlinlang.org/",
+      "moduleVersion": "1.3.31",
+      "moduleLicense": "The Apache License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.jetbrains.trove4j:trove4j",
+      "moduleVersion": "20160824"
+    },
+    {
+      "moduleName": "org.jetbrains:annotations",
+      "moduleUrl": "http://www.jetbrains.org",
+      "moduleVersion": "13.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.json:json",
+      "moduleUrl": "https://github.com/douglascrockford/JSON-java",
+      "moduleVersion": "20180130",
+      "moduleLicense": "The JSON License",
+      "moduleLicenseUrl": "http://json.org/license.html"
+    },
+    {
+      "moduleName": "org.jvnet.staxex:stax-ex",
+      "moduleUrl": "http://stax-ex.java.net/",
+      "moduleVersion": "1.7.7",
+      "moduleLicense": "Dual license consisting of the CDDL v1.1 and GPL v2",
+      "moduleLicenseUrl": "https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html"
+    },
+    {
+      "moduleName": "org.nanohttpd:nanohttpd",
+      "moduleVersion": "2.2.0",
+      "moduleLicense": "The BSD 3-Clause License",
+      "moduleLicenseUrl": "http://opensource.org/licenses/BSD-3-Clause"
+    },
+    {
+      "moduleName": "org.ow2.asm:asm",
+      "moduleUrl": "http://asm.objectweb.org",
+      "moduleVersion": "6.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.ow2.asm:asm-analysis",
+      "moduleUrl": "http://asm.objectweb.org",
+      "moduleVersion": "6.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.ow2.asm:asm-commons",
+      "moduleUrl": "http://asm.objectweb.org",
+      "moduleVersion": "6.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.ow2.asm:asm-tree",
+      "moduleUrl": "http://asm.objectweb.org",
+      "moduleVersion": "6.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "moduleName": "org.ow2.asm:asm-util",
+      "moduleUrl": "http://asm.objectweb.org",
+      "moduleVersion": "6.0",
+      "moduleLicense": "The Apache Software License, Version 2.0",
+      "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    }
+  ]
 }

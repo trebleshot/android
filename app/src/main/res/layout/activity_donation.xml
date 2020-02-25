@@ -18,68 +18,68 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".activity.DonationActivity">
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     xmlns:tools="http://schemas.android.com/tools"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
+                                                     android:fitsSystemWindows="true"
+                                                     tools:context=".activity.DonationActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
         <!-- android:layout_height="@dimen/app_bar_height">-->
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:contentScrim="?colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:titleEnabled="false"
-            app:toolbarId="@+id/toolbar">
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:contentScrim="?colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:titleEnabled="false"
+                app:toolbarId="@+id/toolbar">
 
             <!--
             120sp will automatically adapt when globally bigger fonts are assigned.
             So with 18sp text we should expect 6 lines of text to fit.
             -->
             <TextView
-                android:id="@+id/developerText"
-                style="@style/TextAppearance.Primary.Big"
-                android:layout_width="match_parent"
-                android:layout_height="120sp"
-                android:layout_marginTop="?actionBarSize"
-                android:gravity="center"
-                android:paddingLeft="@dimen/short_content_width_padding"
-                android:paddingRight="@dimen/short_content_width_padding" />
+                    android:id="@+id/developerText"
+                    style="@style/TextAppearance.Primary.Big"
+                    android:layout_width="match_parent"
+                    android:layout_height="120sp"
+                    android:layout_marginTop="?actionBarSize"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/short_content_width_padding"
+                    android:paddingRight="@dimen/short_content_width_padding"/>
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                app:layout_collapseMode="pin" />
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    app:layout_collapseMode="pin"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <fragment
-            android:id="@+id/activity_donation_fragment_list"
-            android:name="com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:tag="donationsFragment" />
+                android:id="@+id/activity_donation_fragment_list"
+                android:name="com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:tag="donationsFragment"/>
 
     </androidx.core.widget.NestedScrollView>
 
     <View
-        style="@style/DividerStyle"
-        android:layout_gravity="bottom" />
+            style="@style/DividerStyle"
+            android:layout_gravity="bottom"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

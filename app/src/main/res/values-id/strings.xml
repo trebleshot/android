@@ -136,16 +136,19 @@
     <string name="text_communicationService">Layanan Komunikasi</string>
     <string name="text_transactionViewer">Lihat transaksi</string>
     <string name="ques_why">Kenapa\?</string>
-    <string name="text_notAllowedHelp">Periksa jika anda diizinkan di %1$s 
-\n
-\nPerangkat&gt; %2$s &gt; Diizinkan terhubung &gt; (centang)</string>
+    <string name="text_notAllowedHelp">Periksa jika anda diizinkan di %1$s
+        \n
+        \nPerangkat&gt; %2$s &gt; Diizinkan terhubung &gt; (centang)
+    </string>
     <string name="butn_saveTo">Simpan ke</string>
     <string name="mesg_secureExit">Tekan kembali untuk keluar</string>
     <string name="butn_create">Buat</string>
     <string name="text_createFolder">Buat Folder</string>
     <string name="mesg_fileAlreadyExists">Berkas sudah ada</string>
     <string name="mesg_folderCreateError">Folder tidak dapat dibuat</string>
-    <string name="text_requestPermissionStorageSummary">Izin ini membolehkan TrebleShot untuk membaca dan menulis ke penyimpanan perangkat anda untuk mengirim dan menerima berkas.</string>
+    <string name="text_requestPermissionStorageSummary">Izin ini membolehkan TrebleShot untuk membaca dan menulis ke
+        penyimpanan perangkat anda untuk mengirim dan menerima berkas.
+    </string>
     <string name="butn_settings">Pengaturan</string>
     <string name="butn_selectThis">Pilih ini</string>
     <string name="butn_newFile">Berkas baru</string>
@@ -168,7 +171,9 @@
     <string name="text_chooseFile">pilih berkas</string>
     <string name="mesg_pathSameError">Anda tidak bisa memilih folder sebelumnya</string>
     <string name="ques_checkOldFiles">Pindahkan berkas\?</string>
-    <string name="text_checkOldFiles">Anda bisa memindahkan berkas terkait yang selesai dan sebagian selesai ke folder ini dan mungkin memakan waktu tergantung ukuran</string>
+    <string name="text_checkOldFiles">Anda bisa memindahkan berkas terkait yang selesai dan sebagian selesai ke folder
+        ini dan mungkin memakan waktu tergantung ukuran
+    </string>
     <string name="mesg_newFilesReceived">Berkas baru diterima</string>
     <string name="butn_show">Tampilkan</string>
     <string name="text_preparingFiles">Menyiapkan berkas</string>
@@ -187,7 +192,9 @@
     <string name="text_interfaceUnknown">Koneksi tidak dikenal</string>
     <string name="text_shareTextShort">Teks</string>
     <string name="butn_connectionList">Koneksi</string>
-    <string name="text_automaticNetworkConnectionFailed">Tidak dapat terhubung ke perangkat. Alamat mungkin sudah berubah. Coba hubungkan ke jaringan saat TrebleShot dibuka.</string>
+    <string name="text_automaticNetworkConnectionFailed">Tidak dapat terhubung ke perangkat. Alamat mungkin sudah
+        berubah. Coba hubungkan ke jaringan saat TrebleShot dibuka.
+    </string>
     <string name="text_automaticNetworkConnectionOngoing">Memilih koneksi terbaik</string>
     <string name="butn_retryReceiving">Coba terima lagi</string>
     <string name="butn_ask">Tanyakan</string>

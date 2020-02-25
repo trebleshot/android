@@ -149,7 +149,9 @@
     <string name="text_createFolder">ایجاد پوشه</string>
     <string name="mesg_fileAlreadyExists">فایل درحال حاضر وجود دارد</string>
     <string name="mesg_folderCreateError">پوشه نمیتواند ایجاد شود</string>
-    <string name="text_requestPermissionStorageSummary">این مجوز به برنامه اجازه خواندن و نوشتن روی حافظه دستگاهتان برای دریافت و اشتراک فایلها را میدهد.</string>
+    <string name="text_requestPermissionStorageSummary">این مجوز به برنامه اجازه خواندن و نوشتن روی حافظه دستگاهتان برای
+        دریافت و اشتراک فایلها را میدهد.
+    </string>
     <string name="butn_settings">تنظیمات</string>
     <string name="butn_selectThis">انتخاب مورد</string>
     <string name="butn_newFile">فایل جدید</string>
@@ -172,7 +174,9 @@
     <string name="text_chooseFile">انتخاب فایل</string>
     <string name="mesg_pathSameError">شما نمیتوانید پوشه قدیمی را برگزینید</string>
     <string name="ques_checkOldFiles">انتقال پرونده‌ها انجام شود؟</string>
-    <string name="text_checkOldFiles">می‌توانید پرونده‌هایی که انتقال‌شان به طور کامل یا جزئی کامل شده است را به این پوشه منتقل کنید و این کار ممکن است بسته به حجمشان مدتی طول بکشد</string>
+    <string name="text_checkOldFiles">می‌توانید پرونده‌هایی که انتقال‌شان به طور کامل یا جزئی کامل شده است را به این
+        پوشه منتقل کنید و این کار ممکن است بسته به حجمشان مدتی طول بکشد
+    </string>
     <string name="mesg_newFilesReceived">فایل های جدید دریافت شدند</string>
     <string name="butn_show">نمایش</string>
     <string name="text_preparingFiles">اماده سازی فایل ها</string>
@@ -198,8 +202,12 @@
     <string name="text_requestPermissionStorage">مجوز ذخیره سازی</string>
     <string name="text_requestPermissionReadPhoneState">مجوز برای خواندن وضعیت تلفن</string>
     <string name="butn_proceed">ادامه</string>
-    <string name="text_automaticNetworkConnectionFailed">اتصال به وسیله مورد نظر از هیچ طریقی میسر نشد. ممکن است نشانی آن تغییر کرده باشد. تلاش کنید حین باز بودن TrebleShot، دوباره به شبکه وصل شوید.</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">برای ایجاد یک شماره منحصربه‌فرد بلندمدت که می‌تواند در شناسایی دستگاه شما توسط دیگران کمک کند، TrebleShot نیاز دارد تا به شماره سریال دستگاه شما دسترسی داشته باشد</string>
+    <string name="text_automaticNetworkConnectionFailed">اتصال به وسیله مورد نظر از هیچ طریقی میسر نشد. ممکن است نشانی
+        آن تغییر کرده باشد. تلاش کنید حین باز بودن TrebleShot، دوباره به شبکه وصل شوید.
+    </string>
+    <string name="text_requestPermissionReadPhoneStateSummary">برای ایجاد یک شماره منحصربه‌فرد بلندمدت که می‌تواند در
+        شناسایی دستگاه شما توسط دیگران کمک کند، TrebleShot نیاز دارد تا به شماره سریال دستگاه شما دسترسی داشته باشد
+    </string>
     <string name="text_mediaDirectory">پوشه رسانه</string>
     <string name="mesg_notEnoughSpace">فضای کافی موجود نیست</string>
     <string name="text_totalIncomingSize">مجموع حجم پرونده‌های دریافتی</string>
@@ -280,14 +288,19 @@
     <string name="text_restrictedAccessStorage">%s (دسترسی محدود)</string>
     <string name="text_emptySearchResult">فاقد نتیجه برای «%s»</string>
     <string name="text_flagResume">پخش ادامه یافت</string>
-    <string name="mesg_versionNotSupported">لطفا به یک نسخه مورد پشتیبانی ارتقا داده و دستگاه‌ها را از نو اسکن کنید.</string>
+    <string name="mesg_versionNotSupported">لطفا به یک نسخه مورد پشتیبانی ارتقا داده و دستگاه‌ها را از نو اسکن کنید.
+    </string>
     <string name="mesg_connectionUpdated">اکنون در حال ارتباط از راه تماس «%s»</string>
-    <string name="mesg_hotspotCreatedInfo">در «تنظیمات وای‌فای» به «%s» وصل شده و یا با کمک «%s» از داخل TrebleShot، پرونده‌ها را بفرستید</string>
+    <string name="mesg_hotspotCreatedInfo">در «تنظیمات وای‌فای» به «%s» وصل شده و یا با کمک «%s» از داخل TrebleShot،
+        پرونده‌ها را بفرستید
+    </string>
     <string name="mesg_deviceConnectionError">اتصال با «%s» از راه «%s» ناموفق بود</string>
-    <string name="text_saveAnywaySummary">فرستنده نمی‌داند پرونده کجاست، اما شما همچنان می‌توانید آن را ذخیره کنید</string>
+    <string name="text_saveAnywaySummary">فرستنده نمی‌داند پرونده کجاست، اما شما همچنان می‌توانید آن را ذخیره کنید
+    </string>
     <string name="butn_sortOrder">ترتیب چینش</string>
     <string name="text_networkServiceDiscovery">فعال‌کردن NSD</string>
-    <string name="mesg_updateDownloadComplete">به‌روزرسانی با موفقیت دریافت و در پرونده‌های دریافتی‌تان دخیر ه شد</string>
+    <string name="mesg_updateDownloadComplete">به‌روزرسانی با موفقیت دریافت و در پرونده‌های دریافتی‌تان دخیر ه شد
+    </string>
     <string name="mesg_listRefreshSnoozed">سیاهه به محض دردسترس بودن تازه‌سازی خواهند شد</string>
     <string name="mesg_errorReadFolder">دسترسی امکان پذیر نیست «%s»</string>
     <string name="mesg_mountDirectoryHelp">پوشه مورد نظر خود را انتخاب کنید</string>
@@ -344,13 +357,18 @@
     <string name="text_transactionGroupDetails">جزئیات گروه تبادل</string>
     <string name="text_remainingTime">زمان باقی مانده %s</string>
     <string name="mesg_errorHotspotPermission">برنامه برای تنظیم hotspot نیاز به مجوز دارد</string>
-    <string name="text_trebleshotHotspotDescription">شما میتوانید از طریق شبکه ساخته شده توسط دستگاه نزدیکتان، فایل ها را به طور مستقیم انتقال دهید.</string>
+    <string name="text_trebleshotHotspotDescription">شما میتوانید از طریق شبکه ساخته شده توسط دستگاه نزدیکتان، فایل ها
+        را به طور مستقیم انتقال دهید.
+    </string>
     <string name="mesg_connectingToSelfHotspot">در حال اتصال به شکبه تربل شات</string>
-    <string name="mesg_warningHotspotMobileActive">دستگاه های متصل شده ممکن است از اینترنت تلفن همراه شما استفاده کنند. شاید بخواهید آن را خاموش کنید.</string>
+    <string name="mesg_warningHotspotMobileActive">دستگاه های متصل شده ممکن است از اینترنت تلفن همراه شما استفاده کنند.
+        شاید بخواهید آن را خاموش کنید.
+    </string>
     <string name="mesg_scanningSelfHotspot">در حال جستجوی شبکه</string>
     <string name="mesg_suggestSelfHotspot">با روشن کردن وای فای میتوانید به جستجوی شبکه بپردازید</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">به برنامه اجازه جستجو و ایجاد شبکه دهید</string>
-    <string name="mesg_locationDisabledSelfHotspot">برای دیدن نتیجه بررسی و ساخت شبکه «موقعیت مکانی» را روشن کنید</string>
+    <string name="mesg_locationDisabledSelfHotspot">برای دیدن نتیجه بررسی و ساخت شبکه «موقعیت مکانی» را روشن کنید
+    </string>
     <string name="mesg_stoppingSelfHotspot">در حال متوقف کردن شبکه</string>
     <string name="mesg_startingSelfHotspot">در حال راه اندازی شبکه</string>
     <string name="mesg_retryReceivingNotice">برنامه برای دریافت انتقالی های مختل شده تلاش می کند</string>
@@ -361,7 +379,8 @@
     <string name="text_fileRoot">ریشه فایل</string>
     <string name="text_workerService">سرویس کارگر</string>
     <string name="text_qrCodeAvailableHelp">برای اشتراک گزاری با دستگاه ها این کد را اسکن کنید</string>
-    <string name="text_qrCodeHotspotDisabledHelp">یک هات اسپات راه بیاندازید تا دیگران امکان اتصال به شما را بیابند</string>
+    <string name="text_qrCodeHotspotDisabledHelp">یک هات اسپات راه بیاندازید تا دیگران امکان اتصال به شما را بیابند
+    </string>
     <string name="text_scanQRCodeHelp">کد QR موجود در صفحه دستگاه میزبان را اسکن کنید</string>
     <string name="butn_qrScanToSend">برای ارسال کد QR را اسکن کنید</string>
     <string name="butn_qrToggle">نماش و مخفی کردن کد QR</string>
@@ -371,12 +390,15 @@
     <string name="text_thirdPartyLibraries">کتابخانه های شخص ثالث</string>
     <string name="text_killServiceAfterLeaving">خروج از برنامه منجر به توقف سرویس می شود</string>
     <string name="text_emptySymbol">-</string>
-    <string name="mesg_notSavingToChosenLocation">دسترسی به پوشه دلخواه شما امکان پذیر نیست، فایل ها در پوشه پیشفرض ذخیره خواهند شد.
-\n
-\n%s</string>
+    <string name="mesg_notSavingToChosenLocation">دسترسی به پوشه دلخواه شما امکان پذیر نیست، فایل ها در پوشه پیشفرض
+        ذخیره خواهند شد.
+        \n
+        \n%s
+    </string>
     <string name="butn_changelog">تغییرات</string>
     <string name="text_changelog">تغییرات</string>
-    <string name="mesg_versionUpdatedChangelog">شما برنامه را بروز کرده اید، مایلید ویژگی های جدید را مشاهده کنید؟</string>
+    <string name="mesg_versionUpdatedChangelog">شما برنامه را بروز کرده اید، مایلید ویژگی های جدید را مشاهده کنید؟
+    </string>
     <string name="mesg_versionUpdatedChangelogRejected">همیشه میتوانید «تغییرات» را در قسمت «درباره» ببینید</string>
     <string name="butn_allow">قبول</string>
     <string name="text_listEmptyTransfer">تمام نقل و انتقالات در اینجا ظاهر می شوند</string>
@@ -399,7 +421,9 @@
     <string name="ques_needHelp">نیاز به کمک دارید؟</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">آیا موارد لازم را در دستگاه دیگر آماده کرده اید؟</string>
     <string name="ques_connectionWizardIsThereQRCode">آیا یک کد QR (بارکد) در صفحه آن می بینید؟</string>
-    <string name="ques_connectionWizardUseKnownDevices">آیا می خواهید به دستگاه هایی که قبلا متصل شده اید، دسترسی داشته باشید؟</string>
+    <string name="ques_connectionWizardUseKnownDevices">آیا می خواهید به دستگاه هایی که قبلا متصل شده اید، دسترسی داشته
+        باشید؟
+    </string>
     <string name="butn_yes">بله</string>
     <string name="butn_no">خیر</string>
     <string name="text_loadThumbnails">نمایش تصاویر کوچک</string>
@@ -437,7 +461,9 @@
     <string name="text_amoledOptimizedBlackThemeSummary">استفاده از رنگ های تیره تر</string>
     <string name="butn_enterIpAddress">آدرس IP را وارد کنید</string>
     <string name="butn_webShare">اشتراک گذاری بوسیله مرورگر</string>
-    <string name="text_webShareNoContentNotice">"از گزینه  «اشتراک گذاری بوسیله مرورگر» برای دیدن نقل و انتقالات استفاده کنید!"</string>
+    <string name="text_webShareNoContentNotice">"از گزینه «اشتراک گذاری بوسیله مرورگر» برای دیدن نقل و انتقالات استفاده
+        کنید!"
+    </string>
     <string name="butn_shareOnBrowser">اشتراک گذاری روی مرورگر</string>
     <string name="butn_hideOnBrowser">مخفی کردن روی مرورگر</string>
     <string name="text_transferSharedOnBrowser">اشتراک گذاری شده روی مرورگر</string>
@@ -445,7 +471,8 @@
     <string name="text_dowloadTrebleshotAndroid">دانلود TrebleShot برای اندروید</string>
     <string name="text_listEmptyConnection">شبکه هایی که به آنها متصل می شوید اینجا نمایش داده می شوند</string>
     <string name="mesg_errorNotAnIpAddress">نشانی IP نامعتبر است
-\n(مثل 192.168.1.2)</string>
+        \n(مثل 192.168.1.2)
+    </string>
     <string name="text_trebleshotHotspot">هات اسپات TrebleShot</string>
     <string name="mesg_scanningDevicesSelfHotspot">به دنبال دستگاه هایی روی یک شبکه هات اسپات TrebleShot هستیم</string>
     <string name="text_movedCacheFiles">فایل های ذخیره شده منتقل شده اند</string>
@@ -453,31 +480,48 @@
     <string name="text_hotspotStartsTrustZoneSummary">منطقه امن نیز به همین ترتیب آغاز خواهد شد</string>
     <string name="text_qrAllowTrustZone">منطقه امن برای کد QR</string>
     <string name="text_connectionWizard">مراحل اتصال</string>
-    <string name="ques_connectionWizardUseNetwork">آیا میخواهید از روتر و یا هر شبکه وای فایی که شما و دوستانتان به آن متصل هستید استفاده شود؟</string>
+    <string name="ques_connectionWizardUseNetwork">آیا میخواهید از روتر و یا هر شبکه وای فایی که شما و دوستانتان به آن
+        متصل هستید استفاده شود؟
+    </string>
     <string name="text_notAllowedHelp">"بررسی کنید آیا به %1$s مجازید
-\n
-\nدستگاه‌ها &gt;  %2$s &gt; اجازه اتصال &gt; (بررسی کنید)"</string>
+        \n
+        \nدستگاه‌ها &gt; %2$s &gt; اجازه اتصال &gt; (بررسی کنید)"
+    </string>
     <string name="text_emulatedMediaDirectory">شبیه‌سازی شده (%s)</string>
     <string name="text_networkServiceDiscoverySummary">کشف سرویس شبکه اکتشاف‌پذیری را بهبود می‌بخشد</string>
     <string name="butn_mountDirectory">سوار کردن پوشه</string>
     <string name="butn_ejectDirectory">پیاده کردن پوشه</string>
     <string name="text_qrAllowTrustZoneSummary">مجاز کردن TrustZone برای ارتباط‌های کد QR</string>
-    <string name="mesg_noPendingTransferObjectExists">انتقال معلقی باقی نمانده است. برای ادامهٔ فایل‌های وقفه یافته، گزینهٔ \'تلاش مجدد دریافت\' را استفاده کنید.</string>
-    <string name="text_addDeviceHelp">با افزودن دستگاه‌ها، می‌توانید فایل مشترکی را با دستگاه‌های بیشتر به اشتراک بگذارید. وقتی تمام شود شما به انتقال بازگردانده خواهد شد.</string>
-    <string name="text_connectionHelp">انتخاب یک گزینه برای اتصال به سایر دستگاه‌ها. برای نمونه، اگر سایر دستگاه‌ها کد QR نشان می‌دهند، گزینهٔ اسکن کد QR را استفاده کنید.</string>
-    <string name="ques_connectionWizardUseHotspot">آیا می‌خواهید سایر دستگاه‌ها با هات‌اسپات به این دستگاه وصل شوند؟ اگر نمی‌دانید که هات‌اسپات چیست، بله را بفشارید.</string>
-    <string name="text_hotspotStartedExternallyNotice">هات‌اسپات از بیرون شروع شده است. برای استفاده کد QR، شما باید اینجا آن را شروع کنید.</string>
+    <string name="mesg_noPendingTransferObjectExists">انتقال معلقی باقی نمانده است. برای ادامهٔ فایل‌های وقفه یافته،
+        گزینهٔ \'تلاش مجدد دریافت\' را استفاده کنید.
+    </string>
+    <string name="text_addDeviceHelp">با افزودن دستگاه‌ها، می‌توانید فایل مشترکی را با دستگاه‌های بیشتر به اشتراک
+        بگذارید. وقتی تمام شود شما به انتقال بازگردانده خواهد شد.
+    </string>
+    <string name="text_connectionHelp">انتخاب یک گزینه برای اتصال به سایر دستگاه‌ها. برای نمونه، اگر سایر دستگاه‌ها کد
+        QR نشان می‌دهند، گزینهٔ اسکن کد QR را استفاده کنید.
+    </string>
+    <string name="ques_connectionWizardUseHotspot">آیا می‌خواهید سایر دستگاه‌ها با هات‌اسپات به این دستگاه وصل شوند؟ اگر
+        نمی‌دانید که هات‌اسپات چیست، بله را بفشارید.
+    </string>
+    <string name="text_hotspotStartedExternallyNotice">هات‌اسپات از بیرون شروع شده است. برای استفاده کد QR، شما باید
+        اینجا آن را شروع کنید.
+    </string>
     <string name="butn_revokePin">ابطال PIN</string>
-    <string name="mesg_errorNotTrusted">این دستگاه نیاز است که به‌عنوان دستگاه TrustZone در دستگاه دریافت کنده تنظیم شده باشد که این عملیات را انجام دهد.</string>
+    <string name="mesg_errorNotTrusted">این دستگاه نیاز است که به‌عنوان دستگاه TrustZone در دستگاه دریافت کنده تنظیم شده
+        باشد که این عملیات را انجام دهد.
+    </string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="text_webShare">@string/butn_webShare</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">یا</string>
-    <string name="text_webShareInfo">در زیر پیوندهایی می‌بینید که دستگاه‌های در شبکهٔ مشترک می‌توانند به یک مرورگر وصل شوند. در ادامه، اشتراک‌گذاری وبی را برای تک‌تک انتقال‌ها فعال کنید.</string>
+    <string name="text_webShareInfo">در زیر پیوندهایی می‌بینید که دستگاه‌های در شبکهٔ مشترک می‌توانند به یک مرورگر وصل
+        شوند. در ادامه، اشتراک‌گذاری وبی را برای تک‌تک انتقال‌ها فعال کنید.
+    </string>
     <string name="ques_shareAsApkOrLink">هم‌رسانی به صورت پیوند یا APK؟</string>
     <string name="butn_asApk">به صورت APK</string>
     <string name="butn_asLink">به صورت یک پیوند</string>
-    <string name="text_linkTrebleshot">"با تربل‌شات پرونده‌ها را هم‌رسانی کنید! بارگیری از:  %s"</string>
+    <string name="text_linkTrebleshot">"با تربل‌شات پرونده‌ها را هم‌رسانی کنید! بارگیری از: %s"</string>
     <string name="butn_downloadAllAsZip">همه را به صورت ZIP بارگیری کنید (تکی، فشرده‌نشده)</string>
     <string name="text_interfaceVPN">سرور VPN</string>
     <string name="text_unrecognizedQrCode">کد شناسایی نشده</string>

@@ -25,11 +25,11 @@
             android:title="@string/butn_previewSelections"/>
 
     <item
-        android:id="@+id/action_mode_abs_editable_select_all"
-        android:title="@string/butn_selectAll"/>
+            android:id="@+id/action_mode_abs_editable_select_all"
+            android:title="@string/butn_selectAll"/>
 
     <item
-        android:id="@+id/action_mode_abs_editable_select_none"
-        android:title="@string/butn_selectNone"/>
+            android:id="@+id/action_mode_abs_editable_select_none"
+            android:title="@string/butn_selectNone"/>
 
 </menu>

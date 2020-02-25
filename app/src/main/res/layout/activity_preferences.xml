@@ -17,17 +17,17 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
     <fragment
-        android:id="@+id/preferences_activity_preferences_fragment"
-        android:name="com.genonbeta.TrebleShot.fragment.PreferencesFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            android:id="@+id/preferences_activity_preferences_fragment"
+            android:name="com.genonbeta.TrebleShot.fragment.PreferencesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     <View
-        style="@style/DividerStyle"
-        android:layout_gravity="bottom" />
+            style="@style/DividerStyle"
+            android:layout_gravity="bottom"/>
 
 </FrameLayout>

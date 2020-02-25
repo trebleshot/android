@@ -28,7 +28,7 @@
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d ফাইল নির্বাচন করা হয়েছে</item>
-        <item quantity="other">"%d ফাইলটি  নির্বাচন করা হয়েছে"</item>
+        <item quantity="other">"%d ফাইলটি নির্বাচন করা হয়েছে"</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
         <item quantity="one">এই মুলতুবি স্থানান্তর সরানো হবে</item>
@@ -56,7 +56,7 @@
     </plurals>
     <plurals name="text_fileDeletionCompleted">
         <item quantity="one">%d ফাইল মোছা হয়েছে</item>
-        <item quantity="other">"%d ফাইলগুলো  মোছা হয়েছে"</item>
+        <item quantity="other">"%d ফাইলগুলো মোছা হয়েছে"</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">একক সারি</item>

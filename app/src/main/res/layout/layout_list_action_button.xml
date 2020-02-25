@@ -18,30 +18,30 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector"
-    android:orientation="horizontal">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?rectSelector"
+                android:orientation="horizontal">
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/text"
-        style="?borderlessButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:clickable="false"
-        app:backgroundTint="@android:color/transparent" />
+            android:id="@+id/text"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:clickable="false"
+            app:backgroundTint="@android:color/transparent"/>
 
     <ImageView
-        android:id="@+id/icon"
-        style="@style/ListContentIconStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/text"
-        android:layout_toLeftOf="@id/text"
-        android:visibility="gone"
-        app:tint="?colorSecondary" />
+            android:id="@+id/icon"
+            style="@style/ListContentIconStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/text"
+            android:layout_toLeftOf="@id/text"
+            android:visibility="gone"
+            app:tint="?colorSecondary"/>
 
 </RelativeLayout>

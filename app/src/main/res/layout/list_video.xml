@@ -17,81 +17,81 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout"
-    style="@style/ListContentLayoutStyle.Narrow.WithOverflowButton"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/layout"
+                style="@style/ListContentLayoutStyle.Narrow.WithOverflowButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?rectSelector">
 
     <ImageView
-        android:id="@+id/visitView"
-        style="@style/OverflowButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+            android:id="@+id/visitView"
+            style="@style/OverflowButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_open_in_new_white_24dp"/>
 
     <FrameLayout
-        android:id="@+id/layout_image"
-        style="@style/ListContentIconStyle"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:background="?contentShowingBackground">
+            android:id="@+id/layout_image"
+            style="@style/ListContentIconStyle"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="?contentShowingBackground">
 
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center" />
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
 
-        <include layout="@layout/generic_view_selection" />
+        <include layout="@layout/generic_view_selection"/>
 
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/visitView"
-        android:layout_toLeftOf="@+id/visitView"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toRightOf="@id/layout_image"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/text"
-            style="@style/TextAppearance.Primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="3" />
-
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
-
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/visitView"
+            android:layout_toLeftOf="@+id/visitView"
+            android:layout_toEndOf="@id/layout_image"
+            android:layout_toRightOf="@id/layout_image"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/text"
+                style="@style/TextAppearance.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3"/>
+
+        <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/text2"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    android:id="@+id/text2"
+                    style="@style/TextAppearance.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
             <TextView
-                style="@style/TextSeparatorMiddleDot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    style="@style/TextSeparatorMiddleDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
             <TextView
-                android:id="@+id/text3"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    android:id="@+id/text3"
+                    style="@style/TextAppearance.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
         </LinearLayout>
     </LinearLayout>

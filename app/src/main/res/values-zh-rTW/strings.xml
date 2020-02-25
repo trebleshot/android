@@ -106,7 +106,7 @@
     <string name="text_stopping">停止中!</string>
     <string name="text_cancellingTransfer">正在取消任務…</string>
     <string name="butn_killNow">現在終止</string>
-    <string name="mesg_groupOngoingNotice">"正在傳送這個檔案前等待 %s  來完成"</string>
+    <string name="mesg_groupOngoingNotice">"正在傳送這個檔案前等待 %s 來完成"</string>
     <string name="butn_proceed">繼續</string>
     <string name="ques_removeQueue">移除傳送項目\?</string>
     <string name="butn_remove">移除</string>
@@ -130,8 +130,9 @@
     <string name="text_error">錯誤</string>
     <string name="ques_why">為什麼\?</string>
     <string name="text_notAllowedHelp">檢查您是否在 %1$s 被允許。
-\n
-\n裝置 &gt; %2$s &gt; 允許連線 &gt; (勾選)</string>
+        \n
+        \n裝置 &gt; %2$s &gt; 允許連線 &gt; (勾選)
+    </string>
     <string name="butn_saveTo">儲存至</string>
     <string name="mesg_secureExit">再次點擊來退出</string>
     <string name="butn_create">建立</string>

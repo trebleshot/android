@@ -17,12 +17,12 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/network_devices_scan"
-        android:icon="@drawable/ic_refresh_white_24dp"
-        android:orderInCategory="0"
-        android:title="@string/butn_scan"
-        app:showAsAction="always" />
+            android:id="@+id/network_devices_scan"
+            android:icon="@drawable/ic_refresh_white_24dp"
+            android:orderInCategory="0"
+            android:title="@string/butn_scan"
+            app:showAsAction="always"/>
 </menu>

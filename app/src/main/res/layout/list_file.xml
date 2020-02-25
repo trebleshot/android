@@ -17,74 +17,74 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/ListContentLayoutStyle.Narrow.WithOverflowButton"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                style="@style/ListContentLayoutStyle.Narrow.WithOverflowButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?rectSelector">
 
     <ImageView
-        android:id="@+id/menu"
-        style="@style/OverflowButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true" />
+            android:id="@+id/menu"
+            style="@style/OverflowButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
 
     <FrameLayout
-        android:id="@+id/layout_image"
-        style="@style/ListContentIconStyle"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true">
+            android:id="@+id/layout_image"
+            style="@style/ListContentIconStyle"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true">
 
         <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/text_image" />
+                android:id="@+id/thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/text_image"/>
 
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/text_image"
-            app:srcCompat="@drawable/ic_folder_white_24dp"
-            app:tint="?colorSecondary" />
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/text_image"
+                app:srcCompat="@drawable/ic_folder_white_24dp"
+                app:tint="?colorSecondary"/>
 
         <include
-            layout="@layout/generic_view_selection_rounded"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+                layout="@layout/generic_view_selection_rounded"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/menu"
-        android:layout_toLeftOf="@id/menu"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toRightOf="@id/layout_image"
-        android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/menu"
+            android:layout_toLeftOf="@id/menu"
+            android:layout_toEndOf="@id/layout_image"
+            android:layout_toRightOf="@id/layout_image"
+            android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text"
-            style="@style/TextAppearance.Primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="3" />
+                android:id="@+id/text"
+                style="@style/TextAppearance.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3"/>
 
         <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
 
         <TextView
-            android:id="@+id/text2"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
     </LinearLayout>
 
 </RelativeLayout>

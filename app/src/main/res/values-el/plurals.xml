@@ -17,52 +17,53 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<resources><plurals name="ques_deleteFile">
-    <item quantity="one">Θέλετε να διαγράψετε αυτό το αρχείο\?</item>
-    <item quantity="other">Θέλετε να διαγράψετε %d αρχεία\?</item>
-</plurals>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">Θέλετε να διαγράψετε αυτό το αρχείο\?</item>
+        <item quantity="other">Θέλετε να διαγράψετε %d αρχεία\?</item>
+    </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="one">"λήφθηκε %d αρχείο  "</item>
-	<item quantity="other">"λήφθηκαν %d αρχεία  "</item>
-</plurals>
+        <item quantity="one">"λήφθηκε %d αρχείο "</item>
+        <item quantity="other">"λήφθηκαν %d αρχεία "</item>
+    </plurals>
     <plurals name="text_itemSelected">
-	<item quantity="one">"επιλέχθηκε %d αρχείο "</item>
-	<item quantity="other">"επιλέχθηκαν %d αρχεία "</item>
-</plurals>
+        <item quantity="one">"επιλέχθηκε %d αρχείο "</item>
+        <item quantity="other">"επιλέχθηκαν %d αρχεία "</item>
+    </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">η εκκρεμούσα μεταφορά θα ακυρωθή</item>
-	<item quantity="other">"οι %d εκκρεμούσες μεταφορές θα ακυρωθούν "</item>
-</plurals>
+        <item quantity="one">η εκκρεμούσα μεταφορά θα ακυρωθή</item>
+        <item quantity="other">"οι %d εκκρεμούσες μεταφορές θα ακυρωθούν "</item>
+    </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">"%d σύνδεση "</item>
-	<item quantity="other">"%d συνδέσεις "</item>
-</plurals>
+        <item quantity="one">"%d σύνδεση "</item>
+        <item quantity="other">"%d συνδέσεις "</item>
+    </plurals>
     <plurals name="ques_receiveMultipleFiles">
-    <item quantity="one">Λήψη αυτού του αρχείου\?</item>
-    <item quantity="other">Λήψη αυτών των αρχείων\?</item>
-</plurals>
+        <item quantity="one">Λήψη αυτού του αρχείου\?</item>
+        <item quantity="other">Λήψη αυτών των αρχείων\?</item>
+    </plurals>
     <plurals name="text_files">
-	<item quantity="one">"%d αρχείο "</item>
-	<item quantity="other">"%d αρχεία "</item>
-</plurals>
+        <item quantity="one">"%d αρχείο "</item>
+        <item quantity="other">"%d αρχεία "</item>
+    </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="one">πρίν από ένα δευτερόλεπτο</item>
-	<item quantity="other">%d δευτερόλεπτα πρίν</item>
-</plurals>
+        <item quantity="one">πρίν από ένα δευτερόλεπτο</item>
+        <item quantity="other">%d δευτερόλεπτα πρίν</item>
+    </plurals>
     <plurals name="text_minutesAgo">
-	<item quantity="one">"πρίν από ένα λεπτό "</item>
-	<item quantity="other">"%d λεπτά πρίν "</item>
-</plurals>
+        <item quantity="one">"πρίν από ένα λεπτό "</item>
+        <item quantity="other">"%d λεπτά πρίν "</item>
+    </plurals>
     <plurals name="text_fileDeletionCompleted">
-	<item quantity="one">"%d αρχείο διαγράφηκε "</item>
-	<item quantity="other">"%d αρχεία διαγράφηκαν "</item>
-</plurals>
+        <item quantity="one">"%d αρχείο διαγράφηκε "</item>
+        <item quantity="other">"%d αρχεία διαγράφηκαν "</item>
+    </plurals>
     <plurals name="text_gridRow">
-	<item quantity="one">μονή σειρά</item>
-	<item quantity="other">%d σειρές</item>
-</plurals>
+        <item quantity="one">μονή σειρά</item>
+        <item quantity="other">%d σειρές</item>
+    </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">μεμονομένη κοινή χρήση</item>
-	<item quantity="other">"κοινή χρήση με %d συσκευές "</item>
-</plurals>
+        <item quantity="one">μεμονομένη κοινή χρήση</item>
+        <item quantity="other">"κοινή χρήση με %d συσκευές "</item>
+    </plurals>
 </resources>

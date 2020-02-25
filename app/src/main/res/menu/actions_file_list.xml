@@ -20,14 +20,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/actions_file_list_toggle_shortcut"
-        android:orderInCategory="98"
-        android:title="@string/butn_addShortcut"
-        android:visible="true" />
+            android:id="@+id/actions_file_list_toggle_shortcut"
+            android:orderInCategory="98"
+            android:title="@string/butn_addShortcut"
+            android:visible="true"/>
 
     <item
-        android:id="@+id/actions_file_list_mount_directory"
-        android:orderInCategory="99"
-        android:title="@string/butn_mountDirectory"
-        android:visible="false" />
+            android:id="@+id/actions_file_list_mount_directory"
+            android:orderInCategory="99"
+            android:title="@string/butn_mountDirectory"
+            android:visible="false"/>
 </menu>

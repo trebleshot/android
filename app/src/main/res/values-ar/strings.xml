@@ -151,14 +151,18 @@
     <string name="text_transactionViewer">عرض الحركة</string>
     <string name="text_error">خطأ</string>
     <string name="ques_why">لماذا؟</string>
-    <string name="text_notAllowedHelp">تحقق إذا كان مسموح لك في قائمة الأجهزة s $ %1 &gt; %2$ s &gt; السماح للاتصال &gt; (التحقق من ذلك)</string>
+    <string name="text_notAllowedHelp">تحقق إذا كان مسموح لك في قائمة الأجهزة s $ %1 &gt; %2$ s &gt; السماح للاتصال &gt;
+        (التحقق من ذلك)
+    </string>
     <string name="butn_saveTo">حفظ إلى</string>
     <string name="mesg_secureExit">اضغط مرة أخرى للخروج</string>
     <string name="butn_create">إنشاء</string>
     <string name="text_createFolder">إنشاء مجلد</string>
     <string name="mesg_fileAlreadyExists">الملف موجود مسبقا</string>
     <string name="mesg_folderCreateError">تعذر إنشاء المجلد</string>
-    <string name="text_requestPermissionStorageSummary">يسمح هذا الإذن تريبليشوت بالقراءة والكتابة الى ذاكرة الجهاز الخاص بك لتلقي وتبادل الملفات.</string>
+    <string name="text_requestPermissionStorageSummary">يسمح هذا الإذن تريبليشوت بالقراءة والكتابة الى ذاكرة الجهاز
+        الخاص بك لتلقي وتبادل الملفات.
+    </string>
     <string name="butn_settings">إعدادات</string>
     <string name="butn_selectThis">حدد هذا الخيار</string>
     <string name="butn_newFile">ملف جديد</string>
@@ -181,7 +185,9 @@
     <string name="text_chooseFile">اختر ملف</string>
     <string name="mesg_pathSameError">لا يمكنك تحديد المجلد القديم</string>
     <string name="ques_checkOldFiles">تحقق من الملفات التالفة ؟</string>
-    <string name="text_checkOldFiles">الرجاء الانتظار بينما يتم النقل إلى المجلد الذي اخترته اللملفات المستلمة أو تخطي بالنقر على \"رفض\"</string>
+    <string name="text_checkOldFiles">الرجاء الانتظار بينما يتم النقل إلى المجلد الذي اخترته اللملفات المستلمة أو تخطي
+        بالنقر على \"رفض\"
+    </string>
     <string name="mesg_newFilesReceived">تم استلام ملفات جديدة</string>
     <string name="butn_show">إظهار</string>
     <string name="text_preparingFiles">تجهيز الملفات</string>
@@ -201,14 +207,19 @@
     <string name="text_shareTextShort">نص</string>
     <string name="butn_feelLucky">شعور محظوظ</string>
     <string name="butn_connectionList">توصيل</string>
-    <string name="text_automaticNetworkConnectionFailed">لم تعمل أيا من اتصالات الجهاز. ربما تم تغيير العنوان الخاص بك . حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.</string>
+    <string name="text_automaticNetworkConnectionFailed">لم تعمل أيا من اتصالات الجهاز. ربما تم تغيير العنوان الخاص بك .
+        حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.
+    </string>
     <string name="text_automaticNetworkConnectionOngoing">وسوف يقرر تريبليشوت لك</string>
     <string name="butn_retryReceiving">اعادة المحاولة للجميع</string>
     <string name="butn_ask">اسأل</string>
     <string name="text_permissionRequest">طلب الإذن</string>
     <string name="text_requestPermissionStorage">إذن التخزين</string>
     <string name="text_requestPermissionReadPhoneState">إذن لقراءة حالة الهاتف</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">تريبليشوت يستخدم الرقم التسلسلي للهاتف الخاص بك لإنشاء رقم هوية طويلة الأمد للجهاز الخاص بك، مما يساعد على أجهزة أخرى تعمل تريبليشوت ليتعرف عليه. يتم تشغيل الجهاز الخاص بك أوريو أو أعلى وتريبليشوت يتطلب هذا الإذن إحضار الرقم التسلسلي. رفض سوف يتسبب إيقاف تريبليشوت.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">تريبليشوت يستخدم الرقم التسلسلي للهاتف الخاص بك لإنشاء
+        رقم هوية طويلة الأمد للجهاز الخاص بك، مما يساعد على أجهزة أخرى تعمل تريبليشوت ليتعرف عليه. يتم تشغيل الجهاز
+        الخاص بك أوريو أو أعلى وتريبليشوت يتطلب هذا الإذن إحضار الرقم التسلسلي. رفض سوف يتسبب إيقاف تريبليشوت.
+    </string>
     <string name="text_mediaDirectory">دليل الوسائط</string>
     <string name="text_emulatedMediaDirectory">تمت محاكاتها (%s)</string>
     <string name="mesg_notEnoughSpace">لا توجد مساحة كافية</string>
@@ -241,9 +252,12 @@
     <string name="text_trebleshotHotspot">تريبليشوت نقطة الوصول الساخنة</string>
     <string name="butn_connect">اتصال</string>
     <string name="butn_disconnect">قطع الاتصال</string>
-    <string name="text_trebleshotHotspotDescription">يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة المفتوحة التي تم إنشاؤها بواسطة جهاز تريبليشوت قريبة.</string>
+    <string name="text_trebleshotHotspotDescription">يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة المفتوحة التي تم
+        إنشاؤها بواسطة جهاز تريبليشوت قريبة.
+    </string>
     <string name="mesg_connectingToSelfHotspot">"الاتصال الى نقطة وصول تريبليشوت الساخنة "</string>
-    <string name="mesg_warningHotspotMobileActive">البعض الآخر قد الاتصال بشبكة الاتصال أثناء البيانات المتنقلة النشطة</string>
+    <string name="mesg_warningHotspotMobileActive">البعض الآخر قد الاتصال بشبكة الاتصال أثناء البيانات المتنقلة النشطة
+    </string>
     <string name="butn_skip">تخطي</string>
     <string name="mesg_scanningSelfHotspot">البحث عن نقطة ساخنة تريبليشوت</string>
     <string name="mesg_suggestSelfHotspot">يمكنك تمكين اللاسلكي للبحث عن نقطة ساخنة تريبليشوت</string>
@@ -264,13 +278,15 @@
     <string name="mesg_ongoingUpdateDownload">تحميل الإصدار الجديد</string>
     <string name="butn_gotIt">فهمت ذلك</string>
     <string name="mesg_helpFolderSelection">لتحديد مجلد، انقر فوق الرمز الخاص به</string>
-    <string name="mesg_hotspotCreatedInfo">الاتصال ب \"%s\" في \"إعدادات وأي فأي\" أو إرسال الملفات عن طريق \"%s\" داخل تريبليشوت</string>
+    <string name="mesg_hotspotCreatedInfo">الاتصال ب \"%s\" في \"إعدادات وأي فأي\" أو إرسال الملفات عن طريق \"%s\" داخل
+        تريبليشوت
+    </string>
     <string name="butn_selectAll">تحديد الكل</string>
     <string name="butn_selectNone">لا تحدد شيء</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
     <string name="mesg_errorHotspotPermission">تريبليشوت يحتاج إلى إذن لإنشاء نقطة ساخنة</string>
     <string name="mesg_deviceConnectionError">لقد فشل الاتصال من \"%s\" الى \"%s\"</string>
-    <string name="mesg_retryReceivingNotice">"تريبليشوت سيقوم بإعادة المحاولة  لتلقي ملفات تمت مقاطعتها"</string>
+    <string name="mesg_retryReceivingNotice">"تريبليشوت سيقوم بإعادة المحاولة لتلقي ملفات تمت مقاطعتها"</string>
     <string name="mesg_transferConnectionNotSetUpFix">الرجاء تحديث الاتصال أولاً باستخدام \"تغيير الاتصال\"</string>
     <string name="butn_setUp">الإعداد</string>
     <string name="text_location">موقع زائف</string>
@@ -278,7 +294,9 @@
     <string name="text_receivedSize">حجم الملفات المستلمة</string>
     <string name="mesg_notValidTransfer">ارسال الملفات غير صالح بعد الآن</string>
     <string name="ques_saveAnyway">حفظ على أي حال؟</string>
-    <string name="text_saveAnywaySummary">المرسل إزال هذا النقل من القائمة الخاصة به ، بالرغم أنها لم تكتمل. إذا قمت بالمتابعة سيتم حفظ الملفات التي يتم تلقيها جزئيا كما لو أنها قد وردت.</string>
+    <string name="text_saveAnywaySummary">المرسل إزال هذا النقل من القائمة الخاصة به ، بالرغم أنها لم تكتمل. إذا قمت
+        بالمتابعة سيتم حفظ الملفات التي يتم تلقيها جزئيا كما لو أنها قد وردت.
+    </string>
     <string name="mesg_fileSaved">تم حفظ الملف</string>
     <string name="butn_sortBy">فرز بحسب</string>
     <string name="butn_sortOrder">ترتيب الفرز</string>
@@ -287,7 +305,9 @@
     <string name="text_sortByName">الاسم</string>
     <string name="text_sortByDate">التاريخ</string>
     <string name="text_sortBySize">الحجم</string>
-    <string name="text_trustZoneDeviceNotice">تفعيل هذا سيمكن هذا الجهاز لإرسال الملفات دون عرض مطالبة عند تشغيل المنطقة الموثوقة</string>
+    <string name="text_trustZoneDeviceNotice">تفعيل هذا سيمكن هذا الجهاز لإرسال الملفات دون عرض مطالبة عند تشغيل المنطقة
+        الموثوقة
+    </string>
     <string name="text_allowingToConnectNotice">عند تحديد هذا سوف تسمح للاجهزة الاخرى بلاتصال بجهازك</string>
     <string name="butn_resetToDefault">إعادة التعيين إلى الافتراضي</string>
     <string name="text_resetPreferencesToDefaultSummary">هذا سيعيد تطبيق الإعدادات الافتراضية</string>

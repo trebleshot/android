@@ -17,30 +17,30 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_about_option_fourth_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="15dp">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/activity_about_option_fourth_layout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="?rectSelector"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="15dp">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginEnd="30dp"
-        app:tint="?colorDonation"
-        app:srcCompat="@drawable/ic_favorite_white_24dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginEnd="30dp"
+            app:tint="?colorDonation"
+            app:srcCompat="@drawable/ic_favorite_white_24dp"/>
 
     <TextView
-        android:id="@+id/activity_about_option_fourth_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/butn_donate"
-        style="@style/TextAppearance.Primary.SingleLine" />
+            android:id="@+id/activity_about_option_fourth_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/butn_donate"
+            style="@style/TextAppearance.Primary.SingleLine"/>
 
 </LinearLayout>

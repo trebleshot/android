@@ -17,39 +17,39 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:padding="4dp">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="4dp">
 
-        <include layout="@layout/include_layout_hotspot_status_image_container" />
+        <include layout="@layout/include_layout_hotspot_status_image_container"/>
 
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="-6dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="-6dp"
-        android:layout_weight="1">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="-6dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="-6dp"
+            android:layout_weight="1">
 
         <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
 
             <include
-                layout="@layout/include_layout_hotspot_status_info_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                    layout="@layout/include_layout_hotspot_status_info_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
         </ScrollView>
 

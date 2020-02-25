@@ -17,20 +17,20 @@
   -->
 
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="@dimen/padding_list_content_parent_layout">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_list_content_parent_layout">
 
     <TextView
-        android:id="@+id/layout_list_title_text"
-        style="@style/CondensedTitleStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/padding_list_content_icon_main_margin_left"
-        android:paddingLeft="@dimen/padding_list_content_icon_main_margin_left"
-        android:paddingRight="@dimen/padding_list_content_icon_main_margin_left"
-        android:paddingStart="@dimen/padding_list_content_icon_main_margin_left"/>
+            android:id="@+id/layout_list_title_text"
+            style="@style/CondensedTitleStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/padding_list_content_icon_main_margin_left"
+            android:paddingLeft="@dimen/padding_list_content_icon_main_margin_left"
+            android:paddingRight="@dimen/padding_list_content_icon_main_margin_left"
+            android:paddingStart="@dimen/padding_list_content_icon_main_margin_left"/>
 
 </LinearLayout>

@@ -19,8 +19,8 @@
 
 <resources>
     <declare-styleable name="ComparativeRelativeLayout">
-        <attr name="baseOnSmallerLength" format="boolean" />
-        <attr name="tallerLengthExtra" format="dimension" />
-        <attr name="alwaysUseWidth" format="boolean" /> <!-- Do not define baseOnSmallerLength to use this -->
+        <attr name="baseOnSmallerLength" format="boolean"/>
+        <attr name="tallerLengthExtra" format="dimension"/>
+        <attr name="alwaysUseWidth" format="boolean"/> <!-- Do not define baseOnSmallerLength to use this -->
     </declare-styleable>
 </resources>
