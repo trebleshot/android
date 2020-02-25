@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,27 +44,25 @@ import java.util.List;
 
 public class SelectionEditorDialog extends AlertDialog.Builder
 {
+    public static final String TAG = SelectionEditorDialog.class.getSimpleName();
+
     private LayoutInflater mLayoutInflater;
     private SelfAdapter mAdapter;
-    private PerformerEngineProvider mProvider;
-    private List<MappedSelectable<?>> mList = new ArrayList<>();
+    private final List<MappedSelectable<?>> mList = new ArrayList<>();
 
     public SelectionEditorDialog(Activity activity, PerformerEngineProvider provider)
     {
         super(activity);
 
-        mProvider = provider;
         mLayoutInflater = LayoutInflater.from(activity);
         mAdapter = new SelfAdapter();
 
         IPerformerEngine engine = provider.getPerformerEngine();
+
         if (engine != null)
-            for (IBaseEngineConnection baseEngineConnection : engine.getConnectionList()) {
-                if (engine instanceof IEngineConnection<?>) {
-                    IEngineConnection<?> connection = (IEngineConnection<?>) baseEngineConnection;
-                    addToMappedObjectList(connection, connection.getAvailableList());
-                }
-            }
+            for (IBaseEngineConnection baseEngineConnection : engine.getConnectionList())
+                if (baseEngineConnection instanceof IEngineConnection<?>)
+                    addToMappedObjectList((IEngineConnection<?>) baseEngineConnection);
 
         View view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false);
         ListView listView = view.findViewById(R.id.listView);
@@ -89,15 +88,20 @@ public class SelectionEditorDialog extends AlertDialog.Builder
         removeSign.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
     }
 
-    private <T extends Selectable> void addToMappedObjectList(IEngineConnection<? extends T> connection,
-                                                              List<? extends T> list)
+    private <T extends Selectable> void addToMappedObjectList(IEngineConnection<T> connection)
     {
+        for (T selectable : connection.getSelectedItemList()) {
+            synchronized (mList) {
+                mList.add(new MappedSelectable<>(selectable, connection));
+            }
+        }
     }
 
     public void massCheck(boolean check)
     {
-        for (MappedSelectable<?> map : mList) {
-            //map.engineConnection.setSelected(map.selectable);
+        synchronized (mList) {
+            for (MappedSelectable<?> selectable : mList)
+                selectable.setSelectableSelected(check);
         }
 
         mAdapter.notifyDataSetChanged();
@@ -141,7 +145,7 @@ public class SelectionEditorDialog extends AlertDialog.Builder
             if (convertView == null)
                 convertView = mLayoutInflater.inflate(R.layout.list_selection, parent, false);
 
-            final Selectable selectable = (Selectable) getItem(position);
+            final MappedSelectable<?> selectable = (MappedSelectable<?>) getItem(position);
             final TextView text1 = convertView.findViewById(R.id.text);
             final View removalSignView = convertView.findViewById(R.id.removalSign);
 
@@ -155,15 +159,33 @@ public class SelectionEditorDialog extends AlertDialog.Builder
         }
     }
 
-    public static class MappedSelectable<T extends Selectable>
+    public static class MappedSelectable<T extends Selectable> implements Selectable
     {
-        public IEngineConnection<?> engineConnection;
+        public IEngineConnection<T> engineConnection;
         public T selectable;
 
-        public MappedSelectable(T selectable, IEngineConnection<? extends T> engineConnection)
+        public MappedSelectable(T selectable, IEngineConnection<T> engineConnection)
         {
             this.selectable = selectable;
             this.engineConnection = engineConnection;
+        }
+
+        @Override
+        public String getSelectableTitle()
+        {
+            return selectable.getSelectableTitle();
+        }
+
+        @Override
+        public boolean isSelectableSelected()
+        {
+            return selectable.isSelectableSelected();
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return engineConnection.setSelected(selectable, selected);
         }
     }
 }

@@ -188,18 +188,18 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
         }
 
         @Override
-        public Holder.Index<DocumentFile> onFirstItem()
+        public Index<DocumentFile> onFirstItem()
         {
-            return new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, null);
+            return new Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, null);
         }
 
         public void goTo(DocumentFile file)
         {
-            ArrayList<Holder.Index<DocumentFile>> pathIndex = new ArrayList<>();
+            ArrayList<Index<DocumentFile>> pathIndex = new ArrayList<>();
             DocumentFile currentFile = file;
 
             while (currentFile != null) {
-                Holder.Index<DocumentFile> index = new Holder.Index<>(currentFile.getName(), currentFile);
+                Index<DocumentFile> index = new Index<>(currentFile.getName(), currentFile);
 
                 pathIndex.add(index);
 

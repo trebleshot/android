@@ -38,7 +38,7 @@ import java.util.List;
 
 abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder<T>>
 {
-    private List<Holder.Index<T>> mList = new ArrayList<>();
+    private final List<Index<T>> mList = new ArrayList<>();
     private OnClickListener<T> mClickListener;
     private Context mContext;
 
@@ -52,7 +52,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
      * To fix issues with the RecyclerView not appearing, the first item must be provided
      * when dealing with wrap_content height.
      */
-    public abstract Holder.Index<T> onFirstItem();
+    public abstract Index<T> onFirstItem();
 
     @NonNull
     @Override
@@ -62,9 +62,9 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final Holder holder, int position)
+    public void onBindViewHolder(@NonNull final Holder<T> holder, int position)
     {
-        holder.index = mList.get(position);
+        holder.index = getList().get(position);
         holder.text.setText(holder.index.title);
         holder.image.setImageResource(holder.index.imgRes);
 
@@ -74,9 +74,9 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 
     public void initAdapter()
     {
-        synchronized (getList()) {
-            getList().clear();
-            getList().add(onFirstItem());
+        synchronized (mList) {
+            mList.clear();
+            mList.add(onFirstItem());
         }
     }
 
@@ -91,7 +91,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
         return mList.size();
     }
 
-    public List<Holder.Index<T>> getList()
+    public List<Index<T>> getList()
     {
         return mList;
     }
@@ -120,24 +120,24 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
             this.image = view.findViewById(R.id.list_pathresolver_image);
             this.text = view.findViewById(R.id.list_pathresolver_text);
         }
+    }
 
-        public static class Index<D>
+    public static class Index<D>
+    {
+        public String title;
+        public int imgRes;
+        public D object;
+
+        public Index(String title, int imgRes, D object)
         {
-            public String title;
-            public int imgRes;
-            public D object;
+            this.title = title;
+            this.imgRes = imgRes;
+            this.object = object;
+        }
 
-            public Index(String title, int imgRes, D object)
-            {
-                this.title = title;
-                this.imgRes = imgRes;
-                this.object = object;
-            }
-
-            public Index(String title, D object)
-            {
-                this(title, R.drawable.ic_keyboard_arrow_right_white_24dp, object);
-            }
+        public Index(String title, D object)
+        {
+            this(title, R.drawable.ic_keyboard_arrow_right_white_24dp, object);
         }
     }
 }

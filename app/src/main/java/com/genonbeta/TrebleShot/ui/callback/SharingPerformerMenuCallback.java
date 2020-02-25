@@ -18,10 +18,15 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
 public class SharingPerformerMenuCallback extends EditableListFragment.SelectionCallback<Shareable>
@@ -29,5 +34,19 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
     public SharingPerformerMenuCallback(Activity activity, PerformerEngineProvider provider)
     {
         super(activity, provider);
+    }
+
+    @Override
+    public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
+    {
+        super.onPerformerMenuList(performerMenu, inflater, targetMenu);
+        inflater.inflate(R.menu.action_mode_share, targetMenu);
+        return true;
+    }
+
+    @Override
+    public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
+    {
+        return super.onPerformerMenuClick(performerMenu, item);
     }
 }

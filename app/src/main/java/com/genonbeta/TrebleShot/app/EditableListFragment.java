@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -849,6 +850,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         {
             int id = item.getItemId();
 
+            Log.d(TAG, "onPerformerMenuClick: Click click");
+
             if (id == R.id.action_mode_abs_editable_select_all) {
             } else if (id == R.id.action_mode_abs_editable_select_none) {
             } else if (id == R.id.action_mode_abs_editable_preview_selections) {
@@ -878,7 +881,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                                                     IBaseEngineConnection owner, Selectable selectable,
                                                     boolean isSelected, int position)
         {
-            return false;
+            return true;
         }
 
         @Override
