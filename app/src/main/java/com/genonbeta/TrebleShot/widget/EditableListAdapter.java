@@ -296,9 +296,10 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 
     public synchronized void syncSelectionList()
     {
+        /*
         synchronized (getList()) {
             syncSelectionList(getList());
-        }
+        }*/
     }
 
     public synchronized void syncSelectionList(List<T> itemList)

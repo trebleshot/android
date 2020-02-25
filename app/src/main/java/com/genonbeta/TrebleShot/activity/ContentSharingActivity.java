@@ -78,8 +78,6 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
-        //mSelectionCallback = new SharingActionModeCallback<>(null);
-
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this,
                 getSupportFragmentManager())
         {
@@ -90,9 +88,6 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
                 if (fragment instanceof EditableListFragmentImpl<?>) {
                     EditableListFragmentImpl<?> fragmentImpl = (EditableListFragmentImpl<?>) fragment;
-
-                    // TODO: 22.02.2020 Set selection callback for selection connection
-                    //fragmentImpl.setSelectionCallback(mSelectionCallback);
 
                     if (viewPager.getCurrentItem() == item.getCurrentPosition())
                         attachListeners(fragmentImpl);

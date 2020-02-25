@@ -37,7 +37,7 @@ import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
 public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>, PerformerEngineProvider,
         IEngineConnection.SelectionListener<T>, TitleProvider
 {
-    boolean applyViewingChanges(int gridSize);
+    void applyViewingChanges(int gridSize);
 
     void changeGridViewSize(int gridSize);
 

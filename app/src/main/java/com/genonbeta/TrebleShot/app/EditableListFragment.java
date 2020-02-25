@@ -233,6 +233,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void onSelected(IPerformerEngine engine, IEngineConnection<T> owner, T selectable, boolean isSelected,
                            int position)
     {
+        if (position >= 0)
+            getAdapter().notifyItemChanged(position);
+        else
+            getAdapter().notifyAllSelectionChanges();
+
+        Log.d(TAG, "onSelected: " + owner.getDefinitiveTitle() + " selected=" + isSelected + " pos=" + position);
 
     }
 
@@ -437,15 +443,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         }
     }
 
-    public boolean applyViewingChanges(int gridSize)
+    public void applyViewingChanges(int gridSize)
     {
-        return applyViewingChanges(gridSize, false);
+        applyViewingChanges(gridSize, false);
     }
 
-    public boolean applyViewingChanges(int gridSize, boolean override)
+    public void applyViewingChanges(int gridSize, boolean override)
     {
         if (!getAdapter().isGridSupported() && !override)
-            return false;
+            return;
 
         getAdapter().notifyGridSizeUpdate(gridSize, isScreenLarge());
 
@@ -453,8 +459,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         getListView().setAdapter(getAdapter());
 
         refreshList();
-
-        return true;
     }
 
     public boolean canShowWideView()
@@ -850,30 +854,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         {
             int id = item.getItemId();
 
-            Log.d(TAG, "onPerformerMenuClick: Click click");
-
             if (id == R.id.action_mode_abs_editable_select_all) {
+
             } else if (id == R.id.action_mode_abs_editable_select_none) {
-            } else if (id == R.id.action_mode_abs_editable_preview_selections) {
-                new SelectionEditorDialog(mActivity, mProvider)
-                        .setOnDismissListener(dialog -> {
-                            // FIXME: 25.02.2020 Uncomment and apply new changes
-                            /*
-                            List<T> selectedItems = new ArrayList<>(mFragment.getEngineConnection()
-                                    .getSelectedItemList());
+            } else if (id == R.id.action_mode_abs_editable_preview_selections)
+                new SelectionEditorDialog(mActivity, mProvider).show();
+            else
+                return false;
 
-                            for (T selectable : selectedItems)
-                                if (!selectable.isSelectableSelected())
-                                    mFragment.getEngineConnection().setSelected(selectable, false);
-
-                            // Position cannot be assumed that is why we need to request a refresh
-                            mFragment.getAdapterImpl().notifyAllSelectionChanges();*/
-                        })
-                        .show();
-            }
-
-
-            return false;
+            return true;
         }
 
         @Override
