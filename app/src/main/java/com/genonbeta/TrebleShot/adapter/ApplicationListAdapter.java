@@ -41,6 +41,8 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import java.io.File;
 import java.util.*;
 
+import static com.genonbeta.TrebleShot.activity.ShareActivity.*;
+
 public class ApplicationListAdapter extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder,
         GroupEditableListAdapter.GroupViewHolder>
 {
@@ -124,7 +126,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
         return true;
     }
 
-    public static class PackageHolder extends GroupEditableListAdapter.GroupShareable implements ShareActivity.Container
+    public static class PackageHolder extends GroupEditableListAdapter.GroupShareable implements Container
     {
         public static final String FORMAT = ".apk";
         public static final String MIME_TYPE = FileUtils.getFileContentType(FORMAT);
@@ -147,12 +149,6 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
             this.appInfo = appInfo;
             this.version = version;
             this.packageName = packageName;
-        }
-
-        @Override
-        public boolean setSelectableSelected(boolean selected)
-        {
-            return super.setSelectableSelected(selected);
         }
 
         @Nullable

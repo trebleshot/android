@@ -49,8 +49,6 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 {
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
-    // TODO: 22.02.2020 Back to the code. Search for 'mSelectionCallback'
-    //private SharingActionModeCallback<Shareable> mSelectionCallback;
     private Activity.OnBackPressedListener mBackPressedListener;
     private PerformerEngine mPerformerEngine = new PerformerEngine();
 
@@ -167,7 +165,6 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
     public void attachListeners(EditableListFragmentImpl<?> fragment)
     {
-        //mSelectionCallback.updateProvider(fragment);
         mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
                 ? (OnBackPressedListener) fragment : null;
     }

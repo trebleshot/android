@@ -238,8 +238,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         else
             getAdapter().notifyAllSelectionChanges();
 
-        Log.d(TAG, "onSelected: " + owner.getDefinitiveTitle() + " selected=" + isSelected + " pos=" + position);
-
     }
 
     @Override
@@ -831,10 +829,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 
-    public static class SelectionCallback<T extends Editable> implements PerformerMenu.Callback
+    public static class SelectionCallback<T extends Editable> implements PerformerMenu.Callback, PerformerEngineProvider
     {
         private Activity mActivity;
         private PerformerEngineProvider mProvider;
+        private MenuItem mPreviewSelections;
 
         public SelectionCallback(Activity activity, PerformerEngineProvider provider)
         {
@@ -846,6 +845,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
         {
             inflater.inflate(R.menu.action_mode_abs_editable, targetMenu);
+
+            mPreviewSelections = targetMenu.findItem(R.id.action_mode_abs_editable_preview_selections);
+            mPreviewSelections.setTitle(String.valueOf(0));
             return true;
         }
 
@@ -854,6 +856,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         {
             int id = item.getItemId();
 
+            // TODO: 25.02.2020 Implement quick selections
             if (id == R.id.action_mode_abs_editable_select_all) {
 
             } else if (id == R.id.action_mode_abs_editable_select_none) {
@@ -878,7 +881,23 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                                                 IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
                                                 int position)
         {
+            int selectedTotal = 0;
 
+            for(IBaseEngineConnection connection : engine.getConnectionList())
+                selectedTotal += connection.getGenericSelectedItemList().size();
+
+            mPreviewSelections.setTitle(String.valueOf(selectedTotal));
+        }
+
+        public Activity getActivity() {
+            return mActivity;
+        }
+
+        @Nullable
+        @Override
+        public IPerformerEngine getPerformerEngine()
+        {
+            return mProvider.getPerformerEngine();
         }
     }
 }

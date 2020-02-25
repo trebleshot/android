@@ -18,6 +18,11 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:showAsAction="always"
+            android:orderInCategory="0"
+            android:id="@+id/action_mode_abs_editable_preview_selections"
+            android:title="@string/butn_previewSelections"/>
 
     <item
         android:id="@+id/action_mode_abs_editable_select_all"
@@ -26,9 +31,5 @@
     <item
         android:id="@+id/action_mode_abs_editable_select_none"
         android:title="@string/butn_selectNone"/>
-
-    <item
-        android:id="@+id/action_mode_abs_editable_preview_selections"
-        android:title="@string/butn_previewSelections"/>
 
 </menu>
