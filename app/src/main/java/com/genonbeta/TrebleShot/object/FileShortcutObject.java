@@ -59,7 +59,6 @@ public class FileShortcutObject implements DatabaseObject<Object>
 
         contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_TITLE, title);
         contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_PATH, path.toString());
-        ;
 
         return contentValues;
     }

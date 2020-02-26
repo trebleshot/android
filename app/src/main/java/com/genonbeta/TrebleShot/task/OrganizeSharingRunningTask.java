@@ -22,15 +22,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.io.Containable;
+import com.genonbeta.TrebleShot.object.TransferDescriptor;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -43,22 +43,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.activity.ShareActivity.*;
-
 public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningTask<ShareActivity>
 {
     private List<Uri> mFileUris;
-    private List<CharSequence> mFileNames;
-    private List<Containable> mContainableList;
-    private Intent mOriginalIntent;
 
-    public  OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent,
-                                      @Nullable List<Containable> containableList)
+    public OrganizeSharingRunningTask(List<Uri> fileUris)
     {
         mFileUris = fileUris;
-        mFileNames = fileNames;
-        mContainableList = containableList;
-        mOriginalIntent = originalIntent;
     }
 
     @Override
@@ -71,9 +62,9 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
             getAnchorListener().updateText(thisTask, getService().getString(R.string.mesg_organizingFiles));
         }
 
-        final List<SelectableStream> measuredObjects = new ArrayList<>();
-        final List<TransferObject> pendingObjects = new ArrayList<>();
-        final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
+        final List<TransferDescriptor> measuredObjects = new ArrayList<>();
+        final List<TransferObject> transferObjectList = new ArrayList<>();
+        final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
 
         for (int position = 0; position < mFileUris.size(); position++) {
             if (getInterrupter().interrupted())
@@ -90,66 +81,35 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
             Uri fileUri = mFileUris.get(position);
 
             try {
-                SelectableStream stream = new SelectableStream(getService(), fileUri, null);
-                DocumentFile file = stream.getDocumentFile();
-                boolean isDirectory = file.isDirectory();
-                String fileName = mFileNames != null ? String.valueOf(mFileNames.get(position)) : file.getName();
-
-                stream.setFriendlyName(fileName);
-
-                if (mContainableList != null && mContainableList.size() > 0) {
-                    Containable containable = null;
-
-                    for (Containable currentContainable : mContainableList)
-                        if (currentContainable.targetUri.equals(fileUri)) {
-                            containable = currentContainable;
-                            break;
-                        }
-
-                    if (containable != null) {
-                        mContainableList.remove(containable);
-
-                        String directory = stream.getDirectory() == null ? fileName
-                                : stream.getDirectory() + File.separator + fileName;
-
-                        stream.setDirectory(directory);
-
-                        for (Uri childUri : containable.children) {
-                            SelectableStream childStream = new SelectableStream(getService(), childUri, directory);
-                            measure(childStream, measuredObjects, childStream.getDocumentFile().isDirectory());
-                        }
-                    }
-                }
-
-                measure(stream, measuredObjects, isDirectory);
+                TransferDescriptor stream = new TransferDescriptor(getService(), fileUri, null);
+                measure(stream, measuredObjects, stream.file.isDirectory());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        for (SelectableStream selectableStream : measuredObjects) {
+        for (TransferDescriptor descriptor : measuredObjects) {
             if (getInterrupter().interrupted())
                 break;
 
-            publishStatusText(selectableStream.getSelectableTitle());
+            publishStatusText(descriptor.title);
 
             long requestId = AppUtils.getUniqueNumber();
 
-            TransferObject transferObject = new TransferObject(requestId, groupInstance.id,
-                    selectableStream.getSelectableTitle(), selectableStream.getDocumentFile().getUri().toString(),
-                    selectableStream.getDocumentFile().getType(), selectableStream.getDocumentFile().length(),
+            TransferObject transferObject = new TransferObject(requestId, group.id, descriptor.title,
+                    descriptor.file.getUri().toString(), descriptor.file.getType(), descriptor.file.length(),
                     TransferObject.Type.OUTGOING);
 
-            if (selectableStream.getDirectory() != null)
-                transferObject.directory = selectableStream.getDirectory();
+            if (descriptor.directory != null)
+                transferObject.directory = descriptor.title;
 
-            pendingObjects.add(transferObject);
+            transferObjectList.add(transferObject);
         }
 
         if (getAnchorListener() != null)
             getAnchorListener().updateText(thisTask, getService().getString(R.string.mesg_completing));
 
-        AppUtils.getDatabase(getService()).insert(pendingObjects, (total, current) -> {
+        AppUtils.getDatabase(getService()).insert(transferObjectList, (total, current) -> {
             if (getAnchorListener() != null)
                 getAnchorListener().updateProgress(total, current);
 
@@ -159,27 +119,27 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
         if (getInterrupter().interrupted()) {
             AppUtils.getDatabase(getService()).remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                     .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
-                            String.valueOf(groupInstance.id)));
+                            String.valueOf(group.id)));
         } else {
             int flags = mOriginalIntent.getIntExtra(EXTRA_FLAGS, 0);
             boolean flagAddNewDevice = (flags & FLAG_LAUNCH_DEVICE_ADDING) != 0;
             boolean flagWebShare = (flags & FLAG_WEBSHARE) != 0;
 
             if (flagWebShare) {
-                groupInstance.isServedOnWeb = true;
+                group.isServedOnWeb = true;
 
                 new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getService(),
                         R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
             }
 
-            AppUtils.getDatabase(getService()).insert(groupInstance);
-            ViewTransferActivity.startInstance(getService(), groupInstance.id);
+            AppUtils.getDatabase(getService()).insert(group);
+            ViewTransferActivity.startInstance(getService(), group.id);
 
             if (flagWebShare)
                 getService().startActivity(new Intent(getService(), WebShareActivity.class).addFlags(
                         Intent.FLAG_ACTIVITY_NEW_TASK));
             else
-                AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id, flagAddNewDevice);
+                AddDevicesToTransferActivity.startInstance(getService(), group.id, flagAddNewDevice);
         }
 
         AppUtils.getDatabase(getService()).broadcast();
@@ -188,10 +148,45 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
             getAnchorListener().finish();
     }
 
-    private void measure(SelectableStream stream, List<SelectableStream> objects, boolean isDirectory) {
+    public void createFolderStructure(DocumentFile file, String folderName, List<TransferDescriptor> list)
+    {
+        DocumentFile[] files = file.listFiles();
+
+        if (files != null) {
+            if (getAnchorListener() != null) {
+                ProgressBar progressBar = getAnchorListener().getProgressBar();
+                progressBar.setMax(getAnchorListener().getProgressBar().getMax() + files.length);
+            }
+
+            for (DocumentFile thisFile : files) {
+                if (getAnchorListener() != null) {
+                    ProgressBar progressBar = getAnchorListener().getProgressBar();
+                    progressBar.setProgress(progressBar.getProgress() + 1);
+                }
+
+                if (getInterrupter().interrupted())
+                    break;
+
+                if (thisFile.isDirectory()) {
+                    createFolderStructure(thisFile, (folderName != null ? folderName + File.separator
+                            : null) + thisFile.getName(), list);
+                    continue;
+                }
+
+                try {
+                    list.add(new TransferDescriptor(thisFile, folderName));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void measure(TransferDescriptor descriptor, List<TransferDescriptor> objects, boolean isDirectory)
+    {
         if (isDirectory)
-            createFolderStructure(stream.getDocumentFile(), stream.getDocumentFile().getName(), objects, this);
+            createFolderStructure(descriptor.file, descriptor.file.getName(), objects);
         else
-            objects.add(stream);
+            objects.add(descriptor);
     }
 }

@@ -381,7 +381,7 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
     public void startDeviceAddingActivity()
     {
         startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.id), REQUEST_ADD_DEVICES);
+                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, mGroup.id), REQUEST_ADD_DEVICES);
     }
 
     @Override

@@ -61,11 +61,11 @@ public class ChooseSharingMethodDialog<T extends Shareable> extends AlertDialog.
                 FLAG_LAUNCH_DEVICE_ADDING))));
 
         setTitle(R.string.text_chooseSharingMethod);
-        setAdapter(new SharingMethodsListAdapter(), clickListener);
+        setAdapter(new SharingMethodListAdapter(), clickListener);
         setNegativeButton(R.string.butn_cancel, null);
     }
 
-    private class SharingMethodsListAdapter extends BaseAdapter
+    private class SharingMethodListAdapter extends BaseAdapter
     {
         @Override
         public int getCount()

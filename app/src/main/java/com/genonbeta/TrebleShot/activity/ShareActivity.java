@@ -33,11 +33,9 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,15 +48,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     public static final String
             ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND",
             ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE",
-            EXTRA_FILENAME_LIST = "extraFileNames",
-            EXTRA_DEVICE_ID = "extraDeviceId",
-            EXTRA_GROUP_ID = "extraGroupId",
-            EXTRA_FILE_CONTAINER = "extraFileContainer",
-            EXTRA_FLAGS = "extraFlags";
-
-    public static final int
-            FLAG_WEBSHARE = 1,
-            FLAG_LAUNCH_DEVICE_ADDING = 2;
+            EXTRA_DEVICE_ID = "extraDeviceId";
 
     private Bundle mPreLoadingBundle = new Bundle();
     private ProgressBar mProgressBar;
@@ -66,42 +56,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     private TextView mProgressTextRight;
     private TextView mTextMain;
     private List<Uri> mFileUris;
-    private List<Containable> mContainableList;
-    private List<CharSequence> mFileNames;
     private OrganizeSharingRunningTask mTask;
-
-    public static void createFolderStructure(DocumentFile file, String folderName,
-                                             List<SelectableStream> pendingObjects, OrganizeSharingRunningTask task)
-    {
-        DocumentFile[] files = file.listFiles();
-
-        if (files != null) {
-            if (task.getAnchorListener() != null)
-                task.getAnchorListener().getProgressBar()
-                        .setMax(task.getAnchorListener().getProgressBar().getMax() + files.length);
-
-            for (DocumentFile thisFile : files) {
-                if (task.getAnchorListener() != null)
-                    task.getAnchorListener().getProgressBar()
-                            .setProgress(task.getAnchorListener().getProgressBar().getProgress() + 1);
-
-                if (task.getInterrupter().interrupted())
-                    break;
-
-                if (thisFile.isDirectory()) {
-                    createFolderStructure(thisFile, (folderName != null ? folderName + File.separator
-                            : null) + thisFile.getName(), pendingObjects, task);
-                    continue;
-                }
-
-                try {
-                    pendingObjects.add(new SelectableStream(thisFile, folderName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -119,24 +74,14 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                         .putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, getIntent().getStringExtra(Intent.EXTRA_TEXT)));
                 finish();
             } else {
-                ArrayList<Uri> fileUris = new ArrayList<>();
-                ArrayList<CharSequence> fileNames = null;
+                List<Uri> fileUris = new ArrayList<>();
 
                 if (ACTION_SEND_MULTIPLE.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
                     List<Uri> pendingFileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                    fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(
-                            EXTRA_FILENAME_LIST) : null;
-
-                    fileUris.addAll(pendingFileUris);
+                    if (pendingFileUris != null)
+                        fileUris.addAll(pendingFileUris);
                 } else {
                     fileUris.add(getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
-
-                    if (getIntent().hasExtra(EXTRA_FILENAME_LIST)) {
-                        fileNames = new ArrayList<>();
-                        String fileName = getIntent().getStringExtra(EXTRA_FILENAME_LIST);
-
-                        fileNames.add(fileName);
-                    }
                 }
 
                 if (fileUris.size() == 0) {
@@ -148,16 +93,12 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                     mProgressTextRight = findViewById(R.id.text2);
                     mTextMain = findViewById(R.id.textMain);
 
-                    if (getIntent().hasExtra(EXTRA_FILE_CONTAINER))
-                        mContainableList = getIntent().getParcelableArrayListExtra(EXTRA_FILE_CONTAINER);
-
                     findViewById(R.id.cancelButton).setOnClickListener(v -> {
                         if (mTask != null)
                             mTask.getInterrupter().interrupt(true);
                     });
 
                     mFileUris = fileUris;
-                    mFileNames = fileNames;
 
                     checkForTasks();
                 }
@@ -183,7 +124,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
             mTask = ((OrganizeSharingRunningTask) task);
             mTask.setAnchorListener(this);
         } else {
-            mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames, getIntent(), mContainableList);
+            mTask = new OrganizeSharingRunningTask(mFileUris);
 
             mTask.setAnchorListener(this)
                     .setTitle(getString(R.string.mesg_organizingFiles))
@@ -232,71 +173,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         runningTask.publishStatusText(text);
 
         runOnUiThread(() -> mTextMain.setText(text));
-    }
-
-    public static class SelectableStream implements Selectable
-    {
-        private String mDirectory;
-        private String mFriendlyName;
-        private DocumentFile mFile;
-        private boolean mSelected = true;
-
-        public SelectableStream(DocumentFile documentFile, String directory)
-        {
-            mFile = documentFile;
-            mDirectory = directory;
-            mFriendlyName = mFile.getName();
-        }
-
-        public SelectableStream(Context context, Uri uri, String directory) throws FileNotFoundException
-        {
-            this(FileUtils.fromUri(context, uri), directory);
-        }
-
-        public String getDirectory()
-        {
-            return mDirectory;
-        }
-
-        public DocumentFile getDocumentFile()
-        {
-            return mFile;
-        }
-
-        @Override
-        public String getSelectableTitle()
-        {
-            return mFriendlyName;
-        }
-
-        @Override
-        public boolean isSelectableSelected()
-        {
-            return mSelected;
-        }
-
-        public void setFriendlyName(String friendlyName)
-        {
-            mFriendlyName = friendlyName;
-        }
-
-        public void setDirectory(String directory)
-        {
-            mDirectory = directory;
-        }
-
-        @Override
-        public boolean setSelectableSelected(boolean selected)
-        {
-            mSelected = selected;
-            return true;
-        }
-    }
-
-    public interface Container
-    {
-        @Nullable
-        Containable expand();
     }
 }
 

@@ -55,12 +55,12 @@ public class DeviceChooserService extends ChooserTargetService
         // use default accent color for light theme
         TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext());
 
-        for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
+        for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES),
+                NetworkDevice.class)) {
             if (device.isLocal)
                 continue;
 
             Bundle bundle = new Bundle();
-
             bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.id);
 
             TextDrawable textImage = iconBuilder.buildRound(device.nickname);
@@ -72,11 +72,7 @@ public class DeviceChooserService extends ChooserTargetService
 
             float result = (float) device.lastUsageTime / (float) System.currentTimeMillis();
 
-            list.add(new ChooserTarget(
-                    device.nickname,
-                    Icon.createWithBitmap(bitmap),
-                    result,
-                    targetActivityName,
+            list.add(new ChooserTarget(device.nickname, Icon.createWithBitmap(bitmap), result, targetActivityName,
                     bundle
             ));
         }

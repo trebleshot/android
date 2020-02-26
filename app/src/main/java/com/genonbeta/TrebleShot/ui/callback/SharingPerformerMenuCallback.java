@@ -29,6 +29,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -64,12 +65,13 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
         if (performerEngine == null)
             return false;
 
-        // TODO: 25.02.2020 For local share
-        //new ChooseSharingMethodDialog<T>(getFragment().getActivity(), intent).show();
-
         List<Shareable> shareableList = compileShareableListFrom(MappedSelectable.compileFrom(performerEngine));
 
-        if (shareableList.size() > 0 && id == R.id.action_mode_share_all_apps) {
+        if (id == R.id.action_mode_share_all_apps || id == R.id.menu_action_share_trebleshot) {
+            if (shareableList.size() <= 0)
+                return false;
+
+            boolean locally = id == R.id.menu_action_share_trebleshot;
             Intent intent = new Intent(shareableList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -78,12 +80,9 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
             if (shareableList.size() > 1) {
                 MIMEGrouper mimeGrouper = new MIMEGrouper();
                 ArrayList<Uri> uriList = new ArrayList<>();
-                ArrayList<CharSequence> nameList = new ArrayList<>();
 
                 for (Shareable sharedItem : shareableList) {
                     uriList.add(sharedItem.uri);
-                    nameList.add(sharedItem.fileName);
-
                     addIfEligible(containerList, sharedItem);
 
                     if (!mimeGrouper.isLocked())
@@ -91,24 +90,24 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
                 }
 
                 intent.setType(mimeGrouper.toString())
-                        .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
-                        .putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameList);
+                        .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
             } else if (shareableList.size() == 1) {
                 Shareable sharedItem = shareableList.get(0);
 
                 addIfEligible(containerList, sharedItem);
 
                 intent.setType(sharedItem.mimeType)
-                        .putExtra(Intent.EXTRA_STREAM, sharedItem.uri)
-                        .putExtra(ShareActivity.EXTRA_FILENAME_LIST, sharedItem.fileName);
+                        .putExtra(Intent.EXTRA_STREAM, sharedItem.uri);
             }
 
-            if (containerList.size() > 0)
-                intent.putParcelableArrayListExtra(ShareActivity.EXTRA_FILE_CONTAINER, containerList);
-
             try {
-                getActivity().startActivity(Intent.createChooser(intent, getActivity().getString(
-                        R.string.text_fileShareAppChoose)));
+                if (locally) {
+
+                    //new ChooseSharingMethodDialog(getFragment().getActivity(), intent).show();
+                } else
+                    getActivity().startActivity(Intent.createChooser(intent, getActivity().getString(
+                            R.string.text_fileShareAppChoose)));
+
                 return true;
             } catch (ActivityNotFoundException e) {
                 Toast.makeText(getActivity(), R.string.mesg_noActivityFound, Toast.LENGTH_SHORT).show();
