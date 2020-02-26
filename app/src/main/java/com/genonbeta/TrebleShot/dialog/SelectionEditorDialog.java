@@ -46,7 +46,7 @@ public class SelectionEditorDialog extends AlertDialog.Builder
 
     private LayoutInflater mLayoutInflater;
     private SelfAdapter mAdapter;
-    private List<MappedSelectable<?>> mList;
+    private final List<MappedSelectable<?>> mList;
 
     public SelectionEditorDialog(Activity activity, PerformerEngineProvider provider)
     {
@@ -96,7 +96,6 @@ public class SelectionEditorDialog extends AlertDialog.Builder
         final AlertDialog dialog = super.show();
 
         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> massCheck(true));
-
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> massCheck(false));
 
         return dialog;

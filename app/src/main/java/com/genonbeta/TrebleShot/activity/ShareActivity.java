@@ -169,7 +169,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    public void onAttachedToTask(WorkerService.RunningTask task)
+    public void onAttachedToTask(WorkerService.BaseAttachableRunningTask task)
     {
 
     }

@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
+import com.genonbeta.TrebleShot.util.SelectionUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
@@ -51,6 +53,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
     private Activity.OnBackPressedListener mBackPressedListener;
     private PerformerEngine mPerformerEngine = new PerformerEngine();
+    private SharingPerformerMenuCallback mMenuCallback = new SharingPerformerMenuCallback(this, this);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -67,8 +70,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
-        SharingPerformerMenuCallback menuCallback = new SharingPerformerMenuCallback(this, this);
-        PerformerMenu performerMenu = new PerformerMenu(this, menuCallback);
+        PerformerMenu performerMenu = new PerformerMenu(this, mMenuCallback);
 
         performerMenu.load(menuView.getMenu());
         performerMenu.setUp(mPerformerEngine);
@@ -158,15 +160,21 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     public void onBackPressed()
     {
         if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
-            // TODO: 22.02.2020 Implement back button closes active selection process
-            super.onBackPressed();
+            if (SelectionUtils.getTotalSize(mPerformerEngine) > 0) {
+                new AlertDialog.Builder(this)
+                        .setMessage(R.string.ques_cancelSelection)
+                        .setNegativeButton(R.string.butn_no, null)
+                        .setPositiveButton(R.string.butn_yes, (dialog, which) -> finish())
+                        .show();
+            } else
+                super.onBackPressed();
         }
     }
 
     public void attachListeners(EditableListFragmentImpl<?> fragment)
     {
-        mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
-                ? (OnBackPressedListener) fragment : null;
+        mMenuCallback.setForegroundConnection(fragment.getEngineConnection());
+        mBackPressedListener = fragment instanceof OnBackPressedListener ? (OnBackPressedListener) fragment : null;
     }
 
     @Nullable

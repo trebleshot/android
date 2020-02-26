@@ -557,4 +557,5 @@
     </string>
     <string name="text_splitApk">Split APK</string>
     <string name="mesg_nothingToShare">Nothing was selected to share</string>
+    <string name="ques_cancelSelection">Cancel selection?</string>
 </resources>

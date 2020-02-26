@@ -17,12 +17,12 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:showAsAction="always"
             android:orderInCategory="0"
             android:id="@+id/action_mode_abs_editable_preview_selections"
-            android:title="@string/butn_previewSelections"/>
+            android:title="@string/butn_previewSelections"
+            app:showAsAction="always"/>
 
     <item
             android:id="@+id/action_mode_abs_editable_select_all"

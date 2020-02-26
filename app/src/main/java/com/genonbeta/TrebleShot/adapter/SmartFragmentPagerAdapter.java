@@ -49,7 +49,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 
     public SmartFragmentPagerAdapter(Context context, FragmentManager fm)
     {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mContext = context;
     }
 
@@ -154,6 +154,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
         return getStableItem(position).itemId;
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position)
     {

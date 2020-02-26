@@ -52,7 +52,7 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
     private List<Containable> mContainableList;
     private Intent mOriginalIntent;
 
-    public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent,
+    public  OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent,
                                       @Nullable List<Containable> containableList)
     {
         mFileUris = fileUris;

@@ -364,8 +364,7 @@ public abstract class Activity extends AppCompatActivity
             public void onServiceConnected(ComponentName name, IBinder service)
             {
                 WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
-                WorkerService.RunningTask task = workerService
-                        .findTaskByHash(WorkerService.intentHash(getIntent()));
+                WorkerService.RunningTask task = workerService.findTaskByHash(WorkerService.intentHash(getIntent()));
 
                 if (task instanceof BaseAttachableRunningTask) {
                     BaseAttachableRunningTask attachable = (BaseAttachableRunningTask) task;
@@ -386,8 +385,8 @@ public abstract class Activity extends AppCompatActivity
             }
         };
 
-        return bindService(new Intent(Activity.this, WorkerService.class),
-                serviceConnection, Context.BIND_AUTO_CREATE);
+        return bindService(new Intent(Activity.this, WorkerService.class), serviceConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     /**

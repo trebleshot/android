@@ -131,13 +131,6 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
-    /**
-     * The available path to save {@link TransferGroup} with fallback check
-     *
-     * @param context
-     * @param group
-     * @return
-     */
     public static DocumentFile getSavePath(Context context, TransferGroup group)
     {
         DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context);
@@ -159,13 +152,6 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return defaultFolder;
     }
 
-    /**
-     * Tries to start an activity to view {@param file} using {@link DocumentFile}
-     *
-     * @param activity Theme supplied {@link Context}
-     * @param file
-     * @return true
-     */
     public static boolean openUriForeground(Activity activity, DocumentFile file)
     {
         if (!openUri(activity, file)) {

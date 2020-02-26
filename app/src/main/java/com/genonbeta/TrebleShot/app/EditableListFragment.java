@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +39,7 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.SelectionUtils;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
@@ -237,7 +237,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             getAdapter().notifyItemChanged(position);
         else
             getAdapter().notifyAllSelectionChanges();
+    }
 
+    @Override
+    public void onSelected(IPerformerEngine engine, IEngineConnection<T> owner, List<T> selectableList,
+                           boolean isSelected, int[] positions)
+    {
+        getAdapter().notifyAllSelectionChanges();
     }
 
     @Override
@@ -829,11 +835,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 
-    public static class SelectionCallback<T extends Editable> implements PerformerMenu.Callback, PerformerEngineProvider
+    public static class SelectionCallback implements PerformerMenu.Callback, PerformerEngineProvider
     {
         private Activity mActivity;
         private PerformerEngineProvider mProvider;
         private MenuItem mPreviewSelections;
+        private IEngineConnection<?> mForegroundConnection = null;
 
         public SelectionCallback(Activity activity, PerformerEngineProvider provider)
         {
@@ -847,7 +854,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             inflater.inflate(R.menu.action_mode_abs_editable, targetMenu);
 
             mPreviewSelections = targetMenu.findItem(R.id.action_mode_abs_editable_preview_selections);
-            mPreviewSelections.setTitle(String.valueOf(0));
+            updateTitle(0);
             return true;
         }
 
@@ -856,10 +863,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         {
             int id = item.getItemId();
 
-            // TODO: 25.02.2020 Implement quick selections
             if (id == R.id.action_mode_abs_editable_select_all) {
-
+                selectAll(true);
             } else if (id == R.id.action_mode_abs_editable_select_none) {
+                selectAll(false);
             } else if (id == R.id.action_mode_abs_editable_preview_selections)
                 new SelectionEditorDialog(mActivity, mProvider).show();
             else
@@ -877,20 +884,56 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         }
 
         @Override
+        public boolean onPerformerMenuItemSelection(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                    IBaseEngineConnection owner,
+                                                    List<? extends Selectable> selectableList, boolean isSelected,
+                                                    int[] positions)
+        {
+            return true;
+        }
+
+        @Override
         public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
                                                 IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
                                                 int position)
         {
-            int selectedTotal = 0;
-
-            for(IBaseEngineConnection connection : engine.getConnectionList())
-                selectedTotal += connection.getGenericSelectedItemList().size();
-
-            mPreviewSelections.setTitle(String.valueOf(selectedTotal));
+            updateTitle(SelectionUtils.getTotalSize(engine));
         }
 
-        public Activity getActivity() {
+        @Override
+        public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                IBaseEngineConnection owner, List<? extends Selectable> selectableList,
+                                                boolean isSelected, int[] positions)
+        {
+            updateTitle(SelectionUtils.getTotalSize(engine));
+        }
+
+        public Activity getActivity()
+        {
             return mActivity;
+        }
+
+        public void selectAll(boolean newState)
+        {
+            IPerformerEngine engine = mProvider.getPerformerEngine();
+            if (mForegroundConnection != null)
+                selectAll(mForegroundConnection, newState);
+            else if (engine != null) {
+                for (IBaseEngineConnection baseEngineConnection : engine.getConnectionList())
+                    if (baseEngineConnection instanceof IEngineConnection<?>)
+                        selectAll((IEngineConnection<? extends Selectable>) baseEngineConnection, newState);
+            }
+        }
+
+        private <T extends Selectable> void selectAll(IEngineConnection<T> connection, boolean newState)
+        {
+            List<T> availableList = connection.getAvailableList();
+            if (availableList.size() > 0) {
+                int[] positions = new int[availableList.size()];
+                for (int i = 0; i < positions.length; i++)
+                    positions[i] = i;
+                connection.setSelected(availableList, positions, newState);
+            }
         }
 
         @Nullable
@@ -898,6 +941,23 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         public IPerformerEngine getPerformerEngine()
         {
             return mProvider.getPerformerEngine();
+        }
+
+        private void updateTitle(int totalSelections)
+        {
+            mPreviewSelections.setTitle(String.valueOf(totalSelections));
+            mPreviewSelections.setEnabled(totalSelections > 0);
+        }
+
+        /**
+         * If you want to only use a single connection with {@link #selectAll} calls, you should provide the foreground
+         * connection that should be used.
+         *
+         * @param connection to be used with foreground operations like select all or none
+         */
+        public void setForegroundConnection(IEngineConnection<?> connection)
+        {
+            mForegroundConnection = connection;
         }
     }
 }

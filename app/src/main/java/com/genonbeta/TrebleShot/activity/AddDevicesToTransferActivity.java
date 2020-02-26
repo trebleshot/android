@@ -235,7 +235,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    public void onAttachedToTask(WorkerService.RunningTask task)
+    public void onAttachedToTask(WorkerService.BaseAttachableRunningTask task)
     {
         takeOnProcessMode();
     }

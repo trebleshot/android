@@ -228,7 +228,7 @@ public class WorkerService extends Service
 
     public interface OnAttachListener
     {
-        void onAttachedToTask(RunningTask task);
+        void onAttachedToTask(BaseAttachableRunningTask task);
     }
 
     public abstract static class RunningTask extends InterruptAwareJob

@@ -40,7 +40,7 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvi
 import java.util.ArrayList;
 import java.util.List;
 
-public class SharingPerformerMenuCallback extends EditableListFragment.SelectionCallback<Shareable>
+public class SharingPerformerMenuCallback extends EditableListFragment.SelectionCallback
 {
     public SharingPerformerMenuCallback(Activity activity, PerformerEngineProvider provider)
     {
@@ -136,10 +136,9 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
     {
         List<Shareable> shareableList = new ArrayList<>();
 
-        for (MappedSelectable<?> mappedSelectable : mappedSelectableList) {
+        for (MappedSelectable<?> mappedSelectable : mappedSelectableList)
             if (mappedSelectable.selectable instanceof Shareable)
                 shareableList.add((Shareable) mappedSelectable.selectable);
-        }
 
         return shareableList;
     }
