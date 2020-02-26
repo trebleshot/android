@@ -25,10 +25,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
 import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
@@ -47,14 +50,22 @@ public class SelectionEditorDialog extends AlertDialog.Builder
     private LayoutInflater mLayoutInflater;
     private SelfAdapter mAdapter;
     private final List<MappedSelectable<?>> mList;
+    private final List<MappedConnection<?>> mMappedConnectionList = new ArrayList<>();
 
     public SelectionEditorDialog(Activity activity, PerformerEngineProvider provider)
     {
         super(activity);
 
+        IPerformerEngine engine = provider.getPerformerEngine();
+
         mLayoutInflater = LayoutInflater.from(activity);
         mAdapter = new SelfAdapter();
-        mList = MappedSelectable.compileFrom(provider.getPerformerEngine());
+        mList = MappedSelectable.compileFrom(engine);
+
+        if (engine != null)
+            for (IBaseEngineConnection baseEngineConnection : engine.getConnectionList())
+                if (baseEngineConnection instanceof IEngineConnection<?>)
+                    addToMappedObjectList((IEngineConnection<?>) baseEngineConnection);
 
         View view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false);
         ListView listView = view.findViewById(R.id.listView);
@@ -83,11 +94,16 @@ public class SelectionEditorDialog extends AlertDialog.Builder
     public void massCheck(boolean check)
     {
         synchronized (mList) {
-            for (MappedSelectable<?> selectable : mList)
-                selectable.setSelectableSelected(check);
+            for (MappedConnection<?> mappedConnection : mMappedConnectionList)
+                massCheck(check, mappedConnection);
         }
 
         mAdapter.notifyDataSetChanged();
+    }
+
+    private <T extends Selectable> void massCheck(boolean check, MappedConnection<T> mappedConnection)
+    {
+        mappedConnection.connection.setSelected(mappedConnection.list, new int[mappedConnection.list.size()], check);
     }
 
     @Override
@@ -138,6 +154,23 @@ public class SelectionEditorDialog extends AlertDialog.Builder
             convertView.setOnClickListener(v -> checkReversed(removalSignView, selectable));
 
             return convertView;
+        }
+    }
+
+    private <T extends Selectable> void addToMappedObjectList(IEngineConnection<T> connection)
+    {
+        mMappedConnectionList.add(new MappedConnection<>(connection, connection.getSelectedItemList()));
+    }
+
+    private static class MappedConnection<T extends Selectable>
+    {
+        public IEngineConnection<T> connection;
+        public List<T> list;
+
+        public MappedConnection(IEngineConnection<T> connection, List<T> list)
+        {
+            this.connection = connection;
+            this.list = new ArrayList<>(list);
         }
     }
 }
