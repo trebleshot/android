@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.DatabaseObject;
@@ -68,15 +69,14 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     {
     }
 
-    public TransferObject(long id, long groupId, String name, String file,
-                          String mimeType, long size, Type type)
+    public TransferObject(long id, long groupId, String name, String file, String mimeType, long size, Type type)
     {
-        this.name = name;
-        this.file = file;
-        this.size = size;
-        this.mimeType = mimeType;
         this.id = id;
         this.groupId = groupId;
+        this.name = name;
+        this.file = file;
+        this.mimeType = mimeType;
+        this.size = size;
         this.type = type;
     }
 
@@ -90,6 +90,28 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     public TransferObject(ContentValues item)
     {
         reconstruct(item);
+    }
+
+    public static TransferObject from(DocumentFile file, long groupId, String directory)
+    {
+        TransferObject object = new TransferObject(AppUtils.getUniqueNumber(), groupId, file.getName(),
+                file.getUri().toString(), file.getType(), file.length(), Type.OUTGOING);
+
+        if (directory != null)
+            object.directory = directory;
+
+        return object;
+    }
+
+    public static TransferObject from(Shareable shareable, long groupId, String directory)
+    {
+        TransferObject object = new TransferObject(AppUtils.getUniqueNumber(), groupId, shareable.fileName,
+                shareable.uri.toString(), shareable.mimeType, shareable.size, Type.OUTGOING);
+
+        if (directory != null)
+            object.directory = directory;
+
+        return object;
     }
 
     @Override

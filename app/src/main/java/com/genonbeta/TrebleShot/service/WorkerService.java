@@ -259,10 +259,7 @@ public class WorkerService extends Service
         @Override
         public int hashCode()
         {
-            if (mHash != 0)
-                return mHash;
-
-            return super.hashCode();
+            return mHash != 0 ? mHash : super.hashCode();
         }
 
         @Nullable

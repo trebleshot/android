@@ -17,17 +17,21 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Interrupter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import static com.genonbeta.TrebleShot.service.WorkerService.AttachedTaskListener;
+import static com.genonbeta.TrebleShot.service.WorkerService.RunningTask;
 
 /**
  * created by: veli
@@ -68,6 +72,39 @@ public class TransferUtils
                 e.printStackTrace();
             }
         }).show();
+    }
+
+    public static void createFolderStructure(List<TransferObject> list, long groupId, DocumentFile file,
+                                             String directory, Interrupter interrupter, AttachedTaskListener listener)
+            throws InterruptedException
+    {
+        DocumentFile[] files = file.listFiles();
+
+        if (files == null || files.length <= 0)
+            return;
+
+        if (listener != null)
+            listener.updateTaskPosition(0, files.length);
+
+        for (DocumentFile thisFile : files) {
+            if (listener != null)
+                listener.updateTaskPosition(1, 0);
+
+            if (interrupter.interrupted())
+                throw new InterruptedException();
+
+            if (thisFile.isDirectory()) {
+                createFolderStructure(list, groupId, thisFile, (directory == null ? null
+                        : directory + File.separator) + thisFile.getName(), interrupter, listener);
+                continue;
+            }
+
+            try {
+                list.add(TransferObject.from(thisFile, groupId, directory));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -295,7 +332,7 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
-        WorkerService.RunningTask task = new WorkerService.RunningTask()
+        RunningTask task = new RunningTask()
         {
             @Override
             protected void onRun()
@@ -400,7 +437,7 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
-        new WorkerService.RunningTask()
+        new RunningTask()
         {
             @Override
             protected void onRun()

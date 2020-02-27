@@ -19,8 +19,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,38 +30,31 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.task.LocalShareRunningTask;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static com.genonbeta.TrebleShot.activity.ShareActivity.*;
-
-public class ChooseSharingMethodDialog<T extends Shareable> extends AlertDialog.Builder
+public class ChooseSharingMethodDialog extends AlertDialog.Builder
 {
     private LayoutInflater mLayoutInflater;
     private final ArrayList<SharingMethod> mSharingMethodList = new ArrayList<>();
 
-    public ChooseSharingMethodDialog(Context context, Intent p2pIntent)
+    public ChooseSharingMethodDialog(Context context, final List<? extends Shareable> list)
     {
         super(context);
 
         mLayoutInflater = LayoutInflater.from(getContext());
 
-        DialogInterface.OnClickListener clickListener = (dialog, which) -> {
-            SharingMethod method = mSharingMethodList.get(which);
-            method.call();
-        };
-
-        // FIXME: 27.02.2020 Sharing methods
-        /*
         mSharingMethodList.add(new SharingMethod(R.drawable.ic_web_white_24dp, R.string.butn_webShare,
-                () -> getContext().startActivity(p2pIntent.putExtra(EXTRA_FLAGS, FLAG_WEBSHARE))));
+                () -> new LocalShareRunningTask(list, false, true).run(getContext())));
 
         mSharingMethodList.add(new SharingMethod(R.drawable.ic_compare_arrows_white_24dp,
-                R.string.text_devicesWithAppInstalled, () -> getContext().startActivity(p2pIntent.putExtra(EXTRA_FLAGS,
-                FLAG_LAUNCH_DEVICE_ADDING))));*/
+                R.string.text_devicesWithAppInstalled, () -> new LocalShareRunningTask(list, true,
+                false).run(getContext())));
 
         setTitle(R.string.text_chooseSharingMethod);
-        setAdapter(new SharingMethodListAdapter(), clickListener);
+        setAdapter(new SharingMethodListAdapter(), (dialog, which) -> mSharingMethodList.get(which).call());
         setNegativeButton(R.string.butn_cancel, null);
     }
 

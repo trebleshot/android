@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.task;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -27,14 +28,20 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.DirectoryHolder;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.io.Containable;
+import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.object.TransferDescriptor;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,16 +67,34 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         final AccessDatabase database = AppUtils.getDatabase(getService());
         final SQLiteDatabase instance = database.getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
-        final List<TransferObject> objectList = new ArrayList<>();
+        final List<TransferObject> list = new ArrayList<>();
 
         getInterrupter().addCloser((userAction -> database.remove(instance, group, null)));
 
         for (Shareable shareable : mList) {
+            Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
+
             if (getInterrupter().interrupted())
                 throw new InterruptedException();
 
+            if (shareable instanceof DirectoryHolder) {
+                DocumentFile file = ((DirectoryHolder) shareable).file;
+                TransferUtils.createFolderStructure(list, group.id, file, shareable.fileName, getInterrupter(),
+                        null);
+            } else
+                list.add(TransferObject.from(shareable, group.id, containable == null ? null : shareable.friendlyName));
 
+            if (containable != null)
+                for (Uri uri : containable.children)
+                    try {
+                        list.add(TransferObject.from(FileUtils.fromUri(getService(), uri), group.id,
+                                shareable.friendlyName));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
         }
+
+        database.insert(instance, list, null, group);
 
         if (mFlagWebShare) {
             group.isServedOnWeb = true;
@@ -78,7 +103,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
                     R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
         }
 
-        AppUtils.getDatabase(getService()).insert(group);
+        database.insert(instance, group, null);
         ViewTransferActivity.startInstance(getService(), group.id);
 
         if (mFlagWebShare)
@@ -87,6 +112,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         else
             AddDevicesToTransferActivity.startInstance(getService(), group.id, mFlagAddNewDevice);
 
-        AppUtils.getDatabase(getService()).broadcast();
+        database.broadcast();
     }
+
 }

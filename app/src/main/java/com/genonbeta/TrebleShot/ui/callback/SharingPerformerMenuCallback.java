@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.ui.callback;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
@@ -66,12 +68,10 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
 
         List<Shareable> shareableList = compileShareableListFrom(MappedSelectable.compileFrom(performerEngine));
 
-        if (id == R.id.menu_action_share_trebleshot) {
+        if (id == R.id.action_mode_share_trebleshot) {
             if (shareableList.size() <= 0)
                 return false;
-
-            //new ChooseSharingMethodDialog(getFragment().getActivity(), intent).show();
-            //addIfEligible(containerList, sharedItem);
+            new ChooseSharingMethodDialog(getActivity(), shareableList).show();
         } else if (id == R.id.action_mode_share_all_apps) {
             if (shareableList.size() <= 0)
                 return false;
@@ -79,15 +79,12 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
             Intent intent = new Intent(shareableList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            ArrayList<Containable> containerList = new ArrayList<>();
-
             if (shareableList.size() > 1) {
                 MIMEGrouper mimeGrouper = new MIMEGrouper();
                 ArrayList<Uri> uriList = new ArrayList<>();
 
                 for (Shareable sharedItem : shareableList) {
                     uriList.add(sharedItem.uri);
-                    addIfEligible(containerList, sharedItem);
 
                     if (!mimeGrouper.isLocked())
                         mimeGrouper.process(sharedItem.mimeType);
@@ -116,16 +113,6 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
             return super.onPerformerMenuClick(performerMenu, item);
 
         return true;
-    }
-
-    private void addIfEligible(ArrayList<Containable> list, Shareable sharedItem)
-    {
-        if (sharedItem instanceof Container) {
-            Containable containable = ((Container) sharedItem).expand();
-
-            if (containable != null)
-                list.add(containable);
-        }
     }
 
     private List<Shareable> compileShareableListFrom(List<MappedSelectable<?>> mappedSelectableList)

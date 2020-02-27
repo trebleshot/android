@@ -18,16 +18,11 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
-import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferDescriptor;
@@ -35,8 +30,11 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,8 +61,7 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
         final AccessDatabase database = AppUtils.getDatabase(getService());
         final SQLiteDatabase instance = database.getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
-        final List<TransferDescriptor> descriptorList = new ArrayList<>();
-        final List<TransferObject> transferObjectList = new ArrayList<>();
+        final List<TransferObject> list = new ArrayList<>();
 
         for (int position = 0; position < mUriList.size(); position++) {
             if (getInterrupter().interrupted())
@@ -78,37 +75,22 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
             Uri fileUri = mUriList.get(position);
 
             try {
-                TransferDescriptor descriptor = new TransferDescriptor(getService(), fileUri, null);
+                DocumentFile file = FileUtils.fromUri(getService(), fileUri);
 
-                if (descriptor.file.isDirectory())
-                    createFolderStructure(descriptor.file, descriptor.file.getName(), descriptorList);
+                if (file.isDirectory())
+                    TransferUtils.createFolderStructure(list, group.id, file, file.getName(),
+                            getInterrupter(), getAnchorListener());
                 else
-                    descriptorList.add(descriptor);
+                    list.add(TransferObject.from(file, group.id, null));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        for (TransferDescriptor descriptor : descriptorList) {
-            if (getInterrupter().interrupted())
-                throw new InterruptedException();
-
-            publishStatusText(descriptor.title);
-
-            TransferObject transferObject = new TransferObject(AppUtils.getUniqueNumber(), group.id, descriptor.title,
-                    descriptor.file.getUri().toString(), descriptor.file.getType(), descriptor.file.length(),
-                    TransferObject.Type.OUTGOING);
-
-            if (descriptor.directory != null)
-                transferObject.directory = descriptor.directory;
-
-            transferObjectList.add(transferObject);
-        }
-
         if (getAnchorListener() != null)
             publishStatusText(getService().getString(R.string.mesg_completing));
 
-        database.insert(instance, transferObjectList, (total, current) -> {
+        database.insert(instance, list, (total, current) -> {
             if (getAnchorListener() != null)
                 getAnchorListener().setTaskPosition(total, current);
 
@@ -126,35 +108,5 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
 
         if (getAnchorListener() instanceof Activity)
             ((Activity) getAnchorListener()).finish();
-    }
-
-    public void createFolderStructure(DocumentFile file, String folderName, List<TransferDescriptor> list)
-    {
-        DocumentFile[] files = file.listFiles();
-
-        if (files != null) {
-            if (getAnchorListener() != null)
-                getAnchorListener().updateTaskPosition(0, files.length);
-
-            for (DocumentFile thisFile : files) {
-                if (getAnchorListener() != null)
-                    getAnchorListener().updateTaskPosition(1, 0);
-
-                if (getInterrupter().interrupted())
-                    break;
-
-                if (thisFile.isDirectory()) {
-                    createFolderStructure(thisFile, (folderName != null ? folderName + File.separator
-                            : null) + thisFile.getName(), list);
-                    continue;
-                }
-
-                try {
-                    list.add(new TransferDescriptor(thisFile, folderName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }
