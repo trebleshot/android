@@ -190,16 +190,8 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     {
         String path = getAdapter().getPath();
 
-        // TODO: 22.02.2020 Check if selection mode is active
-        /*
-        if (path == null) {
-            if (getSelectionCallback() != null && getEngineConnection() != null
-                    && getEngineConnection().getMode().hasActive(getSelectionCallback())) {
-                getEngineConnection().getMode().finish(getSelectionCallback());
-                return true;
-            } else
-                return false;
-        }*/
+        if (path == null)
+            return false;
 
         int slashPos = path.lastIndexOf(File.separator);
 

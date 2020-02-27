@@ -18,30 +18,26 @@
 
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShareActivity extends Activity implements SnackbarPlacementProvider, Activity.OnPreloadArgumentWatcher,
-        WorkerService.OnAttachListener
+        WorkerService.AttachedTaskListener
 {
     public static final String TAG = "ShareActivity";
 
@@ -126,6 +122,8 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         } else {
             mTask = new OrganizeSharingRunningTask(mFileUris);
 
+            Log.d(TAG, "onPreviousRunningTask: Created new task");
+
             mTask.setAnchorListener(this)
                     .setTitle(getString(R.string.mesg_organizingFiles))
                     .setContentIntent(this, getIntent())
@@ -151,26 +149,45 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         return mPreLoadingBundle;
     }
 
-    public void updateProgress(final int total, final int current)
+    @Override
+    public void setTaskPosition(int ofTotal, int total)
     {
         if (isFinishing())
             return;
 
         runOnUiThread(() -> {
-            mProgressTextLeft.setText(String.valueOf(current));
+            mProgressTextLeft.setText(String.valueOf(ofTotal));
             mProgressTextRight.setText(String.valueOf(total));
         });
 
-        mProgressBar.setProgress(current);
+        mProgressBar.setProgress(total);
         mProgressBar.setMax(total);
     }
 
-    public void updateText(WorkerService.RunningTask runningTask, final String text)
+    @Override
+    public void updateTaskPosition(int addToOfTotal, int addToTotal)
     {
         if (isFinishing())
             return;
 
-        runningTask.publishStatusText(text);
+        if (addToOfTotal != 0) {
+            int newPosition = getProgressBar().getProgress() + addToOfTotal;
+            runOnUiThread(() -> mProgressTextLeft.setText(String.valueOf(newPosition)));
+            mProgressBar.setProgress(newPosition);
+        }
+
+        if (addToTotal != 0) {
+            int newPosition = getProgressBar().getMax() + addToTotal;
+            runOnUiThread(() -> mProgressTextRight.setText(String.valueOf(newPosition)));
+            mProgressBar.setMax(newPosition);
+        }
+    }
+
+    @Override
+    public void updateTaskStatus(String text)
+    {
+        if (isFinishing())
+            return;
 
         runOnUiThread(() -> mTextMain.setText(text));
     }

@@ -19,16 +19,16 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferDescriptor;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -43,109 +43,89 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningTask<ShareActivity>
+public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningTask<WorkerService.AttachedTaskListener>
 {
-    private List<Uri> mFileUris;
+    private List<Uri> mUriList;
 
     public OrganizeSharingRunningTask(List<Uri> fileUris)
     {
-        mFileUris = fileUris;
+        mUriList = fileUris;
     }
 
     @Override
-    public void onRun()
+    public void onRun() throws InterruptedException
     {
-        final WorkerService.RunningTask thisTask = this;
-
         if (getAnchorListener() != null) {
-            getAnchorListener().getProgressBar().setMax(mFileUris.size());
-            getAnchorListener().updateText(thisTask, getService().getString(R.string.mesg_organizingFiles));
+            getAnchorListener().setTaskPosition(0, mUriList.size());
+            publishStatusText(getService().getString(R.string.mesg_organizingFiles));
         }
 
-        final List<TransferDescriptor> measuredObjects = new ArrayList<>();
-        final List<TransferObject> transferObjectList = new ArrayList<>();
+        final AccessDatabase database = AppUtils.getDatabase(getService());
+        final SQLiteDatabase instance = database.getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
+        final List<TransferDescriptor> descriptorList = new ArrayList<>();
+        final List<TransferObject> transferObjectList = new ArrayList<>();
 
-        for (int position = 0; position < mFileUris.size(); position++) {
+        for (int position = 0; position < mUriList.size(); position++) {
             if (getInterrupter().interrupted())
-                break;
+                throw new InterruptedException();
 
-            publishStatusText(getService().getString(R.string.text_transferStatusFiles,
-                    position, mFileUris.size()));
+            publishStatusText(getService().getString(R.string.text_transferStatusFiles, position, mUriList.size()));
 
-            if (getAnchorListener() != null) {
-                getAnchorListener().updateProgress(getAnchorListener().getProgressBar().getMax(),
-                        getAnchorListener().getProgressBar().getProgress() + 1);
-            }
+            if (getAnchorListener() != null)
+                getAnchorListener().updateTaskPosition(1, 0);
 
-            Uri fileUri = mFileUris.get(position);
+            Uri fileUri = mUriList.get(position);
 
             try {
-                TransferDescriptor stream = new TransferDescriptor(getService(), fileUri, null);
-                measure(stream, measuredObjects, stream.file.isDirectory());
+                TransferDescriptor descriptor = new TransferDescriptor(getService(), fileUri, null);
+
+                if (descriptor.file.isDirectory())
+                    createFolderStructure(descriptor.file, descriptor.file.getName(), descriptorList);
+                else
+                    descriptorList.add(descriptor);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        for (TransferDescriptor descriptor : measuredObjects) {
+        for (TransferDescriptor descriptor : descriptorList) {
             if (getInterrupter().interrupted())
-                break;
+                throw new InterruptedException();
 
             publishStatusText(descriptor.title);
 
-            long requestId = AppUtils.getUniqueNumber();
-
-            TransferObject transferObject = new TransferObject(requestId, group.id, descriptor.title,
+            TransferObject transferObject = new TransferObject(AppUtils.getUniqueNumber(), group.id, descriptor.title,
                     descriptor.file.getUri().toString(), descriptor.file.getType(), descriptor.file.length(),
                     TransferObject.Type.OUTGOING);
 
             if (descriptor.directory != null)
-                transferObject.directory = descriptor.title;
+                transferObject.directory = descriptor.directory;
 
             transferObjectList.add(transferObject);
         }
 
         if (getAnchorListener() != null)
-            getAnchorListener().updateText(thisTask, getService().getString(R.string.mesg_completing));
+            publishStatusText(getService().getString(R.string.mesg_completing));
 
-        AppUtils.getDatabase(getService()).insert(transferObjectList, (total, current) -> {
+        database.insert(instance, transferObjectList, (total, current) -> {
             if (getAnchorListener() != null)
-                getAnchorListener().updateProgress(total, current);
+                getAnchorListener().setTaskPosition(total, current);
 
             return !getInterrupter().interrupted();
-        });
+        }, group);
 
-        if (getInterrupter().interrupted()) {
-            AppUtils.getDatabase(getService()).remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                    .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
-                            String.valueOf(group.id)));
-        } else {
-            int flags = mOriginalIntent.getIntExtra(EXTRA_FLAGS, 0);
-            boolean flagAddNewDevice = (flags & FLAG_LAUNCH_DEVICE_ADDING) != 0;
-            boolean flagWebShare = (flags & FLAG_WEBSHARE) != 0;
+        getInterrupter().addCloser((userAction) -> database.remove(instance, new SQLQuery.Select(
+                AccessDatabase.TABLE_TRANSFER).setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
+                String.valueOf(group.id))));
 
-            if (flagWebShare) {
-                group.isServedOnWeb = true;
+        database.insert(instance, group, null);
+        ViewTransferActivity.startInstance(getService(), group.id);
+        AddDevicesToTransferActivity.startInstance(getService(), group.id, true);
+        database.broadcast();
 
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getService(),
-                        R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
-            }
-
-            AppUtils.getDatabase(getService()).insert(group);
-            ViewTransferActivity.startInstance(getService(), group.id);
-
-            if (flagWebShare)
-                getService().startActivity(new Intent(getService(), WebShareActivity.class).addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK));
-            else
-                AddDevicesToTransferActivity.startInstance(getService(), group.id, flagAddNewDevice);
-        }
-
-        AppUtils.getDatabase(getService()).broadcast();
-
-        if (getAnchorListener() != null)
-            getAnchorListener().finish();
+        if (getAnchorListener() instanceof Activity)
+            ((Activity) getAnchorListener()).finish();
     }
 
     public void createFolderStructure(DocumentFile file, String folderName, List<TransferDescriptor> list)
@@ -153,16 +133,12 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
         DocumentFile[] files = file.listFiles();
 
         if (files != null) {
-            if (getAnchorListener() != null) {
-                ProgressBar progressBar = getAnchorListener().getProgressBar();
-                progressBar.setMax(getAnchorListener().getProgressBar().getMax() + files.length);
-            }
+            if (getAnchorListener() != null)
+                getAnchorListener().updateTaskPosition(0, files.length);
 
             for (DocumentFile thisFile : files) {
-                if (getAnchorListener() != null) {
-                    ProgressBar progressBar = getAnchorListener().getProgressBar();
-                    progressBar.setProgress(progressBar.getProgress() + 1);
-                }
+                if (getAnchorListener() != null)
+                    getAnchorListener().updateTaskPosition(1, 0);
 
                 if (getInterrupter().interrupted())
                     break;
@@ -180,13 +156,5 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
                 }
             }
         }
-    }
-
-    private void measure(TransferDescriptor descriptor, List<TransferDescriptor> objects, boolean isDirectory)
-    {
-        if (isDirectory)
-            createFolderStructure(descriptor.file, descriptor.file.getName(), objects);
-        else
-            objects.add(descriptor);
     }
 }

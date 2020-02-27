@@ -469,12 +469,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
     {
         public FileHolder(Context context, DocumentFile file)
         {
-            super(file,
-                    file.getName(),
-                    FileUtils.sizeExpression(file.length(), false),
-                    MimeIconUtils.loadMimeIcon(file.getType()),
-                    file.lastModified(),
-                    file.length(),
+            super(file, file.getName(), FileUtils.sizeExpression(file.length(), false),
+                    MimeIconUtils.loadMimeIcon(file.getType()), file.lastModified(), file.length(),
                     FileUtils.getSecureUriSilently(context, file));
         }
 
@@ -509,8 +505,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
         {
             super(context, file);
 
-            this.info = transferObject == null
-                    ? context.getString(R.string.mesg_notValidTransfer)
+            this.info = transferObject == null ? context.getString(R.string.mesg_notValidTransfer)
                     : String.format("%s / %s", FileUtils.sizeExpression(getComparableSize(), false),
                     FileUtils.sizeExpression(transferObject.size, false));
 
@@ -603,8 +598,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
         @Override
         public boolean comparisonSupported()
         {
-            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
-                    && super.comparisonSupported();
+            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON && super.comparisonSupported();
         }
 
         @Override

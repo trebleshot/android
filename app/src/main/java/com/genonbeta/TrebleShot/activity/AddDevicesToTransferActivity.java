@@ -48,7 +48,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider,
-        WorkerService.OnAttachListener
+        WorkerService.AttachedTaskListener
 {
     public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
@@ -313,18 +313,44 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         });
     }
 
-    public void updateProgress(final int total, final int current)
+    @Override
+    public void setTaskPosition(int ofTotal, int total)
     {
         if (isFinishing())
             return;
 
         runOnUiThread(() -> {
-            mProgressTextLeft.setText(String.valueOf(current));
+            mProgressTextLeft.setText(String.valueOf(ofTotal));
             mProgressTextRight.setText(String.valueOf(total));
         });
 
-        mProgressBar.setProgress(current);
+        mProgressBar.setProgress(ofTotal);
         mProgressBar.setMax(total);
+    }
+
+    @Override
+    public void updateTaskPosition(int addToOfTotal, int addToTotal)
+    {
+        if (isFinishing())
+            return;
+
+        if (addToOfTotal != 0) {
+            int newPosition = mProgressBar.getProgress() + addToOfTotal;
+            runOnUiThread(() -> mProgressTextLeft.setText(String.valueOf(newPosition)));
+            mProgressBar.setProgress(newPosition);
+        }
+
+        if (addToTotal != 0) {
+            int newPosition = mProgressBar.getMax() + addToTotal;
+            runOnUiThread(() -> mProgressTextRight.setText(String.valueOf(newPosition)));
+            mProgressBar.setMax(newPosition);
+        }
+    }
+
+    @Override
+    public void updateTaskStatus(String text)
+    {
+
     }
 }
 

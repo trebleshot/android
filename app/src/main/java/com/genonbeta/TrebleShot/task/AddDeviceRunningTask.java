@@ -39,7 +39,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -50,8 +49,7 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
     private NetworkDevice mDevice;
     private DeviceConnection mConnection;
 
-    public AddDeviceRunningTask(TransferGroup group, NetworkDevice device,
-                                DeviceConnection connection)
+    public AddDeviceRunningTask(TransferGroup group, NetworkDevice device, DeviceConnection connection)
     {
         mGroup = group;
         mDevice = device;
@@ -79,9 +77,9 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
                                 TransferObject.Type.OUTGOING, mConnection);
 
                         final List<TransferObject> existingRegistry = database.castQuery(instance, new SQLQuery.Select(
-                                AccessDatabase.TABLE_TRANSFER).setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID
+                                        AccessDatabase.TABLE_TRANSFER).setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID
                                         + "=? AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(
-                                                mGroup.id), TransferObject.Type.OUTGOING.toString()),
+                                mGroup.id), TransferObject.Type.OUTGOING.toString()),
                                 TransferObject.class, null);
 
                         try {

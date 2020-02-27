@@ -226,9 +226,15 @@ public class WorkerService extends Service
         }
     }
 
-    public interface OnAttachListener
+    public interface AttachedTaskListener
     {
         void onAttachedToTask(BaseAttachableRunningTask task);
+
+        void setTaskPosition(int ofTotal, int total);
+
+        void updateTaskPosition(int addToOfTotal, int addToTotal);
+
+        void updateTaskStatus(String text);
     }
 
     public abstract static class RunningTask extends InterruptAwareJob
@@ -243,7 +249,7 @@ public class WorkerService extends Service
         private DynamicNotification mNotification;
         private PendingIntent mActivityIntent;
 
-        abstract protected void onRun();
+        abstract protected void onRun() throws InterruptedException;
 
         protected void onInterrupted()
         {
@@ -308,7 +314,11 @@ public class WorkerService extends Service
 
         protected void run()
         {
-            run(getInterrupter());
+            try {
+                run(getInterrupter());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         public boolean run(final Context context)
@@ -378,7 +388,7 @@ public class WorkerService extends Service
         abstract public void detachAnchor();
     }
 
-    abstract public static class AttachableRunningTask<T extends OnAttachListener> extends BaseAttachableRunningTask
+    abstract public static class AttachableRunningTask<T extends AttachedTaskListener> extends BaseAttachableRunningTask
     {
         private T mAnchorListener;
 
@@ -399,6 +409,15 @@ public class WorkerService extends Service
             mAnchorListener = listener;
             listener.onAttachedToTask(this);
             return this;
+        }
+
+        @Override
+        public boolean publishStatusText(String text)
+        {
+            if (mAnchorListener != null)
+                mAnchorListener.updateTaskStatus(text);
+
+            return super.publishStatusText(text);
         }
     }
 

@@ -350,12 +350,11 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
             final List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(this, mGroup.id, null);
 
             if (assignees.size() == 1)
-                new EstablishConnectionDialog(ViewTransferActivity.this,
-                        assignees.get(0).device, null).show();
+                new EstablishConnectionDialog(ViewTransferActivity.this, assignees.get(0).device, null)
+                        .show();
             else if (assignees.size() > 1) {
-                new ChooseAssigneeDialog(this, assignees, (dialog, which) ->
-                        new EstablishConnectionDialog(ViewTransferActivity.this,
-                                assignees.get(which).device, null).show()).show();
+                new ChooseAssigneeDialog(this, assignees, (dialog, which) -> new EstablishConnectionDialog(
+                        ViewTransferActivity.this, assignees.get(which).device, null).show()).show();
             }
         } else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
             mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
@@ -363,8 +362,7 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
             getDatabase().broadcast();
             showMenus();
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_limit_to) {
-            mAssignee = item.getOrder() < getGroup().assignees.length
-                    ? getGroup().assignees[item.getOrder()] : null;
+            mAssignee = item.getOrder() < getGroup().assignees.length ? getGroup().assignees[item.getOrder()] : null;
 
             TransferFileExplorerFragment fragment = (TransferFileExplorerFragment)
                     getSupportFragmentManager()

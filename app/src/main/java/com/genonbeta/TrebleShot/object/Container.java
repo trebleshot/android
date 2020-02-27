@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,22 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.object;
 
-import com.genonbeta.android.framework.util.Interrupter;
+import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.io.Containable;
 
-/**
- * created by: Veli
- * date: 11.02.2018 19:37
- */
-
-abstract public class InterruptAwareJob
+public interface Container
 {
-    abstract protected void onRun() throws InterruptedException;
-
-    protected void run(Interrupter interrupter) throws InterruptedException
-    {
-        onRun();
-        interrupter.removeClosers();
-    }
+    @Nullable
+    Containable expand();
 }

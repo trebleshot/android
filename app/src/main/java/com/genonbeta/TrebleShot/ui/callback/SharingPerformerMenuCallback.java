@@ -26,11 +26,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.io.Containable;
+import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.MIMEGrouper;
@@ -67,11 +66,16 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
 
         List<Shareable> shareableList = compileShareableListFrom(MappedSelectable.compileFrom(performerEngine));
 
-        if (id == R.id.action_mode_share_all_apps || id == R.id.menu_action_share_trebleshot) {
+        if (id == R.id.menu_action_share_trebleshot) {
             if (shareableList.size() <= 0)
                 return false;
 
-            boolean locally = id == R.id.menu_action_share_trebleshot;
+            //new ChooseSharingMethodDialog(getFragment().getActivity(), intent).show();
+            //addIfEligible(containerList, sharedItem);
+        } else if (id == R.id.action_mode_share_all_apps) {
+            if (shareableList.size() <= 0)
+                return false;
+
             Intent intent = new Intent(shareableList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -94,20 +98,13 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
             } else if (shareableList.size() == 1) {
                 Shareable sharedItem = shareableList.get(0);
 
-                addIfEligible(containerList, sharedItem);
-
                 intent.setType(sharedItem.mimeType)
                         .putExtra(Intent.EXTRA_STREAM, sharedItem.uri);
             }
 
             try {
-                if (locally) {
-
-                    //new ChooseSharingMethodDialog(getFragment().getActivity(), intent).show();
-                } else
-                    getActivity().startActivity(Intent.createChooser(intent, getActivity().getString(
-                            R.string.text_fileShareAppChoose)));
-
+                getActivity().startActivity(Intent.createChooser(intent, getActivity().getString(
+                        R.string.text_fileShareAppChoose)));
                 return true;
             } catch (ActivityNotFoundException e) {
                 Toast.makeText(getActivity(), R.string.mesg_noActivityFound, Toast.LENGTH_SHORT).show();
@@ -123,8 +120,8 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
 
     private void addIfEligible(ArrayList<Containable> list, Shareable sharedItem)
     {
-        if (sharedItem instanceof ShareActivity.Container) {
-            Containable containable = ((ShareActivity.Container) sharedItem).expand();
+        if (sharedItem instanceof Container) {
+            Containable containable = ((Container) sharedItem).expand();
 
             if (containable != null)
                 list.add(containable);

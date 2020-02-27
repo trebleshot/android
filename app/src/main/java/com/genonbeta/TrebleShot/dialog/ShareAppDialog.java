@@ -52,7 +52,7 @@ public class ShareAppDialog extends AlertDialog.Builder
 
     private void shareAsApk(@NonNull final Context context)
     {
-        new Handler(Looper.myLooper()).post(() -> {
+        new Handler(Looper.getMainLooper()).post(() -> {
             try {
                 Interrupter interrupter = new Interrupter();
 
@@ -70,7 +70,6 @@ public class ShareAppDialog extends AlertDialog.Builder
 
                 try {
                     Intent sendIntent = new Intent(Intent.ACTION_SEND)
-                            .putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
                             .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(context, cloneFile))
                             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             .setType(cloneFile.getType());
@@ -89,10 +88,9 @@ public class ShareAppDialog extends AlertDialog.Builder
 
     private void shareAsLink(@NonNull final Context context)
     {
-        new Handler(Looper.myLooper()).post(() -> {
+        new Handler(Looper.getMainLooper()).post(() -> {
             try {
-                String textToShare = context.getString(R.string.text_linkTrebleshot,
-                        AppConfig.URI_GOOGLE_PLAY);
+                String textToShare = context.getString(R.string.text_linkTrebleshot, AppConfig.URI_GOOGLE_PLAY);
 
                 Intent sendIntent = new Intent(Intent.ACTION_SEND)
                         .putExtra(Intent.EXTRA_TEXT, textToShare)

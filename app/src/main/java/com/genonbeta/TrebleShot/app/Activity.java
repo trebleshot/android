@@ -63,6 +63,8 @@ import java.util.List;
 
 public abstract class Activity extends AppCompatActivity
 {
+    private static final String TAG = Activity.class.getSimpleName();
+
     public static final String ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED";
 
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
@@ -366,7 +368,9 @@ public abstract class Activity extends AppCompatActivity
                 WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
                 WorkerService.RunningTask task = workerService.findTaskByHash(WorkerService.intentHash(getIntent()));
 
-                if (task instanceof BaseAttachableRunningTask) {
+                if (task == null)
+                    onPreviousRunningTask(null);
+                else if (task instanceof BaseAttachableRunningTask) {
                     BaseAttachableRunningTask attachable = (BaseAttachableRunningTask) task;
                     onPreviousRunningTask(attachable);
 
