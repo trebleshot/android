@@ -34,7 +34,7 @@ public class RemoveDeviceDialog extends AlertDialog.Builder
         setTitle(R.string.ques_removeDevice);
         setMessage(R.string.text_removeDeviceNotice);
         setNegativeButton(R.string.butn_cancel, null);
-        setPositiveButton(R.string.butn_proceed, (dialog, which) -> AppUtils.getKuick(getContext()).removeAsynchronous(activity,
-                device));
+        setPositiveButton(R.string.butn_proceed, (dialog, which) -> AppUtils.getKuick(getContext()).removeAsynchronous(
+                activity, device, null));
     }
 }

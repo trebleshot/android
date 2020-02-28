@@ -206,7 +206,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
                         (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated,
                                 TextUtils.getAdapterName(getContext(), connection)).show());
             } else if (id == R.id.popup_remove) {
-                AppUtils.getKuick(getContext()).removeAsynchronous(getActivity(), assignee);
+                AppUtils.getKuick(getContext()).removeAsynchronous(getActivity(), assignee, mHeldGroup);
             } else
                 return false;
 

@@ -72,7 +72,7 @@ public class DialogUtils
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 (dialog, which, checkBox) -> {
                     group.setDeleteFilesOnRemoval(checkBox.isChecked());
-                    AppUtils.getKuick(activity).removeAsynchronous(activity, group);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, group, null);
                 });
     }
 
@@ -80,14 +80,15 @@ public class DialogUtils
     {
         int checkBox = TransferObject.Type.INCOMING.equals(object.type) ? R.string.text_alsoDeleteReceivedFiles : 0;
         showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer, activity.getString(
-                R.string.text_removeTransferSummary, object.name), R.string.butn_remove, checkBox,
-                (dialog, which, checkBox1) -> {
+                R.string.text_removeTransferSummary, object.name),
+                R.string.butn_remove, checkBox, (dialog, which, checkBox1) -> {
                     object.setDeleteOnRemoval(checkBox1.isChecked());
-                    AppUtils.getKuick(activity).removeAsynchronous(activity, object);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, object, null);
                 });
     }
 
-    public static void showRemoveTransferObjectListDialog(final Activity activity, final List<? extends TransferObject> objects)
+    public static void showRemoveTransferObjectListDialog(final Activity activity,
+                                                          final List<? extends TransferObject> objects)
     {
         final List<TransferObject> copiedObjects = new ArrayList<>(objects);
 
@@ -100,12 +101,13 @@ public class DialogUtils
                     for (TransferObject object : copiedObjects)
                         object.setDeleteOnRemoval(isChecked);
 
-                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedObjects);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedObjects, null);
                 });
     }
 
 
-    public static void showRemoveTransferGroupListDialog(final Activity activity, final List<? extends TransferGroup> groups)
+    public static void showRemoveTransferGroupListDialog(final Activity activity,
+                                                         final List<? extends TransferGroup> groups)
     {
         final List<TransferGroup> copiedGroups = new ArrayList<>(groups);
 
@@ -117,7 +119,7 @@ public class DialogUtils
                     for (TransferGroup group : copiedGroups)
                         group.setDeleteFilesOnRemoval(isChecked);
 
-                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedGroups);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedGroups, null);
                 });
     }
 
