@@ -48,7 +48,7 @@ import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.util.*;
-import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -475,7 +475,7 @@ public class CommunicationService extends Service
                 else if (TransferObject.Type.OUTGOING.equals(processHolder.type))
                     processHolder.object.putFlag(processHolder.device.id, flag);
 
-                getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -556,16 +556,16 @@ public class CommunicationService extends Service
                 }
             }
 
-            KuickDb.ProgressUpdater progressUpdater = new KuickDb.ProgressUpdater()
+            Progress.Listener progressUpdater = new Progress.SimpleListener()
             {
                 long lastNotified = System.currentTimeMillis();
 
                 @Override
-                public boolean onProgressChange(int total, int current)
+                public boolean onProgressChange(Progress progress)
                 {
                     if ((System.currentTimeMillis() - lastNotified) > 1000) {
                         lastNotified = System.currentTimeMillis();
-                        notification.updateProgress(total, current, false);
+                        notification.updateProgress(progress.getTotal(), progress.getCurrent(), false);
                     }
 
                     return !interrupter.interrupted();
@@ -574,9 +574,9 @@ public class CommunicationService extends Service
 
             if (pendingRegistry.size() > 0) {
                 if (usePublishing)
-                    getKuick().publish(pendingRegistry, progressUpdater);
+                    getKuick().publish(getDatabase(), pendingRegistry, group, progressUpdater);
                 else
-                    getKuick().insert(pendingRegistry, progressUpdater);
+                    getKuick().insert(getDatabase(), pendingRegistry, group, progressUpdater);
             }
 
             notification.cancel();
@@ -803,7 +803,7 @@ public class CommunicationService extends Service
                     if (processHolder.object != null) {
                         Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
                                 + processHolder.object.getFlag().toString());
-                        getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                        getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
                     }
                 }
             }
@@ -943,7 +943,7 @@ public class CommunicationService extends Service
                         if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
                                 Keyword.RESULT)) {
                             processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                            getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                            getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
                             continue;
                         }
 
@@ -955,7 +955,7 @@ public class CommunicationService extends Service
 
                     processHolder.activeConnection.receive();
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.IN_PROGRESS);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
 
                     try {
                         boolean sizeExceeded = false;
@@ -996,7 +996,7 @@ public class CommunicationService extends Service
                         else
                             processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
 
-                        getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                        getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
 
                         Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
                     } catch (Exception e) {
@@ -1004,7 +1004,7 @@ public class CommunicationService extends Service
                         processHolder.interrupter.interrupt(false);
                         processHolder.object.putFlag(processHolder.device.id,
                                 TransferObject.Flag.INTERRUPTED);
-                        getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                        getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
                     } finally {
                         inputStream.close();
                     }
@@ -1018,7 +1018,7 @@ public class CommunicationService extends Service
                             .toString());
 
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
                 } catch (FileNotFoundException | StreamCorruptedException e) {
                     Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + processHolder.object.name);
 
@@ -1029,7 +1029,7 @@ public class CommunicationService extends Service
                             .toString());
 
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
                 } catch (Exception e) {
                     e.printStackTrace();
 
@@ -1040,7 +1040,7 @@ public class CommunicationService extends Service
                             .toString());
 
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
                 }
             }
         } catch (Exception e) {

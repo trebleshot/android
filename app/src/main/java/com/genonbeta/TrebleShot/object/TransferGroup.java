@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.object.Selectable;
 
@@ -119,19 +120,19 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
         SQLQuery.Select objectSelection = new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
                 String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(id));
@@ -146,9 +147,9 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
             for (TransferObject object : objects)
                 object.setDeleteOnRemoval(true);
 
-            kuick.remove(db, objects, null, this);
+            kuick.remove(db, objects, this, listener);
         } else
-            kuick.removeAsObject(db, objectSelection, TransferObject.class, null, null,
-                    this);
+            kuick.removeAsObject(db, objectSelection, TransferObject.class, this, listener,
+                    null);
     }
 }

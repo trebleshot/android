@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
@@ -118,19 +119,19 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
     {
         if (!TransferObject.Type.INCOMING.equals(type))
             return;
@@ -144,7 +145,7 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
             SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId, TransferObject.Flag.INTERRUPTED,
                     true);
 
-            kuick.removeAsObject(db, selection, TransferObject.class, null, null, parent);
+            kuick.removeAsObject(db, selection, TransferObject.class, parent, listener, null);
         } catch (ReconstructionFailedException e) {
             e.printStackTrace();
         }

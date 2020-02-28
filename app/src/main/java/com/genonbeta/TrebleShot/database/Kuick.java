@@ -215,10 +215,18 @@ public class Kuick extends KuickDb
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final List<V> objects)
     {
-        doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(objects, (total, current) -> {
-            task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles, current, total));
-            return !task.getInterrupter().interrupted();
-        }));
+        doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(getWritableDatabase(), objects, null,
+                new Progress.SimpleListener()
+                {
+                    @Override
+                    public boolean onProgressChange(Progress progress)
+                    {
+                        task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles,
+                                progress.getCurrent(), progress.getTotal()));
+                        return !task.getInterrupter().interrupted();
+                    }
+                }
+        ));
     }
 
     public interface AsynchronousTask

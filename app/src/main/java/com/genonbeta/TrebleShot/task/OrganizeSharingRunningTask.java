@@ -31,6 +31,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -87,18 +88,24 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
         if (getAnchorListener() != null)
             publishStatusText(getService().getString(R.string.mesg_completing));
 
-        kuick.insert(db, list, (total, current) -> {
-            if (getAnchorListener() != null)
-                getAnchorListener().setTaskPosition(total, current);
+        Progress.SimpleListener simpleListener = new Progress.SimpleListener()
+        {
+            @Override
+            public boolean onProgressChange(Progress progress)
+            {
+                if (getAnchorListener() != null)
+                    getAnchorListener().setTaskPosition(progress.getTotal(), progress.getCurrent());
 
-            return !getInterrupter().interrupted();
-        }, group);
+                return !getInterrupter().interrupted();
+            }
+        };
 
+        kuick.insert(db, list, group, simpleListener);
+        kuick.insert(db, group, null, simpleListener);
         getInterrupter().addCloser((userAction) -> kuick.remove(db, new SQLQuery.Select(
                 Kuick.TABLE_TRANSFER).setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID),
                 String.valueOf(group.id))));
 
-        kuick.insert(db, group, null);
         ViewTransferActivity.startInstance(getService(), group.id);
         AddDevicesToTransferActivity.startInstance(getService(), group.id, true);
         kuick.broadcast();

@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 
@@ -162,19 +163,19 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent, Progress.Listener listener)
     {
 
     }

@@ -150,11 +150,12 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
                             publishStatusText(context.getString(R.string.mesg_organizingFiles));
 
                             if (doUpdate)
-                                kuick.update(db, assignee, mGroup);
+                                kuick.update(db, assignee, mGroup, null);
                             else
-                                kuick.insert(db, assignee, mGroup);
+                                kuick.insert(db, assignee, mGroup, null);
 
-                            kuick.update(db, existingRegistry, null, mGroup);
+                            // TODO: 28.02.2020 Add listener to update the task
+                            kuick.update(db, existingRegistry, mGroup, null);
                             kuick.broadcast();
 
                             if (getAnchorListener() != null) {

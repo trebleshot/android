@@ -69,7 +69,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
         final List<TransferObject> list = new ArrayList<>();
 
-        getInterrupter().addCloser((userAction -> kuick.remove(db, group, null)));
+        getInterrupter().addCloser((userAction -> kuick.remove(db, group, null, null)));
 
         for (Shareable shareable : mList) {
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
@@ -94,7 +94,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
                     }
         }
 
-        kuick.insert(db, list, null, group);
+        kuick.insert(db, list, group, null);
 
         if (mFlagWebShare) {
             group.isServedOnWeb = true;
@@ -103,7 +103,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
                     R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
         }
 
-        kuick.insert(db, group, null);
+        kuick.insert(db, group, null, null);
         ViewTransferActivity.startInstance(getService(), group.id);
 
         if (mFlagWebShare)

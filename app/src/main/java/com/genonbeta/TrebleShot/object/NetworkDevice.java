@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.Serializable;
@@ -125,19 +126,19 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Void parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Void parent, Progress.Listener listener)
     {
         checkSecureKey();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Void parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Void parent, Progress.Listener listener)
     {
         checkSecureKey();
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Void parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Void parent, Progress.Listener listener)
     {
         kuick.getContext().deleteFile(generatePictureId());
 
@@ -149,7 +150,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
                 + "=?", id), TransferAssignee.class, null);
 
         for (TransferAssignee assignee : assignees)
-            kuick.remove(db, assignee, null);
+            kuick.remove(db, assignee, null, listener);
     }
 
     public enum Type

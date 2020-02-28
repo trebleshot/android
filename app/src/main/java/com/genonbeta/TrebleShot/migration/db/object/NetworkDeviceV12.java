@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.List;
@@ -107,19 +108,19 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
     {
         kuick.getContext().deleteFile(generatePictureId());
 
@@ -132,7 +133,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
 
         // We are ensuring that the transfer group is still valid for other devices
         for (TransferAssigneeV12 assignee : assignees) {
-            kuick.remove(assignee);
+            kuick.remove(db, assignee, this, listener);
 
             try {
                 TransferGroupV12 transferGroup = new TransferGroupV12(assignee.groupId);
@@ -143,7 +144,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
                         String.valueOf(transferGroup.groupId)), TransferAssigneeV12.class);
 
                 if (relatedAssignees.size() == 0)
-                    kuick.remove(transferGroup);
+                    kuick.remove(db, transferGroup, this, listener);
             } catch (Exception ignored) {
 
             }

@@ -24,6 +24,7 @@ import android.net.Uri;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 public class FileShortcutObject implements DatabaseObject<Object>
@@ -72,19 +73,19 @@ public class FileShortcutObject implements DatabaseObject<Object>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
     {
 
     }

@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.net.Inet4Address;
@@ -111,19 +112,19 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
 
     }

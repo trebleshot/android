@@ -96,8 +96,8 @@ public class TextUtils
         return stringBuilder.toString().toUpperCase();
     }
 
-    public static String getTransactionFlagString(Context context, TransferObject object,
-                                                  NumberFormat percentFormat, @Nullable String deviceId)
+    public static String getTransactionFlagString(Context context, TransferObject object, NumberFormat percentFormat,
+                                                  @Nullable String deviceId)
     {
         // Because it takes more arguments when the 'object' is 'Type.OUTGOING', it will be
         // chosen by the appropriate value that it may contain.

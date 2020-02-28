@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 /**
@@ -108,19 +109,19 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
 
     }

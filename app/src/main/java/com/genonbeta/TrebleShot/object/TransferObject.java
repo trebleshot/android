@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 import org.json.JSONException;
@@ -332,19 +333,19 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
     {
         // Normally we'd like to check every file, but it may take a while.
         if (!Type.INCOMING.equals(type) || (!Flag.INTERRUPTED.equals(getFlag())
@@ -362,7 +363,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
 
             if (file != null && file.isFile())
                 file.delete();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             // do nothing
         }
     }

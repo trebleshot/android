@@ -24,6 +24,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
 /**
@@ -87,19 +88,19 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
         kuick.remove(db, new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER)
                 .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
@@ -108,7 +109,7 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
                 .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
 
         kuick.removeAsObject(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)),
-                TransferObjectV12.class, null, null, this);
+                        .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)),
+                TransferObjectV12.class, this, listener, null);
     }
 }
