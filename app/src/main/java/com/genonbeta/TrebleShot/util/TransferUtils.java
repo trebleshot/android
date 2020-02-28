@@ -12,13 +12,13 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -41,8 +41,7 @@ public class TransferUtils
 {
     public static final String TAG = TransferUtils.class.getSimpleName();
 
-    private static void appendOutgoingData(PreloadedGroup group, TransferObject object,
-                                           TransferObject.Flag flag)
+    private static void appendOutgoingData(PreloadedGroup group, TransferObject object, TransferObject.Flag flag)
     {
         group.bytesOutgoing += object.size;
         group.numberOfOutgoing++;
@@ -57,14 +56,13 @@ public class TransferUtils
     }
 
     public static void changeConnection(final FragmentActivity activity, final NetworkDevice device,
-                                        final TransferAssignee assignee,
-                                        final ConnectionUpdatedListener listener)
+                                        final TransferAssignee assignee, final ConnectionUpdatedListener listener)
     {
         new ConnectionChooserDialog(activity, device, (connection, connectionList) -> {
             try {
-                AppUtils.getDatabase(activity).reconstruct(assignee);
-                AppUtils.getDatabase(activity).publish(assignee);
-                AppUtils.getDatabase(activity).broadcast();
+                AppUtils.getKuick(activity).reconstruct(assignee);
+                AppUtils.getKuick(activity).publish(assignee);
+                AppUtils.getKuick(activity).broadcast();
 
                 if (listener != null)
                     listener.onConnectionUpdated(connection, assignee);
@@ -115,18 +113,18 @@ public class TransferUtils
 
     public static SQLQuery.Select createIncomingSelection(long groupId)
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID,
-                        AccessDatabase.FIELD_TRANSFER_TYPE), String.valueOf(groupId),
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                String.format("%s = ? AND %s = ?", Kuick.FIELD_TRANSFER_GROUPID,
+                        Kuick.FIELD_TRANSFER_TYPE), String.valueOf(groupId),
                 TransferObject.Type.INCOMING.toString());
     }
 
     public static SQLQuery.Select createIncomingSelection(long groupId, TransferObject.Flag flag, boolean equals)
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
                 String.format("%s = ? AND %s = ? AND %s " + (equals ? "=" : "!=") + " ?",
-                        AccessDatabase.FIELD_TRANSFER_GROUPID, AccessDatabase.FIELD_TRANSFER_TYPE,
-                        AccessDatabase.FIELD_TRANSFER_FLAG), String.valueOf(groupId),
+                        Kuick.FIELD_TRANSFER_GROUPID, Kuick.FIELD_TRANSFER_TYPE,
+                        Kuick.FIELD_TRANSFER_FLAG), String.valueOf(groupId),
                 TransferObject.Type.INCOMING.toString(), flag.toString());
     }
 
@@ -139,13 +137,12 @@ public class TransferUtils
         return bytesValue == 0 || size == 0 ? 0 : (float) bytesValue / size;
     }
 
-    public static ShowingAssignee fetchFirstAssignee(AccessDatabase database, long groupId)
+    public static ShowingAssignee fetchFirstAssignee(Kuick kuick, long groupId)
     {
-        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
+        SQLQuery.Select select = new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE)
+                .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
 
-        List<ShowingAssignee> assignees = database
-                .castQuery(select, ShowingAssignee.class, (db, item, object) -> {
+        List<ShowingAssignee> assignees = kuick.castQuery(select, ShowingAssignee.class, (db, item, object) -> {
                     object.device = new NetworkDevice(object.deviceId);
                     object.connection = new DeviceConnection(object);
 
@@ -160,10 +157,9 @@ public class TransferUtils
         return assignees.size() == 0 ? null : assignees.get(0);
     }
 
-    public static ShowingAssignee fetchFirstAssignee(SnackbarPlacementProvider snackbar,
-                                                     AccessDatabase database, long groupId)
+    public static ShowingAssignee fetchFirstAssignee(SnackbarPlacementProvider snackbar, Kuick kuick, long groupId)
     {
-        ShowingAssignee assignee = fetchFirstAssignee(database, groupId);
+        ShowingAssignee assignee = fetchFirstAssignee(kuick, groupId);
 
         if (assignee == null) {
             snackbar.createSnackbar(R.string.mesg_noReceiverOrSender).show();
@@ -175,10 +171,10 @@ public class TransferUtils
 
     public static TransferObject fetchFirstValidIncomingTransfer(Context context, long groupId)
     {
-        ContentValues receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(
+        ContentValues receiverInstance = AppUtils.getKuick(context).getFirstFromTable(
                 createIncomingSelection(groupId, TransferObject.Flag.PENDING, true)
-                        .setOrderBy(String.format("`%s` ASC, `%s` ASC", AccessDatabase.FIELD_TRANSFER_DIRECTORY,
-                                AccessDatabase.FIELD_TRANSFER_NAME)));
+                        .setOrderBy(String.format("`%s` ASC, `%s` ASC", Kuick.FIELD_TRANSFER_DIRECTORY,
+                                Kuick.FIELD_TRANSFER_NAME)));
 
         return receiverInstance == null
                 ? null
@@ -192,21 +188,21 @@ public class TransferUtils
 
     public static void loadAssigneeInfo(Context context, ShowingAssignee assignee)
     {
-        loadAssigneeInfo(AppUtils.getDatabase(context), assignee);
+        loadAssigneeInfo(AppUtils.getKuick(context), assignee);
     }
 
-    public static void loadAssigneeInfo(SQLiteDatabase db, ShowingAssignee assignee)
+    public static void loadAssigneeInfo(KuickDb kuick, ShowingAssignee assignee)
     {
         assignee.device = new NetworkDevice(assignee.deviceId);
         assignee.connection = new DeviceConnection(assignee);
 
         try {
-            db.reconstruct(assignee.device);
+            kuick.reconstruct(assignee.device);
         } catch (Exception ignored) {
         }
 
         try {
-            db.reconstruct(assignee.connection);
+            kuick.reconstruct(assignee.connection);
         } catch (Exception ignored) {
         }
     }
@@ -214,17 +210,16 @@ public class TransferUtils
     public static List<ShowingAssignee> loadAssigneeList(Context context, long groupId,
                                                          @Nullable TransferObject.Type type)
     {
-        SQLQuery.Select selection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE);
+        SQLQuery.Select selection = new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE);
 
         if (type == null)
-            selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
-                    String.valueOf(groupId));
+            selection.setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
         else
-            selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
-                            + AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", String.valueOf(groupId),
+            selection.setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
+                            + Kuick.FIELD_TRANSFERASSIGNEE_TYPE + "=?", String.valueOf(groupId),
                     type.toString());
 
-        return AppUtils.getDatabase(context).castQuery(selection, ShowingAssignee.class,
+        return AppUtils.getKuick(context).castQuery(selection, ShowingAssignee.class,
                 (db, item, object) -> loadAssigneeInfo(db, object));
     }
 
@@ -242,8 +237,8 @@ public class TransferUtils
         loadGroupInfo(context, group, null, null);
     }
 
-    public static void loadGroupInfo(Context context, PreloadedGroup group,
-                                     @Nullable String deviceId, @Nullable TransferObject.Type type)
+    public static void loadGroupInfo(Context context, PreloadedGroup group, @Nullable String deviceId,
+                                     @Nullable TransferObject.Type type)
     {
         group.numberOfOutgoing = 0;
         group.numberOfIncoming = 0;
@@ -256,19 +251,19 @@ public class TransferUtils
         group.isRunning = false;
         group.hasIssues = false;
 
-        SQLQuery.Select selection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
+        SQLQuery.Select selection = new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
 
         if (type == null)
-            selection.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
+            selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?",
                     String.valueOf(group.id));
         else
-            selection.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                            + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(group.id),
+            selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
+                            + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(group.id),
                     type.toString());
 
         List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(context, group.id, type);
-        List<TransferObject> objectList = AppUtils.getDatabase(context).castQuery(selection, TransferObject.class);
+        List<TransferObject> objectList = AppUtils.getKuick(context).castQuery(selection, TransferObject.class);
 
         group.assignees = new ShowingAssignee[assigneeList.size()];
 
@@ -338,7 +333,7 @@ public class TransferUtils
             protected void onRun()
             {
                 CommunicationBridge.Client client = new CommunicationBridge.Client(
-                        AppUtils.getDatabase(activity));
+                        AppUtils.getKuick(activity));
 
                 try {
                     final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
@@ -420,16 +415,16 @@ public class TransferUtils
     public static void recoverIncomingInterruptions(Context context, long groupId)
     {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
+        contentValues.put(Kuick.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
 
-        AppUtils.getDatabase(context).update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                + AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
-                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+        AppUtils.getKuick(context).update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
+                                + Kuick.FIELD_TRANSFER_FLAG + "=? AND "
+                                + Kuick.FIELD_TRANSFER_TYPE + "=?",
                         String.valueOf(groupId),
                         TransferObject.Flag.INTERRUPTED.toString(),
                         TransferObject.Type.INCOMING.toString()), contentValues);
-        AppUtils.getDatabase(context).broadcast();
+        AppUtils.getKuick(context).broadcast();
     }
 
     public static void startTransferWithTest(final Activity activity, final TransferGroup group,
@@ -487,14 +482,14 @@ public class TransferUtils
                 try {
                     final NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
 
-                    AppUtils.getDatabase(activity).reconstruct(networkDevice);
+                    AppUtils.getKuick(activity).reconstruct(networkDevice);
 
                     new EstablishConnectionDialog(activity, networkDevice, (connection, availableInterfaces) -> {
                         if (!assignee.connectionAdapter.equals(connection.adapterName)) {
                             assignee.connectionAdapter = connection.adapterName;
 
-                            AppUtils.getDatabase(activity).publish(assignee);
-                            AppUtils.getDatabase(activity).broadcast();
+                            AppUtils.getKuick(activity).publish(assignee);
+                            AppUtils.getKuick(activity).broadcast();
                         }
 
                         AppUtils.startForegroundService(activity, new Intent(activity,

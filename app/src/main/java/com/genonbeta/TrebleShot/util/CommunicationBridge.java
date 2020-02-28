@@ -22,7 +22,7 @@ import android.content.Context;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -43,20 +43,20 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 {
     public static final String TAG = CommunicationBridge.class.getSimpleName();
 
-    public static Client connect(AccessDatabase database, final Client.ConnectionHandler handler)
+    public static Client connect(Kuick kuick, final Client.ConnectionHandler handler)
     {
-        return connect(database, false, handler);
+        return connect(kuick, false, handler);
     }
 
-    public static <T> T connect(AccessDatabase database, Class<T> clazz, final Client.ConnectionHandler handler)
+    public static <T> T connect(Kuick kuick, Class<T> clazz, final Client.ConnectionHandler handler)
     {
-        Client clientInstance = connect(database, true, handler);
+        Client clientInstance = connect(kuick, true, handler);
         return clientInstance.getReturn() != null && clazz != null ? clazz.cast(clientInstance.getReturn()) : null;
     }
 
-    public static Client connect(AccessDatabase database, boolean currentThread, final Client.ConnectionHandler handler)
+    public static Client connect(Kuick kuick, boolean currentThread, final Client.ConnectionHandler handler)
     {
-        final Client clientInstance = new Client(database);
+        final Client clientInstance = new Client(kuick);
 
         if (currentThread)
             handler.onConnect(clientInstance);
@@ -76,13 +76,13 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
     public static class Client extends CoolSocket.Client
     {
-        private AccessDatabase mDatabase;
+        private Kuick mKuick;
         private NetworkDevice mDevice;
         private int mPin = -1;
 
-        public Client(AccessDatabase database)
+        public Client(Kuick kuick)
         {
-            mDatabase = database;
+            mKuick = kuick;
         }
 
         public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection)
@@ -152,12 +152,12 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
         public Context getContext()
         {
-            return getDatabase().getContext();
+            return getKuick().getContext();
         }
 
-        public AccessDatabase getDatabase()
+        public Kuick getKuick()
         {
-            return mDatabase;
+            return mKuick;
         }
 
         public NetworkDevice getDevice()
@@ -193,7 +193,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                 CoolSocket.ActiveConnection.Response response = activeConnection.receive();
                 JSONObject responseJSON = new JSONObject(response.response);
 
-                return NetworkDeviceLoader.loadFrom(getDatabase(), responseJSON);
+                return NetworkDeviceLoader.loadFrom(getKuick(), responseJSON);
             } catch (JSONException e) {
                 throw new CommunicationException("Cannot read the device from JSON");
             }
@@ -214,7 +214,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         {
             NetworkDevice loadedDevice = loadDevice(activeConnection);
 
-            NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice, activeConnection.getClientAddress());
+            NetworkDeviceLoader.processConnection(getKuick(), loadedDevice, activeConnection.getClientAddress());
 
             if (getDevice() != null && !getDevice().id.equals(loadedDevice.id))
                 throw new DifferentClientException("The target device did not match with the connected one");
@@ -224,7 +224,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                     try {
                         NetworkDevice existingDevice = new NetworkDevice(loadedDevice.id);
 
-                        AppUtils.getDatabase(getContext()).reconstruct(existingDevice);
+                        AppUtils.getKuick(getContext()).reconstruct(existingDevice);
                         setDevice(existingDevice);
                     } catch (ReconstructionFailedException ignored) {
                         loadedDevice.secureKey = AppUtils.generateKey();
@@ -242,8 +242,8 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
             loadedDevice.lastUsageTime = System.currentTimeMillis();
 
-            mDatabase.publish(loadedDevice);
-            mDatabase.broadcast();
+            getKuick().publish(loadedDevice);
+            getKuick().broadcast();
             setDevice(loadedDevice);
         }
 

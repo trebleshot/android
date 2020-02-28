@@ -64,16 +64,16 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                             AppConfig.DEFAULT_DISABLED_INTERFACES);
 
                     NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-                    getDatabase().publish(localDevice);
+                    getKuick().publish(localDevice);
 
                     for (NetworkInterface networkInterface : interfaceList) {
                         DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(),
                                 NetworkUtils.getFirstInet4Address(networkInterface).getHostAddress(), localDevice.id,
                                 System.currentTimeMillis());
-                        getDatabase().publish(connection);
+                        getKuick().publish(connection);
                     }
 
-                    getDatabase().broadcast();
+                    getKuick().broadcast();
                     result = mDeviceScanner.scan(interfaceList, this) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE;
                 }
 
@@ -98,10 +98,10 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
     {
         DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(), address.getHostAddress(),
                 "", System.currentTimeMillis());
-        getDatabase().publish(connection);
+        getKuick().publish(connection);
 
-        NetworkDeviceLoader.load(getDatabase(), address.getHostAddress(), null);
-        getDatabase().broadcast();
+        NetworkDeviceLoader.load(getKuick(), address.getHostAddress(), null);
+        getKuick().broadcast();
     }
 
     @Override

@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -35,21 +35,22 @@ import com.genonbeta.android.database.SQLQuery;
  * date: 30.12.2017 13:25
  */
 
-public class TextStreamListAdapter
-        extends GroupEditableListAdapter<TextStreamObject, GroupEditableListAdapter.GroupViewHolder>
+public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamObject,
+        GroupEditableListAdapter.GroupViewHolder>
 {
-    private AccessDatabase mDatabase;
+    private Kuick mKuick;
 
-    public TextStreamListAdapter(Context context, AccessDatabase database)
+    public TextStreamListAdapter(Context context, Kuick kuick)
     {
         super(context, MODE_GROUP_BY_DATE);
-        mDatabase = database;
+        mKuick = kuick;
     }
 
     @Override
     protected void onLoad(GroupLister<TextStreamObject> lister)
     {
-        for (TextStreamObject object : mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD), TextStreamObject.class))
+        for (TextStreamObject object : mKuick.castQuery(new SQLQuery.Select(Kuick.TABLE_CLIPBOARD),
+                TextStreamObject.class))
             lister.offerObliged(this, object);
     }
 

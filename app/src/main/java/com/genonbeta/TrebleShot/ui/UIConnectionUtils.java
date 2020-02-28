@@ -236,7 +236,7 @@ public class UIConnectionUtils
                                          final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
                                          final DialogInterface.OnClickListener retryButtonListener)
     {
-        return CommunicationBridge.connect(AppUtils.getDatabase(activity), NetworkDevice.class, client -> {
+        return CommunicationBridge.connect(AppUtils.getKuick(activity), NetworkDevice.class, client -> {
             try {
                 client.setPin(accessPin);
 
@@ -252,10 +252,10 @@ public class UIConnectionUtils
                 if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT)
                         && device.id != null) {
                     final DeviceConnection connection = NetworkDeviceLoader.processConnection(
-                            AppUtils.getDatabase(activity), device, inetAddress.getHostAddress());
+                            AppUtils.getKuick(activity), device, inetAddress.getHostAddress());
 
                     if (listener != null)
-                        listener.onDeviceRegistered(AppUtils.getDatabase(activity), device, connection);
+                        listener.onDeviceRegistered(AppUtils.getKuick(activity), device, connection);
                 } else
                     showConnectionRejectionInformation(activity, device, receivedReply, retryButtonListener);
 

@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.database;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.StringRes;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.migration.db.Migration;
@@ -33,7 +34,7 @@ import java.util.List;
  * Date: 4/14/17 11:47 PM
  */
 
-public class AccessDatabase extends SQLiteDatabase
+public class Kuick extends KuickDb
 {
     /*
      * Database migration is an important step when upgrading to an upper version. The user data
@@ -42,8 +43,8 @@ public class AccessDatabase extends SQLiteDatabase
 
     public static final int DATABASE_VERSION = 13;
 
-    public static final String TAG = AccessDatabase.class.getSimpleName();
-    public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
+    public static final String TAG = Kuick.class.getSimpleName();
+    public static final String DATABASE_NAME = Kuick.class.getSimpleName() + ".db";
 
     public static final String TABLE_CLIPBOARD = "clipboard";
     public static final String FIELD_CLIPBOARD_ID = "id";
@@ -105,21 +106,21 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String FIELD_WRITABLEPATH_TITLE = "title";
     public static final String FIELD_WRITABLEPATH_PATH = "path";
 
-    public AccessDatabase(Context context)
+    public Kuick(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
-    public void onCreate(android.database.sqlite.SQLiteDatabase db)
+    public void onCreate(SQLiteDatabase db)
     {
         SQLQuery.createTables(db, tables());
     }
 
     @Override
-    public void onUpgrade(android.database.sqlite.SQLiteDatabase database, int old, int current)
+    public void onUpgrade(SQLiteDatabase db, int old, int current)
     {
-        Migration.migrate(this, database, old, current);
+        Migration.migrate(this, db, old, current);
     }
 
     public static SQLValues tables()
@@ -207,12 +208,12 @@ public class AccessDatabase extends SQLiteDatabase
         }.setTitle(activity.getString(textRes)).run(activity);
     }
 
-    public void removeAsynchronous(Activity activity, final DatabaseObject<?> object)
+    public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final V object)
     {
         doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(object));
     }
 
-    public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject<?>> objects)
+    public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final List<V> objects)
     {
         doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(objects, (total, current) -> {
             task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles, current, total));
@@ -225,4 +226,3 @@ public class AccessDatabase extends SQLiteDatabase
         void perform(WorkerService.RunningTask task);
     }
 }
-

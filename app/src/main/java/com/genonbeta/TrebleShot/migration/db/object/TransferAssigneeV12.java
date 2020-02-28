@@ -19,14 +19,15 @@
 package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 /**
  * created by: veli
@@ -80,9 +81,9 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND " +
-                        AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", deviceId, String.valueOf(groupId));
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE)
+                .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND " +
+                        Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", deviceId, String.valueOf(groupId));
     }
 
     @Override
@@ -90,9 +91,9 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
         values.put(Migration.v12.FIELD_TRANSFERASSIGNEE_ISCLONE, 1);
 
         return values;
@@ -101,28 +102,25 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
-        this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+        this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID);
+        this.connectionAdapter = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDeviceV12 parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDeviceV12 parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDeviceV12 parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
     {
 
     }

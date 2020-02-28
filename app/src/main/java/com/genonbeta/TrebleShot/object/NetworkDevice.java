@@ -19,10 +19,11 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.io.Serializable;
 import java.util.List;
@@ -66,27 +67,27 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
-                .setWhere(AccessDatabase.FIELD_DEVICES_ID + "=?", id);
+        return new SQLQuery.Select(Kuick.TABLE_DEVICES)
+                .setWhere(Kuick.FIELD_DEVICES_ID + "=?", id);
     }
 
     public ContentValues getValues()
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_DEVICES_ID, id);
-        values.put(AccessDatabase.FIELD_DEVICES_USER, nickname);
-        values.put(AccessDatabase.FIELD_DEVICES_BRAND, brand);
-        values.put(AccessDatabase.FIELD_DEVICES_MODEL, model);
-        values.put(AccessDatabase.FIELD_DEVICES_BUILDNAME, versionName);
-        values.put(AccessDatabase.FIELD_DEVICES_BUILDNUMBER, versionCode);
-        values.put(AccessDatabase.FIELD_DEVICES_CLIENTVERSION, clientVersion);
-        values.put(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
-        values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocal ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_SECUREKEY, secureKey);
-        values.put(AccessDatabase.FIELD_DEVICES_TYPE, type.toString());
+        values.put(Kuick.FIELD_DEVICES_ID, id);
+        values.put(Kuick.FIELD_DEVICES_USER, nickname);
+        values.put(Kuick.FIELD_DEVICES_BRAND, brand);
+        values.put(Kuick.FIELD_DEVICES_MODEL, model);
+        values.put(Kuick.FIELD_DEVICES_BUILDNAME, versionName);
+        values.put(Kuick.FIELD_DEVICES_BUILDNUMBER, versionCode);
+        values.put(Kuick.FIELD_DEVICES_CLIENTVERSION, clientVersion);
+        values.put(Kuick.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
+        values.put(Kuick.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_ISLOCALADDRESS, isLocal ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_SECUREKEY, secureKey);
+        values.put(Kuick.FIELD_DEVICES_TYPE, type.toString());
 
         return values;
     }
@@ -94,23 +95,23 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.id = item.getAsString(AccessDatabase.FIELD_DEVICES_ID);
-        this.nickname = item.getAsString(AccessDatabase.FIELD_DEVICES_USER);
-        this.brand = item.getAsString(AccessDatabase.FIELD_DEVICES_BRAND);
-        this.model = item.getAsString(AccessDatabase.FIELD_DEVICES_MODEL);
-        this.versionName = item.getAsString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
-        this.versionCode = item.getAsInteger(AccessDatabase.FIELD_DEVICES_BUILDNUMBER);
-        this.lastUsageTime = item.getAsLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
-        this.isTrusted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
-        this.isRestricted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
-        this.isLocal = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
-        this.secureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_SECUREKEY);
+        this.id = item.getAsString(Kuick.FIELD_DEVICES_ID);
+        this.nickname = item.getAsString(Kuick.FIELD_DEVICES_USER);
+        this.brand = item.getAsString(Kuick.FIELD_DEVICES_BRAND);
+        this.model = item.getAsString(Kuick.FIELD_DEVICES_MODEL);
+        this.versionName = item.getAsString(Kuick.FIELD_DEVICES_BUILDNAME);
+        this.versionCode = item.getAsInteger(Kuick.FIELD_DEVICES_BUILDNUMBER);
+        this.lastUsageTime = item.getAsLong(Kuick.FIELD_DEVICES_LASTUSAGETIME);
+        this.isTrusted = item.getAsInteger(Kuick.FIELD_DEVICES_ISTRUSTED) == 1;
+        this.isRestricted = item.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1;
+        this.isLocal = item.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1;
+        this.secureKey = item.getAsInteger(Kuick.FIELD_DEVICES_SECUREKEY);
 
-        if (item.containsKey(AccessDatabase.FIELD_DEVICES_CLIENTVERSION))
-            this.clientVersion = item.getAsInteger(AccessDatabase.FIELD_DEVICES_CLIENTVERSION);
+        if (item.containsKey(Kuick.FIELD_DEVICES_CLIENTVERSION))
+            this.clientVersion = item.getAsInteger(Kuick.FIELD_DEVICES_CLIENTVERSION);
 
         try {
-            this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_DEVICES_TYPE));
+            this.type = Type.valueOf(item.getAsString(Kuick.FIELD_DEVICES_TYPE));
         } catch (Exception e) {
             this.type = Type.NORMAL;
         }
@@ -124,31 +125,31 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Void parent)
     {
         checkSecureKey();
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Void parent)
     {
         checkSecureKey();
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Void parent)
     {
-        database.getContext().deleteFile(generatePictureId());
+        kuick.getContext().deleteFile(generatePictureId());
 
-        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", id));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", id));
 
-        List<TransferAssignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(
-                AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID
+        List<TransferAssignee> assignees = kuick.castQuery(db, new SQLQuery.Select(
+                Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID
                 + "=?", id), TransferAssignee.class, null);
 
         for (TransferAssignee assignee : assignees)
-            database.remove(dbInstance, assignee, null);
+            kuick.remove(db, assignee, null);
     }
 
     public enum Type

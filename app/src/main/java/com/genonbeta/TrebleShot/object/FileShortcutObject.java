@@ -19,11 +19,12 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 public class FileShortcutObject implements DatabaseObject<Object>
 {
@@ -48,8 +49,8 @@ public class FileShortcutObject implements DatabaseObject<Object>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK).setWhere(
-                String.format("%s = ?", AccessDatabase.FIELD_FILEBOOKMARK_PATH), path.toString());
+        return new SQLQuery.Select(Kuick.TABLE_FILEBOOKMARK).setWhere(
+                String.format("%s = ?", Kuick.FIELD_FILEBOOKMARK_PATH), path.toString());
     }
 
     @Override
@@ -57,8 +58,8 @@ public class FileShortcutObject implements DatabaseObject<Object>
     {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_TITLE, title);
-        contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_PATH, path.toString());
+        contentValues.put(Kuick.FIELD_FILEBOOKMARK_TITLE, title);
+        contentValues.put(Kuick.FIELD_FILEBOOKMARK_PATH, path.toString());
 
         return contentValues;
     }
@@ -66,24 +67,24 @@ public class FileShortcutObject implements DatabaseObject<Object>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.title = item.getAsString(AccessDatabase.FIELD_FILEBOOKMARK_TITLE);
-        this.path = Uri.parse(item.getAsString(AccessDatabase.FIELD_FILEBOOKMARK_PATH));
+        this.title = item.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE);
+        this.path = Uri.parse(item.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH));
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }

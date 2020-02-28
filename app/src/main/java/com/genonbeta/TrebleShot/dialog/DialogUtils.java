@@ -72,7 +72,7 @@ public class DialogUtils
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 (dialog, which, checkBox) -> {
                     group.setDeleteFilesOnRemoval(checkBox.isChecked());
-                    AppUtils.getDatabase(activity).removeAsynchronous(activity, group);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, group);
                 });
     }
 
@@ -83,7 +83,7 @@ public class DialogUtils
                 R.string.text_removeTransferSummary, object.name), R.string.butn_remove, checkBox,
                 (dialog, which, checkBox1) -> {
                     object.setDeleteOnRemoval(checkBox1.isChecked());
-                    AppUtils.getDatabase(activity).removeAsynchronous(activity, object);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, object);
                 });
     }
 
@@ -100,7 +100,7 @@ public class DialogUtils
                     for (TransferObject object : copiedObjects)
                         object.setDeleteOnRemoval(isChecked);
 
-                    AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedObjects);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedObjects);
                 });
     }
 
@@ -117,7 +117,7 @@ public class DialogUtils
                     for (TransferGroup group : copiedGroups)
                         group.setDeleteFilesOnRemoval(isChecked);
 
-                    AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedGroups);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedGroups);
                 });
     }
 

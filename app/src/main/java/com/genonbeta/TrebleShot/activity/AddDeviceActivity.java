@@ -152,8 +152,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                     DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
 
                     try {
-                        AppUtils.getDatabase(AddDeviceActivity.this).reconstruct(device);
-                        AppUtils.getDatabase(AddDeviceActivity.this).reconstruct(connection);
+                        AppUtils.getKuick(AddDeviceActivity.this).reconstruct(device);
+                        AppUtils.getKuick(AddDeviceActivity.this).reconstruct(connection);
 
                         mDeviceSelectionListener.onNetworkDeviceSelected(device, connection);
                     } catch (Exception e) {
@@ -434,9 +434,9 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 if (resultCode == RESULT_OK && data != null) {
                     try {
                         NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
-                        AppUtils.getDatabase(getContext()).reconstruct(device);
+                        AppUtils.getKuick(getContext()).reconstruct(device);
                         DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
-                        AppUtils.getDatabase(getContext()).reconstruct(connection);
+                        AppUtils.getKuick(getContext()).reconstruct(connection);
 
                         if (mListener != null)
                             mListener.onNetworkDeviceSelected(device, connection);

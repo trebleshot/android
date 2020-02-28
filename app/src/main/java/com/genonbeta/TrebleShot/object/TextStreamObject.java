@@ -19,11 +19,12 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 /**
  * created by: Veli
@@ -76,8 +77,8 @@ public class TextStreamObject extends GroupEditableListAdapter.GroupShareable im
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD)
-                .setWhere(AccessDatabase.FIELD_CLIPBOARD_ID + "=?", String.valueOf(getId()));
+        return new SQLQuery.Select(Kuick.TABLE_CLIPBOARD)
+                .setWhere(Kuick.FIELD_CLIPBOARD_ID + "=?", String.valueOf(getId()));
     }
 
     @Override
@@ -85,9 +86,9 @@ public class TextStreamObject extends GroupEditableListAdapter.GroupShareable im
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_CLIPBOARD_ID, id);
-        values.put(AccessDatabase.FIELD_CLIPBOARD_TIME, date);
-        values.put(AccessDatabase.FIELD_CLIPBOARD_TEXT, text);
+        values.put(Kuick.FIELD_CLIPBOARD_ID, id);
+        values.put(Kuick.FIELD_CLIPBOARD_TIME, date);
+        values.put(Kuick.FIELD_CLIPBOARD_TEXT, text);
 
         return values;
     }
@@ -95,9 +96,9 @@ public class TextStreamObject extends GroupEditableListAdapter.GroupShareable im
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.id = item.getAsLong(AccessDatabase.FIELD_CLIPBOARD_ID);
-        this.text = item.getAsString(AccessDatabase.FIELD_CLIPBOARD_TEXT);
-        this.date = item.getAsLong(AccessDatabase.FIELD_CLIPBOARD_TIME);
+        this.id = item.getAsLong(Kuick.FIELD_CLIPBOARD_ID);
+        this.text = item.getAsString(Kuick.FIELD_CLIPBOARD_TEXT);
+        this.date = item.getAsLong(Kuick.FIELD_CLIPBOARD_TIME);
         this.mimeType = "text/plain";
         this.size = text.length();
         this.friendlyName = text;
@@ -105,19 +106,19 @@ public class TextStreamObject extends GroupEditableListAdapter.GroupShareable im
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }

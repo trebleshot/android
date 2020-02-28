@@ -45,7 +45,7 @@ import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -68,7 +68,7 @@ public class AppUtils
     public static final String TAG = AppUtils.class.getSimpleName();
 
     private static int mUniqueNumber = 0;
-    private static AccessDatabase mDatabase;
+    private static Kuick mKuick;
     private static SharedPreferences mDefaultPreferences;
     private static SuperPreferences mViewingPreferences;
 
@@ -235,12 +235,12 @@ public class AppUtils
         return builder;
     }
 
-    public static AccessDatabase getDatabase(Context context)
+    public static Kuick getKuick(Context context)
     {
-        if (mDatabase == null)
-            mDatabase = new AccessDatabase(context);
+        if (mKuick == null)
+            mKuick = new Kuick(context);
 
-        return mDatabase;
+        return mKuick;
     }
 
     public static Keyword.Flavor getBuildFlavor()

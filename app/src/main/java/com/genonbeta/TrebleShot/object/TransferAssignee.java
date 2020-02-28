@@ -19,14 +19,14 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
@@ -63,10 +63,8 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
         this(groupId, deviceId, type);
         this.connectionAdapter = connectionAdapter;
     }
-
     public TransferAssignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
-                            @NonNull TransferObject.Type type,
-                            @NonNull DeviceConnection connection)
+                            @NonNull TransferObject.Type type, @NonNull DeviceConnection connection)
     {
         this(group.id, device.id, type, connection.adapterName);
     }
@@ -86,10 +84,10 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(
-                AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", deviceId,
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE).setWhere(
+                Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND "
+                        + Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
+                        + Kuick.FIELD_TRANSFERASSIGNEE_TYPE + "=?", deviceId,
                 String.valueOf(groupId), type.toString());
     }
 
@@ -98,10 +96,10 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
-        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
+        values.put(Kuick.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
 
         return values;
     }
@@ -109,47 +107,44 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
-        this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+        this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID);
+        this.connectionAdapter = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
 
-        // Added in DB version 13 and might be null and may throw an error since the null check
-        // doesn't seem to work
-        if (item.containsKey(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE))
-            this.type = TransferObject.Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE));
+        // Added in DB version 13 and might be null and may throw an error since ContentValues doesn't like it when
+        // when the requested column name doesn't exist or has type different than requested.
+        if (item.containsKey(Kuick.FIELD_TRANSFERASSIGNEE_TYPE))
+            this.type = TransferObject.Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_TYPE));
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
     {
         if (!TransferObject.Type.INCOMING.equals(type))
             return;
 
         try {
-            AccessDatabase accessDatabase = AppUtils.getDatabase(database.getContext());
-
             if (parent == null) {
                 parent = new TransferGroup(groupId);
-                accessDatabase.reconstruct(parent);
+                kuick.reconstruct(db, parent);
             }
 
-            SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId,
-                    TransferObject.Flag.INTERRUPTED, true);
+            SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId, TransferObject.Flag.INTERRUPTED,
+                    true);
 
-            accessDatabase.removeAsObject(dbInstance, selection, TransferObject.class, null, null,
-                    parent);
+            kuick.removeAsObject(db, selection, TransferObject.class, null, null, parent);
         } catch (ReconstructionFailedException e) {
             e.printStackTrace();
         }

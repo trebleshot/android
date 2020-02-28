@@ -31,11 +31,10 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
-import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.FileShortcutObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -103,9 +102,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                             TransferObject existingObject = null;
 
                             try {
-                                ContentValues data = AppUtils.getDatabase(getContext()).getFirstFromTable(
-                                        new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                                                AccessDatabase.FIELD_TRANSFER_FILE + "=?", file.getName()));
+                                ContentValues data = AppUtils.getKuick(getContext()).getFirstFromTable(
+                                        new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                                                Kuick.FIELD_TRANSFER_FILE + "=?", file.getName()));
 
                                 if (data != null)
                                     existingObject = new TransferObject(data);
@@ -191,8 +190,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                 lister.offerObliged(this, fileHolder);
             }
 
-            List<FileShortcutObject> shortcutList = AppUtils.getDatabase(getContext())
-                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileShortcutObject.class);
+            List<FileShortcutObject> shortcutList = AppUtils.getKuick(getContext())
+                    .castQuery(new SQLQuery.Select(Kuick.TABLE_FILEBOOKMARK), FileShortcutObject.class);
 
             for (FileShortcutObject object : shortcutList) {
                 try {
@@ -202,8 +201,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                 }
             }
 
-            List<WritablePathObject> mountedPathList = AppUtils.getDatabase(getContext())
-                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
+            List<WritablePathObject> mountedPathList = AppUtils.getKuick(getContext())
+                    .castQuery(new SQLQuery.Select(Kuick.TABLE_WRITABLEPATH), WritablePathObject.class);
 
             if (Build.VERSION.SDK_INT >= 21) {
                 for (WritablePathObject pathObject : mountedPathList)
@@ -220,18 +219,18 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
             }
 
             {
-                List<TransferObject> objects = AppUtils.getDatabase(getContext())
-                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                                String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_FLAG),
+                List<TransferObject> objects = AppUtils.getKuick(getContext())
+                        .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                                String.format("%s = ?", Kuick.FIELD_TRANSFER_FLAG),
                                 TransferObject.Flag.DONE.toString()).setOrderBy(
-                                String.format("%s DESC", AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME)),
+                                String.format("%s DESC", Kuick.FIELD_TRANSFER_LASTCHANGETIME)),
                                 TransferObject.class);
 
                 List<DocumentFile> pickedRecentFiles = new ArrayList<>();
                 ArrayMap<Long, TransferGroup> groupMap = new ArrayMap<>();
 
-                for (TransferGroup group : AppUtils.getDatabase(getContext()).castQuery(
-                        new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP), TransferGroup.class))
+                for (TransferGroup group : AppUtils.getKuick(getContext()).castQuery(
+                        new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), TransferGroup.class))
                     groupMap.put(group.id, group);
                 int errorLimit = 3;
 

@@ -20,17 +20,17 @@ package com.genonbeta.TrebleShot.object;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.util.Log;
+import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.io.DocumentFile;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -225,9 +225,9 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID,
-                        AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE),
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFER_GROUPID,
+                        Kuick.FIELD_TRANSFER_ID, Kuick.FIELD_TRANSFER_TYPE),
                 String.valueOf(groupId), String.valueOf(id), type.toString());
     }
 
@@ -236,18 +236,18 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFER_ID, id);
-        values.put(AccessDatabase.FIELD_TRANSFER_GROUPID, groupId);
-        values.put(AccessDatabase.FIELD_TRANSFER_NAME, name);
-        values.put(AccessDatabase.FIELD_TRANSFER_SIZE, size);
-        values.put(AccessDatabase.FIELD_TRANSFER_MIME, mimeType);
-        values.put(AccessDatabase.FIELD_TRANSFER_TYPE, type.toString());
-        values.put(AccessDatabase.FIELD_TRANSFER_FILE, file);
-        values.put(AccessDatabase.FIELD_TRANSFER_DIRECTORY, directory);
-        values.put(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME, lastChangeDate);
+        values.put(Kuick.FIELD_TRANSFER_ID, id);
+        values.put(Kuick.FIELD_TRANSFER_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFER_NAME, name);
+        values.put(Kuick.FIELD_TRANSFER_SIZE, size);
+        values.put(Kuick.FIELD_TRANSFER_MIME, mimeType);
+        values.put(Kuick.FIELD_TRANSFER_TYPE, type.toString());
+        values.put(Kuick.FIELD_TRANSFER_FILE, file);
+        values.put(Kuick.FIELD_TRANSFER_DIRECTORY, directory);
+        values.put(Kuick.FIELD_TRANSFER_LASTCHANGETIME, lastChangeDate);
 
         if (Type.INCOMING.equals(type)) {
-            values.put(AccessDatabase.FIELD_TRANSFER_FLAG, mReceiverFlag.toString());
+            values.put(Kuick.FIELD_TRANSFER_FLAG, mReceiverFlag.toString());
         } else {
             JSONObject object = new JSONObject();
 
@@ -260,7 +260,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
                     }
             }
 
-            values.put(AccessDatabase.FIELD_TRANSFER_FLAG, object.toString());
+            values.put(Kuick.FIELD_TRANSFER_FLAG, object.toString());
         }
 
         return values;
@@ -269,20 +269,20 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.name = item.getAsString(AccessDatabase.FIELD_TRANSFER_NAME);
-        this.file = item.getAsString(AccessDatabase.FIELD_TRANSFER_FILE);
-        this.size = item.getAsLong(AccessDatabase.FIELD_TRANSFER_SIZE);
-        this.mimeType = item.getAsString(AccessDatabase.FIELD_TRANSFER_MIME);
-        this.id = item.getAsLong(AccessDatabase.FIELD_TRANSFER_ID);
-        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
-        this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_TYPE));
-        this.directory = item.getAsString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
+        this.name = item.getAsString(Kuick.FIELD_TRANSFER_NAME);
+        this.file = item.getAsString(Kuick.FIELD_TRANSFER_FILE);
+        this.size = item.getAsLong(Kuick.FIELD_TRANSFER_SIZE);
+        this.mimeType = item.getAsString(Kuick.FIELD_TRANSFER_MIME);
+        this.id = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_GROUPID);
+        this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_TYPE));
+        this.directory = item.getAsString(Kuick.FIELD_TRANSFER_DIRECTORY);
 
         // Added with DB version 13
-        if (item.containsKey(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME))
-            this.lastChangeDate = item.getAsLong(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME);
+        if (item.containsKey(Kuick.FIELD_TRANSFER_LASTCHANGETIME))
+            this.lastChangeDate = item.getAsLong(Kuick.FIELD_TRANSFER_LASTCHANGETIME);
 
-        String flagString = item.getAsString(AccessDatabase.FIELD_TRANSFER_FLAG);
+        String flagString = item.getAsString(Kuick.FIELD_TRANSFER_FLAG);
 
         if (Type.INCOMING.equals(this.type)) {
             try {
@@ -332,47 +332,39 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               TransferGroup parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               TransferGroup parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               TransferGroup parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent)
     {
         // Normally we'd like to check every file, but it may take a while.
         if (!Type.INCOMING.equals(type) || (!Flag.INTERRUPTED.equals(getFlag())
                 && (!Flag.DONE.equals(getFlag()) || !mDeleteOnRemoval)))
             return;
 
-        final String TAG = TransferObject.class.getSimpleName();
-        final long startTime = System.currentTimeMillis();
-
         try {
             if (parent == null) {
                 parent = new TransferGroup(groupId);
-                database.reconstruct(parent);
+                kuick.reconstruct(parent);
             }
 
-            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(),
-                    this, parent, false);
+            DocumentFile file = FileUtils.getIncomingPseudoFile(kuick.getContext(), this, parent,
+                    false);
 
             if (file != null && file.isFile())
                 file.delete();
         } catch (Exception e) {
             // do nothing
         }
-
-        Log.d(TAG, "onRemoveObject: Took " + (System.currentTimeMillis() - startTime) + "nsecs to complete");
     }
 
     @Override

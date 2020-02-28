@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -119,7 +119,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
                 registerLayoutViewClicks(clazz);
         };
 
-        return new TextStreamListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+        return new TextStreamListAdapter(getActivity(), AppUtils.getKuick(getContext()))
         {
             @NonNull
             @Override
@@ -153,7 +153,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     {
         super.onResume();
 
-        getActivity().registerReceiver(mStatusReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
+        getActivity().registerReceiver(mStatusReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
         refreshList();
     }
 
@@ -228,9 +228,9 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (AccessDatabase.TABLE_CLIPBOARD.equals(data.tableName))
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (Kuick.TABLE_CLIPBOARD.equals(data.tableName))
                     refreshList();
             }
         }

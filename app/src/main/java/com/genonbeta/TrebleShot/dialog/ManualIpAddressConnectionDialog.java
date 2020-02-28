@@ -21,7 +21,7 @@ package com.genonbeta.TrebleShot.dialog;
 import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -41,7 +41,7 @@ public class ManualIpAddressConnectionDialog extends AbstractSingleTextInputDial
             .OnDeviceRegisteredListener()
     {
         @Override
-        public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, DeviceConnection connection)
+        public void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection)
         {
             if (mDialog != null && mDialog.isShowing())
                 mDialog.dismiss();

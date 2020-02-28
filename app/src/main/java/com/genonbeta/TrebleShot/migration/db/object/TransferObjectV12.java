@@ -24,12 +24,13 @@ package com.genonbeta.TrebleShot.migration.db.object;
  */
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 
 public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
@@ -51,12 +52,14 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     {
     }
 
-    public TransferObjectV12(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+    public TransferObjectV12(long requestId, long groupId, String friendlyName, String file, String fileMime,
+                             long fileSize, Type type)
     {
         this(requestId, groupId, null, friendlyName, file, fileMime, fileSize, type);
     }
 
-    public TransferObjectV12(long requestId, long groupId, String deviceId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+    public TransferObjectV12(long requestId, long groupId, String deviceId, String friendlyName, String file,
+                             String fileMime, long fileSize, Type type)
     {
         this.friendlyName = friendlyName;
         this.file = file;
@@ -103,13 +106,13 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     public SQLQuery.Select getWhere()
     {
         String whereClause = isDivisionObject()
-                ? String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE)
-                : String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID,
-                AccessDatabase.FIELD_TRANSFER_TYPE, Migration.v12.FIELD_TRANSFER_DEVICEID);
+                ? String.format("%s = ? AND %s = ?", Kuick.FIELD_TRANSFER_ID, Kuick.FIELD_TRANSFER_TYPE)
+                : String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFER_ID,
+                Kuick.FIELD_TRANSFER_TYPE, Migration.v12.FIELD_TRANSFER_DEVICEID);
 
-        return isDivisionObject()
-                ? new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString())
-                : new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString(), deviceId);
+        return isDivisionObject() ? new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER).setWhere(whereClause,
+                String.valueOf(requestId), type.toString()) : new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                whereClause, String.valueOf(requestId), type.toString(), deviceId);
     }
 
     @Override
@@ -117,18 +120,18 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFER_ID, requestId);
-        values.put(AccessDatabase.FIELD_TRANSFER_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFER_ID, requestId);
+        values.put(Kuick.FIELD_TRANSFER_GROUPID, groupId);
         values.put(Migration.v12.FIELD_TRANSFER_DEVICEID, deviceId);
-        values.put(AccessDatabase.FIELD_TRANSFER_NAME, friendlyName);
-        values.put(AccessDatabase.FIELD_TRANSFER_SIZE, fileSize);
-        values.put(AccessDatabase.FIELD_TRANSFER_MIME, fileMimeType);
-        values.put(AccessDatabase.FIELD_TRANSFER_FLAG, flag.toString());
-        values.put(AccessDatabase.FIELD_TRANSFER_TYPE, type.toString());
-        values.put(AccessDatabase.FIELD_TRANSFER_FILE, file);
+        values.put(Kuick.FIELD_TRANSFER_NAME, friendlyName);
+        values.put(Kuick.FIELD_TRANSFER_SIZE, fileSize);
+        values.put(Kuick.FIELD_TRANSFER_MIME, fileMimeType);
+        values.put(Kuick.FIELD_TRANSFER_FLAG, flag.toString());
+        values.put(Kuick.FIELD_TRANSFER_TYPE, type.toString());
+        values.put(Kuick.FIELD_TRANSFER_FILE, file);
         values.put(Migration.v12.FIELD_TRANSFER_ACCESSPORT, accessPort);
         values.put(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
-        values.put(AccessDatabase.FIELD_TRANSFER_DIRECTORY, directory);
+        values.put(Kuick.FIELD_TRANSFER_DIRECTORY, directory);
 
         return values;
     }
@@ -136,42 +139,42 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.friendlyName = item.getAsString(AccessDatabase.FIELD_TRANSFER_NAME);
-        this.file = item.getAsString(AccessDatabase.FIELD_TRANSFER_FILE);
-        this.fileSize = item.getAsLong(AccessDatabase.FIELD_TRANSFER_SIZE);
-        this.fileMimeType = item.getAsString(AccessDatabase.FIELD_TRANSFER_MIME);
-        this.requestId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_ID);
-        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
+        this.friendlyName = item.getAsString(Kuick.FIELD_TRANSFER_NAME);
+        this.file = item.getAsString(Kuick.FIELD_TRANSFER_FILE);
+        this.fileSize = item.getAsLong(Kuick.FIELD_TRANSFER_SIZE);
+        this.fileMimeType = item.getAsString(Kuick.FIELD_TRANSFER_MIME);
+        this.requestId = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_GROUPID);
         this.deviceId = item.getAsString(Migration.v12.FIELD_TRANSFER_DEVICEID);
-        this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_TYPE));
+        this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_TYPE));
 
         // We may have put long in that field indicating that the file was / is in progress so generate
         try {
-            this.flag = Flag.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_FLAG));
+            this.flag = Flag.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_FLAG));
         } catch (Exception e) {
             this.flag = Flag.IN_PROGRESS;
-            this.flag.setBytesValue(item.getAsLong(AccessDatabase.FIELD_TRANSFER_FLAG));
+            this.flag.setBytesValue(item.getAsLong(Kuick.FIELD_TRANSFER_FLAG));
         }
 
         this.accessPort = item.getAsInteger(Migration.v12.FIELD_TRANSFER_ACCESSPORT);
         this.skippedBytes = item.getAsLong(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES);
-        this.directory = item.getAsString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
+        this.directory = item.getAsString(Kuick.FIELD_TRANSFER_DIRECTORY);
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroupV12 parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroupV12 parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroupV12 parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroupV12 parent)
     {
 
     }
@@ -206,9 +209,7 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
         @Override
         public String toString()
         {
-            return getBytesValue() > 0
-                    ? String.valueOf(getBytesValue())
-                    : super.toString();
+            return getBytesValue() > 0 ? String.valueOf(getBytesValue()) : super.toString();
         }
     }
 }

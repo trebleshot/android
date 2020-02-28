@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -49,7 +49,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegisteredErrorListener;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
@@ -104,7 +103,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
         }
 
         @Override
-        public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, DeviceConnection connection)
+        public void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection)
         {
             mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
         }
@@ -145,11 +144,11 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
 
         mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
         mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
-        mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+        mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
         mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-        mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getDatabase(getContext()),
+        mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getKuick(getContext()),
                 AppUtils.getDefaultPreferences(getContext()));
     }
 
@@ -355,7 +354,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
 
             builder.show();
         } else
-            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), device).show();
+            new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), device).show();
     }
 
     public void setHiddenDeviceTypes(NetworkDevice.Type[] types)
@@ -416,9 +415,9 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
                         .show();
             } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction()))
                 refreshList();
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (AccessDatabase.TABLE_DEVICES.equals(data.tableName))
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (Kuick.TABLE_DEVICES.equals(data.tableName))
                     refreshList();
             } else if (getUIConnectionUtils().notifyWirelessRequestHandled()
                     && WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())

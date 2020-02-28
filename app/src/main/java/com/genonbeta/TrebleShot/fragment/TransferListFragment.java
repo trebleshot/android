@@ -21,8 +21,6 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -32,11 +30,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ChooseAssigneeDialog;
-import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -52,7 +48,6 @@ import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TransferListFragment extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem,
@@ -76,10 +71,10 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (AccessDatabase.TABLE_TRANSFER.equals(data.tableName)
-                        || AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName))
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (Kuick.TABLE_TRANSFER.equals(data.tableName)
+                        || Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
                     refreshList();
             }
         }
@@ -116,7 +111,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
+        getActivity().registerReceiver(mReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
     }
 
     @Override
@@ -349,17 +344,17 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                                                 TransferUtils.pauseTransfer(getContext(), mHeldGroup,
                                                         TransferObject.Type.INCOMING);
 
-                                                List<TransferObject> checkList = AppUtils.getDatabase(getService()).
-                                                        castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                                                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                                                List<TransferObject> checkList = AppUtils.getKuick(getService()).
+                                                        castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                                                                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
+                                                                                + Kuick.FIELD_TRANSFER_TYPE + "=?",
                                                                         String.valueOf(getTransferGroup().id), TransferObject.Type.INCOMING.toString()), TransferObject.class);
 
                                                 TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().id);
 
                                                 try {
                                                     // Illustrate new change to build the structure accordingly
-                                                    AppUtils.getDatabase(getService()).reconstruct(pseudoGroup);
+                                                    AppUtils.getKuick(getService()).reconstruct(pseudoGroup);
                                                     pseudoGroup.savePath = selectedPath.toString();
 
                                                     for (TransferObject transferObject : checkList) {
@@ -414,7 +409,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
             mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
 
             try {
-                AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
+                AppUtils.getKuick(getContext()).reconstruct(mHeldGroup);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -430,7 +425,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                 ShowingAssignee assignee = new ShowingAssignee(groupId, deviceId,
                         TransferObject.Type.valueOf(type));
 
-                AppUtils.getDatabase(getContext()).reconstruct(assignee);
+                AppUtils.getKuick(getContext()).reconstruct(assignee);
                 TransferUtils.loadAssigneeInfo(getContext(), assignee);
 
                 getAdapter().setAssignee(assignee);
@@ -457,8 +452,8 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         TransferGroup group = getTransferGroup();
 
         group.savePath = selectedPath;
-        AppUtils.getDatabase(getContext()).publish(group);
-        AppUtils.getDatabase(getContext()).broadcast();
+        AppUtils.getKuick(getContext()).publish(group);
+        AppUtils.getKuick(getContext()).broadcast();
 
         if (getActivity() != null && isAdded())
             getActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());

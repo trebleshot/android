@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -94,7 +93,6 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
     {
         private NetworkInterface mInterface;
         private String mName;
-        private boolean mSelected = false;
 
         public EditableNetworkInterface(NetworkInterface addressedInterface, String name)
         {
@@ -171,14 +169,13 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
         @Override
         public boolean isSelectableSelected()
         {
-            return mSelected;
+            return false;
         }
 
         @Override
         public boolean setSelectableSelected(boolean selected)
         {
-            mSelected = selected;
-            return true;
+            return false;
         }
     }
 }

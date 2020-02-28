@@ -32,14 +32,13 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**
@@ -57,11 +56,11 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(data.tableName))
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (Kuick.TABLE_TRANSFERASSIGNEE.equals(data.tableName))
                     refreshList();
-                else if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName))
+                else if (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
                     updateTransferGroup();
             }
         }
@@ -133,7 +132,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
+        getActivity().registerReceiver(mReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
     }
 
     @Override
@@ -149,7 +148,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         try {
             ShowingAssignee assignee = getAdapter().getItem(holder);
 
-            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), assignee.device)
+            new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), assignee.device)
                     .show();
             return true;
         } catch (Exception e) {
@@ -207,7 +206,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
                         (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated,
                                 TextUtils.getAdapterName(getContext(), connection)).show());
             } else if (id == R.id.popup_remove) {
-                AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
+                AppUtils.getKuick(getContext()).removeAsynchronous(getActivity(), assignee);
             } else
                 return false;
 
@@ -220,7 +219,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     private void updateTransferGroup()
     {
         try {
-            AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
+            AppUtils.getKuick(getContext()).reconstruct(mHeldGroup);
             getEmptyActionButton().setText(mHeldGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
                     : R.string.butn_shareOnBrowser);
         } catch (Exception e) {

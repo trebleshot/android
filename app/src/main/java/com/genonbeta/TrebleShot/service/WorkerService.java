@@ -83,7 +83,7 @@ public class WorkerService extends Service
     public void onCreate()
     {
         super.onCreate();
-        mNotificationUtils = new NotificationUtils(this, getDatabase(), getDefaultPreferences());
+        mNotificationUtils = new NotificationUtils(this, getKuick(), getDefaultPreferences());
     }
 
     @Nullable

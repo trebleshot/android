@@ -32,7 +32,7 @@ import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -56,13 +56,12 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 {
     public static final String TAG = DeviceInfoDialog.class.getSimpleName();
 
-    public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database,
-                            final NetworkDevice device)
+    public DeviceInfoDialog(@NonNull final Activity activity, final Kuick kuick, final NetworkDevice device)
     {
         super(activity);
 
         try {
-            database.reconstruct(device);
+            kuick.reconstruct(device);
 
             @SuppressLint("InflateParams")
             View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
@@ -95,8 +94,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             accessSwitch.setOnCheckedChangeListener(
                     (button, isChecked) -> {
                         device.isRestricted = !isChecked;
-                        database.publish(device);
-                        database.broadcast();
+                        kuick.publish(device);
+                        kuick.broadcast();
                         trustSwitch.setEnabled(isChecked);
                     }
             );
@@ -105,8 +104,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                 trustSwitch.setOnCheckedChangeListener(
                         (button, isChecked) -> {
                             device.isTrusted = isChecked;
-                            database.publish(device);
-                            database.broadcast();
+                            kuick.publish(device);
+                            kuick.broadcast();
                         }
                 );
             else

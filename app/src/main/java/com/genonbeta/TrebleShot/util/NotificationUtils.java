@@ -26,7 +26,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 
 /**
  * Created by: veli
@@ -43,26 +43,29 @@ public class NotificationUtils
 
     private Context mContext;
     private NotificationManagerCompat mManager;
-    private AccessDatabase mDatabase;
+    private Kuick mDatabase;
     private SharedPreferences mPreferences;
 
-    public NotificationUtils(Context context, AccessDatabase database, SharedPreferences preferences)
+    public NotificationUtils(Context context, Kuick kuick, SharedPreferences preferences)
     {
         mContext = context;
         mManager = NotificationManagerCompat.from(context);
-        mDatabase = database;
+        mDatabase = kuick;
         mPreferences = preferences;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(
+                    Context.NOTIFICATION_SERVICE);
 
-            NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH, mContext.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH,
+                    mContext.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH);
 
             channelHigh.enableLights(mPreferences.getBoolean("notification_light", false));
             channelHigh.enableVibration(mPreferences.getBoolean("notification_vibrate", false));
             notificationManager.createNotificationChannel(channelHigh);
 
-            NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW, mContext.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW,
+                    mContext.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW);
             notificationManager.createNotificationChannel(channelLow);
         }
     }
@@ -85,7 +88,7 @@ public class NotificationUtils
         return mContext;
     }
 
-    public AccessDatabase getDatabase()
+    public Kuick getDatabase()
     {
         return mDatabase;
     }

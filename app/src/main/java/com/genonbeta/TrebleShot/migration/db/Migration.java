@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.migration.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import androidx.collection.ArrayMap;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.object.TransferAssigneeV12;
 import com.genonbeta.TrebleShot.migration.db.object.TransferObjectV12;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.genonbeta.TrebleShot.database.AccessDatabase.*;
+import static com.genonbeta.TrebleShot.database.Kuick.*;
 
 /**
  * created by: veli
@@ -89,9 +89,9 @@ public class Migration
         }
     }
 
-    public static void migrate(AccessDatabase db, SQLiteDatabase instance, int old, int current)
+    public static void migrate(Kuick kuick, SQLiteDatabase db, int old, int current)
     {
-        SQLValues tables = AccessDatabase.tables();
+        SQLValues tables = Kuick.tables();
         SQLValues tables12 = v12.tables(tables);
 
         switch (old) {
@@ -102,21 +102,21 @@ public class Migration
             case 4:
             case 5:
                 for (String tableName : tables.getTables().keySet())
-                    instance.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
+                    db.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
 
-                SQLQuery.createTables(instance, tables12);
+                SQLQuery.createTables(db, tables12);
                 break; // Database has already been recreated. No need for fallthrough.
             case 6:
                 SQLValues.Table groupTable = tables12.getTable(TABLE_TRANSFERGROUP);
                 SQLValues.Table devicesTable = tables12.getTable(TABLE_DEVICES);
                 SQLValues.Table targetDevicesTable = tables12.getTable(TABLE_TRANSFERASSIGNEE);
 
-                instance.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
-                instance.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
+                db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
+                db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
 
-                SQLQuery.createTable(instance, groupTable);
-                SQLQuery.createTable(instance, devicesTable);
-                SQLQuery.createTable(instance, targetDevicesTable);
+                SQLQuery.createTable(db, groupTable);
+                SQLQuery.createTable(db, devicesTable);
+                SQLQuery.createTable(db, targetDevicesTable);
             case 7:
             case 8:
             case 9:
@@ -130,10 +130,10 @@ public class Migration
                     SQLValues.Table divisTransfer = tables12.getTable(v12.TABLE_DIVISTRANSFER);
                     Map<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObjectV12> supportedItems = new ArrayList<>();
-                    List<TransferAssigneeV12> availableAssignees = db.castQuery(instance,
+                    List<TransferAssigneeV12> availableAssignees = kuick.castQuery(db,
                             new SQLQuery.Select(TABLE_TRANSFERASSIGNEE),
                             TransferAssigneeV12.class, null);
-                    List<TransferObjectV12> availableTransfers = db.castQuery(instance,
+                    List<TransferObjectV12> availableTransfers = kuick.castQuery(db,
                             new SQLQuery.Select(TABLE_TRANSFER), TransferObjectV12.class, null);
 
                     for (TransferAssigneeV12 assignee : availableAssignees) {
@@ -148,24 +148,24 @@ public class Migration
                             supportedItems.add(transferObject);
                     }
 
-                    instance.execSQL("DROP TABLE IF EXISTS `" + tableTransfer.getName() + "`");
-                    SQLQuery.createTable(instance, tableTransfer);
-                    SQLQuery.createTable(instance, divisTransfer);
-                    db.insert(instance, supportedItems, null, null);
+                    db.execSQL("DROP TABLE IF EXISTS `" + tableTransfer.getName() + "`");
+                    SQLQuery.createTable(db, tableTransfer);
+                    SQLQuery.createTable(db, divisTransfer);
+                    kuick.insert(db, supportedItems, null, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             case 11:
                 SQLValues.Table tableFileBookmark = tables12.getTable(TABLE_FILEBOOKMARK);
-                SQLQuery.createTable(instance, tableFileBookmark);
+                SQLQuery.createTable(db, tableFileBookmark);
             case 12:
-                List<TransferGroup> totalGroupList = db.castQuery(instance, new SQLQuery.Select(
+                List<TransferGroup> totalGroupList = kuick.castQuery(db, new SQLQuery.Select(
                         TABLE_TRANSFERGROUP), TransferGroup.class, null);
                 SQLValues.Table tableTransferGroup = tables12.getTable(TABLE_TRANSFERGROUP);
 
-                instance.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`");
-                SQLQuery.createTable(instance, tableTransferGroup);
-                db.insert(instance, totalGroupList, null, null);
+                db.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`");
+                SQLQuery.createTable(db, tableTransferGroup);
+                kuick.insert(db, totalGroupList, null, null);
             case 13: {
                 {
                     SQLValues.Table table = tables.getTable(TABLE_DEVICES);
@@ -173,23 +173,23 @@ public class Migration
                     SQLValues.Column clientVerCol = table.getColumn(FIELD_DEVICES_CLIENTVERSION);
 
                     // Added: Type
-                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
+                    db.execSQL("ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                             + " " + typeColumn.getType().toString() + (typeColumn.isNullable() ? " NOT" : "")
                             + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
 
                     // Added: ClientVersion
-                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
+                    db.execSQL("ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
                             + " " + clientVerCol.getType().toString() + (clientVerCol.isNullable() ? " NOT" : "")
                             + " NULL DEFAULT 0");
                 }
 
                 {
-                    List<TransferAssigneeV12> oldList = db.castQuery(instance, new SQLQuery.Select(
+                    List<TransferAssigneeV12> oldList = kuick.castQuery(db, new SQLQuery.Select(
                             TABLE_TRANSFERASSIGNEE), TransferAssigneeV12.class, null);
 
                     // Added: Type, Removed: IsClone
-                    instance.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFERASSIGNEE + "`");
-                    SQLQuery.createTable(instance, tables.getTable(TABLE_TRANSFERASSIGNEE));
+                    db.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFERASSIGNEE + "`");
+                    SQLQuery.createTable(db, tables.getTable(TABLE_TRANSFERASSIGNEE));
 
                     List<TransferAssignee> newAssignees = new ArrayList<>();
 
@@ -202,7 +202,7 @@ public class Migration
                                 + "=?", TransferObjectV12.Type.INCOMING.toString(), String.valueOf(
                                 assigneeV12.groupId), assigneeV12.deviceId);
 
-                        if (db.getFirstFromTable(instance, selection) != null) {
+                        if (kuick.getFirstFromTable(db, selection) != null) {
                             TransferAssignee incomingAssignee = new TransferAssignee();
                             incomingAssignee.reconstruct(assigneeV12.getValues());
                             incomingAssignee.type = TransferObject.Type.INCOMING;
@@ -214,7 +214,7 @@ public class Migration
                                 + "=?", TransferObjectV12.Type.OUTGOING.toString(), String.valueOf(
                                 assigneeV12.groupId), assigneeV12.deviceId);
 
-                        if (db.getFirstFromTable(instance, selection) != null) {
+                        if (kuick.getFirstFromTable(db, selection) != null) {
                             TransferAssignee outgoingAssignee = new TransferAssignee();
                             outgoingAssignee.reconstruct(assigneeV12.getValues());
                             outgoingAssignee.type = TransferObject.Type.OUTGOING;
@@ -223,30 +223,30 @@ public class Migration
                     }
 
                     if (newAssignees.size() > 0)
-                        db.insert(instance, newAssignees, null, null);
+                        kuick.insert(db, newAssignees, null, null);
                 }
 
                 {
                     SQLValues.Table table = tables.getTable(TABLE_TRANSFER);
 
                     // Changed Flag as Flag[] for Type.OUTGOING objects
-                    List<TransferObjectV12> outgoingBaseObjects = db.castQuery(instance, new SQLQuery.Select(
+                    List<TransferObjectV12> outgoingBaseObjects = kuick.castQuery(db, new SQLQuery.Select(
                             v12.TABLE_DIVISTRANSFER), TransferObjectV12.class, null);
 
-                    List<TransferObjectV12> outgoingMirrorObjects = db.castQuery(instance, new SQLQuery.Select(
+                    List<TransferObjectV12> outgoingMirrorObjects = kuick.castQuery(db, new SQLQuery.Select(
                             TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
                             TransferObjectV12.Type.OUTGOING.toString()), TransferObjectV12.class, null);
 
-                    List<TransferObjectV12> incomingObjects = db.castQuery(instance, new SQLQuery.Select(
+                    List<TransferObjectV12> incomingObjects = kuick.castQuery(db, new SQLQuery.Select(
                             TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
                             TransferObjectV12.Type.INCOMING.toString()), TransferObjectV12.class, null);
 
                     // Remove: Table `divisTransfer`
-                    instance.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`");
+                    db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`");
 
                     // Added: LastChangeTime, Removed: AccessPort, SkippedBytes
-                    instance.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFER + "`");
-                    SQLQuery.createTable(instance, table);
+                    db.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFER + "`");
+                    SQLQuery.createTable(db, table);
 
                     if (outgoingBaseObjects.size() > 0) {
                         Map<Long, TransferObject> newObjects = new HashMap<>();
@@ -277,7 +277,7 @@ public class Migration
                         }
 
                         if (newObjects.size() > 0)
-                            db.insert(instance, new ArrayList<>(newObjects.values()), null, null);
+                            kuick.insert(db, new ArrayList<>(newObjects.values()), null, null);
                     }
 
                     if (incomingObjects.size() > 0) {
@@ -288,7 +288,7 @@ public class Migration
                             newObject.reconstruct(objectV12.getValues());
                         }
 
-                        db.insert(instance, newIncomingInstances, null, null);
+                        kuick.insert(db, newIncomingInstances, null, null);
                     }
                 }
 
@@ -297,7 +297,7 @@ public class Migration
                     SQLValues.Column column = table.getColumn(FIELD_TRANSFERGROUP_ISPAUSED);
 
                     // Added: IsPaused
-                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
+                    db.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
                             + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
                             + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
                 }

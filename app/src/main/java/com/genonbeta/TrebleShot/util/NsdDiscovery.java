@@ -26,7 +26,7 @@ import android.os.Build;
 import android.util.Log;
 import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 
 /**
  * created by: Veli
@@ -41,13 +41,13 @@ public class NsdDiscovery
     private NsdManager.DiscoveryListener mNsdDiscoveryListener;
     private NsdManager.RegistrationListener mNsdRegistrationListener;
     private Context mContext;
-    private AccessDatabase mDatabase;
+    private Kuick mKuick;
     private SharedPreferences mPreferences;
 
-    public NsdDiscovery(Context context, AccessDatabase database, SharedPreferences preferences)
+    public NsdDiscovery(Context context, Kuick kuick, SharedPreferences preferences)
     {
         mContext = context;
-        mDatabase = database;
+        mKuick = kuick;
         mPreferences = preferences;
     }
 
@@ -56,9 +56,9 @@ public class NsdDiscovery
         return mContext;
     }
 
-    public AccessDatabase getDatabase()
+    public Kuick getDatabase()
     {
-        return mDatabase;
+        return mKuick;
     }
 
     public NsdManager.DiscoveryListener getDiscoveryListener()

@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter.DirectoryHolder;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter.WritablePathHolder;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
@@ -104,10 +104,10 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                     e.printStackTrace();
                 }
             } else if (getAdapter().getPath() == null
-                    && AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (AccessDatabase.TABLE_WRITABLEPATH.equals(data.tableName)
-                        || AccessDatabase.TABLE_FILEBOOKMARK.equals(data.tableName))
+                    && Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (Kuick.TABLE_WRITABLEPATH.equals(data.tableName)
+                        || Kuick.TABLE_FILEBOOKMARK.equals(data.tableName))
                     refreshList();
             }
         }
@@ -191,7 +191,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
         mMediaScanner = new MediaScannerConnection(getActivity(), null);
 
         mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
-        mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+        mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
     }
 
     @Override
@@ -209,9 +209,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
                     try {
                         DocumentFile documentFile = DocumentFile.fromUri(getContext(), pathUri, true);
-                        AppUtils.getDatabase(getContext()).publish(
+                        AppUtils.getKuick(getContext()).publish(
                                 new WritablePathObject(documentFile.getName(), pathUri));
-                        AppUtils.getDatabase(getContext()).broadcast();
+                        AppUtils.getKuick(getContext()).broadcast();
                         goPath(null);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -262,7 +262,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
             if (hasPath)
                 try {
-                    AppUtils.getDatabase(getContext()).reconstruct(new FileShortcutObject(getAdapter().getPath().getUri()));
+                    AppUtils.getKuick(getContext()).reconstruct(new FileShortcutObject(getAdapter().getPath().getUri()));
                     shortcutMenuItem.setTitle(R.string.butn_removeShortcut);
                 } catch (Exception e) {
                     shortcutMenuItem.setTitle(R.string.butn_addShortcut);
@@ -298,7 +298,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
                         try {
                             testedObject = new FileShortcutObject(fileHolder.file.getUri());
-                            AppUtils.getDatabase(getContext()).reconstruct(testedObject);
+                            AppUtils.getKuick(getContext()).reconstruct(testedObject);
                         } catch (Exception e) {
                             testedObject = null;
                         }
@@ -336,9 +336,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                             goPath(fileHolder.file.getParentFile());
                         } else if (id == R.id.action_mode_file_eject_directory
                                 && fileHolder instanceof WritablePathHolder) {
-                            AppUtils.getDatabase(getContext()).remove(
+                            AppUtils.getKuick(getContext()).remove(
                                     ((WritablePathHolder) fileHolder).pathObject);
-                            AppUtils.getDatabase(getContext()).broadcast();
+                            AppUtils.getKuick(getContext()).broadcast();
                         } else if (id == R.id.action_mode_file_toggle_shortcut) {
                             shortcutItem(shortcutObject != null ? shortcutObject
                                     : new FileShortcutObject(fileHolder.friendlyName, fileHolder.file.getUri()));
@@ -437,18 +437,18 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
     protected void shortcutItem(FileShortcutObject shortcutObject)
     {
-        AccessDatabase database = AppUtils.getDatabase(getContext());
+        Kuick kuick = AppUtils.getKuick(getContext());
 
         try {
-            database.reconstruct(shortcutObject);
-            database.remove(shortcutObject);
+            kuick.reconstruct(shortcutObject);
+            kuick.remove(shortcutObject);
 
             createSnackbar(R.string.mesg_removed).show();
         } catch (Exception e) {
-            database.insert(shortcutObject);
+            kuick.insert(shortcutObject);
             createSnackbar(R.string.mesg_added).show();
         } finally {
-            database.broadcast();
+            kuick.broadcast();
         }
     }
 

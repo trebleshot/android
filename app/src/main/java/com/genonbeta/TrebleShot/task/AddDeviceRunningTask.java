@@ -28,7 +28,7 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -60,15 +60,15 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
     public void onRun()
     {
         final Context context = getService().getApplicationContext();
-        final AccessDatabase database = AppUtils.getDatabase(context);
-        final SQLiteDatabase instance = database.getWritableDatabase();
+        final Kuick kuick = AppUtils.getKuick(context);
+        final SQLiteDatabase db = kuick.getWritableDatabase();
 
         final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
             if (getAnchorListener() != null)
                 getAnchorListener().doCommunicate(mDevice, mConnection);
         };
 
-        CommunicationBridge.connect(database, true,
+        CommunicationBridge.connect(kuick, true,
                 client -> {
                     try {
                         boolean doUpdate = false;
@@ -76,15 +76,15 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
                         final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice,
                                 TransferObject.Type.OUTGOING, mConnection);
 
-                        final List<TransferObject> existingRegistry = database.castQuery(instance, new SQLQuery.Select(
-                                        AccessDatabase.TABLE_TRANSFER).setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID
-                                        + "=? AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(
+                        final List<TransferObject> existingRegistry = kuick.castQuery(db, new SQLQuery.Select(
+                                        Kuick.TABLE_TRANSFER).setWhere(Kuick.FIELD_TRANSFER_GROUPID
+                                        + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(
                                 mGroup.id), TransferObject.Type.OUTGOING.toString()),
                                 TransferObject.class, null);
 
                         try {
                             // Checks if the current assignee is already on the list, if so, update
-                            database.reconstruct(instance, new TransferAssignee(assignee.groupId, assignee.deviceId,
+                            kuick.reconstruct(db, new TransferAssignee(assignee.groupId, assignee.deviceId,
                                     TransferObject.Type.OUTGOING));
 
                             doUpdate = true;
@@ -127,7 +127,7 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
                         // so that if the user rejects, it won't be removed from the sender
                         jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
 
-                        getInterrupter().addCloser(userAction -> database.remove(assignee));
+                        getInterrupter().addCloser(userAction -> kuick.remove(assignee));
 
                         final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
 
@@ -150,12 +150,12 @@ public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<Ad
                             publishStatusText(context.getString(R.string.mesg_organizingFiles));
 
                             if (doUpdate)
-                                database.update(instance, assignee, mGroup);
+                                kuick.update(db, assignee, mGroup);
                             else
-                                database.insert(instance, assignee, mGroup);
+                                kuick.insert(db, assignee, mGroup);
 
-                            database.update(instance, existingRegistry, null, mGroup);
-                            database.broadcast();
+                            kuick.update(db, existingRegistry, null, mGroup);
+                            kuick.broadcast();
 
                             if (getAnchorListener() != null) {
                                 getAnchorListener().setResult(RESULT_OK, new Intent()

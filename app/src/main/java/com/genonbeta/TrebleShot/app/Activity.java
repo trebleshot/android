@@ -46,7 +46,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.WelcomeActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -407,9 +407,9 @@ public abstract class Activity extends AppCompatActivity
         finish();
     }
 
-    public AccessDatabase getDatabase()
+    public Kuick getDatabase()
     {
-        return AppUtils.getDatabase(this);
+        return AppUtils.getKuick(this);
     }
 
     protected SharedPreferences getDefaultPreferences()

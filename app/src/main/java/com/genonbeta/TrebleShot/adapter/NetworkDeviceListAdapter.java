@@ -29,10 +29,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -83,8 +82,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
             }
         }
 
-        for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(
-                        AccessDatabase.TABLE_DEVICES).setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
+        for (EditableNetworkDevice device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(
+                        Kuick.TABLE_DEVICES).setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
                 EditableNetworkDevice.class))
             if (filterItem(device) && !mHiddenDeviceTypes.contains(device.type) && (!device.isLocal
                     || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))

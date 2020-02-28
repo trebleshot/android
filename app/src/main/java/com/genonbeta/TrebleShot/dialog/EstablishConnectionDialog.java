@@ -24,7 +24,7 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -34,7 +34,6 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.util.MathUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,11 +65,11 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                 final List<ConnectionResult> reachedConnections = new ArrayList<>();
                 final List<ConnectionResult> calculatedConnections = new ArrayList<>();
-                final List<DeviceConnection> connectionList = AppUtils.getDatabase(activity).castQuery(
-                        new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?",
+                final List<DeviceConnection> connectionList = AppUtils.getKuick(activity).castQuery(
+                        new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?",
                                         networkDevice.id)
-                                .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
+                                .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
                         DeviceConnection.class);
 
                 setMax(connectionList.size());
@@ -85,7 +84,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                     publishStatusText(connectionResult.connection.adapterName);
                     setProgress(getProgress() + 1);
 
-                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity),
+                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getKuick(activity),
                             Integer.class, client -> {
                                 connectionResult.pingTime = -1;
 

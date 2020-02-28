@@ -19,7 +19,7 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.content.SharedPreferences;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 
@@ -31,9 +31,9 @@ abstract public class Service extends android.app.Service
 {
     private NotificationUtils mNotificationUtils;
 
-    public AccessDatabase getDatabase()
+    public Kuick getKuick()
     {
-        return AppUtils.getDatabase(this);
+        return AppUtils.getKuick(this);
     }
 
     public SharedPreferences getDefaultPreferences()
@@ -44,7 +44,7 @@ abstract public class Service extends android.app.Service
     public NotificationUtils getNotificationUtils()
     {
         if (mNotificationUtils == null)
-            mNotificationUtils = new NotificationUtils(getApplicationContext(), getDatabase(), getDefaultPreferences());
+            mNotificationUtils = new NotificationUtils(getApplicationContext(), getKuick(), getDefaultPreferences());
 
         return mNotificationUtils;
     }

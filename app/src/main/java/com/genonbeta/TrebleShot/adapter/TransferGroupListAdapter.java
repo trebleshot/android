@@ -33,7 +33,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -55,7 +55,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
 {
     final private List<Long> mRunningTasks = new ArrayList<>();
 
-    private AccessDatabase mDatabase;
+    private Kuick mDatabase;
     private SQLQuery.Select mSelect;
     private NumberFormat mPercentFormat;
 
@@ -64,7 +64,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     private int mColorDone;
     private int mColorError;
 
-    public TransferGroupListAdapter(Context context, AccessDatabase database)
+    public TransferGroupListAdapter(Context context, Kuick database)
     {
         super(context, MODE_GROUP_BY_DATE);
 
@@ -74,7 +74,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
         mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError));
 
-        setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
+        setSelect(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP));
     }
 
     @Override

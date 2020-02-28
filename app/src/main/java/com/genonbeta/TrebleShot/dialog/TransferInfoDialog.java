@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -108,8 +107,8 @@ public class TransferInfoDialog extends AlertDialog.Builder
                     || TransferObject.Flag.IN_PROGRESS.equals(object.getFlag())) {
                 setNeutralButton(R.string.butn_retry, (dialogInterface, i) -> {
                     object.setFlag(TransferObject.Flag.PENDING);
-                    AppUtils.getDatabase(activity).publish(object);
-                    AppUtils.getDatabase(activity).broadcast();
+                    AppUtils.getKuick(activity).publish(object);
+                    AppUtils.getKuick(activity).broadcast();
                 });
             } else if (fileExists) {
                 if (TransferObject.Flag.REMOVED.equals(object.getFlag()) && pseudoFile.getParentFile() != null) {
@@ -126,8 +125,8 @@ public class TransferInfoDialog extends AlertDialog.Builder
                                 ;
                                 object.setFlag(TransferObject.Flag.DONE);
 
-                                AppUtils.getDatabase(activity).update(object);
-                                AppUtils.getDatabase(activity).broadcast();
+                                AppUtils.getKuick(activity).update(object);
+                                AppUtils.getKuick(activity).broadcast();
 
                                 Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {

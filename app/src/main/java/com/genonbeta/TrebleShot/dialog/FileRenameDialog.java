@@ -115,16 +115,16 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 
                 if (object != null) {
                     object.title = renameTo;
-                    AppUtils.getDatabase(getContext()).publish(object);
-                    AppUtils.getDatabase(getContext()).broadcast();
+                    AppUtils.getKuick(getContext()).publish(object);
+                    AppUtils.getKuick(getContext()).broadcast();
                 }
             } else if (holder instanceof FileListAdapter.WritablePathHolder) {
                 WritablePathObject object = ((FileListAdapter.WritablePathHolder) holder).pathObject;
 
                 if (object != null) {
                     object.title = renameTo;
-                    AppUtils.getDatabase(getContext()).publish(object);
-                    AppUtils.getDatabase(getContext()).broadcast();
+                    AppUtils.getKuick(getContext()).publish(object);
+                    AppUtils.getKuick(getContext()).broadcast();
                 }
             } else if (holder.file.canWrite() && holder.file.renameTo(renameTo)) {
                 if (renameListener != null)

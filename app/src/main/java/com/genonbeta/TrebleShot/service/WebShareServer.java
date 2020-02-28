@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.util.*;
@@ -78,7 +78,7 @@ public class WebShareServer extends NanoHTTPD
         mContext = context;
         mAssetManager = context.getAssets();
         mMediaScanner = new MediaScannerConnection(context, null);
-        mNotificationUtils = new NotificationUtils(context, AppUtils.getDatabase(context),
+        mNotificationUtils = new NotificationUtils(context, AppUtils.getKuick(context),
                 AppUtils.getDefaultPreferences(context));
         mThisDevice = AppUtils.getLocalDevice(mContext);
     }
@@ -112,7 +112,7 @@ public class WebShareServer extends NanoHTTPD
         NetworkDevice device = new NetworkDevice(clientAddress);
 
         try {
-            AppUtils.getDatabase(mContext).reconstruct(device);
+            AppUtils.getKuick(mContext).reconstruct(device);
         } catch (ReconstructionFailedException e) {
             device.brand = "TrebleShot";
             device.model = "Web";
@@ -124,8 +124,8 @@ public class WebShareServer extends NanoHTTPD
         }
 
         device.lastUsageTime = System.currentTimeMillis();
-        AppUtils.getDatabase(mContext).publish(device);
-        AppUtils.getDatabase(mContext).broadcast();
+        AppUtils.getKuick(mContext).publish(device);
+        AppUtils.getKuick(mContext).broadcast();
 
         if (device.isRestricted)
             return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
@@ -233,13 +233,13 @@ public class WebShareServer extends NanoHTTPD
 
                 if (destFile.length() == tmpFile.length() || tmpFile.length() == 0)
                     try {
-                        AccessDatabase database = AppUtils.getDatabase(mContext);
+                        Kuick kuick = AppUtils.getKuick(mContext);
 
                         TransferGroup webShareGroup = new TransferGroup(AppConfig.ID_GROUP_WEB_SHARE);
                         webShareGroup.dateCreated = System.currentTimeMillis();
 
                         try {
-                            database.reconstruct(webShareGroup);
+                            kuick.reconstruct(webShareGroup);
                         } catch (ReconstructionFailedException e) {
                             webShareGroup.savePath = savePath.getUri().toString();
                         }
@@ -259,11 +259,11 @@ public class WebShareServer extends NanoHTTPD
                         assignee.connectionAdapter = connection.adapterName;
 
 
-                        database.publish(webShareGroup);
-                        database.publish(assignee);
-                        database.publish(connection);
-                        database.publish(transferObject);
-                        database.broadcast();
+                        kuick.publish(webShareGroup);
+                        kuick.publish(assignee);
+                        kuick.publish(connection);
+                        kuick.publish(transferObject);
+                        kuick.broadcast();
 
                         notification = mNotificationUtils.buildDynamicNotification(notificationId,
                                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
@@ -386,8 +386,8 @@ public class WebShareServer extends NanoHTTPD
                 TransferObject object = new TransferObject(group.id, Long.parseLong(args[2]),
                         TransferObject.Type.OUTGOING);
 
-                AppUtils.getDatabase(mContext).reconstruct(group);
-                AppUtils.getDatabase(mContext).reconstruct(object);
+                AppUtils.getKuick(mContext).reconstruct(group);
+                AppUtils.getKuick(mContext).reconstruct(object);
 
                 if (!group.isServedOnWeb)
                     throw new Exception("The group is not checked as served on the Web");
@@ -418,15 +418,15 @@ public class WebShareServer extends NanoHTTPD
                     throw new Exception("Expected 2 args, " + args.length + " given");
 
                 TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-                AppUtils.getDatabase(mContext).reconstruct(group);
+                AppUtils.getKuick(mContext).reconstruct(group);
 
                 if (!group.isServedOnWeb)
                     throw new Exception("The group is not checked as served on the Web");
 
-                List<TransferObject> transferList = AppUtils.getDatabase(mContext)
-                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                List<TransferObject> transferList = AppUtils.getKuick(mContext)
+                        .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
+                                                + Kuick.FIELD_TRANSFER_TYPE + "=?",
                                         String.valueOf(group.id),
                                         TransferObject.Type.OUTGOING.toString()), TransferObject.class);
 
@@ -450,9 +450,9 @@ public class WebShareServer extends NanoHTTPD
     {
         StringBuilder contentBuilder = new StringBuilder();
 
-        List<PreloadedGroup> groupList = AppUtils.getDatabase(mContext).castQuery(
-                new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-                        .setOrderBy(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED + " DESC"),
+        List<PreloadedGroup> groupList = AppUtils.getKuick(mContext).castQuery(
+                new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+                        .setOrderBy(Kuick.FIELD_TRANSFERGROUP_DATECREATED + " DESC"),
                 PreloadedGroup.class);
 
         for (PreloadedGroup group : groupList) {
@@ -485,17 +485,17 @@ public class WebShareServer extends NanoHTTPD
                 throw new Exception("Expected 2 args, " + args.length + " given");
 
             TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-            AppUtils.getDatabase(mContext).reconstruct(group);
+            AppUtils.getKuick(mContext).reconstruct(group);
 
             if (!group.isServedOnWeb)
                 throw new Exception("The group is not checked as served on the Web");
 
             StringBuilder contentBuilder = new StringBuilder();
-            List<TransferObject> groupList = AppUtils.getDatabase(mContext).castQuery(
-                    new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                            .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
+            List<TransferObject> groupList = AppUtils.getKuick(mContext).castQuery(
+                    new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                            .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID),
                                     String.valueOf(group.id))
-                            .setOrderBy(AccessDatabase.FIELD_TRANSFER_NAME + " ASC"),
+                            .setOrderBy(Kuick.FIELD_TRANSFER_NAME + " ASC"),
                     TransferObject.class);
 
             if (groupList.size() > 0) {

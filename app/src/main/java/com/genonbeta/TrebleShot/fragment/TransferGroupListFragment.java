@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
@@ -59,10 +59,10 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (data != null && (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName)
-                        || AccessDatabase.TABLE_TRANSFER.equals(data.tableName)))
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (data != null && (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName)
+                        || Kuick.TABLE_TRANSFER.equals(data.tableName)))
                     refreshList();
             } else if (CommunicationService.ACTION_TASK_LIST.equals(intent.getAction())
                     && intent.hasExtra(CommunicationService.EXTRA_TASK_LIST)) {
@@ -119,11 +119,11 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     {
         super.onActivityCreated(savedInstanceState);
 
-        mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+        mFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
         mFilter.addAction(CommunicationService.ACTION_TASK_LIST);
 
         if (getSelect() == null)
-            setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
+            setSelect(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP));
     }
 
     @Override
@@ -168,7 +168,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
             }
         };
 
-        return new TransferGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+        return new TransferGroupListAdapter(getActivity(), AppUtils.getKuick(getContext()))
         {
             @NonNull
             @Override

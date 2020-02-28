@@ -39,7 +39,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -91,7 +91,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
         mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError));
 
-        setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER));
+        setSelect(new SQLQuery.Select(Kuick.TABLE_TRANSFER));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                 .getBoolean("load_thumbnails", true);
 
         try {
-            AppUtils.getDatabase(getContext()).reconstruct(mGroup);
+            AppUtils.getKuick(getContext()).reconstruct(mGroup);
         } catch (ReconstructionFailedException e) {
             e.printStackTrace();
             return;
@@ -119,26 +119,26 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
 
         assignees.toArray(assigneeArray);
 
-        SQLQuery.Select transferSelect = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
-        StringBuilder transferWhere = new StringBuilder(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?");
+        SQLQuery.Select transferSelect = new SQLQuery.Select(Kuick.TABLE_TRANSFER);
+        StringBuilder transferWhere = new StringBuilder(Kuick.FIELD_TRANSFER_GROUPID + "=?");
         List<String> transferArgs = new ArrayList<>();
         transferArgs.add(String.valueOf(mGroup.id));
 
         if (currentPath != null) {
-            transferWhere.append(" AND (" + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
-                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)");
+            transferWhere.append(" AND (" + Kuick.FIELD_TRANSFER_DIRECTORY + "=? OR "
+                    + Kuick.FIELD_TRANSFER_DIRECTORY + " LIKE ?)");
 
             transferArgs.add(currentPath);
             transferArgs.add(currentPath + File.separator + "%");
         }
 
         if (assignee != null) {
-            transferWhere.append(" AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?");
+            transferWhere.append(" AND " + Kuick.FIELD_TRANSFER_TYPE + "=?");
             transferArgs.add(assignee.type.toString());
         }
 
         if (getSortingCriteria() == MODE_GROUP_BY_DATE) {
-            transferSelect.setOrderBy(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME + " "
+            transferSelect.setOrderBy(Kuick.FIELD_TRANSFER_LASTCHANGETIME + " "
                     + (getSortingOrder() == MODE_SORT_ORDER_ASCENDING ? "ASC" : "DESC"));
         }
 
@@ -152,7 +152,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                 : currentPath, currentPath);
         lister.offerObliged(this, statusItem);
 
-        List<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(
+        List<GenericTransferItem> derivedList = AppUtils.getKuick(getContext()).castQuery(
                 transferSelect, GenericTransferItem.class);
 
         // we first get the default files
@@ -223,7 +223,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         if (currentPath == null && hasIncoming)
             try {
                 TransferGroup group = new TransferGroup(mGroup.id);
-                AppUtils.getDatabase(getContext()).reconstruct(group);
+                AppUtils.getKuick(getContext()).reconstruct(group);
                 DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
 
                 StorageStatusItem storageItem = new StorageStatusItem();
@@ -362,7 +362,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
 
         try {
-            AppUtils.getDatabase(getContext()).reconstruct(assignee);
+            AppUtils.getKuick(getContext()).reconstruct(assignee);
             mAssignee = assignee;
             return true;
         } catch (ReconstructionFailedException ignored) {
@@ -857,10 +857,10 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         @Override
         public SQLQuery.Select getWhere()
         {
-            return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
-                                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
-                                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
+            return new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                    .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND ("
+                                    + Kuick.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
+                                    + Kuick.FIELD_TRANSFER_DIRECTORY + " = ?)",
                             String.valueOf(this.groupId),
                             this.directory + File.separator + "%",
                             this.directory);

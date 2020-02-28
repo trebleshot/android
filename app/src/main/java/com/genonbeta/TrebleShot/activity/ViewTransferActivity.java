@@ -32,7 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.*;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -91,12 +91,12 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
 
-                if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName))
+                if (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
                     reconstructGroup();
-                else if (AccessDatabase.TABLE_TRANSFER.equals(data.tableName)
+                else if (Kuick.TABLE_TRANSFER.equals(data.tableName)
                         && (data.inserted || data.removed))
                     updateCalculations();
             } else if (CommunicationService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
@@ -171,8 +171,8 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
 
                 Log.d(TAG, "Requested file is: " + streamInfo.friendlyName);
 
-                ContentValues fileData = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                        .setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=? AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                ContentValues fileData = getDatabase().getFirstFromTable(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                        .setWhere(Kuick.FIELD_TRANSFER_FILE + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?",
                                 streamInfo.friendlyName, TransferObject.Type.INCOMING.toString()));
 
                 if (fileData == null)
@@ -267,7 +267,7 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
 
         IntentFilter filter = new IntentFilter();
 
-        filter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+        filter.addAction(Kuick.ACTION_DATABASE_CHANGE);
         filter.addAction(CommunicationService.ACTION_TASK_STATUS_CHANGE);
         filter.addAction(CommunicationService.ACTION_TASK_LIST);
 

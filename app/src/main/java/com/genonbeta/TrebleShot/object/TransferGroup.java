@@ -19,11 +19,11 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-import android.util.Log;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.List;
@@ -66,11 +66,11 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.id = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
-        this.savePath = item.getAsString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
-        this.dateCreated = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
-        this.isServedOnWeb = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
-        this.isPaused = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISPAUSED) == 1;
+        this.id = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
+        this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);
+        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_DATECREATED);
+        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+        this.isPaused = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISPAUSED) == 1;
     }
 
     @Override
@@ -90,11 +90,11 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ID, id);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISPAUSED, isPaused ? 1 : 0);
+        values.put(Kuick.FIELD_TRANSFERGROUP_ID, id);
+        values.put(Kuick.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
+        values.put(Kuick.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
+        values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
+        values.put(Kuick.FIELD_TRANSFERGROUP_ISPAUSED, isPaused ? 1 : 0);
 
         return values;
     }
@@ -102,8 +102,8 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-                .setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(id));
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+                .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(id));
     }
 
     public void setDeleteFilesOnRemoval(boolean delete)
@@ -119,44 +119,36 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDevice parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDevice parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDevice parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
     {
-        final String TAG = TransferGroup.class.getSimpleName();
-        final long startTime = System.currentTimeMillis();
+        SQLQuery.Select objectSelection = new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(id));
 
-        SQLQuery.Select objectSelection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(id));
-
-        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(
-                String.format("%s = ?", AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID), String.valueOf(id)));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE).setWhere(
+                String.format("%s = ?", Kuick.FIELD_TRANSFERASSIGNEE_GROUPID), String.valueOf(id)));
 
         if (mDeleteFilesOnRemoval) {
-            List<TransferObject> objects = database.castQuery(dbInstance, objectSelection,
-                    TransferObject.class, null);
+            List<TransferObject> objects = kuick.castQuery(db, objectSelection, TransferObject.class,
+                    null);
 
             for (TransferObject object : objects)
                 object.setDeleteOnRemoval(true);
 
-            database.remove(dbInstance, objects, null, this);
+            kuick.remove(db, objects, null, this);
         } else
-            database.removeAsObject(dbInstance, objectSelection, TransferObject.class, null, null,
+            kuick.removeAsObject(db, objectSelection, TransferObject.class, null, null,
                     this);
-
-        Log.d(TAG, "onRemoveObject: Took " + (System.currentTimeMillis() - startTime) + "nsecs to complete");
     }
 }

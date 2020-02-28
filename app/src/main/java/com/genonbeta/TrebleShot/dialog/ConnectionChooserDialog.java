@@ -32,7 +32,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ManageDevicesActivity;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -98,10 +98,10 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
     {
         public ConnectionListAdapter()
         {
-            mConnections.addAll(AppUtils.getDatabase(getContext()).castQuery(
-                    new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                            .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.id)
-                            .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
+            mConnections.addAll(AppUtils.getKuick(getContext()).castQuery(
+                    new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                            .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.id)
+                            .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
                     DeviceConnection.class));
 
             mNetworkInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));

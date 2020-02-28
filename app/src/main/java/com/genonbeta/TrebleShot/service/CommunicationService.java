@@ -22,6 +22,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -39,7 +40,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
@@ -47,8 +48,8 @@ import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.util.*;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
@@ -121,7 +122,7 @@ public class CommunicationService extends Service
     private WifiManager.WifiLock mWifiLock;
     private MediaScannerConnection mMediaScanner;
     private HotspotUtils mHotspotUtils;
-    private android.database.sqlite.SQLiteDatabase mDbInstance;
+    private SQLiteDatabase mDatabase;
     private long mTimeTransactionSaved;
 
     @Override
@@ -138,10 +139,10 @@ public class CommunicationService extends Service
         WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
 
         mNotificationHelper = new CommunicationNotificationHelper(getNotificationUtils());
-        mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
+        mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
         mHotspotUtils = HotspotUtils.getInstance(this);
-        mDbInstance = AppUtils.getDatabase(this).getWritableDatabase();
+        mDatabase = AppUtils.getKuick(this).getWritableDatabase();
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
@@ -198,18 +199,18 @@ public class CommunicationService extends Service
 
                 try {
                     final NetworkDevice device = new NetworkDevice(deviceId);
-                    getDatabase().reconstruct(device);
+                    getKuick().reconstruct(device);
 
                     TransferGroup group = new TransferGroup(groupId);
-                    getDatabase().reconstruct(group);
+                    getKuick().reconstruct(group);
 
                     TransferAssignee assignee = new TransferAssignee(groupId, deviceId, TransferObject.Type.INCOMING);
-                    getDatabase().reconstruct(assignee);
+                    getKuick().reconstruct(assignee);
 
                     final DeviceConnection connection = new DeviceConnection(assignee);
-                    getDatabase().reconstruct(connection);
+                    getKuick().reconstruct(connection);
 
-                    CommunicationBridge.connect(getDatabase(), client -> {
+                    CommunicationBridge.connect(getKuick(), client -> {
                         try {
                             CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
@@ -229,8 +230,8 @@ public class CommunicationService extends Service
                     if (isAccepted)
                         startTransferAsClient(groupId, deviceId, TransferObject.Type.INCOMING);
                     else {
-                        getDatabase().remove(group);
-                        getDatabase().broadcast();
+                        getKuick().remove(group);
+                        getKuick().broadcast();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -249,14 +250,14 @@ public class CommunicationService extends Service
                 NetworkDevice device = new NetworkDevice(deviceId);
 
                 try {
-                    getDatabase().reconstruct(device);
+                    getKuick().reconstruct(device);
                     device.isRestricted = !isAccepted;
 
                     if (isAccepted)
                         device.secureKey = suggestedPin;
 
-                    getDatabase().update(device);
-                    getDatabase().broadcast();
+                    getKuick().update(device);
+                    getKuick().broadcast();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -280,7 +281,7 @@ public class CommunicationService extends Service
                 getNotificationHelper().getUtils().cancel(notificationId);
 
                 try {
-                    getDatabase().reconstruct(textStreamObject);
+                    getKuick().reconstruct(textStreamObject);
 
                     if (isAccepted) {
                         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(
@@ -396,9 +397,9 @@ public class CommunicationService extends Service
         {
             ContentValues values = new ContentValues();
 
-            values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
-            getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-                    .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
+            values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
+            getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
                             String.valueOf(1)), values);
         }
 
@@ -430,7 +431,7 @@ public class CommunicationService extends Service
 
         AppUtils.generateNetworkPin(this);
 
-        getDatabase().broadcast();
+        getKuick().broadcast();
     }
 
     private synchronized void addProcess(ProcessHolder processHolder)
@@ -474,14 +475,14 @@ public class CommunicationService extends Service
                 else if (TransferObject.Type.OUTGOING.equals(processHolder.type))
                     processHolder.object.putFlag(processHolder.device.id, flag);
 
-                getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                getKuick().update(getDatabase(), processHolder.object, processHolder.group);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         if (delayReached || isLast)
-            getDatabase().broadcast();
+            getKuick().broadcast();
     }
 
     private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
@@ -508,14 +509,14 @@ public class CommunicationService extends Service
             boolean usePublishing = false;
 
             try {
-                getDatabase().reconstruct(group);
+                getKuick().reconstruct(group);
                 usePublishing = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            getDatabase().publish(group);
-            getDatabase().publish(assignee);
+            getKuick().publish(group);
+            getKuick().publish(assignee);
 
             synchronized (getOngoingIndexList()) {
                 getOngoingIndexList().put(group.id, interrupter);
@@ -555,7 +556,7 @@ public class CommunicationService extends Service
                 }
             }
 
-            SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
+            KuickDb.ProgressUpdater progressUpdater = new KuickDb.ProgressUpdater()
             {
                 long lastNotified = System.currentTimeMillis();
 
@@ -573,9 +574,9 @@ public class CommunicationService extends Service
 
             if (pendingRegistry.size() > 0) {
                 if (usePublishing)
-                    getDatabase().publish(pendingRegistry, progressUpdater);
+                    getKuick().publish(pendingRegistry, progressUpdater);
                 else
-                    getDatabase().insert(pendingRegistry, progressUpdater);
+                    getKuick().insert(pendingRegistry, progressUpdater);
             }
 
             notification.cancel();
@@ -585,7 +586,7 @@ public class CommunicationService extends Service
             }
 
             if (interrupter.interrupted())
-                getDatabase().remove(group);
+                getKuick().remove(group);
             else if (pendingRegistry.size() > 0) {
                 sendBroadcast(new Intent(ACTION_INCOMING_TRANSFER_READY)
                         .putExtra(EXTRA_GROUP_ID, groupId)
@@ -602,7 +603,7 @@ public class CommunicationService extends Service
                             pendingRegistry);
             }
 
-            getDatabase().broadcast();
+            getKuick().broadcast();
         });
     }
 
@@ -802,14 +803,14 @@ public class CommunicationService extends Service
                     if (processHolder.object != null) {
                         Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
                                 + processHolder.object.getFlag().toString());
-                        getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                        getKuick().update(getDatabase(), processHolder.object, processHolder.group);
                     }
                 }
             }
 
             try {
                 DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
-                boolean areFilesDone = getDatabase().getFirstFromTable(getDbInstance(),
+                boolean areFilesDone = getKuick().getFirstFromTable(getDatabase(),
                         TransferUtils.createIncomingSelection(processHolder.group.id, TransferObject.Flag.DONE,
                                 false)) == null;
                 boolean jobDone = !processHolder.interrupter.interrupted() && areFilesDone;
@@ -900,7 +901,7 @@ public class CommunicationService extends Service
                     processHolder.object = new TransferObject(processHolder.group.id,
                             request.getInt(Keyword.TRANSFER_REQUEST_ID), processHolder.type);
 
-                    getDatabase().reconstruct(getDbInstance(), processHolder.object);
+                    getKuick().reconstruct(getDatabase(), processHolder.object);
 
                     processHolder.currentFile = FileUtils.fromUri(getApplicationContext(),
                             Uri.parse(processHolder.object.file));
@@ -942,7 +943,7 @@ public class CommunicationService extends Service
                         if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
                                 Keyword.RESULT)) {
                             processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                            getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                            getKuick().update(getDatabase(), processHolder.object, processHolder.group);
                             continue;
                         }
 
@@ -954,7 +955,7 @@ public class CommunicationService extends Service
 
                     processHolder.activeConnection.receive();
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.IN_PROGRESS);
-                    getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
 
                     try {
                         boolean sizeExceeded = false;
@@ -995,7 +996,7 @@ public class CommunicationService extends Service
                         else
                             processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
 
-                        getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                        getKuick().update(getDatabase(), processHolder.object, processHolder.group);
 
                         Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
                     } catch (Exception e) {
@@ -1003,7 +1004,7 @@ public class CommunicationService extends Service
                         processHolder.interrupter.interrupt(false);
                         processHolder.object.putFlag(processHolder.device.id,
                                 TransferObject.Flag.INTERRUPTED);
-                        getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                        getKuick().update(getDatabase(), processHolder.object, processHolder.group);
                     } finally {
                         inputStream.close();
                     }
@@ -1017,7 +1018,7 @@ public class CommunicationService extends Service
                             .toString());
 
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
-                    getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
                 } catch (FileNotFoundException | StreamCorruptedException e) {
                     Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + processHolder.object.name);
 
@@ -1028,7 +1029,7 @@ public class CommunicationService extends Service
                             .toString());
 
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                    getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
                 } catch (Exception e) {
                     e.printStackTrace();
 
@@ -1039,7 +1040,7 @@ public class CommunicationService extends Service
                             .toString());
 
                     processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                    getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+                    getKuick().update(getDatabase(), processHolder.object, processHolder.group);
                 }
             }
         } catch (Exception e) {
@@ -1068,8 +1069,7 @@ public class CommunicationService extends Service
     private boolean hasOngoingTasks()
     {
         return mCommunicationServer.getConnections().size() > 0 || getOngoingIndexList().size() > 0
-                || getActiveProcessList().size() > 0 || mHotspotUtils.isStarted()
-                || mWebShareServer.hadClients();
+                || getActiveProcessList().size() > 0 || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
     }
 
     private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
@@ -1089,9 +1089,9 @@ public class CommunicationService extends Service
         return mActiveProcessList;
     }
 
-    public android.database.sqlite.SQLiteDatabase getDbInstance()
+    public SQLiteDatabase getDatabase()
     {
-        return mDbInstance;
+        return mDatabase;
     }
 
     private HotspotUtils getHotspotUtils()
@@ -1202,7 +1202,7 @@ public class CommunicationService extends Service
         processHolder.device = new NetworkDevice(deviceId);
 
         try {
-            getDatabase().reconstruct(getDbInstance(), processHolder.device);
+            getKuick().reconstruct(getDatabase(), processHolder.device);
         } catch (ReconstructionFailedException e) {
             throw new DeviceNotFoundException();
         }
@@ -1210,7 +1210,7 @@ public class CommunicationService extends Service
         processHolder.group = new PreloadedGroup(groupId);
 
         try {
-            getDatabase().reconstruct(getDbInstance(), processHolder.group);
+            getKuick().reconstruct(getDatabase(), processHolder.group);
         } catch (ReconstructionFailedException e) {
             throw new TransferGroupNotFoundException();
         }
@@ -1218,7 +1218,7 @@ public class CommunicationService extends Service
         processHolder.assignee = new TransferAssignee(processHolder.group, processHolder.device, processHolder.type);
 
         try {
-            getDatabase().reconstruct(getDbInstance(), processHolder.assignee);
+            getKuick().reconstruct(getDatabase(), processHolder.assignee);
         } catch (ReconstructionFailedException e) {
             throw new AssigneeNotFoundException();
         }
@@ -1226,7 +1226,7 @@ public class CommunicationService extends Service
         processHolder.connection = new DeviceConnection(processHolder.assignee);
 
         try {
-            getDatabase().reconstruct(getDbInstance(), processHolder.connection);
+            getKuick().reconstruct(getDatabase(), processHolder.connection);
         } catch (ReconstructionFailedException e) {
             throw new ConnectionNotFoundException();
         }
@@ -1238,7 +1238,7 @@ public class CommunicationService extends Service
 
     private void startTransferAsClient(final ProcessHolder holder)
     {
-        CommunicationBridge.connect(getDatabase(), client -> {
+        CommunicationBridge.connect(getKuick(), client -> {
             try {
                 holder.activeConnection = client.communicate(holder.device, holder.connection);
 
@@ -1338,7 +1338,7 @@ public class CommunicationService extends Service
                 NetworkDevice device;
 
                 try {
-                    device = NetworkDeviceLoader.loadFrom(getDatabase(), responseJSON);
+                    device = NetworkDeviceLoader.loadFrom(getKuick(), responseJSON);
                 } catch (JSONException e) {
                     // Deprecated: This is a fallback option to generate device information.
                     // Clients must send the device info with the requests asking no handshake or not only handshake.
@@ -1356,7 +1356,7 @@ public class CommunicationService extends Service
 
                 try {
                     NetworkDevice existingInfo = new NetworkDevice(device.id);
-                    getDatabase().reconstruct(existingInfo);
+                    getKuick().reconstruct(existingInfo);
 
                     device.applyPreferences(existingInfo); // apply known preferences
 
@@ -1372,18 +1372,18 @@ public class CommunicationService extends Service
                         // Previously, the device had the access rights which should now be revoked, because
                         // the device does not have a matching key or valid PIN.
                         existingInfo.isRestricted = true;
-                        getDatabase().publish(existingInfo);
+                        getKuick().publish(existingInfo);
                     } else {
                         shouldContinue = true;
 
                         // The device does not have a matching key, but has a valid PIN. So we accept the new key it
                         // sent us and save it.
                         if (device.clientVersion >= 1 && !keysMatch && hasPin)
-                            getDatabase().publish(device);
+                            getKuick().publish(device);
                     }
                 } catch (ReconstructionFailedException ignored) {
                     if (device.clientVersion < 1)
-                        device = NetworkDeviceLoader.load(true, getDatabase(),
+                        device = NetworkDeviceLoader.load(true, getKuick(),
                                 activeConnection.getClientAddress(), null);
 
                     if (device == null || device.id == null || device.id.length() < 1)
@@ -1392,7 +1392,7 @@ public class CommunicationService extends Service
                     device.isTrusted = hasPin;
                     device.isRestricted = !hasPin;
 
-                    getDatabase().publish(device);
+                    getKuick().publish(device);
 
                     shouldContinue = true; // For the first round, we let the client pass.
 
@@ -1405,10 +1405,10 @@ public class CommunicationService extends Service
                     replyJSON = new JSONObject();
                 }
 
-                DeviceConnection connection = NetworkDeviceLoader.processConnection(getDatabase(), device,
+                DeviceConnection connection = NetworkDeviceLoader.processConnection(getKuick(), device,
                         activeConnection.getClientAddress());
 
-                getDatabase().broadcast();
+                getKuick().broadcast();
 
                 if (!shouldContinue || device.clientVersion < 1)
                     replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
@@ -1435,12 +1435,12 @@ public class CommunicationService extends Service
                                         TransferObject.Type.OUTGOING);
 
                                 try {
-                                    getDatabase().reconstruct(group);
-                                    getDatabase().reconstruct(assignee);
+                                    getKuick().reconstruct(group);
+                                    getKuick().reconstruct(assignee);
 
                                     if (!isAccepted) {
-                                        getDatabase().remove(assignee);
-                                        getDatabase().broadcast();
+                                        getKuick().remove(assignee);
+                                        getKuick().broadcast();
                                     }
 
                                     result = true;
@@ -1453,8 +1453,8 @@ public class CommunicationService extends Service
                                 TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(),
                                         responseJSON.getString(Keyword.TRANSFER_CLIPBOARD_TEXT));
 
-                                getDatabase().publish(textStreamObject);
-                                getDatabase().broadcast();
+                                getKuick().publish(textStreamObject);
+                                getKuick().broadcast();
                                 getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
 
                                 result = true;
@@ -1485,7 +1485,7 @@ public class CommunicationService extends Service
                                         type = TransferObject.Type.INCOMING;
 
                                     PreloadedGroup group = new PreloadedGroup(groupId);
-                                    getDatabase().reconstruct(group);
+                                    getKuick().reconstruct(group);
 
                                     Log.d(CommunicationService.TAG, "CommunicationServer.onConnected(): "
                                             + "groupId=" + groupId + " typeValue=" + typeValue);
@@ -1498,7 +1498,7 @@ public class CommunicationService extends Service
                                         processHolder.type = type;
                                         processHolder.assignee = new TransferAssignee(group, device, type);
 
-                                        getDatabase().reconstruct(processHolder.assignee);
+                                        getKuick().reconstruct(processHolder.assignee);
 
                                         if (TransferObject.Type.OUTGOING.equals(type)) {
                                             Log.d(TAG, "onConnected: Informing before starting to send.");

@@ -27,7 +27,7 @@ import android.widget.ImageView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -43,17 +43,17 @@ import java.net.InetAddress;
 
 public class NetworkDeviceLoader
 {
-    public static DeviceConnection processConnection(AccessDatabase database, NetworkDevice device, String ipAddress)
+    public static DeviceConnection processConnection(Kuick kuick, NetworkDevice device, String ipAddress)
     {
         DeviceConnection connection = new DeviceConnection(ipAddress);
-        processConnection(database, device, connection);
+        processConnection(kuick, device, connection);
         return connection;
     }
 
-    public static void processConnection(AccessDatabase database, NetworkDevice device, DeviceConnection connection)
+    public static void processConnection(Kuick kuick, NetworkDevice device, DeviceConnection connection)
     {
         try {
-            database.reconstruct(connection);
+            kuick.reconstruct(connection);
         } catch (Exception e) {
             AppUtils.applyAdapterName(connection);
         }
@@ -61,21 +61,21 @@ public class NetworkDeviceLoader
         connection.lastCheckedDate = System.currentTimeMillis();
         connection.deviceId = device.id;
 
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
-                                + AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + " =? AND "
-                                + AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + " != ?",
+        kuick.remove(new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
+                                + Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME + " =? AND "
+                                + Kuick.FIELD_DEVICECONNECTION_IPADDRESS + " != ?",
                         connection.deviceId, connection.adapterName, connection.ipAddress));
 
-        database.publish(connection);
+        kuick.publish(connection);
     }
 
-    public static void load(final AccessDatabase database, final String ipAddress, OnDeviceRegisteredListener listener)
+    public static void load(final Kuick kuick, final String ipAddress, OnDeviceRegisteredListener listener)
     {
-        load(false, database, ipAddress, listener);
+        load(false, kuick, ipAddress, listener);
     }
 
-    public static NetworkDevice load(boolean currentThread, final AccessDatabase database, final String ipAddress,
+    public static NetworkDevice load(boolean currentThread, final Kuick kuick, final String ipAddress,
                                      final OnDeviceRegisteredListener listener)
     {
         CommunicationBridge.Client.ConnectionHandler connectionHandler = client -> {
@@ -85,14 +85,14 @@ public class NetworkDeviceLoader
                 NetworkDevice device = client.getDevice();
 
                 if (device.id != null) {
-                    NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
-                    DeviceConnection connection = processConnection(database, device, ipAddress);
+                    NetworkDevice localDevice = AppUtils.getLocalDevice(kuick.getContext());
+                    DeviceConnection connection = processConnection(kuick, device, ipAddress);
 
                     if (!localDevice.id.equals(device.id)) {
                         device.lastUsageTime = System.currentTimeMillis();
 
                         if (listener != null)
-                            listener.onDeviceRegistered(database, device, connection);
+                            listener.onDeviceRegistered(kuick, device, connection);
                     }
                 }
 
@@ -104,14 +104,14 @@ public class NetworkDeviceLoader
         };
 
         if (currentThread)
-            return CommunicationBridge.connect(database, NetworkDevice.class, connectionHandler);
+            return CommunicationBridge.connect(kuick, NetworkDevice.class, connectionHandler);
         else
-            CommunicationBridge.connect(database, connectionHandler);
+            CommunicationBridge.connect(kuick, connectionHandler);
 
         return null;
     }
 
-    public static NetworkDevice loadFrom(AccessDatabase database, JSONObject object) throws JSONException
+    public static NetworkDevice loadFrom(Kuick kuick, JSONObject object) throws JSONException
     {
         JSONObject deviceInfo = object.getJSONObject(Keyword.DEVICE_INFO);
         JSONObject appInfo = object.getJSONObject(Keyword.APP_INFO);
@@ -119,7 +119,7 @@ public class NetworkDeviceLoader
         NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
 
         try {
-            database.reconstruct(device);
+            kuick.reconstruct(device);
         } catch (Exception ignored) {
         }
 
@@ -136,7 +136,7 @@ public class NetworkDeviceLoader
         if (device.nickname.length() > AppConfig.NICKNAME_LENGTH_MAX)
             device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_LENGTH_MAX - 1);
 
-        saveProfilePicture(database.getContext(), device, deviceInfo);
+        saveProfilePicture(kuick.getContext(), device, deviceInfo);
 
         return device;
     }
@@ -212,7 +212,7 @@ public class NetworkDeviceLoader
 
     public interface OnDeviceRegisteredListener
     {
-        void onDeviceRegistered(AccessDatabase database, NetworkDevice device, DeviceConnection connection);
+        void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection);
     }
 
     public interface OnDeviceRegisteredErrorListener extends OnDeviceRegisteredListener

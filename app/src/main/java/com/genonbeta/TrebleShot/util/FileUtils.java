@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -146,7 +145,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
             }
         } else {
             group.savePath = defaultFolder.getUri().toString();
-            AppUtils.getDatabase(context).publish(group);
+            AppUtils.getKuick(context).publish(group);
         }
 
         return defaultFolder;

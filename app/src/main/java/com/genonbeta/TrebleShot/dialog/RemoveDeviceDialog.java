@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
@@ -35,7 +34,7 @@ public class RemoveDeviceDialog extends AlertDialog.Builder
         setTitle(R.string.ques_removeDevice);
         setMessage(R.string.text_removeDeviceNotice);
         setNegativeButton(R.string.butn_cancel, null);
-        setPositiveButton(R.string.butn_proceed, (dialog, which) -> AppUtils.getDatabase(getContext()).removeAsynchronous(activity,
+        setPositiveButton(R.string.butn_proceed, (dialog, which) -> AppUtils.getKuick(getContext()).removeAsynchronous(activity,
                 device));
     }
 }

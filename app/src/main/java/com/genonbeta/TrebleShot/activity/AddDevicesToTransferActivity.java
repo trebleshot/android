@@ -36,7 +36,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -69,15 +69,15 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     private ViewGroup mLayoutStatusContainer;
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
-    private IntentFilter mFilter = new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE);
+    private IntentFilter mFilter = new IntentFilter(Kuick.ACTION_DATABASE_CHANGE);
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-                if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName) && !checkGroupIntegrity())
+            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                Kuick.BroadcastData data = Kuick.toData(intent);
+                if (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName) && !checkGroupIntegrity())
                     finish();
             }
         }

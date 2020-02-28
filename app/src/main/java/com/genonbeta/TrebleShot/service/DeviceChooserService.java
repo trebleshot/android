@@ -29,7 +29,7 @@ import android.service.chooser.ChooserTarget;
 import android.service.chooser.ChooserTargetService;
 import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -49,13 +49,13 @@ public class DeviceChooserService extends ChooserTargetService
     @Override
     public List<ChooserTarget> onGetChooserTargets(ComponentName targetActivityName, IntentFilter matchedFilter)
     {
-        AccessDatabase database = AppUtils.getDatabase(getApplicationContext());
+        Kuick kuick = AppUtils.getKuick(getApplicationContext());
         List<ChooserTarget> list = new ArrayList<>();
 
         // use default accent color for light theme
         TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext());
 
-        for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES),
+        for (NetworkDevice device : kuick.castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES),
                 NetworkDevice.class)) {
             if (device.isLocal)
                 continue;

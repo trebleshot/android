@@ -46,7 +46,7 @@ import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -134,8 +134,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     private OnDeviceRegisteredListener mRegisteredListener = new OnDeviceRegisteredListener()
     {
         @Override
-        public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device,
-                                       final DeviceConnection connection)
+        public void onDeviceRegistered(Kuick kuick, final NetworkDevice device, final DeviceConnection connection)
         {
             if (mDeviceSelectedListener != null)
                 mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
@@ -347,8 +346,8 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                     .setNegativeButton(R.string.butn_close, null)
                     .setPositiveButton(R.string.butn_show, (dialog, which) -> {
                         TextStreamObject textObject = new TextStreamObject(AppUtils.getUniqueNumber(), code);
-                        AppUtils.getDatabase(getContext()).publish(textObject);
-                        AppUtils.getDatabase(getContext()).broadcast();
+                        AppUtils.getKuick(getContext()).publish(textObject);
+                        AppUtils.getKuick(getContext()).broadcast();
 
                         Toast.makeText(getContext(), R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show();
 

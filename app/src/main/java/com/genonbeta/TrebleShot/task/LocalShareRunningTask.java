@@ -29,7 +29,7 @@ import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter.DirectoryHolder;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -64,12 +64,12 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         if (mList.size() <= 0)
             return;
 
-        final AccessDatabase database = AppUtils.getDatabase(getService());
-        final SQLiteDatabase instance = database.getWritableDatabase();
+        final Kuick kuick = AppUtils.getKuick(getService());
+        final SQLiteDatabase db = kuick.getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
         final List<TransferObject> list = new ArrayList<>();
 
-        getInterrupter().addCloser((userAction -> database.remove(instance, group, null)));
+        getInterrupter().addCloser((userAction -> kuick.remove(db, group, null)));
 
         for (Shareable shareable : mList) {
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
@@ -94,7 +94,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
                     }
         }
 
-        database.insert(instance, list, null, group);
+        kuick.insert(db, list, null, group);
 
         if (mFlagWebShare) {
             group.isServedOnWeb = true;
@@ -103,7 +103,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
                     R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
         }
 
-        database.insert(instance, group, null);
+        kuick.insert(db, group, null);
         ViewTransferActivity.startInstance(getService(), group.id);
 
         if (mFlagWebShare)
@@ -112,7 +112,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         else
             AddDevicesToTransferActivity.startInstance(getService(), group.id, mFlagAddNewDevice);
 
-        database.broadcast();
+        kuick.broadcast();
     }
 
 }

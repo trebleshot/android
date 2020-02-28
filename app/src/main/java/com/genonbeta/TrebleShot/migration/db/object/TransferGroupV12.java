@@ -19,11 +19,12 @@
 package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 /**
  * created by: veli
@@ -59,10 +60,10 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
-        this.savePath = item.getAsString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
-        this.dateCreated = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
-        this.isServedOnWeb = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
+        this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);
+        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_DATECREATED);
+        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
     }
 
     @Override
@@ -70,10 +71,10 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ID, groupId);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
+        values.put(Kuick.FIELD_TRANSFERGROUP_ID, groupId);
+        values.put(Kuick.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
+        values.put(Kuick.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
+        values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
 
         return values;
     }
@@ -81,36 +82,33 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-                .setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+                .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDeviceV12 parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDeviceV12 parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
-                               NetworkDeviceV12 parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent)
     {
-        database.remove(new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER)
-                .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
+        kuick.remove(db, new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER)
+                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
 
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE)
+                .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
 
-        database.removeAsObject(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)),
+        kuick.removeAsObject(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)),
                 TransferObjectV12.class, null, null, this);
     }
 }

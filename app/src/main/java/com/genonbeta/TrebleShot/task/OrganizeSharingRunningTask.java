@@ -24,8 +24,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.TransferDescriptor;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -34,9 +33,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.util.Interrupter;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +55,8 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
             publishStatusText(getService().getString(R.string.mesg_organizingFiles));
         }
 
-        final AccessDatabase database = AppUtils.getDatabase(getService());
-        final SQLiteDatabase instance = database.getWritableDatabase();
+        final Kuick kuick = AppUtils.getKuick(getService());
+        final SQLiteDatabase db = kuick.getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
         final List<TransferObject> list = new ArrayList<>();
 
@@ -90,21 +87,21 @@ public class OrganizeSharingRunningTask extends WorkerService.AttachableRunningT
         if (getAnchorListener() != null)
             publishStatusText(getService().getString(R.string.mesg_completing));
 
-        database.insert(instance, list, (total, current) -> {
+        kuick.insert(db, list, (total, current) -> {
             if (getAnchorListener() != null)
                 getAnchorListener().setTaskPosition(total, current);
 
             return !getInterrupter().interrupted();
         }, group);
 
-        getInterrupter().addCloser((userAction) -> database.remove(instance, new SQLQuery.Select(
-                AccessDatabase.TABLE_TRANSFER).setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
+        getInterrupter().addCloser((userAction) -> kuick.remove(db, new SQLQuery.Select(
+                Kuick.TABLE_TRANSFER).setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID),
                 String.valueOf(group.id))));
 
-        database.insert(instance, group, null);
+        kuick.insert(db, group, null);
         ViewTransferActivity.startInstance(getService(), group.id);
         AddDevicesToTransferActivity.startInstance(getService(), group.id, true);
-        database.broadcast();
+        kuick.broadcast();
 
         if (getAnchorListener() instanceof Activity)
             ((Activity) getAnchorListener()).finish();

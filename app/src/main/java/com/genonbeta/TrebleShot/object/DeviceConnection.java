@@ -19,10 +19,11 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -75,11 +76,11 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     @Override
     public SQLQuery.Select getWhere()
     {
-        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION);
+        SQLQuery.Select select = new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION);
 
-        return ipAddress == null ? select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
-                + AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
-                : select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
+        return ipAddress == null ? select.setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
+                + Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
+                : select.setWhere(Kuick.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
     }
 
     @Override
@@ -87,10 +88,10 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
-        values.put(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME, adapterName);
-        values.put(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS, ipAddress);
-        values.put(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
+        values.put(Kuick.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
+        values.put(Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME, adapterName);
+        values.put(Kuick.FIELD_DEVICECONNECTION_IPADDRESS, ipAddress);
+        values.put(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
 
         return values;
     }
@@ -98,10 +99,10 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.adapterName = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME);
-        this.ipAddress = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS);
-        this.deviceId = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID);
-        this.lastCheckedDate = item.getAsLong(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
+        this.adapterName = item.getAsString(Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME);
+        this.ipAddress = item.getAsString(Kuick.FIELD_DEVICECONNECTION_IPADDRESS);
+        this.deviceId = item.getAsString(Kuick.FIELD_DEVICECONNECTION_DEVICEID);
+        this.lastCheckedDate = item.getAsLong(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
     }
 
     public Inet4Address toInet4Address() throws UnknownHostException
@@ -110,19 +111,19 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent)
     {
 
     }

@@ -19,10 +19,11 @@
 package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.List;
 
@@ -66,25 +67,25 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
-                .setWhere(AccessDatabase.FIELD_DEVICES_ID + "=?", deviceId);
+        return new SQLQuery.Select(Kuick.TABLE_DEVICES)
+                .setWhere(Kuick.FIELD_DEVICES_ID + "=?", deviceId);
     }
 
     public ContentValues getValues()
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_DEVICES_ID, deviceId);
-        values.put(AccessDatabase.FIELD_DEVICES_USER, nickname);
-        values.put(AccessDatabase.FIELD_DEVICES_BRAND, brand);
-        values.put(AccessDatabase.FIELD_DEVICES_MODEL, model);
-        values.put(AccessDatabase.FIELD_DEVICES_BUILDNAME, versionName);
-        values.put(AccessDatabase.FIELD_DEVICES_BUILDNUMBER, versionNumber);
-        values.put(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
-        values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_SECUREKEY, tmpSecureKey);
+        values.put(Kuick.FIELD_DEVICES_ID, deviceId);
+        values.put(Kuick.FIELD_DEVICES_USER, nickname);
+        values.put(Kuick.FIELD_DEVICES_BRAND, brand);
+        values.put(Kuick.FIELD_DEVICES_MODEL, model);
+        values.put(Kuick.FIELD_DEVICES_BUILDNAME, versionName);
+        values.put(Kuick.FIELD_DEVICES_BUILDNUMBER, versionNumber);
+        values.put(Kuick.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
+        values.put(Kuick.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_SECUREKEY, tmpSecureKey);
 
         return values;
     }
@@ -92,55 +93,57 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
     @Override
     public void reconstruct(ContentValues item)
     {
-        this.deviceId = item.getAsString(AccessDatabase.FIELD_DEVICES_ID);
-        this.nickname = item.getAsString(AccessDatabase.FIELD_DEVICES_USER);
-        this.brand = item.getAsString(AccessDatabase.FIELD_DEVICES_BRAND);
-        this.model = item.getAsString(AccessDatabase.FIELD_DEVICES_MODEL);
-        this.versionName = item.getAsString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
-        this.versionNumber = item.getAsInteger(AccessDatabase.FIELD_DEVICES_BUILDNUMBER);
-        this.lastUsageTime = item.getAsLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
-        this.isTrusted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
-        this.isRestricted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
-        this.isLocalAddress = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
-        this.tmpSecureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_SECUREKEY);
+        this.deviceId = item.getAsString(Kuick.FIELD_DEVICES_ID);
+        this.nickname = item.getAsString(Kuick.FIELD_DEVICES_USER);
+        this.brand = item.getAsString(Kuick.FIELD_DEVICES_BRAND);
+        this.model = item.getAsString(Kuick.FIELD_DEVICES_MODEL);
+        this.versionName = item.getAsString(Kuick.FIELD_DEVICES_BUILDNAME);
+        this.versionNumber = item.getAsInteger(Kuick.FIELD_DEVICES_BUILDNUMBER);
+        this.lastUsageTime = item.getAsLong(Kuick.FIELD_DEVICES_LASTUSAGETIME);
+        this.isTrusted = item.getAsInteger(Kuick.FIELD_DEVICES_ISTRUSTED) == 1;
+        this.isRestricted = item.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1;
+        this.isLocalAddress = item.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1;
+        this.tmpSecureKey = item.getAsInteger(Kuick.FIELD_DEVICES_SECUREKEY);
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent)
     {
-        database.getContext().deleteFile(generatePictureId());
+        kuick.getContext().deleteFile(generatePictureId());
 
-        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
-        List<TransferAssigneeV12> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferAssigneeV12.class, null);
+        List<TransferAssigneeV12> assignees = kuick.castQuery(db, new SQLQuery.Select(
+                Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?",
+                deviceId), TransferAssigneeV12.class, null);
 
         // We are ensuring that the transfer group is still valid for other devices
         for (TransferAssigneeV12 assignee : assignees) {
-            database.remove(assignee);
+            kuick.remove(assignee);
 
             try {
                 TransferGroupV12 transferGroup = new TransferGroupV12(assignee.groupId);
-                database.reconstruct(dbInstance, transferGroup);
+                kuick.reconstruct(db, transferGroup);
 
-                List<TransferAssigneeV12> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferAssigneeV12.class);
+                List<TransferAssigneeV12> relatedAssignees = kuick.castQuery(new SQLQuery.Select(
+                        Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
+                        String.valueOf(transferGroup.groupId)), TransferAssigneeV12.class);
 
                 if (relatedAssignees.size() == 0)
-                    database.remove(transferGroup);
+                    kuick.remove(transferGroup);
             } catch (Exception ignored) {
 
             }

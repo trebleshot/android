@@ -40,7 +40,7 @@ import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.migration.db.Migration;
@@ -268,8 +268,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         } else if (R.id.menu_activity_main_crash_test == mChosenMenuItemId) {
             throw new NullPointerException("The crash was intentional, since 'Crash now' was called");
         } else if (R.id.menu_activity_main_db_migration == mChosenMenuItemId) {
-            AccessDatabase db = AppUtils.getDatabase(this);
-            int dbVersion = AccessDatabase.DATABASE_VERSION;
+            Kuick db = AppUtils.getKuick(this);
+            int dbVersion = Kuick.DATABASE_VERSION;
 
             Toast.makeText(this, "Running migration rules again", Toast.LENGTH_SHORT).show();
             Migration.migrate(db, db.getWritableDatabase(), dbVersion, dbVersion);
