@@ -26,14 +26,15 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.provider.DocumentsContract;
+import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class MimeIconUtils
 {
-    private static HashMap<String, Integer> sMimeIcons = new HashMap<>();
+    private static Map<String, Integer> sMimeIcons = new ArrayMap<>();
 
     static {
         int icon;

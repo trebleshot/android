@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -27,7 +28,7 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 
 import java.net.NetworkInterface;
 import java.text.NumberFormat;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * created by: Veli
@@ -38,7 +39,7 @@ public class TextUtils
 {
     public static int getAdapterName(String adapterName)
     {
-        HashMap<String, Integer> associatedNames = new HashMap<>();
+        Map<String, Integer> associatedNames = new ArrayMap<>();
 
         associatedNames.put("wlan", R.string.text_interfaceWireless);
         associatedNames.put("p2p", R.string.text_interfaceWifiDirect);

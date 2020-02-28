@@ -32,7 +32,6 @@ import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -249,7 +248,7 @@ public class Migration
                     SQLQuery.createTable(db, table);
 
                     if (outgoingBaseObjects.size() > 0) {
-                        Map<Long, TransferObject> newObjects = new HashMap<>();
+                        Map<Long, TransferObject> newObjects = new ArrayMap<>();
 
                         for (TransferObjectV12 objectV12 : outgoingBaseObjects) {
                             TransferObject object = newObjects.get(objectV12.requestId);

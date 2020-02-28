@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
 import androidx.annotation.StringRes;
+import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
@@ -102,7 +103,7 @@ public class WebShareServer extends NanoHTTPD
     {
         mHadClients = true;
 
-        Map<String, String> files = new HashMap<>();
+        Map<String, String> files = new ArrayMap<>();
         NanoHTTPD.Method method = session.getMethod();
         long receiveTimeElapsed = System.currentTimeMillis();
         long notificationId = AppUtils.getUniqueNumber();
@@ -523,7 +524,7 @@ public class WebShareServer extends NanoHTTPD
 
     private String serveHelpPage()
     {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new ArrayMap<>();
         values.put("help_title", mContext.getString(R.string.text_help));
         values.put("licence_text", Tools.escapeHtml(mContext.getString(R.string.conf_licence)));
 
@@ -548,7 +549,7 @@ public class WebShareServer extends NanoHTTPD
                                Object... objects)
     {
         StringBuilder actionUrlBuilder = new StringBuilder();
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new ArrayMap<>();
         values.put("content", content);
         values.put("action_layout", mContext.getString(buttonRes));
 
@@ -566,7 +567,7 @@ public class WebShareServer extends NanoHTTPD
 
     private String makeNotFoundTemplate(@StringRes int msg, @StringRes int detail)
     {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new ArrayMap<>();
         values.put("content", mContext.getString(msg));
         values.put("detail", mContext.getString(detail));
 
@@ -579,7 +580,7 @@ public class WebShareServer extends NanoHTTPD
         String title = mContext.getString(titleRes);
         String appName = mContext.getString(R.string.text_appName);
 
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new ArrayMap<>();
         values.put("title", String.format("%s - %s", title, appName));
         values.put("header_logo", "/image/" + image);
         values.put("header", mContext.getString(R.string.text_appName));
@@ -737,7 +738,7 @@ public class WebShareServer extends NanoHTTPD
 
         private InputStream mData;
 
-        private final Map<String, String> mHeader = new HashMap<>();
+        private final Map<String, String> mHeader = new ArrayMap<>();
 
         private Method mRequestMethod;
 
