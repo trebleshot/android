@@ -157,7 +157,7 @@ public class SelectionEditorDialog extends AlertDialog.Builder
         }
     }
 
-    private <T extends Selectable> void addToMappedObjectList(IEngineConnection<T> connection)
+    private <T extends Selectable> void  addToMappedObjectList(IEngineConnection<T> connection)
     {
         mMappedConnectionList.add(new MappedConnection<>(connection, connection.getSelectedItemList()));
     }

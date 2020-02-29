@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,9 @@ import androidx.appcompat.widget.SearchView;
 import androidx.collection.ArrayMap;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
@@ -54,6 +58,8 @@ import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +73,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
         implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>
 {
-    public final static String ARG_SELECT_BY_CLICK = "argSelectByClick";
+    public final static String
+            ARG_SELECT_BY_CLICK = "argSelectByClick",
+            ARG_SELECTION_CLASSES = "argSelectionClasses",
+            ARG_SELECTION_OBJECTS = "argSelectionObjects";
 
     private IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
     private FilteringDelegate<T> mFilteringDelegate;
@@ -131,6 +140,33 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
         if (getArguments() != null)
             mSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SELECTION_CLASSES)
+                && savedInstanceState.containsKey(ARG_SELECTION_OBJECTS)) {
+            Kryo kryo = new Kryo();
+            String[] classes = savedInstanceState.getStringArray(ARG_SELECTION_CLASSES);
+            byte[] objects = savedInstanceState.getByteArray(ARG_SELECTION_OBJECTS);
+
+            if (classes != null && objects != null) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(objects);
+                Input input = new Input(inputStream);
+                List<T> restoredList = new ArrayList<>();
+
+                for (String className : classes) {
+                    try {
+                        Class<T> clazz = (Class<T>) Class.forName(className);
+                        T object = kryo.readObject(input, clazz);
+
+                        restoredList.add(object);
+                    } catch (ClassCastException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        Log.e(TAG, "The class " + className + " not found and therefore cannot be loaded back" +
+                                "to restore previous state.");
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -250,6 +286,32 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void onSaveInstanceState(@NonNull Bundle outState)
     {
         super.onSaveInstanceState(outState);
+
+        {
+            SelectableHost<T> host = getEngineConnection().getSelectableHost();
+            List<T> list = new ArrayList<>(host.getSelectableList());
+
+            if (host == this && list.size() > 0) {
+                Kryo kryo = new Kryo();
+                String[] classes = new String[list.size()];
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                Output output = new Output(outputStream);
+
+                for (int i = 0; i < list.size(); i++) {
+                    T obj = list.get(i);
+                    Class<? extends Editable> clazz = obj.getClass();
+                    classes[i] = clazz.getName();
+
+                    kryo.register(clazz);
+                    kryo.writeObject(output, obj);
+                    output.flush();
+                }
+
+                outState.putStringArray(ARG_SELECTION_CLASSES, classes);
+                outState.putByteArray(ARG_SELECTION_OBJECTS, outputStream.toByteArray());
+            }
+        }
     }
 
     @Override
@@ -535,7 +597,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public ContentObserver getDefaultContentObserver()
     {
         if (mObserver == null)
-            mObserver = new ContentObserver(new Handler(Looper.myLooper()))
+            mObserver = new ContentObserver(new Handler(Looper.getMainLooper()))
             {
                 @Override
                 public boolean deliverSelfNotifications()

@@ -861,9 +861,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                     .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND ("
                                     + Kuick.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
                                     + Kuick.FIELD_TRANSFER_DIRECTORY + " = ?)",
-                            String.valueOf(this.groupId),
-                            this.directory + File.separator + "%",
-                            this.directory);
+                            String.valueOf(this.groupId), this.directory + File.separator + "%", this.directory);
         }
 
         @Override

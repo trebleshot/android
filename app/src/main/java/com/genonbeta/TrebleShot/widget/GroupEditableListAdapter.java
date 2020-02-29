@@ -173,7 +173,6 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         void setDate(long date);
 
         void setSize(long size);
-
     }
 
     abstract public static class GroupShareable extends Shareable implements GroupEditable

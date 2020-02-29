@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
@@ -46,11 +47,13 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 {
     private List<StableItem> mItems = new ArrayList<>();
     private Context mContext;
+    private FragmentFactory mFragmentFactory;
 
     public SmartFragmentPagerAdapter(Context context, FragmentManager fm)
     {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mContext = context;
+        mFragmentFactory = fm.getFragmentFactory();
     }
 
     public void onItemInstantiated(StableItem item)
@@ -99,7 +102,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
             for (int iterator = 0; iterator < getCount(); iterator++) {
                 StableItem stableItem = getStableItem(iterator);
                 Fragment fragment = getItem(iterator);
-                CharSequence menuTitle = null;
+                CharSequence menuTitle;
 
                 if (stableItem.title != null && stableItem.title.length() > 0)
                     menuTitle = stableItem.title;
@@ -162,7 +165,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
         Fragment instantiatedItem = stableItem.getInitiatedItem();
 
         if (instantiatedItem == null)
-            instantiatedItem = Fragment.instantiate(getContext(), stableItem.clazzName);
+            instantiatedItem = mFragmentFactory.instantiate(getContext().getClassLoader(), stableItem.clazzName);
 
         instantiatedItem.setArguments(stableItem.arguments);
 

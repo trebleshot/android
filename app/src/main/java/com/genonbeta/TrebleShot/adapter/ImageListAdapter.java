@@ -147,7 +147,8 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
             super(VIEW_TYPE_REPRESENTATIVE, representativeText);
         }
 
-        public ImageHolder(long id, String title, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
+        public ImageHolder(long id, String title, String fileName, String albumName, String mimeType, long date,
+                           long size, Uri uri)
         {
             super(id, title, fileName, albumName, mimeType, date, size, uri);
         }
