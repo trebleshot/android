@@ -88,11 +88,6 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         this.type = type;
     }
 
-    public TransferObject(ContentValues item)
-    {
-        reconstruct(item);
-    }
-
     public static TransferObject from(DocumentFile file, long groupId, String directory)
     {
         TransferObject object = new TransferObject(AppUtils.getUniqueNumber(), groupId, file.getName(),
@@ -268,7 +263,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.name = item.getAsString(Kuick.FIELD_TRANSFER_NAME);
         this.file = item.getAsString(Kuick.FIELD_TRANSFER_FILE);

@@ -103,10 +103,6 @@ public class Kuick extends KuickDb
             FIELD_TRANSFERGROUP_ISSHAREDONWEB = "isSharedOnWeb",
             FIELD_TRANSFERGROUP_ISPAUSED = "isPaused";
 
-    public static final String TABLE_WRITABLEPATH = "writablePath",
-            FIELD_WRITABLEPATH_TITLE = "title",
-            FIELD_WRITABLEPATH_PATH = "path";
-
     public Kuick(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -182,10 +178,6 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))
                 .define(new Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true))
                 .define(new Column(FIELD_TRANSFERGROUP_ISPAUSED, SQLType.INTEGER, false));
-
-        values.defineTable(TABLE_WRITABLEPATH)
-                .define(new Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
-                .define(new Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
 
         return values;
     }

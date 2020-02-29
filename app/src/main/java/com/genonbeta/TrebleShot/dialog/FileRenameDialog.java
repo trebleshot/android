@@ -21,8 +21,6 @@ package com.genonbeta.TrebleShot.dialog;
 import android.content.Context;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.object.FileShortcutObject;
-import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -36,7 +34,7 @@ import java.util.List;
  * date: 26.02.2018 08:53
  */
 
-public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> extends AbstractSingleTextInputDialog
+public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends AbstractSingleTextInputDialog
 {
     public static final String TAG = FileRenameDialog.class.getSimpleName();
     public static final int JOB_RENAME_FILES = 0;
@@ -110,22 +108,11 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
     public boolean renameFile(T holder, String renameTo, OnFileRenameListener renameListener)
     {
         try {
-            if (holder instanceof FileListAdapter.ShortcutDirectoryHolder) {
-                FileShortcutObject object = ((FileListAdapter.ShortcutDirectoryHolder) holder).getShortcutObject();
-
-                if (object != null) {
-                    object.title = renameTo;
-                    AppUtils.getKuick(getContext()).publish(object);
+            if (FileListAdapter.FileHolder.Type.Bookmarked.equals(holder.getType())
+                    || FileListAdapter.FileHolder.Type.Mounted.equals(holder.getType())) {
+                    holder.friendlyName = renameTo;
+                    AppUtils.getKuick(getContext()).publish(holder);
                     AppUtils.getKuick(getContext()).broadcast();
-                }
-            } else if (holder instanceof FileListAdapter.WritablePathHolder) {
-                WritablePathObject object = ((FileListAdapter.WritablePathHolder) holder).pathObject;
-
-                if (object != null) {
-                    object.title = renameTo;
-                    AppUtils.getKuick(getContext()).publish(object);
-                    AppUtils.getKuick(getContext()).broadcast();
-                }
             } else if (holder.file.canWrite() && holder.file.renameTo(renameTo)) {
                 if (renameListener != null)
                     renameListener.onFileRename(holder.file, renameTo);

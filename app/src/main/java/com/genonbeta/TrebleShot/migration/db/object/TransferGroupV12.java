@@ -47,11 +47,6 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
         this.groupId = groupId;
     }
 
-    public TransferGroupV12(ContentValues item)
-    {
-        reconstruct(item);
-    }
-
     @Override
     public boolean equals(Object obj)
     {
@@ -59,7 +54,7 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
         this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);

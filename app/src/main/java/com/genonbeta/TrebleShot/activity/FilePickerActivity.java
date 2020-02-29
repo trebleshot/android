@@ -28,11 +28,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -61,7 +59,8 @@ public class FilePickerActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filepicker);
 
-        mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_filepicker_fragment_files);
+        mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(
+                R.id.activitiy_filepicker_fragment_files);
         mFAB = findViewById(R.id.content_fab);
     }
 
@@ -90,17 +89,12 @@ public class FilePickerActivity extends Activity
                         getSupportActionBar().setSubtitle(R.string.text_chooseFolder);
                 }
 
-                mFileExplorerFragment
-                        .getAdapter()
+                mFileExplorerFragment.getAdapter()
                         .setConfiguration(true, false, null);
-
                 mFileExplorerFragment.refreshList();
 
-                RecyclerView recyclerView = mFileExplorerFragment
-                        .getListView();
-
+                RecyclerView recyclerView = mFileExplorerFragment.getListView();
                 recyclerView.setPadding(0, 0, 0, 200);
-
                 recyclerView.setClipToPadding(false);
 
                 mFAB.show();
@@ -130,12 +124,12 @@ public class FilePickerActivity extends Activity
                         return false;
 
                     try {
-                        FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment
+                        FileListAdapter.FileHolder fileHolder = mFileExplorerFragment
                                 .getAdapter()
                                 .getItem(holder.getAdapterPosition());
 
-                        if (fileHolder instanceof FileListAdapter.FileHolder) {
-                            finishWithResult(((FileListAdapter.FileHolder) fileHolder).file);
+                        if (fileHolder.file.isFile()) {
+                            finishWithResult(fileHolder.file);
                             return true;
                         }
                     } catch (NotReadyException e) {
@@ -150,7 +144,8 @@ public class FilePickerActivity extends Activity
             if (!isFinishing())
                 if (getIntent().hasExtra(EXTRA_START_PATH)) {
                     try {
-                        mFileExplorerFragment.goPath(FileUtils.fromUri(this, Uri.parse(getIntent().getStringExtra(EXTRA_START_PATH))));
+                        mFileExplorerFragment.goPath(FileUtils.fromUri(this,
+                                Uri.parse(getIntent().getStringExtra(EXTRA_START_PATH))));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -175,8 +170,7 @@ public class FilePickerActivity extends Activity
     @Override
     public void onBackPressed()
     {
-        if (mFileExplorerFragment == null
-                || !mFileExplorerFragment.onBackPressed())
+        if (mFileExplorerFragment == null || !mFileExplorerFragment.onBackPressed())
             super.onBackPressed();
     }
 

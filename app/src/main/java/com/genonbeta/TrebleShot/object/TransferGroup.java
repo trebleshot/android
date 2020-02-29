@@ -53,11 +53,6 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         this.id = id;
     }
 
-    public TransferGroup(ContentValues item)
-    {
-        reconstruct(item);
-    }
-
     @Override
     public boolean equals(Object obj)
     {
@@ -65,7 +60,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.id = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
         this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);

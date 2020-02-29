@@ -79,11 +79,6 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
         this.type = type;
     }
 
-    public TransferObjectV12(ContentValues item)
-    {
-        reconstruct(item);
-    }
-
     @Override
     public boolean equals(Object obj)
     {
@@ -138,7 +133,7 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.friendlyName = item.getAsString(Kuick.FIELD_TRANSFER_NAME);
         this.file = item.getAsString(Kuick.FIELD_TRANSFER_FILE);

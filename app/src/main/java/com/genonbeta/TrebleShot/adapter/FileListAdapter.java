@@ -20,9 +20,11 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,14 +38,15 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.object.FileShortcutObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MimeIconUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
@@ -56,10 +59,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder,
+public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.FileHolder,
         GroupEditableListAdapter.GroupViewHolder> implements GroupEditableListAdapter.GroupLister.CustomGroupLister<
-        FileListAdapter.GenericFileHolder>
+        FileListAdapter.FileHolder>
 {
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
     public static final int REQUEST_CODE_MOUNT_FOLDER = 1;
@@ -76,7 +80,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
     }
 
     @Override
-    protected void onLoad(GroupLister<GenericFileHolder> lister)
+    protected void onLoad(GroupLister<FileHolder> lister)
     {
         mShowThumbnails = AppUtils.getDefaultPreferences(getContext()).getBoolean("load_thumbnails",
                 true);
@@ -91,65 +95,27 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                     if ((mFileMatch != null && !file.getName().matches(mFileMatch)))
                         continue;
 
-                    if (file.isDirectory() && mShowDirectories) {
-                        DocumentFile[] files = file.listFiles();
-                        String totalFiles = getContext().getResources().getQuantityString(R.plurals.text_items,
-                                files.length, files.length);
-                        lister.offerObliged(this, new DirectoryHolder(file, totalFiles,
-                                R.drawable.ic_folder_white_24dp));
-                    } else if (file.isFile() && mShowFiles) {
-                        if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
-                            TransferObject existingObject = null;
-
-                            try {
-                                ContentValues data = AppUtils.getKuick(getContext()).getFirstFromTable(
-                                        new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
-                                                Kuick.FIELD_TRANSFER_FILE + "=?", file.getName()));
-
-                                if (data != null)
-                                    existingObject = new TransferObject(data);
-                            } catch (Exception ignored) {
-                            }
-
-                            lister.offerObliged(this, new ReceivedFileHolder(getContext(), file, existingObject));
-                        } else
-                            lister.offerObliged(this, new FileHolder(getContext(), file));
-                    }
+                    if ((mShowDirectories && file.isDirectory() || (mShowFiles && file.isFile())))
+                        lister.offerObliged(this, new FileHolder(getContext(), file));
                 }
             }
         } else {
             List<File> referencedDirectoryList = new ArrayList<>();
-            DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext());
 
-            lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles),
-                    R.drawable.ic_trebleshot_rounded_white_24dp_static));
-
-            if (Build.VERSION.SDK_INT <= 28) {
-                lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-                        getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
-
-                if (Build.VERSION.SDK_INT >= 19)
-                    lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                            getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
-
-                lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
-
-                lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                        getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
+            {
+                FileHolder saveDir = new FileHolder(getContext(), FileUtils.getApplicationDirectory(getContext()));
+                saveDir.type = FileHolder.Type.SaveLocation;
+                lister.offerObliged(this, saveDir);
             }
 
-            File fileSystemRoot = new File(".");
-
-            if (fileSystemRoot.canRead())
-                lister.offerObliged(this, new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
-                        getContext().getString(R.string.text_fileRoot),
-                        getContext().getString(R.string.text_folder),
-                        R.drawable.ic_folder_white_24dp));
+            {
+                File rootDir = new File(".");
+                if (rootDir.canRead()) {
+                    FileHolder rootHolder = new FileHolder(getContext(), DocumentFile.fromFile(rootDir));
+                    rootHolder.friendlyName = getContext().getString(R.string.text_fileRoot);
+                    lister.offerObliged(this, rootHolder);
+                }
+            }
 
             if (Build.VERSION.SDK_INT >= 21)
                 referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
@@ -162,8 +128,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                 if (mediaDir == null || !mediaDir.canWrite())
                     continue;
 
-                StorageHolder fileHolder = new StorageHolder(DocumentFile.fromFile(mediaDir),
-                        getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
+                FileHolder fileHolder = new FileHolder(getContext(), DocumentFile.fromFile(mediaDir));
+                fileHolder.type = FileHolder.Type.Storage;
                 String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
                 if (splitPath.length >= 2 && splitPath[1].equals("storage")) {
@@ -190,32 +156,20 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                 lister.offerObliged(this, fileHolder);
             }
 
-            List<FileShortcutObject> shortcutList = AppUtils.getKuick(getContext())
-                    .castQuery(new SQLQuery.Select(Kuick.TABLE_FILEBOOKMARK), FileShortcutObject.class);
+            {
+                List<FileHolder> savedDirList = AppUtils.getKuick(getContext())
+                        .castQuery(new SQLQuery.Select(Kuick.TABLE_FILEBOOKMARK), FileHolder.class);
 
-            for (FileShortcutObject object : shortcutList) {
-                try {
-                    lister.offerObliged(this, new ShortcutDirectoryHolder(getContext(), object));
-                } catch (Exception e) {
-                    // do nothing
-                }
+                for (FileHolder dir : savedDirList)
+                    if (dir.file != null)
+                        lister.offerObliged(this, dir);
             }
 
-            List<WritablePathObject> mountedPathList = AppUtils.getKuick(getContext())
-                    .castQuery(new SQLQuery.Select(Kuick.TABLE_WRITABLEPATH), WritablePathObject.class);
-
             if (Build.VERSION.SDK_INT >= 21) {
-                for (WritablePathObject pathObject : mountedPathList)
-                    try {
-                        lister.offerObliged(this, new WritablePathHolder(DocumentFile.fromUri(getContext(),
-                                pathObject.path, true), pathObject, getContext().getString(R.string.text_storage)));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                lister.offerObliged(this, new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
+                // FIXME: 29.02.2020 Fix mount folder button
+                /*lister.offerObliged(this, new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
                         R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory),
-                        REQUEST_CODE_MOUNT_FOLDER));
+                        REQUEST_CODE_MOUNT_FOLDER));*/
             }
 
             {
@@ -227,11 +181,12 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                                 TransferObject.class);
 
                 List<DocumentFile> pickedRecentFiles = new ArrayList<>();
-                ArrayMap<Long, TransferGroup> groupMap = new ArrayMap<>();
+                Map<Long, TransferGroup> groupMap = new ArrayMap<>();
 
                 for (TransferGroup group : AppUtils.getKuick(getContext()).castQuery(
                         new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), TransferGroup.class))
                     groupMap.put(group.id, group);
+
                 int errorLimit = 3;
 
                 for (TransferObject object : objects) {
@@ -253,20 +208,26 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                     }
                 }
 
-                for (DocumentFile documentFile : pickedRecentFiles)
-                    lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
+                for (DocumentFile documentFile : pickedRecentFiles) {
+                    FileHolder holder = new FileHolder(getContext(), documentFile);
+                    holder.type = FileHolder.Type.Recent;
+                    lister.offerObliged(this, holder);
+                }
             }
         }
     }
 
     @Override
-    protected GenericFileHolder onGenerateRepresentative(String representativeText)
+    protected FileHolder onGenerateRepresentative(String representativeText)
     {
-        return new GenericFileHolder(representativeText);
+        FileHolder holder = new FileHolder();
+        holder.setRepresentativeText(representativeText);
+
+        return holder;
     }
 
     @Override
-    public boolean onCustomGroupListing(GroupLister<GenericFileHolder> lister, int mode, GenericFileHolder object)
+    public boolean onCustomGroupListing(GroupLister<FileHolder> lister, int mode, FileHolder object)
     {
         if (mode == MODE_GROUP_BY_DEFAULT)
             lister.offer(object, new FileHolderMerger(object));
@@ -288,7 +249,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
     public void onBindViewHolder(@NonNull final GroupViewHolder holder, final int position)
     {
         try {
-            final GenericFileHolder object = getItem(position);
+            final FileHolder object = getItem(position);
 
             if (!holder.tryBinding(object)) {
                 final View parentView = holder.itemView;
@@ -301,15 +262,15 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
                 holder.setSelected(object.isSelectableSelected());
 
                 text1.setText(object.friendlyName);
-                text2.setText(object.info);
+                text2.setText(object.getInfo(getContext()));
 
-                if (!mShowThumbnails || !object.loadThumbnail(thumbnail)) {
-                    image.setImageResource(object.iconRes);
+                if (!mShowThumbnails || !object.loadThumbnail(getContext(), thumbnail)) {
+                    image.setImageResource(object.getIconRes());
                     thumbnail.setImageDrawable(null);
                 } else
                     image.setImageDrawable(null);
             } else if (holder.getItemViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
-                ((ImageView) holder.itemView.findViewById(R.id.icon)).setImageResource(object.iconRes);
+                ((ImageView) holder.itemView.findViewById(R.id.icon)).setImageResource(object.getIconRes());
         } catch (NotReadyException e) {
             e.printStackTrace();
         }
@@ -327,10 +288,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
         return stringBuilder.toString();
     }
 
-    public GroupLister<GenericFileHolder> createLister(List<GenericFileHolder> loadedList, int groupBy)
+    public GroupLister<FileHolder> createLister(List<FileHolder> loadedList, int groupBy)
     {
-        return super.createLister(loadedList, groupBy)
-                .setCustomLister(this);
+        return super.createLister(loadedList, groupBy).setCustomLister(this);
     }
 
     @Override
@@ -343,22 +303,22 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
     }
 
     @Override
-    public int getSortingCriteria(GenericFileHolder objectOne, GenericFileHolder objectTwo)
+    public int getSortingCriteria(FileHolder objectOne, FileHolder objectTwo)
     {
         // Checking whether the path is null helps to increase the speed.
-        if (getPath() == null && objectOne instanceof RecentFileHolder
-                && objectTwo instanceof RecentFileHolder)
+        if (getPath() == null && FileHolder.Type.Recent.equals(objectOne.getType())
+                && FileHolder.Type.Recent.equals(objectTwo.getType()))
             return MODE_SORT_BY_DATE;
 
         return super.getSortingCriteria(objectOne, objectTwo);
     }
 
     @Override
-    public int getSortingOrder(GenericFileHolder objectOne, GenericFileHolder objectTwo)
+    public int getSortingOrder(FileHolder objectOne, FileHolder objectTwo)
     {
         // Checking whether the path is null helps to increase the speed.
-        if (getPath() == null && objectOne instanceof RecentFileHolder
-                && objectTwo instanceof RecentFileHolder)
+        if (getPath() == null && FileHolder.Type.Recent.equals(objectOne.getType())
+                && FileHolder.Type.Recent.equals(objectTwo.getType()))
             return MODE_SORT_ORDER_DESCENDING;
 
         return super.getSortingOrder(objectOne, objectTwo);
@@ -376,19 +336,21 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
     }
 
     @Override
-    public String getRepresentativeText(Merger merger)
+    public String getRepresentativeText(Merger<? extends FileHolder> merger)
     {
         if (merger instanceof FileHolderMerger) {
             switch (((FileHolderMerger) merger).getType()) {
-                case STORAGE:
+                case Storage:
+                case Mounted:
                     return getContext().getString(R.string.text_storage);
-                case PUBLIC_FOLDER:
+                case Public:
+                case Bookmarked:
                     return getContext().getString(R.string.text_shortcuts);
-                case FOLDER:
+                case Folder:
                     return getContext().getString(R.string.text_folder);
-                case RECENT_FILE:
+                case Recent:
                     return getContext().getString(R.string.text_recentFiles);
-                case FILE_PART:
+                case Pending:
                     return getContext().getString(R.string.text_pendingTransfers);
                 default:
                     return getContext().getString(R.string.text_file);
@@ -410,46 +372,93 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
         mFileMatch = fileMatch;
     }
 
-    public interface StorageHolderImpl
+    public static class FileHolder extends GroupEditableListAdapter.GroupShareable implements DatabaseObject<Object>
     {
-    }
-
-    public static class GenericFileHolder extends GroupEditableListAdapter.GroupShareable
-    {
+        public static final String TAG = FileHolder.class.getSimpleName();
         public DocumentFile file;
-        public String info;
-        public int iconRes;
+        public TransferObject transferObject = null;
         public int requestCode;
+        protected Type type = null;
 
-        public GenericFileHolder(String representativeText)
+        public FileHolder()
         {
-            this(FileListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
+            Log.d(TAG, "FileHolder: Empty constructor called");
         }
 
-        public GenericFileHolder(int viewType, String representativeText)
+        public FileHolder(Context context, DocumentFile file)
         {
-            super(viewType, representativeText);
-        }
-
-        public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes,
-                                 long date, long size, Uri uri)
-        {
-            // 'id' will be generated by the getId() method
-            super(0, friendlyName, friendlyName, file.getType(), date, size, uri);
-
+            super(0, file.getName(), file.getName(), file.getType(), file.lastModified(), file.length(),
+                    file.getUri());
             this.file = file;
-            this.info = info;
-            this.iconRes = iconRes;
+            calculate(context);
+        }
+
+        protected void calculate(Context context)
+        {
+            if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
+                type = Type.Pending;
+                try {
+                    Kuick kuick = AppUtils.getKuick(context);
+                    ContentValues data = kuick.getFirstFromTable(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                            .setWhere(Kuick.FIELD_TRANSFER_FILE + "=?", file.getName()));
+
+                    if (data != null) {
+                        transferObject = new TransferObject();
+                        transferObject.reconstruct(kuick.getWritableDatabase(), kuick, data);
+
+                        mimeType = transferObject.mimeType;
+                        friendlyName = transferObject.name;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
         }
 
         @Override
         public long getId()
         {
             if (super.getId() == 0)
-                setId(String.format("%s_%s", file.getUri().toString(),
-                        getClass().getName()).hashCode());
+                setId(String.format("%s_%s", file.getUri().toString(), getClass().getName()).hashCode());
 
             return super.getId();
+        }
+
+        public String getInfo(Context context)
+        {
+            switch (getType()) {
+                case Storage:
+                    return context.getString(R.string.text_storage);
+                case Mounted:
+                    return context.getString(R.string.text_mountedDirectory);
+                case Bookmarked:
+                case Folder:
+                case Public:
+                    if (file.isDirectory()) {
+                        int itemSize = file.listFiles().length;
+                        return context.getResources().getQuantityString(R.plurals.text_items, itemSize, itemSize);
+                    } else
+                        return context.getString(R.string.text_unknown);
+                case SaveLocation:
+                    return context.getString(R.string.text_defaultFolder);
+                case Pending:
+                    return transferObject == null ? context.getString(R.string.mesg_notValidTransfer)
+                            : String.format("%s / %s", FileUtils.sizeExpression(getComparableSize(), false),
+                            FileUtils.sizeExpression(transferObject.size, false));
+                case Recent:
+                case File:
+                    return FileUtils.sizeExpression(getComparableSize(), false);
+                default:
+                    return context.getString(R.string.text_unknown);
+            }
+        }
+
+
+        public Type getType()
+        {
+            if (file == null)
+                Log.d(FileHolder.class.getSimpleName(), "getType: It is empty dude: " + friendlyName);
+
+            return type == null ? (file.isDirectory() ? Type.Folder : Type.File) : type;
         }
 
         @Override
@@ -458,246 +467,133 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
             return requestCode;
         }
 
-        public boolean loadThumbnail(ImageView imageView)
+        @Override
+        public ContentValues getValues()
         {
-            return false;
-        }
-    }
-
-    public static class FileHolder extends GenericFileHolder
-    {
-        public FileHolder(Context context, DocumentFile file)
-        {
-            super(file, file.getName(), FileUtils.sizeExpression(file.length(), false),
-                    MimeIconUtils.loadMimeIcon(file.getType()), file.lastModified(), file.length(),
-                    FileUtils.getSecureUriSilently(context, file));
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Kuick.FIELD_FILEBOOKMARK_TITLE, friendlyName);
+            contentValues.put(Kuick.FIELD_FILEBOOKMARK_PATH, uri.toString());
+            return contentValues;
         }
 
         @Override
-        public boolean loadThumbnail(ImageView imageView)
+        public SQLQuery.Select getWhere()
         {
-            String type = file.getType();
+            return new SQLQuery.Select(Kuick.TABLE_FILEBOOKMARK).setWhere(String.format("%s = ?",
+                    Kuick.FIELD_FILEBOOKMARK_PATH), uri.toString());
+        }
 
-            if (type != null) {
-                String[] format = type.split(File.separator);
+        @DrawableRes
+        public int getIconRes()
+        {
+            if (file.isFile()) {
+                switch (type) {
+                    case Mounted:
+                    case Storage:
+                        return R.drawable.ic_save_white_24dp;
+                    case SaveLocation:
+                        return R.drawable.ic_trebleshot_white_24dp_static;
+                    default:
+                        return R.drawable.ic_folder_white_24dp;
+                }
+            } else {
+                if (Type.Pending.equals(type) && transferObject == null)
+                    return R.drawable.ic_block_white_24dp;
 
-                if (format.length > 0)
-                    if ("image".equals(format[0]) || "video".equals(format[0])) {
-                        GlideApp.with(imageView.getContext())
-                                .load(file.getUri())
-                                .error(iconRes)
-                                .override(160)
-                                .centerCrop()
-                                .into(imageView);
-
-                        return true;
-                    }
+                return MimeIconUtils.loadMimeIcon(mimeType);
             }
-
-            return super.loadThumbnail(imageView);
-        }
-    }
-
-    public static class ReceivedFileHolder extends FileHolder
-    {
-        public ReceivedFileHolder(Context context, DocumentFile file, TransferObject transferObject)
-        {
-            super(context, file);
-
-            this.info = transferObject == null ? context.getString(R.string.mesg_notValidTransfer)
-                    : String.format("%s / %s", FileUtils.sizeExpression(getComparableSize(), false),
-                    FileUtils.sizeExpression(transferObject.size, false));
-
-            this.iconRes = transferObject == null
-                    ? R.drawable.ic_block_white_24dp
-                    : MimeIconUtils.loadMimeIcon(transferObject.mimeType);
-
-            if (transferObject != null)
-                this.friendlyName = transferObject.name;
-        }
-    }
-
-    public static class DirectoryHolder extends GenericFileHolder
-    {
-        public DirectoryHolder(DocumentFile file, String info, int iconRes)
-        {
-            this(file, file.getName(), info, iconRes);
         }
 
-        public DirectoryHolder(DocumentFile file, String friendlyName, String info, int iconRes)
+        public boolean loadThumbnail(Context context, ImageView imageView)
         {
-            super(file, friendlyName, info, iconRes, file.lastModified(), 0, file.getUri());
+            if (file.isDirectory() || Type.Pending.equals(type)
+                    || (!mimeType.startsWith("image/") && !mimeType.startsWith("video/")))
+                return false;
+
+            GlideApp.with(context)
+                    .load(file.getUri())
+                    .error(MimeIconUtils.loadMimeIcon(mimeType))
+                    .override(160)
+                    .centerCrop()
+                    .into(imageView);
+
+            return true;
         }
 
         @Override
-        public long getId()
+        public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
         {
-            return super.getId();
-        }
-    }
+            friendlyName = item.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE);
+            uri = Uri.parse(item.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH));
+            type = uri.toString().startsWith("file") ? Type.Bookmarked : Type.Mounted;
 
-    public static class ShortcutDirectoryHolder extends DirectoryHolder
-    {
-        private FileShortcutObject mShortcutObject;
-
-        public ShortcutDirectoryHolder(Context context, FileShortcutObject shortcutObject) throws FileNotFoundException
-        {
-            super(FileUtils.fromUri(context, shortcutObject.path), shortcutObject.title,
-                    context.getString(R.string.text_shortcut), R.drawable.ic_bookmark_white_24dp);
-
-            mShortcutObject = shortcutObject;
-        }
-
-        public FileShortcutObject getShortcutObject()
-        {
-            return mShortcutObject;
-        }
-    }
-
-    public static class StorageHolder extends DirectoryHolder implements StorageHolderImpl
-    {
-        public StorageHolder(DocumentFile file, String info, int iconRes)
-        {
-            super(file, file.getName(), info, iconRes);
-        }
-
-        public StorageHolder(DocumentFile file, String friendlyName, String info, int iconRes)
-        {
-            super(file, friendlyName, info, iconRes);
-        }
-
-        // StorageHolder items could be an abstract path of a disk.
-        // For security reasons, don't allow these items to be selected.
-        @Override
-        public boolean setSelectableSelected(boolean selected)
-        {
-            return false;
-        }
-    }
-
-    public static class WritablePathHolder
-            extends GenericFileHolder
-            implements StorageHolderImpl
-    {
-        public WritablePathObject pathObject;
-
-        public WritablePathHolder(int viewType, @DrawableRes int iconRes, String representativeText, int requestCode)
-        {
-            super(viewType, representativeText);
-            this.iconRes = iconRes;
-            this.requestCode = requestCode;
-        }
-
-        public WritablePathHolder(DocumentFile file, WritablePathObject object, String info)
-        {
-            super(file, object.title, info, R.drawable.ic_save_white_24dp, 0, 0, object.path);
-            this.pathObject = object;
+            try {
+                file = DocumentFile.fromUri(kuick.getContext(), uri, type.equals(Type.Mounted));
+                calculate(kuick.getContext());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
-        public boolean comparisonSupported()
+        public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
         {
-            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON && super.comparisonSupported();
+
         }
 
         @Override
-        public long getId()
+        public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
         {
-            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON ? super.getId() : String.format(
-                    "%s_%s_%s", getClass().getName(), String.valueOf(iconRes),
-                    getRepresentativeText().hashCode()).hashCode();
+
         }
 
-        // Don't let these folders to be selected
         @Override
-        public boolean setSelectableSelected(boolean selected)
+        public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Object parent, Progress.Listener listener)
         {
-            return false;
+
+        }
+
+        public enum Type
+        {
+            Storage,
+            Bookmarked,
+            Mounted,
+            Public,
+            SaveLocation,
+            Recent,
+            Pending,
+            Folder,
+            File
         }
     }
 
-    public static class FileHolderMerger extends ComparableMerger<GenericFileHolder>
+    public static class FileHolderMerger extends ComparableMerger<FileHolder>
     {
-        private Type mType;
+        private FileHolder.Type mType;
 
-        public FileHolderMerger(GenericFileHolder holder)
+        public FileHolderMerger(FileHolder holder)
         {
-            if (holder instanceof StorageHolderImpl)
-                mType = Type.STORAGE;
-            else if (holder instanceof PublicDirectoryHolder)
-                mType = Type.PUBLIC_FOLDER;
-            else if (holder instanceof DirectoryHolder)
-                mType = Type.FOLDER;
-            else if (holder instanceof RecentFileHolder)
-                mType = Type.RECENT_FILE;
-            else if (holder instanceof ReceivedFileHolder)
-                mType = Type.FILE_PART;
-            else
-                mType = Type.FILE;
+            mType = holder.getType();
         }
 
         @Override
         public boolean equals(Object obj)
         {
-            return obj instanceof FileHolderMerger
-                    && ((FileHolderMerger) obj).getType().equals(getType());
+            return obj instanceof FileHolderMerger && ((FileHolderMerger) obj).mType.equals(mType);
         }
 
-        public Type getType()
+        public FileHolder.Type getType()
         {
             return mType;
         }
 
         @Override
-        public int compareTo(@NonNull ComparableMerger<GenericFileHolder> o)
+        public int compareTo(@NonNull ComparableMerger<FileHolder> o)
         {
             if (o instanceof FileHolderMerger)
                 return MathUtils.compare(((FileHolderMerger) o).getType().ordinal(), getType().ordinal());
 
             return 0;
-        }
-
-        public enum Type
-        {
-            STORAGE,
-            FOLDER,
-            PUBLIC_FOLDER,
-            RECENT_FILE,
-            FILE_PART,
-            FILE
-        }
-    }
-
-    public class RecentFileHolder extends FileHolder
-    {
-        public RecentFileHolder(Context context, DocumentFile file)
-        {
-            super(context, file);
-        }
-    }
-
-    public class PublicDirectoryHolder extends DirectoryHolder
-    {
-        public PublicDirectoryHolder(File file, String info, int iconRes)
-        {
-            this(DocumentFile.fromFile(file), info, iconRes);
-
-            String[] files = file.list();
-            int fileCount = files != null ? files.length : 0;
-
-            this.friendlyName = info;
-            this.info = getContext().getResources().getQuantityString(R.plurals.text_files, fileCount, fileCount);
-        }
-
-        public PublicDirectoryHolder(DocumentFile file, String info, int iconRes)
-        {
-            super(file, info, iconRes);
-        }
-
-        @Override
-        public boolean setSelectableSelected(boolean selected)
-        {
-            return false;
         }
     }
 }

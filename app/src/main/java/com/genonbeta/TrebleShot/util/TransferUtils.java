@@ -143,16 +143,16 @@ public class TransferUtils
                 .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
 
         List<ShowingAssignee> assignees = kuick.castQuery(select, ShowingAssignee.class, (db, item, object) -> {
-                    object.device = new NetworkDevice(object.deviceId);
-                    object.connection = new DeviceConnection(object);
+            object.device = new NetworkDevice(object.deviceId);
+            object.connection = new DeviceConnection(object);
 
-                    try {
-                        db.reconstruct(object.device);
-                        db.reconstruct(object.connection);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+            try {
+                db.reconstruct(object.device);
+                db.reconstruct(object.connection);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         return assignees.size() == 0 ? null : assignees.get(0);
     }
@@ -171,14 +171,18 @@ public class TransferUtils
 
     public static TransferObject fetchFirstValidIncomingTransfer(Context context, long groupId)
     {
-        ContentValues receiverInstance = AppUtils.getKuick(context).getFirstFromTable(
+        Kuick kuick = AppUtils.getKuick(context);
+        ContentValues receiverInstance = kuick.getFirstFromTable(
                 createIncomingSelection(groupId, TransferObject.Flag.PENDING, true)
                         .setOrderBy(String.format("`%s` ASC, `%s` ASC", Kuick.FIELD_TRANSFER_DIRECTORY,
                                 Kuick.FIELD_TRANSFER_NAME)));
 
-        return receiverInstance == null
-                ? null
-                : new TransferObject(receiverInstance);
+        if (receiverInstance == null)
+            return null;
+
+        TransferObject object = new TransferObject();
+        object.reconstruct(kuick.getWritableDatabase(), kuick, receiverInstance);
+        return object;
     }
 
     public static boolean isError(TransferObject.Flag flag)

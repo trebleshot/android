@@ -203,7 +203,7 @@ public class Migration
 
                         if (kuick.getFirstFromTable(db, selection) != null) {
                             TransferAssignee incomingAssignee = new TransferAssignee();
-                            incomingAssignee.reconstruct(assigneeV12.getValues());
+                            incomingAssignee.reconstruct(db, kuick, assigneeV12.getValues());
                             incomingAssignee.type = TransferObject.Type.INCOMING;
                             newAssignees.add(incomingAssignee);
                         }
@@ -215,7 +215,7 @@ public class Migration
 
                         if (kuick.getFirstFromTable(db, selection) != null) {
                             TransferAssignee outgoingAssignee = new TransferAssignee();
-                            outgoingAssignee.reconstruct(assigneeV12.getValues());
+                            outgoingAssignee.reconstruct(db, kuick, assigneeV12.getValues());
                             outgoingAssignee.type = TransferObject.Type.OUTGOING;
                             newAssignees.add(outgoingAssignee);
                         }
@@ -257,7 +257,7 @@ public class Migration
                                 continue;
 
                             object = new TransferObject();
-                            object.reconstruct(objectV12.getValues());
+                            object.reconstruct(db, kuick, objectV12.getValues());
 
                             newObjects.put(objectV12.requestId, object);
                         }
@@ -284,7 +284,7 @@ public class Migration
 
                         for (TransferObjectV12 objectV12 : incomingObjects) {
                             TransferObject newObject = new TransferObject();
-                            newObject.reconstruct(objectV12.getValues());
+                            newObject.reconstruct(db, kuick, objectV12.getValues());
                         }
 
                         kuick.insert(db, newIncomingInstances, null, null);

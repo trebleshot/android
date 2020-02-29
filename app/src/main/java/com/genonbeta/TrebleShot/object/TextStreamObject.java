@@ -95,7 +95,7 @@ public class TextStreamObject extends GroupEditableListAdapter.GroupShareable im
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.id = item.getAsLong(Kuick.FIELD_CLIPBOARD_ID);
         this.text = item.getAsString(Kuick.FIELD_CLIPBOARD_TEXT);

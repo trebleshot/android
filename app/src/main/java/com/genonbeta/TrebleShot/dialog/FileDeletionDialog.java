@@ -39,14 +39,14 @@ import java.util.List;
 
 public class FileDeletionDialog extends AlertDialog.Builder
 {
-    public FileDeletionDialog(final Context context, final List<FileListAdapter.GenericFileHolder> items,
+    public FileDeletionDialog(final Context context, final List<FileListAdapter.FileHolder> items,
                               final Listener listener)
     {
         super(context);
 
         final List<Uri> copiedItems = new ArrayList<>();
 
-        for (FileListAdapter.GenericFileHolder item : items)
+        for (FileListAdapter.FileHolder item : items)
             if (item.file != null)
                 copiedItems.add(item.file.getUri());
 

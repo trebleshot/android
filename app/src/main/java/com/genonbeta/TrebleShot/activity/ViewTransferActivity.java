@@ -178,12 +178,13 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
                 if (fileData == null)
                     throw new Exception("File is not found in the database");
 
-                TransferObject object = new TransferObject(fileData);
-                PreloadedGroup transferGroup = new PreloadedGroup(object.groupId);
+                TransferObject object = new TransferObject();
+                object.reconstruct(getDatabase().getWritableDatabase(), getDatabase(), fileData);
+                PreloadedGroup group = new PreloadedGroup(object.groupId);
 
-                getDatabase().reconstruct(object);
+                getDatabase().reconstruct(group);
 
-                mGroup = transferGroup;
+                mGroup = group;
                 mTransferObject = object;
                 mDirectory = object.directory;
 

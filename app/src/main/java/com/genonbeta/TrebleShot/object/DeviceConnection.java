@@ -69,11 +69,6 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
         this.ipAddress = ipAddress;
     }
 
-    public DeviceConnection(ContentValues item)
-    {
-        reconstruct(item);
-    }
-
     @Override
     public SQLQuery.Select getWhere()
     {
@@ -98,7 +93,7 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.adapterName = item.getAsString(Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME);
         this.ipAddress = item.getAsString(Kuick.FIELD_DEVICECONNECTION_IPADDRESS);

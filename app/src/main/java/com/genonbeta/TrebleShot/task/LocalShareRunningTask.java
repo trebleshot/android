@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
-import com.genonbeta.TrebleShot.adapter.FileListAdapter.DirectoryHolder;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
@@ -77,8 +77,8 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
             if (getInterrupter().interrupted())
                 throw new InterruptedException();
 
-            if (shareable instanceof DirectoryHolder) {
-                DocumentFile file = ((DirectoryHolder) shareable).file;
+            if (shareable instanceof FileListAdapter.FileHolder) {
+                DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;
                 TransferUtils.createFolderStructure(list, group.id, file, shareable.fileName, getInterrupter(),
                         null);
             } else

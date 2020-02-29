@@ -55,11 +55,6 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
         this.deviceId = deviceId;
     }
 
-    public NetworkDeviceV12(ContentValues item)
-    {
-        reconstruct(item);
-    }
-
     public String generatePictureId()
     {
         return String.format("picture_%s", deviceId);
@@ -92,7 +87,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.deviceId = item.getAsString(Kuick.FIELD_DEVICES_ID);
         this.nickname = item.getAsString(Kuick.FIELD_DEVICES_USER);

@@ -94,7 +94,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     }
 
     @Override
-    public void reconstruct(ContentValues item)
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.id = item.getAsString(Kuick.FIELD_DEVICES_ID);
         this.nickname = item.getAsString(Kuick.FIELD_DEVICES_USER);

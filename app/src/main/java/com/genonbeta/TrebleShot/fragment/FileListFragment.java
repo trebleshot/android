@@ -34,16 +34,13 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.adapter.FileListAdapter.DirectoryHolder;
-import com.genonbeta.TrebleShot.adapter.FileListAdapter.WritablePathHolder;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.FileHolder;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.object.FileShortcutObject;
-import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -56,7 +53,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class FileListFragment extends GroupEditableListFragment<FileListAdapter.GenericFileHolder,
+abstract public class FileListFragment extends GroupEditableListFragment<FileHolder,
         GroupEditableListAdapter.GroupViewHolder, FileListAdapter>
 {
     public static final String TAG = FileListFragment.class.getSimpleName();
@@ -103,18 +100,16 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (getAdapter().getPath() == null
-                    && Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+            } else if (getAdapter().getPath() == null && Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
-                if (Kuick.TABLE_WRITABLEPATH.equals(data.tableName)
-                        || Kuick.TABLE_FILEBOOKMARK.equals(data.tableName))
+                if (Kuick.TABLE_FILEBOOKMARK.equals(data.tableName))
                     refreshList();
             }
         }
     };
 
     public static boolean handleEditingAction(int id, final FileListFragment fragment,
-                                              List<FileListAdapter.GenericFileHolder> selectedItemList)
+                                              List<FileHolder> selectedItemList)
     {
         final FileListAdapter adapter = fragment.getAdapter();
 
@@ -208,10 +203,10 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                             Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
                     try {
-                        DocumentFile documentFile = DocumentFile.fromUri(getContext(), pathUri, true);
-                        AppUtils.getKuick(getContext()).publish(
-                                new WritablePathObject(documentFile.getName(), pathUri));
-                        AppUtils.getKuick(getContext()).broadcast();
+                        Kuick kuick = AppUtils.getKuick(getContext());
+                        DocumentFile file = DocumentFile.fromUri(getContext(), pathUri, true);
+                        kuick.publish(new FileHolder(getContext(), file));
+                        kuick.broadcast();
                         goPath(null);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -240,9 +235,8 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
         if (id == R.id.actions_file_list_mount_directory) {
             requestMountStorage();
-        } else if (id == R.id.actions_file_list_toggle_shortcut
-                && getAdapter().getPath() != null) {
-            shortcutItem(new FileShortcutObject(getAdapter().getPath().getName(), getAdapter().getPath().getUri()));
+        } else if (id == R.id.actions_file_list_toggle_shortcut && getAdapter().getPath() != null) {
+            shortcutItem(new FileHolder(getContext(), getAdapter().getPath()));
         } else
             return super.onOptionsItemSelected(item);
 
@@ -262,7 +256,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
             if (hasPath)
                 try {
-                    AppUtils.getKuick(getContext()).reconstruct(new FileShortcutObject(getAdapter().getPath().getUri()));
+                    AppUtils.getKuick(getContext()).reconstruct(new FileHolder(getContext(), getAdapter().getPath()));
                     shortcutMenuItem.setTitle(R.string.butn_removeShortcut);
                 } catch (Exception e) {
                     shortcutMenuItem.setTitle(R.string.butn_addShortcut);
@@ -279,69 +273,44 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
 
                 clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz, true));
                 clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
-                    final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(
-                            clazz.getAdapterPosition());
-                    final FileShortcutObject shortcutObject;
+                    final FileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
                     boolean isFile = fileHolder.file.isFile();
-                    boolean canChange = fileHolder.file.canWrite()
-                            || fileHolder instanceof FileListAdapter.ShortcutDirectoryHolder;
+                    boolean isMounted = FileHolder.Type.Mounted.equals(fileHolder.getType());
+                    boolean isBookmarked = FileHolder.Type.Mounted.equals(fileHolder.getType());
+                    boolean canWrite = fileHolder.file.canWrite();
                     boolean canRead = fileHolder.file.canRead();
-                    boolean isSensitive = fileHolder instanceof FileListAdapter.StorageHolderImpl
-                            || fileHolder instanceof FileListAdapter.ShortcutDirectoryHolder;
+
                     PopupMenu popupMenu = new PopupMenu(getContext(), v);
                     Menu menuItself = popupMenu.getMenu();
-
-                    if (fileHolder instanceof FileListAdapter.ShortcutDirectoryHolder)
-                        shortcutObject = ((FileListAdapter.ShortcutDirectoryHolder) fileHolder).getShortcutObject();
-                    else if (fileHolder.file.isDirectory()) {
-                        FileShortcutObject testedObject;
-
-                        try {
-                            testedObject = new FileShortcutObject(fileHolder.file.getUri());
-                            AppUtils.getKuick(getContext()).reconstruct(testedObject);
-                        } catch (Exception e) {
-                            testedObject = null;
-                        }
-
-                        shortcutObject = testedObject;
-                    } else
-                        shortcutObject = null;
 
                     popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
 
                     menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead && isFile);
-                    menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canChange);
-                    menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canChange && !isSensitive);
-                    menuItself.findItem(R.id.action_mode_file_show)
-                            .setVisible(fileHolder instanceof FileListAdapter.RecentFileHolder);
-                    menuItself.findItem(R.id.action_mode_file_change_save_path)
-                            .setVisible(FileUtils.getApplicationDirectory(getContext()).getUri()
-                                    .equals(fileHolder.file.getUri()));
-                    menuItself.findItem(R.id.action_mode_file_eject_directory)
-                            .setVisible(fileHolder instanceof WritablePathHolder);
-                    menuItself.findItem(R.id.action_mode_file_toggle_shortcut)
-                            .setVisible(!isFile)
-                            .setTitle(shortcutObject == null ? R.string.butn_addShortcut
-                                    : R.string.butn_removeShortcut);
+                    menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canWrite || isMounted || isBookmarked);
+                    menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canWrite && !isMounted);
+                    menuItself.findItem(R.id.action_mode_file_show).setVisible(FileHolder.Type.Recent.equals(
+                            fileHolder.getType()));
+                    menuItself.findItem(R.id.action_mode_file_change_save_path).setVisible(
+                            FileHolder.Type.SaveLocation.equals(fileHolder.getType()));
+                    menuItself.findItem(R.id.action_mode_file_eject_directory).setVisible(isMounted);
+                    menuItself.findItem(R.id.action_mode_file_toggle_shortcut).setVisible(!isFile && !isMounted)
+                            .setTitle(isBookmarked ? R.string.butn_removeShortcut : R.string.butn_addShortcut);
 
                     popupMenu.setOnMenuItemClickListener(item -> {
                         int id = item.getItemId();
 
-                        ArrayList<FileListAdapter.GenericFileHolder> generateSelectionList = new ArrayList<>();
+                        ArrayList<FileHolder> generateSelectionList = new ArrayList<>();
                         generateSelectionList.add(fileHolder);
 
                         if (id == R.id.action_mode_file_open) {
                             performLayoutClickOpen(clazz);
                         } else if (id == R.id.action_mode_file_show && fileHolder.file.getParentFile() != null) {
                             goPath(fileHolder.file.getParentFile());
-                        } else if (id == R.id.action_mode_file_eject_directory
-                                && fileHolder instanceof WritablePathHolder) {
-                            AppUtils.getKuick(getContext()).remove(
-                                    ((WritablePathHolder) fileHolder).pathObject);
+                        } else if (id == R.id.action_mode_file_eject_directory) {
+                            AppUtils.getKuick(getContext()).remove(fileHolder);
                             AppUtils.getKuick(getContext()).broadcast();
                         } else if (id == R.id.action_mode_file_toggle_shortcut) {
-                            shortcutItem(shortcutObject != null ? shortcutObject
-                                    : new FileShortcutObject(fileHolder.friendlyName, fileHolder.file.getUri()));
+                            shortcutItem(fileHolder);
                         } else if (id == R.id.action_mode_file_change_save_path) {
                             startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
                         } else
@@ -435,17 +404,17 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
         mLastKnownPath = pathOnTrial;
     }
 
-    protected void shortcutItem(FileShortcutObject shortcutObject)
+    protected void shortcutItem(FileHolder holder)
     {
         Kuick kuick = AppUtils.getKuick(getContext());
 
         try {
-            kuick.reconstruct(shortcutObject);
-            kuick.remove(shortcutObject);
+            kuick.reconstruct(holder);
+            kuick.remove(holder);
 
             createSnackbar(R.string.mesg_removed).show();
         } catch (Exception e) {
-            kuick.insert(shortcutObject);
+            kuick.insert(holder);
             createSnackbar(R.string.mesg_added).show();
         } finally {
             kuick.broadcast();
@@ -487,19 +456,17 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
     public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
-            FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
+            FileHolder fileInfo = getAdapter().getItem(holder);
 
             if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-            else if (fileInfo instanceof FileListAdapter.FileHolder)
-                return setItemSelected(holder);
-            else if (fileInfo instanceof DirectoryHolder || fileInfo instanceof WritablePathHolder) {
+                // FIXME: 29.02.2020 There was a call for setItemSelected for files only. What was that?
+                // Maybe that FileExplorerFragment is expected to override it
+            else if (fileInfo.file.isDirectory()) {
                 FileListFragment.this.goPath(fileInfo.file);
 
-                // TODO: 22.02.2020 Show help dialog if not shown before and selection is not activated.
-                /*
-                if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated()
+                if (getEngineConnection().getSelectedItemList().size() > 0
                         && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection",
                         false))
                     createSnackbar(R.string.mesg_helpFolderSelection)
@@ -507,7 +474,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
                                     .edit()
                                     .putBoolean("helpFolderSelection", true)
                                     .apply())
-                            .show();*/
+                            .show();
             } else
                 return super.performLayoutClick(holder);
 
@@ -523,11 +490,10 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileLis
     public boolean performLayoutLongClick(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
-            FileListAdapter.GenericFileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
+            FileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
 
             // FIXME: 23.02.2020 Ensure this doesn't have any problem
-            if ((fileHolder instanceof DirectoryHolder || fileHolder instanceof WritablePathHolder)
-                    && setItemSelected(holder))
+            if (fileHolder.file.isDirectory() && setItemSelected(holder))
                 return true;
         } catch (NotReadyException e) {
             e.printStackTrace();
