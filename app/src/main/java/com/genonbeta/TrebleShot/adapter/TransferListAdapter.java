@@ -586,7 +586,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
 
         @Override
-        public int getmViewType()
+        public int getViewType()
         {
             return this.viewType;
         }
@@ -598,9 +598,9 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
 
         @Override
-        public void setRepresentativeText(CharSequence mRepresentativeText)
+        public void setRepresentativeText(CharSequence text)
         {
-            this.representativeText = String.valueOf(mRepresentativeText);
+            this.representativeText = String.valueOf(text);
         }
 
         @Override

@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -128,7 +127,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
     public int getItemViewType(int position)
     {
         try {
-            return getItem(position).getmViewType();
+            return getItem(position).getViewType();
         } catch (NotReadyException e) {
             e.printStackTrace();
             return VIEW_TYPE_DEFAULT;
@@ -160,13 +159,13 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     public interface GroupEditable extends Editable
     {
-        int getmViewType();
+        int getViewType();
 
         int getRequestCode();
 
         String getRepresentativeText();
 
-        void setRepresentativeText(CharSequence mRepresentativeText);
+        void setRepresentativeText(CharSequence text);
 
         boolean isGroupRepresentative();
 
@@ -178,7 +177,6 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
     abstract public static class GroupShareable extends Shareable implements GroupEditable
     {
         private int mViewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
-        private String mRepresentativeText;
 
         public GroupShareable()
         {
@@ -188,7 +186,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         public GroupShareable(int viewType, String representativeText)
         {
             mViewType = viewType;
-            mRepresentativeText = representativeText;
+            friendlyName = representativeText;
         }
 
         @Override
@@ -198,7 +196,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         }
 
         @Override
-        public int getmViewType()
+        public int getViewType()
         {
             return mViewType;
         }
@@ -206,18 +204,18 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         @Override
         public String getRepresentativeText()
         {
-            return mRepresentativeText;
+            return friendlyName;
         }
 
         @Override
         public void setRepresentativeText(CharSequence text)
         {
-            mRepresentativeText = String.valueOf(text);
+            friendlyName = String.valueOf(text);
         }
 
         public boolean isGroupRepresentative()
         {
-            return mRepresentativeText != null;
+            return mViewType == VIEW_TYPE_REPRESENTATIVE || mViewType == VIEW_TYPE_ACTION_BUTTON;
         }
 
         @Override
@@ -242,7 +240,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         public boolean searchMatches(String searchWord)
         {
             if (isGroupRepresentative())
-                return TextUtils.searchWord(mRepresentativeText, searchWord);
+                return TextUtils.searchWord(friendlyName, searchWord);
 
             return super.searchMatches(searchWord);
         }
@@ -250,13 +248,13 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     public static class GroupViewHolder extends RecyclerViewAdapter.ViewHolder
     {
-        private TextView mRepresentativeText;
+        private TextView mRepresentativeTextView;
         private int mRequestCode;
 
-        public GroupViewHolder(View itemView, TextView representativeText)
+        public GroupViewHolder(View itemView, TextView textView)
         {
             super(itemView);
-            mRepresentativeText = representativeText;
+            mRepresentativeTextView = textView;
         }
 
         public GroupViewHolder(View itemView, int resRepresentativeText)
@@ -269,9 +267,9 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             super(itemView);
         }
 
-        public TextView getRepresentativeText()
+        public TextView getRepresentativeTextView()
         {
-            return mRepresentativeText;
+            return mRepresentativeTextView;
         }
 
         public int getRequestCode()
@@ -287,15 +285,15 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
         public boolean isRepresentative()
         {
-            return mRepresentativeText != null;
+            return mRepresentativeTextView != null;
         }
 
         public boolean tryBinding(GroupEditable editable)
         {
-            if (getRepresentativeText() == null || editable.getRepresentativeText() == null)
+            if (getRepresentativeTextView() == null || editable.getRepresentativeText() == null)
                 return false;
 
-            getRepresentativeText().setText(editable.getRepresentativeText());
+            getRepresentativeTextView().setText(editable.getRepresentativeText());
             setRequestCode(editable.getRequestCode());
 
             return true;

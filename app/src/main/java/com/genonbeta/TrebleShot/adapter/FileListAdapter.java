@@ -164,10 +164,11 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             }
 
             if (Build.VERSION.SDK_INT >= 21) {
-                // FIXME: 29.02.2020 Fix mount folder button
-                /*lister.offerObliged(this, new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
-                        R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory),
-                        REQUEST_CODE_MOUNT_FOLDER));*/
+                FileHolder mountButtonRep = new FileHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
+                        getContext().getString(R.string.butn_mountDirectory));
+                mountButtonRep.requestCode = REQUEST_CODE_MOUNT_FOLDER;
+                mountButtonRep.type = FileHolder.Type.Storage;
+                lister.offerObliged(this, mountButtonRep);
             }
 
             {
@@ -413,11 +414,35 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             }
         }
 
-        protected void initialize(DocumentFile file)
+        @Override
+        public boolean comparisonSupported()
         {
-            initialize(0, file.getName(), file.getName(), file.getType(), file.lastModified(), file.length(),
-                    file.getUri());
-            this.file = file;
+            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON && super.comparisonSupported();
+        }
+
+        @DrawableRes
+        public int getIconRes()
+        {
+            if (file == null)
+                return 0;
+            else if (file.isDirectory()) {
+                switch (getType()) {
+                    case Storage:
+                        return R.drawable.ic_save_white_24dp;
+                    case SaveLocation:
+                        return R.drawable.ic_trebleshot_white_24dp_static;
+                    case Bookmarked:
+                    case Mounted:
+                        return R.drawable.ic_bookmark_white_24dp;
+                    default:
+                        return R.drawable.ic_folder_white_24dp;
+                }
+            } else {
+                if (Type.Pending.equals(getType()) && transferObject == null)
+                    return R.drawable.ic_block_white_24dp;
+
+                return MimeIconUtils.loadMimeIcon(mimeType);
+            }
         }
 
         @Override
@@ -460,7 +485,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
         public Type getType()
         {
-            if (file == null)
+            if (type == null && file == null)
                 type = Type.Dummy;
 
             return type == null ? (file.isDirectory() ? Type.Folder : Type.File) : type;
@@ -488,29 +513,12 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     Kuick.FIELD_FILEBOOKMARK_PATH), uri.toString());
         }
 
-        @DrawableRes
-        public int getIconRes()
-        {
-            if (file == null)
-                return 0;
-            else if (file.isDirectory()) {
-                switch (getType()) {
-                    case Storage:
-                        return R.drawable.ic_save_white_24dp;
-                    case SaveLocation:
-                        return R.drawable.ic_trebleshot_white_24dp_static;
-                    case Bookmarked:
-                    case Mounted:
-                        return R.drawable.ic_bookmark_white_24dp;
-                    default:
-                        return R.drawable.ic_folder_white_24dp;
-                }
-            } else {
-                if (Type.Pending.equals(getType()) && transferObject == null)
-                    return R.drawable.ic_block_white_24dp;
 
-                return MimeIconUtils.loadMimeIcon(mimeType);
-            }
+        protected void initialize(DocumentFile file)
+        {
+            initialize(0, file.getName(), file.getName(), file.getType(), file.lastModified(), file.length(),
+                    file.getUri());
+            this.file = file;
         }
 
         public boolean loadThumbnail(Context context, ImageView imageView)
@@ -566,7 +574,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
         @Override
         public boolean setSelectableSelected(boolean selected)
         {
-            if (file == null || Type.Mounted.equals(getType()) || Type.Public.equals(getType())
+            if (Type.Dummy.equals(getType()) || Type.Mounted.equals(getType()) || Type.Public.equals(getType())
                     || Type.Recent.equals(getType()))
                 return false;
 
@@ -594,6 +602,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
         public FileHolderMerger(FileHolder holder)
         {
+            //
             switch (holder.getType()) {
                 case Mounted:
                 case Storage:
