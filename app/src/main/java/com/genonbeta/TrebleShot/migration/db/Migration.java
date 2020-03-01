@@ -20,9 +20,11 @@ package com.genonbeta.TrebleShot.migration.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import androidx.collection.ArrayMap;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.object.TransferAssigneeV12;
 import com.genonbeta.TrebleShot.migration.db.object.TransferObjectV12;
+import com.genonbeta.TrebleShot.migration.db.object.WritablePathObjectV12;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -52,6 +54,10 @@ public class Migration
         String FIELD_TRANSFER_DEVICEID = "deviceId";
         String FIELD_TRANSFER_ACCESSPORT = "accessPort";
         String FIELD_TRANSFER_SKIPPEDBYTES = "skippedBytes";
+
+        String TABLE_WRITABLEPATH = "writablePath";
+        String FIELD_WRITABLEPATH_TITLE = "title";
+        String FIELD_WRITABLEPATH_PATH = "path";
 
         static SQLValues tables(SQLValues currentValues)
         {
@@ -299,6 +305,27 @@ public class Migration
                     db.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
                             + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
                             + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
+                }
+
+                {
+                    // Writable path and bookmark objects have been dropped.
+                    // The remaining table (of bookmarks) is used to store both, while the object
+                    // driving them is reduced to FileHolder.
+                    List<WritablePathObjectV12> pathObjectList = kuick.castQuery(db, new SQLQuery.Select(
+                            v12.TABLE_WRITABLEPATH), WritablePathObjectV12.class, null);
+
+                    if (pathObjectList.size() > 0) {
+                        List<FileListAdapter.FileHolder> fileHolderList = new ArrayList<>();
+                        for (WritablePathObjectV12 pathObject : pathObjectList) {
+                            FileListAdapter.FileHolder fileHolder = new FileListAdapter.FileHolder();
+                            fileHolder.reconstruct(db, kuick, pathObject.getValues());
+                            fileHolderList.add(fileHolder);
+                        }
+
+                        kuick.insert(db, fileHolderList, null, null);
+                    }
+
+                    db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_WRITABLEPATH + "`");
                 }
             }
         }
