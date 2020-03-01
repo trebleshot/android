@@ -392,8 +392,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
         menu.findItem(R.id.actions_abs_editable_sort_by).setEnabled(isSortingSupported());
 
-        // TODO: 21.02.2020 Ensure selection is available
         MenuItem multiSelect = menu.findItem(R.id.actions_abs_editable_multi_select);
+        multiSelect.setVisible(getPerformerEngine() != null);
 
         if (!getAdapter().isGridSupported())
             menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(false);

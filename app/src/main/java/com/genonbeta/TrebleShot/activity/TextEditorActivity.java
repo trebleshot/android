@@ -58,17 +58,16 @@ import org.json.JSONObject;
 
 public class TextEditorActivity extends Activity implements SnackbarPlacementProvider
 {
-    public static final String TAG = TextEditorActivity.class.getSimpleName();
-    public static final String ACTION_EDIT_TEXT = "genonbeta.intent.action.EDIT_TEXT";
-    public static final String EXTRA_SUPPORT_APPLY = "extraSupportApply";
-    public static final String EXTRA_TEXT_INDEX = "extraText";
-    public static final String EXTRA_CLIPBOARD_ID = "clipboardId";
+    public static final String TAG = TextEditorActivity.class.getSimpleName(),
+            ACTION_EDIT_TEXT = "genonbeta.intent.action.EDIT_TEXT",
+            EXTRA_SUPPORT_APPLY = "extraSupportApply",
+            EXTRA_TEXT_INDEX = "extraText",
+            EXTRA_CLIPBOARD_ID = "clipboardId";
 
     public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
 
     private EditText mEditTextEditor;
-
-    private TextStreamObject mTextStreamObject;
+    private TextStreamObject mDbObject;
     private long mBackPressTime = 0;
 
     @Override
@@ -87,21 +86,19 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
             mEditTextEditor = findViewById(R.id.layout_text_editor_activity_text_text_box);
 
             if (getIntent().hasExtra(EXTRA_CLIPBOARD_ID)) {
-                mTextStreamObject = new TextStreamObject(getIntent().getLongExtra(EXTRA_CLIPBOARD_ID, -1));
+                mDbObject = new TextStreamObject(getIntent().getLongExtra(EXTRA_CLIPBOARD_ID, -1));
 
                 try {
-                    getDatabase().reconstruct(mTextStreamObject);
+                    getDatabase().reconstruct(mDbObject);
 
-                    mEditTextEditor
-                            .getText()
-                            .append(mTextStreamObject.text);
+                    mEditTextEditor.getText()
+                            .append(mDbObject.text);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    mTextStreamObject = null;
+                    mDbObject = null;
                 }
             } else if (getIntent().hasExtra(EXTRA_TEXT_INDEX))
-                mEditTextEditor
-                        .getText()
+                mEditTextEditor.getText()
                         .append(getIntent().getStringExtra(EXTRA_TEXT_INDEX));
         }
     }
@@ -112,8 +109,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == android.app.Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE
-                    && data != null
+            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
                     && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
                 String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
@@ -146,13 +142,19 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
     @Override
     public void onBackPressed()
     {
-        boolean hasObject = mTextStreamObject != null;
-        boolean hasEntry = mEditTextEditor.getText().length() > 0;
-        boolean hasSavedText = hasObject && mTextStreamObject.text != null && mTextStreamObject.text.length() > 0;
+        boolean hasObject = mDbObject != null;
+        boolean deletionNeeded = checkDeletionNeeded();
+        boolean saveNeeded = checkSaveNeeded();
 
-        if (!hasEntry || (hasSavedText && mTextStreamObject.text.equals(mEditTextEditor.getText().toString()))
-                || (System.currentTimeMillis() - mBackPressTime) < 3000)
+        if ((!saveNeeded && !deletionNeeded) || (System.currentTimeMillis() - mBackPressTime) < 3000)
             super.onBackPressed();
+        else if (deletionNeeded)
+            createSnackbar(R.string.mesg_deleteEmptiedText)
+                    .setAction(R.string.butn_delete, v -> {
+                        removeText();
+                        finish();
+                    })
+                    .show();
         else
             createSnackbar(hasObject ? R.string.mesg_clipboardUpdateNotice : R.string.mesg_textSaveNotice)
                     .setAction(hasObject ? R.string.butn_update : R.string.butn_save, v -> {
@@ -167,9 +169,12 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        boolean applySupported = getIntent() != null
-                && getIntent().hasExtra(EXTRA_SUPPORT_APPLY)
+        boolean applySupported = getIntent() != null && getIntent().hasExtra(EXTRA_SUPPORT_APPLY)
                 && getIntent().getBooleanExtra(EXTRA_SUPPORT_APPLY, false);
+
+        menu.findItem(R.id.menu_action_save)
+                .setVisible(!checkDeletionNeeded())
+                .setEnabled(checkSaveNeeded());
 
         menu.findItem(R.id.menu_action_done)
                 .setVisible(applySupported);
@@ -180,7 +185,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         menu.findItem(R.id.menu_action_share_trebleshot)
                 .setVisible(!applySupported);
 
-        menu.findItem(R.id.menu_action_remove).setVisible(mTextStreamObject != null);
+        menu.findItem(R.id.menu_action_remove).setVisible(mDbObject != null);
 
         menu.findItem(R.id.menu_action_show_as_qr_code).setEnabled(mEditTextEditor.length() > 0
                 && mEditTextEditor.length() <= 1200);
@@ -215,8 +220,8 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)));
         } else if (id == R.id.menu_action_share_trebleshot) {
             startActivityForResult(new Intent(TextEditorActivity.this, AddDeviceActivity.class)
-                    .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
-                            AddDeviceActivity.RequestType.RETURN_RESULT), REQUEST_CODE_CHOOSE_DEVICE);
+                    .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT),
+                    REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
@@ -249,16 +254,23 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         } else if (id == android.R.id.home) {
             onBackPressed();
         } else if (id == R.id.menu_action_remove) {
-            if (mTextStreamObject != null) {
-                getDatabase().remove(mTextStreamObject);
-                getDatabase().broadcast();
-            }
-
-            mTextStreamObject = null;
+            removeText();
         } else
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    protected boolean checkDeletionNeeded()
+    {
+        String editorText = mEditTextEditor.getText().toString();
+        return editorText.length() <= 0 && mDbObject != null && !editorText.equals(mDbObject.text);
+    }
+
+    protected boolean checkSaveNeeded()
+    {
+        String editorText = mEditTextEditor.getText().toString();
+        return editorText.length() > 0 && (mDbObject == null || !editorText.equals(mDbObject.text));
     }
 
     @Override
@@ -309,16 +321,24 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
                 .run(this);
     }
 
+    public void removeText() {
+        if (mDbObject != null) {
+            getDatabase().remove(mDbObject);
+            getDatabase().broadcast();
+            mDbObject = null;
+        }
+    }
+
     public void saveText()
     {
-        if (mTextStreamObject == null)
-            mTextStreamObject = new TextStreamObject(AppUtils.getUniqueNumber());
+        if (mDbObject == null)
+            mDbObject = new TextStreamObject(AppUtils.getUniqueNumber());
 
-        if (mTextStreamObject.date == 0)
-            mTextStreamObject.date = System.currentTimeMillis();
+        if (mDbObject.date == 0)
+            mDbObject.date = System.currentTimeMillis();
 
-        mTextStreamObject.text = mEditTextEditor.getText().toString();
-        getDatabase().publish(mTextStreamObject);
+        mDbObject.text = mEditTextEditor.getText().toString();
+        getDatabase().publish(mDbObject);
         getDatabase().broadcast();
     }
 }

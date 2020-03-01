@@ -126,8 +126,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                 public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
                 {
                     context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null
-                                    ? null
+                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null ? null
                                     : adapter.getPath().getUri()));
                 }
             }).show();
@@ -461,11 +460,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         try {
             FileHolder fileInfo = getAdapter().getItem(holder);
 
-            if (fileInfo.getmViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
+            if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-                // FIXME: 29.02.2020 There was a call for setItemSelected for files only. What was that?
-                // Maybe that FileExplorerFragment is expected to override it
             else if (fileInfo.file.isDirectory()) {
                 FileListFragment.this.goPath(fileInfo.file);
 
