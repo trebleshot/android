@@ -495,11 +495,13 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 return 0;
             else if (file.isDirectory()) {
                 switch (getType()) {
-                    case Mounted:
                     case Storage:
                         return R.drawable.ic_save_white_24dp;
                     case SaveLocation:
                         return R.drawable.ic_trebleshot_white_24dp_static;
+                    case Bookmarked:
+                    case Mounted:
+                        return R.drawable.ic_bookmark_white_24dp;
                     default:
                         return R.drawable.ic_folder_white_24dp;
                 }
