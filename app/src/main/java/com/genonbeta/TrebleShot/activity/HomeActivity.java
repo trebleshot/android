@@ -46,8 +46,10 @@ import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
@@ -78,16 +80,20 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
         setContentView(R.layout.activity_main);
 
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mHomeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_home_fragment);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
+
+        SharingPerformerMenuCallback menuCallback = new SharingPerformerMenuCallback(this, this);
+        PerformerMenu performerMenu = new PerformerMenu(this, menuCallback);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
                 R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+        performerMenu.setUp(mPerformerEngine);
 
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
         {
@@ -99,71 +105,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         });
 
         mNavigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG);
 
         if (UpdateUtils.hasNewVersion(this))
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
-
-        try (InputStream inputStream = openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)) {
-            File logFile = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            int len;
-            byte[] buffer = new byte[8196];
-            while ((len = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, len);
-                outputStream.flush();
-            }
-
-            String report = outputStream.toString();
-            final TextStreamObject streamObject = new TextStreamObject();
-
-            streamObject.text = report;
-            streamObject.date = logFile.lastModified();
-            streamObject.id = AppUtils.getUniqueNumber();
-
-            logFile.delete();
-
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-
-            dialogBuilder.setTitle(R.string.text_crashReport);
-            dialogBuilder.setMessage(R.string.text_crashInfo);
-            dialogBuilder.setNegativeButton(R.string.butn_dismiss, null);
-            dialogBuilder.setNeutralButton(android.R.string.copy, (dialog, which) -> {
-                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(
-                        Service.CLIPBOARD_SERVICE);
-
-                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.text_crashReport),
-                        outputStream.toString()));
-
-                Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
-            });
-
-            dialogBuilder.setPositiveButton(R.string.butn_save, (dialog, which) -> {
-                getDatabase().insert(streamObject);
-                Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show();
-            });
-
-            dialogBuilder.show();
-        } catch (IOException ignored) {
-
-        }
-
-        if (!AppUtils.isLatestChangeLogSeen(this)) {
-            new AlertDialog.Builder(this)
-                    .setMessage(R.string.mesg_versionUpdatedChangelog)
-                    .setPositiveButton(R.string.butn_yes, (dialog, which) -> {
-                        AppUtils.publishLatestChangelogSeen(HomeActivity.this);
-                        startActivity(new Intent(HomeActivity.this, ChangelogActivity.class));
-                    })
-                    .setNeutralButton(R.string.butn_never, (dialog, which) -> getDefaultPreferences().edit()
-                            .putBoolean("show_changelog_dialog", false)
-                            .apply())
-                    .setNegativeButton(R.string.butn_no, (dialog, which) -> {
-                        AppUtils.publishLatestChangelogSeen(HomeActivity.this);
-                        Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected,
-                                Toast.LENGTH_SHORT).show();
-                    })
-                    .show();
-        }
 
         if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
             MenuItem donateItem = mNavigationView.getMenu()
@@ -173,7 +118,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
                 donateItem.setVisible(true);
         }
 
-        mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG);
+        checkAndShowCrashReport();
+        checkAndShowChangelog();
     }
 
     @Override
@@ -276,6 +222,74 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         }
 
         mChosenMenuItemId = 0;
+    }
+
+    private void checkAndShowCrashReport()
+    {
+        try (InputStream inputStream = openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)) {
+            File logFile = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[8196];
+            while ((len = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
+            }
+
+            String report = outputStream.toString();
+            final TextStreamObject streamObject = new TextStreamObject();
+
+            streamObject.text = report;
+            streamObject.date = logFile.lastModified();
+            streamObject.id = AppUtils.getUniqueNumber();
+
+            logFile.delete();
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+
+            dialogBuilder.setTitle(R.string.text_crashReport);
+            dialogBuilder.setMessage(R.string.text_crashInfo);
+            dialogBuilder.setNegativeButton(R.string.butn_dismiss, null);
+            dialogBuilder.setNeutralButton(android.R.string.copy, (dialog, which) -> {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(
+                        Service.CLIPBOARD_SERVICE);
+
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.text_crashReport),
+                        outputStream.toString()));
+
+                Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+            });
+
+            dialogBuilder.setPositiveButton(R.string.butn_save, (dialog, which) -> {
+                getDatabase().insert(streamObject);
+                Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show();
+            });
+
+            dialogBuilder.show();
+        } catch (IOException ignored) {
+
+        }
+    }
+
+    private void checkAndShowChangelog()
+    {
+        if (!AppUtils.isLatestChangeLogSeen(this)) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.mesg_versionUpdatedChangelog)
+                    .setPositiveButton(R.string.butn_yes, (dialog, which) -> {
+                        AppUtils.publishLatestChangelogSeen(HomeActivity.this);
+                        startActivity(new Intent(HomeActivity.this, ChangelogActivity.class));
+                    })
+                    .setNeutralButton(R.string.butn_never, (dialog, which) -> getDefaultPreferences().edit()
+                            .putBoolean("show_changelog_dialog", false)
+                            .apply())
+                    .setNegativeButton(R.string.butn_no, (dialog, which) -> {
+                        AppUtils.publishLatestChangelogSeen(HomeActivity.this);
+                        Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected,
+                                Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+        }
     }
 
     private void createHeaderView()

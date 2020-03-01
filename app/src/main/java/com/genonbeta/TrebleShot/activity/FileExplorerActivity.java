@@ -79,10 +79,8 @@ public class FileExplorerActivity extends Activity implements PerformerEnginePro
     @Override
     public void onBackPressed()
     {
-        if (!mFragmentFileExplorer.onBackPressed()) {
-            // TODO: 22.02.2020 Close active selection processes
-                super.onBackPressed();
-        }
+        if (!mFragmentFileExplorer.onBackPressed())
+            super.onBackPressed();
     }
 
     public void checkRequestedPath(Intent intent)

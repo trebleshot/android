@@ -267,6 +267,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     text1.setEnabled(enabled);
                     text2.setEnabled(enabled);
                     image.setAlpha(enabled ? 1f : 0.5f);
+                    thumbnail.setAlpha(enabled ? 1f : 0.5f);
                 }
 
                 if (!mShowThumbnails || !object.loadThumbnail(getContext(), thumbnail)) {
