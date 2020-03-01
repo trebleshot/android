@@ -40,6 +40,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.util.listing.Merger;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -91,9 +92,9 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     }
 
     @Override
-    protected PreloadedGroup onGenerateRepresentative(String representativeText)
+    protected PreloadedGroup onGenerateRepresentative(String text, Merger<PreloadedGroup> merger)
     {
-        return new PreloadedGroup(representativeText);
+        return new PreloadedGroup(text);
     }
 
     public SQLQuery.Select getSelect()

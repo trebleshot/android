@@ -35,6 +35,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.util.listing.Merger;
 
 /**
  * created by: Veli
@@ -61,8 +62,8 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
-                ? R.layout.list_video_grid
-                : R.layout.list_video, parent, false)) : createDefaultViews(parent, viewType, false);
+                ? R.layout.list_video_grid : R.layout.list_video, parent, false))
+                : createDefaultViews(parent, viewType, false);
     }
 
     @Override
@@ -129,9 +130,9 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     }
 
     @Override
-    protected VideoHolder onGenerateRepresentative(String representativeText)
+    protected VideoHolder onGenerateRepresentative(String text, Merger<VideoHolder> merger)
     {
-        return new VideoHolder(representativeText);
+        return new VideoHolder(text);
     }
 
     @Override

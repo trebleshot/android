@@ -178,7 +178,7 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
     }
 
     @Override
-    public int getViewType()
+    public int getmViewType()
     {
         return viewType;
     }
@@ -207,9 +207,9 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
     }
 
     @Override
-    public void setRepresentativeText(CharSequence representativeText)
+    public void setRepresentativeText(CharSequence mRepresentativeText)
     {
-        this.representativeText = String.valueOf(representativeText);
+        this.representativeText = String.valueOf(mRepresentativeText);
     }
 
     @Override

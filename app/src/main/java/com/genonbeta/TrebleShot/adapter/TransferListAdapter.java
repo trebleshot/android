@@ -113,8 +113,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
 
         Map<String, TransferFolder> folders = new ArrayMap<>();
         ShowingAssignee assignee = getAssignee();
-        List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(getContext(),
-                getGroupId(), null);
+        List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(getContext(), getGroupId(), null);
         ShowingAssignee[] assigneeArray = new ShowingAssignee[assignees.size()];
 
         assignees.toArray(assigneeArray);
@@ -247,9 +246,9 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    protected GenericTransferItem onGenerateRepresentative(String representativeText)
+    protected GenericTransferItem onGenerateRepresentative(String text, Merger<AbstractGenericItem> merger)
     {
-        return new GenericTransferItem(representativeText);
+        return new GenericTransferItem(text);
     }
 
     @Override
@@ -264,7 +263,8 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    public int compareItems(int sortingCriteria, int sortingOrder, AbstractGenericItem objectOne, AbstractGenericItem objectTwo)
+    public int compareItems(int sortingCriteria, int sortingOrder, AbstractGenericItem objectOne,
+                            AbstractGenericItem objectTwo)
     {
         //if (sortingCriteria == MODE_SORT_BY_DEFAULT)
         //    return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
@@ -289,8 +289,8 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         return getAssignee() == null ? null : getAssignee().deviceId;
     }
 
-    public void mergeTransferInfo(DetailsTransferFolder details, GenericTransferItem object,
-                                  boolean isIncoming, @Nullable TransferFolder folder)
+    public void mergeTransferInfo(DetailsTransferFolder details, GenericTransferItem object, boolean isIncoming,
+                                  @Nullable TransferFolder folder)
     {
         if (isIncoming) {
             mergeTransferInfo(details, object, object.getFlag(), true, folder);
@@ -310,9 +310,8 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
     }
 
-    public void mergeTransferInfo(DetailsTransferFolder details, TransferObject object,
-                                  TransferObject.Flag flag, boolean isIncoming,
-                                  @Nullable TransferFolder folder)
+    public void mergeTransferInfo(DetailsTransferFolder details, TransferObject object, TransferObject.Flag flag,
+                                  boolean isIncoming, @Nullable TransferFolder folder)
     {
         details.bytesTotal += object.size;
         details.numberOfTotal++;
@@ -399,7 +398,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    public String getRepresentativeText(Merger merger)
+    public String getRepresentativeText(Merger<? extends AbstractGenericItem> merger)
     {
         if (merger instanceof GroupEditableTransferObjectMerger) {
             switch (((GroupEditableTransferObjectMerger) merger).getType()) {
@@ -587,7 +586,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
 
         @Override
-        public int getViewType()
+        public int getmViewType()
         {
             return this.viewType;
         }
@@ -599,9 +598,9 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
 
         @Override
-        public void setRepresentativeText(CharSequence representativeText)
+        public void setRepresentativeText(CharSequence mRepresentativeText)
         {
-            this.representativeText = String.valueOf(representativeText);
+            this.representativeText = String.valueOf(mRepresentativeText);
         }
 
         @Override
@@ -642,8 +641,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
 
         GenericTransferItem(String representativeText)
         {
-            this.viewType = VIEW_TYPE_REPRESENTATIVE;
-            setRepresentativeText(representativeText);
+            super(representativeText);
         }
 
         @Override

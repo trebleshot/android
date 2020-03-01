@@ -33,16 +33,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.util.listing.Merger;
 
 import java.io.File;
-import java.util.*;
-
-import static com.genonbeta.TrebleShot.activity.ShareActivity.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationListAdapter extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder,
         GroupEditableListAdapter.GroupViewHolder>
@@ -76,9 +75,9 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     }
 
     @Override
-    protected PackageHolder onGenerateRepresentative(String representativeText)
+    protected PackageHolder onGenerateRepresentative(String text, Merger<PackageHolder> merger)
     {
-        return new PackageHolder(VIEW_TYPE_REPRESENTATIVE, representativeText);
+        return new PackageHolder(VIEW_TYPE_REPRESENTATIVE, text);
     }
 
     @NonNull
@@ -144,7 +143,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
         public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName,
                              File executableFile)
         {
-            super(appInfo.packageName.hashCode(), friendlyName, friendlyName + "_" + version + ".apk",
+            initialize(appInfo.packageName.hashCode(), friendlyName, friendlyName + "_" + version + FORMAT,
                     MIME_TYPE, executableFile.lastModified(), executableFile.length(), Uri.fromFile(executableFile));
 
             this.appInfo = appInfo;

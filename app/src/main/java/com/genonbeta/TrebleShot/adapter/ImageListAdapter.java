@@ -33,6 +33,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.util.listing.Merger;
 
 /**
  * created by: Veli
@@ -127,9 +128,9 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     }
 
     @Override
-    protected ImageHolder onGenerateRepresentative(String representativeText)
+    protected ImageHolder onGenerateRepresentative(String text, Merger<ImageHolder> merger)
     {
-        return new ImageHolder(representativeText);
+        return new ImageHolder(text);
     }
 
     @Override

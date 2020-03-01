@@ -63,7 +63,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     abstract protected void onLoad(GroupLister<T> lister);
 
-    abstract protected T onGenerateRepresentative(String representativeText);
+    abstract protected T onGenerateRepresentative(String text, Merger<T> merger);
 
     @Override
     public List<T> onLoad()
@@ -79,15 +79,15 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             for (ComparableMerger<T> thisMerger : groupLister.getList()) {
                 Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
 
-                T generated = onGenerateRepresentative(getRepresentativeText(thisMerger));
+                T generated = onGenerateRepresentative(getRepresentativeText(thisMerger), thisMerger);
                 T firstEditable = thisMerger.getBelongings().get(0);
 
-                if (generated != null)
+                if (generated != null) {
                     loadedList.add(generated);
-
-                generated.setSize(thisMerger.getBelongings().size());
-                generated.setDate(firstEditable.getComparableDate());
-                generated.setId(~generated.getRepresentativeText().hashCode());
+                    generated.setSize(thisMerger.getBelongings().size());
+                    generated.setDate(firstEditable.getComparableDate());
+                    generated.setId(~generated.getRepresentativeText().hashCode());
+                }
 
                 loadedList.addAll(thisMerger.getBelongings());
             }
@@ -128,7 +128,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
     public int getItemViewType(int position)
     {
         try {
-            return getItem(position).getViewType();
+            return getItem(position).getmViewType();
         } catch (NotReadyException e) {
             e.printStackTrace();
             return VIEW_TYPE_DEFAULT;
@@ -160,13 +160,13 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     public interface GroupEditable extends Editable
     {
-        int getViewType();
+        int getmViewType();
 
         int getRequestCode();
 
         String getRepresentativeText();
 
-        void setRepresentativeText(CharSequence representativeText);
+        void setRepresentativeText(CharSequence mRepresentativeText);
 
         boolean isGroupRepresentative();
 
@@ -177,8 +177,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     abstract public static class GroupShareable extends Shareable implements GroupEditable
     {
-        public int viewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
-        public String representativeText;
+        private int mViewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
+        private String mRepresentativeText;
 
         public GroupShareable()
         {
@@ -187,14 +187,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
         public GroupShareable(int viewType, String representativeText)
         {
-            this.viewType = viewType;
-            this.representativeText = representativeText;
-        }
-
-        public GroupShareable(long id, String friendlyName, String fileName, String mimeType, long date, long size,
-                              Uri uri)
-        {
-            super(id, friendlyName, fileName, mimeType, date, size, uri);
+            mViewType = viewType;
+            mRepresentativeText = representativeText;
         }
 
         @Override
@@ -204,26 +198,26 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         }
 
         @Override
-        public int getViewType()
+        public int getmViewType()
         {
-            return viewType;
+            return mViewType;
         }
 
         @Override
         public String getRepresentativeText()
         {
-            return representativeText;
+            return mRepresentativeText;
         }
 
         @Override
-        public void setRepresentativeText(CharSequence representativeText)
+        public void setRepresentativeText(CharSequence text)
         {
-            this.representativeText = String.valueOf(representativeText);
+            mRepresentativeText = String.valueOf(text);
         }
 
         public boolean isGroupRepresentative()
         {
-            return representativeText != null;
+            return mRepresentativeText != null;
         }
 
         @Override
@@ -248,7 +242,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         public boolean searchMatches(String searchWord)
         {
             if (isGroupRepresentative())
-                return TextUtils.searchWord(representativeText, searchWord);
+                return TextUtils.searchWord(mRepresentativeText, searchWord);
 
             return super.searchMatches(searchWord);
         }

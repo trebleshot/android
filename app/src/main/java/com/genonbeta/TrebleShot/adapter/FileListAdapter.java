@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -100,8 +99,6 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 }
             }
         } else {
-            List<File> referencedDirectoryList = new ArrayList<>();
-
             {
                 FileHolder saveDir = new FileHolder(getContext(), FileUtils.getApplicationDirectory(getContext()));
                 saveDir.type = FileHolder.Type.SaveLocation;
@@ -117,6 +114,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 }
             }
 
+            List<File> referencedDirectoryList = new ArrayList<>();
             if (Build.VERSION.SDK_INT >= 21)
                 referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
             else if (Build.VERSION.SDK_INT >= 19)
@@ -196,8 +194,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                         break;
 
                     try {
-                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), object,
-                                group, false);
+                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, group,
+                                false);
 
                         if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
                             pickedRecentFiles.add(documentFile);
@@ -218,12 +216,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     }
 
     @Override
-    protected FileHolder onGenerateRepresentative(String representativeText)
+    protected FileHolder onGenerateRepresentative(String text, Merger<FileHolder> merger)
     {
-        FileHolder holder = new FileHolder();
-        holder.setRepresentativeText(representativeText);
-
-        return holder;
+        return new FileHolder(VIEW_TYPE_REPRESENTATIVE, text);
     }
 
     @Override
@@ -241,8 +236,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
-                R.layout.list_file, parent, false)) : createDefaultViews(parent, viewType, false);
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_file, parent,
+                false)) : createDefaultViews(parent, viewType, false);
     }
 
     @Override
@@ -339,21 +334,22 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     public String getRepresentativeText(Merger<? extends FileHolder> merger)
     {
         if (merger instanceof FileHolderMerger) {
-            switch (((FileHolderMerger) merger).getType()) {
+            switch (((FileHolderMerger) merger).type) {
                 case Storage:
-                case Mounted:
                     return getContext().getString(R.string.text_storage);
-                case Public:
-                case Bookmarked:
+                case PublicFolder:
                     return getContext().getString(R.string.text_shortcuts);
                 case Folder:
                     return getContext().getString(R.string.text_folder);
-                case Recent:
-                    return getContext().getString(R.string.text_recentFiles);
-                case Pending:
+                case PartFile:
                     return getContext().getString(R.string.text_pendingTransfers);
-                default:
+                case RecentFile:
+                    return getContext().getString(R.string.text_recentFiles);
+                case File:
                     return getContext().getString(R.string.text_file);
+                case Dummy:
+                default:
+                    return getContext().getString(R.string.text_unknown);
             }
         }
 
@@ -374,7 +370,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
     public static class FileHolder extends GroupEditableListAdapter.GroupShareable implements DatabaseObject<Object>
     {
-        public static final String TAG = FileHolder.class.getSimpleName();
+        @Nullable
         public DocumentFile file;
         public TransferObject transferObject = null;
         public int requestCode;
@@ -382,20 +378,23 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
         public FileHolder()
         {
-            Log.d(TAG, "FileHolder: Empty constructor called");
+            super();
+        }
+
+        public FileHolder(int viewType, String representativeText)
+        {
+            super(viewType, representativeText);
         }
 
         public FileHolder(Context context, DocumentFile file)
         {
-            super(0, file.getName(), file.getName(), file.getType(), file.lastModified(), file.length(),
-                    file.getUri());
-            this.file = file;
+            initialize(file);
             calculate(context);
         }
 
         protected void calculate(Context context)
         {
-            if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
+            if (file != null && AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
                 type = Type.Pending;
                 try {
                     Kuick kuick = AppUtils.getKuick(context);
@@ -414,11 +413,18 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             }
         }
 
+        protected void initialize(DocumentFile file)
+        {
+            initialize(0, file.getName(), file.getName(), file.getType(), file.lastModified(), file.length(),
+                    file.getUri());
+            this.file = file;
+        }
+
         @Override
         public long getId()
         {
-            if (super.getId() == 0)
-                setId(String.format("%s_%s", file.getUri().toString(), getClass().getName()).hashCode());
+            if (super.getId() == 0 && file != null)
+                setId(String.format("%s_%s", file.getUri().toString(), getType()).hashCode());
 
             return super.getId();
         }
@@ -433,7 +439,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 case Bookmarked:
                 case Folder:
                 case Public:
-                    if (file.isDirectory()) {
+                    if (file != null && file.isDirectory()) {
                         int itemSize = file.listFiles().length;
                         return context.getResources().getQuantityString(R.plurals.text_items, itemSize, itemSize);
                     } else
@@ -452,11 +458,10 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             }
         }
 
-
         public Type getType()
         {
             if (file == null)
-                Log.d(FileHolder.class.getSimpleName(), "getType: It is empty dude: " + friendlyName);
+                type = Type.Dummy;
 
             return type == null ? (file.isDirectory() ? Type.Folder : Type.File) : type;
         }
@@ -486,8 +491,10 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
         @DrawableRes
         public int getIconRes()
         {
-            if (file.isFile()) {
-                switch (type) {
+            if (file == null)
+                return 0;
+            else if (file.isDirectory()) {
+                switch (getType()) {
                     case Mounted:
                     case Storage:
                         return R.drawable.ic_save_white_24dp;
@@ -497,7 +504,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                         return R.drawable.ic_folder_white_24dp;
                 }
             } else {
-                if (Type.Pending.equals(type) && transferObject == null)
+                if (Type.Pending.equals(getType()) && transferObject == null)
                     return R.drawable.ic_block_white_24dp;
 
                 return MimeIconUtils.loadMimeIcon(mimeType);
@@ -506,7 +513,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
         public boolean loadThumbnail(Context context, ImageView imageView)
         {
-            if (file.isDirectory() || Type.Pending.equals(type)
+            if (file == null || file.isDirectory() || Type.Pending.equals(getType())
                     || (!mimeType.startsWith("image/") && !mimeType.startsWith("video/")))
                 return false;
 
@@ -523,16 +530,17 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
         @Override
         public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
         {
-            friendlyName = item.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE);
             uri = Uri.parse(item.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH));
             type = uri.toString().startsWith("file") ? Type.Bookmarked : Type.Mounted;
 
             try {
-                file = DocumentFile.fromUri(kuick.getContext(), uri, type.equals(Type.Mounted));
+                initialize(FileUtils.fromUri(kuick.getContext(), uri));
                 calculate(kuick.getContext());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
+            friendlyName = item.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE);
         }
 
         @Override
@@ -553,6 +561,16 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
         }
 
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            if (file == null || Type.Mounted.equals(getType()) || Type.Public.equals(getType())
+                    || Type.Recent.equals(getType()))
+                return false;
+
+            return super.setSelectableSelected(selected);
+        }
+
         public enum Type
         {
             Storage,
@@ -563,37 +581,68 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             Recent,
             Pending,
             Folder,
-            File
+            File,
+            Dummy
         }
     }
 
-    public static class FileHolderMerger extends ComparableMerger<FileHolder>
+    private static class FileHolderMerger extends ComparableMerger<FileHolder>
     {
-        private FileHolder.Type mType;
+        protected Type type;
 
         public FileHolderMerger(FileHolder holder)
         {
-            mType = holder.getType();
+            switch (holder.getType()) {
+                case Mounted:
+                case Storage:
+                    type = Type.Storage;
+                    break;
+                case Public:
+                case Bookmarked:
+                    type = Type.PublicFolder;
+                    break;
+                case Pending:
+                    type = Type.PartFile;
+                    break;
+                case Recent:
+                    type = Type.RecentFile;
+                    break;
+                case Folder:
+                case SaveLocation:
+                    type = Type.Folder;
+                    break;
+                case File:
+                    type = Type.File;
+                case Dummy:
+                default:
+                    type = Type.Dummy;
+            }
         }
 
         @Override
         public boolean equals(Object obj)
         {
-            return obj instanceof FileHolderMerger && ((FileHolderMerger) obj).mType.equals(mType);
-        }
-
-        public FileHolder.Type getType()
-        {
-            return mType;
+            return obj instanceof FileHolderMerger && ((FileHolderMerger) obj).type.equals(type);
         }
 
         @Override
         public int compareTo(@NonNull ComparableMerger<FileHolder> o)
         {
             if (o instanceof FileHolderMerger)
-                return MathUtils.compare(((FileHolderMerger) o).getType().ordinal(), getType().ordinal());
+                return MathUtils.compare(((FileHolderMerger) o).type.ordinal(), type.ordinal());
 
             return 0;
+        }
+
+        public enum Type
+        {
+            Storage,
+            Folder,
+            PublicFolder,
+            RecentFile,
+            PartFile,
+            File,
+            Dummy
         }
     }
 }

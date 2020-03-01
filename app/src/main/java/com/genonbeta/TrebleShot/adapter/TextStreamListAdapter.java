@@ -29,6 +29,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.util.listing.Merger;
 
 /**
  * created by: Veli
@@ -55,17 +56,17 @@ public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamOb
     }
 
     @Override
-    protected TextStreamObject onGenerateRepresentative(String representativeText)
+    protected TextStreamObject onGenerateRepresentative(String text, Merger<TextStreamObject> merger)
     {
-        return new TextStreamObject(representativeText);
+        return new TextStreamObject(text);
     }
 
     @NonNull
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
-                R.layout.list_text_stream, parent, false)) : createDefaultViews(parent, viewType, false);
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_text_stream,
+                parent, false)) : createDefaultViews(parent, viewType, false);
     }
 
     @Override

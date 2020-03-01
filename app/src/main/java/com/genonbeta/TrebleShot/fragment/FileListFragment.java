@@ -271,14 +271,15 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
             if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz, true));
+                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
+                        true));
                 clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                     final FileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
-                    boolean isFile = fileHolder.file.isFile();
+                    boolean isFile = FileHolder.Type.File.equals(fileHolder.getType());
                     boolean isMounted = FileHolder.Type.Mounted.equals(fileHolder.getType());
-                    boolean isBookmarked = FileHolder.Type.Mounted.equals(fileHolder.getType());
-                    boolean canWrite = fileHolder.file.canWrite();
-                    boolean canRead = fileHolder.file.canRead();
+                    boolean isBookmarked = FileHolder.Type.Bookmarked.equals(fileHolder.getType());
+                    boolean canWrite = fileHolder.file != null && fileHolder.file.canWrite();
+                    boolean canRead = fileHolder.file != null && fileHolder.file.canRead();
 
                     PopupMenu popupMenu = new PopupMenu(getContext(), v);
                     Menu menuItself = popupMenu.getMenu();
@@ -291,7 +292,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                     menuItself.findItem(R.id.action_mode_file_show).setVisible(FileHolder.Type.Recent.equals(
                             fileHolder.getType()));
                     menuItself.findItem(R.id.action_mode_file_change_save_path).setVisible(
-                            FileHolder.Type.SaveLocation.equals(fileHolder.getType()));
+                            FileHolder.Type.SaveLocation.equals(fileHolder.getType())
+                                    || (fileHolder.file != null && FileUtils.getApplicationDirectory(getContext())
+                            .equals(fileHolder.file)));
                     menuItself.findItem(R.id.action_mode_file_eject_directory).setVisible(isMounted);
                     menuItself.findItem(R.id.action_mode_file_toggle_shortcut).setVisible(!isFile && !isMounted)
                             .setTitle(isBookmarked ? R.string.butn_removeShortcut : R.string.butn_addShortcut);
@@ -458,7 +461,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         try {
             FileHolder fileInfo = getAdapter().getItem(holder);
 
-            if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
+            if (fileInfo.getmViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
                 // FIXME: 29.02.2020 There was a call for setItemSelected for files only. What was that?
@@ -484,22 +487,6 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         }
 
         return false;
-    }
-
-    @Override
-    public boolean performLayoutLongClick(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            FileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
-
-            // FIXME: 23.02.2020 Ensure this doesn't have any problem
-            if (fileHolder.file.isDirectory() && setItemSelected(holder))
-                return true;
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-
-        return super.performLayoutLongClick(holder);
     }
 
     @Override

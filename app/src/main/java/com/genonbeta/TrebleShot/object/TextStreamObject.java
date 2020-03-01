@@ -52,7 +52,7 @@ public class TextStreamObject extends GroupEditableListAdapter.GroupShareable im
 
     public TextStreamObject(long id, String index)
     {
-        super(id, index, index, "text/plain", System.currentTimeMillis(), index.length(), null);
+        initialize(id, index, index, "text/plain", System.currentTimeMillis(), index.length(), null);
         this.text = index;
     }
 

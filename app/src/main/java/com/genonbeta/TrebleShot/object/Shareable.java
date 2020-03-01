@@ -42,17 +42,6 @@ abstract public class Shareable implements Editable
     {
     }
 
-    public Shareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
-    {
-        this.id = id;
-        this.friendlyName = friendlyName;
-        this.fileName = fileName;
-        this.mimeType = mimeType;
-        this.date = date;
-        this.size = size;
-        this.uri = uri;
-    }
-
     @Override
     public boolean applyFilter(String[] filteringKeywords)
     {
@@ -67,6 +56,17 @@ abstract public class Shareable implements Editable
     public boolean comparisonSupported()
     {
         return true;
+    }
+
+    protected void initialize(long id, String friendlyName, String fileName, String mimeType, long date, long size,
+                              Uri uri) {
+        this.id = id;
+        this.friendlyName = friendlyName;
+        this.fileName = fileName;
+        this.mimeType = mimeType;
+        this.date = date;
+        this.size = size;
+        this.uri = uri;
     }
 
     @Override

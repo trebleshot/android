@@ -33,6 +33,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.util.listing.Merger;
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.io.File;
@@ -112,9 +113,9 @@ public class AudioListAdapter
     }
 
     @Override
-    protected AudioItemHolder onGenerateRepresentative(String representativeText)
+    protected AudioItemHolder onGenerateRepresentative(String text, Merger<AudioItemHolder> merger)
     {
-        return new AudioItemHolder(representativeText);
+        return new AudioItemHolder(text);
     }
 
     @NonNull
@@ -238,7 +239,7 @@ public class AudioListAdapter
         public AudioItemHolder(long id, String displayName, String artist, String song, String folder, String mimeType,
                                int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
         {
-            super(id, song + " - " + artist, displayName, mimeType, date, size, uri);
+            initialize(id, song + " - " + artist, displayName, mimeType, date, size, uri);
 
             this.artist = artist;
             this.song = song;
