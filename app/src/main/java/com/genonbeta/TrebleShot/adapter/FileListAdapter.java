@@ -70,7 +70,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     private boolean mShowDirectories = true;
     private boolean mShowFiles = true;
     private boolean mShowThumbnails = true;
-    private String mFileMatch;
+    private String mSearchWord;
     private DocumentFile mPath;
 
     public FileListAdapter(Context context)
@@ -91,11 +91,10 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
             if (fileIndex != null && fileIndex.length > 0) {
                 for (DocumentFile file : fileIndex) {
-                    if ((mFileMatch != null && !file.getName().matches(mFileMatch)))
+                    if ((mSearchWord != null && !file.getName().matches(mSearchWord)))
                         continue;
 
-                    if ((mShowDirectories && file.isDirectory() || (mShowFiles && file.isFile())))
-                        lister.offerObliged(this, new FileHolder(getContext(), file));
+                    lister.offerObliged(this, new FileHolder(getContext(), file));
                 }
             }
         } else {
@@ -249,6 +248,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
             if (!holder.tryBinding(object)) {
                 final View parentView = holder.itemView;
+                boolean lookAltered = !mShowFiles || !mShowDirectories;
 
                 ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
@@ -259,6 +259,15 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
                 text1.setText(object.friendlyName);
                 text2.setText(object.getInfo(getContext()));
+
+                if (lookAltered) {
+                    boolean enabled = object.file == null || (mShowFiles && object.file.isFile())
+                            || (mShowDirectories && object.file.isDirectory());
+
+                    text1.setEnabled(enabled);
+                    text2.setEnabled(enabled);
+                    image.setAlpha(enabled ? 1f : 0.5f);
+                }
 
                 if (!mShowThumbnails || !object.loadThumbnail(getContext(), thumbnail)) {
                     image.setImageResource(object.getIconRes());
@@ -366,7 +375,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     {
         mShowDirectories = showDirectories;
         mShowFiles = showFiles;
-        mFileMatch = fileMatch;
+        mSearchWord = fileMatch;
     }
 
     public static class FileHolder extends GroupEditableListAdapter.GroupShareable implements DatabaseObject<Object>
@@ -624,6 +633,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     break;
                 case File:
                     type = Type.File;
+                    break;
                 case Dummy:
                 default:
                     type = Type.Dummy;
