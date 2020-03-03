@@ -86,13 +86,12 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                     final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getKuick(activity),
                             Integer.class, client -> {
-                                connectionResult.pingTime = -1;
-
                                 try {
-                                    final long startTime = System.currentTimeMillis();
+                                    long startTime = System.nanoTime();
                                     CoolSocket.ActiveConnection connection = client.connectWithHandshake(
                                             connectionResult.connection, true);
-                                    connectionResult.pingTime = (int) (System.currentTimeMillis() - startTime);
+                                    connectionResult.pingTime = System.nanoTime() - startTime;
+                                    connectionResult.successful = true;
 
                                     connection.getSocket().close();
                                 } catch (Exception e) {
@@ -109,10 +108,10 @@ public class EstablishConnectionDialog extends ProgressDialog
                 dismiss();
 
                 Comparator<ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {
-                    if (resultFirst.pingTime < 0 || resultLast.pingTime < 0)
-                        return MathUtils.compare(resultFirst.pingTime, resultLast.pingTime);
+                    // make sure we are not comparing unsuccessful attempts with their pingTime values.
+                    if (resultFirst.successful != resultLast.successful)
+                        return resultFirst.successful ? 1 : -1;
 
-                    // reverse: the smaller is the fastest
                     return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime);
                 };
 
@@ -156,7 +155,8 @@ public class EstablishConnectionDialog extends ProgressDialog
     public static class ConnectionResult
     {
         public DeviceConnection connection;
-        public int pingTime = -1;
+        public long pingTime = 0; // nano
+        boolean successful = false;
 
         public ConnectionResult(DeviceConnection connection)
         {

@@ -612,7 +612,6 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
         public FileHolderMerger(FileHolder holder)
         {
-            //
             switch (holder.getType()) {
                 case Mounted:
                 case Storage:

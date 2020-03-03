@@ -34,9 +34,11 @@ import com.genonbeta.TrebleShot.util.TextUtils;
 
 import java.util.List;
 
+import static com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog.*;
+
 public class ConnectionTestDialog extends AlertDialog.Builder
 {
-    final private List<EstablishConnectionDialog.ConnectionResult> mConnections;
+    final private List<ConnectionResult> mConnections;
 
     @ColorInt
     private int mActiveColor;
@@ -45,7 +47,7 @@ public class ConnectionTestDialog extends AlertDialog.Builder
     private int mPassiveColor;
 
     public ConnectionTestDialog(Context context, NetworkDevice device,
-                                List<EstablishConnectionDialog.ConnectionResult> resultList)
+                                List<ConnectionResult> resultList)
     {
         super(context);
 
@@ -89,21 +91,19 @@ public class ConnectionTestDialog extends AlertDialog.Builder
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent,
                         false);
 
-            EstablishConnectionDialog.ConnectionResult address = (EstablishConnectionDialog.ConnectionResult) getItem(
-                    position);
+            ConnectionResult result = (ConnectionResult) getItem(position);
 
             TextView textView1 = convertView.findViewById(R.id.pending_available_interface_text1);
             TextView textView2 = convertView.findViewById(R.id.pending_available_interface_text2);
             TextView textView3 = convertView.findViewById(R.id.pending_available_interface_text3);
 
-            boolean accessible = address.pingTime >= 0;
+            textView1.setTextColor(result.successful ? mActiveColor : mPassiveColor);
+            textView1.setText(TextUtils.getAdapterName(getContext(), result.connection));
+            textView2.setText(result.connection.ipAddress);
 
-            textView1.setTextColor(accessible ? mActiveColor : mPassiveColor);
-            textView1.setText(TextUtils.getAdapterName(getContext(), address.connection));
-            textView2.setText(address.connection.ipAddress);
-
-            if (accessible)
-                textView3.setText(getContext().getString(R.string.text_textMillisecond, address.pingTime));
+            if (result.successful)
+                textView3.setText(getContext().getString(R.string.text_textMillisecond,
+                        1e6 / result.pingTime));
             else
                 textView3.setText(R.string.text_error);
 

@@ -184,7 +184,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                         byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
 
                         while (receivedBytes < updateSize) {
-                            long currentTime = System.currentTimeMillis();
+                            long currentTime = System.nanoTime();
 
                             if ((len = inputStream.read(buffer)) > 0) {
                                 outputStream.write(buffer, 0, len);
@@ -194,7 +194,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                                 lastRead = currentTime;
                             }
 
-                            if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT)
+                            if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6)
                                 throw new TimeoutException("Did not read for 5secs");
                         }
 

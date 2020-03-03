@@ -143,6 +143,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
+            getListView().smoothScrollBy(0, 30);
+
             final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
             final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 

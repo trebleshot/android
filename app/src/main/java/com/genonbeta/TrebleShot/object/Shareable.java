@@ -46,7 +46,7 @@ abstract public class Shareable implements Editable
     public boolean applyFilter(String[] filteringKeywords)
     {
         for (String keyword : filteringKeywords)
-            if (friendlyName != null && friendlyName.toLowerCase().contains(keyword.toLowerCase()))
+            if (TextUtils.searchWord(friendlyName, keyword))
                 return true;
 
         return false;
@@ -59,7 +59,8 @@ abstract public class Shareable implements Editable
     }
 
     protected void initialize(long id, String friendlyName, String fileName, String mimeType, long date, long size,
-                              Uri uri) {
+                              Uri uri)
+    {
         this.id = id;
         this.friendlyName = friendlyName;
         this.fileName = fileName;
@@ -115,11 +116,6 @@ abstract public class Shareable implements Editable
     public boolean equals(Object obj)
     {
         return obj instanceof Shareable ? ((Shareable) obj).uri.equals(uri) : super.equals(obj);
-    }
-
-    public boolean searchMatches(String searchWord)
-    {
-        return TextUtils.searchWord(this.friendlyName, searchWord);
     }
 
     @Override

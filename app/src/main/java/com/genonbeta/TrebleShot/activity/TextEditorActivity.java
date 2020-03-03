@@ -146,10 +146,10 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         boolean deletionNeeded = checkDeletionNeeded();
         boolean saveNeeded = checkSaveNeeded();
 
-        if ((!saveNeeded && !deletionNeeded) || (System.currentTimeMillis() - mBackPressTime) < 3000)
+        if ((!saveNeeded && !deletionNeeded) || System.nanoTime() - mBackPressTime < 2e9) // 2secs to stay in interval
             super.onBackPressed();
         else if (deletionNeeded)
-            createSnackbar(R.string.mesg_deleteEmptiedText)
+            createSnackbar(R.string.ques_deleteEmptiedText)
                     .setAction(R.string.butn_delete, v -> {
                         removeText();
                         finish();
@@ -163,7 +163,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
                     })
                     .show();
 
-        mBackPressTime = System.currentTimeMillis();
+        mBackPressTime = System.nanoTime();
     }
 
     @Override

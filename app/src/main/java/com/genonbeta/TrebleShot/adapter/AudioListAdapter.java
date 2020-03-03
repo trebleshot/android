@@ -255,7 +255,8 @@ public class AudioListAdapter
                 return true;
 
             for (String keyword : filteringKeywords)
-                if (folder.toLowerCase().contains(keyword.toLowerCase()))
+                if (TextUtils.searchWord(folder, keyword) || TextUtils.searchWord(artist, keyword)
+                        || TextUtils.searchWord(song, keyword) || TextUtils.searchWord(albumHolder.title, keyword))
                     return true;
 
             return false;
@@ -265,16 +266,6 @@ public class AudioListAdapter
         public String getComparableName()
         {
             return song;
-        }
-
-        @Override
-        public boolean searchMatches(String searchWord)
-        {
-            if (isGroupRepresentative())
-                return super.searchMatches(searchWord);
-
-            return TextUtils.searchWord(artist, searchWord) || TextUtils.searchWord(song, searchWord)
-                    || TextUtils.searchWord(albumHolder.title, searchWord);
         }
     }
 

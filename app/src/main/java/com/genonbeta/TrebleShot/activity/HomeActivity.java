@@ -25,6 +25,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -146,12 +147,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         if (mHomeFragment.onBackPressed())
             return;
 
+        long pressTime = System.nanoTime();
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        else if ((System.currentTimeMillis() - mExitPressTime) < 2000)
+        else if (pressTime - mExitPressTime < 2e9)
             super.onBackPressed();
         else {
-            mExitPressTime = System.currentTimeMillis();
+            mExitPressTime = pressTime;
             Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
         }
     }
@@ -251,11 +253,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
             dialogBuilder.setMessage(R.string.text_crashInfo);
             dialogBuilder.setNegativeButton(R.string.butn_dismiss, null);
             dialogBuilder.setNeutralButton(android.R.string.copy, (dialog, which) -> {
-                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(
-                        Service.CLIPBOARD_SERVICE);
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Service.CLIPBOARD_SERVICE);
 
-                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.text_crashReport),
-                        outputStream.toString()));
+                if (clipboardManager != null)
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.text_crashReport),
+                            outputStream.toString()));
 
                 Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
             });

@@ -45,6 +45,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.google.android.material.snackbar.Snackbar;
@@ -273,12 +274,21 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                 clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
                         true));
                 clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
-                    final FileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
-                    boolean isFile = FileHolder.Type.File.equals(fileHolder.getType());
-                    boolean isMounted = FileHolder.Type.Mounted.equals(fileHolder.getType());
-                    boolean isBookmarked = FileHolder.Type.Bookmarked.equals(fileHolder.getType());
-                    boolean canWrite = fileHolder.file != null && fileHolder.file.canWrite();
-                    boolean canRead = fileHolder.file != null && fileHolder.file.canRead();
+                    FileHolder holder = getAdapter().getList().get(clazz.getAdapterPosition());
+                    boolean isFile = FileHolder.Type.File.equals(holder.getType());
+                    boolean isMounted = FileHolder.Type.Mounted.equals(holder.getType());
+                    boolean isBookmarked = FileHolder.Type.Bookmarked.equals(holder.getType());
+                    boolean canWrite = holder.file != null && holder.file.canWrite();
+                    boolean canRead = holder.file != null && holder.file.canRead();
+
+                    if (!isMounted && !isBookmarked)
+                        try {
+                            FileHolder dbTestObject = new FileHolder(getContext(), holder.file);
+                            AppUtils.getKuick(getContext()).reconstruct(dbTestObject);
+                            isMounted = FileHolder.Type.Mounted.equals(dbTestObject.getType());
+                            isBookmarked = FileHolder.Type.Bookmarked.equals(dbTestObject.getType());
+                        } catch (ReconstructionFailedException ignored) {
+                        }
 
                     PopupMenu popupMenu = new PopupMenu(getContext(), v);
                     Menu menuItself = popupMenu.getMenu();
@@ -289,11 +299,11 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                     menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canWrite || isMounted || isBookmarked);
                     menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canWrite && !isMounted);
                     menuItself.findItem(R.id.action_mode_file_show).setVisible(FileHolder.Type.Recent.equals(
-                            fileHolder.getType()));
+                            holder.getType()));
                     menuItself.findItem(R.id.action_mode_file_change_save_path).setVisible(
-                            FileHolder.Type.SaveLocation.equals(fileHolder.getType())
-                                    || (fileHolder.file != null && FileUtils.getApplicationDirectory(getContext())
-                            .equals(fileHolder.file)));
+                            FileHolder.Type.SaveLocation.equals(holder.getType())
+                                    || (holder.file != null && FileUtils.getApplicationDirectory(getContext())
+                                    .equals(holder.file)));
                     menuItself.findItem(R.id.action_mode_file_eject_directory).setVisible(isMounted);
                     menuItself.findItem(R.id.action_mode_file_toggle_shortcut).setVisible(!isFile && !isMounted)
                             .setTitle(isBookmarked ? R.string.butn_removeShortcut : R.string.butn_addShortcut);
@@ -302,17 +312,17 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                         int id = item.getItemId();
 
                         ArrayList<FileHolder> generateSelectionList = new ArrayList<>();
-                        generateSelectionList.add(fileHolder);
+                        generateSelectionList.add(holder);
 
                         if (id == R.id.action_mode_file_open) {
                             performLayoutClickOpen(clazz);
-                        } else if (id == R.id.action_mode_file_show && fileHolder.file.getParentFile() != null) {
-                            goPath(fileHolder.file.getParentFile());
+                        } else if (id == R.id.action_mode_file_show && holder.file.getParentFile() != null) {
+                            goPath(holder.file.getParentFile());
                         } else if (id == R.id.action_mode_file_eject_directory) {
-                            AppUtils.getKuick(getContext()).remove(fileHolder);
+                            AppUtils.getKuick(getContext()).remove(holder);
                             AppUtils.getKuick(getContext()).broadcast();
                         } else if (id == R.id.action_mode_file_toggle_shortcut) {
-                            shortcutItem(fileHolder);
+                            shortcutItem(holder);
                         } else if (id == R.id.action_mode_file_change_save_path) {
                             startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
                         } else

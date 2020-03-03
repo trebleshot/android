@@ -150,8 +150,7 @@ public class TextUtils
             case DONE:
                 return percentFormat.format(1.0);
             case IN_PROGRESS:
-                return percentFormat.format(object.size == 0 || flag.getBytesValue() == 0
-                        ? 0
+                return percentFormat.format(object.size == 0 || flag.getBytesValue() == 0 ? 0
                         : Long.valueOf(flag.getBytesValue()).doubleValue() / Long.valueOf(object.size).doubleValue());
             default:
                 return context.getString(getTransactionFlagString(flag));
@@ -178,15 +177,12 @@ public class TextUtils
 
     public static String makeWebShareLink(Context context, String address)
     {
-        return context.getString(R.string.mode_webShareAddress, address, AppConfig
-                .SERVER_PORT_WEBSHARE);
+        return context.getString(R.string.mode_webShareAddress, address, AppConfig.SERVER_PORT_WEBSHARE);
     }
 
     public static boolean searchWord(String word, String searchThis)
     {
-        return searchThis == null
-                || searchThis.length() == 0
-                || word.toLowerCase().contains(searchThis.toLowerCase());
+        return searchThis == null || searchThis.length() == 0 || word.toLowerCase().contains(searchThis.toLowerCase());
     }
 
     public static String trimText(String text, int length)

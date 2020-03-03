@@ -18,46 +18,58 @@
 
 package com.genonbeta.TrebleShot.widget.recyclerview;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder;
 
 /**
  * created by: veli
  * date: 3/11/19 1:02 AM
  */
-public class SwipeSelectionListener<T extends Editable> implements RecyclerView.OnItemTouchListener
+public class SwipeSelectionListener<T extends Editable> extends OnScrollListener implements OnItemTouchListener,
+        Runnable
 {
-    private boolean mSelectionActivated = false;
-    private boolean mActivationWaiting = true;
-    private int mLastPosition = -1;
-    private int mStartPosition = -1;
-    private int mConsistentX = 0;
-    private int mConsistentY = 0;
+    public static final String TAG = SwipeSelectionListener.class.getSimpleName();
+
+    private boolean mSelectionActivated, mActivationWaiting;
+    private int mLastPosition, mStartPosition;
+    private int mInitialX, mInitialY;
+    private int mScrollingX, mScrollingY;
+
     private EditableListFragmentImpl<T> mListFragment;
+
+    private long mScrollJobStartTime;
 
     public SwipeSelectionListener(EditableListFragmentImpl<T> fragment)
     {
         mListFragment = fragment;
+        setInitials(false);
     }
 
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e)
     {
         if (MotionEvent.ACTION_DOWN == e.getAction()) {
-            mActivationWaiting = mListFragment.getEngineConnection() != null;
-            mConsistentX = (int) (e.getX() / 10);
-            mConsistentY = (int) (e.getY() / 10);
+            mActivationWaiting = mListFragment.getPerformerEngine() != null;
+            mInitialX = (int) e.getX();
+            mInitialY = (int) e.getY();
         } else if (MotionEvent.ACTION_MOVE == e.getAction() && mActivationWaiting
-                && (mConsistentX != (int) (e.getX() / 10) || mConsistentY != (int) (e.getY() / 10))) {
+                && (mInitialX != (int) (e.getX()) || mInitialY != (int) (e.getY()))) {
             mSelectionActivated = e.getEventTime() - e.getDownTime() > ViewConfiguration.getLongPressTimeout();
             mActivationWaiting = false;
+
+            if (mSelectionActivated)
+                rv.addOnScrollListener(this);
         }
 
         return mSelectionActivated;
@@ -66,15 +78,14 @@ public class SwipeSelectionListener<T extends Editable> implements RecyclerView.
     @Override
     public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e)
     {
-        // TODO: 13.12.2019 Once began, keep scrolling unless user performs ACTION_UP
         if (MotionEvent.ACTION_UP == e.getAction()) {
-            rv.requestDisallowInterceptTouchEvent(true);
+            setInitials(true);
         } else if (MotionEvent.ACTION_MOVE == e.getAction() && mSelectionActivated) {
             boolean childFound = false;
             View view = mListFragment.getListView().findChildViewUnder(e.getX(), e.getY());
 
             if (view != null) {
-                RecyclerViewAdapter.ViewHolder holder = (RecyclerViewAdapter.ViewHolder) mListFragment.getListView()
+                ViewHolder holder = (ViewHolder) mListFragment.getListView()
                         .findContainingViewHolder(view);
 
                 if (holder != null) {
@@ -105,8 +116,7 @@ public class SwipeSelectionListener<T extends Editable> implements RecyclerView.
                                         boolean selectionResult = mListFragment.getEngineConnection().setSelected(
                                                 mListFragment.getAdapterImpl().getItem(i), selected);
 
-                                        RecyclerViewAdapter.ViewHolder viewHolder = (RecyclerViewAdapter.ViewHolder) rv
-                                                .findViewHolderForAdapterPosition(i);
+                                        ViewHolder viewHolder = (ViewHolder) rv.findViewHolderForAdapterPosition(i);
 
                                         if (viewHolder != null && selectionResult)
                                             viewHolder.setSelected(selected);
@@ -153,7 +163,9 @@ public class SwipeSelectionListener<T extends Editable> implements RecyclerView.
                     }
                 }
 
-                rv.scrollBy(scrollX, scrollY);
+                mScrollingX = scrollX;
+                mScrollingY = scrollY;
+
             }
         }
     }
@@ -161,11 +173,43 @@ public class SwipeSelectionListener<T extends Editable> implements RecyclerView.
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
     {
-        mSelectionActivated = false;
-        mActivationWaiting = false;
-        mStartPosition = -1;
-        mLastPosition = -1;
-        mConsistentX = 0;
+        if (disallowIntercept)
+            setInitials(true);
+    }
+
+    @Override
+    public void run()
+    {
+        FragmentActivity activity = mListFragment.getActivity();
+        RecyclerView view = mListFragment.getListView();
+
+        if (activity.isFinishing() || !view.isShown()) {
+            Log.d(TAG, "scroll: Cancelled to scroll task either because the the activity was finishing or " +
+                    "the RecyclerView was not visible.");
+            return;
+        }
+
+        long frameLoss = System.nanoTime();
+    }
+
+    protected void scroll()
+    {
+        FragmentActivity activity = mListFragment.getActivity();
+
+        if (activity.isFinishing() && (mScrollingX != 0 || mScrollingY != 0))
+            activity.runOnUiThread(this);
+    }
+
+    public void setInitials(boolean removal)
+    {
+        mSelectionActivated = mActivationWaiting = false;
+        mStartPosition = mLastPosition = -1;
+        mInitialX = mInitialY = 0;
+        mScrollingX = mScrollingY = 0;
+
+        // FIXME: 2.03.2020
+        // if (removal)
+        //     mListFragment.getListView().removeOnScrollListener(this);
     }
 }
 

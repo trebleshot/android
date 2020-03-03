@@ -235,15 +235,6 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         {
             return !isGroupRepresentative() && super.setSelectableSelected(selected);
         }
-
-        @Override
-        public boolean searchMatches(String searchWord)
-        {
-            if (isGroupRepresentative())
-                return TextUtils.searchWord(friendlyName, searchWord);
-
-            return super.searchMatches(searchWord);
-        }
     }
 
     public static class GroupViewHolder extends RecyclerViewAdapter.ViewHolder

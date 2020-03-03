@@ -534,7 +534,7 @@
     <string name="text_twoRowLayout">Two-row layout</string>
     <string name="text_twoRowLayoutSummary">Display two rows next to each other</string>
     <string name="text_chooseSharingMethod">Choose sharing method</string>
-    <string name="mesg_noActivityFound">No activity found that can do this action</string>
+    <string name="mesg_noActivityFound">Found no activity that can do this action</string>
     <string name="text_devicesWithAppInstalled">TrebleShot to TrebleShot</string>
     <string name="mesg_unknownHostError">The host is unknown to system</string>
     <string name="text_thirdPartyLibrariesHelp">The libraries shown here may not be directly involved in the final
@@ -559,5 +559,5 @@
     <string name="mesg_nothingToShare">Nothing was selected to share</string>
     <string name="ques_cancelSelection">Cancel selection?</string>
     <string name="text_mountedDirectory">Mounted directory</string>
-    <string name="mesg_deleteEmptiedText">Would you like to delete this since it has no content anymore?</string>
+    <string name="ques_deleteEmptiedText">Would you like to delete this since it has no content anymore?</string>
 </resources>
