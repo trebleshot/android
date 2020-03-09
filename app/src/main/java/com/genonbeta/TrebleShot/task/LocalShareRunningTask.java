@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
@@ -47,6 +48,8 @@ import java.util.List;
 
 public class LocalShareRunningTask extends WorkerService.RunningTask
 {
+    public static final String TAG = LocalShareRunningTask.class.getSimpleName();
+
     public List<? extends Shareable> mList;
     private boolean mFlagAddNewDevice;
     private boolean mFlagWebShare;
@@ -68,8 +71,6 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         final SQLiteDatabase db = kuick.getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
         final List<TransferObject> list = new ArrayList<>();
-
-        getInterrupter().addCloser((userAction -> kuick.remove(db, group, null, null)));
 
         for (Shareable shareable : mList) {
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
@@ -94,6 +95,13 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
                     }
         }
 
+        if (list.size() <= 0) {
+            // TODO: 9.03.2020 Make this more sophisticaed. User may not be able to understand that there is no content.
+            Log.d(TAG, "onRun: No content is located with uri data");
+            return;
+        }
+
+        getInterrupter().addCloser((userAction -> kuick.remove(db, group, null, null)));
         kuick.insert(db, list, group, null);
 
         if (mFlagWebShare) {
