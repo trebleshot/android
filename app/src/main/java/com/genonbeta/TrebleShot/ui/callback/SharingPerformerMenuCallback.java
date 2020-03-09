@@ -18,20 +18,17 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
-import com.genonbeta.TrebleShot.io.Containable;
-import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.MIMEGrouper;
@@ -58,7 +55,7 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
     }
 
     @Override
-    public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
+    public boolean onPerformerMenuSelected(PerformerMenu performerMenu, MenuItem item)
     {
         int id = item.getItemId();
         IPerformerEngine performerEngine = getPerformerEngine();
@@ -69,9 +66,8 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
         List<Shareable> shareableList = compileShareableListFrom(MappedSelectable.compileFrom(performerEngine));
 
         if (id == R.id.action_mode_share_trebleshot) {
-            if (shareableList.size() <= 0)
-                return false;
-            new ChooseSharingMethodDialog(getActivity(), shareableList).show();
+            if (shareableList.size() > 0)
+                new ChooseSharingMethodDialog(getActivity(), shareableList).show();
         } else if (id == R.id.action_mode_share_all_apps) {
             if (shareableList.size() <= 0)
                 return false;
@@ -110,9 +106,11 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
                 Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
             }
         } else
-            return super.onPerformerMenuClick(performerMenu, item);
+            return super.onPerformerMenuSelected(performerMenu, item);
 
-        return true;
+        // I want the menus to keep showing because sharing does not alter data. If it is so descendants should
+        // check and return 'true'.
+        return false;
     }
 
     private List<Shareable> compileShareableListFrom(List<MappedSelectable<?>> mappedSelectableList)

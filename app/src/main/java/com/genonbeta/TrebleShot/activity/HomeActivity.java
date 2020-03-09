@@ -61,8 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener,
-        PerformerEngineProvider
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
@@ -88,13 +87,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
-        SharingPerformerMenuCallback menuCallback = new SharingPerformerMenuCallback(this, this);
-        PerformerMenu performerMenu = new PerformerMenu(this, menuCallback);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
                 R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        performerMenu.setUp(mPerformerEngine);
 
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
         {
@@ -329,12 +325,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
             editImageView.setOnClickListener(v -> startProfileEditor());
         }
-    }
-
-    @Override
-    public IPerformerEngine getPerformerEngine()
-    {
-        return mPerformerEngine;
     }
 
     private void highlightUpdater(String availableVersion)

@@ -21,8 +21,7 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -30,9 +29,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ChooseAssigneeDialog;
+import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -45,9 +46,14 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransferListFragment extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem,
@@ -89,7 +95,6 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         setDefaultOrderingCriteria(TransferListAdapter.MODE_SORT_ORDER_ASCENDING);
         setDefaultSortingCriteria(TransferListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(TransferListAdapter.MODE_GROUP_BY_DEFAULT);
-        // TODO: 22.02.2020 Default selection callback
     }
 
     @Override
@@ -105,6 +110,13 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
             goPath(args.getString(ARG_PATH), args.getLong(ARG_GROUP_ID),
                     args.getString(ARG_DEVICE_ID), args.getString(ARG_TYPE));
         }
+    }
+
+    @Nullable
+    @Override
+    public PerformerMenu onCreatePerformerMenu(Context context)
+    {
+        return new PerformerMenu(context, new SelectionCallback(getActivity(), this));
     }
 
     @Override
@@ -272,24 +284,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
             } else if (transferObject instanceof TransferListAdapter.TransferFolder) {
                 getAdapter().setPath(transferObject.directory);
                 refreshList();
-
-                // TODO: 22.02.2020 Check if selection callback is activated
-                /*
-                if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated()
-                        && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
-                    createSnackbar(R.string.mesg_helpFolderSelection)
-                            .setAction(R.string.butn_gotIt, new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    AppUtils.getDefaultPreferences(getContext())
-                                            .edit()
-                                            .putBoolean("helpFolderSelection", true)
-                                            .apply();
-                                }
-                            })
-                            .show();*/
+                AppUtils.showFolderSelectionHelp(this);
             } else
                 return super.performLayoutClick(holder);
 
@@ -459,38 +454,42 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
             getActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());
     }
 
-    /*
-    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferListAdapter.AbstractGenericItem>
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback
     {
-        private TransferListAdapter mAdapter;
-
-        public SelectionCallback(TransferListFragment fragment)
+        public SelectionCallback(android.app.Activity activity, PerformerEngineProvider provider)
         {
-            super(fragment);
-            mAdapter = fragment.getAdapter();
+            super(activity, provider);
         }
 
         @Override
-        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
         {
-            super.onCreateActionMenu(context, actionMode, menu);
-            actionMode.getMenuInflater().inflate(R.menu.action_mode_transfer, menu);
+            super.onPerformerMenuList(performerMenu, inflater, targetMenu);
+            inflater.inflate(R.menu.action_mode_transfer, targetMenu);
             return true;
         }
 
         @Override
-        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        public boolean onPerformerMenuSelected(PerformerMenu performerMenu, MenuItem item)
         {
             int id = item.getItemId();
+            IPerformerEngine engine = getPerformerEngine();
 
-            final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getEngineConnection().getSelectedItemList());
+            if (engine == null)
+                return false;
 
-            if (id == R.id.action_mode_transfer_delete)
-                DialogUtils.showRemoveTransferObjectListDialog(getFragment().getActivity(), selectionList);
-            else
-                return super.onActionMenuItemSelected(context, actionMode, item);
+            List<Selectable> genericList = new ArrayList<>(engine.getSelectionList());
+            List<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>();
 
-            return true;
+            for (Selectable selectable : genericList)
+                if (selectable instanceof TransferListAdapter.AbstractGenericItem)
+                    selectionList.add((TransferListAdapter.AbstractGenericItem) selectable);
+
+            if (id == R.id.action_mode_transfer_delete) {
+                DialogUtils.showRemoveTransferObjectListDialog(getActivity(), selectionList);
+                return true;
+            } else
+                return super.onPerformerMenuSelected(performerMenu, item);
         }
-    }*/
+    }
 }

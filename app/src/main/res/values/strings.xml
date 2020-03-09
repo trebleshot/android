@@ -560,4 +560,5 @@
     <string name="ques_cancelSelection">Cancel selection?</string>
     <string name="text_mountedDirectory">Mounted directory</string>
     <string name="ques_deleteEmptiedText">Would you like to delete this since it has no content anymore?</string>
+    <string name="butn_cancelSelection">Cancel selection</string>
 </resources>

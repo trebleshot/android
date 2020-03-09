@@ -32,4 +32,8 @@
             android:id="@+id/action_mode_abs_editable_select_none"
             android:title="@string/butn_selectNone"/>
 
+    <item
+            android:id="@+id/action_mode_abs_editable_cancel_selection"
+            android:title="@string/butn_cancelSelection"/>
+
 </menu>

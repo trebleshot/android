@@ -23,10 +23,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -36,24 +34,19 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder;
  * created by: veli
  * date: 3/11/19 1:02 AM
  */
-public class SwipeSelectionListener<T extends Editable> extends OnScrollListener implements OnItemTouchListener,
-        Runnable
+public class SwipeSelectionListener<T extends Editable> implements OnItemTouchListener
 {
     public static final String TAG = SwipeSelectionListener.class.getSimpleName();
 
     private boolean mSelectionActivated, mActivationWaiting;
     private int mLastPosition, mStartPosition;
     private int mInitialX, mInitialY;
-    private int mScrollingX, mScrollingY;
-
     private EditableListFragmentImpl<T> mListFragment;
-
-    private long mScrollJobStartTime;
 
     public SwipeSelectionListener(EditableListFragmentImpl<T> fragment)
     {
         mListFragment = fragment;
-        setInitials(false);
+        setInitials();
     }
 
     @Override
@@ -67,9 +60,6 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
                 && (mInitialX != (int) (e.getX()) || mInitialY != (int) (e.getY()))) {
             mSelectionActivated = e.getEventTime() - e.getDownTime() > ViewConfiguration.getLongPressTimeout();
             mActivationWaiting = false;
-
-            if (mSelectionActivated)
-                rv.addOnScrollListener(this);
         }
 
         return mSelectionActivated;
@@ -78,10 +68,10 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
     @Override
     public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e)
     {
-        if (MotionEvent.ACTION_UP == e.getAction()) {
-            setInitials(true);
+        if (MotionEvent.ACTION_UP == e.getAction() || MotionEvent.ACTION_CANCEL == e.getAction()) {
+            setInitials();
         } else if (MotionEvent.ACTION_MOVE == e.getAction() && mSelectionActivated) {
-            boolean childFound = false;
+            int currentPos = RecyclerView.NO_POSITION;
             View view = mListFragment.getListView().findChildViewUnder(e.getX(), e.getY());
 
             if (view != null) {
@@ -89,10 +79,9 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
                         .findContainingViewHolder(view);
 
                 if (holder != null) {
-                    int currentPos = holder.getAdapterPosition();
-                    childFound = currentPos >= 0;
+                    currentPos = holder.getAdapterPosition();
 
-                    if (childFound) {
+                    if (currentPos >= 0) {
                         if (mStartPosition < 0) {
                             mStartPosition = currentPos;
                             mLastPosition = currentPos;
@@ -100,13 +89,12 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
 
                         if (currentPos != mLastPosition) {
                             synchronized (mListFragment.getAdapterImpl().getList()) {
-                                int startPos = currentPos;
-                                int endPos = mLastPosition;
-
-                                if (currentPos > mLastPosition) {
-                                    startPos = mLastPosition;
-                                    endPos = currentPos;
-                                }
+                                // The idea is that we start with some arbitrary position to select, so, for instance,
+                                // when the starting position is 8 and user goes to select 7, 6, 5, we declare these
+                                // as selected, however, when the user goes with 6, 7, 8 after 5, we decide that those
+                                // numbers are now unselected. This goes on until the user releases the touch event.
+                                int startPos = Math.min(currentPos, mLastPosition);
+                                int endPos = Math.max(currentPos, mLastPosition);
 
                                 try {
                                     for (int i = startPos; i < endPos + 1; i++) {
@@ -132,7 +120,7 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
                 }
             }
 
-            if (mStartPosition < 0 && !childFound)
+            if (mStartPosition < 0 && currentPos < 0)
                 mSelectionActivated = false;
 
             {
@@ -163,9 +151,17 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
                     }
                 }
 
-                mScrollingX = scrollX;
-                mScrollingY = scrollY;
-
+                // Sadly a previous attempt to make this scroll continuous failed, due to the limitations of
+                // smoothScrollBy call of RecyclerView. The problem is that inside the touch events, calling it has
+                // no effect. And also, using scrollBy with touch listener has not benefits as it doesn't invoke
+                // onScrollStateChanged method which, if it did, could be used to repeat the scrolling process
+                // when the state is SETTLING. If it went according to the plan, as long as the mSelectionActivated
+                // is true, we could keep scrolling it. Another good solution could be to use SmoothScroller class
+                // with the layout manager, however, it was expensive use to because, firstly,
+                // it didn't scroll by pixels, instead by child position and secondly, even though it could work,
+                // it wasn't the best solution out there, because the next problem would be to guess where the user is
+                // pointing his or her hand.
+                rv.scrollBy(scrollX, scrollY);
             }
         }
     }
@@ -174,42 +170,14 @@ public class SwipeSelectionListener<T extends Editable> extends OnScrollListener
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
     {
         if (disallowIntercept)
-            setInitials(true);
+            setInitials();
     }
 
-    @Override
-    public void run()
-    {
-        FragmentActivity activity = mListFragment.getActivity();
-        RecyclerView view = mListFragment.getListView();
-
-        if (activity.isFinishing() || !view.isShown()) {
-            Log.d(TAG, "scroll: Cancelled to scroll task either because the the activity was finishing or " +
-                    "the RecyclerView was not visible.");
-            return;
-        }
-
-        long frameLoss = System.nanoTime();
-    }
-
-    protected void scroll()
-    {
-        FragmentActivity activity = mListFragment.getActivity();
-
-        if (activity.isFinishing() && (mScrollingX != 0 || mScrollingY != 0))
-            activity.runOnUiThread(this);
-    }
-
-    public void setInitials(boolean removal)
+    public void setInitials()
     {
         mSelectionActivated = mActivationWaiting = false;
         mStartPosition = mLastPosition = -1;
         mInitialX = mInitialY = 0;
-        mScrollingX = mScrollingY = 0;
-
-        // FIXME: 2.03.2020
-        // if (removal)
-        //     mListFragment.getListView().removeOnScrollListener(this);
     }
 }
 

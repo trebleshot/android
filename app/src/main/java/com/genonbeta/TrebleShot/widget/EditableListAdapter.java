@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.text.format.DateUtils;
-import android.view.View;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
@@ -75,7 +74,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
             mItemList.clear();
             mItemList.addAll(passedItem);
 
-            syncSelectionList(getList());
+            syncSelectionList();
         }
     }
 
@@ -169,7 +168,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public T getItem(int position) throws NotReadyException
     {
         if (position >= getCount() || position < 0)
-            throw new NotReadyException("The list does not contain  this index: " + position);
+            throw new NotReadyException("The list does not contain this index: " + position);
 
         return getList().get(position);
     }
@@ -277,15 +276,9 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return mGridLayoutRequested;
     }
 
-    public void notifyAllSelectionChanges()
+    public void notifyGridSizeUpdate(int gridSize, boolean isScreenLarge)
     {
-        syncSelectionList();
-        notifyDataSetChanged();
-    }
-
-    public boolean notifyGridSizeUpdate(int gridSize, boolean isScreenLarge)
-    {
-        return mGridLayoutRequested = (!isScreenLarge && gridSize > 1) || gridSize > 2;
+        mGridLayoutRequested = (!isScreenLarge && gridSize > 1) || gridSize > 2;
     }
 
     public void setSortingCriteria(int sortingCriteria, int sortingOrder)
@@ -294,16 +287,32 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         mSortingOrderAscending = sortingOrder;
     }
 
-    public synchronized void syncSelectionList()
+    @Override
+    public void syncAndNotify(int adapterPosition)
     {
-        /*
-        synchronized (getList()) {
-            syncSelectionList(getList());
-        }*/
+        syncSelection(adapterPosition);
+        notifyItemChanged(adapterPosition);
     }
 
-    public synchronized void syncSelectionList(List<T> itemList)
+    @Override
+    public void syncAllAndNotify()
     {
+        syncSelectionList();
+        notifyDataSetChanged();
+    }
+
+    public synchronized void syncSelection(int adapterPosition) {
+        try {
+            T item = getItem(adapterPosition);
+            item.setSelectableSelected(mFragment.getEngineConnection().isSelectedOnHost(item));
+        } catch (NotReadyException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void syncSelectionList()
+    {
+        List<T> itemList = new ArrayList<>(getList());
         for (T item : itemList)
             item.setSelectableSelected(mFragment.getEngineConnection().isSelectedOnHost(item));
     }

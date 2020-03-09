@@ -43,16 +43,19 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.SuperPreferences;
+import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -128,6 +131,20 @@ public class AppUtils
 
         object.put(Keyword.APP_INFO, appInfo)
                 .put(Keyword.DEVICE_INFO, deviceInformation);
+    }
+
+    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentImpl<T> fragment) {
+        IEngineConnection<T> connection = fragment.getEngineConnection();
+        SharedPreferences preferences = AppUtils.getDefaultPreferences(fragment.getContext());
+
+        if (connection.getSelectedItemList().size() > 0 && !preferences.getBoolean("helpFolderSelection",
+                false))
+            fragment.createSnackbar(R.string.mesg_helpFolderSelection)
+                    .setAction(R.string.butn_gotIt, v -> preferences
+                            .edit()
+                            .putBoolean("helpFolderSelection", true)
+                            .apply())
+                    .show();
     }
 
     public static void startApplicationDetails(Activity activity) {

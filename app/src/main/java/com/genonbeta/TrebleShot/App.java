@@ -79,8 +79,8 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
     public void uncaughtException(@NonNull Thread t, @NonNull Throwable e)
     {
         try {
-            if ((!mCrashLogFile.exists() || mCrashLogFile.delete())
-                    && mCrashLogFile.createNewFile() && mCrashLogFile.canWrite()) {
+            if ((!mCrashLogFile.exists() || mCrashLogFile.delete()) && mCrashLogFile.createNewFile()
+                    && mCrashLogFile.canWrite()) {
                 StringBuilder stringBuilder = new StringBuilder();
                 StackTraceElement[] stackTraceElements = e.getStackTrace();
 

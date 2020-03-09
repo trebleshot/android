@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.app;
 
-import android.content.Context;
 import android.net.Uri;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -27,8 +26,6 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.app.ListFragmentImpl;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener;
-import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
 
 /**
  * created by: veli
@@ -61,11 +58,15 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 
     String getUniqueSettingKey(String setting);
 
+    boolean isLocalSelectionActivated();
+
     boolean isRefreshLocked();
 
     boolean isRefreshRequested();
 
     boolean isSortingSupported();
+
+    boolean isUsingLocalSelection();
 
     boolean loadIfRequested();
 

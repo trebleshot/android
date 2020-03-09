@@ -35,13 +35,7 @@ public interface EditableListAdapterImpl<T extends Editable> extends ListAdapter
 
     T getItem(int position) throws NotReadyException;
 
-    void notifyAllSelectionChanges();
+    void syncAndNotify(int adapterPosition);
 
-    void notifyItemChanged(int position);
-
-    void notifyItemRangeChanged(int positionStart, int itemCount);
-
-    void syncSelectionList();
-
-    void syncSelectionList(List<T> itemList);
+    void syncAllAndNotify();
 }

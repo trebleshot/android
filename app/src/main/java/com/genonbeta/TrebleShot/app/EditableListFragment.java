@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -79,6 +80,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             ARG_SELECTION_OBJECTS = "argSelectionObjects";
 
     private IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
+    private IPerformerEngine mPerformerEngine = new PerformerEngine();
+    private PerformerMenu mPerformerMenu = null;
     private FilteringDelegate<T> mFilteringDelegate;
     private Snackbar mRefreshDelayedSnackbar;
     private boolean mRefreshRequested = false;
@@ -87,7 +90,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     private boolean mUseDefaultPaddingDecoration = false;
     private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
     private boolean mTwoRowLayoutState = false;
-    private boolean mSelectByClick = false;
+    private boolean mDefaultSelectByClick = false;
+    private boolean mLocalSelectionActivated = false;
     private float mDefaultPaddingDecorationSize = -1;
     private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
     private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
@@ -128,18 +132,22 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return false;
     }
 
+    @Nullable
+    public PerformerMenu onCreatePerformerMenu(Context context)
+    {
+        return null;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         getAdapter().setFragment(this);
         mTwoRowLayoutState = isTwoRowLayout();
-        mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(getContext()));
         mEngineConnection.setSelectableProvider(getAdapterImpl());
-        mEngineConnection.addSelectionListener(this);
 
         if (getArguments() != null)
-            mSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
+            mDefaultSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SELECTION_CLASSES)
                 && savedInstanceState.containsKey(ARG_SELECTION_OBJECTS)) {
@@ -167,6 +175,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                 }
             }
         }
+
+        if (mPerformerMenu != null)
+            mPerformerMenu.setUp(mPerformerEngine);
     }
 
     @Override
@@ -205,7 +216,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
         super.onListView(mainContainer, listViewContainer);
-        View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview_container, null, false);
+        View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview_container, null,
+                false);
 
         ViewGroup recyclerViewContainer = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_container);
         RecyclerView recyclerView = onListView(recyclerViewContainer);
@@ -253,6 +265,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void onAttach(@NonNull Context context)
     {
         super.onAttach(context);
+        mPerformerMenu = onCreatePerformerMenu(context);
+        mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(context));
+        mEngineConnection.addSelectionListener(this);
+
         if (getPerformerEngine() != null)
             getPerformerEngine().ensureSlot(this, getEngineConnection());
     }
@@ -270,16 +286,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                            int position)
     {
         if (position >= 0)
-            getAdapter().notifyItemChanged(position);
+            getAdapter().syncAndNotify(position);
         else
-            getAdapter().notifyAllSelectionChanges();
+            getAdapter().syncAllAndNotify();
+
+        ensureLocalSelection();
     }
 
     @Override
     public void onSelected(IPerformerEngine engine, IEngineConnection<T> owner, List<T> selectableList,
                            boolean isSelected, int[] positions)
     {
-        getAdapter().notifyAllSelectionChanges();
+        getAdapter().syncAllAndNotify();
+        ensureLocalSelection();
     }
 
     @Override
@@ -318,69 +337,74 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.actions_abs_editable_list, menu);
 
-        MenuItem filterItem = menu.findItem(R.id.actions_abs_editable_filter);
+        if (isUsingLocalSelection() && isLocalSelectionActivated())
+            mPerformerMenu.populateMenu(menu);
+        else {
+            inflater.inflate(R.menu.actions_abs_editable_list, menu);
 
-        if (filterItem != null) {
-            filterItem.setVisible(mFilteringSupported);
+            MenuItem filterItem = menu.findItem(R.id.actions_abs_editable_filter);
 
-            if (mFilteringSupported) {
-                View view = filterItem.getActionView();
+            if (filterItem != null) {
+                filterItem.setVisible(mFilteringSupported);
 
-                if (view instanceof SearchView) {
-                    ((SearchView) view).setOnQueryTextListener(new SearchView.OnQueryTextListener()
-                    {
-                        @Override
-                        public boolean onQueryTextSubmit(String query)
+                if (mFilteringSupported) {
+                    View view = filterItem.getActionView();
+
+                    if (view instanceof SearchView) {
+                        ((SearchView) view).setOnQueryTextListener(new SearchView.OnQueryTextListener()
                         {
-                            refreshList();
-                            return true;
-                        }
+                            @Override
+                            public boolean onQueryTextSubmit(String query)
+                            {
+                                refreshList();
+                                return true;
+                            }
 
-                        @Override
-                        public boolean onQueryTextChange(String newText)
-                        {
-                            mSearchText = newText;
-                            refreshList();
-                            return true;
-                        }
-                    });
+                            @Override
+                            public boolean onQueryTextChange(String newText)
+                            {
+                                mSearchText = newText;
+                                refreshList();
+                                return true;
+                            }
+                        });
+                    }
                 }
             }
-        }
 
-        MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
+            MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
 
-        if (gridSizeItem != null) {
-            Menu gridSizeMenu = gridSizeItem.getSubMenu();
+            if (gridSizeItem != null) {
+                Menu gridSizeMenu = gridSizeItem.getSubMenu();
 
-            for (int i = 1; i < (isScreenLandscape() ? 7 : 5); i++)
-                gridSizeMenu.add(R.id.actions_abs_editable_group_grid_size, 0, i,
-                        getContext().getResources().getQuantityString(R.plurals.text_gridRow, i, i));
+                for (int i = 1; i < (isScreenLandscape() ? 7 : 5); i++)
+                    gridSizeMenu.add(R.id.actions_abs_editable_group_grid_size, 0, i,
+                            getContext().getResources().getQuantityString(R.plurals.text_gridRow, i, i));
 
-            gridSizeMenu.setGroupCheckable(R.id.actions_abs_editable_group_grid_size, true, true);
-        }
+                gridSizeMenu.setGroupCheckable(R.id.actions_abs_editable_group_grid_size, true, true);
+            }
 
-        Map<String, Integer> sortingOptions = new ArrayMap<>();
-        onSortingOptions(sortingOptions);
+            Map<String, Integer> sortingOptions = new ArrayMap<>();
+            onSortingOptions(sortingOptions);
 
-        if (sortingOptions.size() > 0) {
-            mSortingOptions.clear();
-            mSortingOptions.putAll(sortingOptions);
+            if (sortingOptions.size() > 0) {
+                mSortingOptions.clear();
+                mSortingOptions.putAll(sortingOptions);
 
-            applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_sort_by),
-                    R.id.actions_abs_editable_group_sorting, mSortingOptions);
+                applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_sort_by),
+                        R.id.actions_abs_editable_group_sorting, mSortingOptions);
 
-            Map<String, Integer> orderingOptions = new ArrayMap<>();
-            onOrderingOptions(orderingOptions);
+                Map<String, Integer> orderingOptions = new ArrayMap<>();
+                onOrderingOptions(orderingOptions);
 
-            if (orderingOptions.size() > 0) {
-                mOrderingOptions.clear();
-                mOrderingOptions.putAll(orderingOptions);
+                if (orderingOptions.size() > 0) {
+                    mOrderingOptions.clear();
+                    mOrderingOptions.putAll(orderingOptions);
 
-                applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_order_by),
-                        R.id.actions_abs_editable_group_sort_order, mOrderingOptions);
+                    applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_order_by),
+                            R.id.actions_abs_editable_group_sort_order, mOrderingOptions);
+                }
             }
         }
     }
@@ -390,37 +414,37 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     {
         super.onPrepareOptionsMenu(menu);
 
-        menu.findItem(R.id.actions_abs_editable_sort_by).setEnabled(isSortingSupported());
+        if (!isLocalSelectionActivated()) {
+            menu.findItem(R.id.actions_abs_editable_sort_by).setEnabled(isSortingSupported());
+            menu.findItem(R.id.actions_abs_editable_multi_select).setVisible(mPerformerMenu != null);
 
-        MenuItem multiSelect = menu.findItem(R.id.actions_abs_editable_multi_select);
-        multiSelect.setVisible(getPerformerEngine() != null);
+            if (!getAdapter().isGridSupported())
+                menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(false);
 
-        if (!getAdapter().isGridSupported())
-            menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(false);
+            MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
 
-        MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
+            if (sortingItem != null) {
+                sortingItem.setVisible(mSortingSupported);
 
-        if (sortingItem != null) {
-            sortingItem.setVisible(mSortingSupported);
+                if (sortingItem.isVisible()) {
+                    checkPreferredDynamicItem(sortingItem, getSortingCriteria(), mSortingOptions);
 
-            if (sortingItem.isVisible()) {
-                checkPreferredDynamicItem(sortingItem, getSortingCriteria(), mSortingOptions);
+                    MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
 
-                MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
-
-                if (orderingItem != null)
-                    checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+                    if (orderingItem != null)
+                        checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+                }
             }
-        }
 
-        MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
+            MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
 
-        if (gridSizeItem != null) {
-            Menu gridRowMenu = gridSizeItem.getSubMenu();
-            int currentRow = getViewingGridSize() - 1;
+            if (gridSizeItem != null) {
+                Menu gridRowMenu = gridSizeItem.getSubMenu();
+                int currentRow = getViewingGridSize() - 1;
 
-            if (currentRow < gridRowMenu.size())
-                gridRowMenu.getItem(currentRow).setChecked(true);
+                if (currentRow < gridRowMenu.size())
+                    gridRowMenu.getItem(currentRow).setChecked(true);
+            }
         }
     }
 
@@ -430,12 +454,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         int id = item.getItemId();
         int groupId = item.getGroupId();
 
-        // TODO: 21.02.2020 Reimplement manually starting selection process
-        /*
-        if (id == R.id.actions_abs_editable_multi_select && getSelectionCallback() != null)
-            getEngineConnection().getMode().start(getSelectionCallback());
-        else*/
-        if (groupId == R.id.actions_abs_editable_group_sorting)
+        if (id == R.id.actions_abs_editable_multi_select && mPerformerMenu != null && getActivity() != null) {
+            setLocalSelectionActivated(!mLocalSelectionActivated);
+        } else if (mPerformerMenu != null) {
+            if (mPerformerMenu.onMenuItemClick(item))
+                setLocalSelectionActivated(false);
+
+            return true;
+        } else if (groupId == R.id.actions_abs_editable_group_sorting)
             changeSortingCriteria(item.getOrder());
         else if (groupId == R.id.actions_abs_editable_group_sort_order)
             changeOrderingCriteria(item.getOrder());
@@ -589,6 +615,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         }
     }
 
+    protected void ensureLocalSelection()
+    {
+        boolean shouldBeEnabled = mEngineConnection.getSelectedItemList().size() > 0;
+        if (mLocalSelectionActivated != shouldBeEnabled) {
+            Log.d(TAG, "ensureLocalSelection: Altering local selection state to '" + shouldBeEnabled + "'");
+            setLocalSelectionActivated(shouldBeEnabled);
+        }
+    }
+
     public EditableListAdapterImpl<T> getAdapterImpl()
     {
         return getAdapter();
@@ -666,8 +701,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public IPerformerEngine getPerformerEngine()
     {
-        return getActivity() != null && getActivity() instanceof PerformerEngineProvider
-                ? ((PerformerEngineProvider) getActivity()).getPerformerEngine() : null;
+        if (getContext() != null && getActivity() instanceof PerformerEngineProvider)
+            return ((PerformerEngineProvider) getActivity()).getPerformerEngine();
+
+        return mPerformerMenu != null ? mPerformerEngine : null;
     }
 
     public SharedPreferences getViewPreferences()
@@ -696,9 +733,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, longClick);
     }
 
-    public boolean isTwoRowLayout()
+    @Override
+    public boolean isLocalSelectionActivated()
     {
-        return AppUtils.getDefaultPreferences(getContext()).getBoolean("two_row_layout", true);
+        return mLocalSelectionActivated;
     }
 
     public boolean isRefreshLocked()
@@ -718,12 +756,23 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean isSelectByClick()
     {
-        return mSelectByClick;
+        return mDefaultSelectByClick || mLocalSelectionActivated;
     }
 
     public boolean isSortingSupported()
     {
         return mSortingSupported;
+    }
+
+    public boolean isTwoRowLayout()
+    {
+        return AppUtils.getDefaultPreferences(getContext()).getBoolean("two_row_layout", true);
+    }
+
+    @Override
+    public boolean isUsingLocalSelection()
+    {
+        return !(getActivity() instanceof PerformerEngineProvider) && mPerformerMenu != null;
     }
 
     public void setSortingSupported(boolean sortingSupported)
@@ -846,7 +895,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             return false;
 
         try {
-            holder.setSelected(getEngineConnection().setSelected(holder));
+            getEngineConnection().setSelected(holder);
+            //holder.setSelected();
             return true;
         } catch (SelectableNotFoundException e) {
             e.printStackTrace();
@@ -861,6 +911,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void setLayoutClickListener(LayoutClickListener<V> clickListener)
     {
         mLayoutClickListener = clickListener;
+    }
+
+    protected void setLocalSelectionActivated(boolean activate)
+    {
+        mLocalSelectionActivated = activate;
+        if (!mLocalSelectionActivated) {
+            List<T> selectedItems = new ArrayList<>(mEngineConnection.getSelectedItemList());
+            if (selectedItems.size() > 0)
+                mEngineConnection.setSelected(selectedItems, new int[selectedItems.size()], false);
+        }
+
+        if (getActivity() != null)
+            getActivity().invalidateOptionsMenu();
     }
 
     public void setFilteringSupported(boolean supported)
@@ -899,12 +962,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public static class SelectionCallback implements PerformerMenu.Callback, PerformerEngineProvider
     {
-        private Activity mActivity;
+        private android.app.Activity mActivity;
         private PerformerEngineProvider mProvider;
         private MenuItem mPreviewSelections;
         private IEngineConnection<?> mForegroundConnection = null;
+        private boolean mCancellable = true;
 
-        public SelectionCallback(Activity activity, PerformerEngineProvider provider)
+        public SelectionCallback(android.app.Activity activity, PerformerEngineProvider provider)
         {
             mActivity = activity;
             mProvider = provider;
@@ -915,26 +979,33 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         {
             inflater.inflate(R.menu.action_mode_abs_editable, targetMenu);
 
+            if (!mCancellable)
+                targetMenu.findItem(R.id.action_mode_abs_editable_cancel_selection).setVisible(false);
+
             mPreviewSelections = targetMenu.findItem(R.id.action_mode_abs_editable_preview_selections);
-            updateTitle(0);
+
+            if (getPerformerEngine() != null)
+                updateTitle(SelectionUtils.getTotalSize(getPerformerEngine()));
             return true;
         }
 
         @Override
-        public boolean onPerformerMenuClick(PerformerMenu performerMenu, MenuItem item)
+        public boolean onPerformerMenuSelected(PerformerMenu performerMenu, MenuItem item)
         {
             int id = item.getItemId();
 
-            if (id == R.id.action_mode_abs_editable_select_all) {
-                selectAll(true);
+            if (id == R.id.action_mode_abs_editable_cancel_selection) {
+                setSelectionState(false, false);
+            } else if (id == R.id.action_mode_abs_editable_select_all) {
+                setSelectionState(true, true);
             } else if (id == R.id.action_mode_abs_editable_select_none) {
-                selectAll(false);
+                setSelectionState(false, true);
             } else if (id == R.id.action_mode_abs_editable_preview_selections)
                 new SelectionEditorDialog(mActivity, mProvider).show();
-            else
-                return false;
 
-            return true;
+            // Returning false means that the target item did not execute anything other than small changes.
+            // It can be said that descendants can interfere with this by making changes and returning true;
+            return false;
         }
 
         @Override
@@ -975,19 +1046,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             return mActivity;
         }
 
-        public void selectAll(boolean newState)
+        public void setSelectionState(boolean newState, boolean tryForeground)
         {
             IPerformerEngine engine = mProvider.getPerformerEngine();
-            if (mForegroundConnection != null)
-                selectAll(mForegroundConnection, newState);
+            if (mForegroundConnection != null && tryForeground)
+                setSelectionState(mForegroundConnection, newState);
             else if (engine != null) {
                 for (IBaseEngineConnection baseEngineConnection : engine.getConnectionList())
                     if (baseEngineConnection instanceof IEngineConnection<?>)
-                        selectAll((IEngineConnection<? extends Selectable>) baseEngineConnection, newState);
+                        setSelectionState((IEngineConnection<? extends Selectable>) baseEngineConnection, newState);
             }
         }
 
-        private <T extends Selectable> void selectAll(IEngineConnection<T> connection, boolean newState)
+        private <T extends Selectable> void setSelectionState(IEngineConnection<T> connection, boolean newState)
         {
             List<T> availableList = connection.getAvailableList();
             if (availableList.size() > 0) {
@@ -996,6 +1067,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                     positions[i] = i;
                 connection.setSelected(availableList, positions, newState);
             }
+        }
+
+        public void setCancellable(boolean cancellable)
+        {
+            mCancellable = cancellable;
         }
 
         @Nullable
@@ -1007,12 +1083,16 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
         private void updateTitle(int totalSelections)
         {
-            mPreviewSelections.setTitle(String.valueOf(totalSelections));
-            mPreviewSelections.setEnabled(totalSelections > 0);
+            // For local selections, the menu may be invalidated or may be just created meaning the menu item may not be
+            // available yet.
+            if (mPreviewSelections != null) {
+                mPreviewSelections.setTitle(String.valueOf(totalSelections));
+                mPreviewSelections.setEnabled(totalSelections > 0);
+            }
         }
 
         /**
-         * If you want to only use a single connection with {@link #selectAll} calls, you should provide the foreground
+         * If you want to only use a single connection with {@link #setSelectionState} calls, you should provide the foreground
          * connection that should be used.
          *
          * @param connection to be used with foreground operations like select all or none

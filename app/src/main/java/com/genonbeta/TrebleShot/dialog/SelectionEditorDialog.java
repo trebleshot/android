@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
@@ -85,10 +84,17 @@ public class SelectionEditorDialog extends AlertDialog.Builder
         setPositiveButton(R.string.butn_close, null);
     }
 
-    public void checkReversed(View removeSign, Selectable selectable)
+    public void checkReversed(TextView textView, View removeSign, Selectable selectable)
     {
         selectable.setSelectableSelected(!selectable.isSelectableSelected());
-        removeSign.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
+        mark(textView, removeSign, selectable);
+    }
+
+    public void mark(TextView textView, View removeSign, Selectable selectable)
+    {
+        boolean selected = selectable.isSelectableSelected();
+        textView.setEnabled(selected);
+        removeSign.setVisibility(selected ? View.GONE : View.VISIBLE);
     }
 
     public void massCheck(boolean check)
@@ -148,16 +154,16 @@ public class SelectionEditorDialog extends AlertDialog.Builder
             View removalSignView = convertView.findViewById(R.id.removalSign);
 
             textView1.setText(selectable.getSelectableTitle());
-            removalSignView.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
+            mark(textView1, removalSignView, selectable);
 
             convertView.setClickable(true);
-            convertView.setOnClickListener(v -> checkReversed(removalSignView, selectable));
+            convertView.setOnClickListener(v -> checkReversed(textView1, removalSignView, selectable));
 
             return convertView;
         }
     }
 
-    private <T extends Selectable> void  addToMappedObjectList(IEngineConnection<T> connection)
+    private <T extends Selectable> void addToMappedObjectList(IEngineConnection<T> connection)
     {
         mMappedConnectionList.add(new MappedConnection<>(connection, connection.getSelectedItemList()));
     }

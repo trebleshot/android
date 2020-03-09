@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -76,6 +75,8 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         performerMenu.load(menuView.getMenu());
         performerMenu.setUp(mPerformerEngine);
 
+        mMenuCallback.setCancellable(false);
+
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
@@ -125,8 +126,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
                     attachListeners(editableListFragment);
 
                     if (editableListFragment.getAdapterImpl() != null)
-                        new Handler(Looper.getMainLooper()).postDelayed(adapter::notifyAllSelectionChanges,
-                                200);
+                        new Handler(Looper.getMainLooper()).postDelayed(adapter::syncAllAndNotify, 200);
                 }
             }
 

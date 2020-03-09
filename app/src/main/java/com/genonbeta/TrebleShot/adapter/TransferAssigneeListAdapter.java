@@ -55,10 +55,8 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new ViewHolder(getInflater().inflate(
-                isHorizontalOrientation() || isGridLayoutRequested()
-                        ? R.layout.list_assignee_grid
-                        : R.layout.list_assignee, parent, false));
+        return new ViewHolder(getInflater().inflate(isHorizontalOrientation() || isGridLayoutRequested()
+                ? R.layout.list_assignee_grid : R.layout.list_assignee, parent, false));
     }
 
     @Override

@@ -42,12 +42,17 @@ import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
+import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
@@ -109,10 +114,11 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         }
     };
 
-    public static boolean handleEditingAction(int id, final FileListFragment fragment,
+    public static boolean handleEditingAction(MenuItem item, final FileListFragment fragment,
                                               List<FileHolder> selectedItemList)
     {
         final FileListAdapter adapter = fragment.getAdapter();
+        final int id = item.getItemId();
 
         if (id == R.id.action_mode_file_delete) {
             new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
@@ -165,8 +171,6 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         setDefaultOrderingCriteria(FileListAdapter.MODE_SORT_ORDER_ASCENDING);
         setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(FileListAdapter.MODE_GROUP_BY_DEFAULT);
-        // TODO: 22.02.2020 Implement default selection callback installation
-        //setDefaultSelectionCallback(new SelectionCallback(this));
     }
 
     @Override
@@ -264,6 +268,13 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         }
     }
 
+    @Nullable
+    @Override
+    public PerformerMenu onCreatePerformerMenu(Context context)
+    {
+        return new PerformerMenu(context, new SelectionCallback(this, this));
+    }
+
     @Override
     public FileListAdapter onAdapter()
     {
@@ -326,7 +337,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                         } else if (id == R.id.action_mode_file_change_save_path) {
                             startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
                         } else
-                            return !handleEditingAction(id, FileListFragment.this, generateSelectionList);
+                            return !handleEditingAction(item, FileListFragment.this, generateSelectionList);
 
                         return true;
                     });
@@ -473,18 +484,9 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
             if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-            else if (fileInfo.file.isDirectory()) {
+            else if (fileInfo.file != null && fileInfo.file.isDirectory()) {
                 FileListFragment.this.goPath(fileInfo.file);
-
-                if (getEngineConnection().getSelectedItemList().size() > 0
-                        && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection",
-                        false))
-                    createSnackbar(R.string.mesg_helpFolderSelection)
-                            .setAction(R.string.butn_gotIt, v -> AppUtils.getDefaultPreferences(getContext())
-                                    .edit()
-                                    .putBoolean("helpFolderSelection", true)
-                                    .apply())
-                            .show();
+                AppUtils.showFolderSelectionHelp(this);
             } else
                 return super.performLayoutClick(holder);
 
@@ -531,38 +533,47 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         void onPathChanged(DocumentFile file);
     }
 
-    /*
-
-    private static class SelectionCallback extends SharingActionModeCallback<FileListAdapter.GenericFileHolder>
+    private static class SelectionCallback extends SharingPerformerMenuCallback
     {
         private FileListFragment mFragment;
 
-        public SelectionCallback(FileListFragment fragment)
+        public SelectionCallback(FileListFragment fragment, PerformerEngineProvider provider)
         {
-            super(fragment);
+            super(fragment.getActivity(), provider);
             mFragment = fragment;
         }
 
         @Override
-        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
         {
-            super.onCreateActionMenu(context, actionMode, menu);
-            actionMode.getMenuInflater().inflate(R.menu.action_mode_file, menu);
+            super.onPerformerMenuList(performerMenu, inflater, targetMenu);
+            inflater.inflate(R.menu.action_mode_file, targetMenu);
             return true;
         }
 
         @Override
-        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        public boolean onPerformerMenuSelected(PerformerMenu performerMenu, MenuItem item)
         {
-            int id = item.getItemId();
+            IPerformerEngine performerEngine = getPerformerEngine();
 
-            if (getFragment().getEngineConnection().getSelectedItemList().size() == 0)
-                return super.onActionMenuItemSelected(context, actionMode, item);
+            if (performerEngine == null)
+                return false;
 
-            if (!handleEditingAction(id, mFragment, getFragment().getEngineConnection().getSelectedItemList()))
-                return super.onActionMenuItemSelected(context, actionMode, item);
+            List<? extends Selectable> selectableList = new ArrayList<>(performerEngine.getSelectionList());
+            List<FileHolder> fileList = new ArrayList<>();
 
+            for (Selectable selectable : selectableList)
+                if (selectable instanceof FileHolder)
+                    fileList.add((FileHolder) selectable);
+
+            if (fileList.size() <= 0 || !handleEditingAction(item, mFragment, fileList))
+                return super.onPerformerMenuSelected(performerMenu, item);
+
+            // Currently, copy, rename, and delete is in-place which are all making changes and thus should end the
+            // selection session. If something that does not make changes needs to implemented, it should be considered
+            // if it makes more sense to define it instead of inside the 'handleEditionAction' method which is also
+            // invoked by the individual item using popup menus.
             return true;
         }
-    }*/
+    }
 }

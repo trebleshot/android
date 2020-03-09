@@ -18,13 +18,13 @@
 
 package com.genonbeta.TrebleShot.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,15 +33,23 @@ import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
+import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,7 +89,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
-        // TODO: 22.02.2020 Add the default selection callback
         setUseDefaultPaddingDecoration(true);
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
@@ -124,6 +131,13 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
 
         if (getSelect() == null)
             setSelect(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP));
+    }
+
+    @Nullable
+    @Override
+    public PerformerMenu onCreatePerformerMenu(Context context)
+    {
+        return new PerformerMenu(getContext(), new SelectionCallback(getActivity(), this));
     }
 
     @Override
@@ -214,55 +228,59 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         return this;
     }
 
-    /*
-    private static class SelectionCallback extends EditableListFragment.SelectionCallback<PreloadedGroup>
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback
     {
-        public SelectionCallback(EditableListFragmentImpl<PreloadedGroup> fragment)
+        public SelectionCallback(Activity activity, PerformerEngineProvider provider)
         {
-            super(fragment);
+            super(activity, provider);
         }
 
         @Override
-        public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
         {
-            super.onPrepareActionMenu(context, actionMode);
+            super.onPerformerMenuList(performerMenu, inflater, targetMenu);
+            inflater.inflate(R.menu.action_mode_group, targetMenu);
             return true;
         }
 
         @Override
-        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-        {
-            super.onCreateActionMenu(context, actionMode, menu);
-            actionMode.getMenuInflater().inflate(R.menu.action_mode_group, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        public boolean onPerformerMenuSelected(PerformerMenu performerMenu, MenuItem item)
         {
             int id = item.getItemId();
+            Kuick kuick = AppUtils.getKuick(getActivity());
+            IPerformerEngine engine = getPerformerEngine();
 
-            List<PreloadedGroup> selectionList = new ArrayList<>(getFragment().getEngineConnection().getSelectedItemList());
+            if (engine == null)
+                return false;
 
-            if (id == R.id.action_mode_group_delete)
-                DialogUtils.showRemoveTransferGroupListDialog(getFragment().getActivity(), selectionList);
-            else if (id == R.id.action_mode_group_serve_on_web
-                    || id == R.id.action_mode_group_hide_on_web) {
-                boolean success = false;
+            List<Selectable> genericList = new ArrayList<>(engine.getSelectionList());
+            List<PreloadedGroup> selectionList = new ArrayList<>();
+
+            for (Selectable selectable : genericList)
+                if (selectable instanceof PreloadedGroup)
+                    selectionList.add((PreloadedGroup) selectable);
+
+            if (id == R.id.action_mode_group_delete) {
+                DialogUtils.showRemoveTransferGroupListDialog(getActivity(), selectionList);
+                return true;
+            } else if (id == R.id.action_mode_group_serve_on_web || id == R.id.action_mode_group_hide_on_web) {
+                boolean served = id == R.id.action_mode_group_serve_on_web;
+                List<PreloadedGroup> changedList = new ArrayList<>();
 
                 for (PreloadedGroup group : selectionList) {
-                    group.isServedOnWeb = group.hasOutgoing() && id == R.id.action_mode_group_serve_on_web;
+                    if (!group.hasOutgoing() || group.isServedOnWeb == served)
+                        continue;
 
-                    if (group.isServedOnWeb)
-                        success = true;
+                    group.isServedOnWeb = served;
+                    changedList.add(group);
                 }
 
-                AppUtils.getDatabase(getFragment().getContext()).update(selectionList);
-                AppUtils.getDatabase(getFragment().getContext()).broadcast();
+                kuick.update(changedList);
+                kuick.broadcast();
             } else
-                return super.onActionMenuItemSelected(context, actionMode, item);
+                super.onPerformerMenuSelected(performerMenu, item);
 
-            return true;
+            return false;
         }
-    }*/
+    }
 }

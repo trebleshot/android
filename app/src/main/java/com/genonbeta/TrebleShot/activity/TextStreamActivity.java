@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import com.genonbeta.TrebleShot.R;
@@ -30,11 +29,8 @@ import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
-public class TextStreamActivity extends Activity implements PerformerEngineProvider
+public class TextStreamActivity extends Activity
 {
-    private PerformerEngine mPerformerEngine = new PerformerEngine();
-    private TextStreamListFragment mStreamListFragment;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -44,20 +40,10 @@ public class TextStreamActivity extends Activity implements PerformerEngineProvi
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mStreamListFragment = (TextStreamListFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.activity_text_stream_fragment);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        // TODO: 22.02.2020 Add the condition to remmove the active selection session
-            super.onBackPressed();
     }
 
     @Override
@@ -71,11 +57,5 @@ public class TextStreamActivity extends Activity implements PerformerEngineProvi
             return super.onOptionsItemSelected(item);
 
         return true;
-    }
-
-    @Override
-    public IPerformerEngine getPerformerEngine()
-    {
-        return mPerformerEngine;
     }
 }

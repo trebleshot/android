@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
@@ -54,8 +53,8 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
     @Override
     public int onGridSpanSize(int viewType, int currentSpanSize)
     {
-        return viewType == ImageListAdapter.VIEW_TYPE_REPRESENTATIVE
-                || viewType == ImageListAdapter.VIEW_TYPE_ACTION_BUTTON
+        return viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE
+                || viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                 ? currentSpanSize : super.onGridSpanSize(viewType, currentSpanSize);
     }
 
@@ -64,19 +63,22 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
     {
         super.onCreateOptionsMenu(menu, inflater);
 
-        Map<String, Integer> options = new ArrayMap<>();
+        if (!isUsingLocalSelection() || !isLocalSelectionActivated()) {
+            Map<String, Integer> options = new ArrayMap<>();
 
-        onGroupingOptions(options);
+            onGroupingOptions(options);
 
-        mGroupingOptions.clear();
-        mGroupingOptions.putAll(options);
+            mGroupingOptions.clear();
+            mGroupingOptions.putAll(options);
 
-        if (mGroupingOptions.size() > 0) {
-            inflater.inflate(R.menu.actions_abs_group_shareable_list, menu);
-            MenuItem groupingItem = menu.findItem(R.id.actions_abs_group_shareable_grouping);
+            if (mGroupingOptions.size() > 0) {
+                inflater.inflate(R.menu.actions_abs_group_shareable_list, menu);
+                MenuItem groupingItem = menu.findItem(R.id.actions_abs_group_shareable_grouping);
 
-            if (groupingItem != null)
-                applyDynamicMenuItems(groupingItem, R.id.actions_abs_group_shareable_group_grouping, mGroupingOptions);
+                if (groupingItem != null)
+                    applyDynamicMenuItems(groupingItem, R.id.actions_abs_group_shareable_group_grouping,
+                            mGroupingOptions);
+            }
         }
     }
 
@@ -84,8 +86,11 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
     public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         super.onPrepareOptionsMenu(menu);
-        checkPreferredDynamicItem(menu.findItem(R.id.actions_abs_group_shareable_grouping), getGroupingCriteria(),
-                mGroupingOptions);
+
+        if (!isUsingLocalSelection() || !isLocalSelectionActivated()) {
+            checkPreferredDynamicItem(menu.findItem(R.id.actions_abs_group_shareable_grouping), getGroupingCriteria(),
+                    mGroupingOptions);
+        }
     }
 
     @Override

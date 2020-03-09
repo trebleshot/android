@@ -18,28 +18,40 @@
 
 package com.genonbeta.TrebleShot.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.SelectionUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.PerformerMenu;
+import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,7 +73,6 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
         setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
-        // TODO: 22.02.2020 set default selection callback
     }
 
     @Override
@@ -88,6 +99,13 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
         setEmptyText(getString(R.string.text_listEmptyTextStream));
         getListView().setClipToPadding(false);
         getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
+    }
+
+    @Nullable
+    @Override
+    public PerformerMenu onCreatePerformerMenu(Context context)
+    {
+        return new PerformerMenu(context, new SelectionCallback(getActivity(), this));
     }
 
     @Override
@@ -176,52 +194,105 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
         return context.getString(R.string.text_textStream);
     }
 
-    /*
-    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback
     {
-        public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
+        private MenuItem mShareWithTrebleShot;
+        private MenuItem mShareWithOthers;
+
+        public SelectionCallback(Activity activity, PerformerEngineProvider provider)
         {
-            super(fragment);
+            super(activity, provider);
         }
 
         @Override
-        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+        public boolean onPerformerMenuList(PerformerMenu performerMenu, MenuInflater inflater, Menu targetMenu)
         {
-            super.onCreateActionMenu(context, actionMode, menu);
-            actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
+            super.onPerformerMenuList(performerMenu, inflater, targetMenu);
+
+            // Sharing text with this menu is unnecessary since only one item can be sent at a time. So, this will be
+            // disabled until it is possible to send multiple items.
+            //inflater.inflate(R.menu.action_mode_share, targetMenu);
+            inflater.inflate(R.menu.action_mode_text_stream, targetMenu);
+
+            mShareWithTrebleShot = targetMenu.findItem(R.id.action_mode_share_trebleshot);
+            MenuItemCompat.setIconTintList(mShareWithTrebleShot, null);
+
+            mShareWithOthers = targetMenu.findItem(R.id.action_mode_share_all_apps);
+            updateShareMethods(getPerformerEngine());
+
             return true;
         }
 
         @Override
-        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        public boolean onPerformerMenuSelected(PerformerMenu performerMenu, MenuItem item)
         {
             int id = item.getItemId();
 
-            List<TextStreamObject> selectionList = getFragment().getEngineConnection().getSelectedItemList();
+            IPerformerEngine engine = getPerformerEngine();
+            if (engine == null)
+                return false;
+
+            List<Selectable> genericSelectionList = new ArrayList<>(engine.getSelectionList());
+            List<TextStreamObject> selectionList = new ArrayList<>();
+            Kuick kuick = AppUtils.getKuick(getActivity());
+            Context context = getActivity();
+
+            for (Selectable selectable : genericSelectionList)
+                if (selectable instanceof TextStreamObject)
+                    selectionList.add((TextStreamObject) selectable);
 
             if (id == R.id.action_mode_text_stream_delete) {
-                AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
-                AppUtils.getDatabase(getFragment().getContext()).broadcast();
+                kuick.remove(selectionList);
+                kuick.broadcast();
+                return true;
             } else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
                 if (selectionList.size() == 1) {
                     TextStreamObject streamObject = selectionList.get(0);
-
-                    Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
-                            ? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
+                    boolean shareLocally = id == R.id.action_mode_share_trebleshot;
+                    Intent intent = (shareLocally ? new Intent(context, ShareActivity.class) : new Intent())
+                            .setAction(Intent.ACTION_SEND)
                             .putExtra(Intent.EXTRA_TEXT, streamObject.text)
                             .setType("text/*");
 
-                    getAdapter().getContext().startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getFragment().getContext().getString(R.string.text_fileShareAppChoose)) : shareIntent);
-                } else {
+                    getActivity().startActivity(shareLocally ? intent : Intent.createChooser(intent, context.getString(
+                            R.string.text_fileShareAppChoose)));
+                } else
                     Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
             } else
-                return super.onActionMenuItemSelected(context, actionMode, item);
+                return super.onPerformerMenuSelected(performerMenu, item);
 
-            return true;
+            return false;
         }
-    }*/
+
+        @Override
+        public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                IBaseEngineConnection owner, Selectable selectable, boolean isSelected,
+                                                int position)
+        {
+            super.onPerformerMenuItemSelected(performerMenu, engine, owner, selectable, isSelected, position);
+            updateShareMethods(engine);
+        }
+
+        @Override
+        public void onPerformerMenuItemSelected(PerformerMenu performerMenu, IPerformerEngine engine,
+                                                IBaseEngineConnection owner, List<? extends Selectable> selectableList,
+                                                boolean isSelected, int[] positions)
+        {
+            super.onPerformerMenuItemSelected(performerMenu, engine, owner, selectableList, isSelected, positions);
+            updateShareMethods(engine);
+        }
+
+        private void updateShareMethods(IPerformerEngine engine)
+        {
+            int totalSelections = SelectionUtils.getTotalSize(engine);
+
+            if (mShareWithOthers != null)
+                mShareWithOthers.setEnabled(totalSelections == 1);
+
+            if (mShareWithTrebleShot != null)
+                mShareWithTrebleShot.setEnabled(totalSelections == 1);
+        }
+    }
 
     private class StatusReceiver extends BroadcastReceiver
     {

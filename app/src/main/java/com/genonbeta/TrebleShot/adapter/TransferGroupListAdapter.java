@@ -29,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -183,8 +184,11 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
         }
     }
 
-    public void updateActiveList(long[] activeList)
+    public void updateActiveList(@Nullable long[] activeList)
     {
+        if (activeList == null)
+            return;
+
         synchronized (mRunningTasks) {
             mRunningTasks.clear();
 

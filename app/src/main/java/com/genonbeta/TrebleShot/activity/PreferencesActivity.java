@@ -70,13 +70,4 @@ public class PreferencesActivity extends Activity
         getMenuInflater().inflate(R.menu.actions_preferences_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-	/*
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-        PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(this),
-                AppUtils.getDefaultPreferences(this).getWeakManager());
-	}*/
 }

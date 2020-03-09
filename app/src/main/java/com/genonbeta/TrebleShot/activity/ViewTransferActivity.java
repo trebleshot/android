@@ -47,9 +47,6 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -60,7 +57,7 @@ import java.util.List;
  * Date: 5/23/17 1:43 PM
  */
 
-public class ViewTransferActivity extends Activity implements PerformerEngineProvider, SnackbarPlacementProvider
+public class ViewTransferActivity extends Activity implements SnackbarPlacementProvider
 {
     public static final String TAG = ViewTransferActivity.class.getSimpleName();
 
@@ -75,7 +72,6 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
     private OnBackPressedListener mBackPressedListener;
     private PreloadedGroup mGroup;
     private TransferObject mTransferObject;
-    private PerformerEngine mPerformerEngine = new PerformerEngine();
     private ShowingAssignee mAssignee;
     private String mDirectory;
     private MenuItem mCnTestMenu;
@@ -434,12 +430,6 @@ public class ViewTransferActivity extends Activity implements PerformerEnginePro
     public PreloadedGroup getGroup()
     {
         return mGroup;
-    }
-
-    @Override
-    public IPerformerEngine getPerformerEngine()
-    {
-        return mPerformerEngine;
     }
 
     public void reconstructGroup()
