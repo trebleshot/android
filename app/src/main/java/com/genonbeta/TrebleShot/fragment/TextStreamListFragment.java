@@ -124,13 +124,6 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     }
 
     @Override
-    public int onGridSpanSize(int viewType, int currentSpanSize)
-    {
-        return viewType == TextStreamListAdapter.VIEW_TYPE_REPRESENTATIVE ? currentSpanSize
-                : super.onGridSpanSize(viewType, currentSpanSize);
-    }
-
-    @Override
     public TextStreamListAdapter onAdapter()
     {
         final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {

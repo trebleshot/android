@@ -563,4 +563,5 @@
     <string name="butn_cancelSelection">Cancel selection</string>
     <string name="text_startTransferButtonHelp">Start transfer by clicking this button</string>
     <string name="butn_compose">Compose</string>
+    <string name="butn_addMore">Add more</string>
 </resources>

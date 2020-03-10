@@ -85,8 +85,8 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         return viewType == VIEW_TYPE_DEFAULT ? new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(
-                isGridLayoutRequested() ? R.layout.list_application_grid : R.layout.list_application, parent,
-                false)) : createDefaultViews(parent, viewType, false);
+                R.layout.list_application, parent, false)) : createDefaultViews(parent, viewType,
+                false);
     }
 
     @Override
@@ -118,12 +118,6 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean isGridSupported()
-    {
-        return true;
     }
 
     public static class PackageHolder extends GroupEditableListAdapter.GroupShareable implements Container

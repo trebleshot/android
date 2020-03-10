@@ -31,8 +31,6 @@ import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 
 import java.util.Map;
 
@@ -48,7 +46,6 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
         setDefaultOrderingCriteria(ApplicationListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(ApplicationListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(ApplicationListAdapter.MODE_GROUP_BY_DATE);
-        setDefaultViewingGridSize(1, 4);
         setUseDefaultPaddingDecoration(false);
     }
 

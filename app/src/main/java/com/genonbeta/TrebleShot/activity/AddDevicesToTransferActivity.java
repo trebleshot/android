@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -43,6 +45,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -69,6 +72,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     private ViewGroup mLayoutStatusContainer;
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
+    private int mColorActive;
+    private int mColorNormal;
     private IntentFilter mFilter = new IntentFilter(Kuick.ACTION_DATABASE_CHANGE);
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -117,6 +122,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.id);
         assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, false);
 
+        mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
+        mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
         mProgressBar = findViewById(R.id.progressBar);
         mProgressTextLeft = findViewById(R.id.text1);
         mProgressTextRight = findViewById(R.id.text2);
@@ -293,6 +300,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
         //mTextMain.setText(R.string.text_addDevicesToTransfer);
         mActionButton.setIconResource(R.drawable.ic_add_white_24dp);
+        mActionButton.setText(R.string.butn_addMore);
+        mActionButton.setBackgroundTintList(ColorStateList.valueOf(mColorNormal));
         mLayoutStatusContainer.setVisibility(View.GONE);
         mActionButton.setOnClickListener(v -> startConnectionManagerActivity());
     }
@@ -306,7 +315,9 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public void takeOnProcessMode()
     {
         mLayoutStatusContainer.setVisibility(View.VISIBLE);
+        mActionButton.setText(R.string.butn_cancel);
         mActionButton.setIconResource(R.drawable.ic_close_white_24dp);
+        mActionButton.setBackgroundTintList(ColorStateList.valueOf(mColorActive));
         mActionButton.setOnClickListener(v -> {
             if (mTask != null)
                 mTask.getInterrupter().interrupt();

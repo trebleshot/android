@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_margin="@dimen/fab_margin"
-            android:text="@string/butn_addDevices"
+            android:text="@string/butn_addMore"
             app:icon="@drawable/ic_add_white_24dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.*;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
@@ -82,6 +84,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     private MenuItem mAddDeviceMenu;
     private MenuItem mLimitMenu;
     private MenuItem mToggleBrowserShare;
+    private int mColorActive;
+    private int mColorNormal;
     private CrunchLatestDataTask mDataCruncher;
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -160,6 +164,9 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
+        mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
 
         if (Intent.ACTION_VIEW.equals(getIntent().getAction()) && getIntent().getData() != null) {
             try {
@@ -471,13 +478,13 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             if (hasAnyFiles || hasRunning) {
                 toggleButton.setIconResource(hasRunning ? R.drawable.ic_pause_white_24dp
                         : R.drawable.ic_play_arrow_white_24dp);
+                toggleButton.setBackgroundTintList(ColorStateList.valueOf(hasRunning ? mColorActive : mColorNormal));
 
-                if (hasRunning) {
+                if (hasRunning)
                     toggleButton.setText(R.string.butn_pause);
-                } else {
+                else
                     toggleButton.setText(hasIncoming == hasOutgoing ? R.string.butn_start
                             : (hasIncoming ? R.string.butn_receive : R.string.butn_send));
-                }
 
                 toggleButton.setVisibility(View.VISIBLE);
             } else

@@ -307,7 +307,8 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
                     popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
 
                     menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead && isFile);
-                    menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canWrite || isMounted || isBookmarked);
+                    menuItself.findItem(R.id.action_mode_file_rename).setEnabled((canWrite || isMounted || isBookmarked)
+                            && !FileHolder.Type.Pending.equals(holder.getType()));
                     menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canWrite && !isMounted);
                     menuItself.findItem(R.id.action_mode_file_show).setVisible(FileHolder.Type.Recent.equals(
                             holder.getType()));
