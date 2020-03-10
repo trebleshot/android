@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -39,19 +40,16 @@ import com.genonbeta.android.framework.util.listing.Merger;
 public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamObject,
         GroupEditableListAdapter.GroupViewHolder>
 {
-    private Kuick mKuick;
-
-    public TextStreamListAdapter(Context context, Kuick kuick)
+    public TextStreamListAdapter(Context context)
     {
         super(context, MODE_GROUP_BY_DATE);
-        mKuick = kuick;
     }
 
     @Override
     protected void onLoad(GroupLister<TextStreamObject> lister)
     {
-        for (TextStreamObject object : mKuick.castQuery(new SQLQuery.Select(Kuick.TABLE_CLIPBOARD),
-                TextStreamObject.class))
+        for (TextStreamObject object : AppUtils.getKuick(getContext()).castQuery(
+                new SQLQuery.Select(Kuick.TABLE_CLIPBOARD), TextStreamObject.class))
             lister.offerObliged(this, object);
     }
 
@@ -77,7 +75,7 @@ public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamOb
 
             if (!holder.tryBinding(object)) {
                 View parentView = holder.itemView;
-                String text = object.text.replace("\n", " ");
+                String text = object.text.replace("\n", " ").trim();
 
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
