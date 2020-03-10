@@ -29,7 +29,6 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
@@ -49,7 +48,6 @@ import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnectio
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +129,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
                 registerLayoutViewClicks(clazz);
         };
 
-        return new TextStreamListAdapter(getActivity(), AppUtils.getKuick(getContext()))
+        return new TextStreamListAdapter(getActivity())
         {
             @NonNull
             @Override
