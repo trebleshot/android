@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.object;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
@@ -349,6 +350,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
 
         try {
             if (parent == null) {
+                Log.d(TransferObject.class.getSimpleName(), "onRemoveObject: Had to recreate the group");
                 parent = new TransferGroup(groupId);
                 kuick.reconstruct(parent);
             }

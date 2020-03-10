@@ -44,6 +44,13 @@ public class TransferFileExplorerFragment extends TransferListFragment
     private ExtendedFloatingActionButton mToggleButton;
 
     @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        setHasBottomSpace(true);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -79,8 +86,6 @@ public class TransferFileExplorerFragment extends TransferListFragment
     {
         super.onViewCreated(view, savedInstanceState);
         setSnackbarContainer(view.findViewById(R.id.layout_transfer_explorer_fragment_content));
-        getListView().setClipToPadding(false);
-        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 4));
 
         if (getActivity() instanceof ViewTransferActivity)
             ((ViewTransferActivity) getActivity()).showMenus();

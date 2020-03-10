@@ -57,7 +57,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferListFragment extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem,
+public class TransferListFragment extends GroupEditableListFragment<TransferListAdapter.GenericItem,
         GroupEditableListAdapter.GroupViewHolder, TransferListAdapter> implements TitleProvider,
         Activity.OnBackPressedListener
 {
@@ -323,10 +323,12 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                                                         TransferObject.Type.INCOMING);
 
                                                 List<TransferObject> checkList = AppUtils.getKuick(getService()).
-                                                        castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                                                                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                                                + Kuick.FIELD_TRANSFER_TYPE + "=?",
-                                                                        String.valueOf(getTransferGroup().id), TransferObject.Type.INCOMING.toString()), TransferObject.class);
+                                                        castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                                                                Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
+                                                                        + Kuick.FIELD_TRANSFER_TYPE + "=?",
+                                                                String.valueOf(getTransferGroup().id),
+                                                                TransferObject.Type.INCOMING.toString()),
+                                                                TransferObject.class);
 
                                                 TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().id);
 
@@ -345,15 +347,19 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                                                         publishStatusText(transferObject.name);
 
                                                         try {
-                                                            file = FileUtils.getIncomingPseudoFile(getService(), transferObject, getTransferGroup(), false);
-                                                            pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferObject, pseudoGroup, true);
+                                                            file = FileUtils.getIncomingPseudoFile(getService(),
+                                                                    transferObject, getTransferGroup(),
+                                                                    false);
+                                                            pseudoFile = FileUtils.getIncomingPseudoFile(getService(),
+                                                                    transferObject, pseudoGroup, true);
                                                         } catch (Exception e) {
                                                             continue;
                                                         }
 
                                                         if (file != null && pseudoFile != null) {
                                                             if (file.canWrite())
-                                                                FileUtils.move(getService(), file, pseudoFile, getInterrupter());
+                                                                FileUtils.move(getService(), file, pseudoFile,
+                                                                        getInterrupter());
                                                             else
                                                                 throw new IOException("Failed to access: " + file.getUri());
                                                         }
@@ -400,8 +406,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     {
         if (deviceId != null && type != null)
             try {
-                ShowingAssignee assignee = new ShowingAssignee(groupId, deviceId,
-                        TransferObject.Type.valueOf(type));
+                ShowingAssignee assignee = new ShowingAssignee(groupId, deviceId, TransferObject.Type.valueOf(type));
 
                 AppUtils.getKuick(getContext()).reconstruct(assignee);
                 TransferUtils.loadAssigneeInfo(getContext(), assignee);
@@ -462,11 +467,11 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                 return false;
 
             List<Selectable> genericList = new ArrayList<>(engine.getSelectionList());
-            List<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>();
+            List<TransferListAdapter.GenericItem> selectionList = new ArrayList<>();
 
             for (Selectable selectable : genericList)
-                if (selectable instanceof TransferListAdapter.AbstractGenericItem)
-                    selectionList.add((TransferListAdapter.AbstractGenericItem) selectable);
+                if (selectable instanceof TransferListAdapter.GenericItem)
+                    selectionList.add((TransferListAdapter.GenericItem) selectable);
 
             if (id == R.id.action_mode_transfer_delete) {
                 DialogUtils.showRemoveTransferObjectListDialog(getActivity(), selectionList);

@@ -84,8 +84,8 @@ public class EstablishConnectionDialog extends ProgressDialog
                     publishStatusText(connectionResult.connection.adapterName);
                     setProgress(getProgress() + 1);
 
-                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getKuick(activity),
-                            Integer.class, client -> {
+                    final Long calculatedTime = CommunicationBridge.connect(AppUtils.getKuick(activity), Long.class,
+                            client -> {
                                 try {
                                     long startTime = System.nanoTime();
                                     CoolSocket.ActiveConnection connection = client.connectWithHandshake(

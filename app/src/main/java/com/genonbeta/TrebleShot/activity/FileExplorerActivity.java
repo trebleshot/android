@@ -35,11 +35,10 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvi
 
 import java.io.FileNotFoundException;
 
-public class FileExplorerActivity extends Activity implements PerformerEngineProvider
+public class FileExplorerActivity extends Activity
 {
     public static final String EXTRA_FILE_PATH = "filePath";
 
-    private PerformerEngine mPerformerEngine = new PerformerEngine();
     private FileExplorerFragment mFragmentFileExplorer;
 
     @Override
@@ -98,12 +97,6 @@ public class FileExplorerActivity extends Activity implements PerformerEnginePro
             }
         } else
             openFolder(null);
-    }
-
-    @Override
-    public IPerformerEngine getPerformerEngine()
-    {
-        return mPerformerEngine;
     }
 
     private void openFolder(@Nullable DocumentFile requestedFolder)

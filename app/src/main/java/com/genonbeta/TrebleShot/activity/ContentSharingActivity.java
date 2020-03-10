@@ -99,6 +99,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
         Bundle arguments = new Bundle();
         arguments.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
+        arguments.putBoolean(FileExplorerFragment.ARG_HAS_BOTTOM_SPACE, true);
 
         pagerAdapter.add(new StableItem(0, ApplicationListFragment.class, arguments));
         pagerAdapter.add(new StableItem(1, FileExplorerFragment.class, arguments).setTitle(getString(

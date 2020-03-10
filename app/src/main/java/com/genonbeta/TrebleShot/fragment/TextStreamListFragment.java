@@ -64,6 +64,13 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     private StatusReceiver mStatusReceiver = new StatusReceiver();
 
     @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        setHasBottomSpace(true);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -96,8 +103,6 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
 
         setEmptyImage(R.drawable.ic_forum_white_24dp);
         setEmptyText(getString(R.string.text_listEmptyTextStream));
-        getListView().setClipToPadding(false);
-        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 4));
     }
 
     @Nullable

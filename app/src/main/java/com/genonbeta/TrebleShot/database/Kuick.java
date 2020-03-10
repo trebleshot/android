@@ -37,11 +37,6 @@ import java.util.List;
 
 public class Kuick extends KuickDb
 {
-    /*
-     * Database migration is an important step when upgrading to an upper version. The user data
-     * is always preserved.
-     */
-
     public static final int DATABASE_VERSION = 13;
 
     public static final String

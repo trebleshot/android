@@ -76,6 +76,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 {
     public final static String
             ARG_SELECT_BY_CLICK = "argSelectByClick",
+            ARG_HAS_BOTTOM_SPACE = "argSelectByClick",
             ARG_SELECTION_CLASSES = "argSelectionClasses",
             ARG_SELECTION_OBJECTS = "argSelectionObjects";
 
@@ -90,7 +91,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     private boolean mUseDefaultPaddingDecoration = false;
     private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
     private boolean mTwoRowLayoutState = false;
-    private boolean mDefaultSelectByClick = false;
+    private boolean mSelectByClick = false;
+    private boolean mHasBottomSpace = false;
     private boolean mLocalSelectionActivated = false;
     private float mDefaultPaddingDecorationSize = -1;
     private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
@@ -143,11 +145,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     {
         super.onCreate(savedInstanceState);
         getAdapter().setFragment(this);
+        Bundle arguments = getArguments();
         mTwoRowLayoutState = isTwoRowLayout();
         mEngineConnection.setSelectableProvider(getAdapterImpl());
 
-        if (getArguments() != null)
-            mDefaultSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
+        if (arguments != null) {
+            mSelectByClick = arguments.getBoolean(ARG_SELECT_BY_CLICK, mSelectByClick);
+            mHasBottomSpace = arguments.getBoolean(ARG_HAS_BOTTOM_SPACE, mHasBottomSpace);
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SELECTION_CLASSES)
                 && savedInstanceState.containsKey(ARG_SELECTION_OBJECTS)) {
@@ -209,6 +214,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
         getListView().addOnItemTouchListener(new SwipeSelectionListener<>(this));
+
+        if (mHasBottomSpace) {
+            int bottomSpace = (int) (getResources().getDimension(R.dimen.fab_margin) * 4);
+            getListView().setClipToPadding(false);
+            getListView().setPadding(0, 0, 0, bottomSpace);
+        }
     }
 
 
@@ -756,7 +767,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean isSelectByClick()
     {
-        return mDefaultSelectByClick || mLocalSelectionActivated;
+        return mSelectByClick || mLocalSelectionActivated;
     }
 
     public boolean isSortingSupported()
@@ -929,6 +940,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void setFilteringSupported(boolean supported)
     {
         mFilteringSupported = supported;
+    }
+
+    public void setHasBottomSpace(boolean has)
+    {
+        mHasBottomSpace = has;
     }
 
     public void setUseDefaultPaddingDecoration(boolean use)

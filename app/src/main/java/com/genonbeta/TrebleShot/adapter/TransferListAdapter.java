@@ -64,9 +64,9 @@ import java.util.Map;
  * Date: 4/15/17 12:29 PM
  */
 
-public class TransferListAdapter extends GroupEditableListAdapter<TransferListAdapter.AbstractGenericItem,
+public class TransferListAdapter extends GroupEditableListAdapter<TransferListAdapter.GenericItem,
         GroupEditableListAdapter.GroupViewHolder> implements GroupEditableListAdapter.GroupLister.CustomGroupLister<
-        TransferListAdapter.AbstractGenericItem>
+        TransferListAdapter.GenericItem>
 {
     //public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
@@ -95,7 +95,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    protected void onLoad(GroupLister<AbstractGenericItem> lister)
+    protected void onLoad(GroupLister<GenericItem> lister)
     {
         final boolean loadThumbnails = AppUtils.getDefaultPreferences(getContext())
                 .getBoolean("load_thumbnails", true);
@@ -246,13 +246,13 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    protected GenericTransferItem onGenerateRepresentative(String text, Merger<AbstractGenericItem> merger)
+    protected GenericTransferItem onGenerateRepresentative(String text, Merger<GenericItem> merger)
     {
         return new GenericTransferItem(text);
     }
 
     @Override
-    public boolean onCustomGroupListing(GroupLister<AbstractGenericItem> lister, int mode, AbstractGenericItem object)
+    public boolean onCustomGroupListing(GroupLister<GenericItem> lister, int mode, GenericItem object)
     {
         if (mode == MODE_GROUP_BY_DEFAULT)
             lister.offer(object, new GroupEditableTransferObjectMerger(object, this));
@@ -263,8 +263,8 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    public int compareItems(int sortingCriteria, int sortingOrder, AbstractGenericItem objectOne,
-                            AbstractGenericItem objectTwo)
+    public int compareItems(int sortingCriteria, int sortingOrder, GenericItem objectOne,
+                            GenericItem objectTwo)
     {
         //if (sortingCriteria == MODE_SORT_BY_DEFAULT)
         //    return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
@@ -273,7 +273,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    public GroupLister<AbstractGenericItem> createLister(List<AbstractGenericItem> loadedList, int groupBy)
+    public GroupLister<GenericItem> createLister(List<GenericItem> loadedList, int groupBy)
     {
         return super.createLister(loadedList, groupBy)
                 .setCustomLister(this);
@@ -398,7 +398,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    public String getRepresentativeText(Merger<? extends AbstractGenericItem> merger)
+    public String getRepresentativeText(Merger<? extends GenericItem> merger)
     {
         if (merger instanceof GroupEditableTransferObjectMerger) {
             switch (((GroupEditableTransferObjectMerger) merger).getType()) {
@@ -441,15 +441,15 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     @Override
     public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
-                R.layout.list_transfer, parent, false)) : createDefaultViews(parent, viewType, false);
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_transfer, parent,
+                false)) : createDefaultViews(parent, viewType, false);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, int position)
     {
         try {
-            final AbstractGenericItem object = getItem(position);
+            final GenericItem object = getItem(position);
 
             if (!holder.tryBinding(object)) {
                 final View parentView = holder.itemView;
@@ -504,8 +504,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
 
                 boolean supportThumbnail = object.loadThumbnail(thumbnail);
 
-                progressBar.setVisibility(!supportThumbnail || !object.isComplete(this)
-                        ? View.VISIBLE
+                progressBar.setVisibility(!supportThumbnail || !object.isComplete(this) ? View.VISIBLE
                         : View.GONE);
 
                 if (supportThumbnail)
@@ -530,17 +529,16 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
 
     }
 
-    abstract public static class AbstractGenericItem extends TransferObject
-            implements GroupEditableListAdapter.GroupEditable
+    public static abstract class GenericItem extends TransferObject implements GroupEditableListAdapter.GroupEditable
     {
         public int viewType;
         public String representativeText;
 
-        public AbstractGenericItem()
+        public GenericItem()
         {
         }
 
-        public AbstractGenericItem(String representativeText)
+        public GenericItem(String representativeText)
         {
             this.viewType = VIEW_TYPE_REPRESENTATIVE;
             setRepresentativeText(representativeText);
@@ -628,7 +626,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
     }
 
-    public static class GenericTransferItem extends AbstractGenericItem
+    public static class GenericTransferItem extends GenericItem
     {
         @Nullable
         DocumentFile documentFile;
@@ -667,8 +665,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         public void handleStatusIcon(ImageView imageView, TransferGroup group)
         {
             imageView.setVisibility(View.VISIBLE);
-            imageView.setImageResource(Type.INCOMING.equals(type)
-                    ? R.drawable.ic_arrow_down_white_24dp
+            imageView.setImageResource(Type.INCOMING.equals(type) ? R.drawable.ic_arrow_down_white_24dp
                     : R.drawable.ic_arrow_up_white_24dp);
         }
 
@@ -792,7 +789,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
     }
 
-    public static class TransferFolder extends AbstractGenericItem
+    public static class TransferFolder extends GenericItem
     {
         boolean hasIssues;
         boolean hasOngoing;
@@ -956,7 +953,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
     }
 
-    public static class StorageStatusItem extends AbstractGenericItem implements StatusItem
+    public static class StorageStatusItem extends GenericItem implements StatusItem
     {
         long bytesTotal = 0;
         long bytesFree = 0;
@@ -1050,11 +1047,11 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
     }
 
-    public static class GroupEditableTransferObjectMerger extends ComparableMerger<AbstractGenericItem>
+    public static class GroupEditableTransferObjectMerger extends ComparableMerger<GenericItem>
     {
         private Type mType;
 
-        GroupEditableTransferObjectMerger(AbstractGenericItem holder, TransferListAdapter adapter)
+        GroupEditableTransferObjectMerger(GenericItem holder, TransferListAdapter adapter)
         {
             if (holder instanceof StatusItem)
                 mType = Type.STATUS;
@@ -1084,7 +1081,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         }
 
         @Override
-        public int compareTo(@NonNull ComparableMerger<AbstractGenericItem> o)
+        public int compareTo(@NonNull ComparableMerger<GenericItem> o)
         {
             if (o instanceof GroupEditableTransferObjectMerger)
                 return MathUtils.compare(((GroupEditableTransferObjectMerger) o).getType().ordinal(), getType().ordinal());
