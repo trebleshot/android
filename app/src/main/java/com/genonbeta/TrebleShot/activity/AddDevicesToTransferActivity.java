@@ -44,7 +44,7 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider,
@@ -64,7 +64,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
     private TransferGroup mGroup = null;
     private AddDeviceRunningTask mTask;
-    private FloatingActionButton mActionButton;
+    private ExtendedFloatingActionButton mActionButton;
     private ProgressBar mProgressBar;
     private ViewGroup mLayoutStatusContainer;
     private TextView mProgressTextLeft;
@@ -292,7 +292,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         mProgressBar.setProgress(0);
 
         //mTextMain.setText(R.string.text_addDevicesToTransfer);
-        mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
+        mActionButton.setIconResource(R.drawable.ic_add_white_24dp);
         mLayoutStatusContainer.setVisibility(View.GONE);
         mActionButton.setOnClickListener(v -> startConnectionManagerActivity());
     }
@@ -306,7 +306,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public void takeOnProcessMode()
     {
         mLayoutStatusContainer.setVisibility(View.VISIBLE);
-        mActionButton.setImageResource(R.drawable.ic_close_white_24dp);
+        mActionButton.setIconResource(R.drawable.ic_close_white_24dp);
         mActionButton.setOnClickListener(v -> {
             if (mTask != null)
                 mTask.getInterrupter().interrupt();

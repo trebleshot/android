@@ -96,7 +96,7 @@ public class LocalShareRunningTask extends WorkerService.RunningTask
         }
 
         if (list.size() <= 0) {
-            // TODO: 9.03.2020 Make this more sophisticaed. User may not be able to understand that there is no content.
+            // TODO: 9.03.2020 Make this more sophisticated. User may not be able to understand that there is no content.
             Log.d(TAG, "onRun: No content is located with uri data");
             return;
         }

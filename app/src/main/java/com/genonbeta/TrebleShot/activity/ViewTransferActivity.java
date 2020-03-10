@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.*;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -47,6 +48,7 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -75,7 +77,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     private ShowingAssignee mAssignee;
     private String mDirectory;
     private MenuItem mCnTestMenu;
-    private MenuItem mToggleMenu;
     private MenuItem mRetryMenu;
     private MenuItem mShowFilesMenu;
     private MenuItem mAddDeviceMenu;
@@ -92,8 +93,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
                 if (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
                     reconstructGroup();
-                else if (Kuick.TABLE_TRANSFER.equals(data.tableName)
-                        && (data.inserted || data.removed))
+                else if (Kuick.TABLE_TRANSFER.equals(data.tableName) && (data.inserted || data.removed))
                     updateCalculations();
             } else if (CommunicationService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
                     && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)
@@ -190,8 +190,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 getIntent().setAction(ACTION_LIST_TRANSFERS)
                         .putExtra(EXTRA_GROUP_ID, mGroup.id);
 
-                new TransferInfoDialog(ViewTransferActivity.this, mGroup, object,
-                        mAssignee == null ? null : mAssignee.deviceId).show();
+                new TransferInfoDialog(ViewTransferActivity.this, mGroup, object, mAssignee == null ? null
+                        : mAssignee.deviceId).show();
 
                 Log.d(TAG, "Created instance from an file intent. Original has been cleaned " +
                         "and changed to open intent");
@@ -206,21 +206,19 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 getDatabase().reconstruct(group);
                 mGroup = group;
 
-                if (getIntent().hasExtra(EXTRA_REQUEST_ID)
-                        && getIntent().hasExtra(EXTRA_DEVICE_ID)
+                if (getIntent().hasExtra(EXTRA_REQUEST_ID) && getIntent().hasExtra(EXTRA_DEVICE_ID)
                         && getIntent().hasExtra(EXTRA_REQUEST_TYPE)) {
                     long requestId = getIntent().getLongExtra(EXTRA_REQUEST_ID, -1);
                     String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
 
                     try {
-                        TransferObject.Type type = TransferObject.Type
-                                .valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
+                        TransferObject.Type type = TransferObject.Type.valueOf(getIntent().getStringExtra(
+                                EXTRA_REQUEST_TYPE));
 
                         TransferObject object = new TransferObject(group.id, requestId, type);
                         getDatabase().reconstruct(object);
 
-                        new TransferInfoDialog(ViewTransferActivity.this, group, object,
-                                deviceId).show();
+                        new TransferInfoDialog(ViewTransferActivity.this, group, object, deviceId).show();
                     } catch (Exception e) {
                         // do nothing
                     }
@@ -233,19 +231,18 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         if (mGroup == null)
             finish();
         else {
-            Bundle transferListFragmentBundle = new Bundle();
-            transferListFragmentBundle.putLong(TransferFileExplorerFragment.ARG_GROUP_ID, mGroup.id);
-            transferListFragmentBundle.putString(TransferFileExplorerFragment.ARG_PATH,
+            Bundle bundle = new Bundle();
+            bundle.putLong(TransferFileExplorerFragment.ARG_GROUP_ID, mGroup.id);
+            bundle.putString(TransferFileExplorerFragment.ARG_PATH,
                     mTransferObject == null || mTransferObject.directory == null
                             ? null : mTransferObject.directory);
 
-            TransferFileExplorerFragment fragment = (TransferFileExplorerFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.activity_transaction_content_frame);
+            TransferFileExplorerFragment fragment = getExplorerFragment();
 
             if (fragment == null) {
                 fragment = (TransferFileExplorerFragment) getSupportFragmentManager().getFragmentFactory().instantiate(
                         getClassLoader(), TransferFileExplorerFragment.class.getName());
-                fragment.setArguments(transferListFragmentBundle);
+                fragment.setArguments(bundle);
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -289,7 +286,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
 
         mCnTestMenu = menu.findItem(R.id.actions_transfer_test_connection);
-        mToggleMenu = menu.findItem(R.id.actions_transfer_toggle);
         mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving);
         mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
         mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
@@ -310,8 +306,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
             MenuItem checkedItem = null;
 
-            if ((devicePosition < 0 || (checkedItem = thisMenu.getItem(devicePosition)) == null)
-                    && thisMenu.size() > 0)
+            if ((devicePosition < 0 || (checkedItem = thisMenu.getItem(devicePosition)) == null) && thisMenu.size() > 0)
                 checkedItem = thisMenu.getItem(thisMenu.size() - 1);
 
             if (checkedItem != null)
@@ -328,15 +323,11 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
         if (id == android.R.id.home) {
             finish();
-        } else if (id == R.id.actions_transfer_toggle) {
-            toggleTask();
         } else if (id == R.id.actions_transfer_remove) {
             DialogUtils.showRemoveDialog(this, mGroup);
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
             TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.id);
-
-            createSnackbar(R.string.mesg_retryReceivingNotice)
-                    .show();
+            createSnackbar(R.string.mesg_retryReceivingNotice).show();
         } else if (id == R.id.actions_transfer_receiver_show_files) {
             startActivity(new Intent(this, FileExplorerActivity.class)
                     .putExtra(FileExplorerActivity.EXTRA_FILE_PATH,
@@ -388,8 +379,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     private void attachListeners(Fragment initiatedItem)
     {
-        mBackPressedListener = initiatedItem instanceof OnBackPressedListener
-                ? (OnBackPressedListener) initiatedItem
+        mBackPressedListener = initiatedItem instanceof OnBackPressedListener ? (OnBackPressedListener) initiatedItem
                 : null;
     }
 
@@ -426,6 +416,12 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         return mAssignee;
     }
 
+    public TransferFileExplorerFragment getExplorerFragment()
+    {
+        return (TransferFileExplorerFragment) getSupportFragmentManager().findFragmentById(
+                R.id.activity_transaction_content_frame);
+    }
+
     @Nullable
     public PreloadedGroup getGroup()
     {
@@ -443,6 +439,13 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         }
     }
 
+    @Nullable
+    public ExtendedFloatingActionButton getToggleButton()
+    {
+        TransferFileExplorerFragment explorerFragment = getExplorerFragment();
+        return explorerFragment != null ? explorerFragment.getToggleButton() : null;
+    }
+
     private void requestTaskStateUpdate()
     {
         if (mGroup != null)
@@ -450,28 +453,36 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                     .setAction(CommunicationService.ACTION_REQUEST_TASK_LIST));
     }
 
-    private void showMenus()
+    public void showMenus()
     {
         boolean hasAnyFiles = getGroup().numberOfTotal() > 0;
         boolean hasRunning = mActiveProcesses.size() > 0;
         boolean hasIncoming = getGroup().hasIncoming();
         boolean hasOutgoing = getGroup().hasOutgoing();
+        ExtendedFloatingActionButton toggleButton = getToggleButton();
 
-        if (mToggleMenu == null || mRetryMenu == null || mShowFilesMenu == null)
+        if (mRetryMenu == null || mShowFilesMenu == null)
             return;
 
-        if (hasAnyFiles || hasRunning) {
-            if (hasRunning)
-                mToggleMenu.setTitle(R.string.butn_pause);
-            else {
-                mToggleMenu.setTitle(hasIncoming == hasOutgoing
-                        ? R.string.butn_start
-                        : (hasIncoming ? R.string.butn_receive : R.string.butn_send));
-            }
+        if (toggleButton != null) {
+            if (Build.VERSION.SDK_INT <= 14 || !toggleButton.hasOnClickListeners())
+                toggleButton.setOnClickListener(v -> toggleTask());
 
-            mToggleMenu.setVisible(true);
-        } else
-            mToggleMenu.setVisible(false);
+            if (hasAnyFiles || hasRunning) {
+                toggleButton.setIconResource(hasRunning ? R.drawable.ic_pause_white_24dp
+                        : R.drawable.ic_play_arrow_white_24dp);
+
+                if (hasRunning) {
+                    toggleButton.setText(R.string.butn_pause);
+                } else {
+                    toggleButton.setText(hasIncoming == hasOutgoing ? R.string.butn_start
+                            : (hasIncoming ? R.string.butn_receive : R.string.butn_send));
+                }
+
+                toggleButton.setVisibility(View.VISIBLE);
+            } else
+                toggleButton.setVisibility(View.GONE);
+        }
 
         mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
                 : R.string.butn_shareOnBrowser);

@@ -79,12 +79,13 @@
             tools:context=".activity.AddDevicesToTransferActivity"
             tools:showIn="@layout/activity_add_devices_to_transfer"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/content_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_add_white_24dp"/>
+            android:text="@string/butn_addDevices"
+            app:icon="@drawable/ic_add_white_24dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

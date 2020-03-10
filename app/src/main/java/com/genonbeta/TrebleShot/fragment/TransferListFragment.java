@@ -28,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
+import com.genonbeta.TrebleShot.adapter.TransferListAdapter.StorageStatusItem;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
@@ -79,8 +80,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         {
             if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
-                if (Kuick.TABLE_TRANSFER.equals(data.tableName)
-                        || Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
+                if (Kuick.TABLE_TRANSFER.equals(data.tableName) || Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
                     refreshList();
             }
         }
@@ -232,26 +232,16 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                 final List<ShowingAssignee> list = TransferUtils.loadAssigneeList(getContext(),
                         getTransferGroup().id, null);
 
-                DialogInterface.OnClickListener listClickListener = new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        getAdapter().setAssignee(list.get(which));
-                        getAdapter().setPath(getAdapter().getPath());
-                        refreshList();
-                    }
+                DialogInterface.OnClickListener listClickListener = (dialog, which) -> {
+                    getAdapter().setAssignee(list.get(which));
+                    getAdapter().setPath(getAdapter().getPath());
+                    refreshList();
                 };
 
-                DialogInterface.OnClickListener noLimitListener = new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        getAdapter().setAssignee(null);
-                        getAdapter().setPath(getAdapter().getPath());
-                        refreshList();
-                    }
+                DialogInterface.OnClickListener noLimitListener = (dialog, which) -> {
+                    getAdapter().setAssignee(null);
+                    getAdapter().setPath(getAdapter().getPath());
+                    refreshList();
                 };
 
                 ChooseAssigneeDialog dialog = new ChooseAssigneeDialog(getActivity(), list,
@@ -260,8 +250,8 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                 dialog.setTitle(R.string.text_limitTo)
                         .setNeutralButton(R.string.butn_none, noLimitListener)
                         .show();
-            } else if (transferObject instanceof TransferListAdapter.StorageStatusItem) {
-                final TransferListAdapter.StorageStatusItem statusItem = (TransferListAdapter.StorageStatusItem) transferObject;
+            } else if (transferObject instanceof StorageStatusItem) {
+                final StorageStatusItem statusItem = (StorageStatusItem) transferObject;
 
                 if (statusItem.hasIssues(getAdapter())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -269,14 +259,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                     builder.setMessage(getContext().getString(R.string.mesg_notEnoughSpace));
                     builder.setNegativeButton(R.string.butn_close, null);
 
-                    builder.setPositiveButton(R.string.butn_saveTo, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            changeSavePath(statusItem.directory);
-                        }
-                    });
+                    builder.setPositiveButton(R.string.butn_saveTo, (dialog, which) -> changeSavePath(statusItem.directory));
 
                     builder.show();
                 } else

@@ -48,6 +48,7 @@ import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     {
         FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null,
                 false);
-        FloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
+        ExtendedFloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
 
         listViewContainer.addView(view);
 
@@ -98,7 +99,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
         setEmptyImage(R.drawable.ic_forum_white_24dp);
         setEmptyText(getString(R.string.text_listEmptyTextStream));
         getListView().setClipToPadding(false);
-        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
+        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 4));
     }
 
     @Nullable
@@ -215,8 +216,6 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
             inflater.inflate(R.menu.action_mode_text_stream, targetMenu);
 
             mShareWithTrebleShot = targetMenu.findItem(R.id.action_mode_share_trebleshot);
-            MenuItemCompat.setIconTintList(mShareWithTrebleShot, null);
-
             mShareWithOthers = targetMenu.findItem(R.id.action_mode_share_all_apps);
             updateShareMethods(getPerformerEngine());
 

@@ -27,8 +27,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
+import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.adapter.TransferPathResolverRecyclerAdapter;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.io.File;
 
@@ -40,6 +41,7 @@ public class TransferFileExplorerFragment extends TransferListFragment
 {
     private RecyclerView mPathView;
     private TransferPathResolverRecyclerAdapter mPathAdapter;
+    private ExtendedFloatingActionButton mToggleButton;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -51,29 +53,25 @@ public class TransferFileExplorerFragment extends TransferListFragment
     @Override
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
-        View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_explorer, null, false);
+        View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_explorer, null,
+                false);
         listViewContainer.addView(adaptedView);
 
+        mToggleButton = adaptedView.findViewById(R.id.layout_transfer_explorer_efab);
         mPathView = adaptedView.findViewById(R.id.layout_transfer_explorer_recycler);
         mPathAdapter = new TransferPathResolverRecyclerAdapter(getContext());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL,
+                false);
         layoutManager.setStackFromEnd(true);
 
         mPathView.setHasFixedSize(true);
         mPathView.setLayoutManager(layoutManager);
         mPathView.setAdapter(mPathAdapter);
 
-        mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener<String>()
-        {
-            @Override
-            public void onClick(PathResolverRecyclerAdapter.Holder<String> holder)
-            {
-                goPath(holder.index.object);
-            }
-        });
+        mPathAdapter.setOnClickListener(holder -> goPath(holder.index.object));
 
-        return super.onListView(mainContainer, (ViewGroup) adaptedView.findViewById(R.id.layout_transfer_explorer_fragment_content));
+        return super.onListView(mainContainer, adaptedView.findViewById(R.id.layout_transfer_explorer_fragment_content));
     }
 
     @Override
@@ -81,6 +79,11 @@ public class TransferFileExplorerFragment extends TransferListFragment
     {
         super.onViewCreated(view, savedInstanceState);
         setSnackbarContainer(view.findViewById(R.id.layout_transfer_explorer_fragment_content));
+        getListView().setClipToPadding(false);
+        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 4));
+
+        if (getActivity() instanceof ViewTransferActivity)
+            ((ViewTransferActivity) getActivity()).showMenus();
     }
 
     @Override
@@ -101,5 +104,11 @@ public class TransferFileExplorerFragment extends TransferListFragment
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_files);
+    }
+
+    @Nullable
+    public ExtendedFloatingActionButton getToggleButton()
+    {
+        return mToggleButton;
     }
 }

@@ -63,6 +63,12 @@
         <item name="tint">@android:color/white</item>
     </style>
 
+    <style name="Widget.TrebleShot.ExtendedFloatingActionButtonStyle"
+           parent="@style/Widget.MaterialComponents.ExtendedFloatingActionButton">
+        <item name="iconTint">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="Widget.TrebleShot.ButtonStyle.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="backgroundTint">@color/text_button_background_selector</item>
         <item name="cornerRadius">8dp</item>
