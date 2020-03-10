@@ -65,6 +65,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
         FileListAdapter.FileHolder>
 {
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
+    public static final int MODE_GROUP_FOR_INBOX = MODE_GROUP_BY_DATE;
     public static final int REQUEST_CODE_MOUNT_FOLDER = 1;
 
     private boolean mShowDirectories = true;
@@ -224,7 +225,8 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     @Override
     public boolean onCustomGroupListing(GroupLister<FileHolder> lister, int mode, FileHolder object)
     {
-        if (mode == MODE_GROUP_BY_DEFAULT)
+        if (mode == MODE_GROUP_BY_DEFAULT
+                || (mode == MODE_GROUP_FOR_INBOX && object.file != null && object.file.isDirectory()))
             lister.offer(object, new FileHolderMerger(object));
         else
             return false;
@@ -303,7 +305,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     public int getGroupBy()
     {
         if (mPath != null && mPath.equals(FileUtils.getApplicationDirectory(getContext())))
-            return MODE_GROUP_BY_DATE;
+            return MODE_GROUP_FOR_INBOX;
 
         return super.getGroupBy();
     }

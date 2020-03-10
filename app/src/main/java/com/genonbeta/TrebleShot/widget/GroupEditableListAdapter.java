@@ -27,7 +27,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.util.date.DateMerger;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Lister;
@@ -303,9 +302,9 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             mMode = mode;
         }
 
-        public GroupLister(List<T> noGroupingListList, int mode, CustomGroupLister<T> customList)
+        public GroupLister(List<T> noGroupingList, int mode, CustomGroupLister<T> customList)
         {
-            this(noGroupingListList, mode);
+            this(noGroupingList, mode);
             mCustomLister = customList;
         }
 
@@ -317,11 +316,12 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
         public void offer(T object)
         {
-            if (mMode == MODE_GROUP_BY_DATE)
-                offer(object, new DateMerger<>(object.getComparableDate()));
-            else if (mMode == MODE_GROUP_BY_NOTHING || mCustomLister == null
-                    || !mCustomLister.onCustomGroupListing(this, mMode, object))
-                mNoGroupingList.add(object);
+            if (mCustomLister == null || !mCustomLister.onCustomGroupListing(this, mMode, object)) {
+                if (mMode == MODE_GROUP_BY_DATE)
+                    offer(object, new DateMerger<>(object.getComparableDate()));
+                else
+                    mNoGroupingList.add(object);
+            }
         }
 
         public GroupLister<T> setCustomLister(CustomGroupLister<T> customLister)
