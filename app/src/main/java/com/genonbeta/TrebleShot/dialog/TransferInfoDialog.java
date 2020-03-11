@@ -57,9 +57,8 @@ public class TransferInfoDialog extends AlertDialog.Builder
         try {
             // If it is incoming than get the received or cache file
             // If not then try to reach to the source file that is being send
-            attemptedFile = isIncoming ? FileUtils.getIncomingPseudoFile(getContext(),
-                    object, group, false) : FileUtils.fromUri(
-                    getContext(), Uri.parse(object.file));
+            attemptedFile = isIncoming ? FileUtils.getIncomingPseudoFile(getContext(), object, group,
+                    false) : FileUtils.fromUri(getContext(), Uri.parse(object.file));
         } catch (Exception e) {
             e.printStackTrace();
         }

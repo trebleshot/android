@@ -45,8 +45,8 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
  * created by: veli
  * date: 06.04.2018 12:58
  */
-public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee,
-        RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
+public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee, RecyclerViewAdapter.ViewHolder,
+        TransferAssigneeListAdapter>
 {
     public static final String ARG_GROUP_ID = "groupId";
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
@@ -220,8 +220,6 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         try {
             AppUtils.getKuick(getContext()).reconstruct(mHeldGroup);
-            getEmptyActionButton().setText(mHeldGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
-                    : R.string.butn_shareOnBrowser);
         } catch (Exception e) {
             e.printStackTrace();
         }

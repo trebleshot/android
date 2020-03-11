@@ -155,8 +155,10 @@ public class CommunicationService extends Service
 
         refreshServiceState();
 
-        if (!AppUtils.checkRunningConditions(this) || !mCommunicationServer.start())
+        if (!AppUtils.checkRunningConditions(this) || !mCommunicationServer.start()) {
+            Log.e(TAG, "onCreate: Cannot start the service. server=" + mCommunicationServer.isServerAlive());
             stopSelf();
+        }
 
         if (getHotspotUtils() instanceof HotspotUtils.OreoAPI && Build.VERSION.SDK_INT >= 26)
             ((HotspotUtils.OreoAPI) getHotspotUtils()).setSecondaryCallback(new WifiManager.LocalOnlyHotspotCallback()

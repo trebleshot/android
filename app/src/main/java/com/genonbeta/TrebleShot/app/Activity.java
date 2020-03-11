@@ -38,6 +38,7 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -241,28 +242,18 @@ public abstract class Activity extends AppCompatActivity
                             .load(chosenImageUri)
                             .centerCrop()
                             .override(200, 200)
-                            // TODO: 23.02.2020 Is there any other target that takes less space?
-                            .into(new Target<Drawable>()
+                            .into(new CustomTarget<Drawable>()
                             {
                                 @Override
-                                public void onLoadStarted(@Nullable Drawable placeholder)
-                                {
-
-                                }
-
-                                @Override
-                                public void onLoadFailed(@Nullable Drawable errorDrawable)
-                                {
-
-                                }
-
-                                @Override
-                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition)
+                                public void onResourceReady(@NonNull Drawable resource,
+                                                            @Nullable Transition<? super Drawable> transition)
                                 {
                                     try {
-                                        Bitmap bitmap = Bitmap.createBitmap(AppConfig.PHOTO_SCALE_FACTOR, AppConfig.PHOTO_SCALE_FACTOR, Bitmap.Config.ARGB_8888);
+                                        Bitmap bitmap = Bitmap.createBitmap(AppConfig.PHOTO_SCALE_FACTOR,
+                                                AppConfig.PHOTO_SCALE_FACTOR, Bitmap.Config.ARGB_8888);
                                         Canvas canvas = new Canvas(bitmap);
-                                        FileOutputStream outputStream = openFileOutput("profilePicture", MODE_PRIVATE);
+                                        FileOutputStream outputStream = openFileOutput("profilePicture",
+                                                MODE_PRIVATE);
 
                                         resource.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
                                         resource.draw(canvas);
@@ -278,49 +269,6 @@ public abstract class Activity extends AppCompatActivity
 
                                 @Override
                                 public void onLoadCleared(@Nullable Drawable placeholder)
-                                {
-
-                                }
-
-                                @Override
-                                public void getSize(@NonNull SizeReadyCallback cb)
-                                {
-
-                                }
-
-                                @Override
-                                public void removeCallback(@NonNull SizeReadyCallback cb)
-                                {
-
-                                }
-
-                                @Nullable
-                                @Override
-                                public Request getRequest()
-                                {
-                                    return null;
-                                }
-
-                                @Override
-                                public void setRequest(@Nullable Request request)
-                                {
-
-                                }
-
-                                @Override
-                                public void onStart()
-                                {
-
-                                }
-
-                                @Override
-                                public void onStop()
-                                {
-
-                                }
-
-                                @Override
-                                public void onDestroy()
                                 {
 
                                 }

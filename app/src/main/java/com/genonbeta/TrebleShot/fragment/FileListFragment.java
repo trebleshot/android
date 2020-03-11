@@ -511,17 +511,13 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         return super.performLayoutClickOpen(holder);
     }
 
-    public boolean scanFile(DocumentFile file)
+    public void scanFile(DocumentFile file)
     {
         // FIXME: 9/11/18 There should be insert, remove, update
-        if (!(file instanceof LocalDocumentFile) || !mMediaScanner.isConnected())
-            return false;
-
-        String filePath = ((LocalDocumentFile) file).getFile().getAbsolutePath();
-
-        mMediaScanner.scanFile(filePath, file.isDirectory() ? file.getType() : null);
-
-        return true;
+        if (file instanceof LocalDocumentFile && mMediaScanner.isConnected()) {
+            String filePath = ((LocalDocumentFile) file).getFile().getAbsolutePath();
+            mMediaScanner.scanFile(filePath, file.isDirectory() ? file.getType() : null);
+        }
     }
 
     public void setOnPathChangedListener(OnPathChangedListener pathChangedListener)

@@ -468,7 +468,7 @@ public class TransferUtils
                                 FileUtils.getReadableUri(group.savePath)));
                         builder.setNegativeButton(R.string.butn_close, null);
 
-                        builder.setPositiveButton(R.string.butn_saveAnyway,
+                        builder.setPositiveButton(R.string.butn_gotIt,
                                 (dialog, which) -> startTransfer(activity, assignee));
 
                         builder.show();
