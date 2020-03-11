@@ -23,6 +23,9 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
+import android.system.Os;
+import android.system.StructStatVfs;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +52,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
+import com.genonbeta.android.framework.io.TreeDocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -234,6 +238,18 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                     File saveFile = ((LocalDocumentFile) savePath).getFile();
                     storageItem.bytesTotal = saveFile.getTotalSpace();
                     storageItem.bytesFree = saveFile.getFreeSpace(); // return used space
+                } else if (Build.VERSION.SDK_INT >= 21 && savePath instanceof TreeDocumentFile) {
+                    try {
+                        ParcelFileDescriptor descriptor = getContext().getContentResolver().openFileDescriptor(
+                                savePath.getOriginalUri(), "r");
+                        if (descriptor != null) {
+                            StructStatVfs stats = Os.fstatvfs(descriptor.getFileDescriptor());
+                            storageItem.bytesTotal = stats.f_blocks * stats.f_bsize;
+                            storageItem.bytesFree = stats.f_bavail * stats.f_bsize;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     storageItem.bytesTotal = -1;
                     storageItem.bytesFree = -1;
