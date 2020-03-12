@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.widget;
 
-import android.content.Context;
 import android.text.format.DateUtils;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
@@ -28,6 +27,8 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
+import com.genonbeta.TrebleShot.view.HolderProvider;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTitleProvider;
@@ -43,7 +44,7 @@ import java.util.List;
  */
 
 abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
-        extends RecyclerViewAdapter<T, V> implements EditableListAdapterImpl<T>, SectionTitleProvider
+        extends RecyclerViewAdapter<T, V> implements EditableListAdapterImpl<T>, HolderProvider<V>, SectionTitleProvider
 {
     public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -55,16 +56,19 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
     private EditableListFragmentImpl<T> mFragment;
+    private HolderConsumer<V> mHolderConsumer;
     private List<T> mItemList = new ArrayList<>();
     private int mSortingCriteria = MODE_SORT_BY_NAME;
     private int mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING;
     private boolean mGridLayoutRequested = false;
     private Comparator<T> mGeneratedComparator;
 
-    public EditableListAdapter(Context context)
+    public EditableListAdapter(EditableListFragmentImpl<T> fragment, HolderConsumer<V> consumer)
     {
-        super(context);
+        super(fragment.getContext());
         setHasStableIds(true);
+        setFragment(fragment);
+        setHolderConsumer(consumer);
     }
 
     @Override
@@ -90,6 +94,16 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
                 .getFilteringKeyword(getFragment());
 
         return filteringKeywords == null || filteringKeywords.length <= 0 || item.applyFilter(filteringKeywords);
+    }
+
+    public boolean isGridSupported()
+    {
+        return false;
+    }
+
+    public boolean isGridLayoutRequested()
+    {
+        return mGridLayoutRequested;
     }
 
     @Override
@@ -154,9 +168,9 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return mFragment;
     }
 
-    public void setFragment(EditableListFragmentImpl<T> fragmentImpl)
+    public HolderConsumer<V> getConsumer()
     {
-        mFragment = fragmentImpl;
+        return mHolderConsumer;
     }
 
     @Override
@@ -209,18 +223,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return getList();
     }
 
-    @Override
-    public String getSectionTitle(int position)
-    {
-        try {
-            return getSectionName(position, getItem(position));
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-
-        return getContext().getString(R.string.text_emptySymbol);
-    }
-
     @NonNull
     public String getSectionName(int position, T object)
     {
@@ -246,6 +248,18 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return TextUtils.trimText(text, 1).toUpperCase();
     }
 
+    @Override
+    public String getSectionTitle(int position)
+    {
+        try {
+            return getSectionName(position, getItem(position));
+        } catch (NotReadyException e) {
+            e.printStackTrace();
+        }
+
+        return getContext().getString(R.string.text_emptySymbol);
+    }
+
     public int getSortingCriteria(T objectOne, T objectTwo)
     {
         return getSortingCriteria();
@@ -266,19 +280,20 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return mSortingOrderAscending;
     }
 
-    public boolean isGridSupported()
-    {
-        return false;
-    }
-
-    public boolean isGridLayoutRequested()
-    {
-        return mGridLayoutRequested;
-    }
 
     public void notifyGridSizeUpdate(int gridSize, boolean isScreenLarge)
     {
         mGridLayoutRequested = (!isScreenLarge && gridSize > 1) || gridSize > 2;
+    }
+
+    public void setFragment(EditableListFragmentImpl<T> fragmentImpl)
+    {
+        mFragment = fragmentImpl;
+    }
+
+    public void setHolderConsumer(HolderConsumer<V> holderConsumer)
+    {
+        mHolderConsumer = holderConsumer;
     }
 
     public void setSortingCriteria(int sortingCriteria, int sortingOrder)
@@ -301,7 +316,8 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         notifyDataSetChanged();
     }
 
-    public synchronized void syncSelection(int adapterPosition) {
+    public synchronized void syncSelection(int adapterPosition)
+    {
         try {
             T item = getItem(adapterPosition);
             item.setSelectableSelected(mFragment.getEngineConnection().isSelectedOnHost(item));

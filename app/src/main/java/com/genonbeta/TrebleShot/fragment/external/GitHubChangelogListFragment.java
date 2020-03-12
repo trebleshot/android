@@ -46,12 +46,6 @@ public class GitHubChangelogListFragment extends DynamicRecyclerViewFragment<Git
         RecyclerViewAdapter.ViewHolder, GitHubChangelogListFragment.VersionListAdapter>
 {
     @Override
-    public VersionListAdapter onAdapter()
-    {
-        return new VersionListAdapter(getContext());
-    }
-
-    @Override
     public void onResume()
     {
         super.onResume();
@@ -63,14 +57,10 @@ public class GitHubChangelogListFragment extends DynamicRecyclerViewFragment<Git
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_github_circle_white_24dp);
-        setEmptyText(getString(R.string.mesg_noInternetConnection));
-
-        useEmptyActionButton(true);
-        getEmptyActionButton().setText(R.string.butn_refresh);
-        getEmptyActionButton().setOnClickListener(v -> refreshList());
-
-        onEnsureList();
+        setListAdapter(new VersionListAdapter(getContext()));
+        setEmptyListImage(R.drawable.ic_github_circle_white_24dp);
+        setEmptyListText(getString(R.string.mesg_noInternetConnection));
+        useEmptyActionButton(getString(R.string.butn_refresh), v -> refreshList());
     }
 
     public static class VersionObject

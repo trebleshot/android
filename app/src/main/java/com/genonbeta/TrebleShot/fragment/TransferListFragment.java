@@ -21,7 +21,10 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -102,13 +105,13 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
+        setListAdapter(new TransferListAdapter(this, this));
+        setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
 
         Bundle args = getArguments();
-
         if (args != null && args.containsKey(ARG_GROUP_ID)) {
-            goPath(args.getString(ARG_PATH), args.getLong(ARG_GROUP_ID),
-                    args.getString(ARG_DEVICE_ID), args.getString(ARG_TYPE));
+            goPath(args.getString(ARG_PATH), args.getLong(ARG_GROUP_ID), args.getString(ARG_DEVICE_ID),
+                    args.getString(ARG_TYPE));
         }
     }
 
@@ -131,28 +134,6 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
-    }
-
-    @Override
-    public TransferListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative()) {
-                registerLayoutViewClicks(clazz);
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
-                        true));
-            }
-        };
-
-        return new TransferListAdapter(getActivity())
-        {
-            @NonNull
-            @Override
-            public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
     }
 
     @Override

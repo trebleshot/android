@@ -18,17 +18,20 @@
 
 package com.genonbeta.TrebleShot.fragment;
 
+import android.app.Activity;
 import android.content.*;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
@@ -111,9 +114,49 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
 
     private UIConnectionUtils.RequestWatcher mWiFiWatcher = (result, shouldWait) -> mWaitForWiFi = shouldWait;
 
+    public static void openInfo(Activity activity, ConnectionUtils utils, NetworkDevice device)
+    {
+        if (device instanceof HotspotNetwork) {
+            final HotspotNetwork hotspotNetwork = (HotspotNetwork) device;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                    .setTitle(device.nickname)
+                    .setMessage(R.string.text_trebleshotHotspotDescription)
+                    .setNegativeButton(R.string.butn_close, null);
+
+            if (Build.VERSION.SDK_INT < 29)
+                builder.setPositiveButton(utils.isConnectedToNetwork(hotspotNetwork)
+                        ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) ->
+                        utils.toggleConnection(hotspotNetwork));
+
+            builder.show();
+        } else
+            new DeviceInfoDialog(activity, AppUtils.getKuick(activity), device).show();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        super.onCreate(savedInstanceState);
+
+        if (!isHorizontalOrientation() && mSwipeRefreshEnabled)
+            setLayoutResId(R.layout.layout_network_device);
+
+        setFilteringSupported(true);
+        setSortingSupported(false);
+        setUseDefaultPaddingDecoration(true);
+        setUseDefaultPaddingDecorationSpaceForEdges(true);
+        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
+
+        mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
+        mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
+        mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
+        mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+
+        mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getKuick(getContext()),
+                AppUtils.getDefaultPreferences(getContext()));
+
         if (getArguments() != null) {
             Bundle args = getArguments();
 
@@ -133,48 +176,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
                 }
             }
         }
-
-        super.onCreate(savedInstanceState);
-
-        setFilteringSupported(true);
-        setSortingSupported(false);
-        setUseDefaultPaddingDecoration(true);
-        setUseDefaultPaddingDecorationSpaceForEdges(true);
-        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
-
-        mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
-        mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
-        mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-
-        mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getKuick(getContext()),
-                AppUtils.getDefaultPreferences(getContext()));
-    }
-
-    @Override
-    protected RecyclerView onListView(ViewGroup container)
-    {
-        if (isHorizontalOrientation() || !mSwipeRefreshEnabled)
-            return super.onListView(container);
-
-        Context context = container.getContext();
-
-        mSwipeRefreshLayout = new SwipeRefreshLayout(getActivity());
-
-        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat
-                .getColor(context, AppUtils.getReference(getActivity(), R.attr.colorAccent)));
-
-        mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(
-                ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorSurface))
-        );
-
-        container.addView(mSwipeRefreshLayout);
-
-        return super.onListView(mSwipeRefreshLayout);
     }
 
     @Override
@@ -182,13 +183,23 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_devices_white_24dp);
-        setEmptyText(getString(R.string.text_findDevicesHint));
-
+        setListAdapter(new NetworkDeviceListAdapter(this, this, getConnectionUtils(),
+                mHiddenDeviceTypes));
+        setEmptyListImage(R.drawable.ic_devices_white_24dp);
+        setEmptyListText(getString(R.string.text_findDevicesHint));
         useEmptyActionButton(getString(R.string.butn_scan), v -> requestRefresh());
 
-        if (mSwipeRefreshLayout != null)
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+
+        if (mSwipeRefreshLayout != null) {
+            Context context = requireContext();
+
+            mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context,
+                    AppUtils.getReference(context, R.attr.colorAccent)));
+            mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(context,
+                    AppUtils.getReference(context, R.attr.colorSurface)));
             mSwipeRefreshLayout.setOnRefreshListener(this::requestRefresh);
+        }
     }
 
     @Override
@@ -199,28 +210,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
 
         if (AppUtils.getDefaultPreferences(getContext()).getBoolean("scan_devices_auto", false))
             requestRefresh();
-    }
-
-    @Override
-    public NetworkDeviceListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> {
-            registerLayoutViewClicks(clazz);
-
-            clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
-                openInfo(getAdapter().getList().get(clazz.getAdapterPosition()));
-            });
-        };
-
-        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils(), mHiddenDeviceTypes)
-        {
-            @NonNull
-            @Override
-            public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
     }
 
     @Override
@@ -238,9 +227,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
                         (connection, availableInterfaces) -> mDeviceSelectedListener.onNetworkDeviceSelected(device,
                                 connection)).show();
 
-        } else {
-            openInfo(device);
-        }
+        } else
+            openInfo(getActivity(), getConnectionUtils(), device);
 
         return true;
     }
@@ -252,7 +240,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
         getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
         getActivity().bindService(new Intent(getContext(), DeviceScannerService.class), mScannerConnection,
                 Service.BIND_AUTO_CREATE);
-        refreshList();
 
         mNsdDiscovery.startDiscovering();
     }
@@ -335,26 +322,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     {
         return (getArguments() != null && getArguments().getBoolean(ARG_USE_HORIZONTAL_VIEW))
                 || super.isHorizontalOrientation();
-    }
-
-    private void openInfo(NetworkDevice device)
-    {
-        if (device instanceof HotspotNetwork) {
-            final HotspotNetwork hotspotNetwork = (HotspotNetwork) device;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                    .setTitle(device.nickname)
-                    .setMessage(R.string.text_trebleshotHotspotDescription)
-                    .setNegativeButton(R.string.butn_close, null);
-
-            if (Build.VERSION.SDK_INT < 29)
-                builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork)
-                        ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) ->
-                        getConnectionUtils().toggleConnection(hotspotNetwork));
-
-            builder.show();
-        } else
-            new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), device).show();
     }
 
     public void setHiddenDeviceTypes(NetworkDevice.Type[] types)

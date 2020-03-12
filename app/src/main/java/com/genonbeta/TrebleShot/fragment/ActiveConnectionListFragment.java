@@ -47,7 +47,6 @@ import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_STATE_CHANGED;
@@ -80,6 +79,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        setLayoutResId(R.layout.layout_active_connection);
         setSortingSupported(false);
         setFilteringSupported(true);
         setUseDefaultPaddingDecoration(true);
@@ -95,10 +96,11 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     }
 
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
-        CoordinatorLayout view = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.layout_active_connection,
-                null, false);
+        super.onViewCreated(view, savedInstanceState);
+        setListAdapter(new ActiveConnectionListAdapter(this, this));
+
         final CardView webShareInfo = view.findViewById(R.id.card_web_share_info);
         Button webShareInfoHideButton = view.findViewById(R.id.card_web_share_info_hide_button);
         final String helpWebShareInfo = "help_webShareInfo";
@@ -114,10 +116,6 @@ public class ActiveConnectionListFragment extends EditableListFragment<
                         .apply();
             });
         }
-
-        listViewContainer.addView(view);
-
-        return super.onListView(mainContainer, view.findViewById(R.id.container));
     }
 
     @Override
@@ -139,29 +137,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     {
         super.onActivityCreated(savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_share_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyConnection));
-    }
-
-    @Override
-    public ActiveConnectionListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> {
-            registerLayoutViewClicks(clazz);
-
-            clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
-            clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
-        };
-
-        return new ActiveConnectionListAdapter(getActivity())
-        {
-            @NonNull
-            @Override
-            public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
+        setEmptyListImage(R.drawable.ic_share_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyConnection));
     }
 
     @Override

@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiNetworkSuggestion;
@@ -31,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
@@ -39,6 +39,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -47,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment.openInfo;
+
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice,
         RecyclerViewAdapter.ViewHolder>
 {
@@ -54,13 +57,13 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     private TextDrawable.IShapeBuilder mIconBuilder;
     private List<NetworkDevice.Type> mHiddenDeviceTypes;
 
-    public NetworkDeviceListAdapter(Context context, ConnectionUtils connectionUtils,
+    public NetworkDeviceListAdapter(EditableListFragmentImpl<EditableNetworkDevice> fragment,
+                                    HolderConsumer<ViewHolder> consumer, ConnectionUtils connectionUtils,
                                     NetworkDevice.Type[] hiddenDeviceTypes)
     {
-        super(context);
-
+        super(fragment, consumer);
         mConnectionUtils = connectionUtils;
-        mIconBuilder = AppUtils.getDefaultIconBuilder(context);
+        mIconBuilder = AppUtils.getDefaultIconBuilder(getContext());
         mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes) : new ArrayList<>();
     }
 
@@ -96,9 +99,16 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(
+        ViewHolder holder = new RecyclerViewAdapter.ViewHolder(getInflater().inflate(
                 isHorizontalOrientation() || isGridLayoutRequested() ? R.layout.list_network_device_grid
                         : R.layout.list_network_device, parent, false));
+
+        getConsumer().registerLayoutViewClicks(holder);
+        holder.itemView.findViewById(R.id.menu)
+                .setOnClickListener(v -> openInfo(getFragment().getActivity(), mConnectionUtils,
+                        getList().get(holder.getAdapterPosition())));
+
+        return holder;
     }
 
     @Override

@@ -25,15 +25,16 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -68,6 +69,34 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
 
     private TransferGroup mHeldGroup;
 
+    public static <T extends Editable> void showPopupMenu(EditableListFragmentImpl<T> fragment,
+                                                          TransferAssigneeListAdapter adapter, TransferGroup group,
+                                                          RecyclerViewAdapter.ViewHolder clazz, View v)
+    {
+        final ShowingAssignee assignee = adapter.getList().get(clazz.getAdapterPosition());
+
+        PopupMenu popupMenu = new PopupMenu(fragment.getContext(), v);
+        Menu menu = popupMenu.getMenu();
+
+        popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.popup_changeChangeConnection) {
+                TransferUtils.changeConnection(fragment.getActivity(), assignee.device, assignee,
+                        (connection, assignee1) -> fragment.createSnackbar(R.string.mesg_connectionUpdated,
+                                TextUtils.getAdapterName(fragment.getContext(), connection)).show());
+            } else if (id == R.id.popup_remove) {
+                AppUtils.getKuick(fragment.getContext()).removeAsynchronous(fragment.getActivity(), assignee, group);
+            } else
+                return false;
+
+            return true;
+        });
+
+        popupMenu.show();
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -94,39 +123,19 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_device_hub_white_24dp);
-        setEmptyText(getString(R.string.text_noDeviceForTransfer));
+        setListAdapter(new TransferAssigneeListAdapter(this, this));
+        setEmptyListImage(R.drawable.ic_device_hub_white_24dp);
+        setEmptyListText(getString(R.string.text_noDeviceForTransfer));
 
         updateTransferGroup();
 
         int paddingRecyclerView = (int) getResources()
                 .getDimension(R.dimen.padding_list_content_parent_layout);
 
-        getListView().setPadding(paddingRecyclerView, paddingRecyclerView, paddingRecyclerView,
-                paddingRecyclerView);
+        getListView().setPadding(paddingRecyclerView, paddingRecyclerView, paddingRecyclerView, paddingRecyclerView);
         getListView().setClipToPadding(false);
     }
 
-    @Override
-    public TransferAssigneeListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> actions = clazz -> {
-            registerLayoutViewClicks(clazz);
-
-            clazz.itemView.findViewById(R.id.menu).setOnClickListener(
-                    v -> showPopupMenu(clazz, v));
-        };
-
-        return new TransferAssigneeListAdapter(getContext())
-        {
-            @NonNull
-            @Override
-            public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
-            }
-        }.setGroup(getTransferGroup());
-    }
 
     @Override
     public void onResume()
@@ -148,8 +157,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         try {
             ShowingAssignee assignee = getAdapter().getItem(holder);
 
-            new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), assignee.device)
-                    .show();
+            new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), assignee.device).show();
             return true;
         } catch (Exception e) {
             // do nothing
@@ -161,7 +169,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     @Override
     public boolean onDefaultLongClickAction(RecyclerViewAdapter.ViewHolder holder)
     {
-        showPopupMenu(holder, holder.itemView);
+        showPopupMenu(this, getAdapter(), getTransferGroup(), holder, holder.itemView);
         return true;
     }
 
@@ -187,33 +195,6 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         }
 
         return mHeldGroup;
-    }
-
-    private void showPopupMenu(RecyclerViewAdapter.ViewHolder clazz, View v)
-    {
-        final ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
-
-        PopupMenu popupMenu = new PopupMenu(getContext(), v);
-        Menu menu = popupMenu.getMenu();
-
-        popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-
-            if (id == R.id.popup_changeChangeConnection) {
-                TransferUtils.changeConnection(getActivity(), assignee.device, assignee,
-                        (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated,
-                                TextUtils.getAdapterName(getContext(), connection)).show());
-            } else if (id == R.id.popup_remove) {
-                AppUtils.getKuick(getContext()).removeAsynchronous(getActivity(), assignee, mHeldGroup);
-            } else
-                return false;
-
-            return true;
-        });
-
-        popupMenu.show();
     }
 
     private void updateTransferGroup()

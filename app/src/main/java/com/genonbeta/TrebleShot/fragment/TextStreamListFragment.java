@@ -24,12 +24,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.FrameLayout;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
@@ -47,7 +48,6 @@ import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +75,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     {
         super.onCreate(savedInstanceState);
 
+        setLayoutResId(R.layout.layout_text_stream);
         setFilteringSupported(true);
         setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
@@ -82,27 +83,16 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     }
 
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
-    {
-        FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null,
-                false);
-        ExtendedFloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
-
-        listViewContainer.addView(view);
-
-        actionButton.setOnClickListener(v -> startActivity(new Intent(getActivity(),
-                TextEditorActivity.class).setAction(TextEditorActivity.ACTION_EDIT_TEXT)));
-
-        return super.onListView(mainContainer, view.findViewById(R.id.layout_text_stream_content));
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_forum_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyTextStream));
+        setEmptyListImage(R.drawable.ic_forum_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyTextStream));
+
+        view.findViewById(R.id.layout_text_stream_fab)
+                .setOnClickListener(v -> startActivity(new Intent(getActivity(), TextEditorActivity.class)
+                        .setAction(TextEditorActivity.ACTION_EDIT_TEXT)));
     }
 
     @Nullable
@@ -124,25 +114,6 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     {
         options.put(getString(R.string.text_groupByNothing), TextStreamListAdapter.MODE_GROUP_BY_NOTHING);
         options.put(getString(R.string.text_groupByDate), TextStreamListAdapter.MODE_GROUP_BY_DATE);
-    }
-
-    @Override
-    public TextStreamListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative())
-                registerLayoutViewClicks(clazz);
-        };
-
-        return new TextStreamListAdapter(getActivity())
-        {
-            @NonNull
-            @Override
-            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
     }
 
     @Override

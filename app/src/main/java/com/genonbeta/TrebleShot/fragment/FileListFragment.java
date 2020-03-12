@@ -26,27 +26,30 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.PopupMenu;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter.FileHolder;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
+import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
@@ -162,6 +165,22 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         return true;
     }
 
+    public static <T extends Editable> void shortcutItem(EditableListFragmentImpl<T> fragment, FileHolder holder)
+    {
+        Kuick kuick = AppUtils.getKuick(fragment.getContext());
+
+        try {
+            kuick.reconstruct(holder);
+            kuick.remove(holder);
+            fragment.createSnackbar(R.string.mesg_removed).show();
+        } catch (Exception e) {
+            kuick.insert(holder);
+            fragment.createSnackbar(R.string.mesg_added).show();
+        } finally {
+            kuick.broadcast();
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -178,8 +197,8 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_folder_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyFiles));
+        setEmptyListImage(R.drawable.ic_folder_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyFiles));
     }
 
     @Override
@@ -240,7 +259,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         if (id == R.id.actions_file_list_mount_directory) {
             requestMountStorage();
         } else if (id == R.id.actions_file_list_toggle_shortcut && getAdapter().getPath() != null) {
-            shortcutItem(new FileHolder(getContext(), getAdapter().getPath()));
+            shortcutItem(this, new FileHolder(getContext(), getAdapter().getPath()));
         } else
             return super.onOptionsItemSelected(item);
 
@@ -273,97 +292,6 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
     public PerformerMenu onCreatePerformerMenu(Context context)
     {
         return new PerformerMenu(context, new SelectionCallback(this, this));
-    }
-
-    @Override
-    public FileListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative()) {
-                registerLayoutViewClicks(clazz);
-
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
-                        true));
-                clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
-                    FileHolder holder = getAdapter().getList().get(clazz.getAdapterPosition());
-                    boolean isFile = FileHolder.Type.File.equals(holder.getType());
-                    boolean isMounted = FileHolder.Type.Mounted.equals(holder.getType());
-                    boolean isBookmarked = FileHolder.Type.Bookmarked.equals(holder.getType());
-                    boolean canWrite = holder.file != null && holder.file.canWrite();
-                    boolean canRead = holder.file != null && holder.file.canRead();
-
-                    if (!isMounted && !isBookmarked)
-                        try {
-                            FileHolder dbTestObject = new FileHolder(getContext(), holder.file);
-                            AppUtils.getKuick(getContext()).reconstruct(dbTestObject);
-                            isMounted = FileHolder.Type.Mounted.equals(dbTestObject.getType());
-                            isBookmarked = FileHolder.Type.Bookmarked.equals(dbTestObject.getType());
-                        } catch (ReconstructionFailedException ignored) {
-                        }
-
-                    PopupMenu popupMenu = new PopupMenu(getContext(), v);
-                    Menu menuItself = popupMenu.getMenu();
-
-                    popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
-
-                    menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead && isFile);
-                    menuItself.findItem(R.id.action_mode_file_rename).setEnabled((canWrite || isMounted || isBookmarked)
-                            && !FileHolder.Type.Pending.equals(holder.getType()));
-                    menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canWrite && !isMounted);
-                    menuItself.findItem(R.id.action_mode_file_show).setVisible(FileHolder.Type.Recent.equals(
-                            holder.getType()));
-                    menuItself.findItem(R.id.action_mode_file_change_save_path).setVisible(
-                            FileHolder.Type.SaveLocation.equals(holder.getType())
-                                    || (holder.file != null && FileUtils.getApplicationDirectory(getContext())
-                                    .equals(holder.file)));
-                    menuItself.findItem(R.id.action_mode_file_eject_directory).setVisible(isMounted);
-                    menuItself.findItem(R.id.action_mode_file_toggle_shortcut).setVisible(!isFile && !isMounted)
-                            .setTitle(isBookmarked ? R.string.butn_removeShortcut : R.string.butn_addShortcut);
-
-                    popupMenu.setOnMenuItemClickListener(item -> {
-                        int id = item.getItemId();
-
-                        ArrayList<FileHolder> generateSelectionList = new ArrayList<>();
-                        generateSelectionList.add(holder);
-
-                        if (id == R.id.action_mode_file_open) {
-                            performLayoutClickOpen(clazz);
-                        } else if (id == R.id.action_mode_file_show && holder.file.getParentFile() != null) {
-                            goPath(holder.file.getParentFile());
-                        } else if (id == R.id.action_mode_file_eject_directory) {
-                            AppUtils.getKuick(getContext()).remove(holder);
-                            AppUtils.getKuick(getContext()).broadcast();
-                        } else if (id == R.id.action_mode_file_toggle_shortcut) {
-                            shortcutItem(holder);
-                        } else if (id == R.id.action_mode_file_change_save_path) {
-                            startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
-                        } else
-                            return !handleEditingAction(item, FileListFragment.this, generateSelectionList);
-
-                        return true;
-                    });
-
-                    popupMenu.show();
-                });
-            }
-        };
-
-        return new FileListAdapter(getActivity())
-        {
-            @NonNull
-            @Override
-            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                GroupViewHolder holder = super.onCreateViewHolder(parent, viewType);
-
-                if (viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON) {
-                    registerLayoutViewClicks(holder);
-                    return holder;
-                }
-
-                return AppUtils.quickAction(holder, quickActions);
-            }
-        };
     }
 
     @Override
@@ -426,29 +354,6 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
             getListView().scrollToPosition(0);
 
         mLastKnownPath = pathOnTrial;
-    }
-
-    protected void shortcutItem(FileHolder holder)
-    {
-        Kuick kuick = AppUtils.getKuick(getContext());
-
-        try {
-            kuick.reconstruct(holder);
-            kuick.remove(holder);
-
-            createSnackbar(R.string.mesg_removed).show();
-        } catch (Exception e) {
-            kuick.insert(holder);
-            createSnackbar(R.string.mesg_added).show();
-        } finally {
-            kuick.broadcast();
-        }
-    }
-
-    @Override
-    public Snackbar createSnackbar(int resId, Object... objects)
-    {
-        return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_SHORT);
     }
 
     public void goPath(DocumentFile file)

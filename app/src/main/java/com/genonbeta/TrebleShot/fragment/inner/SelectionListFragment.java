@@ -43,11 +43,6 @@ import java.util.List;
 public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder,
         SelectionListFragment.MyAdapter> implements IconProvider, TitleProvider
 {
-    @Override
-    public MyAdapter onAdapter()
-    {
-        return new MyAdapter(getContext());
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -83,17 +78,10 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_insert_drive_file_white_24dp);
-        setEmptyText(getString(R.string.text_listEmpty));
-
-        useEmptyActionButton(getString(R.string.butn_refresh), new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                refreshList();
-            }
-        });
+        setListAdapter(new MyAdapter(getContext()));
+        setEmptyListImage(R.drawable.ic_insert_drive_file_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmpty));
+        useEmptyActionButton(getString(R.string.butn_refresh), v -> refreshList());
     }
 
     @Override
@@ -146,7 +134,6 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
             final AppCompatCheckBox checkBox = holder.itemView.findViewById(R.id.checkbox);
 
             holder.itemView.setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
-
             checkBox.setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
 
             return holder;

@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -31,7 +30,9 @@ import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.Merger;
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
@@ -50,21 +51,19 @@ public class AudioListAdapter
 
     private ContentResolver mResolver;
 
-    public AudioListAdapter(Context context)
+    public AudioListAdapter(EditableListFragmentImpl<AudioItemHolder> fragment,
+                            HolderConsumer<GroupViewHolder> consumer)
     {
-        super(context, MODE_GROUP_BY_ARTIST);
-        mResolver = context.getContentResolver();
+        super(fragment, consumer, MODE_GROUP_BY_ARTIST);
+        mResolver = getContext().getContentResolver();
     }
 
     @Override
     protected void onLoad(GroupLister<AudioItemHolder> lister)
     {
         Map<Integer, AlbumHolder> albumList = new ArrayMap<>();
-        Cursor songCursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null,
-                MediaStore.Audio.Media.IS_MUSIC + "=?",
-                new String[]{String.valueOf(1)},
-                null);
+        Cursor songCursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
+                MediaStore.Audio.Media.IS_MUSIC + "=?", new String[]{String.valueOf(1)}, null);
 
         Cursor albumCursor = mResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null,
                 null, null, null);
@@ -126,7 +125,16 @@ public class AudioListAdapter
             return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false),
                     R.id.layout_list_title_text);
 
-        return new GroupViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
+        GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(R.layout.list_music, parent,
+                false));
+
+        getConsumer().registerLayoutViewClicks(holder);
+        holder.itemView.findViewById(R.id.visitView)
+                .setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+        holder.itemView.findViewById(R.id.selector)
+                .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+
+        return holder;
     }
 
     @Override

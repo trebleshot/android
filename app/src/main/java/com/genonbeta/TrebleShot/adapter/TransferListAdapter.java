@@ -42,11 +42,13 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.*;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -87,10 +89,11 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     private int mColorDone;
     private int mColorError;
 
-    public TransferListAdapter(Context context)
+    public TransferListAdapter(EditableListFragmentImpl<GenericItem> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
-        super(context, MODE_GROUP_BY_DEFAULT);
+        super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
 
+        Context context = getContext();
         mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
         mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError));
@@ -457,8 +460,17 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     @Override
     public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_transfer, parent,
-                false)) : createDefaultViews(parent, viewType, false);
+        GroupViewHolder holder = viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
+                R.layout.list_transfer, parent, false)) : createDefaultViews(parent, viewType,
+                false);
+
+        if (!holder.isRepresentative()) {
+            getConsumer().registerLayoutViewClicks(holder);
+            holder.itemView.findViewById(R.id.layout_image)
+                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+        }
+
+        return holder;
     }
 
     @Override

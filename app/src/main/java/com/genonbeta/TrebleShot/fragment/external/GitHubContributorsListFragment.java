@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.updatewithgithub.RemoteServer;
@@ -53,45 +52,18 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
         GitHubContributorsListFragment.ContributorListAdapter>
 {
     @Override
-    public ContributorListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = clazz -> clazz.itemView
-                .findViewById(R.id.visitView).setOnClickListener((View.OnClickListener) v -> {
-                    final ContributorObject contributorObject = getAdapter().getList().get(clazz.getAdapterPosition());
-
-                    if (getContext() == null)
-                        return;
-
-                    getContext().startActivity(new Intent(Intent.ACTION_VIEW)
-                            .setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
-                });
-
-        return new ContributorListAdapter(getContext())
-        {
-            @NonNull
-            @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
 
-        useEmptyActionButton(true);
-        getEmptyActionButton().setText(R.string.butn_refresh);
-        getEmptyActionButton().setOnClickListener(v -> refreshList());
-
-        setEmptyImage(R.drawable.ic_github_circle_white_24dp);
-        setEmptyText(getString(R.string.mesg_noInternetConnection));
+        setListAdapter(new ContributorListAdapter(getContext()));
+        setEmptyListImage(R.drawable.ic_github_circle_white_24dp);
+        setEmptyListText(getString(R.string.mesg_noInternetConnection));
+        useEmptyActionButton(getString(R.string.butn_refresh), v -> refreshList());
     }
 
     @Override
-    public RecyclerView.LayoutManager onLayoutManager()
+    public RecyclerView.LayoutManager getLayoutManager()
     {
         return new GridLayoutManager(getContext(), 1);
     }
@@ -123,7 +95,17 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
         {
-            return new ViewHolder(getInflater().inflate(R.layout.list_contributors, parent, false));
+            ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_contributors, parent,
+                    false));
+
+            holder.itemView.findViewById(R.id.visitView).setOnClickListener((View.OnClickListener) v -> {
+                final ContributorObject contributorObject = getList().get(holder.getAdapterPosition());
+
+                getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+                        .setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
+            });
+
+            return holder;
         }
 
         @Override

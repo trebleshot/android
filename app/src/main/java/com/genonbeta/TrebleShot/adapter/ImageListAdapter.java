@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -30,7 +29,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -46,11 +47,11 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     private ContentResolver mResolver;
     private int mSelectedInset;
 
-    public ImageListAdapter(Context context)
+    public ImageListAdapter(EditableListFragmentImpl<ImageHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
-        super(context, MODE_GROUP_BY_ALBUM);
-        mResolver = context.getContentResolver();
-        mSelectedInset = (int) context.getResources().getDimension(R.dimen.space_list_grid);
+        super(fragment, consumer, MODE_GROUP_BY_ALBUM);
+        mResolver = getContext().getContentResolver();
+        mSelectedInset = (int) getContext().getResources().getDimension(R.dimen.space_list_grid);
     }
 
     @Override
@@ -94,8 +95,17 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
             return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false),
                     R.id.layout_list_title_text);
 
-        return new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
+        GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
                 ? R.layout.list_image_grid : R.layout.list_image, parent, false));
+
+        getConsumer().registerLayoutViewClicks(holder);
+        View visitView = holder.itemView.findViewById(R.id.visitView);
+        visitView.setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+        visitView.setOnLongClickListener(v -> getConsumer().performLayoutLongClick(holder));
+        holder.itemView.findViewById(isGridLayoutRequested() ? R.id.selectorContainer : R.id.selector)
+                .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+
+        return holder;
     }
 
     @Override

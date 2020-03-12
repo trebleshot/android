@@ -21,12 +21,14 @@ package com.genonbeta.TrebleShot.fragment.external;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import org.json.JSONArray;
@@ -46,50 +48,10 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
         RecyclerViewAdapter.ViewHolder, ThirdPartyLibraryListFragment.LicencesAdapter>
 {
     @Override
-    public LicencesAdapter onAdapter()
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions =
-                clazz -> clazz.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
-                    final ModuleItem moduleItem = getAdapter().getList().get(clazz.getAdapterPosition());
-
-                    PopupMenu popupMenu = new PopupMenu(getContext(), v);
-                    popupMenu.getMenuInflater().inflate(R.menu.popup_third_party_library_item, popupMenu.getMenu());
-
-                    popupMenu.getMenu()
-                            .findItem(R.id.popup_visitWebPage)
-                            .setEnabled(moduleItem.moduleUrl != null);
-
-                    popupMenu.getMenu()
-                            .findItem(R.id.popup_goToLicenceURL)
-                            .setEnabled(moduleItem.licenceUrl != null);
-
-                    popupMenu.setOnMenuItemClickListener(item -> {
-                        int id = item.getItemId();
-
-                        if (id == R.id.popup_goToLicenceURL)
-                            getContext().startActivity(new Intent(Intent.ACTION_VIEW)
-                                    .setData(Uri.parse(moduleItem.licenceUrl)));
-                        else if (id == R.id.popup_visitWebPage)
-                            getContext().startActivity(new Intent(Intent.ACTION_VIEW)
-                                    .setData(Uri.parse(moduleItem.moduleUrl)));
-                        else
-                            return false;
-
-                        return true;
-                    });
-
-                    popupMenu.show();
-                });
-
-        return new LicencesAdapter(getContext())
-        {
-            @NonNull
-            @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
+        super.onViewCreated(view, savedInstanceState);
+        setListAdapter(new LicencesAdapter(getContext()));
     }
 
     public static class LicencesAdapter extends RecyclerViewAdapter<ModuleItem, RecyclerViewAdapter.ViewHolder>
@@ -105,7 +67,42 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
         {
-            return new ViewHolder(getInflater().inflate(R.layout.list_third_party_library, parent, false));
+            ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_third_party_library, parent,
+                    false));
+
+            holder.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
+                final ModuleItem moduleItem = getList().get(holder.getAdapterPosition());
+
+                PopupMenu popupMenu = new PopupMenu(getContext(), v);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_third_party_library_item, popupMenu.getMenu());
+
+                popupMenu.getMenu()
+                        .findItem(R.id.popup_visitWebPage)
+                        .setEnabled(moduleItem.moduleUrl != null);
+
+                popupMenu.getMenu()
+                        .findItem(R.id.popup_goToLicenceURL)
+                        .setEnabled(moduleItem.licenceUrl != null);
+
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int id = item.getItemId();
+
+                    if (id == R.id.popup_goToLicenceURL)
+                        getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+                                .setData(Uri.parse(moduleItem.licenceUrl)));
+                    else if (id == R.id.popup_visitWebPage)
+                        getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+                                .setData(Uri.parse(moduleItem.moduleUrl)));
+                    else
+                        return false;
+
+                    return true;
+                });
+
+                popupMenu.show();
+            });
+
+            return holder;
         }
 
         @Override

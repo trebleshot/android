@@ -18,16 +18,17 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
-import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -42,9 +43,10 @@ import java.util.List;
 public class ActiveConnectionListAdapter extends EditableListAdapter<
         ActiveConnectionListAdapter.EditableNetworkInterface, RecyclerViewAdapter.ViewHolder>
 {
-    public ActiveConnectionListAdapter(Context context)
+    public ActiveConnectionListAdapter(EditableListFragmentImpl<EditableNetworkInterface> fragment,
+                                       HolderConsumer<ViewHolder> consumer)
     {
-        super(context);
+        super(fragment, consumer);
     }
 
     @Override
@@ -68,8 +70,16 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new ViewHolder(getInflater().inflate(R.layout.list_active_connection,
-                parent, false));
+        ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_active_connection, parent,
+                false));
+
+        getConsumer().registerLayoutViewClicks(holder);
+        holder.itemView.findViewById(R.id.visitView)
+                .setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+        holder.itemView.findViewById(R.id.selector)
+                .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+
+        return holder;
     }
 
     @Override

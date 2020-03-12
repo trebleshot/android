@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,8 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.app;
+package com.genonbeta.TrebleShot.view;
 
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -25,7 +26,19 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
  * created by: veli
  * date: 8/24/18 1:36 PM
  */
-public interface EditableListFragmentModelImpl<V extends RecyclerViewAdapter.ViewHolder>
+public interface HolderConsumer<V extends RecyclerViewAdapter.ViewHolder>
 {
+    boolean performLayoutClick(V holder);
+
+    boolean performLayoutLongClick(V holder);
+
+    boolean performLayoutClickOpen(V holder);
+
+    void registerLayoutViewClicks(final V holder);
+
+    boolean setItemSelected(V holder);
+
+    boolean setItemSelected(V holder, boolean force);
+
     void setLayoutClickListener(EditableListFragment.LayoutClickListener<V> clickListener);
 }

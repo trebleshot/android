@@ -45,6 +45,7 @@ import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.SelectionUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
@@ -72,7 +73,7 @@ import java.util.Map;
 
 abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder,
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
-        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>
+        implements EditableListFragmentImpl<T>, HolderConsumer<V>, SelectableHost<T>
 {
     public final static String
             ARG_SELECT_BY_CLICK = "argSelectByClick",
@@ -100,6 +101,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     private int mDefaultViewingGridSize = 1;
     private int mDefaultViewingGridSizeLandscape = 1;
     private int mDividerResId = R.id.abstract_layout_fast_scroll_recyclerview_bottom_divider;
+    private int mLayoutResId = R.layout.abstract_layout_editable_list_fragment;
     private FastScroller mFastScroller;
     private Map<String, Integer> mSortingOptions = new ArrayMap<>();
     private Map<String, Integer> mOrderingOptions = new ArrayMap<>();
@@ -144,7 +146,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getAdapter().setFragment(this);
         Bundle arguments = getArguments();
         mTwoRowLayoutState = isTwoRowLayout();
         mEngineConnection.setSelectableProvider(getAdapterImpl());
@@ -185,20 +186,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             mPerformerMenu.setUp(mPerformerEngine);
     }
 
+    @Nullable
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
-
-        setHasOptionsMenu(true);
-
-        if (mUseDefaultPaddingDecoration) {
-            float padding = mDefaultPaddingDecorationSize > -1 ? mDefaultPaddingDecorationSize
-                    : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
-
-            getListView().addItemDecoration(new PaddingItemDecoration((int) padding,
-                    mUseDefaultPaddingDecorationSpaceForEdges, isHorizontalOrientation()));
-        }
+        return inflater.inflate(mLayoutResId, container, false);
     }
 
     @Override
@@ -206,8 +199,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     {
         super.onViewCreated(view, savedInstanceState);
 
-        getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
-        getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
+        mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
 
         // We have to recreate the provider class because old one doesn't work when
         // same instance is used.
@@ -222,44 +214,20 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         }
     }
 
-
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    public void onActivityCreated(Bundle savedInstanceState)
     {
-        super.onListView(mainContainer, listViewContainer);
-        View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview_container, null,
-                false);
+        super.onActivityCreated(savedInstanceState);
 
-        ViewGroup recyclerViewContainer = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_container);
-        RecyclerView recyclerView = onListView(recyclerViewContainer);
-        mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
+        setHasOptionsMenu(true);
 
-        // TODO: 1/18/19 Something like onSetListView method would be more safe to set the layout manager etc.
-        recyclerView.setLayoutManager(onLayoutManager());
-        listViewContainer.addView(view);
+        if (mUseDefaultPaddingDecoration) {
+            float padding = mDefaultPaddingDecorationSize > -1 ? mDefaultPaddingDecorationSize
+                    : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
 
-        return recyclerView;
-    }
-
-    protected RecyclerView onListView(ViewGroup container)
-    {
-        RecyclerView view = (RecyclerView) getLayoutInflater().inflate(R.layout.abstract_recyclerview, null,
-                false);
-
-        container.addView(view);
-
-        return view;
-    }
-
-    @Override
-    public boolean onSetListAdapter(E adapter)
-    {
-        if (super.onSetListAdapter(adapter)) {
-            mFastScroller.setRecyclerView(getListView());
-            return true;
+            getListView().addItemDecoration(new PaddingItemDecoration((int) padding,
+                    mUseDefaultPaddingDecorationSpaceForEdges, isHorizontalOrientation()));
         }
-
-        return false;
     }
 
     @Override
@@ -428,9 +396,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         if (!isLocalSelectionActivated()) {
             menu.findItem(R.id.actions_abs_editable_sort_by).setEnabled(isSortingSupported());
             menu.findItem(R.id.actions_abs_editable_multi_select).setVisible(mPerformerMenu != null);
-
-            if (!getAdapter().isGridSupported())
-                menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(false);
+            menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(getAdapter().isGridSupported());
 
             MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
 
@@ -500,36 +466,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return 1;
     }
 
-    @Override
-    public RecyclerView.LayoutManager onLayoutManager()
-    {
-        final RecyclerView.LayoutManager defaultLayoutManager = super.onLayoutManager();
-        final int optimumGridSize = getOptimumGridSize();
-
-        final GridLayoutManager layoutManager;
-
-        if (defaultLayoutManager instanceof GridLayoutManager) {
-            layoutManager = (GridLayoutManager) defaultLayoutManager;
-            layoutManager.setSpanCount(optimumGridSize);
-        } else
-            layoutManager = new GridLayoutManager(getContext(), optimumGridSize);
-
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
-        {
-            @Override
-            public int getSpanSize(int position)
-            {
-                // should be reserved so it can occupy all the available space of a row.
-                int viewType = getAdapter().getItemViewType(position);
-
-                return viewType == EditableListAdapter.VIEW_TYPE_DEFAULT ? 1
-                        : onGridSpanSize(viewType, optimumGridSize);
-            }
-        });
-
-        return layoutManager;
-    }
-
     protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, Map<String, Integer> options)
     {
         if (mainItem != null) {
@@ -558,7 +494,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
         getAdapter().notifyGridSizeUpdate(gridSize, isScreenLarge());
 
-        getListView().setLayoutManager(onLayoutManager());
+        getListView().setLayoutManager(getLayoutManager());
         getListView().setAdapter(getAdapter());
 
         refreshList();
@@ -635,6 +571,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         }
     }
 
+    public int getActiveViewingGridSize()
+    {
+        return getListView().getLayoutManager() instanceof GridLayoutManager
+                ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() : 1;
+    }
+
     public EditableListAdapterImpl<T> getAdapterImpl()
     {
         return getAdapter();
@@ -668,9 +610,24 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     }
 
     @Override
-    public void setFilteringDelegate(FilteringDelegate<T> delegate)
+    public RecyclerView.LayoutManager getLayoutManager()
     {
-        mFilteringDelegate = delegate;
+        final GridLayoutManager layoutManager = generateGridLayoutManager();
+        final int optimumGridSize = getOptimumGridSize();
+
+        layoutManager.setSpanCount(optimumGridSize);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
+        {
+            @Override
+            public int getSpanSize(int position)
+            {
+                // should be reserved so it can occupy all the available space of a row.
+                int type = getAdapter().getItemViewType(position);
+                return type == EditableListAdapter.VIEW_TYPE_DEFAULT ? 1 : onGridSpanSize(type, optimumGridSize);
+            }
+        });
+
+        return layoutManager;
     }
 
     public FastScroller getFastScroller()
@@ -689,14 +646,17 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return preferredGridSize > 1 ? preferredGridSize : canShowWideView() && isTwoRowLayout() ? 2 : 1;
     }
 
-    public String getUniqueSettingKey(String setting)
-    {
-        return getClass().getSimpleName() + "_" + setting;
-    }
-
     public IEngineConnection<T> getEngineConnection()
     {
         return mEngineConnection;
+    }
+
+    public IPerformerEngine getPerformerEngine()
+    {
+        if (getContext() != null && getActivity() instanceof PerformerEngineProvider)
+            return ((PerformerEngineProvider) getActivity()).getPerformerEngine();
+
+        return mPerformerMenu != null ? mPerformerEngine : null;
     }
 
     @Override
@@ -710,17 +670,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return getViewPreferences().getInt(getUniqueSettingKey("SortBy"), mDefaultSortingCriteria);
     }
 
-    public IPerformerEngine getPerformerEngine()
+    public String getUniqueSettingKey(String setting)
     {
-        if (getContext() != null && getActivity() instanceof PerformerEngineProvider)
-            return ((PerformerEngineProvider) getActivity()).getPerformerEngine();
-
-        return mPerformerMenu != null ? mPerformerEngine : null;
-    }
-
-    public SharedPreferences getViewPreferences()
-    {
-        return AppUtils.getViewingPreferences(getContext());
+        return getClass().getSimpleName() + "_" + setting;
     }
 
     public int getViewingGridSize()
@@ -733,10 +685,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                 mDefaultViewingGridSize);
     }
 
-    public int getActiveViewingGridSize()
+    public SharedPreferences getViewPreferences()
     {
-        return getListView().getLayoutManager() instanceof GridLayoutManager
-                ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() : 1;
+        return AppUtils.getViewingPreferences(getContext());
     }
 
     public boolean invokeClickListener(V holder, boolean longClick)
@@ -760,11 +711,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return mRefreshRequested;
     }
 
-    public void setRefreshRequested(boolean requested)
-    {
-        mRefreshRequested = requested;
-    }
-
     public boolean isSelectByClick()
     {
         return mSelectByClick || mLocalSelectionActivated;
@@ -784,11 +730,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public boolean isUsingLocalSelection()
     {
         return !(getActivity() instanceof PerformerEngineProvider) && mPerformerMenu != null;
-    }
-
-    public void setSortingSupported(boolean sortingSupported)
-    {
-        mSortingSupported = sortingSupported;
     }
 
     public boolean loadIfRequested()
@@ -813,12 +754,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return setItemSelected(holder) || invokeClickListener(holder, false) || onDefaultClickAction(holder);
     }
 
-    public boolean performLayoutLongClick(V holder)
-    {
-        return invokeClickListener(holder, true) || onDefaultLongClickAction(holder)
-                || setItemSelected(holder, true);
-    }
-
     public boolean performLayoutClickOpen(V holder)
     {
         try {
@@ -833,10 +768,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return false;
     }
 
-    public void registerLayoutViewClicks(final V holder)
+    public boolean performLayoutLongClick(V holder)
     {
-        holder.itemView.setOnClickListener(v -> performLayoutClick(holder));
-        holder.itemView.setOnLongClickListener(v -> performLayoutLongClick(holder));
+        return invokeClickListener(holder, true) || onDefaultLongClickAction(holder)
+                || setItemSelected(holder, true);
     }
 
     @Override
@@ -859,6 +794,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                 mRefreshDelayedSnackbar = null;
             }
         }
+    }
+
+    public void registerLayoutViewClicks(final V holder)
+    {
+        holder.itemView.setOnClickListener(v -> performLayoutClick(holder));
+        holder.itemView.setOnLongClickListener(v -> performLayoutLongClick(holder));
     }
 
     public void setDefaultPaddingDecorationSize(float defaultPadding)
@@ -895,6 +836,22 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         mDividerResId = resId;
     }
 
+    @Override
+    public void setFilteringDelegate(FilteringDelegate<T> delegate)
+    {
+        mFilteringDelegate = delegate;
+    }
+
+    public void setFilteringSupported(boolean supported)
+    {
+        mFilteringSupported = supported;
+    }
+
+    public void setHasBottomSpace(boolean has)
+    {
+        mHasBottomSpace = has;
+    }
+
     public boolean setItemSelected(V holder)
     {
         return setItemSelected(holder, isSelectByClick());
@@ -924,6 +881,16 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         mLayoutClickListener = clickListener;
     }
 
+    @Override
+    protected void setListAdapter(E adapter, boolean hadAdapter)
+    {
+        super.setListAdapter(adapter, hadAdapter);
+        mFastScroller.setRecyclerView(getListView());
+        getAdapter().setFragment(this);
+        getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
+        getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
+    }
+
     protected void setLocalSelectionActivated(boolean activate)
     {
         mLocalSelectionActivated = activate;
@@ -937,14 +904,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
             getActivity().invalidateOptionsMenu();
     }
 
-    public void setFilteringSupported(boolean supported)
+    protected void setLayoutResId(int resId)
     {
-        mFilteringSupported = supported;
+        mLayoutResId = resId;
     }
 
-    public void setHasBottomSpace(boolean has)
+    public void setRefreshRequested(boolean requested)
     {
-        mHasBottomSpace = has;
+        mRefreshRequested = requested;
+    }
+
+    public void setSortingSupported(boolean sortingSupported)
+    {
+        mSortingSupported = sortingSupported;
     }
 
     public void setUseDefaultPaddingDecoration(boolean use)

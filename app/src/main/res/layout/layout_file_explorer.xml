@@ -38,10 +38,7 @@
             android:layout_above="@+id/fragment_fileexplorer_pathresolver"
             android:layout_alignParentTop="true">
 
-        <FrameLayout
-                android:id="@+id/fragment_fileexplorer_listViewContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+        <include layout="@layout/abstract_layout_editable_list_fragment"/>
 
         <View
                 android:id="@+id/fragment_fileexplorer_separator"

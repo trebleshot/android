@@ -24,9 +24,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.android.framework.util.date.DateMerger;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Lister;
@@ -53,9 +55,9 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     private int mGroupBy;
 
-    public GroupEditableListAdapter(Context context, int groupBy)
+    public GroupEditableListAdapter(EditableListFragmentImpl<T> fragment, HolderConsumer<V> consumer, int groupBy)
     {
-        super(context);
+        super(fragment, consumer);
         mGroupBy = groupBy;
     }
 

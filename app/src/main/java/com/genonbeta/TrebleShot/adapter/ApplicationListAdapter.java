@@ -33,9 +33,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.Merger;
 
@@ -49,11 +51,12 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     private SharedPreferences mPreferences;
     private PackageManager mManager;
 
-    public ApplicationListAdapter(Context context, SharedPreferences preferences)
+    public ApplicationListAdapter(EditableListFragmentImpl<PackageHolder> fragment,
+                                  HolderConsumer<GroupViewHolder> consumer, SharedPreferences preferences)
     {
-        super(context, MODE_GROUP_BY_DATE);
+        super(fragment, consumer, MODE_GROUP_BY_DATE);
         mPreferences = preferences;
-        mManager = context.getPackageManager();
+        mManager = getContext().getPackageManager();
     }
 
     @Override
@@ -84,9 +87,20 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     @Override
     public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(
-                R.layout.list_application, parent, false)) : createDefaultViews(parent, viewType,
-                false);
+        GroupViewHolder holder = viewType == VIEW_TYPE_DEFAULT
+                ? new GroupViewHolder(getInflater().inflate(R.layout.list_application, parent, false))
+                : createDefaultViews(parent, viewType, false);
+
+        if (!holder.isRepresentative()) {
+            getConsumer().registerLayoutViewClicks(holder);
+
+            holder.itemView.findViewById(R.id.visitView)
+                    .setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+            holder.itemView.findViewById(R.id.selector)
+                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+        }
+
+        return holder;
     }
 
     @Override

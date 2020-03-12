@@ -20,13 +20,16 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -34,19 +37,24 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MimeIconUtils;
+import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
@@ -74,9 +82,10 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     private String mSearchWord;
     private DocumentFile mPath;
 
-    public FileListAdapter(Context context)
+    public FileListAdapter(EditableListFragmentImpl<FileHolder> fragment, HolderConsumer<GroupViewHolder> consumer,
+                           int groupBy)
     {
-        super(context, MODE_GROUP_BY_DEFAULT);
+        super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
     }
 
     @Override
@@ -238,8 +247,80 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_file, parent,
-                false)) : createDefaultViews(parent, viewType, false);
+        GroupViewHolder holder = viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
+                R.layout.list_file, parent, false)) : createDefaultViews(parent, viewType, false);
+
+        if (viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
+            getConsumer().registerLayoutViewClicks(holder);
+        else if (!holder.isRepresentative()) {
+            getConsumer().registerLayoutViewClicks(holder);
+            holder.itemView.findViewById(R.id.layout_image)
+                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+            holder.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
+                FileHolder fileHolder = getList().get(holder.getAdapterPosition());
+                boolean isFile = FileHolder.Type.File.equals(fileHolder.getType());
+                boolean isMounted = FileHolder.Type.Mounted.equals(fileHolder.getType());
+                boolean isBookmarked = FileHolder.Type.Bookmarked.equals(fileHolder.getType());
+                boolean canWrite = fileHolder.file != null && fileHolder.file.canWrite();
+                boolean canRead = fileHolder.file != null && fileHolder.file.canRead();
+
+                if (!isMounted && !isBookmarked)
+                    try {
+                        FileHolder dbTestObject = new FileHolder(getContext(), fileHolder.file);
+                        AppUtils.getKuick(getContext()).reconstruct(dbTestObject);
+                        isMounted = FileHolder.Type.Mounted.equals(dbTestObject.getType());
+                        isBookmarked = FileHolder.Type.Bookmarked.equals(dbTestObject.getType());
+                    } catch (ReconstructionFailedException ignored) {
+                    }
+
+                PopupMenu popupMenu = new PopupMenu(getContext(), v);
+                Menu menuItself = popupMenu.getMenu();
+
+                popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
+
+                menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead && isFile);
+                menuItself.findItem(R.id.action_mode_file_rename).setEnabled((canWrite || isMounted || isBookmarked)
+                        && !FileHolder.Type.Pending.equals(fileHolder.getType()));
+                menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canWrite && !isMounted);
+                menuItself.findItem(R.id.action_mode_file_show).setVisible(FileHolder.Type.Recent.equals(
+                        fileHolder.getType()));
+                menuItself.findItem(R.id.action_mode_file_change_save_path).setVisible(
+                        FileHolder.Type.SaveLocation.equals(fileHolder.getType())
+                                || (fileHolder.file != null && FileUtils.getApplicationDirectory(getContext())
+                                .equals(fileHolder.file)));
+                menuItself.findItem(R.id.action_mode_file_eject_directory).setVisible(isMounted);
+                menuItself.findItem(R.id.action_mode_file_toggle_shortcut).setVisible(!isFile && !isMounted)
+                        .setTitle(isBookmarked ? R.string.butn_removeShortcut : R.string.butn_addShortcut);
+
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int id = item.getItemId();
+
+                    ArrayList<FileHolder> generateSelectionList = new ArrayList<>();
+                    generateSelectionList.add(fileHolder);
+
+                    if (id == R.id.action_mode_file_open) {
+                        getConsumer().performLayoutClickOpen(holder);
+                    } else if (id == R.id.action_mode_file_show && fileHolder.file.getParentFile() != null) {
+                        goPath(fileHolder.file.getParentFile());
+                    } else if (id == R.id.action_mode_file_eject_directory) {
+                        AppUtils.getKuick(getContext()).remove(fileHolder);
+                        AppUtils.getKuick(getContext()).broadcast();
+                    } else if (id == R.id.action_mode_file_toggle_shortcut) {
+                        FileListFragment.shortcutItem(getFragment(), fileHolder);
+                    } else if (id == R.id.action_mode_file_change_save_path) {
+                        getContext().startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
+                    } else if (getFragment() instanceof FileListFragment)
+                        return !FileListFragment.handleEditingAction(item, (FileListFragment) getFragment(),
+                                generateSelectionList);
+
+                    return true;
+                });
+
+                popupMenu.show();
+            });
+        }
+
+        return holder;
     }
 
     @Override

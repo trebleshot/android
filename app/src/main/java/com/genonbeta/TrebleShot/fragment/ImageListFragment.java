@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
+import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -55,8 +56,9 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_photo_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyImage));
+        setListAdapter(new ImageListAdapter(this, this));
+        setEmptyListImage(R.drawable.ic_photo_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyImage));
     }
 
     @Override
@@ -64,8 +66,8 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     {
         super.onResume();
 
-        getContext().getContentResolver()
-                .registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, getDefaultContentObserver());
+        getContext().getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                true, getDefaultContentObserver());
     }
 
     @Override
@@ -73,35 +75,7 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     {
         super.onPause();
 
-        getContext().getContentResolver()
-                .unregisterContentObserver(getDefaultContentObserver());
-    }
-
-    @Override
-    public ImageListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative()) {
-                registerLayoutViewClicks(clazz);
-
-                View visitView = clazz.itemView.findViewById(R.id.visitView);
-                visitView.setOnClickListener(v -> performLayoutClickOpen(clazz));
-                visitView.setOnLongClickListener(v -> performLayoutLongClick(clazz));
-
-                clazz.itemView.findViewById(getAdapter().isGridLayoutRequested() ? R.id.selectorContainer
-                        : R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
-            }
-        };
-
-        return new ImageListAdapter(getActivity())
-        {
-            @NonNull
-            @Override
-            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
+        getContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 
     @Override

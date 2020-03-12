@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
@@ -94,14 +93,12 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }
 
+    @Nullable
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
-        View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null,
-                false);
-        ((ViewGroup) mainContainer).addView(adaptedView);
-
-        return super.onListView(mainContainer, adaptedView.findViewById(R.id.fragmentContainer));
+        return inflater.inflate(R.layout.layout_transfer_group, container, false);
     }
 
     @Override
@@ -109,16 +106,16 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyTransfer));
+        setListAdapter(new TransferGroupListAdapter(this, this, getSelect()));
+        setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyTransfer));
 
-        View viewSend = view.findViewById(R.id.sendLayoutButton);
-        View viewReceive = view.findViewById(R.id.receiveLayoutButton);
-
-        viewSend.setOnClickListener(v -> startActivity(new Intent(getContext(), ContentSharingActivity.class)));
-
-        viewReceive.setOnClickListener(v -> startActivity(new Intent(getContext(), AddDeviceActivity.class)
-                .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.MAKE_ACQUAINTANCE)));
+        view.findViewById(R.id.sendLayoutButton).setOnClickListener(v -> startActivity(
+                new Intent(getContext(), ContentSharingActivity.class)));
+        view.findViewById(R.id.receiveLayoutButton).setOnClickListener(v -> startActivity(
+                new Intent(getContext(), AddDeviceActivity.class)
+                        .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
+                                AddDeviceActivity.RequestType.MAKE_ACQUAINTANCE)));
     }
 
     @Override
@@ -169,28 +166,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     {
         options.put(getString(R.string.text_groupByNothing), TransferGroupListAdapter.MODE_GROUP_BY_NOTHING);
         options.put(getString(R.string.text_groupByDate), TransferGroupListAdapter.MODE_GROUP_BY_DATE);
-    }
-
-    @Override
-    public TransferGroupListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative()) {
-                registerLayoutViewClicks(clazz);
-                clazz.itemView.findViewById(R.id.layout_image).setOnClickListener(v -> setItemSelected(clazz,
-                        true));
-            }
-        };
-
-        return new TransferGroupListAdapter(getActivity(), AppUtils.getKuick(getContext()))
-        {
-            @NonNull
-            @Override
-            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        }.setSelect(getSelect());
     }
 
     @Override

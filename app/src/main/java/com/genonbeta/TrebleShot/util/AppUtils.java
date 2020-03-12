@@ -421,12 +421,6 @@ public class AppUtils
             context.startService(intent);
     }
 
-    public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
-    {
-        quickActions.onQuickActions(clazz);
-        return clazz;
-    }
-
     public static boolean toggleDeviceScanning(DeviceScannerService service)
     {
         if (!service.getDeviceScanner().isBusy()) {
@@ -437,10 +431,5 @@ public class AppUtils
 
         service.getDeviceScanner().interrupt();
         return false;
-    }
-
-    public interface QuickActions<T>
-    {
-        void onQuickActions(T clazz);
     }
 }

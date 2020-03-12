@@ -54,8 +54,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_android_head_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyApp));
+        setEmptyListImage(R.drawable.ic_android_head_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyApp));
     }
 
     @Override
@@ -64,29 +64,6 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
         super.onGroupingOptions(options);
         options.put(getString(R.string.text_groupByNothing), ApplicationListAdapter.MODE_GROUP_BY_NOTHING);
         options.put(getString(R.string.text_groupByDate), ApplicationListAdapter.MODE_GROUP_BY_DATE);
-    }
-
-    @Override
-    public ApplicationListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative()) {
-                registerLayoutViewClicks(clazz);
-
-                clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
-                clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
-            }
-        };
-
-        return new ApplicationListAdapter(getActivity(), AppUtils.getDefaultPreferences(getContext()))
-        {
-            @NonNull
-            @Override
-            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
     }
 
     @Override

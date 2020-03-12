@@ -75,8 +75,8 @@
         android:layout_above="@id/actionsContainer"
         android:background="?colorDivider" />-->
 
-    <FrameLayout
-            android:id="@+id/fragmentContainer"
+    <include
+            layout="@layout/abstract_layout_editable_list_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/actionsContainer"

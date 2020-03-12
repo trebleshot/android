@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -54,18 +53,19 @@ public class TransferFileExplorerFragment extends TransferListFragment
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        setLayoutResId(R.layout.layout_transfer_explorer);
         setDividerView(R.id.layout_transfer_explorer_separator);
     }
 
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
-        View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_explorer, null,
-                false);
-        listViewContainer.addView(adaptedView);
+        super.onViewCreated(view, savedInstanceState);
+        setSnackbarContainer(view.findViewById(R.id.layout_transfer_explorer_fragment_content));
 
-        mToggleButton = adaptedView.findViewById(R.id.layout_transfer_explorer_efab);
-        mPathView = adaptedView.findViewById(R.id.layout_transfer_explorer_recycler);
+        mToggleButton = view.findViewById(R.id.layout_transfer_explorer_efab);
+        mPathView = view.findViewById(R.id.layout_transfer_explorer_recycler);
         mPathAdapter = new TransferPathResolverRecyclerAdapter(getContext());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL,
@@ -77,15 +77,6 @@ public class TransferFileExplorerFragment extends TransferListFragment
         mPathView.setAdapter(mPathAdapter);
 
         mPathAdapter.setOnClickListener(holder -> goPath(holder.index.object));
-
-        return super.onListView(mainContainer, adaptedView.findViewById(R.id.layout_transfer_explorer_fragment_content));
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-    {
-        super.onViewCreated(view, savedInstanceState);
-        setSnackbarContainer(view.findViewById(R.id.layout_transfer_explorer_fragment_content));
 
         if (getActivity() instanceof ViewTransferActivity)
             ((ViewTransferActivity) getActivity()).showMenus();

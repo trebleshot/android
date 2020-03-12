@@ -67,32 +67,29 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
         setDividerView(R.id.fragment_fileexplorer_separator);
     }
 
+    @Nullable
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
-        View adaptedView = getLayoutInflater().inflate(R.layout.layout_file_explorer, null, false);
-        listViewContainer.addView(adaptedView);
-
-        mPathView = adaptedView.findViewById(R.id.fragment_fileexplorer_pathresolver);
-        mPathAdapter = new FilePathResolverRecyclerAdapter(getContext());
-
-        mPathAdapter.setOnClickListener(holder -> goPath(holder.index.object));
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL,
-                false);
-        layoutManager.setStackFromEnd(true);
-
-        mPathView.setLayoutManager(layoutManager);
-        mPathView.setHasFixedSize(true);
-        mPathView.setAdapter(mPathAdapter);
-
-        return super.onListView(mainContainer, adaptedView.findViewById(R.id.fragment_fileexplorer_listViewContainer));
+        return inflater.inflate(R.layout.layout_file_explorer, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
+        mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
+        mPathAdapter = new FilePathResolverRecyclerAdapter(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL,
+                false);
+
+        layoutManager.setStackFromEnd(true);
+        mPathView.setLayoutManager(layoutManager);
+        mPathView.setHasFixedSize(true);
+        mPathView.setAdapter(mPathAdapter);
+        mPathAdapter.setOnClickListener(holder -> goPath(holder.index.object));
 
         if (mRequestedPath != null)
             requestPath(mRequestedPath);
@@ -200,9 +197,7 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
 
             while (currentFile != null) {
                 Index<DocumentFile> index = new Index<>(currentFile.getName(), currentFile);
-
                 pathIndex.add(index);
-
                 currentFile = currentFile.getParentFile();
 
                 if (currentFile == null && ".".equals(index.title))
@@ -214,7 +209,6 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
             synchronized (getList()) {
                 while (pathIndex.size() != 0) {
                     int currentStage = pathIndex.size() - 1;
-
                     getList().add(pathIndex.get(currentStage));
                     pathIndex.remove(currentStage);
                 }

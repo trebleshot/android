@@ -151,15 +151,15 @@ public class SwipeSelectionListener<T extends Editable> implements OnItemTouchLi
                     }
                 }
 
-                // Sadly a previous attempt to make this scroll continuous failed, due to the limitations of
-                // smoothScrollBy call of RecyclerView. The problem is that inside the touch events, calling it has
+                // Sadly a previous attempt to make this scroll continuous failed due to the limitations of the
+                // smoothScrollBy method of RecyclerView. The problem is that inside the touch events, calling it has
                 // no effect. And also, using scrollBy with touch listener has not benefits as it doesn't invoke
                 // onScrollStateChanged method which, if it did, could be used to repeat the scrolling process
                 // when the state is SETTLING. If it went according to the plan, as long as the mSelectionActivated
                 // is true, we could keep scrolling it. Another good solution could be to use SmoothScroller class
-                // with the layout manager, however, it was expensive use to because, firstly,
-                // it didn't scroll by pixels, instead by child position and secondly, even though it could work,
-                // it wasn't the best solution out there, because the next problem would be to guess where the user is
+                // with the layout manager, however, it was expensive use to because, firstly, it didn't scroll by
+                // pixels, but by pointing out the position of a child and secondly, even though it could work, it
+                // wasn't the best solution out there, because the next problem would be to guess where the user is
                 // pointing his or her hand.
                 rv.scrollBy(scrollX, scrollY);
             }

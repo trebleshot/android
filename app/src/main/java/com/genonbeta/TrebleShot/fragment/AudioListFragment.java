@@ -22,14 +22,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.AudioListAdapter;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
@@ -51,8 +49,8 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setEmptyImage(R.drawable.ic_library_music_white_24dp);
-        setEmptyText(getString(R.string.text_listEmptyMusic));
+        setEmptyListImage(R.drawable.ic_library_music_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyMusic));
     }
 
     @Override
@@ -82,29 +80,6 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
         options.put(getString(R.string.text_groupByAlbum), AudioListAdapter.MODE_GROUP_BY_ALBUM);
         options.put(getString(R.string.text_groupByArtist), AudioListAdapter.MODE_GROUP_BY_ARTIST);
         options.put(getString(R.string.text_groupByFolder), AudioListAdapter.MODE_GROUP_BY_FOLDER);
-    }
-
-    @Override
-    public AudioListAdapter onAdapter()
-    {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-            if (!clazz.isRepresentative()) {
-                registerLayoutViewClicks(clazz);
-
-                clazz.itemView.findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
-                clazz.itemView.findViewById(R.id.selector).setOnClickListener(v -> setItemSelected(clazz, true));
-            }
-        };
-
-        return new AudioListAdapter(getActivity())
-        {
-            @NonNull
-            @Override
-            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-            }
-        };
     }
 
     @Override
