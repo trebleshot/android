@@ -139,9 +139,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     public void onResume()
     {
         super.onResume();
-
         getActivity().registerReceiver(mStatusReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
-        refreshList();
     }
 
     @Override

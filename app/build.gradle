@@ -129,7 +129,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.esotericsoftware:kryo:4.0.2'
     implementation 'com.google.android.material:material:1.1.0'
-    implementation 'com.genonbeta.android:framework:1.0.4-local40'
+    implementation 'com.genonbeta.android:framework:1.0.4-local44'
     implementation 'com.genonbeta.android:gdatabase:1.0.3.2-local8'
     implementation 'com.genonbeta.coolsocket:main:1.0.3.2'
     // 3.3.2 requires minimum Android SDK 16, so core version changes should be made in accordance

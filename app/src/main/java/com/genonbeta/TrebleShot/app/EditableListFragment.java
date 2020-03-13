@@ -897,6 +897,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         adapter.setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
     }
 
+    @Override
+    protected void setListView(RecyclerView listView)
+    {
+        super.setListView(listView);
+        setSnackbarContainer(listView);
+    }
+
     protected void setLocalSelectionActivated(boolean activate)
     {
         mLocalSelectionActivated = activate;

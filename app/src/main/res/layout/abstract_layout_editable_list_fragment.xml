@@ -22,11 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <View
-            android:id="@+id/abstract_layout_fast_scroll_recyclerview_bottom_divider"
-            style="@style/DividerStyle"
-            android:visibility="gone"
-            android:layout_gravity="bottom"/>
+    <include layout="@layout/genfw_layout_listfragment_emptyview"/>
+
+    <include layout="@layout/genfw_layout_listfragment_recyclerview"/>
 
     <com.genonbeta.android.framework.widget.recyclerview.FastScroller
             android:id="@+id/abstract_layout_fast_scroll_recyclerview_fastscroll_view"
@@ -37,8 +35,10 @@
             android:layout_marginBottom="10dp"
             android:orientation="vertical"/>
 
-    <include layout="@layout/genfw_layout_listfragment_recyclerview"/>
-
-    <include layout="@layout/genfw_layout_listfragment_emptyview"/>
+    <View
+            android:id="@+id/abstract_layout_fast_scroll_recyclerview_bottom_divider"
+            style="@style/DividerStyle"
+            android:visibility="gone"
+            android:layout_gravity="bottom"/>
 
 </FrameLayout>

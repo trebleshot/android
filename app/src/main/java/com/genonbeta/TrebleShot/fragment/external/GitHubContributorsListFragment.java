@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -51,6 +52,14 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
         GitHubContributorsListFragment.ContributorObject, RecyclerViewAdapter.ViewHolder,
         GitHubContributorsListFragment.ContributorListAdapter>
 {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
+    {
+        return generateDefaultView(inflater, container, savedInstanceState);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -59,7 +68,7 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
         setListAdapter(new ContributorListAdapter(getContext()));
         setEmptyListImage(R.drawable.ic_github_circle_white_24dp);
         setEmptyListText(getString(R.string.mesg_noInternetConnection));
-        useEmptyActionButton(getString(R.string.butn_refresh), v -> refreshList());
+        useEmptyListActionButton(getString(R.string.butn_refresh), v -> refreshList());
     }
 
     @Override

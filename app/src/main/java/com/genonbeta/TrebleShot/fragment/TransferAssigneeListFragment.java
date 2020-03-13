@@ -123,7 +123,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TransferAssigneeListAdapter(this, this));
+        setListAdapter(new TransferAssigneeListAdapter(this, this, getTransferGroup()));
         setEmptyListImage(R.drawable.ic_device_hub_white_24dp);
         setEmptyListText(getString(R.string.text_noDeviceForTransfer));
 
@@ -156,7 +156,6 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         try {
             ShowingAssignee assignee = getAdapter().getItem(holder);
-
             new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), assignee.device).show();
             return true;
         } catch (Exception e) {

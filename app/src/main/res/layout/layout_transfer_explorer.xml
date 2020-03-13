@@ -38,10 +38,7 @@
             android:layout_above="@+id/layout_transfer_explorer_recycler"
             android:layout_alignParentTop="true">
 
-        <FrameLayout
-                android:id="@+id/layout_transfer_explorer_fragment_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+        <include layout="@layout/abstract_layout_editable_list_fragment"/>
 
         <View
                 android:id="@+id/layout_transfer_explorer_separator"

@@ -62,12 +62,10 @@ public class TransferFileExplorerFragment extends TransferListFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        setSnackbarContainer(view.findViewById(R.id.layout_transfer_explorer_fragment_content));
 
         mToggleButton = view.findViewById(R.id.layout_transfer_explorer_efab);
         mPathView = view.findViewById(R.id.layout_transfer_explorer_recycler);
         mPathAdapter = new TransferPathResolverRecyclerAdapter(getContext());
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL,
                 false);
         layoutManager.setStackFromEnd(true);

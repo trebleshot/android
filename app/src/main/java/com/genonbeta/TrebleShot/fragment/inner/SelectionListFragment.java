@@ -81,7 +81,7 @@ public class SelectionListFragment extends DynamicRecyclerViewFragment<Selectabl
         setListAdapter(new MyAdapter(getContext()));
         setEmptyListImage(R.drawable.ic_insert_drive_file_white_24dp);
         setEmptyListText(getString(R.string.text_listEmpty));
-        useEmptyActionButton(getString(R.string.butn_refresh), v -> refreshList());
+        useEmptyListActionButton(getString(R.string.butn_refresh), v -> refreshList());
     }
 
     @Override

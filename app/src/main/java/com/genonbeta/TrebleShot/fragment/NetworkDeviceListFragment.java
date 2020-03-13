@@ -187,7 +187,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
                 mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
-        useEmptyActionButton(getString(R.string.butn_scan), v -> requestRefresh());
+        useEmptyListActionButton(getString(R.string.butn_scan), v -> requestRefresh());
 
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
 

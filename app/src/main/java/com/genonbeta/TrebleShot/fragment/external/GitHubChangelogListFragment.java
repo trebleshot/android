@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.fragment.external;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -45,11 +46,12 @@ import java.util.List;
 public class GitHubChangelogListFragment extends DynamicRecyclerViewFragment<GitHubChangelogListFragment.VersionObject,
         RecyclerViewAdapter.ViewHolder, GitHubChangelogListFragment.VersionListAdapter>
 {
+    @Nullable
     @Override
-    public void onResume()
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
-        super.onResume();
-        AppUtils.publishLatestChangelogSeen(getActivity());
+        return generateDefaultView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -60,7 +62,14 @@ public class GitHubChangelogListFragment extends DynamicRecyclerViewFragment<Git
         setListAdapter(new VersionListAdapter(getContext()));
         setEmptyListImage(R.drawable.ic_github_circle_white_24dp);
         setEmptyListText(getString(R.string.mesg_noInternetConnection));
-        useEmptyActionButton(getString(R.string.butn_refresh), v -> refreshList());
+        useEmptyListActionButton(getString(R.string.butn_refresh), v -> refreshList());
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        AppUtils.publishLatestChangelogSeen(getActivity());
     }
 
     public static class VersionObject

@@ -21,7 +21,7 @@
                                                      android:layout_width="match_parent"
                                                      android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -62,7 +62,9 @@
         </androidx.cardview.widget.CardView>
 
         <include layout="@layout/abstract_layout_editable_list_fragment"
+                 android:layout_below="@id/card_web_share_info"
+                 android:layout_alignParentBottom="true"
                  android:layout_width="match_parent"
-                 android:layout_height="wrap_content"/>
-    </LinearLayout>
+                 android:layout_height="match_parent"/>
+    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

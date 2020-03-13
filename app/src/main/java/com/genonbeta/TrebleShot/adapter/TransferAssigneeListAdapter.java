@@ -50,10 +50,11 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     private TextDrawable.IShapeBuilder mIconBuilder;
 
     public TransferAssigneeListAdapter(EditableListFragmentImpl<ShowingAssignee> fragment,
-                                       HolderConsumer<ViewHolder> consumer)
+                                       HolderConsumer<ViewHolder> consumer, TransferGroup group)
     {
         super(fragment, consumer);
         mIconBuilder = AppUtils.getDefaultIconBuilder(fragment.getContext());
+        mGroup = group;
     }
 
     @NonNull
@@ -87,11 +88,5 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     public List<ShowingAssignee> onLoad()
     {
         return TransferUtils.loadAssigneeList(getContext(), mGroup.id, null);
-    }
-
-    public TransferAssigneeListAdapter setGroup(TransferGroup group)
-    {
-        mGroup = group;
-        return this;
     }
 }

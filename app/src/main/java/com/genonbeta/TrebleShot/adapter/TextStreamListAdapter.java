@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
-import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,8 +65,13 @@ public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamOb
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_text_stream,
-                parent, false)) : createDefaultViews(parent, viewType, false);
+        GroupViewHolder holder = viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
+                R.layout.list_text_stream, parent, false))
+                : createDefaultViews(parent, viewType, false);
+
+        if (!holder.isRepresentative())
+            getConsumer().registerLayoutViewClicks(holder);
+        return holder;
     }
 
     @Override
