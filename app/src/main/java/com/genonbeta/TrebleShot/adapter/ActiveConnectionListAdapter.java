@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -43,7 +43,7 @@ import java.util.List;
 public class ActiveConnectionListAdapter extends EditableListAdapter<
         ActiveConnectionListAdapter.EditableNetworkInterface, RecyclerViewAdapter.ViewHolder>
 {
-    public ActiveConnectionListAdapter(EditableListFragmentImpl<EditableNetworkInterface> fragment,
+    public ActiveConnectionListAdapter(EditableListFragmentBase<EditableNetworkInterface> fragment,
                                        HolderConsumer<ViewHolder> consumer)
     {
         super(fragment, consumer);

@@ -48,7 +48,7 @@ import com.genonbeta.TrebleShot.util.SelectionUtils;
 import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
 import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
@@ -71,9 +71,9 @@ import java.util.Map;
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder,
+public abstract class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder,
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
-        implements EditableListFragmentImpl<T>, HolderConsumer<V>, SelectableHost<T>
+        implements EditableListFragmentBase<T>, HolderConsumer<V>, SelectableHost<T>
 {
     public final static String
             ARG_SELECT_BY_CLICK = "argSelectByClick",
@@ -120,7 +120,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
         @Nullable
         @Override
-        public String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment)
+        public String[] getFilteringKeyword(EditableListFragmentBase<T> listFragment)
         {
             if (mSearchText != null && mSearchText.length() > 0)
                 return mSearchText.split(" ");
@@ -198,18 +198,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         super.onViewCreated(view, savedInstanceState);
 
         mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
-
         // We have to recreate the provider class because old one doesn't work when
         // same instance is used.
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
-        getListView().addOnItemTouchListener(new SwipeSelectionListener<>(this));
-
-        if (mHasBottomSpace) {
-            int bottomSpace = (int) (getResources().getDimension(R.dimen.fab_margin) * 4);
-            getListView().setClipToPadding(false);
-            getListView().setPadding(0, 0, 0, bottomSpace);
-        }
     }
 
     @Override
@@ -575,7 +567,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
                 ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() : 1;
     }
 
-    public EditableListAdapterImpl<T> getAdapterImpl()
+    public EditableListAdapterBase<T> getAdapterImpl()
     {
         return getAdapter();
     }
@@ -902,6 +894,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     {
         super.setListView(listView);
         setSnackbarContainer(listView);
+        listView.addOnItemTouchListener(new SwipeSelectionListener<>(this));
+
+        if (mHasBottomSpace) {
+            int bottomSpace = (int) (getResources().getDimension(R.dimen.fab_margin) * 4);
+            listView.setClipToPadding(false);
+            listView.setPadding(0, 0, 0, bottomSpace);
+        }
     }
 
     protected void setLocalSelectionActivated(boolean activate)
@@ -950,7 +949,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public interface LayoutClickListener<V extends RecyclerViewAdapter.ViewHolder>
     {
-        boolean onLayoutClick(EditableListFragmentImpl<?> listFragment, V holder, boolean longClick);
+        boolean onLayoutClick(EditableListFragmentBase<?> listFragment, V holder, boolean longClick);
     }
 
     public interface FilteringDelegate<T extends Editable>
@@ -958,7 +957,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         boolean changeFilteringKeyword(@Nullable String keyword);
 
         @Nullable
-        String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
+        String[] getFilteringKeyword(EditableListFragmentBase<T> listFragment);
     }
 
     public static class SelectionCallback implements PerformerMenu.Callback, PerformerEngineProvider
@@ -1093,8 +1092,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         }
 
         /**
-         * If you want to only use a single connection with {@link #setSelectionState} calls, you should provide the foreground
-         * connection that should be used.
+         * If you want to use only a single connection with {@link #setSelectionState} calls, you should provide the
+         * foreground connection that should be used.
          *
          * @param connection to be used with foreground operations like select all or none
          */

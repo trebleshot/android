@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -69,7 +69,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
 
     private TransferGroup mHeldGroup;
 
-    public static <T extends Editable> void showPopupMenu(EditableListFragmentImpl<T> fragment,
+    public static <T extends Editable> void showPopupMenu(EditableListFragmentBase<T> fragment,
                                                           TransferAssigneeListAdapter adapter, TransferGroup group,
                                                           RecyclerViewAdapter.ViewHolder clazz, View v)
     {

@@ -47,7 +47,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.service.WorkerService.BaseAttachableRunningTask;
@@ -220,7 +220,7 @@ public abstract class Activity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (AppUtils.checkRunningConditions(this))
-            AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
+            AppUtils.startForegroundService(this, new Intent(this, BackgroundService.class));
         else
             requestRequiredPermissions(!mSkipPermissionRequest);
     }
@@ -340,12 +340,12 @@ public abstract class Activity extends AppCompatActivity
 
     /**
      * Exits app closing all the active services and connections.
-     * This will also prevent this activity from notifying {@link CommunicationService}
+     * This will also prevent this activity from notifying {@link BackgroundService}
      * as the user leaves to the state of {@link Activity#onPause()}
      */
     public void exitApp()
     {
-        stopService(new Intent(this, CommunicationService.class));
+        stopService(new Intent(this, BackgroundService.class));
         stopService(new Intent(this, DeviceScannerService.class));
         stopService(new Intent(this, WorkerService.class));
 

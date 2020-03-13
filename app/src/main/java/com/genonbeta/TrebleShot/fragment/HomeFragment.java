@@ -30,11 +30,12 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
+import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class HomeFragment extends com.genonbeta.android.framework.app.Fragment implements SnackbarPlacementProvider,
-        TitleProvider, com.genonbeta.android.framework.app.FragmentImpl, Activity.OnBackPressedListener
+public class HomeFragment extends Fragment implements SnackbarPlacementProvider,
+        TitleProvider, Activity.OnBackPressedListener
 {
     private ViewPager mViewPager;
     private SmartFragmentPagerAdapter mAdapter;

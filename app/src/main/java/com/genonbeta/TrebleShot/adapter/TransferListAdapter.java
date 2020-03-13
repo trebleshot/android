@@ -42,7 +42,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -89,7 +89,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     private int mColorDone;
     private int mColorError;
 
-    public TransferListAdapter(EditableListFragmentImpl<GenericItem> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public TransferListAdapter(EditableListFragmentBase<GenericItem> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
 

@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -51,7 +51,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     private SharedPreferences mPreferences;
     private PackageManager mManager;
 
-    public ApplicationListAdapter(EditableListFragmentImpl<PackageHolder> fragment,
+    public ApplicationListAdapter(EditableListFragmentBase<PackageHolder> fragment,
                                   HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DATE);

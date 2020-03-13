@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.adapter;
 
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -31,7 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.view.HolderConsumer;
@@ -52,7 +51,7 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     private ContentResolver mResolver;
     private int mSelectedInset;
 
-    public VideoListAdapter(EditableListFragmentImpl<VideoHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public VideoListAdapter(EditableListFragmentBase<VideoHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DATE);
         mResolver = getContext().getContentResolver();

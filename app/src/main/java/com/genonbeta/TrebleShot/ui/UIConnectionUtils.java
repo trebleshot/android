@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggesti
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -340,8 +340,8 @@ public class UIConnectionUtils
                     .show();
 
         AppUtils.startForegroundService(getConnectionUtils().getContext(),
-                new Intent(getConnectionUtils().getContext(), CommunicationService.class)
-                        .setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
+                new Intent(getConnectionUtils().getContext(), BackgroundService.class)
+                        .setAction(BackgroundService.ACTION_TOGGLE_HOTSPOT));
 
         watcher.onResultReturned(true, false);
 

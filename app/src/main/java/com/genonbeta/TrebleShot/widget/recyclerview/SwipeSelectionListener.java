@@ -18,14 +18,13 @@
 
 package com.genonbeta.TrebleShot.widget.recyclerview;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder;
@@ -41,9 +40,9 @@ public class SwipeSelectionListener<T extends Editable> implements OnItemTouchLi
     private boolean mSelectionActivated, mActivationWaiting;
     private int mLastPosition, mStartPosition;
     private int mInitialX, mInitialY;
-    private EditableListFragmentImpl<T> mListFragment;
+    private EditableListFragmentBase<T> mListFragment;
 
-    public SwipeSelectionListener(EditableListFragmentImpl<T> fragment)
+    public SwipeSelectionListener(EditableListFragmentBase<T> fragment)
     {
         mListFragment = fragment;
         setInitials();

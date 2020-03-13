@@ -37,11 +37,10 @@ import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
@@ -70,9 +69,9 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
                 if (data != null && (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName)
                         || Kuick.TABLE_TRANSFER.equals(data.tableName)))
                     refreshList();
-            } else if (CommunicationService.ACTION_TASK_LIST.equals(intent.getAction())
-                    && intent.hasExtra(CommunicationService.EXTRA_TASK_LIST)) {
-                getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST));
+            } else if (BackgroundService.ACTION_TASK_LIST.equals(intent.getAction())
+                    && intent.hasExtra(BackgroundService.EXTRA_TASK_LIST)) {
+                getAdapter().updateActiveList(intent.getLongArrayExtra(BackgroundService.EXTRA_TASK_LIST));
                 refreshList();
             }
         }
@@ -116,7 +115,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         super.onActivityCreated(savedInstanceState);
 
         mFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        mFilter.addAction(CommunicationService.ACTION_TASK_LIST);
+        mFilter.addAction(BackgroundService.ACTION_TASK_LIST);
     }
 
     @Nullable
@@ -132,8 +131,8 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         super.onResume();
         getActivity().registerReceiver(mReceiver, mFilter);
 
-        AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_REQUEST_TASK_LIST));
+        AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), BackgroundService.class)
+                .setAction(BackgroundService.ACTION_REQUEST_TASK_LIST));
     }
 
     @Override

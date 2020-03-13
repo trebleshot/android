@@ -38,7 +38,7 @@ import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
@@ -82,7 +82,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     private String mSearchWord;
     private DocumentFile mPath;
 
-    public FileListAdapter(EditableListFragmentImpl<FileHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public FileListAdapter(EditableListFragmentBase<FileHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
     }

@@ -22,8 +22,8 @@ import android.net.Uri;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
-import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
-import com.genonbeta.android.framework.app.ListFragmentImpl;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
+import com.genonbeta.android.framework.app.ListFragmentBase;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
@@ -31,7 +31,7 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvi
  * created by: veli
  * date: 14/04/18 10:35
  */
-public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>, PerformerEngineProvider,
+public interface EditableListFragmentBase<T extends Editable> extends ListFragmentBase<T>, PerformerEngineProvider,
         IEngineConnection.SelectionListener<T>, TitleProvider
 {
     void applyViewingChanges(int gridSize);
@@ -42,7 +42,7 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 
     void changeSortingCriteria(int id);
 
-    EditableListAdapterImpl<T> getAdapterImpl();
+    EditableListAdapterBase<T> getAdapterImpl();
 
     EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
 

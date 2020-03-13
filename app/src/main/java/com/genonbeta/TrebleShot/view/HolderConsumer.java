@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.view;
 
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**

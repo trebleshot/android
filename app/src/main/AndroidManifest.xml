@@ -178,7 +178,7 @@
         <!-- android:process=":transfer"-->
 
         <service
-                android:name=".service.CommunicationService"
+                android:name=".service.BackgroundService"
                 android:enabled="true"
                 android:label="@string/text_communicationService"/>
         <!-- android:process=":transfer"-->

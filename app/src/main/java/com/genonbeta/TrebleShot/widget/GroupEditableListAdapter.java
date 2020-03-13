@@ -18,13 +18,12 @@
 
 package com.genonbeta.TrebleShot.widget;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -55,7 +54,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     private int mGroupBy;
 
-    public GroupEditableListAdapter(EditableListFragmentImpl<T> fragment, HolderConsumer<V> consumer, int groupBy)
+    public GroupEditableListAdapter(EditableListFragmentBase<T> fragment, HolderConsumer<V> consumer, int groupBy)
     {
         super(fragment, consumer);
         mGroupBy = groupBy;
@@ -310,7 +309,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             mCustomLister = customList;
         }
 
-        public void offerObliged(EditableListAdapterImpl<T> adapter, T object)
+        public void offerObliged(EditableListAdapterBase<T> adapter, T object)
         {
             if (adapter.filterItem(object))
                 offer(object);

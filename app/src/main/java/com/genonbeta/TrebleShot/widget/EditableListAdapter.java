@@ -21,7 +21,7 @@ package com.genonbeta.TrebleShot.widget;
 import android.text.format.DateUtils;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -44,7 +44,7 @@ import java.util.List;
  */
 
 abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
-        extends RecyclerViewAdapter<T, V> implements EditableListAdapterImpl<T>, HolderProvider<V>, SectionTitleProvider
+        extends RecyclerViewAdapter<T, V> implements EditableListAdapterBase<T>, HolderProvider<V>, SectionTitleProvider
 {
     public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -55,7 +55,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public static final int MODE_SORT_ORDER_ASCENDING = 100;
     public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
-    private EditableListFragmentImpl<T> mFragment;
+    private EditableListFragmentBase<T> mFragment;
     private HolderConsumer<V> mHolderConsumer;
     private List<T> mItemList = new ArrayList<>();
     private int mSortingCriteria = MODE_SORT_BY_NAME;
@@ -63,7 +63,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     private boolean mGridLayoutRequested = false;
     private Comparator<T> mGeneratedComparator;
 
-    public EditableListAdapter(EditableListFragmentImpl<T> fragment, HolderConsumer<V> consumer)
+    public EditableListAdapter(EditableListFragmentBase<T> fragment, HolderConsumer<V> consumer)
     {
         super(fragment.getContext());
         setHasStableIds(true);
@@ -158,7 +158,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return mGeneratedComparator;
     }
 
-    public EditableListFragmentImpl<T> getFragment()
+    public EditableListFragmentBase<T> getFragment()
     {
         return mFragment;
     }
@@ -281,7 +281,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         mGridLayoutRequested = (!isScreenLarge && gridSize > 1) || gridSize > 2;
     }
 
-    public void setFragment(EditableListFragmentImpl<T> fragmentImpl)
+    public void setFragment(EditableListFragmentBase<T> fragmentImpl)
     {
         mFragment = fragmentImpl;
     }

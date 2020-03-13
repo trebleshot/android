@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
@@ -57,7 +57,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     private TextDrawable.IShapeBuilder mIconBuilder;
     private List<NetworkDevice.Type> mHiddenDeviceTypes;
 
-    public NetworkDeviceListAdapter(EditableListFragmentImpl<EditableNetworkDevice> fragment,
+    public NetworkDeviceListAdapter(EditableListFragmentBase<EditableNetworkDevice> fragment,
                                     HolderConsumer<ViewHolder> consumer, ConnectionUtils connectionUtils,
                                     NetworkDevice.Type[] hiddenDeviceTypes)
     {

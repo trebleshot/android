@@ -29,7 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
@@ -47,7 +47,7 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     private ContentResolver mResolver;
     private int mSelectedInset;
 
-    public ImageListAdapter(EditableListFragmentImpl<ImageHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public ImageListAdapter(EditableListFragmentBase<ImageHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_ALBUM);
         mResolver = getContext().getContentResolver();

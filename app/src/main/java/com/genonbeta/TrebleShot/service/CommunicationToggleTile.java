@@ -73,10 +73,10 @@ public class CommunicationToggleTile extends TileService
     {
         super.onClick();
 
-        if (isMyServiceRunning(CommunicationService.class))
-            stopService(new Intent(getApplicationContext(), CommunicationService.class));
+        if (isMyServiceRunning(BackgroundService.class))
+            stopService(new Intent(getApplicationContext(), BackgroundService.class));
         else
-            AppUtils.startForegroundService(this, new Intent(getApplicationContext(), CommunicationService.class));
+            AppUtils.startForegroundService(this, new Intent(getApplicationContext(), BackgroundService.class));
 
         updateTileState();
     }
@@ -95,7 +95,7 @@ public class CommunicationToggleTile extends TileService
 
     private void updateTileState()
     {
-        updateTileState(isMyServiceRunning(CommunicationService.class) ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+        updateTileState(isMyServiceRunning(BackgroundService.class) ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
     }
 
     private void updateTileState(int state)

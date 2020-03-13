@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.List;
@@ -65,8 +65,8 @@ public class CommunicationNotificationHelper
                 .setContentText(getContext().getString(R.string.text_communicationServiceStop))
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), CommunicationService.class)
-                        .setAction(CommunicationService.ACTION_END_SESSION), 0));
+                        getContext(), BackgroundService.class)
+                        .setAction(BackgroundService.ACTION_END_SESSION), 0));
 
         return notification.show();
     }
@@ -86,17 +86,17 @@ public class CommunicationNotificationHelper
         DynamicNotification notification = getUtils().buildDynamicNotification(AppUtils.getUniqueNumber(),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
-        Intent acceptIntent = new Intent(getContext(), CommunicationService.class);
+        Intent acceptIntent = new Intent(getContext(), BackgroundService.class);
         Intent dialogIntent = new Intent(getContext(), DialogEventReceiver.class);
 
-        acceptIntent.setAction(CommunicationService.ACTION_DEVICE_APPROVAL)
-                .putExtra(CommunicationService.EXTRA_DEVICE_ID, device.id)
+        acceptIntent.setAction(BackgroundService.ACTION_DEVICE_APPROVAL)
+                .putExtra(BackgroundService.EXTRA_DEVICE_ID, device.id)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
-                .putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true)
-                .putExtra(CommunicationService.EXTRA_DEVICE_PIN, pin);
+                .putExtra(BackgroundService.EXTRA_IS_ACCEPTED, true)
+                .putExtra(BackgroundService.EXTRA_DEVICE_PIN, pin);
 
         Intent rejectIntent = ((Intent) acceptIntent.clone())
-                .putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
+                .putExtra(BackgroundService.EXTRA_IS_ACCEPTED, false);
 
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent,
                 0);
@@ -126,16 +126,16 @@ public class CommunicationNotificationHelper
                 TransferUtils.createUniqueTransferId(group.id, device.id, type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : objectList.get(0).name;
-        Intent acceptIntent = new Intent(getContext(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_FILE_TRANSFER)
-                .putExtra(CommunicationService.EXTRA_DEVICE_ID, device.id)
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, group.id).putExtra(
+        Intent acceptIntent = new Intent(getContext(), BackgroundService.class)
+                .setAction(BackgroundService.ACTION_FILE_TRANSFER)
+                .putExtra(BackgroundService.EXTRA_DEVICE_ID, device.id)
+                .putExtra(BackgroundService.EXTRA_GROUP_ID, group.id).putExtra(
                         NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
         Intent rejectIntent = ((Intent) acceptIntent.clone());
 
-        acceptIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
-        rejectIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
+        acceptIntent.putExtra(BackgroundService.EXTRA_IS_ACCEPTED, true);
+        rejectIntent.putExtra(BackgroundService.EXTRA_IS_ACCEPTED, false);
 
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent,
                 0);
@@ -160,7 +160,7 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyFileTransfer(CommunicationService.ProcessHolder processHolder) throws Exception
+    public void notifyFileTransfer(BackgroundService.ProcessHolder processHolder) throws Exception
     {
         if (processHolder.notification == null) {
             boolean isIncoming = TransferObject.Type.INCOMING.equals(processHolder.object.type);
@@ -168,13 +168,13 @@ public class CommunicationNotificationHelper
             processHolder.notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
                     processHolder.group.id, processHolder.device.id, processHolder.object.type),
                     NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-            Intent cancelIntent = new Intent(getContext(), CommunicationService.class);
+            Intent cancelIntent = new Intent(getContext(), BackgroundService.class);
 
-            cancelIntent.setAction(CommunicationService.ACTION_STOP_TRANSFER)
-                    .putExtra(CommunicationService.EXTRA_REQUEST_ID, processHolder.object.id)
-                    .putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.group.id)
-                    .putExtra(CommunicationService.EXTRA_DEVICE_ID, processHolder.device.id)
-                    .putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, processHolder.type.toString())
+            cancelIntent.setAction(BackgroundService.ACTION_STOP_TRANSFER)
+                    .putExtra(BackgroundService.EXTRA_REQUEST_ID, processHolder.object.id)
+                    .putExtra(BackgroundService.EXTRA_GROUP_ID, processHolder.group.id)
+                    .putExtra(BackgroundService.EXTRA_DEVICE_ID, processHolder.device.id)
+                    .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, processHolder.type.toString())
                     .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, processHolder.notification.getNotificationId());
 
             processHolder.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
@@ -230,17 +230,17 @@ public class CommunicationNotificationHelper
         DynamicNotification notification = getUtils().buildDynamicNotification(object.id,
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
-        Intent acceptIntent = new Intent(getContext(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_CLIPBOARD)
-                .putExtra(CommunicationService.EXTRA_CLIPBOARD_ID, object.id)
+        Intent acceptIntent = new Intent(getContext(), BackgroundService.class)
+                .setAction(BackgroundService.ACTION_CLIPBOARD)
+                .putExtra(BackgroundService.EXTRA_CLIPBOARD_ID, object.id)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
         Intent activityIntent = new Intent(getContext(), TextEditorActivity.class);
 
         Intent rejectIntent = ((Intent) acceptIntent.clone());
 
-        acceptIntent.putExtra(CommunicationService.EXTRA_CLIPBOARD_ACCEPTED, true);
-        rejectIntent.putExtra(CommunicationService.EXTRA_CLIPBOARD_ACCEPTED, false);
+        acceptIntent.putExtra(BackgroundService.EXTRA_CLIPBOARD_ACCEPTED, true);
+        rejectIntent.putExtra(BackgroundService.EXTRA_CLIPBOARD_ACCEPTED, false);
 
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent,
                 0);
@@ -274,7 +274,7 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyFileReceived(CommunicationService.ProcessHolder processHolder, DocumentFile savePath)
+    public void notifyFileReceived(BackgroundService.ProcessHolder processHolder, DocumentFile savePath)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(
                 TransferUtils.createUniqueTransferId(processHolder.group.id, processHolder.device.id,
@@ -319,7 +319,7 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyReceiveError(CommunicationService.ProcessHolder processHolder)
+    public void notifyReceiveError(BackgroundService.ProcessHolder processHolder)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
                 processHolder.group.id, processHolder.device.id, processHolder.object.type),
@@ -361,7 +361,7 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyConnectionError(CommunicationService.ProcessHolder processHolder, @Nullable String errorKey)
+    public void notifyConnectionError(BackgroundService.ProcessHolder processHolder, @Nullable String errorKey)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(
                 TransferUtils.createUniqueTransferId(processHolder.group.id, processHolder.device.id,
@@ -399,10 +399,10 @@ public class CommunicationNotificationHelper
                 TransferUtils.createUniqueTransferId(group.id, device.id, TransferObject.Type.INCOMING),
                 NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
-        Intent cancelIntent = new Intent(getContext(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_CANCEL_INDEXING)
+        Intent cancelIntent = new Intent(getContext(), BackgroundService.class)
+                .setAction(BackgroundService.ACTION_CANCEL_INDEXING)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, group.id);
+                .putExtra(BackgroundService.EXTRA_GROUP_ID, group.id);
 
         PendingIntent negativeIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent,
                 0);
@@ -420,7 +420,7 @@ public class CommunicationNotificationHelper
         return notification.show();
     }
 
-    public DynamicNotification notifyStuckThread(CommunicationService.ProcessHolder processHolder)
+    public DynamicNotification notifyStuckThread(BackgroundService.ProcessHolder processHolder)
     {
         return notifyStuckThread(processHolder.group.id, processHolder.device.id, processHolder.type);
     }
@@ -430,11 +430,11 @@ public class CommunicationNotificationHelper
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
                 groupId, deviceId, type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
-        Intent killIntent = new Intent(getContext(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_STOP_TRANSFER)
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
-                .putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
-                .putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, type.toString())
+        Intent killIntent = new Intent(getContext(), BackgroundService.class)
+                .setAction(BackgroundService.ACTION_STOP_TRANSFER)
+                .putExtra(BackgroundService.EXTRA_GROUP_ID, groupId)
+                .putExtra(BackgroundService.EXTRA_DEVICE_ID, deviceId)
+                .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, type.toString())
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)

@@ -37,7 +37,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter.FileHolder;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
@@ -49,7 +49,6 @@ import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
@@ -165,7 +164,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
         return true;
     }
 
-    public static <T extends Editable> void shortcutItem(EditableListFragmentImpl<T> fragment, FileHolder holder)
+    public static <T extends Editable> void shortcutItem(EditableListFragmentBase<T> fragment, FileHolder holder)
     {
         Kuick kuick = AppUtils.getKuick(fragment.getContext());
 

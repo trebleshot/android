@@ -16,7 +16,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -316,11 +316,11 @@ public class TransferUtils
     public static void pauseTransfer(Context context, long groupId, @Nullable String deviceId,
                                      TransferObject.Type type)
     {
-        Intent intent = new Intent(context, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_STOP_TRANSFER)
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
-                .putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
-                .putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, type.toString());
+        Intent intent = new Intent(context, BackgroundService.class)
+                .setAction(BackgroundService.ACTION_STOP_TRANSFER)
+                .putExtra(BackgroundService.EXTRA_GROUP_ID, groupId)
+                .putExtra(BackgroundService.EXTRA_DEVICE_ID, deviceId)
+                .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, type.toString());
 
         AppUtils.startForegroundService(context, intent);
     }
@@ -497,11 +497,11 @@ public class TransferUtils
                         }
 
                         AppUtils.startForegroundService(activity, new Intent(activity,
-                                CommunicationService.class)
-                                .setAction(CommunicationService.ACTION_START_TRANSFER)
-                                .putExtra(CommunicationService.EXTRA_GROUP_ID, assignee.groupId)
-                                .putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId)
-                                .putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, assignee.type.toString()));
+                                BackgroundService.class)
+                                .setAction(BackgroundService.ACTION_START_TRANSFER)
+                                .putExtra(BackgroundService.EXTRA_GROUP_ID, assignee.groupId)
+                                .putExtra(BackgroundService.EXTRA_DEVICE_ID, assignee.deviceId)
+                                .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, assignee.type.toString()));
                     }).show();
                 } catch (Exception e) {
                     new AlertDialog.Builder(activity)

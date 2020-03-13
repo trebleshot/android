@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 
 /**
@@ -61,9 +61,9 @@ public class QuickSelectNetworkDeviceListFragment extends NetworkDeviceListFragm
             public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
             {
                 if (getContext() != null) {
-                    getContext().sendBroadcast(new Intent(CommunicationService.ACTION_DEVICE_ACQUAINTANCE)
-                            .putExtra(CommunicationService.EXTRA_DEVICE_ID, networkDevice.id)
-                            .putExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
+                    getContext().sendBroadcast(new Intent(BackgroundService.ACTION_DEVICE_ACQUAINTANCE)
+                            .putExtra(BackgroundService.EXTRA_DEVICE_ID, networkDevice.id)
+                            .putExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
 
                     return true;
                 }

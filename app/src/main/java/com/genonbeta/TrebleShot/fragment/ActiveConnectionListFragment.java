@@ -34,15 +34,13 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -65,7 +63,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
+            if (BackgroundService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
                     || WIFI_AP_STATE_CHANGED.equals(intent.getAction())
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
                     || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
@@ -87,7 +85,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
-        mFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
+        mFilter.addAction(BackgroundService.ACTION_HOTSPOT_STATUS);
         mFilter.addAction(WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);

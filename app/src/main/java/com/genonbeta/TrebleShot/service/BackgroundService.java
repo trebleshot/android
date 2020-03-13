@@ -68,7 +68,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
-public class CommunicationService extends Service
+public class BackgroundService extends Service
 {
     public static final String TAG = "CommunicationService";
 
@@ -317,7 +317,7 @@ public class CommunicationService extends Service
                     && intent.hasExtra(EXTRA_DEVICE_ID) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
-                String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
+                String deviceId = intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID);
                 String typeString = intent.getStringExtra(EXTRA_TRANSFER_TYPE);
 
                 try {
@@ -628,7 +628,7 @@ public class CommunicationService extends Service
 
                 try {
                     TransferObject object = TransferUtils.fetchFirstValidIncomingTransfer(
-                            CommunicationService.this, processHolder.group.id);
+                            BackgroundService.this, processHolder.group.id);
 
                     if (object == null) {
                         Log.d(TAG, "handleTransferAsReceiver(): Exiting because there is no " +
@@ -795,7 +795,7 @@ public class CommunicationService extends Service
                     retry = true;
 
                     if (!processHolder.recoverInterruptions) {
-                        TransferUtils.recoverIncomingInterruptions(CommunicationService.this,
+                        TransferUtils.recoverIncomingInterruptions(BackgroundService.this,
                                 processHolder.group.id);
                         processHolder.recoverInterruptions = true;
                     }
@@ -1327,7 +1327,7 @@ public class CommunicationService extends Service
                     sendBroadcast(new Intent(ACTION_PIN_USED));
 
                 JSONObject replyJSON = new JSONObject();
-                AppUtils.applyDeviceToJSON(CommunicationService.this, replyJSON);
+                AppUtils.applyDeviceToJSON(BackgroundService.this, replyJSON);
 
                 if (handshakeRequired) {
                     pushReply(activeConnection, replyJSON, true);
@@ -1489,7 +1489,7 @@ public class CommunicationService extends Service
                                     PreloadedGroup group = new PreloadedGroup(groupId);
                                     getKuick().reconstruct(group);
 
-                                    Log.d(CommunicationService.TAG, "CommunicationServer.onConnected(): "
+                                    Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
                                             + "groupId=" + groupId + " typeValue=" + typeValue);
 
                                     if (!isProcessRunning(groupId, device.id, type)) {
@@ -1572,7 +1572,7 @@ public class CommunicationService extends Service
                     }
                 });
             } else if (Keyword.REQUEST_UPDATE_V2.equals(request)) {
-                NetworkDevice thisDevice = AppUtils.getLocalDevice(CommunicationService.this);
+                NetworkDevice thisDevice = AppUtils.getLocalDevice(BackgroundService.this);
                 File file = new File(getApplicationInfo().sourceDir);
 
                 {

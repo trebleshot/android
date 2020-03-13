@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -51,7 +51,7 @@ public class AudioListAdapter
 
     private ContentResolver mResolver;
 
-    public AudioListAdapter(EditableListFragmentImpl<AudioItemHolder> fragment,
+    public AudioListAdapter(EditableListFragmentBase<AudioItemHolder> fragment,
                             HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_ARTIST);

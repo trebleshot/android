@@ -34,7 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -65,7 +65,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     private int mColorDone;
     private int mColorError;
 
-    public TransferGroupListAdapter(EditableListFragmentImpl<PreloadedGroup> fragment,
+    public TransferGroupListAdapter(EditableListFragmentBase<PreloadedGroup> fragment,
                                     HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DATE);

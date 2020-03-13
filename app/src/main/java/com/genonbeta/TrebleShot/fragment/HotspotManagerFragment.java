@@ -41,7 +41,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
@@ -91,8 +91,8 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     {
         super.onCreate(savedInstanceState);
 
-        mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
-        mIntentFilter.addAction(CommunicationService.ACTION_PIN_USED);
+        mIntentFilter.addAction(BackgroundService.ACTION_HOTSPOT_STATUS);
+        mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
         mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
 
         setHasOptionsMenu(true);
@@ -300,8 +300,8 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         if (!getConnectionUtils().getHotspotUtils().isEnabled())
             updateViewsWithBlank();
         else if (Build.VERSION.SDK_INT >= 26)
-            AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
-                    .setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
+            AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), BackgroundService.class)
+                    .setAction(BackgroundService.ACTION_REQUEST_HOTSPOT_STATUS));
         else // With Oreo, we always have a WifiConfiguration
             updateViews(getConnectionUtils().getHotspotUtils().getConfiguration());
     }
@@ -312,13 +312,13 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         public void onReceive(Context context, Intent intent)
         {
             if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
-                    || CommunicationService.ACTION_PIN_USED.equals(intent.getAction()))
+                    || BackgroundService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
-            else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
-                if (intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false))
-                    updateViews(intent.getParcelableExtra(CommunicationService.EXTRA_HOTSPOT_CONFIGURATION));
+            else if (BackgroundService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
+                if (intent.getBooleanExtra(BackgroundService.EXTRA_HOTSPOT_ENABLED, false))
+                    updateViews(intent.getParcelableExtra(BackgroundService.EXTRA_HOTSPOT_CONFIGURATION));
                 else if (getConnectionUtils().getHotspotUtils().isEnabled()
-                        && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false))
+                        && !intent.getBooleanExtra(BackgroundService.EXTRA_HOTSPOT_DISABLING, false))
                     updateViewsAsStartedExternally();
             }
         }

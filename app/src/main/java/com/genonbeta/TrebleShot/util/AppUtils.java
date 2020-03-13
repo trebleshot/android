@@ -43,7 +43,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -133,7 +133,7 @@ public class AppUtils
                 .put(Keyword.DEVICE_INFO, deviceInformation);
     }
 
-    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentImpl<T> fragment) {
+    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentBase<T> fragment) {
         IEngineConnection<T> connection = fragment.getEngineConnection();
         SharedPreferences preferences = AppUtils.getDefaultPreferences(fragment.getContext());
 

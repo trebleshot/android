@@ -18,13 +18,12 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
-import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -49,7 +48,7 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     private TransferGroup mGroup;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public TransferAssigneeListAdapter(EditableListFragmentImpl<ShowingAssignee> fragment,
+    public TransferAssigneeListAdapter(EditableListFragmentBase<ShowingAssignee> fragment,
                                        HolderConsumer<ViewHolder> consumer, TransferGroup group)
     {
         super(fragment, consumer);

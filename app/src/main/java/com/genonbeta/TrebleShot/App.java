@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
@@ -142,9 +142,9 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
 
         if ((hadNone && inForeground) || mForegroundActivitiesCount == 0)
             AppUtils.startForegroundService(this,
-                    new Intent(this, CommunicationService.class)
-                            .setAction(CommunicationService.ACTION_SERVICE_STATUS)
-                            .putExtra(CommunicationService.EXTRA_STATUS_STARTED, inForeground));
+                    new Intent(this, BackgroundService.class)
+                            .setAction(BackgroundService.ACTION_SERVICE_STATUS)
+                            .putExtra(BackgroundService.EXTRA_STATUS_STARTED, inForeground));
 
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
     }

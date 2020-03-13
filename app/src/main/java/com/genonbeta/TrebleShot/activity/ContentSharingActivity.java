@@ -32,11 +32,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter.StableItem;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.SelectionUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
 import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
@@ -72,10 +72,9 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
         PerformerMenu performerMenu = new PerformerMenu(this, mMenuCallback);
 
+        mMenuCallback.setCancellable(false);
         performerMenu.load(menuView.getMenu());
         performerMenu.setUp(mPerformerEngine);
-
-        mMenuCallback.setCancellable(false);
 
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
@@ -88,8 +87,8 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
             {
                 Fragment fragment = item.getInitiatedItem();
 
-                if (fragment instanceof EditableListFragmentImpl<?>) {
-                    EditableListFragmentImpl<?> fragmentImpl = (EditableListFragmentImpl<?>) fragment;
+                if (fragment instanceof EditableListFragmentBase<?>) {
+                    EditableListFragmentBase<?> fragmentImpl = (EditableListFragmentBase<?>) fragment;
 
                     if (viewPager.getCurrentItem() == item.getCurrentPosition())
                         attachListeners(fragmentImpl);
@@ -120,9 +119,9 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
                 viewPager.setCurrentItem(tab.getPosition());
                 Fragment fragment = pagerAdapter.getItem(tab.getPosition());
 
-                if (fragment instanceof EditableListFragmentImpl<?>) {
-                    EditableListFragmentImpl<?> editableListFragment = (EditableListFragmentImpl<?>) fragment;
-                    EditableListAdapterImpl<?> adapter = editableListFragment.getAdapterImpl();
+                if (fragment instanceof EditableListFragmentBase<?>) {
+                    EditableListFragmentBase<?> editableListFragment = (EditableListFragmentBase<?>) fragment;
+                    EditableListAdapterBase<?> adapter = editableListFragment.getAdapterImpl();
 
                     attachListeners(editableListFragment);
 
@@ -173,7 +172,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         }
     }
 
-    public void attachListeners(EditableListFragmentImpl<?> fragment)
+    public void attachListeners(EditableListFragmentBase<?> fragment)
     {
         mMenuCallback.setForegroundConnection(fragment.getEngineConnection());
         mBackPressedListener = fragment instanceof OnBackPressedListener ? (OnBackPressedListener) fragment : null;

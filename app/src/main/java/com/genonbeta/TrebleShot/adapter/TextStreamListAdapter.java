@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -41,7 +41,7 @@ import com.genonbeta.android.framework.util.listing.Merger;
 public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamObject,
         GroupEditableListAdapter.GroupViewHolder>
 {
-    public TextStreamListAdapter(EditableListFragmentImpl<TextStreamObject> fragment,
+    public TextStreamListAdapter(EditableListFragmentBase<TextStreamObject> fragment,
                                  HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DATE);

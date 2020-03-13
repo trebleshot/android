@@ -44,7 +44,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
@@ -89,7 +89,7 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        mIntentFilter.addAction(CommunicationService.ACTION_PIN_USED);
+        mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
     }
 
     @Nullable
@@ -267,7 +267,7 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
         {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
-                    || CommunicationService.ACTION_PIN_USED.equals(intent.getAction()))
+                    || BackgroundService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
         }
     }

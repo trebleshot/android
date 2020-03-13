@@ -42,7 +42,7 @@ import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -99,17 +99,17 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                     reconstructGroup();
                 else if (Kuick.TABLE_TRANSFER.equals(data.tableName) && (data.inserted || data.removed))
                     updateCalculations();
-            } else if (CommunicationService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
-                    && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)
-                    && intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)) {
-                long groupId = intent.getLongExtra(CommunicationService.EXTRA_GROUP_ID, -1);
+            } else if (BackgroundService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
+                    && intent.hasExtra(BackgroundService.EXTRA_GROUP_ID)
+                    && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ID)) {
+                long groupId = intent.getLongExtra(BackgroundService.EXTRA_GROUP_ID, -1);
 
                 if (groupId == mGroup.id) {
-                    String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
-                    int taskChange = intent.getIntExtra(CommunicationService.EXTRA_TASK_CHANGE_TYPE, -1);
+                    String deviceId = intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID);
+                    int taskChange = intent.getIntExtra(BackgroundService.EXTRA_TASK_CHANGE_TYPE, -1);
 
                     synchronized (mActiveProcesses) {
-                        if (taskChange == CommunicationService.TASK_STATUS_ONGOING)
+                        if (taskChange == BackgroundService.TASK_STATUS_ONGOING)
                             mActiveProcesses.add(deviceId);
                         else
                             mActiveProcesses.remove(deviceId);
@@ -117,9 +117,9 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
                     showMenus();
                 }
-            } else if (CommunicationService.ACTION_TASK_LIST.equals(intent.getAction())) {
-                long[] groupIds = intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST);
-                List<String> deviceIds = intent.getStringArrayListExtra(CommunicationService.EXTRA_DEVICE_LIST);
+            } else if (BackgroundService.ACTION_TASK_LIST.equals(intent.getAction())) {
+                long[] groupIds = intent.getLongArrayExtra(BackgroundService.EXTRA_TASK_LIST);
+                List<String> deviceIds = intent.getStringArrayListExtra(BackgroundService.EXTRA_DEVICE_LIST);
 
                 if (groupIds != null && deviceIds != null
                         && groupIds.length == deviceIds.size()) {
@@ -269,8 +269,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         IntentFilter filter = new IntentFilter();
 
         filter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        filter.addAction(CommunicationService.ACTION_TASK_STATUS_CHANGE);
-        filter.addAction(CommunicationService.ACTION_TASK_LIST);
+        filter.addAction(BackgroundService.ACTION_TASK_STATUS_CHANGE);
+        filter.addAction(BackgroundService.ACTION_TASK_LIST);
 
         registerReceiver(mReceiver, filter);
         reconstructGroup();
@@ -456,8 +456,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     private void requestTaskStateUpdate()
     {
         if (mGroup != null)
-            AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                    .setAction(CommunicationService.ACTION_REQUEST_TASK_LIST));
+            AppUtils.startForegroundService(this, new Intent(this, BackgroundService.class)
+                    .setAction(BackgroundService.ACTION_REQUEST_TASK_LIST));
     }
 
     public void showMenus()
