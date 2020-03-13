@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -47,6 +48,14 @@ import java.util.List;
 public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<ThirdPartyLibraryListFragment.ModuleItem,
         RecyclerViewAdapter.ViewHolder, ThirdPartyLibraryListFragment.LicencesAdapter>
 {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
+    {
+        return generateDefaultView(inflater, container, savedInstanceState);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -56,7 +65,7 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
 
     public static class LicencesAdapter extends RecyclerViewAdapter<ModuleItem, RecyclerViewAdapter.ViewHolder>
     {
-        private List<ModuleItem> mList = new ArrayList<>();
+        private final List<ModuleItem> mList = new ArrayList<>();
 
         public LicencesAdapter(Context context)
         {
@@ -141,17 +150,14 @@ public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<T
             InputStream inputStream = getContext().getResources().openRawResource(R.raw.libraries_index);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-            int read = 0;
-
             try {
-                while ((read = inputStream.read()) != -1) {
+                int read;
+                while ((read = inputStream.read()) != -1)
                     outputStream.write(read);
-                }
 
                 JSONObject jsonObject = new JSONObject(outputStream.toString());
                 JSONArray dependenciesArray = jsonObject.getJSONArray("dependencies");
-
-                ArrayList<ModuleItem> returnedList = new ArrayList<>();
+                List<ModuleItem> returnedList = new ArrayList<>();
 
                 for (int i = 0; i < dependenciesArray.length(); i++)
                     returnedList.add(new ModuleItem(dependenciesArray.getJSONObject(i)));

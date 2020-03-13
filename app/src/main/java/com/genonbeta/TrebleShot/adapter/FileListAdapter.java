@@ -82,8 +82,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     private String mSearchWord;
     private DocumentFile mPath;
 
-    public FileListAdapter(EditableListFragmentImpl<FileHolder> fragment, HolderConsumer<GroupViewHolder> consumer,
-                           int groupBy)
+    public FileListAdapter(EditableListFragmentImpl<FileHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
     }

@@ -64,15 +64,8 @@ public class FileExplorerFragment extends FileListFragment implements Activity.O
     {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setLayoutResId(R.layout.layout_file_explorer);
         setDividerView(R.id.fragment_fileexplorer_separator);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState)
-    {
-        return inflater.inflate(R.layout.layout_file_explorer, container, false);
     }
 
     @Override

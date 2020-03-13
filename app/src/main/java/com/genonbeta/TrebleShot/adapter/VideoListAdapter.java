@@ -150,12 +150,6 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
         return new VideoHolder(text);
     }
 
-    @Override
-    public boolean isGridSupported()
-    {
-        return true;
-    }
-
     public static class VideoHolder extends GalleryGroupEditableListAdapter.GalleryGroupShareable
     {
         public String duration;

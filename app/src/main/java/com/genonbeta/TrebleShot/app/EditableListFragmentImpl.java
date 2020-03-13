@@ -58,6 +58,8 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 
     String getUniqueSettingKey(String setting);
 
+    boolean isGridSupported();
+
     boolean isLocalSelectionActivated();
 
     boolean isRefreshLocked();

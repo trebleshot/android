@@ -96,11 +96,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return filteringKeywords == null || filteringKeywords.length <= 0 || item.applyFilter(filteringKeywords);
     }
 
-    public boolean isGridSupported()
-    {
-        return false;
-    }
-
     public boolean isGridLayoutRequested()
     {
         return mGridLayoutRequested;

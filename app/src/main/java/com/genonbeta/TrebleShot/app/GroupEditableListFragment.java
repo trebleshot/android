@@ -18,13 +18,10 @@
 
 package com.genonbeta.TrebleShot.app;
 
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -42,13 +39,6 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
 {
     private Map<String, Integer> mGroupingOptions = new ArrayMap<>();
     private int mDefaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING;
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-    {
-        super.onViewCreated(view, savedInstanceState);
-        getAdapter().setGroupBy(getGroupingCriteria());
-    }
 
     @Override
     public int onGridSpanSize(int viewType, int currentSpanSize)
@@ -127,5 +117,12 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
     public void setDefaultGroupingCriteria(int groupingCriteria)
     {
         mDefaultGroupingCriteria = groupingCriteria;
+    }
+
+    @Override
+    protected void setListAdapter(E adapter, boolean hadAdapter)
+    {
+        super.setListAdapter(adapter, hadAdapter);
+        adapter.setGroupBy(getGroupingCriteria());
     }
 }

@@ -396,7 +396,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         if (!isLocalSelectionActivated()) {
             menu.findItem(R.id.actions_abs_editable_sort_by).setEnabled(isSortingSupported());
             menu.findItem(R.id.actions_abs_editable_multi_select).setVisible(mPerformerMenu != null);
-            menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(getAdapter().isGridSupported());
+            menu.findItem(R.id.actions_abs_editable_grid_size).setVisible(isGridSupported());
 
             MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
 
@@ -489,7 +489,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public void applyViewingChanges(int gridSize, boolean override)
     {
-        if (!getAdapter().isGridSupported() && !override)
+        if (!isGridSupported() && !override)
             return;
 
         getAdapter().notifyGridSizeUpdate(gridSize, isScreenLarge());
@@ -502,7 +502,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean canShowWideView()
     {
-        return !getAdapter().isGridSupported() && isScreenLarge() && !isHorizontalOrientation();
+        return !isGridSupported() && isScreenLarge() && !isHorizontalOrientation();
     }
 
     public void changeGridViewSize(int gridSize)
@@ -693,6 +693,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public boolean invokeClickListener(V holder, boolean longClick)
     {
         return mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, longClick);
+    }
+
+    @Override
+    public boolean isGridSupported()
+    {
+        return false;
     }
 
     @Override

@@ -59,7 +59,6 @@ import java.util.Map;
 public class TransferGroupListFragment extends GroupEditableListFragment<PreloadedGroup,
         GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter> implements IconProvider
 {
-    private SQLQuery.Select mSelect;
     private IntentFilter mFilter = new IntentFilter();
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -84,6 +83,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     {
         super.onCreate(savedInstanceState);
 
+        setLayoutResId(R.layout.layout_transfer_group);
         setFilteringSupported(true);
         setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
@@ -93,20 +93,12 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState)
-    {
-        return inflater.inflate(R.layout.layout_transfer_group, container, false);
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TransferGroupListAdapter(this, this, getSelect()));
+        setListAdapter(new TransferGroupListAdapter(this, this));
         setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyTransfer));
 
@@ -125,9 +117,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
 
         mFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
         mFilter.addAction(CommunicationService.ACTION_TASK_LIST);
-
-        if (getSelect() == null)
-            setSelect(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP));
     }
 
     @Nullable
@@ -181,26 +170,15 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     }
 
     @Override
-    public int getIconRes()
-    {
-        return R.drawable.ic_swap_vert_white_24dp;
-    }
-
-    @Override
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_transfers);
     }
 
-    public SQLQuery.Select getSelect()
+    @Override
+    public int getIconRes()
     {
-        return mSelect;
-    }
-
-    public TransferGroupListFragment setSelect(SQLQuery.Select select)
-    {
-        mSelect = select;
-        return this;
+        return R.drawable.ic_swap_vert_white_24dp;
     }
 
     private static class SelectionCallback extends EditableListFragment.SelectionCallback

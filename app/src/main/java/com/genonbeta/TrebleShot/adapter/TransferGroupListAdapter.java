@@ -35,6 +35,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -56,9 +57,7 @@ import java.util.List;
 public class TransferGroupListAdapter extends GroupEditableListAdapter<PreloadedGroup,
         GroupEditableListAdapter.GroupViewHolder>
 {
-    final private List<Long> mRunningTasks = new ArrayList<>();
-
-    private SQLQuery.Select mSelect;
+    private final List<Long> mRunningTasks = new ArrayList<>();
     private NumberFormat mPercentFormat;
 
     @ColorInt
@@ -67,7 +66,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     private int mColorError;
 
     public TransferGroupListAdapter(EditableListFragmentImpl<PreloadedGroup> fragment,
-                                    HolderConsumer<GroupViewHolder> consumer, SQLQuery.Select selection)
+                                    HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DATE);
 
@@ -76,8 +75,6 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
         mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
         mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError));
-
-        setSelect(selection);
     }
 
     @Override
@@ -85,7 +82,8 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     {
         List<Long> activeList = new ArrayList<>(mRunningTasks);
 
-        for (PreloadedGroup group : AppUtils.getKuick(getContext()).castQuery(getSelect(), PreloadedGroup.class)) {
+        for (PreloadedGroup group : AppUtils.getKuick(getContext()).castQuery(
+                new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), PreloadedGroup.class)) {
             TransferUtils.loadGroupInfo(getContext(), group);
             group.isRunning = activeList.contains(group.id);
 
@@ -97,19 +95,6 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     protected PreloadedGroup onGenerateRepresentative(String text, Merger<PreloadedGroup> merger)
     {
         return new PreloadedGroup(text);
-    }
-
-    public SQLQuery.Select getSelect()
-    {
-        return mSelect;
-    }
-
-    public TransferGroupListAdapter setSelect(SQLQuery.Select select)
-    {
-        if (select != null)
-            mSelect = select;
-
-        return this;
     }
 
     @NonNull

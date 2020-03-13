@@ -61,9 +61,8 @@
 
         </androidx.cardview.widget.CardView>
 
-        <FrameLayout
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        <include layout="@layout/abstract_layout_editable_list_fragment"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"/>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

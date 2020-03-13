@@ -197,6 +197,7 @@ abstract public class FileListFragment extends GroupEditableListFragment<FileHol
     {
         super.onViewCreated(view, savedInstanceState);
 
+        setListAdapter(new FileListAdapter(this, this));
         setEmptyListImage(R.drawable.ic_folder_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyFiles));
     }

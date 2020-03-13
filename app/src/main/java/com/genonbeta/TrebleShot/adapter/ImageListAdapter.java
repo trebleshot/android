@@ -143,12 +143,6 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
         return new ImageHolder(text);
     }
 
-    @Override
-    public boolean isGridSupported()
-    {
-        return true;
-    }
-
     public static class ImageHolder extends GalleryGroupEditableListAdapter.GalleryGroupShareable
     {
         public String dateTakenString;
