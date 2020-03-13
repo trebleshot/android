@@ -146,10 +146,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Bundle arguments = getArguments();
         mTwoRowLayoutState = isTwoRowLayout();
-        mEngineConnection.setSelectableProvider(getAdapterImpl());
-
+        Bundle arguments = getArguments();
         if (arguments != null) {
             mSelectByClick = arguments.getBoolean(ARG_SELECT_BY_CLICK, mSelectByClick);
             mHasBottomSpace = arguments.getBoolean(ARG_HAS_BOTTOM_SPACE, mHasBottomSpace);
@@ -646,6 +644,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
         return preferredGridSize > 1 ? preferredGridSize : canShowWideView() && isTwoRowLayout() ? 2 : 1;
     }
 
+    @NonNull
     public IEngineConnection<T> getEngineConnection()
     {
         return mEngineConnection;
@@ -892,9 +891,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
     {
         super.setListAdapter(adapter, hadAdapter);
         mFastScroller.setRecyclerView(getListView());
-        getAdapter().setFragment(this);
-        getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
-        getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
+        mEngineConnection.setSelectableProvider(adapter);
+        adapter.setFragment(this);
+        adapter.notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
+        adapter.setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
     }
 
     protected void setLocalSelectionActivated(boolean activate)

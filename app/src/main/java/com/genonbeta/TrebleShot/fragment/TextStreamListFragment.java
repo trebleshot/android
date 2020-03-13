@@ -87,6 +87,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     {
         super.onViewCreated(view, savedInstanceState);
 
+        setListAdapter(new TextStreamListAdapter(this, this));
         setEmptyListImage(R.drawable.ic_forum_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyTextStream));
 

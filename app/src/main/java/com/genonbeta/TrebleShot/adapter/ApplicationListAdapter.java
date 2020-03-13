@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -36,6 +35,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -52,10 +52,10 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     private PackageManager mManager;
 
     public ApplicationListAdapter(EditableListFragmentImpl<PackageHolder> fragment,
-                                  HolderConsumer<GroupViewHolder> consumer, SharedPreferences preferences)
+                                  HolderConsumer<GroupViewHolder> consumer)
     {
         super(fragment, consumer, MODE_GROUP_BY_DATE);
-        mPreferences = preferences;
+        mPreferences = AppUtils.getDefaultPreferences(getContext());
         mManager = getContext().getPackageManager();
     }
 

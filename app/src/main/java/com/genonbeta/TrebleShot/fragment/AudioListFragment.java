@@ -49,6 +49,7 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     {
         super.onViewCreated(view, savedInstanceState);
 
+        setListAdapter(new AudioListAdapter(this, this));
         setEmptyListImage(R.drawable.ic_library_music_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyMusic));
     }

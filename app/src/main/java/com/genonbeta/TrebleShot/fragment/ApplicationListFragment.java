@@ -54,6 +54,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     {
         super.onViewCreated(view, savedInstanceState);
 
+        setListAdapter(new ApplicationListAdapter(this, this));
         setEmptyListImage(R.drawable.ic_android_head_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyApp));
     }
