@@ -30,8 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.service.WorkerService.AttachedTaskListener;
-import static com.genonbeta.TrebleShot.service.WorkerService.RunningTask;
+import static com.genonbeta.TrebleShot.service.BackgroundService.AttachedTaskListener;
+import static com.genonbeta.TrebleShot.service.BackgroundService.RunningTask;
 
 /**
  * created by: veli

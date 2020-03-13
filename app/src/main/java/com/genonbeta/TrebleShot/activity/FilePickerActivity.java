@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
@@ -98,18 +97,13 @@ public class FilePickerActivity extends Activity
                 recyclerView.setClipToPadding(false);
 
                 mFAB.show();
-                mFAB.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        DocumentFile selectedPath = mFileExplorerFragment.getAdapter().getPath();
+                mFAB.setOnClickListener(v -> {
+                    DocumentFile selectedPath = mFileExplorerFragment.getAdapter().getPath();
 
-                        if (selectedPath != null && selectedPath.canWrite())
-                            finishWithResult(selectedPath);
-                        else
-                            Snackbar.make(v, R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
-                    }
+                    if (selectedPath != null && selectedPath.canWrite())
+                        finishWithResult(selectedPath);
+                    else
+                        Snackbar.make(v, R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
                 });
             } else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
                 if (getSupportActionBar() != null) {
@@ -178,7 +172,6 @@ public class FilePickerActivity extends Activity
     {
         setResult(Activity.RESULT_OK, new Intent(ACTION_CHOOSE_DIRECTORY)
                 .putExtra(EXTRA_CHOSEN_PATH, file.getUri()));
-
         finish();
     }
 }

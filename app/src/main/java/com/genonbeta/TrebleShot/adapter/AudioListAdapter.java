@@ -153,12 +153,8 @@ public class AudioListAdapter
 
                 text1.setText(object.song);
 
-                if (getGroupBy() == MODE_GROUP_BY_ALBUM
-                        || getGroupBy() == MODE_GROUP_BY_ARTIST) {
-                    text2.setText(getGroupBy() == MODE_GROUP_BY_ALBUM
-                            ? object.artist
-                            : object.albumHolder.title);
-
+                if (getGroupBy() == MODE_GROUP_BY_ALBUM || getGroupBy() == MODE_GROUP_BY_ARTIST) {
+                    text2.setText(getGroupBy() == MODE_GROUP_BY_ALBUM ? object.artist : object.albumHolder.title);
                     text3.setVisibility(View.GONE);
                     textSeparator1.setVisibility(View.GONE);
                 } else {
@@ -186,11 +182,11 @@ public class AudioListAdapter
     public boolean onCustomGroupListing(GroupLister<AudioItemHolder> lister, int mode, AudioItemHolder object)
     {
         if (mode == MODE_GROUP_BY_ALBUM)
-            lister.offer(object, new StringMerger<AudioItemHolder>(object.albumHolder.title));
+            lister.offer(object, new StringMerger<>(object.albumHolder.title));
         else if (mode == MODE_GROUP_BY_ARTIST)
-            lister.offer(object, new StringMerger<AudioItemHolder>(object.artist));
+            lister.offer(object, new StringMerger<>(object.artist));
         else if (mode == MODE_GROUP_BY_FOLDER)
-            lister.offer(object, new StringMerger<AudioItemHolder>(object.folder));
+            lister.offer(object, new StringMerger<>(object.folder));
         else
             return false;
 

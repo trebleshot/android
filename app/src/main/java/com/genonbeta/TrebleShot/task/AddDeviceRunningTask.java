@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddDeviceRunningTask extends WorkerService.AttachableRunningTask<AddDevicesToTransferActivity>
+public class AddDeviceRunningTask extends BackgroundService.AttachableRunningTask<AddDevicesToTransferActivity>
 {
     private TransferGroup mGroup;
     private NetworkDevice mDevice;

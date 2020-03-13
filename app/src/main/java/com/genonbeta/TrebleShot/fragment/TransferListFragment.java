@@ -42,7 +42,7 @@ import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -295,7 +295,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
-                                        new WorkerService.RunningTask()
+                                        new BackgroundService.RunningTask()
                                         {
                                             @Override
                                             public void onRun()

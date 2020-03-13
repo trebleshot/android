@@ -201,10 +201,6 @@
         </service>
 
         <service
-                android:name=".service.WorkerService"
-                android:label="@string/text_workerService"/>
-
-        <service
                 android:name=".service.CommunicationToggleTile"
                 android:icon="@drawable/ic_trebleshot_white_24dp_static"
                 android:label="@string/text_shareFiles"

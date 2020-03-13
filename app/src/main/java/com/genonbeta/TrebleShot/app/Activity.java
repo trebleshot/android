@@ -48,9 +48,8 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.BackgroundService.BaseAttachableRunningTask;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
-import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.service.WorkerService.BaseAttachableRunningTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.io.FileInputStream;
@@ -310,8 +309,9 @@ public abstract class Activity extends AppCompatActivity
             @Override
             public void onServiceConnected(ComponentName name, IBinder service)
             {
-                WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
-                WorkerService.RunningTask task = workerService.findTaskByHash(WorkerService.intentHash(getIntent()));
+                BackgroundService workerService = ((BackgroundService.LocalBinder) service).getService();
+                BackgroundService.RunningTask task = workerService.findTaskByHash(
+                        BackgroundService.hashIntent(getIntent()));
 
                 if (task == null)
                     onPreviousRunningTask(null);
@@ -334,7 +334,7 @@ public abstract class Activity extends AppCompatActivity
             }
         };
 
-        return bindService(new Intent(Activity.this, WorkerService.class), serviceConnection,
+        return bindService(new Intent(Activity.this, BackgroundService.class), serviceConnection,
                 Context.BIND_AUTO_CREATE);
     }
 
@@ -347,7 +347,7 @@ public abstract class Activity extends AppCompatActivity
     {
         stopService(new Intent(this, BackgroundService.class));
         stopService(new Intent(this, DeviceScannerService.class));
-        stopService(new Intent(this, WorkerService.class));
+        stopService(new Intent(this, BackgroundService.class));
 
         finish();
     }

@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
@@ -46,7 +46,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalShareRunningTask extends WorkerService.RunningTask
+public class LocalShareRunningTask extends BackgroundService.RunningTask
 {
     public static final String TAG = LocalShareRunningTask.class.getSimpleName();
 

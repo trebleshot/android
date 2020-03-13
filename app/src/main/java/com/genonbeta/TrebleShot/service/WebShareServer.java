@@ -121,7 +121,7 @@ public class WebShareServer extends NanoHTTPD
             device.versionName = mThisDevice.versionName;
             device.nickname = clientAddress;
             device.type = NetworkDevice.Type.WEB;
-            device.secureKey = 0; // It is not require for web browsers
+            device.secureKey = 0; // It is not required for web browsers
         }
 
         device.lastUsageTime = System.currentTimeMillis();

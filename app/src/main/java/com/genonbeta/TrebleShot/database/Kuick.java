@@ -24,7 +24,7 @@ import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.StringRes;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.android.database.*;
 import com.genonbeta.android.database.SQLValues.Column;
 
@@ -182,7 +182,7 @@ public class Kuick extends KuickDb
         if (activity == null || activity.isFinishing())
             return;
 
-        new WorkerService.RunningTask()
+        new BackgroundService.RunningTask()
         {
             @Override
             protected void onRun()
@@ -230,6 +230,6 @@ public class Kuick extends KuickDb
 
     public interface AsynchronousTask
     {
-        void perform(WorkerService.RunningTask task);
+        void perform(BackgroundService.RunningTask task);
     }
 }

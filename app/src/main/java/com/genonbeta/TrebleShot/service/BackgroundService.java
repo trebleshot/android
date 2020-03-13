@@ -18,20 +18,20 @@
 
 package com.genonbeta.TrebleShot.service;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.ContentValues;
-import android.content.Intent;
+import android.app.PendingIntent;
+import android.content.*;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.collection.ArrayMap;
@@ -91,6 +91,9 @@ public class BackgroundService extends Service
             ACTION_REQUEST_TASK_LIST = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_LIST",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
             ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
+            ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL",
+            ACTION_KILL_ALL_SIGNAL = "com.genonbeta.intent.action.KILL_ALL_SIGNAL",
+            EXTRA_TASK_HASH = "extraTaskId",
             EXTRA_DEVICE_ID = "extraDeviceId",
             EXTRA_DEVICE_PIN = "extraDevicePin",
             EXTRA_STATUS_STARTED = "extraStatusStarted",
@@ -110,8 +113,11 @@ public class BackgroundService extends Service
 
     public static final int
             TASK_STATUS_ONGOING = 0,
-            TASK_STATUS_STOPPED = 1;
+            TASK_STATUS_STOPPED = 1,
+            REQUEST_CODE_RESCUE_TASK = 10910,
+            ID_NOTIFICATION_FOREGROUND = 1103;
 
+    private long mTimeTransactionSaved;
     private List<ProcessHolder> mActiveProcessList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
     private WebShareServer mWebShareServer;
@@ -123,12 +129,15 @@ public class BackgroundService extends Service
     private MediaScannerConnection mMediaScanner;
     private HotspotUtils mHotspotUtils;
     private SQLiteDatabase mDatabase;
-    private long mTimeTransactionSaved;
+    private final List<RunningTask> mTaskList = new ArrayList<>();
+    private ExecutorService mExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private LocalBinder mBinder = new LocalBinder();
+    private DynamicNotification mNotification;
 
     @Override
     public IBinder onBind(Intent intent)
     {
-        return null;
+        return mBinder;
     }
 
     @Override
@@ -380,6 +389,24 @@ public class BackgroundService extends Service
                 }
             } else if (ACTION_REQUEST_TASK_LIST.equals(intent.getAction())) {
                 notifyTaskList();
+            } else if (ACTION_KILL_SIGNAL.equals(intent.getAction()) && intent.hasExtra(EXTRA_TASK_HASH)) {
+                int taskHash = intent.getIntExtra(EXTRA_TASK_HASH, -1);
+
+                RunningTask runningTask = findTaskByHash(taskHash);
+
+                if (runningTask == null || runningTask.getInterrupter().interrupted())
+                    getNotificationUtils().cancel(taskHash);
+                else {
+                    runningTask.getInterrupter().interrupt();
+                    runningTask.onInterrupted();
+                }
+            } else if (ACTION_KILL_ALL_SIGNAL.equals(intent.getAction())) {
+                synchronized (getTaskList()) {
+                    for (RunningTask runningTask : getTaskList()) {
+                        runningTask.getInterrupter().interrupt();
+                        runningTask.onInterrupted();
+                    }
+                }
             }
         }
 
@@ -431,6 +458,11 @@ public class BackgroundService extends Service
             }
         }
 
+        synchronized (getTaskList()) {
+            for (RunningTask runningTask : getTaskList())
+                runningTask.getInterrupter().interrupt(false);
+        }
+
         AppUtils.generateNetworkPin(this);
 
         getKuick().broadcast();
@@ -439,11 +471,6 @@ public class BackgroundService extends Service
     private synchronized void addProcess(ProcessHolder processHolder)
     {
         getActiveProcessList().add(processHolder);
-    }
-
-    private synchronized void removeProcess(ProcessHolder processHolder)
-    {
-        getActiveProcessList().remove(processHolder);
     }
 
     private void broadcastTransferState(ProcessHolder processHolder, boolean isLast)
@@ -485,6 +512,69 @@ public class BackgroundService extends Service
 
         if (delayReached || isLast)
             getKuick().broadcast();
+    }
+
+    private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
+    {
+        synchronized (getActiveProcessList()) {
+            for (ProcessHolder processHolder : getActiveProcessList())
+                if (processHolder.group.id == groupId && type.equals(processHolder.type)
+                        && (deviceId == null || deviceId.equals(processHolder.device.id)))
+                    return processHolder;
+        }
+
+        return null;
+    }
+
+    public synchronized RunningTask findTaskByHash(int hashCode)
+    {
+        synchronized (getTaskList()) {
+            for (RunningTask runningTask : getTaskList())
+                if (runningTask.hashCode() == hashCode)
+                    return runningTask;
+        }
+
+        return null;
+    }
+
+    private synchronized List<ProcessHolder> getActiveProcessList()
+    {
+        return mActiveProcessList;
+    }
+
+    public SQLiteDatabase getDatabase()
+    {
+        return mDatabase;
+    }
+
+    private HotspotUtils getHotspotUtils()
+    {
+        return mHotspotUtils;
+    }
+
+    private CommunicationNotificationHelper getNotificationHelper()
+    {
+        return mNotificationHelper;
+    }
+
+    private synchronized Map<Long, Interrupter> getOngoingIndexList()
+    {
+        return mOngoingIndexList;
+    }
+
+    private ExecutorService getSelfExecutor()
+    {
+        return mSelfExecutor;
+    }
+
+    public List<RunningTask> getTaskList()
+    {
+        return mTaskList;
+    }
+
+    private WifiManager.WifiLock getWifiLock()
+    {
+        return mWifiLock;
     }
 
     private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
@@ -1074,67 +1164,25 @@ public class BackgroundService extends Service
                 || getActiveProcessList().size() > 0 || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
     }
 
-    private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
+    public static int hashIntent(@NonNull Intent intent)
     {
-        synchronized (getActiveProcessList()) {
-            for (ProcessHolder processHolder : getActiveProcessList())
-                if (processHolder.group.id == groupId && type.equals(processHolder.type)
-                        && (deviceId == null || deviceId.equals(processHolder.device.id)))
-                    return processHolder;
-        }
+        StringBuilder builder = new StringBuilder()
+                .append(intent.getComponent())
+                .append(intent.getData())
+                .append(intent.getPackage())
+                .append(intent.getAction())
+                .append(intent.getFlags())
+                .append(intent.getType());
 
-        return null;
-    }
+        if (intent.getExtras() != null)
+            builder.append(intent.getExtras().toString());
 
-    private synchronized List<ProcessHolder> getActiveProcessList()
-    {
-        return mActiveProcessList;
-    }
-
-    public SQLiteDatabase getDatabase()
-    {
-        return mDatabase;
-    }
-
-    private HotspotUtils getHotspotUtils()
-    {
-        return mHotspotUtils;
-    }
-
-    private CommunicationNotificationHelper getNotificationHelper()
-    {
-        return mNotificationHelper;
-    }
-
-    private synchronized Map<Long, Interrupter> getOngoingIndexList()
-    {
-        return mOngoingIndexList;
-    }
-
-    private ExecutorService getSelfExecutor()
-    {
-        return mSelfExecutor;
-    }
-
-    private WifiManager.WifiLock getWifiLock()
-    {
-        return mWifiLock;
+        return builder.toString().hashCode();
     }
 
     private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
     {
         return findProcessById(groupId, deviceId, type) != null;
-    }
-
-    private void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type, int state)
-    {
-        Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
-                .putExtra(EXTRA_TASK_CHANGE_TYPE, state)
-                .putExtra(EXTRA_GROUP_ID, groupId)
-                .putExtra(EXTRA_DEVICE_ID, deviceId)
-                .putExtra(EXTRA_TRANSFER_TYPE, type.toString());
-
-        sendBroadcast(intent);
     }
 
     private void notifyTaskList()
@@ -1161,17 +1209,93 @@ public class BackgroundService extends Service
                 .putStringArrayListExtra(EXTRA_DEVICE_LIST, deviceList));
     }
 
+    private void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type, int state)
+    {
+        Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
+                .putExtra(EXTRA_TASK_CHANGE_TYPE, state)
+                .putExtra(EXTRA_GROUP_ID, groupId)
+                .putExtra(EXTRA_DEVICE_ID, deviceId)
+                .putExtra(EXTRA_TRANSFER_TYPE, type.toString());
+
+        sendBroadcast(intent);
+    }
+
+    public void publishNotification(RunningTask runningTask)
+    {
+        if (runningTask.mNotification == null) {
+            PendingIntent cancelIntent = PendingIntent.getService(this, AppUtils.getUniqueNumber(),
+                    new Intent(this, BackgroundService.class)
+                            .setAction(ACTION_KILL_SIGNAL)
+                            .putExtra(EXTRA_TASK_HASH, runningTask.hashCode()), 0);
+
+            runningTask.mNotification = getNotificationUtils().buildDynamicNotification(runningTask.hashCode(),
+                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+
+            runningTask.mNotification.setSmallIcon(runningTask.getIconRes() == 0
+                    ? R.drawable.ic_autorenew_white_24dp_static : runningTask.getIconRes())
+                    .setContentTitle(getString(R.string.text_taskOngoing))
+                    .addAction(R.drawable.ic_close_white_24dp_static,
+                            getString(R.string.butn_cancel), cancelIntent);
+
+            if (runningTask.mActivityIntent != null)
+                runningTask.mNotification.setContentIntent(runningTask.mActivityIntent);
+        }
+
+        runningTask.mNotification.setContentTitle(runningTask.getTitle())
+                .setContentText(runningTask.getStatusText());
+
+        runningTask.mNotification.show();
+    }
+
+    public void publishForegroundNotification()
+    {
+        if (mNotification == null) {
+            mNotification = getNotificationUtils().buildDynamicNotification(ID_NOTIFICATION_FOREGROUND,
+                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+            mNotification.setSmallIcon(R.drawable.ic_autorenew_white_24dp_static)
+                    .setContentTitle(getString(R.string.text_taskOngoing));
+        }
+
+        mNotification.setContentText(getString(R.string.text_workerService));
+        startForeground(ID_NOTIFICATION_FOREGROUND, mNotification.build());
+    }
+
     private void refreshServiceState()
     {
         startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
                 getNotificationHelper().getCommunicationServiceNotification().build());
     }
 
-    private void sendHotspotStatusDisabling()
+    protected synchronized void registerWork(RunningTask runningTask)
     {
-        sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
-                .putExtra(EXTRA_HOTSPOT_ENABLED, false)
-                .putExtra(EXTRA_HOTSPOT_DISABLING, true));
+        synchronized (getTaskList()) {
+            getTaskList().add(runningTask);
+        }
+
+        publishForegroundNotification();
+        publishNotification(runningTask);
+    }
+
+    private synchronized void removeProcess(ProcessHolder processHolder)
+    {
+        getActiveProcessList().remove(processHolder);
+    }
+
+    public void run(final RunningTask runningTask)
+    {
+        mExecutor.submit(() -> {
+            runningTask.setService(BackgroundService.this);
+            registerWork(runningTask);
+
+            try {
+                runningTask.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            unregisterWork(runningTask);
+            runningTask.setService(null);
+        });
     }
 
     private void sendHotspotStatus(@Nullable WifiConfiguration wifiConfiguration)
@@ -1182,6 +1306,13 @@ public class BackgroundService extends Service
                 .putExtra(EXTRA_HOTSPOT_CONFIGURATION, wifiConfiguration);
 
         sendBroadcast(statusIntent);
+    }
+
+    private void sendHotspotStatusDisabling()
+    {
+        sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
+                .putExtra(EXTRA_HOTSPOT_ENABLED, false)
+                .putExtra(EXTRA_HOTSPOT_DISABLING, true));
     }
 
     private void setupHotspot()
@@ -1290,6 +1421,18 @@ public class BackgroundService extends Service
                 mNotificationHelper.notifyConnectionError(holder, null);
             }
         });
+    }
+
+    protected synchronized void unregisterWork(RunningTask runningTask)
+    {
+        runningTask.mNotification.cancel();
+
+        synchronized (getTaskList()) {
+            getTaskList().remove(runningTask);
+
+            if (getTaskList().size() <= 0)
+                stopForeground(true);
+        }
     }
 
     public class CommunicationServer extends CoolSocket
@@ -1650,6 +1793,206 @@ public class BackgroundService extends Service
         public ProcessHolder()
         {
             timeStarted = System.currentTimeMillis();
+        }
+    }
+
+    public interface AttachedTaskListener
+    {
+        void onAttachedToTask(BaseAttachableRunningTask task);
+
+        void setTaskPosition(int ofTotal, int total);
+
+        void updateTaskPosition(int addToOfTotal, int addToTotal);
+
+        void updateTaskStatus(String text);
+    }
+
+    public abstract static class RunningTask extends InterruptAwareJob
+    {
+        private Interrupter mInterrupter;
+        private BackgroundService mService;
+        private String mStatusText;
+        private String mTitle;
+        private int mIconRes;
+        private long mLastNotified = 0;
+        private int mHash = 0;
+        private DynamicNotification mNotification;
+        private PendingIntent mActivityIntent;
+
+        abstract protected void onRun() throws InterruptedException;
+
+        protected void onInterrupted()
+        {
+
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return mHash != 0 ? mHash : super.hashCode();
+        }
+
+        @Nullable
+        public PendingIntent getContentIntent()
+        {
+            return mActivityIntent;
+        }
+
+        public int getIconRes()
+        {
+            return mIconRes;
+        }
+
+        public Interrupter getInterrupter()
+        {
+            if (mInterrupter == null)
+                mInterrupter = new Interrupter();
+
+            return mInterrupter;
+        }
+
+        protected BackgroundService getService()
+        {
+            return mService;
+        }
+
+        public String getStatusText()
+        {
+            return mStatusText;
+        }
+
+        public String getTitle()
+        {
+            return mTitle;
+        }
+
+        public boolean publishStatusText(String text)
+        {
+            mStatusText = text;
+
+            if (System.currentTimeMillis() - mLastNotified > 2000) {
+                mService.publishNotification(this);
+                mLastNotified = System.currentTimeMillis();
+
+                return true;
+            }
+            return false;
+        }
+
+        protected void run()
+        {
+            try {
+                run(getInterrupter());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public boolean run(final Context context)
+        {
+            ServiceConnection serviceConnection = new ServiceConnection()
+            {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service)
+                {
+                    AppUtils.startForegroundService(context, new Intent(context, BackgroundService.class));
+
+                    BackgroundService workerService = ((LocalBinder) service).getService();
+                    workerService.run(RunningTask.this);
+
+                    context.unbindService(this);
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name)
+                {
+
+                }
+            };
+
+            return context.bindService(new Intent(context, BackgroundService.class), serviceConnection,
+                    Context.BIND_AUTO_CREATE);
+        }
+
+        public RunningTask setContentIntent(PendingIntent intent)
+        {
+            mActivityIntent = intent;
+            return this;
+        }
+
+        public RunningTask setContentIntent(Context context, Intent intent)
+        {
+            mHash = hashIntent(intent);
+            return setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
+        }
+
+        public RunningTask setIconRes(int iconRes)
+        {
+            mIconRes = iconRes;
+            return this;
+        }
+
+        public RunningTask setInterrupter(Interrupter interrupter)
+        {
+            mInterrupter = interrupter;
+            return this;
+        }
+
+        private void setService(@Nullable BackgroundService service)
+        {
+            mService = service;
+        }
+
+        public RunningTask setTitle(String title)
+        {
+            mTitle = title;
+            return this;
+        }
+    }
+
+    public abstract static class BaseAttachableRunningTask extends RunningTask
+    {
+        abstract public void detachAnchor();
+    }
+
+    public abstract static class AttachableRunningTask<T extends AttachedTaskListener> extends BaseAttachableRunningTask
+    {
+        private T mAnchorListener;
+
+        @Override
+        public void detachAnchor()
+        {
+            mAnchorListener = null;
+        }
+
+        @Nullable
+        public T getAnchorListener()
+        {
+            return mAnchorListener;
+        }
+
+        public AttachableRunningTask<T> setAnchorListener(T listener)
+        {
+            mAnchorListener = listener;
+            listener.onAttachedToTask(this);
+            return this;
+        }
+
+        @Override
+        public boolean publishStatusText(String text)
+        {
+            if (mAnchorListener != null)
+                mAnchorListener.updateTaskStatus(text);
+
+            return super.publishStatusText(text);
+        }
+    }
+
+    public class LocalBinder extends Binder
+    {
+        public BackgroundService getService()
+        {
+            return BackgroundService.this;
         }
     }
 }

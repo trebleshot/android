@@ -21,7 +21,7 @@ package com.genonbeta.TrebleShot.dialog;
 import android.content.Context;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -58,8 +58,7 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
         setOnProceedClickListener(R.string.butn_rename, dialog -> {
             final String renameTo = getEditText().getText().toString();
 
-            if (getItemList().size() == 1
-                    && renameFile(getItemList().get(0), renameTo, renameListener)) {
+            if (getItemList().size() == 1 && renameFile(getItemList().get(0), renameTo, renameListener)) {
                 if (renameListener != null)
                     renameListener.onFileRenameCompleted(getContext());
                 return true;
@@ -71,7 +70,7 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
                 return false;
             }
 
-            new WorkerService.RunningTask()
+            new BackgroundService.RunningTask()
             {
                 @Override
                 protected void onRun()
@@ -110,9 +109,9 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
         try {
             if (FileListAdapter.FileHolder.Type.Bookmarked.equals(holder.getType())
                     || FileListAdapter.FileHolder.Type.Mounted.equals(holder.getType())) {
-                    holder.friendlyName = renameTo;
-                    AppUtils.getKuick(getContext()).publish(holder);
-                    AppUtils.getKuick(getContext()).broadcast();
+                holder.friendlyName = renameTo;
+                AppUtils.getKuick(getContext()).publish(holder);
+                AppUtils.getKuick(getContext()).broadcast();
             } else if (holder.file.canWrite() && holder.file.renameTo(renameTo)) {
                 if (renameListener != null)
                     renameListener.onFileRename(holder.file, renameTo);

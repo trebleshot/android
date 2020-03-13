@@ -34,15 +34,16 @@ import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class HomeFragment extends Fragment implements SnackbarPlacementProvider,
-        TitleProvider, Activity.OnBackPressedListener
+public class HomeFragment extends Fragment implements SnackbarPlacementProvider, TitleProvider,
+        Activity.OnBackPressedListener
 {
     private ViewPager mViewPager;
     private SmartFragmentPagerAdapter mAdapter;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
         final View view = inflater.inflate(R.layout.layout_home_fragment, container, false);
 
@@ -50,8 +51,10 @@ public class HomeFragment extends Fragment implements SnackbarPlacementProvider,
         mViewPager = view.findViewById(R.id.layout_home_view_pager);
         mAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager());
 
-        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class, null));
-        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, ActiveConnectionListFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class,
+                null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, ActiveConnectionListFragment.class,
+                null));
         mAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, FileExplorerFragment.class, null));
         mAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, TextStreamListFragment.class, null));
 

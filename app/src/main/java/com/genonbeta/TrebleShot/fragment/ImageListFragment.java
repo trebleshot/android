@@ -65,7 +65,6 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     public void onResume()
     {
         super.onResume();
-
         getContext().getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 true, getDefaultContentObserver());
     }
@@ -74,7 +73,6 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     public void onPause()
     {
         super.onPause();
-
         getContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 

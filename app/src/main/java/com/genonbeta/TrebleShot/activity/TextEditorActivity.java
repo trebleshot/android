@@ -37,7 +37,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -220,7 +220,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)));
         } else if (id == R.id.menu_action_share_trebleshot) {
             startActivityForResult(new Intent(TextEditorActivity.this, AddDeviceActivity.class)
-                    .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT),
+                            .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT),
                     REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
@@ -283,7 +283,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
     {
         createSnackbar(R.string.mesg_communicating).show();
 
-        new WorkerService.RunningTask()
+        new BackgroundService.RunningTask()
         {
             @Override
             public void onRun()
@@ -321,7 +321,8 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
                 .run(this);
     }
 
-    public void removeText() {
+    public void removeText()
+    {
         if (mDbObject != null) {
             getDatabase().remove(mDbObject);
             getDatabase().broadcast();
