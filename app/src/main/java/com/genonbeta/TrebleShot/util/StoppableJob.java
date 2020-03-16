@@ -18,20 +18,20 @@
 
 package com.genonbeta.TrebleShot.util;
 
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 
 /**
  * created by: Veli
  * date: 11.02.2018 19:37
  */
 
-abstract public class InterruptAwareJob
+public abstract class StoppableJob
 {
-    abstract protected void onRun() throws InterruptedException;
+    protected abstract void onRun() throws InterruptedException;
 
-    protected void run(Interrupter interrupter) throws InterruptedException
+    protected void run(Stoppable stoppable) throws InterruptedException
     {
         onRun();
-        interrupter.removeClosers();
+        stoppable.removeClosers();
     }
 }

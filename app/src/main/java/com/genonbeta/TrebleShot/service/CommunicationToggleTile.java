@@ -76,7 +76,7 @@ public class CommunicationToggleTile extends TileService
         if (isMyServiceRunning(BackgroundService.class))
             stopService(new Intent(getApplicationContext(), BackgroundService.class));
         else
-            AppUtils.startForegroundService(this, new Intent(getApplicationContext(), BackgroundService.class));
+            AppUtils.startService(this, new Intent(getApplicationContext(), BackgroundService.class));
 
         updateTileState();
     }

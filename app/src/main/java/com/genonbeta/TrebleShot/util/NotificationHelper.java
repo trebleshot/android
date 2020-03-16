@@ -35,6 +35,7 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.List;
@@ -44,13 +45,13 @@ import java.util.List;
  * date: 26.01.2018 18:29
  */
 
-public class CommunicationNotificationHelper
+public class NotificationHelper
 {
     public static final int SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID = 1;
 
     private NotificationUtils mNotificationUtils;
 
-    public CommunicationNotificationHelper(NotificationUtils notificationUtils)
+    public NotificationHelper(NotificationUtils notificationUtils)
     {
         mNotificationUtils = notificationUtils;
     }
@@ -160,56 +161,56 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyFileTransfer(BackgroundService.ProcessHolder processHolder) throws Exception
+    public void notifyFileTransfer(FileTransferTask task) throws Exception
     {
-        if (processHolder.notification == null) {
-            boolean isIncoming = TransferObject.Type.INCOMING.equals(processHolder.object.type);
+        if (task.notification == null) {
+            boolean isIncoming = TransferObject.Type.INCOMING.equals(task.object.type);
 
-            processHolder.notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                    processHolder.group.id, processHolder.device.id, processHolder.object.type),
+            task.notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
+                    task.group.id, task.device.id, task.object.type),
                     NotificationUtils.NOTIFICATION_CHANNEL_LOW);
             Intent cancelIntent = new Intent(getContext(), BackgroundService.class);
 
-            cancelIntent.setAction(BackgroundService.ACTION_STOP_TRANSFER)
-                    .putExtra(BackgroundService.EXTRA_REQUEST_ID, processHolder.object.id)
-                    .putExtra(BackgroundService.EXTRA_GROUP_ID, processHolder.group.id)
-                    .putExtra(BackgroundService.EXTRA_DEVICE_ID, processHolder.device.id)
-                    .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, processHolder.type.toString())
-                    .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, processHolder.notification.getNotificationId());
+            cancelIntent.setAction(BackgroundService.ACTION_STOP_TASK)
+                    .putExtra(BackgroundService.EXTRA_REQUEST_ID, task.object.id)
+                    .putExtra(BackgroundService.EXTRA_GROUP_ID, task.group.id)
+                    .putExtra(BackgroundService.EXTRA_DEVICE_ID, task.device.id)
+                    .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, task.type.toString())
+                    .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, task.notification.getNotificationId());
 
-            processHolder.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
+            task.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
                     : android.R.drawable.stat_sys_upload)
                     .setContentText(getContext().getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
-                    .setContentInfo(processHolder.device.nickname)
+                    .setContentInfo(task.device.nickname)
                     .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                             getContext(), ViewTransferActivity.class)
                             .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
-                            .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, processHolder.object.groupId), 0))
+                            .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, task.object.groupId), 0))
                     .setOngoing(true)
-                    .setWhen(processHolder.timeStarted)
+                    .setWhen(task.timeStarted)
                     .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(isIncoming
                             ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(),
                             AppUtils.getUniqueNumber(), cancelIntent, 0));
         }
 
-        processHolder.notification.setContentTitle(processHolder.object.name);
+        task.notification.setContentTitle(task.object.name);
 
-        processHolder.notification.setProgress(100, (int) (Math.max(0.01,
-                processHolder.completedBytes + processHolder.currentBytes) / Math.max(0.01,
-                processHolder.group.bytesPending()) * 100
+        task.notification.setProgress(100, (int) (Math.max(0.01,
+                task.completedBytes + task.currentBytes) / Math.max(0.01,
+                task.group.bytesPending()) * 100
         ), false);
 
-        long bytesTransferred = processHolder.completedBytes + processHolder.currentBytes;
+        long bytesTransferred = task.completedBytes + task.currentBytes;
 
-        if (processHolder.lastKnownBytes > 0 && bytesTransferred > 0) {
-            long change = bytesTransferred - processHolder.lastKnownBytes;
+        if (task.lastKnownBytes > 0 && bytesTransferred > 0) {
+            long change = bytesTransferred - task.lastKnownBytes;
             StringBuilder text = new StringBuilder();
 
             text.append(FileUtils.sizeExpression(change, false));
             text.append("/s");
 
-            if (processHolder.group.bytesPending() > 0 && change > 0) {
-                long timeNeeded = (processHolder.group.bytesPending() - bytesTransferred) / change;
+            if (task.group.bytesPending() > 0 && change > 0) {
+                long timeNeeded = (task.group.bytesPending() - bytesTransferred) / change;
 
                 text.append(" (");
                 text.append(getContext().getString(R.string.text_remainingTime,
@@ -217,12 +218,12 @@ public class CommunicationNotificationHelper
                 text.append(")");
             }
 
-            processHolder.notification.setSubText(text.toString());
+            task.notification.setSubText(text.toString());
         }
 
-        processHolder.lastKnownBytes = bytesTransferred;
+        task.lastKnownBytes = bytesTransferred;
 
-        processHolder.notification.show();
+        task.notification.show();
     }
 
     public void notifyClipboardRequest(NetworkDevice device, TextStreamObject object)
@@ -274,34 +275,33 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyFileReceived(BackgroundService.ProcessHolder processHolder, DocumentFile savePath)
+    public void notifyFileReceived(FileTransferTask task, DocumentFile savePath)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(
-                TransferUtils.createUniqueTransferId(processHolder.group.id, processHolder.device.id,
-                        processHolder.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
+                task.group.id, task.device.id, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
         notification
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                .setContentInfo(processHolder.device.nickname)
+                .setContentInfo(task.device.nickname)
                 .setAutoCancel(true)
                 .setDefaults(getUtils().getNotificationSettings())
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentText(getContext().getString(R.string.text_receivedTransfer,
-                        FileUtils.sizeExpression(processHolder.completedBytes, false),
+                        FileUtils.sizeExpression(task.completedBytes, false),
                         TimeUtils.getFriendlyElapsedTime(getContext(), System.currentTimeMillis()
-                                - processHolder.timeStarted)));
+                                - task.timeStarted)));
 
-        if (processHolder.completedCount != 1) {
+        if (task.completedCount != 1) {
             notification
                     .setContentTitle(getContext().getResources().getQuantityString(
-                            R.plurals.text_fileReceiveCompletedSummary, processHolder.completedCount,
-                            processHolder.completedCount))
+                            R.plurals.text_fileReceiveCompletedSummary, task.completedCount,
+                            task.completedCount))
                     .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                             getContext(), FileExplorerActivity.class)
                             .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
         } else {
             try {
-                Intent openIntent = FileUtils.getOpenIntent(getContext(), processHolder.currentFile);
+                Intent openIntent = FileUtils.getOpenIntent(getContext(), task.currentFile);
                 notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(),
                         openIntent, 0));
             } catch (Exception e) {
@@ -309,7 +309,7 @@ public class CommunicationNotificationHelper
             }
 
             notification
-                    .setContentTitle(processHolder.object.name)
+                    .setContentTitle(task.object.name)
                     .addAction(R.drawable.ic_folder_white_24dp_static, getContext().getString(R.string.butn_showFiles),
                             PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(),
                                     FileExplorerActivity.class)
@@ -319,11 +319,10 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyReceiveError(BackgroundService.ProcessHolder processHolder)
+    public void notifyReceiveError(FileTransferTask task)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                processHolder.group.id, processHolder.device.id, processHolder.object.type),
-                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+                task.group.id, task.device.id, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_error))
@@ -334,7 +333,7 @@ public class CommunicationNotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), ViewTransferActivity.class)
                         .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, processHolder.group.id), 0));
+                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, task.group.id), 0));
 
         notification.show();
     }
@@ -361,13 +360,12 @@ public class CommunicationNotificationHelper
         notification.show();
     }
 
-    public void notifyConnectionError(BackgroundService.ProcessHolder processHolder, @Nullable String errorKey)
+    public void notifyConnectionError(FileTransferTask task, @Nullable String errorKey)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(
-                TransferUtils.createUniqueTransferId(processHolder.group.id, processHolder.device.id,
-                        processHolder.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, processHolder.device.nickname,
-                TextUtils.getAdapterName(getContext(), processHolder.connection));
+        DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
+                task.group.id, task.device.id, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, task.device.nickname,
+                TextUtils.getAdapterName(getContext(), task.connection));
 
         if (errorKey != null)
             switch (errorKey) {
@@ -388,7 +386,7 @@ public class CommunicationNotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), ViewTransferActivity.class)
                         .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, processHolder.group.id), 0));
+                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, task.group.id), 0));
 
         notification.show();
     }
@@ -399,8 +397,9 @@ public class CommunicationNotificationHelper
                 TransferUtils.createUniqueTransferId(group.id, device.id, TransferObject.Type.INCOMING),
                 NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
+        // TODO: 15.03.2020 Fix the action matching the close action
         Intent cancelIntent = new Intent(getContext(), BackgroundService.class)
-                .setAction(BackgroundService.ACTION_CANCEL_INDEXING)
+                .setAction(BackgroundService.ACTION_STOP_TASK)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
                 .putExtra(BackgroundService.EXTRA_GROUP_ID, group.id);
 
@@ -420,9 +419,9 @@ public class CommunicationNotificationHelper
         return notification.show();
     }
 
-    public DynamicNotification notifyStuckThread(BackgroundService.ProcessHolder processHolder)
+    public DynamicNotification notifyStuckThread(FileTransferTask task)
     {
-        return notifyStuckThread(processHolder.group.id, processHolder.device.id, processHolder.type);
+        return notifyStuckThread(task.group.id, task.device.id, task.type);
     }
 
     public DynamicNotification notifyStuckThread(long groupId, String deviceId, TransferObject.Type type)
@@ -431,7 +430,7 @@ public class CommunicationNotificationHelper
                 groupId, deviceId, type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
         Intent killIntent = new Intent(getContext(), BackgroundService.class)
-                .setAction(BackgroundService.ACTION_STOP_TRANSFER)
+                .setAction(BackgroundService.ACTION_STOP_TASK)
                 .putExtra(BackgroundService.EXTRA_GROUP_ID, groupId)
                 .putExtra(BackgroundService.EXTRA_DEVICE_ID, deviceId)
                 .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, type.toString())

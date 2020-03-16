@@ -22,7 +22,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -73,7 +73,7 @@ public class TransferUtils
     }
 
     public static void createFolderStructure(List<TransferObject> list, long groupId, DocumentFile file,
-                                             String directory, Interrupter interrupter, AttachedTaskListener listener)
+                                             String directory, Stoppable stoppable, AttachedTaskListener listener)
             throws InterruptedException
     {
         DocumentFile[] files = file.listFiles();
@@ -88,12 +88,12 @@ public class TransferUtils
             if (listener != null)
                 listener.updateTaskPosition(1, 0);
 
-            if (interrupter.interrupted())
+            if (stoppable.isInterrupted())
                 throw new InterruptedException();
 
             if (thisFile.isDirectory()) {
                 createFolderStructure(list, groupId, thisFile, (directory == null ? null
-                        : directory + File.separator) + thisFile.getName(), interrupter, listener);
+                        : directory + File.separator) + thisFile.getName(), stoppable, listener);
                 continue;
             }
 
@@ -259,12 +259,10 @@ public class TransferUtils
                 Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
 
         if (type == null)
-            selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?",
-                    String.valueOf(group.id));
+            selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
         else
-            selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
-                            + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(group.id),
-                    type.toString());
+            selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?",
+                    String.valueOf(group.id), type.toString());
 
         List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(context, group.id, type);
         List<TransferObject> objectList = AppUtils.getKuick(context).castQuery(selection, TransferObject.class);
@@ -317,12 +315,12 @@ public class TransferUtils
                                      TransferObject.Type type)
     {
         Intent intent = new Intent(context, BackgroundService.class)
-                .setAction(BackgroundService.ACTION_STOP_TRANSFER)
+                .setAction(BackgroundService.ACTION_STOP_TASK)
                 .putExtra(BackgroundService.EXTRA_GROUP_ID, groupId)
                 .putExtra(BackgroundService.EXTRA_DEVICE_ID, deviceId)
                 .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, type.toString());
 
-        AppUtils.startForegroundService(context, intent);
+        AppUtils.startService(context, intent);
     }
 
     @Deprecated
@@ -342,7 +340,7 @@ public class TransferUtils
                 try {
                     final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
-                    Interrupter.Closer connectionCloser = userAction -> {
+                    Stoppable.Closer connectionCloser = userAction -> {
                         try {
                             activeConnection.getSocket().close();
                         } catch (IOException e) {
@@ -350,7 +348,7 @@ public class TransferUtils
                         }
                     };
 
-                    getInterrupter().addCloser(connectionCloser);
+                    addCloser(connectionCloser);
 
                     JSONObject jsonRequest = new JSONObject()
                             .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
@@ -360,7 +358,7 @@ public class TransferUtils
 
                     final JSONObject responseJSON = new JSONObject(activeConnection.receive().response);
                     activeConnection.getSocket().close();
-                    getInterrupter().removeCloser(connectionCloser);
+                    removeCloser(connectionCloser);
 
                     if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
                         activity.runOnUiThread(() -> {
@@ -496,7 +494,7 @@ public class TransferUtils
                             AppUtils.getKuick(activity).broadcast();
                         }
 
-                        AppUtils.startForegroundService(activity, new Intent(activity,
+                        AppUtils.startService(activity, new Intent(activity,
                                 BackgroundService.class)
                                 .setAction(BackgroundService.ACTION_START_TRANSFER)
                                 .putExtra(BackgroundService.EXTRA_GROUP_ID, assignee.groupId)

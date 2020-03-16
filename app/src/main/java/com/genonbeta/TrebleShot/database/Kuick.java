@@ -206,7 +206,7 @@ public class Kuick extends KuickDb
                     {
                         task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles,
                                 progress.getCurrent(), progress.getTotal()));
-                        return !task.getInterrupter().interrupted();
+                        return !task.isInterrupted();
                     }
                 }
         ));
@@ -222,7 +222,7 @@ public class Kuick extends KuickDb
                     {
                         task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles,
                                 progress.getCurrent(), progress.getTotal()));
-                        return !task.getInterrupter().interrupted();
+                        return !task.isInterrupted();
                     }
                 }
         ));

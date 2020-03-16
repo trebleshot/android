@@ -24,7 +24,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
@@ -38,6 +41,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -69,11 +73,8 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
                 if (data != null && (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName)
                         || Kuick.TABLE_TRANSFER.equals(data.tableName)))
                     refreshList();
-            } else if (BackgroundService.ACTION_TASK_LIST.equals(intent.getAction())
-                    && intent.hasExtra(BackgroundService.EXTRA_TASK_LIST)) {
-                getAdapter().updateActiveList(intent.getLongArrayExtra(BackgroundService.EXTRA_TASK_LIST));
-                refreshList();
-            }
+            } else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction()))
+                updateTasks();
         }
     };
 
@@ -103,8 +104,8 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
 
         view.findViewById(R.id.sendLayoutButton).setOnClickListener(v -> startActivity(
                 new Intent(getContext(), ContentSharingActivity.class)));
-        view.findViewById(R.id.receiveLayoutButton).setOnClickListener(v -> startActivity(
-                new Intent(getContext(), AddDeviceActivity.class)
+        view.findViewById(R.id.receiveLayoutButton)
+                .setOnClickListener(v -> startActivity(new Intent(getContext(), AddDeviceActivity.class)
                         .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
                                 AddDeviceActivity.RequestType.MAKE_ACQUAINTANCE)));
     }
@@ -115,7 +116,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         super.onActivityCreated(savedInstanceState);
 
         mFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        mFilter.addAction(BackgroundService.ACTION_TASK_LIST);
+        mFilter.addAction(BackgroundService.ACTION_TASK_CHANGE);
     }
 
     @Nullable
@@ -129,17 +130,15 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mReceiver, mFilter);
-
-        AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), BackgroundService.class)
-                .setAction(BackgroundService.ACTION_REQUEST_TASK_LIST));
+        requireContext().registerReceiver(mReceiver, mFilter);
+        updateTasks();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        getActivity().unregisterReceiver(mReceiver);
+        requireContext().unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -160,7 +159,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
-            ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).id);
+            ViewTransferActivity.startInstance(requireActivity(), getAdapter().getItem(holder).id);
             return true;
         } catch (Exception ignored) {
         }
@@ -233,6 +232,23 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
                 super.onPerformerMenuSelected(performerMenu, item);
 
             return false;
+        }
+    }
+
+    public void updateTasks()
+    {
+        try {
+            BackgroundService service = AppUtils.getBgService(requireActivity());
+            List<FileTransferTask> tasks = service.getTaskListOf(FileTransferTask.class);
+            List<Long> activeTaskList = new ArrayList<>();
+            for (FileTransferTask task : tasks)
+                if (task.group != null)
+                    activeTaskList.add(task.group.id);
+
+            getAdapter().updateActiveList(activeTaskList);
+            refreshList();
+        } catch (IllegalStateException ignored) {
+
         }
     }
 }

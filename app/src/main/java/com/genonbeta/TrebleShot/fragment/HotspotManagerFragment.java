@@ -91,7 +91,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     {
         super.onCreate(savedInstanceState);
 
-        mIntentFilter.addAction(BackgroundService.ACTION_HOTSPOT_STATUS);
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
         mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
 
@@ -103,10 +102,16 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        View view = getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
+        return getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
+    }
 
-        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(
-                getContext(), R.attr.colorPassive)));
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), AppUtils.getReference(
+                requireContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_hotspot_manager_qr_image);
         mToggleButton = view.findViewById(R.id.layout_hotspot_manager_info_toggle_button);
         mContainerText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1_container);
@@ -117,8 +122,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         mText3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3);
 
         mToggleButton.setOnClickListener(v -> toggleHotspot());
-
-        return view;
     }
 
     @Override
@@ -140,7 +143,7 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
             String hotspotName = getConnectionUtils().getHotspotUtils().getConfiguration().SSID;
             String friendlyName = AppUtils.getFriendlySSID(hotspotName);
 
-            new AlertDialog.Builder(getActivity())
+            new AlertDialog.Builder(requireActivity())
                     .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, friendlyName))
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
@@ -164,7 +167,7 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     {
         super.onResume();
 
-        getContext().registerReceiver(mStatusReceiver, mIntentFilter);
+        requireContext().registerReceiver(mStatusReceiver, mIntentFilter);
         updateState();
 
         if (mWaitForHotspot)
@@ -175,7 +178,7 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     public void onPause()
     {
         super.onPause();
-        getContext().unregisterReceiver(mStatusReceiver);
+        requireContext().unregisterReceiver(mStatusReceiver);
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -203,6 +206,21 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         return context.getString(R.string.text_startHotspot);
     }
 
+    @Nullable
+    public WifiConfiguration getWifiConfiguration()
+    {
+        if (Build.VERSION.SDK_INT < 26)
+            return getConnectionUtils().getHotspotUtils().getConfiguration();
+
+        try {
+            AppUtils.getBgService(requireActivity()).getHotspotConfig();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private void toggleHotspot()
     {
         if (mHotspotStartedExternally)
@@ -210,6 +228,28 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         else
             getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT,
                     mHotspotWatcher);
+    }
+
+    private void showMenu()
+    {
+        if (mHelpMenuItem != null)
+            mHelpMenuItem.setVisible(getConnectionUtils().getHotspotUtils().getConfiguration() != null
+                    && getConnectionUtils().getHotspotUtils().isEnabled());
+    }
+
+    private void updateState()
+    {
+        showMenu();
+        boolean enabled = getConnectionUtils().getHotspotUtils().isEnabled();
+        WifiConfiguration config = getWifiConfiguration();
+
+        if (enabled && config != null)
+            updateViews(config);
+        else if (!enabled)
+            updateViewsWithBlank();
+        else {
+            updateViewsAsStartedExternally();
+        }
     }
 
     private void updateViewsWithBlank()
@@ -286,26 +326,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         }
     }
 
-    private void showMenu()
-    {
-        if (mHelpMenuItem != null)
-            mHelpMenuItem.setVisible(getConnectionUtils().getHotspotUtils().getConfiguration() != null
-                    && getConnectionUtils().getHotspotUtils().isEnabled());
-    }
-
-    private void updateState()
-    {
-        showMenu();
-
-        if (!getConnectionUtils().getHotspotUtils().isEnabled())
-            updateViewsWithBlank();
-        else if (Build.VERSION.SDK_INT >= 26)
-            AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), BackgroundService.class)
-                    .setAction(BackgroundService.ACTION_REQUEST_HOTSPOT_STATUS));
-        else // With Oreo, we always have a WifiConfiguration
-            updateViews(getConnectionUtils().getHotspotUtils().getConfiguration());
-    }
-
     private class StatusReceiver extends BroadcastReceiver
     {
         @Override
@@ -314,13 +334,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
             if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
                     || BackgroundService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
-            else if (BackgroundService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
-                if (intent.getBooleanExtra(BackgroundService.EXTRA_HOTSPOT_ENABLED, false))
-                    updateViews(intent.getParcelableExtra(BackgroundService.EXTRA_HOTSPOT_CONFIGURATION));
-                else if (getConnectionUtils().getHotspotUtils().isEnabled()
-                        && !intent.getBooleanExtra(BackgroundService.EXTRA_HOTSPOT_DISABLING, false))
-                    updateViewsAsStartedExternally();
-            }
         }
     }
 }

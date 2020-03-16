@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.util;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
@@ -52,6 +54,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.SuperPreferences;
@@ -60,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.lang.ref.WeakReference;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -133,7 +137,36 @@ public class AppUtils
                 .put(Keyword.DEVICE_INFO, deviceInformation);
     }
 
-    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentBase<T> fragment) {
+    @NonNull
+    public static BackgroundService getBgService(Activity activity) throws IllegalStateException
+    {
+        BackgroundService service = getBgServiceRef(activity).get();
+        if (service == null)
+            throw new IllegalStateException("The service is not ready or removed from the scope. Do not call this " +
+                    "method after the application process exits.");
+        return service;
+    }
+
+    /**
+     * A reference object for the service. If you don't want to deal with 'null' state, use
+     * {@link #getBgService(Activity)} instead
+     *
+     * @param activity That will be used to extract the right {@link Application} instance which should be
+     *                 {@link App}
+     * @return the service instance that was bound to the {@link Application} class
+     */
+    public static WeakReference<BackgroundService> getBgServiceRef(Activity activity)
+    {
+        Application application = activity.getApplication();
+        if (application instanceof App)
+            return ((App) application).getBackgroundService();
+
+        return new WeakReference<>(null);
+    }
+
+
+    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentBase<T> fragment)
+    {
         IEngineConnection<T> connection = fragment.getEngineConnection();
         SharedPreferences preferences = AppUtils.getDefaultPreferences(fragment.getContext());
 
@@ -147,7 +180,8 @@ public class AppUtils
                     .show();
     }
 
-    public static void startApplicationDetails(Activity activity) {
+    public static void startApplicationDetails(Activity activity)
+    {
         activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 .setData(Uri.fromParts("package", activity.getPackageName(), null)));
     }
@@ -320,9 +354,7 @@ public class AppUtils
 
     public static String getLocalDeviceName(Context context)
     {
-        String deviceName = getDefaultPreferences(context)
-                .getString("device_name", null);
-
+        String deviceName = getDefaultPreferences(context).getString("device_name", null);
         return deviceName == null || deviceName.length() == 0 ? Build.MODEL.toUpperCase() : deviceName;
     }
 
@@ -363,8 +395,7 @@ public class AppUtils
 
         if (Build.VERSION.SDK_INT >= 16) {
             permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    R.string.text_requestPermissionStorage,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.text_requestPermissionStorage,
                     R.string.text_requestPermissionStorageSummary));
         }
 
@@ -400,8 +431,8 @@ public class AppUtils
         int lastSeenChangelog = preferences.getInt("changelog_seen_version", -1);
         boolean dialogAllowed = preferences.getBoolean("show_changelog_dialog", true);
 
-        return !preferences.contains("previously_migrated_version")
-                || device.versionCode == lastSeenChangelog || !dialogAllowed;
+        return !preferences.contains("previously_migrated_version") || device.versionCode == lastSeenChangelog
+                || !dialogAllowed;
     }
 
     public static void publishLatestChangelogSeen(Context context)
@@ -413,7 +444,7 @@ public class AppUtils
                 .apply();
     }
 
-    public static void startForegroundService(Context context, Intent intent)
+    public static void startService(Context context, Intent intent)
     {
         if (Build.VERSION.SDK_INT >= 26)
             context.startForegroundService(intent);

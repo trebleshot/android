@@ -164,8 +164,8 @@ public class UIConnectionUtils
                         }
 
                         if (canContinue) {
-                            mAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
-                                    (NetworkDeviceListAdapter.NetworkSpecifier) object,
+                            mAddress = getConnectionUtils().establishHotspotConnection(this,
+                                    (NetworkDeviceListAdapter.NetworkSpecifier<?>) object,
                                     (delimiter, timePassed) -> timePassed >= 30000);
                         }
                     } else if (object instanceof InetAddress)
@@ -183,7 +183,7 @@ public class UIConnectionUtils
                         }, retryButtonListener) != null;
                     }
 
-                    if (!mConnected && !getInterrupter().interruptedByUser()) {
+                    if (!mConnected && !isInterruptedByUser()) {
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
                                 .setMessage(R.string.mesg_connectionFailure)
                                 .setNegativeButton(R.string.butn_close, null)
@@ -209,7 +209,7 @@ public class UIConnectionUtils
         runningTask.run(activity);
 
         if (task != null)
-            task.updateTaskStarted(runningTask.getInterrupter());
+            task.updateTaskStarted(runningTask);
     }
 
     public boolean notifyWirelessRequestHandled()
@@ -338,15 +338,20 @@ public class UIConnectionUtils
                     : R.string.mesg_startingSelfHotspot)
                     .show();
 
-        AppUtils.startForegroundService(getConnectionUtils().getContext(),
-                new Intent(getConnectionUtils().getContext(), BackgroundService.class)
-                        .setAction(BackgroundService.ACTION_TOGGLE_HOTSPOT));
-
+        toggleHotspot(activity);
         watcher.onResultReturned(true, false);
 
         return true;
     }
 
+    private void toggleHotspot(Activity activity)
+    {
+        try {
+            AppUtils.getBgService(activity).toggleHotspot();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
 
     public boolean turnOnWiFi(final Activity activity, final int requestId, final RequestWatcher watcher)
     {

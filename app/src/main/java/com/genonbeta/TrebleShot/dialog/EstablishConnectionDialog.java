@@ -31,8 +31,9 @@ import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.util.MathUtils;
+import com.genonbeta.android.framework.util.Stoppable;
+import com.genonbeta.android.framework.util.StoppableImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,19 +49,19 @@ public class EstablishConnectionDialog extends ProgressDialog
     {
         super(activity);
 
-        final Interrupter interrupter = new Interrupter();
+        final Stoppable stoppable = new StoppableImpl();
 
         setTitle(R.string.text_automaticNetworkConnectionOngoing);
         setCancelable(false);
         setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), (dialogInterface, i) -> interrupter.interrupt());
+        setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), (dialogInterface, i) -> stoppable.interrupt());
 
         mTask = new BackgroundService.RunningTask()
         {
             @Override
             protected void onRun()
             {
-                setInterrupter(interrupter);
+                setStoppable(stoppable);
                 publishStatusText(getService().getString(R.string.mesg_communicating));
 
                 final List<ConnectionResult> reachedConnections = new ArrayList<>();
@@ -78,7 +79,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                     calculatedConnections.add(new ConnectionResult(connection));
 
                 for (final ConnectionResult connectionResult : calculatedConnections) {
-                    if (getInterrupter().interrupted())
+                    if (isInterrupted())
                         break;
 
                     publishStatusText(connectionResult.connection.adapterName);
@@ -123,7 +124,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                         if (listener == null) {
                             new ConnectionTestDialog(activity, networkDevice, calculatedConnections).show();
                         } else {
-                            if (!getInterrupter().interrupted())
+                            if (!isInterrupted())
                                 if (reachedConnections.size() < 1) {
                                     new Builder(activity)
                                             .setTitle(R.string.text_error)

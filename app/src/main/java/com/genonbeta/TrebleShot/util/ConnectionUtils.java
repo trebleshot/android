@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -35,7 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -151,14 +150,14 @@ public class ConnectionUtils
         return false;
     }
 
-    public InetAddress establishHotspotConnection(final Interrupter interrupter, final NetworkSpecifier hotspotNetwork,
+    public InetAddress establishHotspotConnection(final Stoppable stoppable, final NetworkSpecifier<?> hotspotNetwork,
                                                   final ConnectionCallback connectionCallback)
     {
-        return establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, (short) 4);
+        return establishHotspotConnection(stoppable, hotspotNetwork, connectionCallback, (short) 4);
     }
 
     @WorkerThread
-    private InetAddress establishHotspotConnection(final Interrupter interrupter, NetworkSpecifier specifier,
+    private InetAddress establishHotspotConnection(final Stoppable stoppable, NetworkSpecifier<?> specifier,
                                                    final ConnectionCallback connectionCallback, short leftAttempts)
     {
         leftAttempts--;
@@ -224,7 +223,7 @@ public class ConnectionUtils
             } else
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
 
-            if (connectionCallback.onTimePassed(1000, passedTime) || interrupter.interrupted()) {
+            if (connectionCallback.onTimePassed(1000, passedTime) || stoppable.isInterrupted()) {
                 Log.d(TAG, "establishHotspotConnection(): Timed out or onTimePassed returned true. Exiting...");
                 break;
             }
@@ -237,14 +236,14 @@ public class ConnectionUtils
             }
         }
 
-        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(interrupter, specifier,
+        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(stoppable, specifier,
                 connectionCallback, leftAttempts);
     }
 
     /**
-     * @see #findFromConfigurations(String, String)
      * @param configuration The configuration that contains network SSID, BSSID, other fields required to filter the
      *                      network
+     * @see #findFromConfigurations(String, String)
      */
     @Deprecated
     public WifiConfiguration findFromConfigurations(WifiConfiguration configuration)
@@ -253,11 +252,9 @@ public class ConnectionUtils
     }
 
     /**
-     *
-     * @param ssid The SSID that will be used to filter.
+     * @param ssid  The SSID that will be used to filter.
      * @param bssid The MAC address of the network. Its use is prioritized when not null as it is unique.
      * @return The matching configuration or null if no configuration matched with the given parameters.
-     *
      * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
      * APIs it makes use of.
      */
@@ -370,9 +367,9 @@ public class ConnectionUtils
 
     /**
      * Enable and connect to the given network specification.
+     *
      * @param hotspotNetwork The network specifier that will be connected to.
      * @return True when the request is successful and false when it fails.
-     *
      * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
      * APIs it makes use of.
      */
@@ -411,7 +408,8 @@ public class ConnectionUtils
     }
 
     @TargetApi(29)
-    public int suggestNetwork(NetworkSuggestion suggestion) {
+    public int suggestNetwork(NetworkSuggestion suggestion)
+    {
         final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
         suggestions.add(suggestion.object);
 
@@ -420,9 +418,9 @@ public class ConnectionUtils
 
     /**
      * This method activates or deactivates a given network depending on its state.
+     *
      * @param hotspotNetwork The network specifier that you want to toggle the connection to.
      * @return True when the request is successful, false if otherwise.
-     *
      * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
      * APIs it makes use of.
      */

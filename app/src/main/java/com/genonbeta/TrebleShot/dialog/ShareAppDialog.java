@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -29,11 +28,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
+import com.genonbeta.android.framework.util.StoppableImpl;
 
 import java.io.File;
 
@@ -54,7 +53,7 @@ public class ShareAppDialog extends AlertDialog.Builder
     {
         new Handler(Looper.getMainLooper()).post(() -> {
             try {
-                Interrupter interrupter = new Interrupter();
+                Stoppable interrupter = new StoppableImpl();
 
                 PackageManager pm = context.getPackageManager();
                 PackageInfo packageInfo = pm.getPackageInfo(context.getApplicationInfo().packageName, 0);

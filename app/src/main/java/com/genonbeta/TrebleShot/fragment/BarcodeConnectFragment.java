@@ -57,7 +57,7 @@ import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -390,7 +390,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
         mDeviceSelectedListener = listener;
     }
 
-    public void updateState(boolean isConnecting, final Interrupter interrupter)
+    public void updateState(boolean isConnecting, final Stoppable stoppable)
     {
         if (!isAdded()) {
             mBarcodeView.pauseAndWait();
@@ -407,8 +407,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
         }
 
         mTaskContainer.setVisibility(isConnecting ? View.VISIBLE : View.GONE);
-        mTaskInterruptButton.setOnClickListener(isConnecting ? (View.OnClickListener) v ->
-                interrupter.interrupt() : null);
+        mTaskInterruptButton.setOnClickListener(isConnecting ? (View.OnClickListener) v -> stoppable.interrupt() : null);
     }
 
     public void updateState()
@@ -476,9 +475,9 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     }
 
     @Override
-    public void updateTaskStarted(Interrupter interrupter)
+    public void updateTaskStarted(Stoppable stoppable)
     {
-        updateState(true, interrupter);
+        updateState(true, stoppable);
     }
 
     @Override

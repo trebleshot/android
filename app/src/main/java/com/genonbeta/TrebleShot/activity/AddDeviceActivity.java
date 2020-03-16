@@ -53,7 +53,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
@@ -97,7 +97,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 UITask uiTask = new UITask()
                 {
                     @Override
-                    public void updateTaskStarted(Interrupter interrupter)
+                    public void updateTaskStarted(Stoppable stoppable)
                     {
                         mProgressBar.setVisibility(View.VISIBLE);
                     }

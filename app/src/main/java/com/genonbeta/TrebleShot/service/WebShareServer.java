@@ -46,7 +46,8 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
+import com.genonbeta.android.framework.util.StoppableImpl;
 import fi.iki.elonen.NanoHTTPD;
 
 import java.io.*;
@@ -171,7 +172,7 @@ public class WebShareServer extends NanoHTTPD
             } else {
                 File tmpFile = new File(filePath);
                 DocumentFile savePath = FileUtils.getApplicationDirectory(mContext);
-                Interrupter interrupter = new Interrupter();
+                Stoppable stoppable = new StoppableImpl();
                 DocumentFile sourceFile = DocumentFile.fromFile(tmpFile);
                 DocumentFile destFile = savePath.createFile(null,
                         FileUtils.getUniqueFileName(savePath, fileName, true));
@@ -215,7 +216,7 @@ public class WebShareServer extends NanoHTTPD
                             }
 
                             if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT
-                                    || interrupter.interrupted())
+                                    || stoppable.isInterrupted())
                                 throw new Exception("Timed out or interrupted. Exiting!");
                         }
 
@@ -281,7 +282,7 @@ public class WebShareServer extends NanoHTTPD
                                 .addAction(R.drawable.ic_folder_white_24dp_static,
                                         mContext.getString(R.string.butn_showFiles), PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(),
                                                 new Intent(mContext, FileExplorerActivity.class)
-                                                .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
+                                                        .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
 
                         try {
                             Intent openIntent = FileUtils.getOpenIntent(mContext, destFile);

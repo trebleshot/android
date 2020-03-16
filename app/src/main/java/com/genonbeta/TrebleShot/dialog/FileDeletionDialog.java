@@ -82,7 +82,7 @@ public class FileDeletionDialog extends AlertDialog.Builder
 
                             private void delete(DocumentFile file)
                             {
-                                if (getInterrupter().interrupted())
+                                if (isInterrupted())
                                     return;
 
                                 boolean isDirectory = file.isDirectory();

@@ -349,7 +349,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 
                 for (int i = 1; i < (isScreenLandscape() ? 7 : 5); i++)
                     gridSizeMenu.add(R.id.actions_abs_editable_group_grid_size, 0, i,
-                            getContext().getResources().getQuantityString(R.plurals.text_gridRow, i, i));
+                            getResources().getQuantityString(R.plurals.text_gridRow, i, i));
 
                 gridSizeMenu.setGroupCheckable(R.id.actions_abs_editable_group_grid_size, true, true);
             }
@@ -743,7 +743,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 
     public boolean openUri(Uri uri)
     {
-        return FileUtils.openUri(getContext(), uri);
+        return FileUtils.openUri(requireContext(), uri);
     }
 
     public boolean performLayoutClick(V holder)

@@ -24,7 +24,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
 
 import java.io.FileInputStream;
@@ -42,7 +42,8 @@ import java.net.Socket;
 
 public class UpdateUtils
 {
-    public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog, final GitHubUpdater.OnInfoAvailableListener listener)
+    public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog,
+                                       final GitHubUpdater.OnInfoAvailableListener listener)
     {
         updater.checkForUpdates(popupDialog, (newVersion, versionName, title, description, releaseDate) -> {
             SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
@@ -112,7 +113,8 @@ public class UpdateUtils
         socket.close();
     }
 
-    public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException
+    public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Stoppable stoppable,
+                                             OnConnectionReadyListener readyListener) throws IOException
     {
         ServerSocket serverSocket = null;
         Socket socket = null;
@@ -125,7 +127,7 @@ public class UpdateUtils
 
             final ServerSocket finalServer = serverSocket;
 
-            interrupter.addCloser(userAction -> {
+            stoppable.addCloser(userAction -> {
                 try {
                     if (!finalServer.isClosed())
                         finalServer.close();
@@ -146,19 +148,24 @@ public class UpdateUtils
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = context.getContentResolver().openOutputStream(updateFile.getUri());
 
+            if (outputStream == null)
+                throw new IOException("Could not open the output stream to write to.");
+
             byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
             int len = 0;
-            long lastRead = System.currentTimeMillis();
+            long lastRead = 0;
 
             while (len != -1) {
+                long current = System.nanoTime();
+
                 if ((len = inputStream.read(buffer)) > 0) {
                     outputStream.write(buffer, 0, len);
                     outputStream.flush();
 
-                    lastRead = System.currentTimeMillis();
+                    lastRead = current;
                 }
 
-                if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT || interrupter.interrupted())
+                if ((current - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6 || stoppable.isInterrupted())
                     throw new Exception("Timed out or interrupted. Exiting!");
             }
 

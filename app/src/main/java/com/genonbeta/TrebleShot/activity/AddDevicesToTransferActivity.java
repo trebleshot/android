@@ -154,7 +154,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
         if (id == android.R.id.home || id == R.id.actions_add_devices_done) {
             if (mTask != null)
-                mTask.getInterrupter().interrupt();
+                mTask.interrupt();
 
             finish();
         } else if (id == R.id.actions_add_devices_help) {
@@ -320,7 +320,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         mActionButton.setBackgroundTintList(ColorStateList.valueOf(mColorActive));
         mActionButton.setOnClickListener(v -> {
             if (mTask != null)
-                mTask.getInterrupter().interrupt();
+                mTask.interrupt();
         });
     }
 

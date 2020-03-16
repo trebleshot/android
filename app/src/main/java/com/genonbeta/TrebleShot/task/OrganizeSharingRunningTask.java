@@ -63,7 +63,7 @@ public class OrganizeSharingRunningTask extends BackgroundService.AttachableRunn
         final List<TransferObject> list = new ArrayList<>();
 
         for (int position = 0; position < mUriList.size(); position++) {
-            if (getInterrupter().interrupted())
+            if (isInterrupted())
                 throw new InterruptedException();
 
             publishStatusText(getService().getString(R.string.text_transferStatusFiles, position, mUriList.size()));
@@ -77,8 +77,8 @@ public class OrganizeSharingRunningTask extends BackgroundService.AttachableRunn
                 DocumentFile file = FileUtils.fromUri(getService(), fileUri);
 
                 if (file.isDirectory())
-                    TransferUtils.createFolderStructure(list, group.id, file, file.getName(),
-                            getInterrupter(), getAnchorListener());
+                    TransferUtils.createFolderStructure(list, group.id, file, file.getName(), this,
+                            getAnchorListener());
                 else
                     list.add(TransferObject.from(file, group.id, null));
             } catch (FileNotFoundException e) {
@@ -97,13 +97,13 @@ public class OrganizeSharingRunningTask extends BackgroundService.AttachableRunn
                 if (getAnchorListener() != null)
                     getAnchorListener().setTaskPosition(progress.getTotal(), progress.getCurrent());
 
-                return !getInterrupter().interrupted();
+                return !isInterrupted();
             }
         };
 
         kuick.insert(db, list, group, simpleListener);
         kuick.insert(db, group, null, simpleListener);
-        getInterrupter().addCloser((userAction) -> kuick.remove(db, new SQLQuery.Select(
+        addCloser((userAction) -> kuick.remove(db, new SQLQuery.Select(
                 Kuick.TABLE_TRANSFER).setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID),
                 String.valueOf(group.id))));
 

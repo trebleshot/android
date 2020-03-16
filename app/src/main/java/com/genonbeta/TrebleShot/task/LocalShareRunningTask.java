@@ -75,12 +75,12 @@ public class LocalShareRunningTask extends BackgroundService.RunningTask
         for (Shareable shareable : mList) {
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
 
-            if (getInterrupter().interrupted())
+            if (isInterrupted())
                 throw new InterruptedException();
 
             if (shareable instanceof FileListAdapter.FileHolder) {
                 DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;
-                TransferUtils.createFolderStructure(list, group.id, file, shareable.fileName, getInterrupter(),
+                TransferUtils.createFolderStructure(list, group.id, file, shareable.fileName, this,
                         null);
             } else
                 list.add(TransferObject.from(shareable, group.id, containable == null ? null : shareable.friendlyName));
@@ -101,7 +101,7 @@ public class LocalShareRunningTask extends BackgroundService.RunningTask
             return;
         }
 
-        getInterrupter().addCloser((userAction -> kuick.remove(db, group, null, null)));
+        addCloser((userAction -> kuick.remove(db, group, null, null)));
         kuick.insert(db, list, group, null);
 
         if (mFlagWebShare) {

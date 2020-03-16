@@ -63,8 +63,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (BackgroundService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
-                    || WIFI_AP_STATE_CHANGED.equals(intent.getAction())
+            if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
                     || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
                     || WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(intent.getAction())
@@ -85,7 +84,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
-        mFilter.addAction(BackgroundService.ACTION_HOTSPOT_STATUS);
+
         mFilter.addAction(WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);

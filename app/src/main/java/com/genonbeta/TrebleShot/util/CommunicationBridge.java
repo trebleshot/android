@@ -50,8 +50,8 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
     public static <T> T connect(Kuick kuick, Class<T> clazz, final Client.ConnectionHandler handler)
     {
-        Client clientInstance = connect(kuick, true, handler);
-        return clientInstance.getReturn() != null && clazz != null ? clazz.cast(clientInstance.getReturn()) : null;
+        Client client = connect(kuick, true, handler);
+        return client.getReturn() != null && clazz != null ? clazz.cast(client.getReturn()) : null;
     }
 
     public static Client connect(Kuick kuick, boolean currentThread, final Client.ConnectionHandler handler)

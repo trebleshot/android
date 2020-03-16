@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,17 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.ui;
+package com.genonbeta.TrebleShot.object;
 
-import com.genonbeta.android.framework.util.Stoppable;
-
-/**
- * created by: veli
- * date: 16/04/18 22:41
- */
-public interface UITask
+public interface Identifiable
 {
-    void updateTaskStarted(final Stoppable stoppable);
-
-    void updateTaskStopped();
+    Identity getIdentity();
 }

@@ -19,9 +19,12 @@
 package com.genonbeta.TrebleShot;
 
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.IBinder;
 import android.text.format.DateFormat;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -39,6 +42,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Date;
 
 /**
@@ -46,13 +50,15 @@ import java.util.Date;
  * date: 25.02.2018 01:23
  */
 
-public class App extends Application implements Thread.UncaughtExceptionHandler
+public class App extends Application implements Thread.UncaughtExceptionHandler, ServiceConnection
 {
     public static final String TAG = App.class.getSimpleName();
 
     private int mForegroundActivitiesCount = 0;
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private File mCrashLogFile;
+    private BackgroundService mBgService;
+    private WeakReference<BackgroundService> mBgServiceRef;
 
     @Override
     public void onCreate()
@@ -73,6 +79,104 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
             GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
             UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
         }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service)
+    {
+        if (service instanceof BackgroundService.LocalBinder)
+            mBgService = ((BackgroundService.LocalBinder) service).getService();
+        else
+            Log.e(TAG, "onServiceConnected: Some unknown binder is given");
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name)
+    {
+        mBgServiceRef.clear();
+        mBgService = null;
+    }
+
+    public WeakReference<BackgroundService> getBackgroundService()
+    {
+        if (mBgServiceRef == null || mBgServiceRef.get() == null)
+            mBgServiceRef = new WeakReference<>(mBgService);
+
+        return mBgServiceRef;
+    }
+
+    private void initializeSettings()
+    {
+        //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
+        SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(this);
+        NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+        boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
+        boolean refVersion = defaultPreferences.contains("referral_version");
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
+
+        if (!refVersion)
+            defaultPreferences.edit()
+                    .putInt("referral_version", localDevice.versionCode)
+                    .apply();
+
+        // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
+        // So we will disable it for them and it will still remain as an option for the user.
+        if (!nsdDefined)
+            defaultPreferences.edit()
+                    .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
+                    .apply();
+
+        if (defaultPreferences.contains("migrated_version")) {
+            int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionCode);
+
+            if (migratedVersion < localDevice.versionCode) {
+                // migrating to a new version
+
+                if (migratedVersion <= 67)
+                    AppUtils.getViewingPreferences(getApplicationContext()).edit()
+                            .clear()
+                            .apply();
+
+                defaultPreferences.edit()
+                        .putInt("migrated_version", localDevice.versionCode)
+                        .putInt("previously_migrated_version", migratedVersion)
+                        .apply();
+            }
+        } else
+            defaultPreferences.edit()
+                    .putInt("migrated_version", localDevice.versionCode)
+                    .apply();
+    }
+
+    public static void notifyActivityInForeground(Activity activity, boolean inForeground)
+    {
+        ((App) activity.getApplication()).notifyActivityInForeground(inForeground);
+    }
+
+    public synchronized void notifyActivityInForeground(boolean inForeground)
+    {
+        if (mForegroundActivitiesCount == 0 && !inForeground)
+            return;
+
+        mForegroundActivitiesCount += inForeground ? 1 : -1;
+        boolean inBg = mForegroundActivitiesCount == 0;
+        boolean newlyInFg = mForegroundActivitiesCount == 1;
+        Intent basicIntent = new Intent(this, BackgroundService.class);
+
+        if (newlyInFg) {
+            bindService(basicIntent, this, BIND_AUTO_CREATE);
+        } else if (inBg) {
+            boolean canStop = mBgService.canStopService();
+            unbindService(this);
+
+            if (canStop)
+                stopService(basicIntent);
+            else
+                AppUtils.startService(this, basicIntent);
+        }
+
+        Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
     }
 
     @Override
@@ -127,69 +231,5 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
         mDefaultExceptionHandler.uncaughtException(t, e);
     }
 
-    public static void notifyActivityInForeground(Activity activity, boolean inForeground)
-    {
-        ((App) activity.getApplication()).notifyActivityInForeground(inForeground);
-    }
 
-    public synchronized void notifyActivityInForeground(boolean inForeground)
-    {
-        if (mForegroundActivitiesCount < 0 && !inForeground)
-            return;
-
-        boolean hadNone = mForegroundActivitiesCount == 0;
-        mForegroundActivitiesCount += inForeground ? 1 : -1;
-
-        if ((hadNone && inForeground) || mForegroundActivitiesCount == 0)
-            AppUtils.startForegroundService(this,
-                    new Intent(this, BackgroundService.class)
-                            .setAction(BackgroundService.ACTION_SERVICE_STATUS)
-                            .putExtra(BackgroundService.EXTRA_STATUS_STARTED, inForeground));
-
-        Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
-    }
-
-    private void initializeSettings()
-    {
-        //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
-        SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(this);
-        NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-        boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
-        boolean refVersion = defaultPreferences.contains("referral_version");
-
-        PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
-
-        if (!refVersion)
-            defaultPreferences.edit()
-                    .putInt("referral_version", localDevice.versionCode)
-                    .apply();
-
-        // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
-        // So we will disable it for them and it will still remain as an option for the user.
-        if (!nsdDefined)
-            defaultPreferences.edit()
-                    .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
-                    .apply();
-
-        if (defaultPreferences.contains("migrated_version")) {
-            int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionCode);
-
-            if (migratedVersion < localDevice.versionCode) {
-                // migrating to a new version
-
-                if (migratedVersion <= 67)
-                    AppUtils.getViewingPreferences(getApplicationContext()).edit()
-                            .clear()
-                            .apply();
-
-                defaultPreferences.edit()
-                        .putInt("migrated_version", localDevice.versionCode)
-                        .putInt("previously_migrated_version", migratedVersion)
-                        .apply();
-            }
-        } else
-            defaultPreferences.edit()
-                    .putInt("migrated_version", localDevice.versionCode)
-                    .apply();
-    }
 }

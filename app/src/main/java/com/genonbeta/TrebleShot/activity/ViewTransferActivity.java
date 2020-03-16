@@ -99,7 +99,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                     reconstructGroup();
                 else if (Kuick.TABLE_TRANSFER.equals(data.tableName) && (data.inserted || data.removed))
                     updateCalculations();
-            } else if (BackgroundService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
+            } else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction())
                     && intent.hasExtra(BackgroundService.EXTRA_GROUP_ID)
                     && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ID)) {
                 long groupId = intent.getLongExtra(BackgroundService.EXTRA_GROUP_ID, -1);
@@ -269,7 +269,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         IntentFilter filter = new IntentFilter();
 
         filter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        filter.addAction(BackgroundService.ACTION_TASK_STATUS_CHANGE);
+        filter.addAction(BackgroundService.ACTION_TASK_CHANGE);
         filter.addAction(BackgroundService.ACTION_TASK_LIST);
 
         registerReceiver(mReceiver, filter);
@@ -456,7 +456,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     private void requestTaskStateUpdate()
     {
         if (mGroup != null)
-            AppUtils.startForegroundService(this, new Intent(this, BackgroundService.class)
+            AppUtils.startService(this, new Intent(this, BackgroundService.class)
                     .setAction(BackgroundService.ACTION_REQUEST_TASK_LIST));
     }
 

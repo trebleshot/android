@@ -219,7 +219,7 @@ public abstract class Activity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (AppUtils.checkRunningConditions(this))
-            AppUtils.startForegroundService(this, new Intent(this, BackgroundService.class));
+            AppUtils.startService(this, new Intent(this, BackgroundService.class));
         else
             requestRequiredPermissions(!mSkipPermissionRequest);
     }
@@ -310,8 +310,7 @@ public abstract class Activity extends AppCompatActivity
             public void onServiceConnected(ComponentName name, IBinder service)
             {
                 BackgroundService workerService = ((BackgroundService.LocalBinder) service).getService();
-                BackgroundService.RunningTask task = workerService.findTaskByHash(
-                        BackgroundService.hashIntent(getIntent()));
+                BackgroundService.RunningTask task = workerService.findTaskBy(BackgroundService.hashIntent(getIntent()));
 
                 if (task == null)
                     onPreviousRunningTask(null);
@@ -345,7 +344,6 @@ public abstract class Activity extends AppCompatActivity
      */
     public void exitApp()
     {
-        stopService(new Intent(this, BackgroundService.class));
         stopService(new Intent(this, DeviceScannerService.class));
         stopService(new Intent(this, BackgroundService.class));
 

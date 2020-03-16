@@ -20,9 +20,7 @@ package com.genonbeta.TrebleShot.service;
 
 import android.app.PendingIntent;
 import android.content.*;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
@@ -33,37 +31,30 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.collection.ArrayMap;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
-import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
-import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
-import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
-import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.task.FileTransferTask;
+import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
-import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.LocalDocumentFile;
-import com.genonbeta.android.framework.io.StreamInfo;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
+import com.genonbeta.android.framework.util.StoppableImpl;
 import fi.iki.elonen.NanoHTTPD;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
@@ -73,64 +64,43 @@ public class BackgroundService extends Service
     public static final String TAG = "CommunicationService";
 
     public static final String
-            ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
             ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD",
-            ACTION_CANCEL_INDEXING = "com.genonbeta.TrebleShot.action.CANCEL_INDEXING",
+            ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
             ACTION_DEVICE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL",
             ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION",
-            ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
-            ACTION_STOP_TRANSFER = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
-            ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT",
-            ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS",
-            ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS",
-            ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
-            ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS",
-            ACTION_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE",
-            ACTION_TASK_LIST = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE",
-            ACTION_REQUEST_TASK_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS",
-            ACTION_REQUEST_TASK_LIST = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_LIST",
+            ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
-            ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
             ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL",
-            ACTION_KILL_ALL_SIGNAL = "com.genonbeta.intent.action.KILL_ALL_SIGNAL",
-            EXTRA_TASK_HASH = "extraTaskId",
+            ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
+            ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
+            ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
+            ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE",
+            EXTRA_DEVICE_LIST = "extraDeviceListRunning",
+            EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
+            EXTRA_CLIPBOARD_ID = "extraTextId",
+            EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
             EXTRA_DEVICE_ID = "extraDeviceId",
             EXTRA_DEVICE_PIN = "extraDevicePin",
-            EXTRA_STATUS_STARTED = "extraStatusStarted",
-            EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
-            EXTRA_REQUEST_ID = "extraRequestId",
-            EXTRA_CLIPBOARD_ID = "extraTextId",
             EXTRA_GROUP_ID = "extraGroupId",
+            EXTRA_IDENTITY = "extraIdentity",
             EXTRA_IS_ACCEPTED = "extraAccepted",
-            EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
-            EXTRA_HOTSPOT_ENABLED = "extraHotspotEnabled",
-            EXTRA_HOTSPOT_DISABLING = "extraHotspotDisabling",
-            EXTRA_HOTSPOT_CONFIGURATION = "extraHotspotConfiguration",
-            EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType",
-            EXTRA_TASK_LIST = "extraTaskListRunning",
-            EXTRA_DEVICE_LIST = "extraDeviceListRunning",
+            EXTRA_REQUEST_ID = "extraRequestId",
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int
             TASK_STATUS_ONGOING = 0,
             TASK_STATUS_STOPPED = 1,
-            REQUEST_CODE_RESCUE_TASK = 10910,
             ID_NOTIFICATION_FOREGROUND = 1103;
 
-    private long mTimeTransactionSaved;
-    private List<ProcessHolder> mActiveProcessList = new ArrayList<>();
+    private final List<RunningTask> mTaskList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
     private WebShareServer mWebShareServer;
-    private Map<Long, Interrupter> mOngoingIndexList = new ArrayMap<>();
-    private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
+    private ExecutorService mExecutor = Executors.newFixedThreadPool(10);
     private NsdDiscovery mNsdDiscovery;
-    private CommunicationNotificationHelper mNotificationHelper;
+    private NotificationHelper mNotificationHelper;
     private WifiManager.WifiLock mWifiLock;
     private MediaScannerConnection mMediaScanner;
     private HotspotUtils mHotspotUtils;
-    private SQLiteDatabase mDatabase;
-    private final List<RunningTask> mTaskList = new ArrayList<>();
-    private ExecutorService mExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private LocalBinder mBinder = new LocalBinder();
     private DynamicNotification mNotification;
 
@@ -147,11 +117,10 @@ public class BackgroundService extends Service
 
         WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
 
-        mNotificationHelper = new CommunicationNotificationHelper(getNotificationUtils());
+        mNotificationHelper = new NotificationHelper(getNotificationUtils());
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
         mHotspotUtils = HotspotUtils.getInstance(this);
-        mDatabase = AppUtils.getKuick(this).getWritableDatabase();
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
@@ -163,32 +132,7 @@ public class BackgroundService extends Service
             mWifiLock.acquire();
 
         refreshServiceState();
-
-        if (!AppUtils.checkRunningConditions(this) || !mCommunicationServer.start()) {
-            Log.e(TAG, "onCreate: Cannot start the service. server=" + mCommunicationServer.isServerAlive());
-            stopSelf();
-        }
-
-        if (getHotspotUtils() instanceof HotspotUtils.OreoAPI && Build.VERSION.SDK_INT >= 26)
-            ((HotspotUtils.OreoAPI) getHotspotUtils()).setSecondaryCallback(new WifiManager.LocalOnlyHotspotCallback()
-            {
-                @RequiresApi(api = Build.VERSION_CODES.O)
-                @Override
-                public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation)
-                {
-                    super.onStarted(reservation);
-                    sendHotspotStatus(reservation.getWifiConfiguration());
-                }
-            });
-
-        try {
-            mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
-            mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
-                    Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
-            mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-        } catch (Throwable t) {
-            Log.e(TAG, "Failed to start Web Share Server");
-        }
+        tryStartingServices();
     }
 
     @Override
@@ -239,7 +183,8 @@ public class BackgroundService extends Service
                     });
 
                     if (isAccepted)
-                        startTransferAsClient(groupId, deviceId, TransferObject.Type.INCOMING);
+                        FileTransferTask.startTransferAsClient(this, groupId, deviceId,
+                                TransferObject.Type.INCOMING);
                     else {
                         getKuick().remove(group);
                         getKuick().broadcast();
@@ -272,16 +217,6 @@ public class BackgroundService extends Service
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (ACTION_CANCEL_INDEXING.equals(intent.getAction())) {
-                int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-                long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
-
-                getNotificationHelper().getUtils().cancel(notificationId);
-
-                Interrupter interrupter = getOngoingIndexList().get(groupId);
-
-                if (interrupter != null)
-                    interrupter.interrupt();
             } else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 long clipboardId = intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1);
@@ -312,100 +247,37 @@ public class BackgroundService extends Service
 
                 try {
                     TransferObject.Type type = TransferObject.Type.valueOf(typeString);
-                    ProcessHolder process = findProcessById(groupId, deviceId, type);
+                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identityWith(groupId,
+                            deviceId, type));
 
-                    if (process == null)
-                        startTransferAsClient(groupId, deviceId, type);
+                    if (task == null)
+                        FileTransferTask.startTransferAsClient(this, groupId, deviceId, type);
                     else
-                        Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.object.name),
+                        Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.object.name),
                                 Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (ACTION_STOP_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_GROUP_ID)
-                    && intent.hasExtra(EXTRA_DEVICE_ID) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
+            } else if (ACTION_STOP_TASK.equals(intent.getAction()) && intent.hasExtra(EXTRA_IDENTITY)) {
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-                long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
-                String deviceId = intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID);
-                String typeString = intent.getStringExtra(EXTRA_TRANSFER_TYPE);
+                Identity identity = intent.getParcelableExtra(EXTRA_IDENTITY);
 
                 try {
-                    TransferObject.Type type = TransferObject.Type.valueOf(typeString);
-                    ProcessHolder processHolder = findProcessById(groupId, deviceId, type);
+                    RunningTask task = findTaskBy(identity);
 
-                    if (processHolder == null) {
-                        notifyTaskStatusChange(groupId, deviceId, type, TASK_STATUS_STOPPED);
+                    if (task == null) {
                         getNotificationHelper().getUtils().cancel(notificationId);
                     } else {
-                        processHolder.notification = getNotificationHelper().notifyStuckThread(processHolder);
+                        // FIXME: 16.03.2020 Should we use this notification?
+                        //task.notification = getNotificationHelper().notifyStuckThread(task);
 
-                        if (!processHolder.interrupter.interrupted()) {
-                            processHolder.interrupter.interrupt(true);
-                        } else {
-                            try {
-                                if (processHolder.activeConnection != null
-                                        && processHolder.activeConnection.getSocket() != null)
-                                    processHolder.activeConnection.getSocket().close();
-                            } catch (IOException ignored) {
-                            }
-
-                            try {
-                                if (processHolder.activeConnection != null
-                                        && processHolder.activeConnection.getSocket() != null)
-                                    processHolder.activeConnection.getSocket().close();
-                            } catch (IOException ignored) {
-                            }
-                        }
+                        if (task.isInterrupted())
+                            task.forceQuit();
+                        else
+                            task.interrupt(true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-            } else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
-                    && (Build.VERSION.SDK_INT < 23 || Settings.System.canWrite(this))) {
-                setupHotspot();
-            } else if (ACTION_REQUEST_HOTSPOT_STATUS.equals(intent.getAction())) {
-                sendHotspotStatus(getHotspotUtils().getConfiguration());
-            } else if (ACTION_SERVICE_STATUS.equals(intent.getAction()) && intent.hasExtra(EXTRA_STATUS_STARTED)) {
-                boolean startRequested = intent.getBooleanExtra(EXTRA_STATUS_STARTED, false);
-
-                if (!startRequested && !hasOngoingTasks()) {
-                    Log.d(TAG, "onStartCommand(): Destroy state has been applied");
-                    stopSelf();
-                }
-            } else if (ACTION_REQUEST_TASK_STATUS.equals(intent.getAction())
-                    && intent.hasExtra(EXTRA_GROUP_ID) && intent.hasExtra(EXTRA_DEVICE_ID)
-                    && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
-                long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
-                String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-                String typeString = intent.getStringExtra(EXTRA_TRANSFER_TYPE);
-
-                try {
-                    TransferObject.Type type = TransferObject.Type.valueOf(typeString);
-
-                    notifyTaskStatusChange(groupId, deviceId, type, isProcessRunning(
-                            groupId, deviceId, type) ? TASK_STATUS_STOPPED : TASK_STATUS_ONGOING);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (ACTION_REQUEST_TASK_LIST.equals(intent.getAction())) {
-                notifyTaskList();
-            } else if (ACTION_KILL_SIGNAL.equals(intent.getAction()) && intent.hasExtra(EXTRA_TASK_HASH)) {
-                int taskHash = intent.getIntExtra(EXTRA_TASK_HASH, -1);
-
-                RunningTask runningTask = findTaskByHash(taskHash);
-
-                if (runningTask == null || runningTask.getInterrupter().interrupted())
-                    getNotificationUtils().cancel(taskHash);
-                else {
-                    runningTask.getInterrupter().interrupt();
-                    runningTask.onInterrupted();
-                }
-            } else if (ACTION_KILL_ALL_SIGNAL.equals(intent.getAction())) {
-                synchronized (getTaskList()) {
-                    for (RunningTask runningTask : getTaskList()) {
-                        runningTask.getInterrupter().interrupt();
-                        runningTask.onInterrupted();
-                    }
                 }
             }
         }
@@ -425,7 +297,6 @@ public class BackgroundService extends Service
 
         {
             ContentValues values = new ContentValues();
-
             values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
             getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
                     .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
@@ -444,107 +315,42 @@ public class BackgroundService extends Service
 
         stopForeground(true);
 
-        synchronized (getOngoingIndexList()) {
-            for (Interrupter interrupter : getOngoingIndexList().values()) {
-                interrupter.interrupt(true);
-                Log.d(TAG, "onDestroy(): Ongoing indexing stopped: " + interrupter.toString());
+        synchronized (mTaskList) {
+            for (RunningTask task : mTaskList) {
+                task.getStoppable().interrupt(false);
+                Log.d(TAG, "onDestroy(): Ongoing indexing stopped: " + task.getTitle());
             }
-        }
-
-        synchronized (getActiveProcessList()) {
-            for (ProcessHolder processHolder : getActiveProcessList()) {
-                processHolder.interrupter.interrupt(true);
-                Log.d(TAG, "onDestroy(): Killing process: " + processHolder.toString());
-            }
-        }
-
-        synchronized (getTaskList()) {
-            for (RunningTask runningTask : getTaskList())
-                runningTask.getInterrupter().interrupt(false);
         }
 
         AppUtils.generateNetworkPin(this);
-
         getKuick().broadcast();
     }
 
-    private synchronized void addProcess(ProcessHolder processHolder)
+    public void attach(RunningTask task)
     {
-        getActiveProcessList().add(processHolder);
+        runInternal(task);
     }
 
-    private void broadcastTransferState(ProcessHolder processHolder, boolean isLast)
+    public boolean canStopService()
     {
-        long time = System.currentTimeMillis();
-
-		/*if (isLast || time - mTimeTransactionSaved > AppConfig.DEFAULT_NOTIFICATION_DELAY) {
-			mTimeTransactionSaved = time;
-
-			if (getDbInstance().inTransaction()) {
-				getDbInstance().setTransactionSuccessful();
-				getDbInstance().endTransaction();
-			}
-
-			if (!isLast)
-				getDbInstance().beginTransaction();
-		}*/
-        boolean delayReached = time - processHolder.lastProcessingTime > AppConfig.DEFAULT_NOTIFICATION_DELAY;
-
-        if (delayReached && !isLast) {
-            processHolder.lastProcessingTime = time;
-
-            try {
-                getNotificationHelper().notifyFileTransfer(processHolder);
-
-                TransferObject.Flag flag = TransferObject.Flag.IN_PROGRESS;
-                flag.setBytesValue(processHolder.currentBytes);
-
-                if (TransferObject.Type.INCOMING.equals(processHolder.type))
-                    processHolder.object.setFlag(flag);
-                else if (TransferObject.Type.OUTGOING.equals(processHolder.type))
-                    processHolder.object.putFlag(processHolder.device.id, flag);
-
-                getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (delayReached || isLast)
-            getKuick().broadcast();
+        return mCommunicationServer.getConnections().size() > 0 || getTaskList().size() > 0
+                || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
     }
 
-    private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
+    public RunningTask findTaskBy(long hashCode)
     {
-        synchronized (getActiveProcessList()) {
-            for (ProcessHolder processHolder : getActiveProcessList())
-                if (processHolder.group.id == groupId && type.equals(processHolder.type)
-                        && (deviceId == null || deviceId.equals(processHolder.device.id)))
-                    return processHolder;
-        }
-
-        return null;
+        return findTaskBy(Identity.withORs(hashCode));
     }
 
-    public synchronized RunningTask findTaskByHash(int hashCode)
+    public synchronized RunningTask findTaskBy(Identity identity)
     {
-        synchronized (getTaskList()) {
+        synchronized (mTaskList) {
             for (RunningTask runningTask : getTaskList())
-                if (runningTask.hashCode() == hashCode)
+                if (runningTask.getIdentity().equals(identity))
                     return runningTask;
         }
 
         return null;
-    }
-
-    private synchronized List<ProcessHolder> getActiveProcessList()
-    {
-        return mActiveProcessList;
-    }
-
-    public SQLiteDatabase getDatabase()
-    {
-        return mDatabase;
     }
 
     private HotspotUtils getHotspotUtils()
@@ -552,19 +358,24 @@ public class BackgroundService extends Service
         return mHotspotUtils;
     }
 
-    private CommunicationNotificationHelper getNotificationHelper()
+    public WifiConfiguration getHotspotConfig()
+    {
+        return getHotspotUtils().getConfiguration();
+    }
+
+    public MediaScannerConnection getMediaScanner()
+    {
+        return mMediaScanner;
+    }
+
+    public NotificationHelper getNotificationHelper()
     {
         return mNotificationHelper;
     }
 
-    private synchronized Map<Long, Interrupter> getOngoingIndexList()
-    {
-        return mOngoingIndexList;
-    }
-
     private ExecutorService getSelfExecutor()
     {
-        return mSelfExecutor;
+        return mExecutor;
     }
 
     public List<RunningTask> getTaskList()
@@ -572,596 +383,30 @@ public class BackgroundService extends Service
         return mTaskList;
     }
 
+    public <T extends RunningTask> List<T> getTaskListOf(Class<T> clazz)
+    {
+        List<T> taskList = new ArrayList<>();
+        synchronized (mTaskList) {
+            for (RunningTask task : mTaskList)
+                if (clazz.isInstance(task))
+                    taskList.add((T) task);
+        }
+        return taskList;
+    }
+
     private WifiManager.WifiLock getWifiLock()
     {
         return mWifiLock;
     }
 
-    private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
-                                       final DeviceConnection connection, final boolean noPrompt)
+    private boolean hasOngoingIndexing()
     {
-        getSelfExecutor().submit(() -> {
-            final JSONArray jsonArray;
-            final Interrupter interrupter = new Interrupter();
-            TransferGroup group = new TransferGroup(groupId);
-            TransferAssignee assignee = new TransferAssignee(group, device, TransferObject.Type.INCOMING, connection);
-            final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, device);
-
-            notification.setProgress(0, 0, true);
-
-            try {
-                jsonArray = new JSONArray(jsonIndex);
-            } catch (Exception e) {
-                notification.cancel();
-                e.printStackTrace();
-                return;
-            }
-
-            notification.setProgress(0, 0, false);
-            boolean usePublishing = false;
-
-            try {
-                getKuick().reconstruct(group);
-                usePublishing = true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            getKuick().publish(group);
-            getKuick().publish(assignee);
-
-            synchronized (getOngoingIndexList()) {
-                getOngoingIndexList().put(group.id, interrupter);
-            }
-
-            long uniqueId = System.currentTimeMillis(); // The uniqueIds
-            List<TransferObject> pendingRegistry = new ArrayList<>();
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                if (interrupter.interrupted())
-                    break;
-
-                try {
-                    if (!(jsonArray.get(i) instanceof JSONObject))
-                        continue;
-
-                    JSONObject requestIndex = jsonArray.getJSONObject(i);
-
-                    if (requestIndex != null && requestIndex.has(Keyword.INDEX_FILE_NAME)
-                            && requestIndex.has(Keyword.INDEX_FILE_SIZE) && requestIndex.has(Keyword.INDEX_FILE_MIME)
-                            && requestIndex.has(Keyword.TRANSFER_REQUEST_ID)) {
-
-                        TransferObject transferObject = new TransferObject(
-                                requestIndex.getLong(Keyword.TRANSFER_REQUEST_ID),
-                                groupId, requestIndex.getString(Keyword.INDEX_FILE_NAME),
-                                "." + (uniqueId++) + "." + AppConfig.EXT_FILE_PART,
-                                requestIndex.getString(Keyword.INDEX_FILE_MIME),
-                                requestIndex.getLong(Keyword.INDEX_FILE_SIZE), TransferObject.Type.INCOMING);
-
-                        if (requestIndex.has(Keyword.INDEX_DIRECTORY))
-                            transferObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
-
-                        pendingRegistry.add(transferObject);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            Progress.Listener progressUpdater = new Progress.SimpleListener()
-            {
-                long lastNotified = System.currentTimeMillis();
-
-                @Override
-                public boolean onProgressChange(Progress progress)
-                {
-                    if ((System.currentTimeMillis() - lastNotified) > 1000) {
-                        lastNotified = System.currentTimeMillis();
-                        notification.updateProgress(progress.getTotal(), progress.getCurrent(), false);
-                    }
-
-                    return !interrupter.interrupted();
-                }
-            };
-
-            if (pendingRegistry.size() > 0) {
-                if (usePublishing)
-                    getKuick().publish(getDatabase(), pendingRegistry, group, progressUpdater);
-                else
-                    getKuick().insert(getDatabase(), pendingRegistry, group, progressUpdater);
-            }
-
-            notification.cancel();
-
-            synchronized (getOngoingIndexList()) {
-                getOngoingIndexList().remove(group.id);
-            }
-
-            if (interrupter.interrupted())
-                getKuick().remove(group);
-            else if (pendingRegistry.size() > 0) {
-                sendBroadcast(new Intent(ACTION_INCOMING_TRANSFER_READY)
-                        .putExtra(EXTRA_GROUP_ID, groupId)
-                        .putExtra(EXTRA_DEVICE_ID, device.id));
-
-                if (noPrompt)
-                    try {
-                        startTransferAsClient(group.id, device.id, TransferObject.Type.INCOMING);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                else
-                    getNotificationHelper().notifyTransferRequest(device, group, TransferObject.Type.INCOMING,
-                            pendingRegistry);
-            }
-
-            getKuick().broadcast();
-        });
-    }
-
-    private void handleTransferAsReceiver(ProcessHolder processHolder)
-    {
-        addProcess(processHolder);
-        notifyTaskStatusChange(processHolder.group.id, processHolder.device.id, processHolder.type,
-                TASK_STATUS_ONGOING);
-        notifyTaskList();
-
-        boolean retry = false;
-
-        try {
-            TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.assignee);
-
-            while (processHolder.activeConnection.getSocket().isConnected()) {
-                processHolder.currentBytes = 0;
-                if (processHolder.interrupter.interrupted())
-                    break;
-
-                try {
-                    TransferObject object = TransferUtils.fetchFirstValidIncomingTransfer(
-                            BackgroundService.this, processHolder.group.id);
-
-                    if (object == null) {
-                        Log.d(TAG, "handleTransferAsReceiver(): Exiting because there is no " +
-                                "pending file instance left");
-                        break;
-                    } else
-                        Log.d(TAG, "handleTransferAsReceiver(): Starting to receive " + object);
-
-                    processHolder.object = object;
-                    processHolder.currentFile = FileUtils.getIncomingFile(
-                            getApplicationContext(), processHolder.object, processHolder.group);
-                    StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(),
-                            processHolder.currentFile.getUri());
-                    processHolder.currentBytes = processHolder.currentFile.length();
-                    broadcastTransferState(processHolder, false);
-
-                    {
-                        JSONObject reply = new JSONObject()
-                                .put(Keyword.TRANSFER_REQUEST_ID, processHolder.object.id)
-                                .put(Keyword.RESULT, true);
-
-                        if (processHolder.currentBytes > 0)
-                            reply.put(Keyword.SKIPPED_BYTES, processHolder.currentBytes);
-
-                        Log.d(TAG, "handleTransferAsReceiver(): reply: " + reply.toString());
-                        processHolder.activeConnection.reply(reply.toString());
-                    }
-
-                    {
-                        JSONObject response = new JSONObject(processHolder.activeConnection.receive().response);
-                        Log.d(TAG, "handleTransferAsReceiver(): receive: " + response.toString());
-
-                        if (!response.getBoolean(Keyword.RESULT)) {
-                            if (response.has(Keyword.TRANSFER_JOB_DONE)
-                                    && !response.getBoolean(Keyword.TRANSFER_JOB_DONE)) {
-                                processHolder.interrupter.interrupt(true);
-                                Log.d(TAG, "handleTransferAsReceiver(): Transfer should be closed, babe!");
-                                break;
-                            } else if (response.has(Keyword.FLAG)
-                                    && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
-                                if (response.has(Keyword.ERROR)
-                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
-                                    processHolder.object.setFlag(TransferObject.Flag.REMOVED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says it does not have the " +
-                                            "file defined");
-                                } else if (response.has(Keyword.ERROR)
-                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
-                                    processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says it can't open the file");
-                                } else if (response.has(Keyword.ERROR)
-                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_UNKNOWN)) {
-                                    processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says an unknown error occurred");
-                                }
-                            }
-                        } else {
-                            long sizeChanged = response.has(Keyword.SIZE_CHANGED) ? response.getLong(
-                                    Keyword.SIZE_CHANGED) : 0;
-                            boolean sizeActuallyChanged = sizeChanged > 0 && processHolder.object.size != sizeChanged;
-
-                            if (sizeActuallyChanged) {
-                                Log.d(TAG, "handleTransferAsReceiver(): Sender says the file has a new size");
-                                processHolder.object.size = response.getLong(Keyword.SIZE_CHANGED);
-                                boolean canContinue = processHolder.currentBytes < 1;
-
-                                processHolder.activeConnection.reply(new JSONObject()
-                                        .put(Keyword.RESULT, canContinue)
-                                        .toString());
-
-                                if (!canContinue) {
-                                    Log.d(TAG, "handleTransferAsReceiver(): The change may broke the previous " +
-                                            "file which has a length. Cannot take the risk.");
-                                    processHolder.object.setFlag(TransferObject.Flag.REMOVED);
-                                    continue;
-                                }
-
-                                Log.d(TAG, "handleTransferAsReceiver(): receive: " +
-                                        processHolder.activeConnection.receive().response);
-                            }
-
-                            processHolder.activeConnection.reply(Keyword.STUB);
-                            OutputStream outputStream = null;
-                            boolean completed = false;
-
-                            try {
-                                outputStream = streamInfo.openOutputStream();
-                                int readLength;
-                                long lastReceivedTime = 0;
-                                long timeout = processHolder.activeConnection.getTimeout();
-                                byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-                                InputStream inputStream = processHolder.activeConnection.getSocket()
-                                        .getInputStream();
-
-                                while (processHolder.currentBytes < processHolder.object.size) {
-                                    if ((readLength = inputStream.read(buffer)) > 0) {
-                                        processHolder.currentBytes += readLength;
-                                        outputStream.write(buffer, 0, readLength);
-                                        outputStream.flush();
-
-                                        lastReceivedTime = System.currentTimeMillis();
-                                    }
-
-                                    broadcastTransferState(processHolder, false);
-
-                                    if (processHolder.interrupter.interrupted()) {
-                                        processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
-                                        break;
-                                    }
-
-                                    if (timeout != CoolSocket.NO_TIMEOUT
-                                            && System.currentTimeMillis() - lastReceivedTime > timeout)
-                                        break;
-                                }
-
-                                completed = processHolder.currentBytes == processHolder.object.size;
-                                processHolder.object.setFlag(completed ? TransferObject.Flag.DONE
-                                        : TransferObject.Flag.INTERRUPTED);
-
-                                Log.d(TAG, "handleTransferAsSender(): File received " + processHolder.object.name);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                processHolder.interrupter.interrupt(false);
-                                processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
-                            } finally {
-                                if (outputStream != null)
-                                    outputStream.close();
-                            }
-
-                            try {
-                                if (completed) {
-                                    processHolder.completedBytes += processHolder.currentBytes;
-                                    processHolder.completedCount++;
-
-                                    if (processHolder.currentFile.getParentFile() != null) {
-                                        processHolder.currentFile = FileUtils.saveReceivedFile(
-                                                processHolder.currentFile.getParentFile(),
-                                                processHolder.currentFile, processHolder.object);
-
-                                        Log.d(TAG, "handleTransferAsReceiver(): The file is "
-                                                + processHolder.currentFile.getUri().toString()
-                                                + " and the name is " + processHolder.object.file);
-
-                                        sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-                                                .putExtra(FileListFragment.EXTRA_FILE_PARENT,
-                                                        processHolder.currentFile.getParentFile().getUri())
-                                                .putExtra(FileListFragment.EXTRA_FILE_NAME,
-                                                        processHolder.currentFile.getName()));
-                                    }
-
-                                    if (processHolder.currentFile instanceof LocalDocumentFile
-                                            && mMediaScanner.isConnected())
-                                        mMediaScanner.scanFile(
-                                                ((LocalDocumentFile) processHolder.currentFile)
-                                                        .getFile().getAbsolutePath(),
-                                                processHolder.object.mimeType);
-                                }
-                            } catch (Exception ignored) {
-                                Log.e(TAG, "Error occurred during completion of the transfer");
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    retry = true;
-
-                    if (!processHolder.recoverInterruptions) {
-                        TransferUtils.recoverIncomingInterruptions(BackgroundService.this,
-                                processHolder.group.id);
-                        processHolder.recoverInterruptions = true;
-                    }
-
-                    break;
-                } finally {
-                    if (processHolder.object != null) {
-                        Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
-                                + processHolder.object.getFlag().toString());
-                        getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-                    }
-                }
-            }
-
-            try {
-                DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
-                boolean areFilesDone = getKuick().getFirstFromTable(getDatabase(),
-                        TransferUtils.createIncomingSelection(processHolder.group.id, TransferObject.Flag.DONE,
-                                false)) == null;
-                boolean jobDone = !processHolder.interrupter.interrupted() && areFilesDone;
-
-                processHolder.activeConnection.reply(new JSONObject()
-                        .put(Keyword.RESULT, false)
-                        .put(Keyword.TRANSFER_JOB_DONE, jobDone)
-                        .toString());
-                Log.d(TAG, "handleTransferAsReceiver(): reply: done ?? " + jobDone);
-
-                if (!retry)
-                    if (processHolder.interrupter.interruptedByUser()) {
-                        processHolder.notification.cancel();
-                        Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
-                                "notified");
-                    } else if (processHolder.interrupter.interrupted()) {
-                        getNotificationHelper().notifyReceiveError(processHolder);
-                        Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
-                    } else if (processHolder.completedCount > 0) {
-                        getNotificationHelper().notifyFileReceived(processHolder, savePath);
-                        Log.d(TAG, "handleTransferAsReceiver(): Notify user");
-                    }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            removeProcess(processHolder);
-            notifyTaskStatusChange(processHolder.group.id, processHolder.assignee.deviceId,
-                    processHolder.type, TASK_STATUS_STOPPED);
-            notifyTaskList();
-            broadcastTransferState(processHolder, true);
-
-            Log.d(TAG, "We have exited");
-
-            if (retry && processHolder.attemptsLeft > 0 && !processHolder.interrupter.interruptedByUser()) {
-                try {
-                    startTransferAsClient(processHolder);
-                    processHolder.attemptsLeft--;
-                } catch (Exception e) {
-                    Log.d(TAG, "handleTransferAsReceiver(): Restart is requested, but transfer" +
-                            " instance failed to reconstruct");
-                }
-            }
+        synchronized (mTaskList) {
+            for (RunningTask task : mTaskList)
+                if (task instanceof IndexTransferTask)
+                    return true;
         }
-    }
-
-    private void handleTransferAsSender(ProcessHolder processHolder)
-    {
-        addProcess(processHolder);
-        notifyTaskStatusChange(processHolder.group.id, processHolder.device.id, processHolder.type,
-                TASK_STATUS_ONGOING);
-        notifyTaskList();
-
-        try {
-            TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.assignee);
-
-            while (processHolder.activeConnection.getSocket().isConnected()) {
-                processHolder.currentBytes = 0;
-                CoolSocket.ActiveConnection.Response response = processHolder.activeConnection.receive();
-                Log.d(TAG, "handleTransferAsSender(): receive: " + response.response);
-                JSONObject request = new JSONObject(response.response);
-
-                if (request.has(Keyword.RESULT) && !request.getBoolean(Keyword.RESULT)) {
-                    if (request.has(Keyword.TRANSFER_JOB_DONE) && !request.getBoolean(Keyword.TRANSFER_JOB_DONE))
-                        processHolder.interrupter.interrupt(true);
-
-                    Log.d(TAG, "handleTransferAsSender(): Receiver notified that the transfer " +
-                            "has stopped with interruption=" + processHolder.interrupter.interrupted());
-                    return;
-                } else if (processHolder.interrupter.interrupted()) {
-                    processHolder.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.TRANSFER_JOB_DONE, false)
-                            .toString());
-
-                    Log.d(TAG, "handleTransferAsSender(): Exiting because the interruption " +
-                            "has been triggered");
-
-                    // Wait for the next response to ensure no error occurs.
-                    continue;
-                }
-
-                try {
-                    Log.d(TAG, "handleTransferAsSender(): " + processHolder.type.toString());
-
-                    processHolder.object = new TransferObject(processHolder.group.id,
-                            request.getInt(Keyword.TRANSFER_REQUEST_ID), processHolder.type);
-
-                    getKuick().reconstruct(getDatabase(), processHolder.object);
-
-                    processHolder.currentFile = FileUtils.fromUri(getApplicationContext(),
-                            Uri.parse(processHolder.object.file));
-                    long fileSize = processHolder.currentFile.length();
-                    InputStream inputStream = getContentResolver().openInputStream(
-                            processHolder.currentFile.getUri());
-
-                    if (inputStream == null)
-                        throw new FileNotFoundException("The input stream for the file has failed to open.");
-
-                    broadcastTransferState(processHolder, false);
-
-                    if (request.has(Keyword.SKIPPED_BYTES)) {
-                        long skippedBytes = request.getLong(Keyword.SKIPPED_BYTES);
-                        long newPosition = inputStream.skip(skippedBytes);
-
-                        Log.d(TAG, "handleTransferAsSender(): Has skipped bytes: " + skippedBytes);
-
-                        if (skippedBytes > 0 && newPosition != skippedBytes) {
-                            inputStream.close();
-                            throw new IOException("Failed to skip bytes. The requested is " + skippedBytes
-                                    + " and the result is " + newPosition);
-                        }
-                    }
-
-                    JSONObject reply = new JSONObject()
-                            .put(Keyword.RESULT, true);
-
-                    if (fileSize != processHolder.object.size) {
-                        processHolder.object.size = fileSize;
-
-                        reply.put(Keyword.SIZE_CHANGED, fileSize);
-                        processHolder.activeConnection.reply(reply.toString());
-                        Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
-
-                        JSONObject validityOfChange = new JSONObject(processHolder.activeConnection
-                                .receive().response);
-
-                        if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
-                                Keyword.RESULT)) {
-                            processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                            getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-                            continue;
-                        }
-
-                        processHolder.activeConnection.reply(Keyword.STUB);
-                    } else {
-                        processHolder.activeConnection.reply(reply.toString());
-                        Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
-                    }
-
-                    processHolder.activeConnection.receive();
-                    processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.IN_PROGRESS);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-
-                    try {
-                        boolean sizeExceeded = false;
-                        int readLength;
-                        byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-                        OutputStream outputStream = processHolder.activeConnection.getSocket()
-                                .getOutputStream();
-
-                        while ((readLength = inputStream.read(buffer)) != -1
-                                && processHolder.currentBytes < processHolder.object.size
-                                && !processHolder.activeConnection.getSocket().isOutputShutdown()) {
-                            if (readLength > 0) {
-                                if (processHolder.currentBytes + readLength > processHolder.object.size) {
-                                    sizeExceeded = true;
-                                    break;
-                                }
-
-                                broadcastTransferState(processHolder, false);
-
-                                processHolder.currentBytes += readLength;
-                                outputStream.write(buffer, 0, readLength);
-                                outputStream.flush();
-                            }
-
-                            if (processHolder.interrupter.interrupted()) {
-                                processHolder.object.putFlag(processHolder.device.id,
-                                        TransferObject.Flag.INTERRUPTED);
-                                break;
-                            }
-                        }
-
-                        if (processHolder.currentBytes == processHolder.object.size) {
-                            processHolder.completedBytes += processHolder.currentBytes;
-                            processHolder.completedCount++;
-                            processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.DONE);
-                        } else if (sizeExceeded)
-                            processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
-                        else
-                            processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-
-                        getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-
-                        Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        processHolder.interrupter.interrupt(false);
-                        processHolder.object.putFlag(processHolder.device.id,
-                                TransferObject.Flag.INTERRUPTED);
-                        getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-                    } finally {
-                        inputStream.close();
-                    }
-                } catch (ReconstructionFailedException e) {
-                    Log.d(TAG, "handleTransferAsSender(): File not found");
-
-                    processHolder.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND)
-                            .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
-                            .toString());
-
-                    processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-                } catch (FileNotFoundException | StreamCorruptedException e) {
-                    Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + processHolder.object.name);
-
-                    processHolder.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE)
-                            .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
-                            .toString());
-
-                    processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-
-                    processHolder.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.ERROR, Keyword.ERROR_UNKNOWN)
-                            .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
-                            .toString());
-
-                    processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-                    getKuick().update(getDatabase(), processHolder.object, processHolder.group, null);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            processHolder.interrupter.interrupt();
-        } finally {
-            if (processHolder.notification != null)
-                processHolder.notification.cancel();
-            else if (processHolder.interrupter.interrupted() && !processHolder.interrupter.interruptedByUser())
-                mNotificationHelper.notifyConnectionError(processHolder, null);
-
-            synchronized (getActiveProcessList()) {
-                removeProcess(processHolder);
-
-                if (processHolder.group.id != 0 && processHolder.device.id != null)
-                    notifyTaskStatusChange(processHolder.group.id, processHolder.device.id,
-                            processHolder.type, TASK_STATUS_STOPPED);
-
-                notifyTaskList();
-            }
-
-            broadcastTransferState(processHolder, true);
-        }
-    }
-
-    private boolean hasOngoingTasks()
-    {
-        return mCommunicationServer.getConnections().size() > 0 || getOngoingIndexList().size() > 0
-                || getActiveProcessList().size() > 0 || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
+        return false;
     }
 
     public static int hashIntent(@NonNull Intent intent)
@@ -1182,42 +427,7 @@ public class BackgroundService extends Service
 
     private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
     {
-        return findProcessById(groupId, deviceId, type) != null;
-    }
-
-    private void notifyTaskList()
-    {
-        List<Long> taskList = new ArrayList<>();
-        ArrayList<String> deviceList = new ArrayList<>();
-
-        synchronized (getActiveProcessList()) {
-            for (ProcessHolder processHolder : getActiveProcessList()) {
-                if (processHolder.group != null && processHolder.device != null) {
-                    taskList.add(processHolder.group.id);
-                    deviceList.add(processHolder.device.id);
-                }
-            }
-        }
-
-        long[] taskArray = new long[taskList.size()];
-
-        for (int i = 0; i < taskList.size(); i++)
-            taskArray[i] = taskList.get(i);
-
-        sendBroadcast(new Intent(ACTION_TASK_LIST)
-                .putExtra(EXTRA_TASK_LIST, taskArray)
-                .putStringArrayListExtra(EXTRA_DEVICE_LIST, deviceList));
-    }
-
-    private void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type, int state)
-    {
-        Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
-                .putExtra(EXTRA_TASK_CHANGE_TYPE, state)
-                .putExtra(EXTRA_GROUP_ID, groupId)
-                .putExtra(EXTRA_DEVICE_ID, deviceId)
-                .putExtra(EXTRA_TRANSFER_TYPE, type.toString());
-
-        sendBroadcast(intent);
+        return findTaskBy(FileTransferTask.identityWith(groupId, deviceId, type)) != null;
     }
 
     public void publishNotification(RunningTask runningTask)
@@ -1226,7 +436,7 @@ public class BackgroundService extends Service
             PendingIntent cancelIntent = PendingIntent.getService(this, AppUtils.getUniqueNumber(),
                     new Intent(this, BackgroundService.class)
                             .setAction(ACTION_KILL_SIGNAL)
-                            .putExtra(EXTRA_TASK_HASH, runningTask.hashCode()), 0);
+                            .putExtra(EXTRA_IDENTITY, runningTask.getIdentity()), 0);
 
             runningTask.mNotification = getNotificationUtils().buildDynamicNotification(runningTask.hashCode(),
                     NotificationUtils.NOTIFICATION_CHANNEL_LOW);
@@ -1262,7 +472,7 @@ public class BackgroundService extends Service
 
     private void refreshServiceState()
     {
-        startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
+        startForeground(NotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
                 getNotificationHelper().getCommunicationServiceNotification().build());
     }
 
@@ -1276,151 +486,69 @@ public class BackgroundService extends Service
         publishNotification(runningTask);
     }
 
-    private synchronized void removeProcess(ProcessHolder processHolder)
-    {
-        getActiveProcessList().remove(processHolder);
-    }
-
     public void run(final RunningTask runningTask)
     {
-        mExecutor.submit(() -> {
-            runningTask.setService(BackgroundService.this);
-            registerWork(runningTask);
-
-            try {
-                runningTask.run();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            unregisterWork(runningTask);
-            runningTask.setService(null);
-        });
+        mExecutor.submit(() -> attach(runningTask));
     }
 
-    private void sendHotspotStatus(@Nullable WifiConfiguration wifiConfiguration)
+    private void runInternal(RunningTask runningTask)
     {
-        Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS)
-                .putExtra(EXTRA_HOTSPOT_ENABLED, wifiConfiguration != null)
-                .putExtra(EXTRA_HOTSPOT_DISABLING, false)
-                .putExtra(EXTRA_HOTSPOT_CONFIGURATION, wifiConfiguration);
+        runningTask.setService(BackgroundService.this);
+        registerWork(runningTask);
 
-        sendBroadcast(statusIntent);
+        try {
+            runningTask.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        unregisterWork(runningTask);
+        runningTask.setService(null);
     }
 
-    private void sendHotspotStatusDisabling()
+    public void toggleHotspot()
     {
-        sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
-                .putExtra(EXTRA_HOTSPOT_ENABLED, false)
-                .putExtra(EXTRA_HOTSPOT_DISABLING, true));
-    }
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(this))
+            return;
 
-    private void setupHotspot()
-    {
-        if (getHotspotUtils().isEnabled()) {
+        if (getHotspotUtils().isEnabled())
             getHotspotUtils().disable();
-
-            if (Build.VERSION.SDK_INT >= 26)
-                sendHotspotStatusDisabling();
-        } else
+        else
             getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
     }
 
-    private void startTransferAsClient(long groupId, String deviceId, TransferObject.Type type)
-            throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException,
-            AssigneeNotFoundException
+    /**
+     * Some services like file transfer server, web share portal server involve writing and reading data.
+     * So, it is best to avoid starting them when the app doesn't have the right permissions.
+     */
+    public boolean tryStartingServices()
     {
-        ProcessHolder processHolder = new ProcessHolder();
-        processHolder.type = type;
-        processHolder.device = new NetworkDevice(deviceId);
+        if (mWebShareServer.isAlive() && mCommunicationServer.isServerAlive())
+            return true;
 
-        try {
-            getKuick().reconstruct(getDatabase(), processHolder.device);
-        } catch (ReconstructionFailedException e) {
-            throw new DeviceNotFoundException();
+        if (!AppUtils.checkRunningConditions(this)) {
+            Log.d(TAG, "tryStartingServices: The app doesn't have the satisfactory permissions to start " +
+                    "services.");
+            return false;
         }
 
-        processHolder.group = new PreloadedGroup(groupId);
-
-        try {
-            getKuick().reconstruct(getDatabase(), processHolder.group);
-        } catch (ReconstructionFailedException e) {
-            throw new TransferGroupNotFoundException();
+        if (!mCommunicationServer.isServerAlive() || !mCommunicationServer.start()) {
+            Log.e(TAG, "tryStartingServices: Cannot start the service. server="
+                    + mCommunicationServer.isServerAlive());
+            return false;
         }
 
-        processHolder.assignee = new TransferAssignee(processHolder.group, processHolder.device, processHolder.type);
-
         try {
-            getKuick().reconstruct(getDatabase(), processHolder.assignee);
-        } catch (ReconstructionFailedException e) {
-            throw new AssigneeNotFoundException();
+            mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
+            mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
+                    Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
+            mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+        } catch (Throwable t) {
+            Log.e(TAG, "Failed to start Web Share Server");
+            return false;
         }
 
-        processHolder.connection = new DeviceConnection(processHolder.assignee);
-
-        try {
-            getKuick().reconstruct(getDatabase(), processHolder.connection);
-        } catch (ReconstructionFailedException e) {
-            throw new ConnectionNotFoundException();
-        }
-
-        Log.d(TAG, "startTransferAsClient(): With deviceId=" + processHolder.device.id + " groupId="
-                + processHolder.group.id + " adapter=" + processHolder.assignee.connectionAdapter);
-        startTransferAsClient(processHolder);
-    }
-
-    private void startTransferAsClient(final ProcessHolder holder)
-    {
-        CommunicationBridge.connect(getKuick(), client -> {
-            try {
-                holder.activeConnection = client.communicate(holder.device, holder.connection);
-
-                {
-                    JSONObject reply = new JSONObject()
-                            .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
-                            .put(Keyword.TRANSFER_GROUP_ID, holder.group.id)
-                            .put(Keyword.TRANSFER_TYPE, holder.type.toString());
-
-                    holder.activeConnection.reply(reply.toString());
-                    Log.d(TAG, "startTransferAsClient(): reply: " + reply.toString());
-                }
-
-                {
-                    CoolSocket.ActiveConnection.Response response = holder.activeConnection.receive();
-                    JSONObject responseJSON = new JSONObject(response.response);
-
-                    Log.d(TAG, "startTransferAsClient(): " + holder.type.toString() + "; About to start with "
-                            + response.response);
-
-                    if (responseJSON.getBoolean(Keyword.RESULT)) {
-                        holder.attemptsLeft = 2;
-
-                        if (TransferObject.Type.INCOMING.equals(holder.type)) {
-                            handleTransferAsReceiver(holder);
-                        } else if (TransferObject.Type.OUTGOING.equals(holder.type)) {
-                            holder.activeConnection.reply(Keyword.STUB);
-                            handleTransferAsSender(holder);
-                            holder.activeConnection.reply(Keyword.STUB);
-                        }
-
-                        try {
-                            CoolSocket.ActiveConnection.Response lastResponse = holder.activeConnection.receive();
-
-                            Log.d(TAG, "startTransferAsClient(): Final response before " +
-                                    "exit: " + lastResponse.response);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        getNotificationHelper().notifyConnectionError(holder, responseJSON.has(Keyword.ERROR)
-                                ? responseJSON.getString(Keyword.ERROR) : null);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                mNotificationHelper.notifyConnectionError(holder, null);
-            }
-        });
+        return true;
     }
 
     protected synchronized void unregisterWork(RunningTask runningTask)
@@ -1561,13 +689,12 @@ public class BackgroundService extends Service
                     switch (responseJSON.getString(Keyword.REQUEST)) {
                         case (Keyword.REQUEST_TRANSFER):
                             if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID)
-                                    && getOngoingIndexList().size() < 1) {
-                                final long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
-                                final String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
-
+                                    && !hasOngoingIndexing()) {
+                                long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
+                                String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
                                 result = true;
 
-                                handleTransferRequest(groupId, jsonIndex, device, connection, hasPin);
+                                run(new IndexTransferTask(groupId, jsonIndex, device, connection, hasPin));
                             }
                             break;
                         case (Keyword.REQUEST_RESPONSE):
@@ -1636,20 +763,20 @@ public class BackgroundService extends Service
                                             + "groupId=" + groupId + " typeValue=" + typeValue);
 
                                     if (!isProcessRunning(groupId, device.id, type)) {
-                                        ProcessHolder processHolder = new ProcessHolder();
-                                        processHolder.activeConnection = activeConnection;
-                                        processHolder.group = group;
-                                        processHolder.device = device;
-                                        processHolder.type = type;
-                                        processHolder.assignee = new TransferAssignee(group, device, type);
+                                        FileTransferTask task = new FileTransferTask();
+                                        task.activeConnection = activeConnection;
+                                        task.group = group;
+                                        task.device = device;
+                                        task.type = type;
+                                        task.assignee = new TransferAssignee(group, device, type);
 
-                                        getKuick().reconstruct(processHolder.assignee);
+                                        getKuick().reconstruct(task.assignee);
 
                                         if (TransferObject.Type.OUTGOING.equals(type)) {
                                             Log.d(TAG, "onConnected: Informing before starting to send.");
 
                                             pushReply(activeConnection, new JSONObject(), true);
-                                            handleTransferAsSender(processHolder);
+                                            attach(task);
 
                                             result = true;
                                         } else if (TransferObject.Type.INCOMING.equals(type)) {
@@ -1664,7 +791,7 @@ public class BackgroundService extends Service
                                             Log.d(TAG, "onConnected: " + activeConnection.receive().response);
 
                                             if (result)
-                                                handleTransferAsReceiver(processHolder);
+                                                attach(task);
 
                                             Log.d(TAG, "onConnected: " + activeConnection.receive().response);
                                         }
@@ -1739,7 +866,7 @@ public class BackgroundService extends Service
                         long lastRead = 0;
 
                         while ((len = inputStream.read(buffer)) != -1) {
-                            long currentTime = System.currentTimeMillis();
+                            long currentTime = System.nanoTime();
 
                             if (len > 0) {
                                 lastRead = currentTime;
@@ -1748,7 +875,7 @@ public class BackgroundService extends Service
                                 outputStream.flush();
                             }
 
-                            if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT)
+                            if (currentTime - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6)
                                 throw new TimeoutException("Did not read any bytes for 5secs.");
                         }
 
@@ -1759,40 +886,6 @@ public class BackgroundService extends Service
                 return false;
 
             return true;
-        }
-    }
-
-    public static class ProcessHolder
-    {
-        // Native objects
-        public Interrupter interrupter = new Interrupter();
-
-        // Static objects
-        public CoolSocket.ActiveConnection activeConnection;
-        public NetworkDevice device;
-        public PreloadedGroup group;
-        public TransferAssignee assignee;
-        public DeviceConnection connection;
-        public TransferObject.Type type;
-
-        // Changing objects
-        public DynamicNotification notification;
-        public TransferObject object;
-        public DocumentFile currentFile;
-        public long lastProcessingTime;
-        public long currentBytes; // moving
-        public long lastKnownBytes; // completedBytes of 2 secs ago
-        public long completedBytes;
-        public long timeStarted;
-        public int completedCount;
-
-        // Informative objects
-        public boolean recoverInterruptions = false;
-        public int attemptsLeft = 2;
-
-        public ProcessHolder()
-        {
-            timeStarted = System.currentTimeMillis();
         }
     }
 
@@ -1807,9 +900,9 @@ public class BackgroundService extends Service
         void updateTaskStatus(String text);
     }
 
-    public abstract static class RunningTask extends InterruptAwareJob
+    public abstract static class RunningTask extends StoppableJob implements Stoppable, Identifiable
     {
-        private Interrupter mInterrupter;
+        private Stoppable mStoppable;
         private BackgroundService mService;
         private String mStatusText;
         private String mTitle;
@@ -1819,17 +912,23 @@ public class BackgroundService extends Service
         private DynamicNotification mNotification;
         private PendingIntent mActivityIntent;
 
-        abstract protected void onRun() throws InterruptedException;
+        protected abstract void onRun() throws InterruptedException;
 
-        protected void onInterrupted()
+        @Override
+        public boolean addCloser(Closer closer)
+        {
+            return getStoppable().addCloser(closer);
+        }
+
+        public void forceQuit()
         {
 
         }
 
         @Override
-        public int hashCode()
+        public List<Closer> getClosers()
         {
-            return mHash != 0 ? mHash : super.hashCode();
+            return getStoppable().getClosers();
         }
 
         @Nullable
@@ -1838,17 +937,25 @@ public class BackgroundService extends Service
             return mActivityIntent;
         }
 
+        @Override
+        public Identity getIdentity()
+        {
+            return Identity.withORs(hashCode());
+        }
+
         public int getIconRes()
         {
             return mIconRes;
         }
 
-        public Interrupter getInterrupter()
+        protected MediaScannerConnection getMediaScanner()
         {
-            if (mInterrupter == null)
-                mInterrupter = new Interrupter();
+            return getService().getMediaScanner();
+        }
 
-            return mInterrupter;
+        protected NotificationHelper getNotificationHelper()
+        {
+            return getService().getNotificationHelper();
         }
 
         protected BackgroundService getService()
@@ -1861,28 +968,95 @@ public class BackgroundService extends Service
             return mStatusText;
         }
 
+        private Stoppable getStoppable()
+        {
+            if (mStoppable == null)
+                mStoppable = new StoppableImpl();
+
+            return mStoppable;
+        }
+
         public String getTitle()
         {
             return mTitle;
         }
 
+        @Override
+        public boolean hasCloser(Closer closer)
+        {
+            return getStoppable().hasCloser(closer);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return mHash != 0 ? mHash : super.hashCode();
+        }
+
+        public boolean interrupt()
+        {
+            return getStoppable().interrupt();
+        }
+
+        public boolean interrupt(boolean userAction)
+        {
+            return getStoppable().interrupt(userAction);
+        }
+
+        @Override
+        public boolean isInterrupted()
+        {
+            return getStoppable().isInterrupted();
+        }
+
+        @Override
+        public boolean isInterruptedByUser()
+        {
+            return getStoppable().isInterruptedByUser();
+        }
+
         public boolean publishStatusText(String text)
         {
             mStatusText = text;
+            long time = System.nanoTime();
 
-            if (System.currentTimeMillis() - mLastNotified > 2000) {
+            if (time - mLastNotified > 2e9) {
                 mService.publishNotification(this);
-                mLastNotified = System.currentTimeMillis();
+                mLastNotified = time;
 
                 return true;
             }
             return false;
         }
 
+        @Override
+        public boolean removeCloser(Closer closer)
+        {
+            return getStoppable().removeCloser(closer);
+        }
+
+        @Override
+        public void reset()
+        {
+            getStoppable().reset();
+        }
+
+        @Override
+        public void reset(boolean resetClosers)
+        {
+            getStoppable().reset(resetClosers);
+        }
+
+        @Override
+        public void removeClosers()
+        {
+            getStoppable().removeClosers();
+        }
+
         protected void run()
         {
             try {
-                run(getInterrupter());
+                run(getStoppable());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -1895,7 +1069,7 @@ public class BackgroundService extends Service
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service)
                 {
-                    AppUtils.startForegroundService(context, new Intent(context, BackgroundService.class));
+                    AppUtils.startService(context, new Intent(context, BackgroundService.class));
 
                     BackgroundService workerService = ((LocalBinder) service).getService();
                     workerService.run(RunningTask.this);
@@ -1932,15 +1106,15 @@ public class BackgroundService extends Service
             return this;
         }
 
-        public RunningTask setInterrupter(Interrupter interrupter)
-        {
-            mInterrupter = interrupter;
-            return this;
-        }
-
         private void setService(@Nullable BackgroundService service)
         {
             mService = service;
+        }
+
+        public RunningTask setStoppable(Stoppable stoppable)
+        {
+            mStoppable = stoppable;
+            return this;
         }
 
         public RunningTask setTitle(String title)
@@ -1950,9 +1124,14 @@ public class BackgroundService extends Service
         }
     }
 
+    public interface Identifiable
+    {
+        Identity getIdentity();
+    }
+
     public abstract static class BaseAttachableRunningTask extends RunningTask
     {
-        abstract public void detachAnchor();
+        public abstract void detachAnchor();
     }
 
     public abstract static class AttachableRunningTask<T extends AttachedTaskListener> extends BaseAttachableRunningTask

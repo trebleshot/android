@@ -210,7 +210,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                             .setPositiveButton(R.string.butn_open, (dialog, which) -> FileUtils.openUriForeground(activity, updateFile)));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    getInterrupter().interrupt(false);
+                    interrupt(false);
 
                     showDialog(activity, new AlertDialog.Builder(activity)
                             .setTitle(R.string.text_error)

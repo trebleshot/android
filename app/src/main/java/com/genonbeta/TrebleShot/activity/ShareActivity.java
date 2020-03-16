@@ -91,7 +91,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
 
                     findViewById(R.id.cancelButton).setOnClickListener(v -> {
                         if (mTask != null)
-                            mTask.getInterrupter().interrupt(true);
+                            mTask.interrupt(true);
                     });
 
                     mFileUris = fileUris;

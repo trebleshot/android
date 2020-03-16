@@ -31,17 +31,17 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.util.Stoppable;
 
 import java.io.File;
 import java.io.IOException;
 
 public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 {
-    public static void copy(Context context, DocumentFile source, DocumentFile destination, Interrupter interrupter)
+    public static void copy(Context context, DocumentFile source, DocumentFile destination, Stoppable stoppable)
             throws Exception
     {
-        copy(context, source, destination, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT,
+        copy(context, source, destination, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
@@ -124,9 +124,9 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
     }
 
     public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,
-                               Interrupter interrupter) throws Exception
+                               Stoppable stoppable) throws Exception
     {
-        return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT,
+        return move(context, targetFile, destinationFile, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
