@@ -164,22 +164,24 @@ public class NotificationHelper
 
     public void notifyFileTransfer(FileTransferTask task) throws Exception
     {
-        if (task.notification == null) {
+        DynamicNotification notification = task.getCustomNotification();
+
+        if (notification == null) {
             boolean isIncoming = TransferObject.Type.INCOMING.equals(task.object.type);
+            notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
+                    task.group.id, task.device.id, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
-            task.notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                    task.group.id, task.device.id, task.object.type),
-                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-            Intent cancelIntent = new Intent(getContext(), BackgroundService.class);
+            task.setCustomNotification(notification);
 
-            cancelIntent.setAction(BackgroundService.ACTION_STOP_TASK)
+            Intent cancelIntent = new Intent(getContext(), BackgroundService.class)
+                    .setAction(BackgroundService.ACTION_STOP_TASK)
                     .putExtra(BackgroundService.EXTRA_REQUEST_ID, task.object.id)
                     .putExtra(BackgroundService.EXTRA_GROUP_ID, task.group.id)
                     .putExtra(BackgroundService.EXTRA_DEVICE_ID, task.device.id)
                     .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, task.type.toString())
-                    .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, task.notification.getNotificationId());
+                    .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
-            task.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
+            notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
                     : android.R.drawable.stat_sys_upload)
                     .setContentText(getContext().getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
                     .setContentInfo(task.device.nickname)
@@ -194,12 +196,9 @@ public class NotificationHelper
                             AppUtils.getUniqueNumber(), cancelIntent, 0));
         }
 
-        task.notification.setContentTitle(task.object.name);
-
-        task.notification.setProgress(100, (int) (Math.max(0.01,
-                task.completedBytes + task.currentBytes) / Math.max(0.01,
-                task.group.bytesPending()) * 100
-        ), false);
+        notification.setContentTitle(task.object.name);
+        notification.setProgress(100, (int) (Math.max(0.01, task.completedBytes + task.currentBytes)
+                / Math.max(0.01, task.group.bytesPending()) * 100), false);
 
         long bytesTransferred = task.completedBytes + task.currentBytes;
 
@@ -219,12 +218,12 @@ public class NotificationHelper
                 text.append(")");
             }
 
-            task.notification.setSubText(text.toString());
+            notification.setSubText(text.toString());
         }
 
         task.lastKnownBytes = bytesTransferred;
 
-        task.notification.show();
+        notification.show();
     }
 
     public void notifyClipboardRequest(NetworkDevice device, TextStreamObject object)

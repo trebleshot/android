@@ -32,7 +32,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -87,9 +86,6 @@ public class BackgroundService extends Service
             EXTRA_REQUEST_ID = "extraRequestId",
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
-    public static final int
-            ID_NOTIFICATION_FOREGROUND = 1103;
-
     private final List<BackgroundTask> mTaskList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
     private WebShareServer mWebShareServer;
@@ -100,7 +96,6 @@ public class BackgroundService extends Service
     private MediaScannerConnection mMediaScanner;
     private HotspotUtils mHotspotUtils;
     private LocalBinder mBinder = new LocalBinder();
-    private DynamicNotification mNotification;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -429,18 +424,6 @@ public class BackgroundService extends Service
         return findTaskBy(FileTransferTask.identityWith(groupId, deviceId, type)) != null;
     }
 
-    public void publishForegroundNotification()
-    {
-        if (mNotification == null) {
-            mNotification = getNotificationUtils().buildDynamicNotification(ID_NOTIFICATION_FOREGROUND,
-                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-            mNotification.setSmallIcon(R.drawable.ic_autorenew_white_24dp_static)
-                    .setContentTitle(getString(R.string.text_taskOngoing));
-        }
-
-        mNotification.setContentText(getString(R.string.text_workerService));
-        startForeground(ID_NOTIFICATION_FOREGROUND, mNotification.build());
-    }
 
     private void refreshServiceState()
     {
@@ -453,8 +436,6 @@ public class BackgroundService extends Service
         synchronized (getTaskList()) {
             getTaskList().add(runningTask);
         }
-
-        publishForegroundNotification();
     }
 
     public void run(final BackgroundTask runningTask)
@@ -473,7 +454,6 @@ public class BackgroundService extends Service
         }
 
         unregisterWork(runningTask);
-        ;
     }
 
     public void toggleHotspot()

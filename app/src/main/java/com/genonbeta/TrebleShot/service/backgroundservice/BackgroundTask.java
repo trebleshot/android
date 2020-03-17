@@ -26,36 +26,56 @@ import android.content.ServiceConnection;
 import android.media.MediaScannerConnection;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
-import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Identifiable;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.util.*;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.NotificationHelper;
+import com.genonbeta.TrebleShot.util.StoppableJob;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.framework.util.StoppableImpl;
 
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.service.BackgroundService.*;
+import static com.genonbeta.TrebleShot.service.BackgroundService.hashIntent;
 
 public abstract class BackgroundTask extends StoppableJob implements Stoppable, Identifiable
 {
-    private Stoppable mStoppable;
+    public static final int TASK_GROUP_DEFAULT = 0;
+
+    private Kuick mKuick;
     private BackgroundService mService;
-    private String mStatusText;
-    private String mTitle;
-    private int mIconRes;
-    private long mLastNotified = 0;
-    private int mHash = 0;
-    private DynamicNotification mNotification;
+    private Stoppable mStoppable;
     private PendingIntent mActivityIntent;
+    private DynamicNotification mCustomNotification; // The notification that is not part of the default notification.
+    private ProgressListener mProgressListener = new ProgressListener();
+    private String mCurrentContent;
+    private boolean mPublishRequested = false;
+    private int mHash = 0;
 
     protected abstract void onRun() throws InterruptedException;
+
+    protected void onProgressChange(Progress progress)
+    {
+
+    }
 
     @Override
     public boolean addCloser(Closer closer)
     {
         return getStoppable().addCloser(closer);
+    }
+
+    public boolean consumeInfoChanges()
+    {
+        if (mPublishRequested) {
+            mPublishRequested = false;
+            return true;
+        }
+        return false;
     }
 
     public void forceQuit()
@@ -75,15 +95,30 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mActivityIntent;
     }
 
+    public String getCurrentContent()
+    {
+        return mCurrentContent;
+    }
+
+    @Nullable
+    public DynamicNotification getCustomNotification()
+    {
+        return mCustomNotification;
+    }
+
+    public abstract String getDescription();
+
     @Override
     public Identity getIdentity()
     {
         return Identity.withORs(hashCode());
     }
 
-    public int getIconRes()
+    public Kuick getKuick()
     {
-        return mIconRes;
+        if (mKuick == null)
+            mKuick = AppUtils.getKuick(getService());
+        return mKuick;
     }
 
     protected MediaScannerConnection getMediaScanner()
@@ -101,11 +136,6 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mService;
     }
 
-    public String getStatusText()
-    {
-        return mStatusText;
-    }
-
     private Stoppable getStoppable()
     {
         if (mStoppable == null)
@@ -114,10 +144,12 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mStoppable;
     }
 
-    public String getTitle()
+    public int getTaskGroup()
     {
-        return mTitle;
+        return TASK_GROUP_DEFAULT;
     }
+
+    public abstract String getTitle();
 
     @Override
     public boolean hasCloser(Closer closer)
@@ -153,44 +185,22 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return getStoppable().isInterruptedByUser();
     }
 
-    private void publishNotification()
+    public Progress progress()
     {
-        if (mNotification == null) {
-            PendingIntent cancelIntent = PendingIntent.getService(getService(), AppUtils.getUniqueNumber(),
-                    new Intent(getService(), BackgroundService.class)
-                            .setAction(ACTION_KILL_SIGNAL)
-                            .putExtra(EXTRA_IDENTITY, getIdentity()), 0);
-
-            mNotification = getService().getNotificationUtils().buildDynamicNotification(hashCode(),
-                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-            mNotification.setSmallIcon(getIconRes() == 0
-                    ? R.drawable.ic_autorenew_white_24dp_static : getIconRes())
-                    .setContentTitle(getService().getString(R.string.text_taskOngoing))
-                    .addAction(R.drawable.ic_close_white_24dp_static,
-                            getService().getString(R.string.butn_cancel), cancelIntent);
-
-            if (mActivityIntent != null)
-                mNotification.setContentIntent(mActivityIntent);
-        }
-
-        mNotification.setContentTitle(getTitle())
-                .setContentText(getStatusText());
-
-        mNotification.show();
+        return Progress.dissect(mProgressListener);
     }
 
-    public boolean publishStatusText(String text)
+    public Progress.Listener progressListener()
     {
-        mStatusText = text;
-        long time = System.nanoTime();
+        // This ensures when Progress.Listener.getProgress() is called, it doesn't return a null object.
+        // Of course, if the user needs the progress itself, then, he or she should use #progress() method.
+        progress();
+        return mProgressListener;
+    }
 
-        if (time - mLastNotified > 2e9) {
-            publishNotification();
-            mLastNotified = time;
-
-            return true;
-        }
+    public boolean publishStatus()
+    {
+        mPublishRequested = true;
         return false;
     }
 
@@ -218,23 +228,14 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         getStoppable().removeClosers();
     }
 
-    protected void removeNotification()
-    {
-        if (mNotification != null)
-            mNotification.cancel();
-    }
-
-
     public void run(BackgroundService service)
     {
         try {
             setService(service);
-            publishNotification();
             run(getStoppable());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            removeNotification();
             setService(null);
         }
     }
@@ -265,22 +266,25 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
                 Context.BIND_AUTO_CREATE);
     }
 
-    public BackgroundTask setContentIntent(PendingIntent intent)
+    public void setContentIntent(PendingIntent intent)
     {
         mActivityIntent = intent;
-        return this;
     }
 
-    public BackgroundTask setContentIntent(Context context, Intent intent)
+    public void setContentIntent(Context context, Intent intent)
     {
         mHash = hashIntent(intent);
-        return setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
+        setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
     }
 
-    public BackgroundTask setIconRes(int iconRes)
+    public void setCurrentContent(String content)
     {
-        mIconRes = iconRes;
-        return this;
+        mCurrentContent = content;
+    }
+
+    public void setCustomNotification(DynamicNotification notification)
+    {
+        mCustomNotification = notification;
     }
 
     private void setService(@Nullable BackgroundService service)
@@ -294,9 +298,14 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return this;
     }
 
-    public BackgroundTask setTitle(String title)
+    private class ProgressListener extends Progress.SimpleListener
     {
-        mTitle = title;
-        return this;
+        @Override
+        public boolean onProgressChange(Progress progress)
+        {
+            BackgroundTask.this.onProgressChange(progress);
+            publishStatus();
+            return !isInterrupted();
+        }
     }
 }

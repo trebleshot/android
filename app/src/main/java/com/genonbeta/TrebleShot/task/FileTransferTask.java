@@ -34,7 +34,10 @@ import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.util.*;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
@@ -56,7 +59,6 @@ public class FileTransferTask extends BackgroundTask
     public TransferObject.Type type;
 
     // Changing objects
-    public DynamicNotification notification;
     public TransferObject object;
     public DocumentFile currentFile;
     public long lastProcessingTime;
@@ -71,7 +73,6 @@ public class FileTransferTask extends BackgroundTask
     public int attemptsLeft = 2;
 
     private long mTimeTransactionSaved;
-    private Kuick mKuick;
     private SQLiteDatabase mDatabase;
 
     @Override
@@ -139,6 +140,18 @@ public class FileTransferTask extends BackgroundTask
         }
     }
 
+    @Override
+    public String getCurrentContent()
+    {
+        return object == null ? super.getCurrentContent() : object.name;
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return null;
+    }
+
     private SQLiteDatabase getDatabase()
     {
         if (mDatabase == null)
@@ -152,11 +165,10 @@ public class FileTransferTask extends BackgroundTask
         return identityOf(this);
     }
 
-    private Kuick getKuick()
+    @Override
+    public String getTitle()
     {
-        if (mKuick == null)
-            mKuick = AppUtils.getKuick(getService());
-        return mKuick;
+        return null;
     }
 
     private void handleTransferAsReceiver()
@@ -363,7 +375,6 @@ public class FileTransferTask extends BackgroundTask
 
                 if (!retry)
                     if (isInterruptedByUser()) {
-                        this.notification.cancel();
                         Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
                                 "notified");
                     } else if (isInterrupted()) {
@@ -573,9 +584,7 @@ public class FileTransferTask extends BackgroundTask
             e.printStackTrace();
             interrupt();
         } finally {
-            if (this.notification != null)
-                this.notification.cancel();
-            else if (isInterrupted() && !isInterruptedByUser())
+            if (isInterrupted() && !isInterruptedByUser())
                 getNotificationHelper().notifyConnectionError(this, null);
 
             broadcastTransferState(true);

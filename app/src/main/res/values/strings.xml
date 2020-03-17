@@ -455,7 +455,7 @@
     <string name="mesg_turningWiFiOn">Turning Wi-Fi on</string>
     <string name="mesg_locationPermissionRequiredAny">Turn on location service first to continue</string>
     <string name="mesg_connectToWiFiNetworkHelp">Connect to a Wi-Fi network to continue</string>
-    <string name="mesg_removing">Removing… May take long</string>
+    <string name="mesg_removing">Removing…</string>
     <string name="butn_help">Help</string>
     <string name="text_help" translatable="false">@string/butn_help</string>
     <string name="butn_choose">Choose</string>
@@ -564,4 +564,5 @@
     <string name="text_startTransferButtonHelp">Start transfer by clicking this button</string>
     <string name="butn_compose">Compose</string>
     <string name="butn_addMore">Add more</string>
+    <string name="mesg_mayTakeLong">May take long!</string>
 </resources>

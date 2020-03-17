@@ -21,10 +21,10 @@ package com.genonbeta.TrebleShot.database;
 import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import androidx.annotation.StringRes;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.*;
 import com.genonbeta.android.database.SQLValues.Column;
 
@@ -177,59 +177,95 @@ public class Kuick extends KuickDb
         return values;
     }
 
-    private void doAsynchronous(Activity activity, @StringRes int textRes, final AsynchronousTask asynchronousTask)
-    {
-        if (activity == null || activity.isFinishing())
-            return;
-
-        new BackgroundTask()
-        {
-            @Override
-            protected void onRun()
-            {
-                if (getService() != null)
-                    publishStatusText("-");
-
-                asynchronousTask.perform(this);
-                broadcast();
-            }
-        }.setTitle(activity.getString(textRes)).run(activity);
-    }
-
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final V object, T parent)
     {
-        doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(getWritableDatabase(), object, parent,
-                new Progress.SimpleListener()
-                {
-                    @Override
-                    public boolean onProgressChange(Progress progress)
-                    {
-                        task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles,
-                                progress.getCurrent(), progress.getTotal()));
-                        return !task.isInterrupted();
-                    }
-                }
-        ));
+        new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent).run(activity);
     }
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final List<V> objects, T parent)
     {
-        doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(getWritableDatabase(), objects, parent,
-                new Progress.SimpleListener()
-                {
-                    @Override
-                    public boolean onProgressChange(Progress progress)
-                    {
-                        task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles,
-                                progress.getCurrent(), progress.getTotal()));
-                        return !task.isInterrupted();
-                    }
-                }
-        ));
+        new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent).run(activity);
     }
 
     public interface AsynchronousTask
     {
         void perform(BackgroundTask task);
+    }
+
+    private static abstract class BgTaskImpl extends BackgroundTask
+    {
+        private SQLiteDatabase mDb;
+        private String mTitle;
+        private String mDescription;
+
+        BgTaskImpl(Context context, int titleRes, int descriptionRes, SQLiteDatabase db)
+        {
+            mTitle = context.getString(titleRes);
+            mDescription = context.getString(descriptionRes);
+            mDb = db;
+        }
+
+        @Override
+        protected void onProgressChange(Progress progress)
+        {
+            super.onProgressChange(progress);
+            setCurrentContent(getService().getString(R.string.text_transferStatusFiles, progress.getCurrent(),
+                    progress.getTotal()));
+        }
+
+        public SQLiteDatabase getDb()
+        {
+            return mDb;
+        }
+
+        @Override
+        public String getDescription()
+        {
+            return mDescription;
+        }
+
+        @Override
+        public String getTitle()
+        {
+            return mTitle;
+        }
+    }
+
+    private static class SingleRemovalTask<T, V extends DatabaseObject<T>> extends BgTaskImpl
+    {
+        private V mObject;
+        private T mParent;
+
+        SingleRemovalTask(Context context, SQLiteDatabase db, V object, T parent)
+        {
+            super(context, R.string.mesg_removing, R.string.mesg_mayTakeLong, db);
+            mObject = object;
+            mParent = parent;
+        }
+
+        @Override
+        protected void onRun() throws InterruptedException
+        {
+            AppUtils.getKuick(getService()).remove(getDb(), mObject, mParent, progressListener());
+        }
+    }
+
+    private static class MultipleRemovalTask<T, V extends DatabaseObject<T>> extends BgTaskImpl
+    {
+        private List<V> mObjectList;
+        private T mParent;
+
+        MultipleRemovalTask(Context context, SQLiteDatabase db, List<V> objectList, T parent)
+        {
+            super(context, R.string.mesg_removing, R.string.mesg_mayTakeLong, db);
+            mObjectList = objectList;
+            mParent = parent;
+        }
+
+        @Override
+        protected void onRun() throws InterruptedException
+        {
+            AppUtils.getKuick(getService()).remove(getDb(), mObjectList, mParent, progressListener());
+        }
     }
 }

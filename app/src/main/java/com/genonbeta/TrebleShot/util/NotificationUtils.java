@@ -77,10 +77,9 @@ public class NotificationUtils
                 (int) (notificationId > Integer.MAX_VALUE ? notificationId / 100000 : notificationId));
     }
 
-    public NotificationUtils cancel(int notificationId)
+    public void cancel(int notificationId)
     {
         mManager.cancel(notificationId);
-        return this;
     }
 
     public Context getContext()
@@ -100,9 +99,12 @@ public class NotificationUtils
 
     public int getNotificationSettings()
     {
-        int makeSound = (mPreferences.getBoolean("notification_sound", true)) ? NotificationCompat.DEFAULT_SOUND : 0;
-        int vibrate = (mPreferences.getBoolean("notification_vibrate", true)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
-        int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
+        int makeSound = (mPreferences.getBoolean("notification_sound", true))
+                ? NotificationCompat.DEFAULT_SOUND : 0;
+        int vibrate = (mPreferences.getBoolean("notification_vibrate", true))
+                ? NotificationCompat.DEFAULT_VIBRATE : 0;
+        int light = (mPreferences.getBoolean("notification_light", false))
+                ? NotificationCompat.DEFAULT_LIGHTS : 0;
 
         return makeSound | vibrate | light;
     }
