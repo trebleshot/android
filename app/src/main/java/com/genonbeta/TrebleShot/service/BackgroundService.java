@@ -88,8 +88,6 @@ public class BackgroundService extends Service
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int
-            TASK_STATUS_ONGOING = 0,
-            TASK_STATUS_STOPPED = 1,
             ID_NOTIFICATION_FOREGROUND = 1103;
 
     private final List<RunningTask> mTaskList = new ArrayList<>();
@@ -117,6 +115,7 @@ public class BackgroundService extends Service
 
         WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
 
+        mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
         mNotificationHelper = new NotificationHelper(getNotificationUtils());
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
@@ -539,7 +538,6 @@ public class BackgroundService extends Service
         }
 
         try {
-            mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
             mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
                     Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
             mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
