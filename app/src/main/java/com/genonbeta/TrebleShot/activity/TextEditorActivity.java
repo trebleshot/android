@@ -37,7 +37,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -283,7 +283,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
     {
         createSnackbar(R.string.mesg_communicating).show();
 
-        new BackgroundService.RunningTask()
+        new BackgroundTask()
         {
             @Override
             public void onRun()

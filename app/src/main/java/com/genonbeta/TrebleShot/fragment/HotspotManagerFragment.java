@@ -213,7 +213,7 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
             return getConnectionUtils().getHotspotUtils().getConfiguration();
 
         try {
-            AppUtils.getBgService(requireActivity()).getHotspotConfig();
+            return AppUtils.getBgService(requireActivity()).getHotspotConfig();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }

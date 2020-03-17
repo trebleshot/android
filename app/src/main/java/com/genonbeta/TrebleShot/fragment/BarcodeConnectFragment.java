@@ -187,7 +187,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
         int id = item.getItemId();
 
         if (id == R.id.show_help)
-            new AlertDialog.Builder(getActivity())
+            new AlertDialog.Builder(requireActivity())
                     .setMessage(R.string.text_scanQRCodeHelp)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
@@ -232,7 +232,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     {
         super.onResume();
 
-        getContext().registerReceiver(mReceiver, mIntentFilter);
+        requireContext().registerReceiver(mReceiver, mIntentFilter);
         updateState();
 
         //if (mPreviousScanResult != null)
@@ -244,7 +244,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     {
         super.onPause();
 
-        getContext().unregisterReceiver(mReceiver);
+        requireContext().unregisterReceiver(mReceiver);
         mBarcodeView.pauseAndWait();
     }
 
@@ -279,7 +279,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                 String ssid = jsonObject.getString(Keyword.NETWORK_SSID);
                 String bssid = null;
                 String password = null;
-                NetworkDeviceListAdapter.NetworkSpecifier informer;
+                NetworkDeviceListAdapter.NetworkSpecifier<?> informer;
 
                 if (jsonObject.has(Keyword.NETWORK_BSSID))
                     bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
@@ -313,7 +313,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                     try {
                         makeAcquaintance(InetAddress.getByName(ipAddress), accessPin);
                     } catch (UnknownHostException e) {
-                        new AlertDialog.Builder(getActivity())
+                        new AlertDialog.Builder(requireActivity())
                                 .setMessage(R.string.mesg_unknownHostError)
                                 .setNeutralButton(R.string.butn_close, null)
                                 .show();
@@ -325,7 +325,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                 } else {
                     mBarcodeView.pauseAndWait();
 
-                    new AlertDialog.Builder(getActivity())
+                    new AlertDialog.Builder(requireActivity())
                             .setMessage(R.string.mesg_errorNotSameNetwork)
                             .setNegativeButton(R.string.butn_close, null)
                             .setPositiveButton(R.string.butn_skip, (dialog, which) -> runnable.run())
@@ -340,7 +340,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
 
             mBarcodeView.pauseAndWait();
 
-            new AlertDialog.Builder(getActivity())
+            new AlertDialog.Builder(requireActivity())
                     .setTitle(R.string.text_unrecognizedQrCode)
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
@@ -359,8 +359,10 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                         if (getContext() != null) {
                             ClipboardManager manager = (ClipboardManager) getContext().getSystemService(
                                     Service.CLIPBOARD_SERVICE);
-                            manager.setPrimaryClip(ClipData.newPlainText("copiedText", code));
-                            Toast.makeText(getContext(), R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+                            if (manager != null) {
+                                manager.setPrimaryClip(ClipData.newPlainText("copiedText", code));
+                                Toast.makeText(getContext(), R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+                            }
                         }
                     })
                     .setOnDismissListener(dismissListener)
@@ -382,7 +384,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
 
     protected void makeAcquaintance(Object object, int accessPin)
     {
-        mConnectionUtils.makeAcquaintance(getActivity(), this, object, accessPin, mRegisteredListener);
+        mConnectionUtils.makeAcquaintance(requireActivity(), this, object, accessPin, mRegisteredListener);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
@@ -390,14 +392,14 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
         mDeviceSelectedListener = listener;
     }
 
-    public void updateState(boolean isConnecting, final Stoppable stoppable)
+    public void updateState(boolean connecting, final Stoppable stoppable)
     {
         if (!isAdded()) {
             mBarcodeView.pauseAndWait();
             return;
         }
 
-        if (isConnecting) {
+        if (connecting) {
             // Keep showing barcode view
             mBarcodeView.pauseAndWait();
             setConductItemsShowing(false);
@@ -406,8 +408,8 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
             updateState();
         }
 
-        mTaskContainer.setVisibility(isConnecting ? View.VISIBLE : View.GONE);
-        mTaskInterruptButton.setOnClickListener(isConnecting ? (View.OnClickListener) v -> stoppable.interrupt() : null);
+        mTaskContainer.setVisibility(connecting ? View.VISIBLE : View.GONE);
+        mTaskInterruptButton.setOnClickListener(connecting ? (View.OnClickListener) v -> stoppable.interrupt() : null);
     }
 
     public void updateState()
@@ -416,7 +418,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
             return;
 
         final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
-        final boolean hasCameraPermission = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+        boolean hasCameraPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
         // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
         final boolean hasLocationPermission = Build.VERSION.SDK_INT < 23
@@ -431,11 +433,11 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                 mConductText.setText(R.string.text_cameraPermissionRequired);
                 mConductButton.setText(R.string.butn_ask);
 
-                mConductButton.setOnClickListener(v -> ActivityCompat.requestPermissions(getActivity(), new String[]{
+                mConductButton.setOnClickListener(v -> ActivityCompat.requestPermissions(requireActivity(), new String[]{
                         Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA));
 
                 if (!mPermissionRequestedCamera)
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},
+                    ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA},
                             REQUEST_PERMISSION_CAMERA);
 
                 mPermissionRequestedCamera = true;
@@ -448,7 +450,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                         REQUEST_PERMISSION_LOCATION, mPermissionWatcher));
 
                 if (!mPermissionRequestedLocation)
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    ActivityCompat.requestPermissions(requireActivity(), new String[]{
                             Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_CAMERA);
 
                 mPermissionRequestedLocation = true;

@@ -93,11 +93,11 @@ public class NotificationHelper
         acceptIntent.setAction(BackgroundService.ACTION_DEVICE_APPROVAL)
                 .putExtra(BackgroundService.EXTRA_DEVICE_ID, device.id)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
-                .putExtra(BackgroundService.EXTRA_IS_ACCEPTED, true)
+                .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
                 .putExtra(BackgroundService.EXTRA_DEVICE_PIN, pin);
 
         Intent rejectIntent = ((Intent) acceptIntent.clone())
-                .putExtra(BackgroundService.EXTRA_IS_ACCEPTED, false);
+                .putExtra(BackgroundService.EXTRA_ACCEPTED, false);
 
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent,
                 0);
@@ -126,7 +126,8 @@ public class NotificationHelper
         DynamicNotification notification = getUtils().buildDynamicNotification(
                 TransferUtils.createUniqueTransferId(group.id, device.id, type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : objectList.get(0).name;
+        String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(
+                R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : objectList.get(0).name;
         Intent acceptIntent = new Intent(getContext(), BackgroundService.class)
                 .setAction(BackgroundService.ACTION_FILE_TRANSFER)
                 .putExtra(BackgroundService.EXTRA_DEVICE_ID, device.id)
@@ -135,8 +136,8 @@ public class NotificationHelper
 
         Intent rejectIntent = ((Intent) acceptIntent.clone());
 
-        acceptIntent.putExtra(BackgroundService.EXTRA_IS_ACCEPTED, true);
-        rejectIntent.putExtra(BackgroundService.EXTRA_IS_ACCEPTED, false);
+        acceptIntent.putExtra(BackgroundService.EXTRA_ACCEPTED, true);
+        rejectIntent.putExtra(BackgroundService.EXTRA_ACCEPTED, false);
 
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent,
                 0);

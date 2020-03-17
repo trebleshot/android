@@ -46,9 +46,7 @@ abstract public class HotspotUtils
     public static HotspotUtils getInstance(Context context)
     {
         if (mInstance == null)
-            mInstance = Build.VERSION.SDK_INT >= 26
-                    ? new OreoAPI(context)
-                    : new HackAPI(context);
+            mInstance = Build.VERSION.SDK_INT >= 26 ? new OreoAPI(context) : new HackAPI(context);
 
         return mInstance;
     }
@@ -74,27 +72,26 @@ abstract public class HotspotUtils
         return mWifiManager;
     }
 
-    abstract public boolean disable();
+    public abstract boolean disable();
 
-    abstract public boolean enable();
+    public abstract boolean enable();
 
-    abstract public boolean enableConfigured(String apName, String passKeyWPA2);
+    public abstract boolean enableConfigured(String apName, String passKeyWPA2);
 
-    abstract public WifiConfiguration getConfiguration();
+    public abstract WifiConfiguration getConfiguration();
 
-    abstract public WifiConfiguration getPreviousConfig();
+    public abstract WifiConfiguration getPreviousConfig();
 
-    abstract public boolean isEnabled();
+    public abstract boolean isEnabled();
 
-    abstract public boolean isStarted();
+    public abstract boolean isStarted();
 
-    abstract public boolean unloadPreviousConfig();
+    public abstract boolean unloadPreviousConfig();
 
     @RequiresApi(26)
     public static class OreoAPI extends HotspotUtils
     {
         private WifiManager.LocalOnlyHotspotReservation mHotspotReservation;
-        private WifiManager.LocalOnlyHotspotCallback mCallback;
 
         private OreoAPI(Context context)
         {
@@ -124,9 +121,6 @@ abstract public class HotspotUtils
                     {
                         super.onStarted(reservation);
                         mHotspotReservation = reservation;
-
-                        if (mCallback != null)
-                            mCallback.onStarted(reservation);
                     }
 
                     @Override
@@ -134,9 +128,6 @@ abstract public class HotspotUtils
                     {
                         super.onStopped();
                         mHotspotReservation = null;
-
-                        if (mCallback != null)
-                            mCallback.onStopped();
                     }
 
                     @Override
@@ -144,11 +135,8 @@ abstract public class HotspotUtils
                     {
                         super.onFailed(reason);
                         mHotspotReservation = null;
-
-                        if (mCallback != null)
-                            mCallback.onFailed(reason);
                     }
-                }, new Handler(Looper.myLooper()));
+                }, new Handler(Looper.getMainLooper()));
 
                 return true;
             } catch (Throwable ignored) {
@@ -188,11 +176,6 @@ abstract public class HotspotUtils
         public boolean isStarted()
         {
             return mHotspotReservation != null;
-        }
-
-        public void setSecondaryCallback(WifiManager.LocalOnlyHotspotCallback callback)
-        {
-            mCallback = callback;
         }
 
         @Override
@@ -337,11 +320,10 @@ abstract public class HotspotUtils
             if (mPreviousConfig == null)
                 return false;
 
-            setHotspotConfig(mPreviousConfig);
-
+            boolean result = setHotspotConfig(mPreviousConfig);
             mPreviousConfig = null;
 
-            return true;
+            return result;
         }
     }
 }

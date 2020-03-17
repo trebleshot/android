@@ -33,6 +33,7 @@ import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -42,7 +43,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 
-public class FileTransferTask extends BackgroundService.RunningTask
+public class FileTransferTask extends BackgroundTask
 {
     public static final String TAG = FileTransferTask.class.getSimpleName();
 

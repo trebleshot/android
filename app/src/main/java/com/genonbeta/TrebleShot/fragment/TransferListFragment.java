@@ -43,6 +43,7 @@ import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -275,7 +276,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                         .setMessage(R.string.text_checkOldFiles)
                         .setNeutralButton(R.string.butn_cancel, null)
                         .setNegativeButton(R.string.butn_skip, (dialogInterface, i) -> updateSavePath(selectedPath.toString()))
-                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> new BackgroundService.RunningTask()
+                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> new BackgroundTask()
                         {
                             @Override
                             public void onRun()

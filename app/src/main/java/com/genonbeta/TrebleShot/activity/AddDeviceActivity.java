@@ -70,7 +70,6 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
     private final IntentFilter mFilter = new IntentFilter();
     private HotspotManagerFragment mHotspotManagerFragment;
-    private BarcodeConnectFragment mBarcodeConnectFragment;
     private NetworkManagerFragment mNetworkManagerFragment;
     private NetworkDeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
@@ -149,7 +148,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                         && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ID)
                         && intent.hasExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME)) {
                     NetworkDevice device = new NetworkDevice(intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID));
-                    DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME));
+                    DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(
+                            BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME));
 
                     try {
                         AppUtils.getKuick(AddDeviceActivity.this).reconstruct(device);
@@ -192,10 +192,12 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
         mToolbarLayout = findViewById(R.id.toolbar_layout);
         mOptionsFragment = (OptionsFragment) factory.instantiate(getClassLoader(), OptionsFragment.class.getName());
-        mBarcodeConnectFragment = (BarcodeConnectFragment) factory.instantiate(getClassLoader(), BarcodeConnectFragment.class.getName());
-        mHotspotManagerFragment = (HotspotManagerFragment) factory.instantiate(getClassLoader(), HotspotManagerFragment.class.getName());
-        mNetworkManagerFragment = (NetworkManagerFragment) factory.instantiate(getClassLoader(), NetworkManagerFragment.class.getName());
-        mDeviceListFragment = (NetworkDeviceListFragment) factory.instantiate(getClassLoader(), NetworkDeviceListFragment.class.getName());
+        mHotspotManagerFragment = (HotspotManagerFragment) factory.instantiate(getClassLoader(),
+                HotspotManagerFragment.class.getName());
+        mNetworkManagerFragment = (NetworkManagerFragment) factory.instantiate(getClassLoader(),
+                NetworkManagerFragment.class.getName());
+        mDeviceListFragment = (NetworkDeviceListFragment) factory.instantiate(getClassLoader(),
+                NetworkDeviceListFragment.class.getName());
         mDeviceListFragment.setArguments(deviceListArgs);
 
         mFilter.addAction(ACTION_CHANGE_FRAGMENT);
@@ -283,7 +285,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     @Override
     public Snackbar createSnackbar(int resId, Object... objects)
     {
-        return Snackbar.make(findViewById(R.id.activity_connection_establishing_content_view), getString(resId, objects), Snackbar.LENGTH_LONG);
+        return Snackbar.make(findViewById(R.id.activity_connection_establishing_content_view),
+                getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
     public AvailableFragment getShowingFragmentId()

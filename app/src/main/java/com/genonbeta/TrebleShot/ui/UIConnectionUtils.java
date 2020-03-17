@@ -40,6 +40,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import org.json.JSONException;
@@ -112,7 +113,7 @@ public class UIConnectionUtils
     public void makeAcquaintance(final Activity activity, final UITask task, final Object object, final int accessPin,
                                  final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
     {
-        BackgroundService.RunningTask runningTask = new BackgroundService.RunningTask()
+        BackgroundTask runningTask = new BackgroundTask()
         {
             private boolean mConnected = false;
             private InetAddress mAddress;

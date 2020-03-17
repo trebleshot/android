@@ -28,7 +28,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShareActivity extends Activity implements SnackbarPlacementProvider, Activity.OnPreloadArgumentWatcher,
-        BackgroundService.AttachedTaskListener
+        AttachedTaskListener
 {
     public static final String TAG = "ShareActivity";
 
@@ -106,13 +107,13 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    public void onAttachedToTask(BackgroundService.BaseAttachableRunningTask task)
+    public void onAttachedToTask(BaseAttachableBgTask task)
     {
 
     }
 
     @Override
-    protected void onPreviousRunningTask(@Nullable BackgroundService.BaseAttachableRunningTask task)
+    protected void onPreviousRunningTask(@Nullable BaseAttachableBgTask task)
     {
         super.onPreviousRunningTask(task);
 

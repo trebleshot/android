@@ -54,14 +54,9 @@ abstract public class AbstractFailureAwareDialog extends AlertDialog.Builder
         final AlertDialog dialog = super.show();
 
         if (mClickListener != null)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (mClickListener.onProceedClick(dialog))
-                        dialog.dismiss();
-                }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                if (mClickListener.onProceedClick(dialog))
+                    dialog.dismiss();
             });
 
         return dialog;

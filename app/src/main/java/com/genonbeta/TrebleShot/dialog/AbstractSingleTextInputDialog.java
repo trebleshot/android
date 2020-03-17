@@ -22,6 +22,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 
 /**
@@ -38,14 +39,13 @@ abstract public class AbstractSingleTextInputDialog extends AbstractFailureAware
     {
         super(context);
 
-        mView = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.layout_dialog_single_text_input, null);
+        mView = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.layout_dialog_single_text_input,
+                null);
         mEditText = mView.findViewById(R.id.layout_dialog_single_text_input_text);
 
         setView(mView);
         setTitle(R.string.text_createFolder);
         setNegativeButton(R.string.butn_close, null);
-
-        mEditText.requestFocus();
     }
 
     public ViewGroup getContainerView()
@@ -56,5 +56,13 @@ abstract public class AbstractSingleTextInputDialog extends AbstractFailureAware
     public EditText getEditText()
     {
         return mEditText;
+    }
+
+    @Override
+    public AlertDialog show()
+    {
+        AlertDialog dialog = super.show();
+        mEditText.requestFocus();
+        return dialog;
     }
 }

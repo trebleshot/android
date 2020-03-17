@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.database.SQLQuery;
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class EstablishConnectionDialog extends ProgressDialog
 {
-    private BackgroundService.RunningTask mTask;
+    private BackgroundTask mTask;
 
     public EstablishConnectionDialog(final Activity activity, final NetworkDevice networkDevice,
                                      @Nullable final OnDeviceSelectedListener listener)
@@ -56,7 +57,7 @@ public class EstablishConnectionDialog extends ProgressDialog
         setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), (dialogInterface, i) -> stoppable.interrupt());
 
-        mTask = new BackgroundService.RunningTask()
+        mTask = new BackgroundTask()
         {
             @Override
             protected void onRun()

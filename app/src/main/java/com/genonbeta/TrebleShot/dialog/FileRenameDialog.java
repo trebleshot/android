@@ -22,6 +22,7 @@ import android.content.Context;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -70,7 +71,7 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
                 return false;
             }
 
-            new BackgroundService.RunningTask()
+            new BackgroundTask()
             {
                 @Override
                 protected void onRun()

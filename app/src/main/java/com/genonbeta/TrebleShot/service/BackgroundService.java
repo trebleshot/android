@@ -18,8 +18,10 @@
 
 package com.genonbeta.TrebleShot.service;
 
-import android.app.PendingIntent;
-import android.content.*;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -38,13 +40,12 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
-import com.genonbeta.android.framework.util.Stoppable;
-import com.genonbeta.android.framework.util.StoppableImpl;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +76,6 @@ public class BackgroundService extends Service
             ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
             ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
             ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE",
-            EXTRA_DEVICE_LIST = "extraDeviceListRunning",
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
             EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
@@ -83,14 +83,14 @@ public class BackgroundService extends Service
             EXTRA_DEVICE_PIN = "extraDevicePin",
             EXTRA_GROUP_ID = "extraGroupId",
             EXTRA_IDENTITY = "extraIdentity",
-            EXTRA_IS_ACCEPTED = "extraAccepted",
+            EXTRA_ACCEPTED = "extraAccepted",
             EXTRA_REQUEST_ID = "extraRequestId",
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int
             ID_NOTIFICATION_FOREGROUND = 1103;
 
-    private final List<RunningTask> mTaskList = new ArrayList<>();
+    private final List<BackgroundTask> mTaskList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
     private WebShareServer mWebShareServer;
     private ExecutorService mExecutor = Executors.newFixedThreadPool(10);
@@ -147,7 +147,7 @@ public class BackgroundService extends Service
                 final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
                 final long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
                 final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-                final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
+                final boolean isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
@@ -196,7 +196,7 @@ public class BackgroundService extends Service
                 }
             } else if (ACTION_DEVICE_APPROVAL.equals(intent.getAction())) {
                 String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-                boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
+                boolean isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 int suggestedPin = intent.getIntExtra(EXTRA_DEVICE_PIN, -1);
 
@@ -220,7 +220,6 @@ public class BackgroundService extends Service
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 long clipboardId = intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1);
                 boolean isAccepted = intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false);
-
                 TextStreamObject textStreamObject = new TextStreamObject(clipboardId);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
@@ -229,9 +228,12 @@ public class BackgroundService extends Service
                     getKuick().reconstruct(textStreamObject);
 
                     if (isAccepted) {
-                        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(
-                                ClipData.newPlainText("receivedText", textStreamObject.text));
-                        Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+                        ClipboardManager cbManager = ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
+
+                        if (cbManager != null) {
+                            cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", textStreamObject.text));
+                            Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -262,7 +264,7 @@ public class BackgroundService extends Service
                 Identity identity = intent.getParcelableExtra(EXTRA_IDENTITY);
 
                 try {
-                    RunningTask task = findTaskBy(identity);
+                    BackgroundTask task = findTaskBy(identity);
 
                     if (task == null) {
                         getNotificationHelper().getUtils().cancel(notificationId);
@@ -302,21 +304,19 @@ public class BackgroundService extends Service
                             String.valueOf(1)), values);
         }
 
-        if (getHotspotUtils().unloadPreviousConfig()) {
-            getHotspotUtils().disable();
-            Log.d(TAG, "onDestroy(): Stopping hotspot (previously started)");
-        }
+        if (getHotspotUtils().unloadPreviousConfig())
+            Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + getHotspotUtils().disable());
 
         if (getWifiLock() != null && getWifiLock().isHeld()) {
             getWifiLock().release();
-            Log.d(TAG, "onDestroy(): Releasing Wi-Fi lock");
+            Log.d(TAG, "onDestroy: Releasing Wi-Fi lock");
         }
 
         stopForeground(true);
 
         synchronized (mTaskList) {
-            for (RunningTask task : mTaskList) {
-                task.getStoppable().interrupt(false);
+            for (BackgroundTask task : mTaskList) {
+                task.interrupt(false);
                 Log.d(TAG, "onDestroy(): Ongoing indexing stopped: " + task.getTitle());
             }
         }
@@ -325,7 +325,7 @@ public class BackgroundService extends Service
         getKuick().broadcast();
     }
 
-    public void attach(RunningTask task)
+    public void attach(BackgroundTask task)
     {
         runInternal(task);
     }
@@ -336,15 +336,15 @@ public class BackgroundService extends Service
                 || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
     }
 
-    public RunningTask findTaskBy(long hashCode)
+    public BackgroundTask findTaskBy(long hashCode)
     {
         return findTaskBy(Identity.withORs(hashCode));
     }
 
-    public synchronized RunningTask findTaskBy(Identity identity)
+    public synchronized BackgroundTask findTaskBy(Identity identity)
     {
         synchronized (mTaskList) {
-            for (RunningTask runningTask : getTaskList())
+            for (BackgroundTask runningTask : getTaskList())
                 if (runningTask.getIdentity().equals(identity))
                     return runningTask;
         }
@@ -377,16 +377,16 @@ public class BackgroundService extends Service
         return mExecutor;
     }
 
-    public List<RunningTask> getTaskList()
+    public List<BackgroundTask> getTaskList()
     {
         return mTaskList;
     }
 
-    public <T extends RunningTask> List<T> getTaskListOf(Class<T> clazz)
+    public <T extends BackgroundTask> List<T> getTaskListOf(Class<T> clazz)
     {
         List<T> taskList = new ArrayList<>();
         synchronized (mTaskList) {
-            for (RunningTask task : mTaskList)
+            for (BackgroundTask task : mTaskList)
                 if (clazz.isInstance(task))
                     taskList.add((T) task);
         }
@@ -401,7 +401,7 @@ public class BackgroundService extends Service
     private boolean hasOngoingIndexing()
     {
         synchronized (mTaskList) {
-            for (RunningTask task : mTaskList)
+            for (BackgroundTask task : mTaskList)
                 if (task instanceof IndexTransferTask)
                     return true;
         }
@@ -429,33 +429,6 @@ public class BackgroundService extends Service
         return findTaskBy(FileTransferTask.identityWith(groupId, deviceId, type)) != null;
     }
 
-    public void publishNotification(RunningTask runningTask)
-    {
-        if (runningTask.mNotification == null) {
-            PendingIntent cancelIntent = PendingIntent.getService(this, AppUtils.getUniqueNumber(),
-                    new Intent(this, BackgroundService.class)
-                            .setAction(ACTION_KILL_SIGNAL)
-                            .putExtra(EXTRA_IDENTITY, runningTask.getIdentity()), 0);
-
-            runningTask.mNotification = getNotificationUtils().buildDynamicNotification(runningTask.hashCode(),
-                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-            runningTask.mNotification.setSmallIcon(runningTask.getIconRes() == 0
-                    ? R.drawable.ic_autorenew_white_24dp_static : runningTask.getIconRes())
-                    .setContentTitle(getString(R.string.text_taskOngoing))
-                    .addAction(R.drawable.ic_close_white_24dp_static,
-                            getString(R.string.butn_cancel), cancelIntent);
-
-            if (runningTask.mActivityIntent != null)
-                runningTask.mNotification.setContentIntent(runningTask.mActivityIntent);
-        }
-
-        runningTask.mNotification.setContentTitle(runningTask.getTitle())
-                .setContentText(runningTask.getStatusText());
-
-        runningTask.mNotification.show();
-    }
-
     public void publishForegroundNotification()
     {
         if (mNotification == null) {
@@ -475,34 +448,32 @@ public class BackgroundService extends Service
                 getNotificationHelper().getCommunicationServiceNotification().build());
     }
 
-    protected synchronized void registerWork(RunningTask runningTask)
+    protected synchronized void registerWork(BackgroundTask runningTask)
     {
         synchronized (getTaskList()) {
             getTaskList().add(runningTask);
         }
 
         publishForegroundNotification();
-        publishNotification(runningTask);
     }
 
-    public void run(final RunningTask runningTask)
+    public void run(final BackgroundTask runningTask)
     {
         mExecutor.submit(() -> attach(runningTask));
     }
 
-    private void runInternal(RunningTask runningTask)
+    private void runInternal(BackgroundTask runningTask)
     {
-        runningTask.setService(BackgroundService.this);
         registerWork(runningTask);
 
         try {
-            runningTask.run();
+            runningTask.run(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         unregisterWork(runningTask);
-        runningTask.setService(null);
+        ;
     }
 
     public void toggleHotspot()
@@ -513,7 +484,8 @@ public class BackgroundService extends Service
         if (getHotspotUtils().isEnabled())
             getHotspotUtils().disable();
         else
-            getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
+            Log.d(TAG, "toggleHotspot: Enabling=" + getHotspotUtils().enableConfigured(AppUtils.getHotspotName(
+                    this), null));
     }
 
     /**
@@ -549,11 +521,9 @@ public class BackgroundService extends Service
         return true;
     }
 
-    protected synchronized void unregisterWork(RunningTask runningTask)
+    protected synchronized void unregisterWork(BackgroundTask runningTask)
     {
-        runningTask.mNotification.cancel();
-
-        synchronized (getTaskList()) {
+        synchronized (mTaskList) {
             getTaskList().remove(runningTask);
 
             if (getTaskList().size() <= 0)
@@ -884,284 +854,6 @@ public class BackgroundService extends Service
                 return false;
 
             return true;
-        }
-    }
-
-    public interface AttachedTaskListener
-    {
-        void onAttachedToTask(BaseAttachableRunningTask task);
-
-        void setTaskPosition(int ofTotal, int total);
-
-        void updateTaskPosition(int addToOfTotal, int addToTotal);
-
-        void updateTaskStatus(String text);
-    }
-
-    public abstract static class RunningTask extends StoppableJob implements Stoppable, Identifiable
-    {
-        private Stoppable mStoppable;
-        private BackgroundService mService;
-        private String mStatusText;
-        private String mTitle;
-        private int mIconRes;
-        private long mLastNotified = 0;
-        private int mHash = 0;
-        private DynamicNotification mNotification;
-        private PendingIntent mActivityIntent;
-
-        protected abstract void onRun() throws InterruptedException;
-
-        @Override
-        public boolean addCloser(Closer closer)
-        {
-            return getStoppable().addCloser(closer);
-        }
-
-        public void forceQuit()
-        {
-
-        }
-
-        @Override
-        public List<Closer> getClosers()
-        {
-            return getStoppable().getClosers();
-        }
-
-        @Nullable
-        public PendingIntent getContentIntent()
-        {
-            return mActivityIntent;
-        }
-
-        @Override
-        public Identity getIdentity()
-        {
-            return Identity.withORs(hashCode());
-        }
-
-        public int getIconRes()
-        {
-            return mIconRes;
-        }
-
-        protected MediaScannerConnection getMediaScanner()
-        {
-            return getService().getMediaScanner();
-        }
-
-        protected NotificationHelper getNotificationHelper()
-        {
-            return getService().getNotificationHelper();
-        }
-
-        protected BackgroundService getService()
-        {
-            return mService;
-        }
-
-        public String getStatusText()
-        {
-            return mStatusText;
-        }
-
-        private Stoppable getStoppable()
-        {
-            if (mStoppable == null)
-                mStoppable = new StoppableImpl();
-
-            return mStoppable;
-        }
-
-        public String getTitle()
-        {
-            return mTitle;
-        }
-
-        @Override
-        public boolean hasCloser(Closer closer)
-        {
-            return getStoppable().hasCloser(closer);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return mHash != 0 ? mHash : super.hashCode();
-        }
-
-        public boolean interrupt()
-        {
-            return getStoppable().interrupt();
-        }
-
-        public boolean interrupt(boolean userAction)
-        {
-            return getStoppable().interrupt(userAction);
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-            return getStoppable().isInterrupted();
-        }
-
-        @Override
-        public boolean isInterruptedByUser()
-        {
-            return getStoppable().isInterruptedByUser();
-        }
-
-        public boolean publishStatusText(String text)
-        {
-            mStatusText = text;
-            long time = System.nanoTime();
-
-            if (time - mLastNotified > 2e9) {
-                mService.publishNotification(this);
-                mLastNotified = time;
-
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeCloser(Closer closer)
-        {
-            return getStoppable().removeCloser(closer);
-        }
-
-        @Override
-        public void reset()
-        {
-            getStoppable().reset();
-        }
-
-        @Override
-        public void reset(boolean resetClosers)
-        {
-            getStoppable().reset(resetClosers);
-        }
-
-        @Override
-        public void removeClosers()
-        {
-            getStoppable().removeClosers();
-        }
-
-        protected void run()
-        {
-            try {
-                run(getStoppable());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public boolean run(final Context context)
-        {
-            ServiceConnection serviceConnection = new ServiceConnection()
-            {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service)
-                {
-                    AppUtils.startService(context, new Intent(context, BackgroundService.class));
-
-                    BackgroundService workerService = ((LocalBinder) service).getService();
-                    workerService.run(RunningTask.this);
-
-                    context.unbindService(this);
-                }
-
-                @Override
-                public void onServiceDisconnected(ComponentName name)
-                {
-
-                }
-            };
-
-            return context.bindService(new Intent(context, BackgroundService.class), serviceConnection,
-                    Context.BIND_AUTO_CREATE);
-        }
-
-        public RunningTask setContentIntent(PendingIntent intent)
-        {
-            mActivityIntent = intent;
-            return this;
-        }
-
-        public RunningTask setContentIntent(Context context, Intent intent)
-        {
-            mHash = hashIntent(intent);
-            return setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
-        }
-
-        public RunningTask setIconRes(int iconRes)
-        {
-            mIconRes = iconRes;
-            return this;
-        }
-
-        private void setService(@Nullable BackgroundService service)
-        {
-            mService = service;
-        }
-
-        public RunningTask setStoppable(Stoppable stoppable)
-        {
-            mStoppable = stoppable;
-            return this;
-        }
-
-        public RunningTask setTitle(String title)
-        {
-            mTitle = title;
-            return this;
-        }
-    }
-
-    public interface Identifiable
-    {
-        Identity getIdentity();
-    }
-
-    public abstract static class BaseAttachableRunningTask extends RunningTask
-    {
-        public abstract void detachAnchor();
-    }
-
-    public abstract static class AttachableRunningTask<T extends AttachedTaskListener> extends BaseAttachableRunningTask
-    {
-        private T mAnchorListener;
-
-        @Override
-        public void detachAnchor()
-        {
-            mAnchorListener = null;
-        }
-
-        @Nullable
-        public T getAnchorListener()
-        {
-            return mAnchorListener;
-        }
-
-        public AttachableRunningTask<T> setAnchorListener(T listener)
-        {
-            mAnchorListener = listener;
-            listener.onAttachedToTask(this);
-            return this;
-        }
-
-        @Override
-        public boolean publishStatusText(String text)
-        {
-            if (mAnchorListener != null)
-                mAnchorListener.updateTaskStatus(text);
-
-            return super.publishStatusText(text);
         }
     }
 

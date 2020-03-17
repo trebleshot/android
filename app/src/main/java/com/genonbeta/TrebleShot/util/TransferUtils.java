@@ -17,6 +17,8 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -29,9 +31,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import static com.genonbeta.TrebleShot.service.BackgroundService.AttachedTaskListener;
-import static com.genonbeta.TrebleShot.service.BackgroundService.RunningTask;
 
 /**
  * created by: veli
@@ -329,7 +328,7 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
-        RunningTask task = new RunningTask()
+        BackgroundTask task = new BackgroundTask()
         {
             @Override
             protected void onRun()
@@ -434,7 +433,7 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
-        new RunningTask()
+        new BackgroundTask()
         {
             @Override
             protected void onRun()

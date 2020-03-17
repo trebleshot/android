@@ -36,6 +36,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -124,7 +125,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
     protected void runReceiveTask(final Activity activity, final NetworkDevice device,
                                   final DeviceConnection connection)
     {
-        new BackgroundService.RunningTask()
+        new BackgroundTask()
         {
             @Override
             public void onRun()

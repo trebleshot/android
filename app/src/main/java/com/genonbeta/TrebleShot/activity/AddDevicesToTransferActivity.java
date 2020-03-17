@@ -44,14 +44,15 @@ import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider,
-        BackgroundService.AttachedTaskListener
+public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
     public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
@@ -207,7 +208,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    protected void onPreviousRunningTask(@Nullable BackgroundService.BaseAttachableRunningTask task)
+    protected void onPreviousRunningTask(@Nullable BaseAttachableBgTask task)
     {
         super.onPreviousRunningTask(task);
 
@@ -242,7 +243,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    public void onAttachedToTask(BackgroundService.BaseAttachableRunningTask task)
+    public void onAttachedToTask(BaseAttachableBgTask task)
     {
         takeOnProcessMode();
     }

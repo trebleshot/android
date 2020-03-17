@@ -28,7 +28,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.ImageView;
@@ -48,8 +47,9 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.BackgroundService.BaseAttachableRunningTask;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.io.FileInputStream;
@@ -66,7 +66,7 @@ public abstract class Activity extends AppCompatActivity
 
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
 
-    private final List<BaseAttachableRunningTask> mAttachedTasks = new ArrayList<>();
+    private final List<BaseAttachableBgTask> mAttachedTasks = new ArrayList<>();
     private AlertDialog mOngoingRequest;
     private IntentFilter mFilter = new IntentFilter();
     private boolean mDarkThemeRequested = false;
@@ -191,9 +191,8 @@ public abstract class Activity extends AppCompatActivity
         super.onStop();
 
         synchronized (mAttachedTasks) {
-            for (BaseAttachableRunningTask task : mAttachedTasks) {
+            for (BaseAttachableBgTask task : mAttachedTasks)
                 task.detachAnchor();
-            }
 
             mAttachedTasks.clear();
         }
@@ -208,7 +207,7 @@ public abstract class Activity extends AppCompatActivity
         super.onDestroy();
     }
 
-    protected void onPreviousRunningTask(@Nullable BaseAttachableRunningTask task)
+    protected void onPreviousRunningTask(@Nullable BaseAttachableBgTask task)
     {
 
     }
@@ -278,7 +277,7 @@ public abstract class Activity extends AppCompatActivity
 
     }
 
-    public void attachRunningTask(BaseAttachableRunningTask task)
+    public void attachRunningTask(BaseAttachableBgTask task)
     {
         synchronized (mAttachedTasks) {
             mAttachedTasks.add(task);
@@ -302,39 +301,25 @@ public abstract class Activity extends AppCompatActivity
             recreate();
     }
 
-    public boolean checkForTasks()
+    public void checkForTasks()
     {
-        ServiceConnection serviceConnection = new ServiceConnection()
-        {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service)
-            {
-                BackgroundService workerService = ((BackgroundService.LocalBinder) service).getService();
-                BackgroundService.RunningTask task = workerService.findTaskBy(BackgroundService.hashIntent(getIntent()));
+        try {
+            BackgroundService service = AppUtils.getBgService(this);
+            BackgroundTask task = service.findTaskBy(BackgroundService.hashIntent(getIntent()));
 
-                if (task == null)
-                    onPreviousRunningTask(null);
-                else if (task instanceof BaseAttachableRunningTask) {
-                    BaseAttachableRunningTask attachable = (BaseAttachableRunningTask) task;
-                    onPreviousRunningTask(attachable);
+            if (task == null)
+                onPreviousRunningTask(null);
+            else if (task instanceof BaseAttachableBgTask) {
+                BaseAttachableBgTask attachable = (BaseAttachableBgTask) task;
+                onPreviousRunningTask(attachable);
 
-                    synchronized (mAttachedTasks) {
-                        attachRunningTask(attachable);
-                    }
+                synchronized (mAttachedTasks) {
+                    attachRunningTask(attachable);
                 }
-
-                unbindService(this);
             }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name)
-            {
-
-            }
-        };
-
-        return bindService(new Intent(Activity.this, BackgroundService.class), serviceConnection,
-                Context.BIND_AUTO_CREATE);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
