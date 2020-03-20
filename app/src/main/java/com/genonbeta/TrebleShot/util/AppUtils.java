@@ -19,11 +19,9 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Application;
-import android.app.Service;
+import android.app.*;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -137,76 +135,6 @@ public class AppUtils
                 .put(Keyword.DEVICE_INFO, deviceInformation);
     }
 
-    @NonNull
-    public static BackgroundService getBgService(Activity activity) throws IllegalStateException
-    {
-        BackgroundService service = getBgServiceRef(activity).get();
-        if (service == null)
-            throw new IllegalStateException("The service is not ready or removed from the scope. Do not call this " +
-                    "method after the application process exits.");
-        return service;
-    }
-
-    /**
-     * A reference object for the service. If you don't want to deal with 'null' state, use
-     * {@link #getBgService(Activity)} instead
-     *
-     * @param activity That will be used to extract the right {@link Application} instance which should be
-     *                 {@link App}
-     * @return the service instance that was bound to the {@link Application} class
-     */
-    public static WeakReference<BackgroundService> getBgServiceRef(Activity activity)
-    {
-        Application application = activity.getApplication();
-        if (application instanceof App)
-            return ((App) application).getBackgroundService();
-
-        return new WeakReference<>(null);
-    }
-
-
-    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentBase<T> fragment)
-    {
-        IEngineConnection<T> connection = fragment.getEngineConnection();
-        SharedPreferences preferences = AppUtils.getDefaultPreferences(fragment.getContext());
-
-        if (connection.getSelectedItemList().size() > 0 && !preferences.getBoolean("helpFolderSelection",
-                false))
-            fragment.createSnackbar(R.string.mesg_helpFolderSelection)
-                    .setAction(R.string.butn_gotIt, v -> preferences
-                            .edit()
-                            .putBoolean("helpFolderSelection", true)
-                            .apply())
-                    .show();
-    }
-
-    public static void startApplicationDetails(Activity activity)
-    {
-        activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                .setData(Uri.fromParts("package", activity.getPackageName(), null)));
-    }
-
-    public static void startFeedbackActivity(Activity activity)
-    {
-        Intent intent = new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
-                .putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.text_appName));
-
-        DocumentFile logFile = AppUtils.createLog(activity);
-
-        if (logFile != null) {
-            try {
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(activity, logFile)));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.butn_feedbackContact)));
-    }
-
     public static boolean checkRunningConditions(Context context)
     {
         for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions(context))
@@ -222,9 +150,13 @@ public class AppUtils
         String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
         DocumentFile logFile = saveDirectory.createFile(null, fileName);
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Service.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> processList = activityManager.getRunningAppProcesses();
 
         try {
+            if (activityManager == null)
+                throw new Exception("Could not grab the ActivityManager service.");
+
+            List<ActivityManager.RunningAppProcessInfo> processList = activityManager.getRunningAppProcesses();
+
             String command = "logcat -d -v threadtime *:*";
             Process process = Runtime.getRuntime().exec(command);
 
@@ -252,6 +184,8 @@ public class AppUtils
             return logFile;
         } catch (IOException e) {
             // do nothing
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;
@@ -323,10 +257,101 @@ public class AppUtils
 
         if (uuid == null) {
             uuid = UUID.randomUUID().toString();
-            preferences.edit().putString("uuid", uuid).apply();
+            preferences.edit()
+                    .putString("uuid", uuid)
+                    .apply();
         }
 
         return uuid;
+    }
+
+    @NonNull
+    public static Activity getActivity(DialogInterface dialog) throws IllegalStateException
+    {
+        Activity activity = null;
+        if (dialog instanceof Dialog)
+            activity = ((Dialog) dialog).getOwnerActivity();
+
+        if (activity == null)
+            throw new IllegalStateException("This dialog type is not known to be able gather the activity from.");
+
+        return activity;
+    }
+
+    @NonNull
+    public static BackgroundService getBgService(DialogInterface dialog) throws IllegalStateException
+    {
+        return getBgService(getActivity(dialog));
+    }
+
+    @NonNull
+    public static BackgroundService getBgService(Activity activity) throws IllegalStateException
+    {
+        BackgroundService service = getBgServiceRef(activity).get();
+        if (service == null)
+            throw new IllegalStateException("The service is not ready or removed from the scope. Do not call this " +
+                    "method after the application process exits.");
+        return service;
+    }
+
+    /**
+     * A reference object for the service. If you don't want to deal with 'null' state, use
+     * {@link #getBgService(Activity)} instead
+     *
+     * @param activity That will be used to extract the right {@link Application} instance which should be
+     *                 {@link App}
+     * @return the service instance that was bound to the {@link Application} class
+     */
+    public static WeakReference<BackgroundService> getBgServiceRef(Activity activity)
+    {
+        Application application = activity.getApplication();
+        if (application instanceof App)
+            return ((App) application).getBackgroundService();
+
+        return new WeakReference<>(null);
+    }
+
+
+    public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentBase<T> fragment)
+    {
+        IEngineConnection<T> connection = fragment.getEngineConnection();
+        SharedPreferences preferences = AppUtils.getDefaultPreferences(fragment.getContext());
+
+        if (connection.getSelectedItemList().size() > 0 && !preferences.getBoolean("helpFolderSelection",
+                false))
+            fragment.createSnackbar(R.string.mesg_helpFolderSelection)
+                    .setAction(R.string.butn_gotIt, v -> preferences
+                            .edit()
+                            .putBoolean("helpFolderSelection", true)
+                            .apply())
+                    .show();
+    }
+
+    public static void startApplicationDetails(Activity activity)
+    {
+        activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .setData(Uri.fromParts("package", activity.getPackageName(), null)));
+    }
+
+    public static void startFeedbackActivity(Activity activity)
+    {
+        Intent intent = new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
+                .putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.text_appName));
+
+        DocumentFile logFile = AppUtils.createLog(activity);
+
+        if (logFile != null) {
+            try {
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(activity, logFile)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.butn_feedbackContact)));
     }
 
     public static boolean isFamiliarHotspot(String ssid)

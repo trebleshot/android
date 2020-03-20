@@ -30,7 +30,6 @@ import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -44,13 +43,13 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddDeviceRunningTask extends AttachableBgTask<AddDevicesToTransferActivity>
+public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity>
 {
     private TransferGroup mGroup;
     private NetworkDevice mDevice;
     private DeviceConnection mConnection;
 
-    public AddDeviceRunningTask(TransferGroup group, NetworkDevice device, DeviceConnection connection)
+    public AddDeviceTask(TransferGroup group, NetworkDevice device, DeviceConnection connection)
     {
         mGroup = group;
         mDevice = device;
@@ -65,22 +64,23 @@ public class AddDeviceRunningTask extends AttachableBgTask<AddDevicesToTransferA
         final SQLiteDatabase db = kuick.getWritableDatabase();
 
         final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
-            if (getAnchorListener() != null)
-                getAnchorListener().doCommunicate(mDevice, mConnection);
+            try {
+                rerun(AppUtils.getBgService(dialog));
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         };
 
         CommunicationBridge.connect(kuick, true, client -> {
             try {
                 boolean doUpdate = false;
                 final JSONObject jsonRequest = new JSONObject();
-                final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice,
-                        TransferObject.Type.OUTGOING, mConnection);
-
+                final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
+                        mConnection);
                 final List<TransferObject> existingRegistry = kuick.castQuery(db, new SQLQuery.Select(
-                                Kuick.TABLE_TRANSFER).setWhere(Kuick.FIELD_TRANSFER_GROUPID
-                                + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(
-                        mGroup.id), TransferObject.Type.OUTGOING.toString()),
-                        TransferObject.class, null);
+                        Kuick.TABLE_TRANSFER).setWhere(Kuick.FIELD_TRANSFER_GROUPID
+                                + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(mGroup.id),
+                        TransferObject.Type.OUTGOING.toString()), TransferObject.class, null);
 
                 try {
                     // Checks if the current assignee is already on the list, if so, update
@@ -100,16 +100,15 @@ public class AddDeviceRunningTask extends AttachableBgTask<AddDevicesToTransferA
                 JSONArray filesArray = new JSONArray();
 
                 for (TransferObject transferObject : existingRegistry) {
-                    publishStatusText(transferObject.name);
+                    setCurrentContent(transferObject.name);
                     transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
 
                     if (isInterrupted())
                         throw new InterruptedException("Interrupted by user");
 
-                    JSONObject thisJson = new JSONObject();
-
                     try {
-                        thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.name)
+                        JSONObject thisJson = new JSONObject()
+                                .put(Keyword.INDEX_FILE_NAME, transferObject.name)
                                 .put(Keyword.INDEX_FILE_SIZE, transferObject.size)
                                 .put(Keyword.TRANSFER_REQUEST_ID, transferObject.id)
                                 .put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
@@ -147,7 +146,7 @@ public class AddDeviceRunningTask extends AttachableBgTask<AddDevicesToTransferA
                 JSONObject clientResponse = new JSONObject(response.response);
 
                 if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                    publishStatusText(context.getString(R.string.mesg_organizingFiles));
+                    setCurrentContent(context.getString(R.string.mesg_organizingFiles));
 
                     if (doUpdate)
                         kuick.update(db, assignee, mGroup, null);
@@ -155,36 +154,51 @@ public class AddDeviceRunningTask extends AttachableBgTask<AddDevicesToTransferA
                         kuick.insert(db, assignee, mGroup, null);
 
                     // TODO: 28.02.2020 Add listener to update the task
-                    kuick.update(db, existingRegistry, mGroup, null);
+                    kuick.update(db, existingRegistry, mGroup, progressListener());
                     kuick.broadcast();
 
-                    if (getAnchorListener() != null) {
-                        getAnchorListener().setResult(RESULT_OK, new Intent()
+                    if (anchor() != null) {
+                        anchor().setResult(RESULT_OK, new Intent()
                                 .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
                                 .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
 
-                        getAnchorListener().finish();
+                        anchor().finish();
                     }
-                } else if (getAnchorListener() != null) {
-                    UIConnectionUtils.showConnectionRejectionInformation(getAnchorListener(), mDevice,
+                } else if (anchor() != null) {
+                    UIConnectionUtils.showConnectionRejectionInformation(anchor(), mDevice,
                             clientResponse, retryButtonListener);
                 }
             } catch (Exception e) {
                 if (!(e instanceof InterruptedException)) {
                     e.printStackTrace();
 
-                    if (getAnchorListener() != null)
-                        getAnchorListener().runOnUiThread(() -> new AlertDialog.Builder(getAnchorListener())
+                    if (anchor() != null)
+                        anchor().runOnUiThread(() -> new AlertDialog.Builder(anchor())
                                 .setMessage(context.getString(R.string.mesg_fileSendError,
                                         context.getString(R.string.mesg_connectionProblem)))
                                 .setNegativeButton(R.string.butn_close, null)
                                 .setPositiveButton(R.string.butn_retry, retryButtonListener)
                                 .show());
                 }
-            } finally {
-                if (getAnchorListener() != null)
-                    getAnchorListener().runOnUiThread(() -> getAnchorListener().resetStatusViews());
             }
         });
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return null;
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return null;
+    }
+
+    private enum Task
+    {
+        ShowErrorDialog,
+        UpdateProgress
     }
 }

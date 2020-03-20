@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.service;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
@@ -32,6 +33,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -331,20 +333,24 @@ public class BackgroundService extends Service
                 || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
     }
 
-    public BackgroundTask findTaskBy(long hashCode)
+    @Nullable
+    public BackgroundTask findTaskBy(Identity identity)
     {
-        return findTaskBy(Identity.withORs(hashCode));
+        List<BackgroundTask> taskList = findTasksBy(identity);
+        return taskList.size() > 0 ? taskList.get(0) : null;
     }
 
-    public synchronized BackgroundTask findTaskBy(Identity identity)
+    @NonNull
+    public synchronized List<BackgroundTask> findTasksBy(Identity identity)
     {
+        List<BackgroundTask> taskList = new ArrayList<>();
         synchronized (mTaskList) {
-            for (BackgroundTask runningTask : getTaskList())
-                if (runningTask.getIdentity().equals(identity))
-                    return runningTask;
+            for (BackgroundTask task : getTaskList())
+                if (task.getIdentity().equals(identity))
+                    taskList.add(task);
         }
 
-        return null;
+        return taskList;
     }
 
     private HotspotUtils getHotspotUtils()
@@ -377,6 +383,7 @@ public class BackgroundService extends Service
         return mTaskList;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends BackgroundTask> List<T> getTaskListOf(Class<T> clazz)
     {
         List<T> taskList = new ArrayList<>();
@@ -391,16 +398,6 @@ public class BackgroundService extends Service
     private WifiManager.WifiLock getWifiLock()
     {
         return mWifiLock;
-    }
-
-    private boolean hasOngoingIndexing()
-    {
-        synchronized (mTaskList) {
-            for (BackgroundTask task : mTaskList)
-                if (task instanceof IndexTransferTask)
-                    return true;
-        }
-        return false;
     }
 
     public static int hashIntent(@NonNull Intent intent)
@@ -419,11 +416,20 @@ public class BackgroundService extends Service
         return builder.toString().hashCode();
     }
 
+    public <T extends BackgroundTask> boolean hasTaskOf(Class<T> clazz)
+    {
+        synchronized (mTaskList) {
+            for (BackgroundTask task : mTaskList)
+                if (clazz.isInstance(task))
+                    return true;
+        }
+        return false;
+    }
+
     private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
     {
         return findTaskBy(FileTransferTask.identityWith(groupId, deviceId, type)) != null;
     }
-
 
     private void refreshServiceState()
     {
@@ -431,10 +437,21 @@ public class BackgroundService extends Service
                 getNotificationHelper().getCommunicationServiceNotification().build());
     }
 
-    protected synchronized void registerWork(BackgroundTask runningTask)
+    protected synchronized <T extends BackgroundTask> void registerWork(T task)
     {
-        synchronized (getTaskList()) {
-            getTaskList().add(runningTask);
+        synchronized (mTaskList) {
+            mTaskList.add(task);
+        }
+
+        sendBroadcast(new Intent(ACTION_TASK_CHANGE));
+    }
+
+    public static <T extends BackgroundTask> void run(Activity activity, T task)
+    {
+        try {
+            AppUtils.getBgService(activity).run(task);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
     }
 
@@ -504,11 +521,11 @@ public class BackgroundService extends Service
     protected synchronized void unregisterWork(BackgroundTask runningTask)
     {
         synchronized (mTaskList) {
-            getTaskList().remove(runningTask);
-
-            if (getTaskList().size() <= 0)
-                stopForeground(true);
+            mTaskList.remove(runningTask);
+            // FIXME: 20.03.2020 Should we stop the service if there is no task left?
         }
+
+        sendBroadcast(new Intent(ACTION_TASK_CHANGE));
     }
 
     public class CommunicationServer extends CoolSocket
@@ -637,7 +654,7 @@ public class BackgroundService extends Service
                     switch (responseJSON.getString(Keyword.REQUEST)) {
                         case (Keyword.REQUEST_TRANSFER):
                             if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID)
-                                    && !hasOngoingIndexing()) {
+                                    && !hasTaskOf(IndexTransferTask.class)) {
                                 long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
                                 String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
                                 result = true;

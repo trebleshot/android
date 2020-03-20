@@ -36,7 +36,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.transition.TransitionManager;
@@ -60,6 +59,10 @@ public class WelcomeActivity extends Activity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if (hasIntroductionShown())
+            finish();
+
         setContentView(R.layout.activity_welcome);
         setSkipPermissionRequest(true);
         setWelcomePageDisallowed(true);

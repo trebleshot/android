@@ -31,6 +31,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,7 +116,6 @@ public class NetworkDeviceLoader
     {
         JSONObject deviceInfo = object.getJSONObject(Keyword.DEVICE_INFO);
         JSONObject appInfo = object.getJSONObject(Keyword.APP_INFO);
-
         NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
 
         try {
@@ -210,7 +210,7 @@ public class NetworkDeviceLoader
         imageView.setImageDrawable(iconBuilder.buildRound(device.nickname));
     }
 
-    public interface OnDeviceRegisteredListener
+    public interface OnDeviceRegisteredListener extends AttachedTaskListener
     {
         void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection);
     }

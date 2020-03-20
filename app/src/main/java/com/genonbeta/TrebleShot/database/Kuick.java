@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.migration.db.Migration;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.*;
@@ -179,17 +180,12 @@ public class Kuick extends KuickDb
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final V object, T parent)
     {
-        new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent).run(activity);
+        BackgroundService.run(activity, new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent));
     }
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final List<V> objects, T parent)
     {
-        new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent).run(activity);
-    }
-
-    public interface AsynchronousTask
-    {
-        void perform(BackgroundTask task);
+        BackgroundService.run(activity, new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent));
     }
 
     private static abstract class BgTaskImpl extends BackgroundTask

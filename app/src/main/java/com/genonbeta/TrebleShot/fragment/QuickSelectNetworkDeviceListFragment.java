@@ -55,27 +55,16 @@ public class QuickSelectNetworkDeviceListFragment extends NetworkDeviceListFragm
         else
             setDefaultViewingGridSize(2, 3);
 
-        setDeviceSelectedListener(new NetworkDeviceSelectedListener()
-        {
-            @Override
-            public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
-            {
-                if (getContext() != null) {
-                    getContext().sendBroadcast(new Intent(BackgroundService.ACTION_DEVICE_ACQUAINTANCE)
-                            .putExtra(BackgroundService.EXTRA_DEVICE_ID, networkDevice.id)
-                            .putExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
+        setDeviceSelectedListener((networkDevice, connection) -> {
+            if (getContext() != null) {
+                getContext().sendBroadcast(new Intent(BackgroundService.ACTION_DEVICE_ACQUAINTANCE)
+                        .putExtra(BackgroundService.EXTRA_DEVICE_ID, networkDevice.id)
+                        .putExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
 
-                    return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            public boolean isListenerEffective()
-            {
                 return true;
             }
+
+            return false;
         });
     }
 

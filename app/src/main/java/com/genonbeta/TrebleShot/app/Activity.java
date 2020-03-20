@@ -46,6 +46,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
+import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
@@ -83,6 +84,8 @@ public abstract class Activity extends AppCompatActivity
         {
             if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED.equals(intent.getAction()))
                 checkForThemeChange();
+            else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction()))
+                attachTasks();
         }
     };
 
@@ -121,9 +124,8 @@ public abstract class Activity extends AppCompatActivity
                         appliedRes = R.style.Theme_TrebleShot_Dark_NoActionBar_StaticStatusBar;
                         break;
                     default:
-                        Log.e(Activity.class.getSimpleName(), "There is an unknown theme applied. "
-                                + "Resources could fail. "
-                                + "Dark theme won't be effective");
+                        Log.e(Activity.class.getSimpleName(), "The theme in use for " + getClass().getSimpleName()
+                                + " is unknown. To change the theme to what user requested, it needs to be defined.");
                 }
 
                 mThemeLoadingFailed = appliedRes == 0;
@@ -180,7 +182,7 @@ public abstract class Activity extends AppCompatActivity
     protected void onStart()
     {
         super.onStart();
-
+        attachTasks();
         if (AppUtils.checkRunningConditions(this))
             App.notifyActivityInForeground(this, true);
     }
@@ -189,25 +191,12 @@ public abstract class Activity extends AppCompatActivity
     protected void onStop()
     {
         super.onStop();
-
-        synchronized (mAttachedTasks) {
-            for (BaseAttachableBgTask task : mAttachedTasks)
-                task.detachAnchor();
-
-            mAttachedTasks.clear();
-        }
-
+        detachTasks();
         if (AppUtils.checkRunningConditions(this))
             App.notifyActivityInForeground(this, false);
     }
 
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-    }
-
-    protected void onPreviousRunningTask(@Nullable BaseAttachableBgTask task)
+    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
     {
 
     }
@@ -277,20 +266,59 @@ public abstract class Activity extends AppCompatActivity
 
     }
 
-    public void attachRunningTask(BaseAttachableBgTask task)
+    public void attachTask(BaseAttachableBgTask task)
     {
+        if (task.getContentIntent() == null)
+            task.setContentIntent(this, getIntent());
+
         synchronized (mAttachedTasks) {
             mAttachedTasks.add(task);
         }
     }
 
-    public boolean isPowerSaveMode()
+    private synchronized void attachTasks()
     {
-        if (android.os.Build.VERSION.SDK_INT < 23)
-            return false;
+        try {
+            BackgroundService service = AppUtils.getBgService(this);
+            List<BackgroundTask> concurrentTaskList = service.findTasksBy(getIdentity());
+            List<BaseAttachableBgTask> attachableBgTaskList = new ArrayList<>(mAttachedTasks);
+            boolean checkIfExists = attachableBgTaskList.size() > 0;
 
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        return powerManager != null && powerManager.isPowerSaveMode();
+            // If this call is in between of onStart and onStop, it means there could be some tasks held in the
+            // attached task list. To avoid duplicates, we check for them using 'checkIfExists'.
+            if (concurrentTaskList.size() > 0) {
+                for (BackgroundTask task : concurrentTaskList) {
+                    if (task instanceof BaseAttachableBgTask) {
+                        BaseAttachableBgTask attachableBgTask = (BaseAttachableBgTask) task;
+                        if (!checkIfExists || !attachableBgTaskList.contains(task)) {
+                            attachTask(attachableBgTask);
+                            attachableBgTaskList.add(attachableBgTask);
+                        }
+                    }
+                }
+            }
+
+            // In this phase, we remove the tasks that are no longer known to the background service.
+            if (checkIfExists && attachableBgTaskList.size() > 0) {
+                if (concurrentTaskList.size() == 0)
+                    detachTasks();
+                else {
+                    List<BaseAttachableBgTask> unrefreshedTaskList = new ArrayList<>(attachableBgTaskList);
+                    for (BaseAttachableBgTask task : unrefreshedTaskList) {
+                        if (!concurrentTaskList.contains(task))
+                            detachTask(task);
+                    }
+                }
+            }
+
+            onAttachTasks(attachableBgTaskList);
+            for (BaseAttachableBgTask bgTask : attachableBgTaskList)
+                if (!bgTask.hasAnchor())
+                    throw new RuntimeException("The task " + bgTask.getClass().getSimpleName() + " owner "
+                            + getClass().getSimpleName() + "  did not provide the anchor.");
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     public void checkForThemeChange()
@@ -301,31 +329,23 @@ public abstract class Activity extends AppCompatActivity
             recreate();
     }
 
-    public void checkForTasks()
+    public void detachTask(BaseAttachableBgTask task)
     {
-        try {
-            BackgroundService service = AppUtils.getBgService(this);
-            BackgroundTask task = service.findTaskBy(BackgroundService.hashIntent(getIntent()));
-
-            if (task == null)
-                onPreviousRunningTask(null);
-            else if (task instanceof BaseAttachableBgTask) {
-                BaseAttachableBgTask attachable = (BaseAttachableBgTask) task;
-                onPreviousRunningTask(attachable);
-
-                synchronized (mAttachedTasks) {
-                    attachRunningTask(attachable);
-                }
-            }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+        synchronized (mAttachedTasks) {
+            task.removeAnchor();
+            mAttachedTasks.remove(task);
         }
+    }
+
+    private void detachTasks()
+    {
+        List<BaseAttachableBgTask> taskList = new ArrayList<>(mAttachedTasks);
+        for (BaseAttachableBgTask task : taskList)
+            detachTask(task);
     }
 
     /**
      * Exits app closing all the active services and connections.
-     * This will also prevent this activity from notifying {@link BackgroundService}
-     * as the user leaves to the state of {@link Activity#onPause()}
      */
     public void exitApp()
     {
@@ -333,6 +353,39 @@ public abstract class Activity extends AppCompatActivity
         stopService(new Intent(this, BackgroundService.class));
 
         finish();
+    }
+
+    public <T extends BaseAttachableBgTask> List<T> findTasks(Class<T> clazz)
+    {
+        synchronized (mAttachedTasks) {
+            return findTasks(mAttachedTasks, clazz);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends BaseAttachableBgTask> List<T> findTasks(List<BaseAttachableBgTask> taskList, Class<T> clazz)
+    {
+        List<T> matchingTaskList = new ArrayList<>();
+        for (BaseAttachableBgTask task : taskList)
+            if (clazz.isInstance(task))
+                matchingTaskList.add((T) task);
+        return matchingTaskList;
+    }
+
+    public <T extends BaseAttachableBgTask> boolean hasTask(Class<T> clazz)
+    {
+        synchronized (mAttachedTasks) {
+            return hasTask(mAttachedTasks, clazz);
+        }
+    }
+
+    public <T extends BaseAttachableBgTask> boolean hasTask(List<BaseAttachableBgTask> taskList, Class<T> clazz)
+    {
+        for (BaseAttachableBgTask task : taskList)
+            if (clazz.isInstance(task))
+                return true;
+
+        return false;
     }
 
     public Kuick getDatabase()
@@ -345,9 +398,33 @@ public abstract class Activity extends AppCompatActivity
         return AppUtils.getDefaultPreferences(this);
     }
 
+    public Identity getIdentity()
+    {
+        return Identity.withORs(BackgroundService.hashIntent(getIntent()));
+    }
+
     public boolean hasIntroductionShown()
     {
         return getDefaultPreferences().getBoolean("introduction_shown", false);
+    }
+
+    public boolean isPowerSaveMode()
+    {
+        if (android.os.Build.VERSION.SDK_INT < 23)
+            return false;
+
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        return powerManager != null && powerManager.isPowerSaveMode();
+    }
+
+    public void interruptAllTasks(boolean userAction)
+    {
+        if (mAttachedTasks.size() <= 0)
+            return;
+        synchronized (mAttachedTasks) {
+            for (BaseAttachableBgTask task : mAttachedTasks)
+                task.interrupt(userAction);
+        }
     }
 
     public boolean isAmoledDarkThemeRequested()
@@ -392,27 +469,24 @@ public abstract class Activity extends AppCompatActivity
             runOnUiThread(this::onUserProfileUpdated);
     }
 
-    public void setSkipPermissionRequest(boolean skip)
-    {
-        mSkipPermissionRequest = skip;
-    }
-
     public void requestProfilePictureChange()
     {
         startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), REQUEST_PICK_PROFILE_PHOTO);
     }
 
-    public boolean requestRequiredPermissions(boolean killActivityOtherwise)
+    public void requestRequiredPermissions(boolean finishIfOtherwise)
     {
         if (mOngoingRequest != null && mOngoingRequest.isShowing())
-            return false;
-
+            return;
         for (RationalePermissionRequest.PermissionRequest request : AppUtils.getRequiredPermissions(this))
             if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request,
-                    killActivityOtherwise)) != null)
-                return false;
+                    finishIfOtherwise)) != null)
+                break;
+    }
 
-        return true;
+    public void setSkipPermissionRequest(boolean skip)
+    {
+        mSkipPermissionRequest = skip;
     }
 
     public void setWelcomePageDisallowed(boolean disallow)

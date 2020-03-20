@@ -117,14 +117,14 @@ public class FileTransferTask extends BackgroundTask
                 else if (TransferObject.Type.OUTGOING.equals(this.type))
                     this.object.putFlag(this.device.id, flag);
 
-                getKuick().update(getDatabase(), this.object, this.group, null);
+                kuick().update(getDatabase(), this.object, this.group, null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         if (delayReached || isLast)
-            getKuick().broadcast();
+            kuick().broadcast();
     }
 
     @Override
@@ -155,7 +155,7 @@ public class FileTransferTask extends BackgroundTask
     private SQLiteDatabase getDatabase()
     {
         if (mDatabase == null)
-            mDatabase = getKuick().getWritableDatabase();
+            mDatabase = kuick().getWritableDatabase();
         return mDatabase;
     }
 
@@ -355,14 +355,14 @@ public class FileTransferTask extends BackgroundTask
                     if (this.object != null) {
                         Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
                                 + this.object.getFlag().toString());
-                        getKuick().update(getDatabase(), this.object, this.group, null);
+                        kuick().update(getDatabase(), this.object, this.group, null);
                     }
                 }
             }
 
             try {
                 DocumentFile savePath = FileUtils.getSavePath(getService(), this.group);
-                boolean areFilesDone = getKuick().getFirstFromTable(getDatabase(),
+                boolean areFilesDone = kuick().getFirstFromTable(getDatabase(),
                         TransferUtils.createIncomingSelection(this.group.id, TransferObject.Flag.DONE,
                                 false)) == null;
                 boolean jobDone = !isInterrupted() && areFilesDone;
@@ -442,7 +442,7 @@ public class FileTransferTask extends BackgroundTask
                     this.object = new TransferObject(this.group.id, request.getInt(Keyword.TRANSFER_REQUEST_ID),
                             this.type);
 
-                    getKuick().reconstruct(getDatabase(), this.object);
+                    kuick().reconstruct(getDatabase(), this.object);
 
                     this.currentFile = FileUtils.fromUri(getService(), Uri.parse(this.object.file));
                     long fileSize = this.currentFile.length();
@@ -482,7 +482,7 @@ public class FileTransferTask extends BackgroundTask
                         if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
                                 Keyword.RESULT)) {
                             this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
-                            getKuick().update(getDatabase(), this.object, this.group, null);
+                            kuick().update(getDatabase(), this.object, this.group, null);
                             continue;
                         }
 
@@ -494,7 +494,7 @@ public class FileTransferTask extends BackgroundTask
 
                     this.activeConnection.receive();
                     this.object.putFlag(this.device.id, TransferObject.Flag.IN_PROGRESS);
-                    getKuick().update(getDatabase(), this.object, this.group, null);
+                    kuick().update(getDatabase(), this.object, this.group, null);
 
                     try {
                         boolean sizeExceeded = false;
@@ -534,14 +534,14 @@ public class FileTransferTask extends BackgroundTask
                         else
                             this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
 
-                        getKuick().update(getDatabase(), this.object, this.group, null);
+                        kuick().update(getDatabase(), this.object, this.group, null);
 
                         Log.d(TAG, "handleTransferAsSender(): File sent " + this.object.name);
                     } catch (Exception e) {
                         e.printStackTrace();
                         interrupt(false);
                         this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
-                        getKuick().update(getDatabase(), this.object, this.group, null);
+                        kuick().update(getDatabase(), this.object, this.group, null);
                     } finally {
                         inputStream.close();
                     }
@@ -555,7 +555,7 @@ public class FileTransferTask extends BackgroundTask
                             .toString());
 
                     this.object.putFlag(this.device.id, TransferObject.Flag.REMOVED);
-                    getKuick().update(getDatabase(), this.object, this.group, null);
+                    kuick().update(getDatabase(), this.object, this.group, null);
                 } catch (FileNotFoundException | StreamCorruptedException e) {
                     Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + this.object.name);
 
@@ -566,7 +566,7 @@ public class FileTransferTask extends BackgroundTask
                             .toString());
 
                     this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
-                    getKuick().update(getDatabase(), this.object, this.group, null);
+                    kuick().update(getDatabase(), this.object, this.group, null);
                 } catch (Exception e) {
                     e.printStackTrace();
 
@@ -577,7 +577,7 @@ public class FileTransferTask extends BackgroundTask
                             .toString());
 
                     this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
-                    getKuick().update(getDatabase(), this.object, this.group, null);
+                    kuick().update(getDatabase(), this.object, this.group, null);
                 }
             }
         } catch (Exception e) {
@@ -648,7 +648,7 @@ public class FileTransferTask extends BackgroundTask
 
     public void startTransferAsClient()
     {
-        CommunicationBridge.connect(getKuick(), true, this::startTransferAsClientInternal);
+        CommunicationBridge.connect(kuick(), true, this::startTransferAsClientInternal);
     }
 
     void startTransferAsClientInternal(CommunicationBridge.Client client)

@@ -20,11 +20,5 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 
 public interface AttachedTaskListener
 {
-    void onAttachedToTask(BaseAttachableBgTask task);
-
-    void setTaskPosition(int ofTotal, int total);
-
-    void updateTaskPosition(int addToOfTotal, int addToTotal);
-
-    void updateTaskStatus(String text);
+    void onTaskStateChanged(BaseAttachableBgTask task);
 }

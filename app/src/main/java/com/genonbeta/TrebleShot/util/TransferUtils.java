@@ -17,9 +17,9 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -72,7 +72,7 @@ public class TransferUtils
     }
 
     public static void createFolderStructure(List<TransferObject> list, long groupId, DocumentFile file,
-                                             String directory, Stoppable stoppable, AttachedTaskListener listener)
+                                             String directory, Stoppable stoppable, Progress.Listener progress)
             throws InterruptedException
     {
         DocumentFile[] files = file.listFiles();
@@ -80,19 +80,17 @@ public class TransferUtils
         if (files == null || files.length <= 0)
             return;
 
-        if (listener != null)
-            listener.updateTaskPosition(0, files.length);
+        Progress.addToTotal(progress, files.length);
 
         for (DocumentFile thisFile : files) {
-            if (listener != null)
-                listener.updateTaskPosition(1, 0);
+            Progress.addToCurrent(progress, 1);
 
             if (stoppable.isInterrupted())
                 throw new InterruptedException();
 
             if (thisFile.isDirectory()) {
                 createFolderStructure(list, groupId, thisFile, (directory == null ? null
-                        : directory + File.separator) + thisFile.getName(), stoppable, listener);
+                        : directory + File.separator) + thisFile.getName(), stoppable, progress);
                 continue;
             }
 
@@ -473,7 +471,7 @@ public class TransferUtils
                 } else
                     startTransfer(activity, assignee);
             }
-        }.setTitle(activity.getString(R.string.mesg_completing)).run(activity);
+        }.run(activity);
     }
 
     public static void startTransfer(final Activity activity, final TransferAssignee assignee)

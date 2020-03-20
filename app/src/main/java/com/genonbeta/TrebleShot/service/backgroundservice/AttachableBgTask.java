@@ -18,37 +18,116 @@
 
 package com.genonbeta.TrebleShot.service.backgroundservice;
 
-import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AttachableBgTask<T extends AttachedTaskListener> extends BaseAttachableBgTask
 {
-    private T mAnchorListener;
+    public static final int OVERRIDE_BY_ALL = 1;
+    public static final int OVERRIDE_BY_NONE = 2;
+    public static final int OVERRIDE_BY_SELF = 4;
 
-    @Override
-    public void detachAnchor()
-    {
-        mAnchorListener = null;
-    }
+    private T mAnchor;
+    private final List<Call<T>> mCallList = new ArrayList<>();
 
-    @Nullable
-    public T getAnchorListener()
+    protected boolean doesOverride(Call<T> call, Call<T> currentCall)
     {
-        return mAnchorListener;
-    }
+        if ((call.overrideBy & OVERRIDE_BY_NONE) != 0)
+            return false;
 
-    public AttachableBgTask<T> setAnchorListener(T listener)
-    {
-        mAnchorListener = listener;
-        listener.onAttachedToTask(this);
-        return this;
+        return ((call.overrideBy & OVERRIDE_BY_SELF) != 0 && call.taskId.ordinal() == currentCall.taskId.ordinal())
+                || (call.overrideBy & OVERRIDE_BY_ALL) != 0;
     }
 
     @Override
-    public boolean publishStatusText(String text)
+    public boolean hasAnchor()
     {
-        if (mAnchorListener != null)
-            mAnchorListener.updateTaskStatus(text);
+        return mAnchor != null;
+    }
 
-        return super.publishStatusText(text);
+    public void post(Call<T> currentCall)
+    {
+        postAll();
+
+        if (hasAnchor())
+            currentCall.now(mAnchor);
+        else {
+            synchronized (mCallList) {
+                List<Call<T>> newList = new ArrayList<>();
+                for (Call<T> call : mCallList)
+                    if (doesOverride(call, currentCall))
+                        newList.add(call);
+
+                mCallList.clear();
+                mCallList.addAll(newList);
+            }
+        }
+    }
+
+    private void postAll()
+    {
+        if (mCallList.size() <= 0)
+            return;
+
+        synchronized (mCallList) {
+            boolean doneAll = true;
+            for (Call<T> call : mCallList) {
+                if (hasAnchor()) {
+                    call.now(mAnchor);
+                    call.done = true;
+                } else {
+                    doneAll = false;
+                    break;
+                }
+            }
+
+            if (doneAll)
+                mCallList.clear();
+            else {
+                List<Call<T>> newList = new ArrayList<>();
+                for (Call<T> call : mCallList)
+                    if (!call.done)
+                        newList.add(call);
+
+                mCallList.clear();
+                mCallList.addAll(newList);
+            }
+        }
+    }
+
+    @Override
+    public boolean publishStatus()
+    {
+        if (hasAnchor())
+            mAnchor.onTaskStateChanged(this);
+        return super.publishStatus();
+    }
+
+    @Override
+    public void removeAnchor()
+    {
+        mAnchor = null;
+    }
+
+    public void setAnchor(T anchor)
+    {
+        mAnchor = anchor;
+        publishStatus();
+        postAll();
+    }
+
+    public static abstract class Call<T extends AttachedTaskListener>
+    {
+        public int overrideBy;
+        public Enum<?> taskId;
+        boolean done;
+
+        public Call(Enum<?> taskId, int overrideBy)
+        {
+            this.taskId = taskId;
+            this.overrideBy = overrideBy;
+        }
+
+        public abstract void now(T anchor);
     }
 }

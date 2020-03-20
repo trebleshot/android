@@ -19,12 +19,9 @@
 package com.genonbeta.TrebleShot.service.backgroundservice;
 
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.MediaScannerConnection;
-import android.os.IBinder;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Identifiable;
@@ -54,6 +51,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     private ProgressListener mProgressListener = new ProgressListener();
     private String mCurrentContent;
     private boolean mPublishRequested = false;
+    private boolean mFinished = false;
     private int mHash = 0;
 
     protected abstract void onRun() throws InterruptedException;
@@ -69,7 +67,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return getStoppable().addCloser(closer);
     }
 
-    public boolean consumeInfoChanges()
+    public boolean consumeChanges()
     {
         if (mPublishRequested) {
             mPublishRequested = false;
@@ -112,13 +110,6 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     public Identity getIdentity()
     {
         return Identity.withORs(hashCode());
-    }
-
-    public Kuick getKuick()
-    {
-        if (mKuick == null)
-            mKuick = AppUtils.getKuick(getService());
-        return mKuick;
     }
 
     protected MediaScannerConnection getMediaScanner()
@@ -173,6 +164,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return getStoppable().interrupt(userAction);
     }
 
+    public boolean isFinished()
+    {
+        return mFinished;
+    }
+
     @Override
     public boolean isInterrupted()
     {
@@ -183,6 +179,13 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     public boolean isInterruptedByUser()
     {
         return getStoppable().isInterruptedByUser();
+    }
+
+    public Kuick kuick()
+    {
+        if (mKuick == null)
+            mKuick = AppUtils.getKuick(getService());
+        return mKuick;
     }
 
     public Progress progress()
@@ -210,16 +213,29 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return getStoppable().removeCloser(closer);
     }
 
+    public void rerun(BackgroundService service)
+    {
+        reset(true);
+        service.run(this);
+    }
+
     @Override
     public void reset()
     {
         getStoppable().reset();
+        resetInternal();
     }
 
     @Override
     public void reset(boolean resetClosers)
     {
         getStoppable().reset(resetClosers);
+        resetInternal();
+    }
+
+    private void resetInternal() {
+        setFinished(false);
+        progressListener().setProgress(null);
     }
 
     @Override
@@ -230,40 +246,20 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
     public void run(BackgroundService service)
     {
+        if (isFinished() || isInterrupted())
+            throw new IllegalStateException(getClass().getName() + " is already in interrupted state. To run it "
+                    + "again with the same configuration you need to use rerun().");
         try {
             setService(service);
+            publishStatus();
             run(getStoppable());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            setFinished(true);
+            publishStatus();
             setService(null);
         }
-    }
-
-    public boolean run(final Context context)
-    {
-        ServiceConnection serviceConnection = new ServiceConnection()
-        {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service)
-            {
-                AppUtils.startService(context, new Intent(context, BackgroundService.class));
-
-                BackgroundService workerService = ((BackgroundService.LocalBinder) service).getService();
-                workerService.run(BackgroundTask.this);
-
-                context.unbindService(this);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name)
-            {
-
-            }
-        };
-
-        return context.bindService(new Intent(context, BackgroundService.class), serviceConnection,
-                Context.BIND_AUTO_CREATE);
     }
 
     public void setContentIntent(PendingIntent intent)
@@ -285,6 +281,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     public void setCustomNotification(DynamicNotification notification)
     {
         mCustomNotification = notification;
+    }
+
+    private void setFinished(boolean finished)
+    {
+        mFinished = finished;
     }
 
     private void setService(@Nullable BackgroundService service)

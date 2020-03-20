@@ -21,16 +21,16 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
-import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
+import com.genonbeta.TrebleShot.task.OrganizeSharingTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -49,11 +49,11 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
 
     private Bundle mPreLoadingBundle = new Bundle();
     private ProgressBar mProgressBar;
-    private TextView mProgressTextLeft;
-    private TextView mProgressTextRight;
+    private TextView mProgressTextCurrent;
+    private TextView mProgressTextTotal;
     private TextView mTextMain;
     private List<Uri> mFileUris;
-    private OrganizeSharingRunningTask mTask;
+    private boolean mHadTask = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,6 +61,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
+        mHadTask = savedInstanceState.getBoolean("had_task", mHadTask);
         String action = getIntent() != null ? getIntent().getAction() : null;
 
         if (ACTION_SEND.equals(action) || ACTION_SEND_MULTIPLE.equals(action) || Intent.ACTION_SEND.equals(action)
@@ -86,18 +87,12 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                     finish();
                 } else {
                     mProgressBar = findViewById(R.id.progressBar);
-                    mProgressTextLeft = findViewById(R.id.text1);
-                    mProgressTextRight = findViewById(R.id.text2);
+                    mProgressTextCurrent = findViewById(R.id.text1);
+                    mProgressTextTotal = findViewById(R.id.text2);
                     mTextMain = findViewById(R.id.textMain);
-
-                    findViewById(R.id.cancelButton).setOnClickListener(v -> {
-                        if (mTask != null)
-                            mTask.interrupt(true);
-                    });
-
                     mFileUris = fileUris;
 
-                    checkForTasks();
+                    findViewById(R.id.cancelButton).setOnClickListener(v -> interruptAllTasks(true));
                 }
             }
         } else {
@@ -107,30 +102,50 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    public void onAttachedToTask(BaseAttachableBgTask task)
+    protected void onSaveInstanceState(@NonNull Bundle outState)
     {
-
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("had_task", mHadTask);
     }
 
     @Override
-    protected void onPreviousRunningTask(@Nullable BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableBgTask task)
     {
-        super.onPreviousRunningTask(task);
+        if (task instanceof OrganizeSharingTask) {
+            if (task.isFinished()) {
+                finish();
+                return;
+            }
 
-        if (task instanceof OrganizeSharingRunningTask) {
-            mTask = ((OrganizeSharingRunningTask) task);
-            mTask.setAnchorListener(this);
-        } else {
-            mTask = new OrganizeSharingRunningTask(mFileUris);
+            int progress = task.progress().getCurrent();
+            int total = task.progress().getTotal();
 
-            Log.d(TAG, "onPreviousRunningTask: Created new task");
+            runOnUiThread(() -> {
+                mTextMain.setText(task.getCurrentContent());
+                mProgressTextCurrent.setText(String.valueOf(progress));
+                mProgressTextTotal.setText(String.valueOf(total));
+            });
 
-            mTask.setAnchorListener(this)
-                    .setTitle(getString(R.string.mesg_organizingFiles))
-                    .setContentIntent(this, getIntent())
-                    .run(this);
+            mProgressBar.setProgress(progress);
+            mProgressBar.setMax(total);
+        }
+    }
 
-            attachRunningTask(mTask);
+    @Override
+    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    {
+        super.onAttachTasks(taskList);
+        for (BaseAttachableBgTask task : taskList)
+            if (task instanceof OrganizeSharingTask)
+                ((OrganizeSharingTask) task).setAnchor(this);
+
+        if (!hasTask(OrganizeSharingTask.class)) {
+            if (mHadTask)
+                finish();
+            else {
+                BackgroundService.run(this, new OrganizeSharingTask(mFileUris));
+                mHadTask = true;
+            }
         }
     }
 
@@ -148,49 +163,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     public Bundle passPreLoadingArguments()
     {
         return mPreLoadingBundle;
-    }
-
-    @Override
-    public void setTaskPosition(int ofTotal, int total)
-    {
-        if (isFinishing())
-            return;
-
-        runOnUiThread(() -> {
-            mProgressTextLeft.setText(String.valueOf(ofTotal));
-            mProgressTextRight.setText(String.valueOf(total));
-        });
-
-        mProgressBar.setProgress(total);
-        mProgressBar.setMax(total);
-    }
-
-    @Override
-    public void updateTaskPosition(int addToOfTotal, int addToTotal)
-    {
-        if (isFinishing())
-            return;
-
-        if (addToOfTotal != 0) {
-            int newPosition = getProgressBar().getProgress() + addToOfTotal;
-            runOnUiThread(() -> mProgressTextLeft.setText(String.valueOf(newPosition)));
-            mProgressBar.setProgress(newPosition);
-        }
-
-        if (addToTotal != 0) {
-            int newPosition = getProgressBar().getMax() + addToTotal;
-            runOnUiThread(() -> mProgressTextRight.setText(String.valueOf(newPosition)));
-            mProgressBar.setMax(newPosition);
-        }
-    }
-
-    @Override
-    public void updateTaskStatus(String text)
-    {
-        if (isFinishing())
-            return;
-
-        runOnUiThread(() -> mTextMain.setText(text));
     }
 }
 

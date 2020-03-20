@@ -20,5 +20,7 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 
 public abstract class BaseAttachableBgTask extends BackgroundTask
 {
-    public abstract void detachAnchor();
+    public abstract boolean hasAnchor();
+
+    public abstract void removeAnchor();
 }

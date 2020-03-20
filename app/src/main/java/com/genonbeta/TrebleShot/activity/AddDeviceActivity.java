@@ -60,7 +60,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class AddDeviceActivity extends Activity implements SnackbarPlacementProvider
+public class AddDeviceActivity extends Activity implements SnackbarPlacementProvider, NetworkDeviceSelectedListener
 {
     public static final String ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT";
     public static final String EXTRA_FRAGMENT_ENUM = "extraFragmentEnum";
@@ -78,59 +78,12 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     private ProgressBar mProgressBar;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
-    private final NetworkDeviceSelectedListener mDeviceSelectionListener = new NetworkDeviceSelectedListener()
-    {
-        @Override
-        public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
-        {
-            if (mRequestType.equals(RequestType.RETURN_RESULT)) {
-                setResult(RESULT_OK, new Intent()
-                        .putExtra(EXTRA_DEVICE_ID, networkDevice.id)
-                        .putExtra(EXTRA_CONNECTION_ADAPTER, connection.adapterName));
-
-                finish();
-            } else {
-                ConnectionUtils connectionUtils = ConnectionUtils.getInstance(AddDeviceActivity.this);
-                UIConnectionUtils uiUtils = new UIConnectionUtils(connectionUtils, AddDeviceActivity.this);
-
-                UITask uiTask = new UITask()
-                {
-                    @Override
-                    public void updateTaskStarted(Stoppable stoppable)
-                    {
-                        mProgressBar.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void updateTaskStopped()
-                    {
-                        mProgressBar.setVisibility(View.GONE);
-                    }
-                };
-
-                NetworkDeviceLoader.OnDeviceRegisteredListener listener =
-                        (database, device, connection1) -> createSnackbar(R.string.mesg_completing).show();
-
-                uiUtils.makeAcquaintance(AddDeviceActivity.this, uiTask, connection, -1, listener);
-            }
-
-            return true;
-        }
-
-        @Override
-        public boolean isListenerEffective()
-        {
-            return true;
-        }
-    };
-
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (ACTION_CHANGE_FRAGMENT.equals(intent.getAction())
-                    && intent.hasExtra(EXTRA_FRAGMENT_ENUM)) {
+            if (ACTION_CHANGE_FRAGMENT.equals(intent.getAction()) && intent.hasExtra(EXTRA_FRAGMENT_ENUM)) {
                 String fragmentEnum = intent.getStringExtra(EXTRA_FRAGMENT_ENUM);
 
                 try {
@@ -155,7 +108,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                         AppUtils.getKuick(AddDeviceActivity.this).reconstruct(device);
                         AppUtils.getKuick(AddDeviceActivity.this).reconstruct(connection);
 
-                        mDeviceSelectionListener.onNetworkDeviceSelected(device, connection);
+                        onNetworkDeviceSelected(device, connection);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -256,12 +209,49 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         return true;
     }
 
+    @Override
+    public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
+    {
+        if (mRequestType.equals(RequestType.RETURN_RESULT)) {
+            setResult(RESULT_OK, new Intent()
+                    .putExtra(EXTRA_DEVICE_ID, networkDevice.id)
+                    .putExtra(EXTRA_CONNECTION_ADAPTER, connection.adapterName));
+
+            finish();
+        } else {
+            ConnectionUtils connectionUtils = ConnectionUtils.getInstance(AddDeviceActivity.this);
+            UIConnectionUtils uiUtils = new UIConnectionUtils(connectionUtils, AddDeviceActivity.this);
+
+            UITask uiTask = new UITask()
+            {
+                @Override
+                public void updateTaskStarted(Stoppable stoppable)
+                {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void updateTaskStopped()
+                {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            };
+
+            NetworkDeviceLoader.OnDeviceRegisteredListener listener =
+                    (database, device, connection1) -> createSnackbar(R.string.mesg_completing).show();
+
+            uiUtils.makeAcquaintance(AddDeviceActivity.this, uiTask, connection, -1, listener);
+        }
+
+        return true;
+    }
+
     public void applyViewChanges(Fragment fragment)
     {
         boolean isOptions = fragment instanceof OptionsFragment;
 
         if (fragment instanceof DeviceSelectionSupport)
-            ((DeviceSelectionSupport) fragment).setDeviceSelectedListener(mDeviceSelectionListener);
+            ((DeviceSelectionSupport) fragment).setDeviceSelectedListener(this);
 
         if (getSupportActionBar() != null) {
             mToolbarLayout.setTitle(fragment instanceof TitleProvider
@@ -359,7 +349,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     {
         ConnectionUtils connectionUtils = ConnectionUtils.getInstance(this);
         UIConnectionUtils uiConnectionUtils = new UIConnectionUtils(connectionUtils, this);
-        new ManualIpAddressConnectionDialog(this, uiConnectionUtils, mDeviceSelectionListener).show();
+        new ManualIpAddressConnectionDialog(this, uiConnectionUtils, this).show();
     }
 
     public enum RequestType
@@ -383,8 +373,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         void setDeviceSelectedListener(NetworkDeviceSelectedListener listener);
     }
 
-    public static class OptionsFragment
-            extends com.genonbeta.android.framework.app.Fragment
+    public static class OptionsFragment extends com.genonbeta.android.framework.app.Fragment
             implements DeviceSelectionSupport
     {
         public static final int REQUEST_CHOOSE_DEVICE = 100;
@@ -393,7 +382,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
         @Nullable
         @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState)
         {
             View view = inflater.inflate(R.layout.layout_connection_options_fragment, container, false);
 
@@ -436,9 +426,11 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             if (requestCode == REQUEST_CHOOSE_DEVICE)
                 if (resultCode == RESULT_OK && data != null) {
                     try {
-                        NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
+                        NetworkDevice device = new NetworkDevice(data.getStringExtra(
+                                BarcodeScannerActivity.EXTRA_DEVICE_ID));
                         AppUtils.getKuick(getContext()).reconstruct(device);
-                        DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
+                        DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(
+                                BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
                         AppUtils.getKuick(getContext()).reconstruct(connection);
 
                         if (mListener != null)
@@ -451,8 +443,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
         private void startCodeScanner()
         {
-            startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class),
-                    REQUEST_CHOOSE_DEVICE);
+            startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class), REQUEST_CHOOSE_DEVICE);
         }
 
         public void updateFragment(AvailableFragment fragment)

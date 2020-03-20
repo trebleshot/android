@@ -253,7 +253,7 @@ public class ConnectionUtils
 
     /**
      * @param ssid  The SSID that will be used to filter.
-     * @param bssid The MAC address of the network. Its use is prioritized when not null as it is unique.
+     * @param bssid The MAC address of the network. Its use is prioritized when not null since it is unique.
      * @return The matching configuration or null if no configuration matched with the given parameters.
      * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
      * APIs it makes use of.

@@ -46,33 +46,32 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
-import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
+import com.genonbeta.TrebleShot.task.AddDeviceTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.List;
+
 public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
-    public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
-
-    public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
-
     public static final String
+            TAG = AddDevicesToTransferActivity.class.getSimpleName(),
             EXTRA_DEVICE_ID = "extraDeviceId",
             EXTRA_GROUP_ID = "extraGroupId",
             EXTRA_FLAGS = "extraFlags";
 
     public static final int
+            REQUEST_CODE_CHOOSE_DEVICE = 0,
             FLAG_LAUNCH_DEVICE_CHOOSER = 1;
 
     private TransferGroup mGroup = null;
-    private AddDeviceRunningTask mTask;
     private ExtendedFloatingActionButton mActionButton;
     private ProgressBar mProgressBar;
     private ViewGroup mLayoutStatusContainer;
-    private TextView mProgressTextLeft;
-    private TextView mProgressTextRight;
+    private TextView mProgressTextCurrent;
+    private TextView mProgressTextTotal;
     private int mColorActive;
     private int mColorNormal;
     private IntentFilter mFilter = new IntentFilter(Kuick.ACTION_DATABASE_CHANGE);
@@ -126,8 +125,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
         mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
         mProgressBar = findViewById(R.id.progressBar);
-        mProgressTextLeft = findViewById(R.id.text1);
-        mProgressTextRight = findViewById(R.id.text2);
+        mProgressTextCurrent = findViewById(R.id.text1);
+        mProgressTextTotal = findViewById(R.id.text2);
         mActionButton = findViewById(R.id.content_fab);
         mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
 
@@ -144,8 +143,6 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
             transaction.add(R.id.assigneeListFragment, assigneeListFragment);
             transaction.commit();
         }
-
-        resetStatusViews();
     }
 
     @Override
@@ -154,18 +151,14 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         int id = item.getItemId();
 
         if (id == android.R.id.home || id == R.id.actions_add_devices_done) {
-            if (mTask != null)
-                mTask.interrupt();
-
+            interruptAllTasks(true);
             finish();
         } else if (id == R.id.actions_add_devices_help) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setTitle(R.string.text_help)
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.text_help)
                     .setMessage(R.string.text_addDeviceHelp)
-                    .setPositiveButton(R.string.butn_close, null);
-
-            builder.show();
+                    .setPositiveButton(R.string.butn_close, null)
+                    .show();
         } else
             return super.onOptionsItemSelected(item);
 
@@ -175,8 +168,9 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_add_devices, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -208,21 +202,13 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    protected void onPreviousRunningTask(@Nullable BaseAttachableBgTask task)
+    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
     {
-        super.onPreviousRunningTask(task);
+        super.onAttachTasks(taskList);
 
-        if (task instanceof AddDeviceRunningTask) {
-            mTask = ((AddDeviceRunningTask) task);
-            mTask.setAnchorListener(this);
-        }
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        checkForTasks();
+        for (BaseAttachableBgTask task : taskList)
+            if (task instanceof AddDeviceTask)
+                ((AddDeviceTask) task).setAnchor(this);
     }
 
     @Override
@@ -243,9 +229,20 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    public void onAttachedToTask(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableBgTask task)
     {
-        takeOnProcessMode();
+        if (task instanceof AddDeviceTask) {
+            int progress = task.progress().getCurrent();
+            int total = task.progress().getTotal();
+
+            runOnUiThread(() -> {
+                mProgressTextCurrent.setText(String.valueOf(progress));
+                mProgressTextTotal.setText(String.valueOf(total));
+            });
+
+            mProgressBar.setProgress(progress);
+            mProgressBar.setMax(total);
+        }
     }
 
     public boolean checkGroupIntegrity()
@@ -278,91 +275,27 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
     public void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
     {
-        AddDeviceRunningTask task = new AddDeviceRunningTask(mGroup, device, connection);
-
-        task.setAnchorListener(this)
-                .setTitle(getString(R.string.mesg_communicating))
-                .setContentIntent(this, getIntent())
-                .run(this);
-
-        attachRunningTask(task);
+        BackgroundService.run(this, new AddDeviceTask(mGroup, device, connection));
     }
 
-    @Override
-    public Intent getIntent()
+    public void setNowAdding(boolean adding)
     {
-        return super.getIntent();
-    }
-
-    public void resetStatusViews()
-    {
-        mProgressBar.setMax(0);
-        mProgressBar.setProgress(0);
-
-        //mTextMain.setText(R.string.text_addDevicesToTransfer);
-        mActionButton.setIconResource(R.drawable.ic_add_white_24dp);
-        mActionButton.setText(R.string.butn_addMore);
-        mActionButton.setBackgroundTintList(ColorStateList.valueOf(mColorNormal));
-        mLayoutStatusContainer.setVisibility(View.GONE);
-        mActionButton.setOnClickListener(v -> startConnectionManagerActivity());
+        mLayoutStatusContainer.setVisibility(adding ? View.VISIBLE : View.GONE);
+        mActionButton.setIconResource(adding ? R.drawable.ic_close_white_24dp : R.drawable.ic_add_white_24dp);
+        mActionButton.setText(adding ? R.string.butn_cancel : R.string.butn_addMore);
+        mActionButton.setBackgroundTintList(ColorStateList.valueOf(adding ? mColorActive : mColorNormal));
+        mActionButton.setOnClickListener(v -> {
+            if (adding)
+                interruptAllTasks(true);
+            else
+                startConnectionManagerActivity();
+        });
     }
 
     private void startConnectionManagerActivity()
     {
         startActivityForResult(new Intent(AddDevicesToTransferActivity.this, AddDeviceActivity.class),
                 REQUEST_CODE_CHOOSE_DEVICE);
-    }
-
-    public void takeOnProcessMode()
-    {
-        mLayoutStatusContainer.setVisibility(View.VISIBLE);
-        mActionButton.setText(R.string.butn_cancel);
-        mActionButton.setIconResource(R.drawable.ic_close_white_24dp);
-        mActionButton.setBackgroundTintList(ColorStateList.valueOf(mColorActive));
-        mActionButton.setOnClickListener(v -> {
-            if (mTask != null)
-                mTask.interrupt();
-        });
-    }
-
-    @Override
-    public void setTaskPosition(int ofTotal, int total)
-    {
-        if (isFinishing())
-            return;
-
-        runOnUiThread(() -> {
-            mProgressTextLeft.setText(String.valueOf(ofTotal));
-            mProgressTextRight.setText(String.valueOf(total));
-        });
-
-        mProgressBar.setProgress(ofTotal);
-        mProgressBar.setMax(total);
-    }
-
-    @Override
-    public void updateTaskPosition(int addToOfTotal, int addToTotal)
-    {
-        if (isFinishing())
-            return;
-
-        if (addToOfTotal != 0) {
-            int newPosition = mProgressBar.getProgress() + addToOfTotal;
-            runOnUiThread(() -> mProgressTextLeft.setText(String.valueOf(newPosition)));
-            mProgressBar.setProgress(newPosition);
-        }
-
-        if (addToTotal != 0) {
-            int newPosition = mProgressBar.getMax() + addToTotal;
-            runOnUiThread(() -> mProgressTextRight.setText(String.valueOf(newPosition)));
-            mProgressBar.setMax(newPosition);
-        }
-    }
-
-    @Override
-    public void updateTaskStatus(String text)
-    {
-
     }
 }
 

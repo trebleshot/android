@@ -24,6 +24,7 @@ import com.genonbeta.android.framework.util.Stoppable;
  * created by: veli
  * date: 16/04/18 22:41
  */
+// TODO: 18.03.2020 Remove this and use BackgroundTask
 public interface UITask
 {
     void updateTaskStarted(final Stoppable stoppable);

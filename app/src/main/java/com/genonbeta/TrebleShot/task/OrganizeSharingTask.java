@@ -23,7 +23,6 @@ import android.net.Uri;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
-import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -32,7 +31,6 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -40,11 +38,11 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganizeSharingRunningTask extends AttachableBgTask<AttachedTaskListener>
+public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
 {
     private List<Uri> mUriList;
 
-    public OrganizeSharingRunningTask(List<Uri> fileUris)
+    public OrganizeSharingTask(List<Uri> fileUris)
     {
         mUriList = fileUris;
     }
@@ -52,33 +50,27 @@ public class OrganizeSharingRunningTask extends AttachableBgTask<AttachedTaskLis
     @Override
     public void onRun() throws InterruptedException
     {
-        if (getAnchorListener() != null) {
-            getAnchorListener().setTaskPosition(0, mUriList.size());
-            publishStatusText(getService().getString(R.string.mesg_organizingFiles));
-        }
-
-        final Kuick kuick = AppUtils.getKuick(getService());
-        final SQLiteDatabase db = kuick.getWritableDatabase();
+        final SQLiteDatabase db = kuick().getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
         final List<TransferObject> list = new ArrayList<>();
 
-        for (int position = 0; position < mUriList.size(); position++) {
+        progress().addToTotal(mUriList.size());
+        publishStatus();
+
+        for (Uri uri : mUriList) {
             if (isInterrupted())
                 throw new InterruptedException();
 
-            publishStatusText(getService().getString(R.string.text_transferStatusFiles, position, mUriList.size()));
-
-            if (getAnchorListener() != null)
-                getAnchorListener().updateTaskPosition(1, 0);
-
-            Uri fileUri = mUriList.get(position);
+            progress().addToCurrent(1);
 
             try {
-                DocumentFile file = FileUtils.fromUri(getService(), fileUri);
+                DocumentFile file = FileUtils.fromUri(getService(), uri);
+                setCurrentContent(file.getName());
+                publishStatus();
 
                 if (file.isDirectory())
                     TransferUtils.createFolderStructure(list, group.id, file, file.getName(), this,
-                            getAnchorListener());
+                            progressListener());
                 else
                     list.add(TransferObject.from(file, group.id, null));
             } catch (FileNotFoundException e) {
@@ -86,32 +78,27 @@ public class OrganizeSharingRunningTask extends AttachableBgTask<AttachedTaskLis
             }
         }
 
-        if (getAnchorListener() != null)
-            publishStatusText(getService().getString(R.string.mesg_completing));
+        if (list.size() > 0) {
+            kuick().insert(db, list, group, progressListener());
+            kuick().insert(db, group, null, progressListener());
+            addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(group.id))));
 
-        Progress.SimpleListener simpleListener = new Progress.SimpleListener()
-        {
-            @Override
-            public boolean onProgressChange(Progress progress)
-            {
-                if (getAnchorListener() != null)
-                    getAnchorListener().setTaskPosition(progress.getTotal(), progress.getCurrent());
+            ViewTransferActivity.startInstance(getService(), group.id);
+            AddDevicesToTransferActivity.startInstance(getService(), group.id, true);
+            kuick().broadcast();
+        }
+    }
 
-                return !isInterrupted();
-            }
-        };
+    @Override
+    public String getDescription()
+    {
+        return getService().getString(R.string.mesg_organizingFiles);
+    }
 
-        kuick.insert(db, list, group, simpleListener);
-        kuick.insert(db, group, null, simpleListener);
-        addCloser((userAction) -> kuick.remove(db, new SQLQuery.Select(
-                Kuick.TABLE_TRANSFER).setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID),
-                String.valueOf(group.id))));
-
-        ViewTransferActivity.startInstance(getService(), group.id);
-        AddDevicesToTransferActivity.startInstance(getService(), group.id, true);
-        kuick.broadcast();
-
-        if (getAnchorListener() instanceof Activity)
-            ((Activity) getAnchorListener()).finish();
+    @Override
+    public String getTitle()
+    {
+        return getService().getString(R.string.mesg_organizingFiles);
     }
 }
