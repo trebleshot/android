@@ -28,7 +28,6 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 
 public class BarcodeScannerActivity extends Activity
 {

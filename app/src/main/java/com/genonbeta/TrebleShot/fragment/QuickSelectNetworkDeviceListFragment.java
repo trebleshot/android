@@ -23,10 +23,8 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 
 /**
  * created by: veli

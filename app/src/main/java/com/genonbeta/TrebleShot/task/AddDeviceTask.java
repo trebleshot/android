@@ -153,32 +153,48 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     else
                         kuick.insert(db, assignee, mGroup, null);
 
-                    // TODO: 28.02.2020 Add listener to update the task
                     kuick.update(db, existingRegistry, mGroup, progressListener());
                     kuick.broadcast();
 
-                    if (anchor() != null) {
-                        anchor().setResult(RESULT_OK, new Intent()
-                                .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
-                                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
+                    post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
+                    {
+                        @Override
+                        public void now(AddDevicesToTransferActivity anchor)
+                        {
+                            anchor.setResult(RESULT_OK, new Intent()
+                                    .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
+                                    .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
 
-                        anchor().finish();
-                    }
-                } else if (anchor() != null) {
-                    UIConnectionUtils.showConnectionRejectionInformation(anchor(), mDevice,
-                            clientResponse, retryButtonListener);
-                }
+                            anchor.finish();
+                        }
+                    });
+                } else
+                    post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
+                    {
+                        @Override
+                        public void now(AddDevicesToTransferActivity anchor)
+                        {
+                            UIConnectionUtils.showConnectionRejectionInformation(anchor, mDevice,
+                                    clientResponse, retryButtonListener);
+                        }
+                    });
             } catch (Exception e) {
                 if (!(e instanceof InterruptedException)) {
                     e.printStackTrace();
 
-                    if (anchor() != null)
-                        anchor().runOnUiThread(() -> new AlertDialog.Builder(anchor())
-                                .setMessage(context.getString(R.string.mesg_fileSendError,
-                                        context.getString(R.string.mesg_connectionProblem)))
-                                .setNegativeButton(R.string.butn_close, null)
-                                .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                .show());
+                    post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
+                    {
+                        @Override
+                        public void now(AddDevicesToTransferActivity anchor)
+                        {
+                            anchor.runOnUiThread(() -> new AlertDialog.Builder(anchor)
+                                    .setMessage(context.getString(R.string.mesg_fileSendError,
+                                            context.getString(R.string.mesg_connectionProblem)))
+                                    .setNegativeButton(R.string.butn_close, null)
+                                    .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                    .show());
+                        }
+                    });
                 }
             }
         });
@@ -196,9 +212,8 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         return null;
     }
 
-    private enum Task
+    private enum TaskId
     {
-        ShowErrorDialog,
-        UpdateProgress
+        Finalize
     }
 }

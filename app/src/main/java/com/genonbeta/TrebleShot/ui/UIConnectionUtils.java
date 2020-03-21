@@ -107,18 +107,10 @@ public class UIConnectionUtils
         return mSnackbarSupport;
     }
 
-    public void makeAcquaintance(final Activity activity, final Object object, final int accessPin,
-                                 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
-    {
-        BackgroundService.run(activity, new DeviceIntroductionTask());
-    }
-
     public boolean notifyWirelessRequestHandled()
     {
         boolean returnedState = mWirelessEnableRequested;
-
         mWirelessEnableRequested = false;
-
         return returnedState;
     }
 

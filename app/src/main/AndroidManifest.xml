@@ -163,6 +163,7 @@
         <activity
                 android:name=".activity.WebShareActivity"
                 android:label="@string/text_webShare"/>
+        <activity android:name=".activity.IpAddressConnectionActivity"/>
 
         <provider
                 android:name="androidx.core.content.FileProvider"

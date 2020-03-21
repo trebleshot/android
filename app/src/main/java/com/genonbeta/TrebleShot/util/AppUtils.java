@@ -273,7 +273,7 @@ public class AppUtils
             activity = ((Dialog) dialog).getOwnerActivity();
 
         if (activity == null)
-            throw new IllegalStateException("This dialog type is not known to be able gather the activity from.");
+            throw new IllegalStateException("This dialog type is not a known type to gather the activity from.");
 
         return activity;
     }

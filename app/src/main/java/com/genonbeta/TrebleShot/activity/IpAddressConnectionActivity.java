@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,18 +16,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.ui;
+package com.genonbeta.TrebleShot.activity;
 
-import com.genonbeta.android.framework.util.Stoppable;
+import android.os.Bundle;
+import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.Activity;
 
-/**
- * created by: veli
- * date: 16/04/18 22:41
- */
-// TODO: 18.03.2020 Remove this and use BackgroundTask
-public interface UITask
+public class IpAddressConnectionActivity extends Activity
 {
-    void updateTaskStarted(final Stoppable stoppable);
-
-    void updateTaskStopped();
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ip_address_connection);
+    }
 }

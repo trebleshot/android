@@ -171,6 +171,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
         void setDate(long date);
 
+        void setId(long id);
+
         void setSize(long size);
     }
 

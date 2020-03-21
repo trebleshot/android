@@ -42,26 +42,24 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.TrebleShot.task.AddDeviceTask;
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
-import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegisteredErrorListener;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.EditableNetworkDevice;
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.HotspotNetwork;
 
-public class NetworkDeviceListFragment extends EditableListFragment<EditableNetworkDevice,
-        RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider,
-        AddDeviceActivity.DeviceSelectionSupport
+public class NetworkDeviceListFragment extends EditableListFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder,
+        NetworkDeviceListAdapter> implements IconProvider
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -69,7 +67,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     public static final String ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList";
 
     private NsdDiscovery mNsdDiscovery;
-    private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -96,20 +93,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
         }
 
 
-    };
-
-    private OnDeviceRegisteredErrorListener mDeviceErrorListener = new OnDeviceRegisteredErrorListener()
-    {
-        @Override
-        public void onError(Exception error)
-        {
-        }
-
-        @Override
-        public void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection)
-        {
-            mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
-        }
     };
 
     private UIConnectionUtils.RequestWatcher mWiFiWatcher = (result, shouldWait) -> mWaitForWiFi = shouldWait;
@@ -217,16 +200,14 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     {
         final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
 
-        if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
+        if (requireActivity() instanceof AddDeviceActivity) {
             if (device.versionCode != -1 && device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
                 createSnackbar(R.string.mesg_versionNotSupported).show();
             else if (device instanceof HotspotNetwork)
-                mConnectionUtils.makeAcquaintance(getActivity(), null, device, -1, mDeviceErrorListener);
+                BackgroundService.run(requireActivity(), new DeviceIntroductionTask());
             else
-                new EstablishConnectionDialog(getActivity(), device,
-                        (connection, availableInterfaces) -> mDeviceSelectedListener.onNetworkDeviceSelected(device,
-                                connection)).show();
-
+                new EstablishConnectionDialog(getActivity(), device, (connection, availableInterfaces) ->
+                        AddDeviceActivity.returnResult(requireActivity(), device, connection)).show();
         } else
             openInfo(getActivity(), getConnectionUtils(), device);
 
@@ -237,8 +218,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-        getActivity().bindService(new Intent(getContext(), DeviceScannerService.class), mScannerConnection,
+        requireActivity().registerReceiver(mStatusReceiver, mIntentFilter);
+        requireActivity().bindService(new Intent(getContext(), DeviceScannerService.class), mScannerConnection,
                 Service.BIND_AUTO_CREATE);
 
         mNsdDiscovery.startDiscovering();
@@ -248,8 +229,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     public void onPause()
     {
         super.onPause();
-        getActivity().unregisterReceiver(mStatusReceiver);
-        getActivity().unbindService(mScannerConnection);
+        requireActivity().unregisterReceiver(mStatusReceiver);
+        requireActivity().unbindService(mScannerConnection);
 
         mNsdDiscovery.stopDiscovering();
 
@@ -345,11 +326,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
 
         if (!AppUtils.toggleDeviceScanning(mService))
             Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
-    }
-
-    public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
-    {
-        mDeviceSelectedListener = listener;
     }
 
     private class StatusReceiver extends BroadcastReceiver

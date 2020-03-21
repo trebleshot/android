@@ -214,9 +214,4 @@ public class NetworkDeviceLoader
     {
         void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection);
     }
-
-    public interface OnDeviceRegisteredErrorListener extends OnDeviceRegisteredListener
-    {
-        void onError(Exception error);
-    }
 }

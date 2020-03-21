@@ -29,7 +29,7 @@ import com.genonbeta.android.database.SQLQuery;
 import java.io.Serializable;
 import java.util.List;
 
-public class NetworkDevice implements DatabaseObject<Void>, Serializable
+public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editable
 {
     public String brand;
     public String model;
@@ -45,6 +45,8 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     public boolean isLocal = false;
     public Type type = Type.NORMAL;
 
+    private boolean mIsSelected = false;
+
     public NetworkDevice()
     {
     }
@@ -54,15 +56,68 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
         this.id = id;
     }
 
+    @Override
+    public boolean applyFilter(String[] filteringKeywords)
+    {
+        for (String keyword : filteringKeywords)
+            if (nickname.toLowerCase().contains(keyword.toLowerCase()))
+                return true;
+
+        return false;
+    }
+
+    public void applyPreferences(NetworkDevice otherDevice)
+    {
+        isLocal = otherDevice.isLocal;
+        isRestricted = otherDevice.isRestricted;
+        isTrusted = otherDevice.isTrusted;
+    }
+
     private void checkSecureKey()
     {
         if (secureKey < 0)
             throw new RuntimeException("Secure key for " + nickname + " cannot be invalid when the device is saved");
     }
 
+    @Override
+    public boolean comparisonSupported()
+    {
+        return true;
+    }
+
     public String generatePictureId()
     {
         return String.format("picture_%s", id);
+    }
+
+    @Override
+    public String getComparableName()
+    {
+        return nickname;
+    }
+
+    @Override
+    public long getComparableDate()
+    {
+        return lastUsageTime;
+    }
+
+    @Override
+    public long getComparableSize()
+    {
+        return 0;
+    }
+
+    @Override
+    public long getId()
+    {
+        return id.hashCode();
+    }
+
+    @Override
+    public String getSelectableTitle()
+    {
+        return nickname;
     }
 
     @Override
@@ -94,6 +149,12 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     }
 
     @Override
+    public boolean isSelectableSelected()
+    {
+        return mIsSelected;
+    }
+
+    @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.id = item.getAsString(Kuick.FIELD_DEVICES_ID);
@@ -118,11 +179,11 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
         }
     }
 
-    public void applyPreferences(NetworkDevice otherDevice)
+    @Override
+    public boolean setSelectableSelected(boolean selected)
     {
-        isLocal = otherDevice.isLocal;
-        isRestricted = otherDevice.isRestricted;
-        isTrusted = otherDevice.isTrusted;
+        mIsSelected = selected;
+        return true;
     }
 
     @Override

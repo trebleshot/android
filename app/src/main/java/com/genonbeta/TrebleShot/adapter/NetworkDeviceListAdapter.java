@@ -34,7 +34,6 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -50,14 +49,13 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment.openInfo;
 
-public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice,
-        RecyclerViewAdapter.ViewHolder>
+public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
 {
     private ConnectionUtils mConnectionUtils;
     private TextDrawable.IShapeBuilder mIconBuilder;
     private List<NetworkDevice.Type> mHiddenDeviceTypes;
 
-    public NetworkDeviceListAdapter(EditableListFragmentBase<EditableNetworkDevice> fragment,
+    public NetworkDeviceListAdapter(EditableListFragmentBase<NetworkDevice> fragment,
                                     HolderConsumer<ViewHolder> consumer, ConnectionUtils connectionUtils,
                                     NetworkDevice.Type[] hiddenDeviceTypes)
     {
@@ -68,9 +66,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     }
 
     @Override
-    public List<EditableNetworkDevice> onLoad()
+    public List<NetworkDevice> onLoad()
     {
-        List<EditableNetworkDevice> list = new ArrayList<>();
+        List<NetworkDevice> list = new ArrayList<>();
 
         if (mConnectionUtils.canReadScanResults()) {
             for (ScanResult result : mConnectionUtils.getWifiManager().getScanResults()) {
@@ -85,9 +83,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
             }
         }
 
-        for (EditableNetworkDevice device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(
+        for (NetworkDevice device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(
                         Kuick.TABLE_DEVICES).setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
-                EditableNetworkDevice.class))
+                NetworkDevice.class))
             if (filterItem(device) && !mHiddenDeviceTypes.contains(device.type) && (!device.isLocal
                     || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
                 list.add(device);
@@ -142,77 +140,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
-    public static class EditableNetworkDevice extends NetworkDevice implements Editable
-    {
-        private boolean mIsSelected = false;
-
-        @Override
-        public boolean applyFilter(String[] filteringKeywords)
-        {
-            for (String keyword : filteringKeywords)
-                if (nickname.toLowerCase().contains(keyword.toLowerCase()))
-                    return true;
-
-            return false;
-        }
-
-        @Override
-        public boolean comparisonSupported()
-        {
-            return true;
-        }
-
-        @Override
-        public long getId()
-        {
-            return id.hashCode();
-        }
-
-        @Override
-        public void setId(long id)
-        {
-
-        }
-
-        @Override
-        public String getComparableName()
-        {
-            return nickname;
-        }
-
-        @Override
-        public long getComparableDate()
-        {
-            return lastUsageTime;
-        }
-
-        @Override
-        public long getComparableSize()
-        {
-            return 0;
-        }
-
-        @Override
-        public String getSelectableTitle()
-        {
-            return nickname;
-        }
-
-        @Override
-        public boolean isSelectableSelected()
-        {
-            return mIsSelected;
-        }
-
-        @Override
-        public boolean setSelectableSelected(boolean selected)
-        {
-            mIsSelected = selected;
-            return true;
-        }
-    }
-
-    public static class NetworkSpecifier<T> extends EditableNetworkDevice
+    public static class NetworkSpecifier<T> extends NetworkDevice
     {
         public T object;
 

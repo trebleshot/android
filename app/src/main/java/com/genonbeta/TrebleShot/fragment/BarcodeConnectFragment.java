@@ -41,22 +41,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
-import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
-import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.util.Stoppable;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -71,14 +68,12 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.UnfamiliarNetwork;
-import static com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegisteredListener;
 
 /**
  * created by: veli
  * date: 12/04/18 17:21
  */
-public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.Fragment implements TitleProvider,
-        UITask, IconProvider, AddDeviceActivity.DeviceSelectionSupport
+public class BarcodeConnectFragment extends Fragment implements TitleProvider, IconProvider
 {
     public static final String TAG = "BarcodeConnectFragment";
 
@@ -96,7 +91,6 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     private Button mTaskInterruptButton;
     private View mTaskContainer;
     private IntentFilter mIntentFilter = new IntentFilter();
-    private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private boolean mPermissionRequestedCamera = false;
     private boolean mPermissionRequestedLocation = false;
     private boolean mShowAsText = false;
@@ -128,16 +122,6 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
                     || LocationManager.PROVIDERS_CHANGED_ACTION.equals(intent.getAction()))
                 updateState();
-        }
-    };
-
-    private OnDeviceRegisteredListener mRegisteredListener = new OnDeviceRegisteredListener()
-    {
-        @Override
-        public void onDeviceRegistered(Kuick kuick, final NetworkDevice device, final DeviceConnection connection)
-        {
-            if (mDeviceSelectedListener != null)
-                mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
         }
     };
 
@@ -384,14 +368,10 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
 
     protected void makeAcquaintance(Object object, int accessPin)
     {
-        mConnectionUtils.makeAcquaintance(requireActivity(), this, object, accessPin, mRegisteredListener);
+        BackgroundService.run(requireActivity(), new DeviceIntroductionTask());
     }
 
-    public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
-    {
-        mDeviceSelectedListener = listener;
-    }
-
+    // TODO: 21.03.2020 Reimplement this
     public void updateState(boolean connecting, final Stoppable stoppable)
     {
         if (!isAdded()) {
@@ -474,17 +454,5 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
     protected void setConductItemsShowing(boolean showing)
     {
         mConductContainer.setVisibility(showing ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void updateTaskStarted(Stoppable stoppable)
-    {
-        updateState(true, stoppable);
-    }
-
-    @Override
-    public void updateTaskStopped()
-    {
-        updateState(false, null);
     }
 }

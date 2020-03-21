@@ -33,9 +33,8 @@ public class ManageDevicesActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_devices);
 
-        findViewById(R.id.fixConnectionButton).setOnClickListener(v -> startActivity(new Intent(
-                ManageDevicesActivity.this, AddDeviceActivity.class).putExtra(
-                AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT)));
+        findViewById(R.id.fixConnectionButton)
+                .setOnClickListener(v -> startActivity(new Intent(this, AddDeviceActivity.class)));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
