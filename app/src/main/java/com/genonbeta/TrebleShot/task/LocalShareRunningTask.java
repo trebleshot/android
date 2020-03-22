@@ -123,4 +123,16 @@ public class LocalShareRunningTask extends BackgroundTask
         kuick.broadcast();
     }
 
+    @Override
+    public String getDescription()
+    {
+        return null;
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return null;
+    }
+
 }

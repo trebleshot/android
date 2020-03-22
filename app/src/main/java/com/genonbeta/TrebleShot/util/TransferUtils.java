@@ -3,21 +3,22 @@ package com.genonbeta.TrebleShot.util;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
+import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
+import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
+import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.task.FileTransferTask;
+import com.genonbeta.TrebleShot.task.InitializeTransferTask;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
@@ -25,11 +26,8 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -298,117 +296,22 @@ public class TransferUtils
         }
     }
 
-    public static void pauseTransfer(Context context, TransferGroup group, TransferObject.Type type)
+    public static void pauseTransfer(Activity activity, TransferAssignee assignee)
     {
-        pauseTransfer(context, group.id, null, type);
+        pauseTransfer(activity, assignee.groupId, assignee.deviceId, assignee.type);
     }
 
-    public static void pauseTransfer(Context context, TransferAssignee assignee)
-    {
-        pauseTransfer(context, assignee.groupId, assignee.deviceId, assignee.type);
-    }
-
-    public static void pauseTransfer(Context context, long groupId, @Nullable String deviceId,
+    public static void pauseTransfer(Activity activity, long groupId, @Nullable String deviceId,
                                      TransferObject.Type type)
     {
-        Intent intent = new Intent(context, BackgroundService.class)
-                .setAction(BackgroundService.ACTION_STOP_TASK)
-                .putExtra(BackgroundService.EXTRA_GROUP_ID, groupId)
-                .putExtra(BackgroundService.EXTRA_DEVICE_ID, deviceId)
-                .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, type.toString());
-
-        AppUtils.startService(context, intent);
+        AppUtils.interruptTasksBy(activity, FileTransferTask.identifyWith(groupId, deviceId, type), true);
     }
 
     @Deprecated
     public static void requestStartSending(final Activity activity, final TransferAssignee assignee,
                                            final NetworkDevice device, final DeviceConnection connection)
     {
-        final Context context = activity.getApplicationContext();
-
-        BackgroundTask task = new BackgroundTask()
-        {
-            @Override
-            protected void onRun()
-            {
-                CommunicationBridge.Client client = new CommunicationBridge.Client(
-                        AppUtils.getKuick(activity));
-
-                try {
-                    final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
-
-                    Stoppable.Closer connectionCloser = userAction -> {
-                        try {
-                            activeConnection.getSocket().close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    };
-
-                    addCloser(connectionCloser);
-
-                    JSONObject jsonRequest = new JSONObject()
-                            .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
-                            .put(Keyword.TRANSFER_GROUP_ID, assignee.groupId);
-
-                    activeConnection.reply(jsonRequest.toString());
-
-                    final JSONObject responseJSON = new JSONObject(activeConnection.receive().response);
-                    activeConnection.getSocket().close();
-                    removeCloser(connectionCloser);
-
-                    if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
-                        activity.runOnUiThread(() -> {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                            @StringRes int msg = R.string.mesg_somethingWentWrong;
-                            String errorMsg = Keyword.ERROR_UNKNOWN;
-
-                            try {
-                                errorMsg = responseJSON.getString(Keyword.ERROR);
-                            } catch (JSONException e) {
-                                // do nothing
-                            }
-
-                            switch (errorMsg) {
-                                case Keyword.ERROR_NOT_FOUND:
-                                    msg = R.string.mesg_notValidTransfer;
-                                    break;
-                                case Keyword.ERROR_REQUIRE_TRUST:
-                                    msg = R.string.mesg_errorNotTrusted;
-                                    break;
-                                case Keyword.ERROR_NOT_ALLOWED:
-                                    msg = R.string.mesg_notAllowed;
-                                    break;
-                            }
-
-                            builder.setMessage(context.getString(msg));
-                            builder.setNegativeButton(R.string.butn_close, null);
-                            builder.setPositiveButton(R.string.butn_retry,
-                                    (dialog, which) -> requestStartSending(activity, assignee, device,
-                                            connection));
-
-                            builder.show();
-                        });
-                } catch (Exception e) {
-                    if (!activity.isFinishing())
-                        activity.runOnUiThread(() -> {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                            builder.setMessage(context.getString(R.string.mesg_connectionFailure));
-                            builder.setNegativeButton(R.string.butn_close, null);
-
-                            builder.setPositiveButton(R.string.butn_retry,
-                                    (dialog, which) -> requestStartSending(activity, assignee,
-                                            device, connection));
-
-                            builder.show();
-                        });
-                }
-            }
-        };
-
-        task.setTitle(activity.getString(R.string.mesg_communicating))
-                .run(activity);
+        BackgroundService.run(activity, new InitializeTransferTask(device, connection, assignee));
     }
 
     public static void recoverIncomingInterruptions(Context context, long groupId)
@@ -431,6 +334,8 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
+        // FIXME: 21.03.2020
+        /*
         new BackgroundTask()
         {
             @Override
@@ -472,6 +377,8 @@ public class TransferUtils
                     startTransfer(activity, assignee);
             }
         }.run(activity);
+
+         */
     }
 
     public static void startTransfer(final Activity activity, final TransferAssignee assignee)
@@ -491,19 +398,26 @@ public class TransferUtils
                             AppUtils.getKuick(activity).broadcast();
                         }
 
-                        AppUtils.startService(activity, new Intent(activity,
-                                BackgroundService.class)
-                                .setAction(BackgroundService.ACTION_START_TRANSFER)
-                                .putExtra(BackgroundService.EXTRA_GROUP_ID, assignee.groupId)
-                                .putExtra(BackgroundService.EXTRA_DEVICE_ID, assignee.deviceId)
-                                .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, assignee.type.toString()));
+                        try {
+                            FileTransferTask task = FileTransferTask.createFrom(activity, assignee.groupId,
+                                    assignee.deviceId, assignee.type);
+
+                            BackgroundService.run(activity, task);
+                        } catch (TransferGroupNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (DeviceNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (ConnectionNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (AssigneeNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }).show();
                 } catch (Exception e) {
                     new AlertDialog.Builder(activity)
                             .setMessage(R.string.mesg_somethingWentWrong)
                             .setNegativeButton(R.string.butn_cancel, null)
-                            .setPositiveButton(R.string.butn_retry,
-                                    (dialog, which) -> startTransfer(activity, assignee))
+                            .setPositiveButton(R.string.butn_retry, (dialog, which) -> startTransfer(activity, assignee))
                             .show();
                 }
             });

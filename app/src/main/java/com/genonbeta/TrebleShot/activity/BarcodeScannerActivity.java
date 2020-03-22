@@ -47,29 +47,6 @@ public class BarcodeScannerActivity extends Activity
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        BarcodeConnectFragment fragment = (BarcodeConnectFragment) getSupportFragmentManager().findFragmentById(R.id.barcodeScannerFragment);
-
-        if (fragment != null)
-            fragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
-            {
-                @Override
-                public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
-                {
-                    setResult(RESULT_OK, new Intent()
-                            .putExtra(EXTRA_DEVICE_ID, networkDevice.id)
-                            .putExtra(EXTRA_CONNECTION_ADAPTER, connection.adapterName));
-                    finish();
-
-                    return true;
-                }
-
-                @Override
-                public boolean isListenerEffective()
-                {
-                    return true;
-                }
-            });
     }
 
     @Override

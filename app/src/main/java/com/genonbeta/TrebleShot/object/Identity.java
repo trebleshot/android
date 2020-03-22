@@ -23,7 +23,7 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class has two modes. One is the AND values and the other is the OR values. The AND values are the first
@@ -35,8 +35,8 @@ import java.util.Iterator;
  */
 public class Identity implements Parcelable
 {
-    private final ArrayList<String> mValueListOR;
-    private final ArrayList<String> mValueListAND;
+    private final List<Identifier> mValueListOR;
+    private final List<Identifier> mValueListAND;
 
     public Identity()
     {
@@ -46,8 +46,8 @@ public class Identity implements Parcelable
 
     protected Identity(Parcel in)
     {
-        mValueListOR = in.createStringArrayList();
-        mValueListAND = in.createStringArrayList();
+        mValueListOR = in.createTypedArrayList(Identifier.CREATOR);
+        mValueListAND = in.createTypedArrayList(Identifier.CREATOR);
     }
 
     public static final Creator<Identity> CREATOR = new Creator<Identity>()
@@ -78,14 +78,11 @@ public class Identity implements Parcelable
             Identity identity = (Identity) obj;
 
             if (!isAllTrue(identity)) {
-                Iterator<String> iterator = mValueListOR.iterator();
                 synchronized (mValueListOR) {
-                    for (String val : mValueListOR) {
-                        if (!iterator.hasNext())
-                            break;
-
-                        if (val.equals(iterator.next()))
-                            return true;
+                    synchronized (identity.mValueListOR) {
+                        for (Identifier identifier : identity.mValueListOR)
+                            if (mValueListOR.contains(identifier))
+                                return true;
                     }
 
                     return false;
@@ -98,46 +95,46 @@ public class Identity implements Parcelable
     // AND
     private boolean isAllTrue(Identity identity)
     {
-        if (mValueListAND.size() != identity.mValueListAND.size() || mValueListAND.size() <= 0)
+        if (mValueListAND.size() <= 0 || identity.mValueListAND.size() <= 0)
             return false;
 
         synchronized (mValueListAND) {
-            Iterator<String> iterator = mValueListAND.iterator();
-            for (String val : identity.mValueListAND)
-                if (!val.equals(iterator.next()))
-                    return false;
+            synchronized (identity.mValueListAND) {
+                for (Identifier identifier : identity.mValueListAND)
+                    if (!mValueListAND.contains(identifier))
+                        return false;
+            }
         }
+
         return true;
     }
 
-    public Identity putAND(Object object)
+    public void putAND(Identifier identifier)
     {
         synchronized (mValueListAND) {
-            mValueListAND.add(String.valueOf(object));
+            mValueListAND.add(identifier);
         }
-        return this;
     }
 
-    public Identity putOR(Object object)
+    public void putOR(Identifier identifier)
     {
         synchronized (mValueListOR) {
-            mValueListOR.add(String.valueOf(object));
+            mValueListOR.add(identifier);
         }
-        return this;
     }
 
-    public static Identity withANDs(Object... ands)
+    public static Identity withANDs(Identifier... ands)
     {
         Identity identity = new Identity();
-        for (Object and : ands)
+        for (Identifier and : ands)
             identity.putAND(and);
         return identity;
     }
 
-    public static Identity withORs(Object... ors)
+    public static Identity withORs(Identifier... ors)
     {
         Identity identity = new Identity();
-        for (Object or : ors)
+        for (Identifier or : ors)
             identity.putOR(or);
         return identity;
     }
@@ -145,7 +142,7 @@ public class Identity implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeStringList(mValueListOR);
-        dest.writeStringList(mValueListAND);
+        dest.writeTypedList(mValueListOR);
+        dest.writeTypedList(mValueListAND);
     }
-}
+    }

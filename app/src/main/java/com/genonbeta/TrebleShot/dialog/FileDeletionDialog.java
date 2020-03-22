@@ -54,65 +54,64 @@ public class FileDeletionDialog extends AlertDialog.Builder
         setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, copiedItems.size(), copiedItems.size()));
 
         setNegativeButton(R.string.butn_cancel, null);
-        setPositiveButton(R.string.butn_delete, new DialogInterface.OnClickListener()
+        setPositiveButton(R.string.butn_delete, (dialog, p2) -> {
+            // FIXME: 21.03.2020
+            /*
+            new BackgroundTask()
+            {
+                int mTotalDeletion = 0;
+
+                @Override
+                public void onRun()
                 {
-                    @Override
-                    public void onClick(DialogInterface dialog, int p2)
-                    {
-                        new BackgroundTask()
-                        {
-                            int mTotalDeletion = 0;
+                    for (Uri currentUri : copiedItems) {
+                        try {
+                            DocumentFile file = FileUtils.fromUri(getService(), currentUri);
 
-                            @Override
-                            public void onRun()
-                            {
-                                for (Uri currentUri : copiedItems) {
-                                    try {
-                                        DocumentFile file = FileUtils.fromUri(getService(), currentUri);
+                            delete(file);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                                        delete(file);
-                                    } catch (FileNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
+                    if (listener != null)
+                        listener.onCompleted(this, getService(), mTotalDeletion);
+                }
 
-                                if (listener != null)
-                                    listener.onCompleted(this, getService(), mTotalDeletion);
-                            }
+                private void delete(DocumentFile file)
+                {
+                    if (isInterrupted())
+                        return;
 
-                            private void delete(DocumentFile file)
-                            {
-                                if (isInterrupted())
-                                    return;
+                    boolean isDirectory = file.isDirectory();
+                    boolean isFile = file.isFile();
 
-                                boolean isDirectory = file.isDirectory();
-                                boolean isFile = file.isFile();
+                    if (isDirectory)
+                        deleteDirectory(file);
 
-                                if (isDirectory)
-                                    deleteDirectory(file);
+                    if (file.delete()) {
+                        if (isFile)
+                            mTotalDeletion++;
 
-                                if (file.delete()) {
-                                    if (isFile)
-                                        mTotalDeletion++;
-
-                                    listener.onFileDeletion(this, getContext(), file);
-                                    publishStatusText(file.getName());
-                                }
-                            }
-
-                            private void deleteDirectory(DocumentFile folder)
-                            {
-                                DocumentFile[] files = folder.listFiles();
-
-                                if (files != null)
-                                    for (DocumentFile anotherFile : files)
-                                        delete(anotherFile);
-                            }
-                        }.setTitle(getContext().getString(R.string.text_deletingFilesOngoing))
-                                .setIconRes(R.drawable.ic_folder_white_24dp_static)
-                                .run(context);
+                        listener.onFileDeletion(this, getContext(), file);
+                        publishStatusText(file.getName());
                     }
                 }
+
+                private void deleteDirectory(DocumentFile folder)
+                {
+                    DocumentFile[] files = folder.listFiles();
+
+                    if (files != null)
+                        for (DocumentFile anotherFile : files)
+                            delete(anotherFile);
+                }
+            }.setTitle(getContext().getString(R.string.text_deletingFilesOngoing))
+                    .setIconRes(R.drawable.ic_folder_white_24dp_static)
+                    .run(context);
+
+             */
+        }
         );
     }
 

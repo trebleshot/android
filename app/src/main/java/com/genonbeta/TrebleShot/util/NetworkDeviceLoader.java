@@ -99,8 +99,7 @@ public class NetworkDeviceLoader
 
                 client.setReturn(device);
             } catch (Exception e) {
-                if (listener instanceof OnDeviceRegisteredErrorListener)
-                    ((OnDeviceRegisteredErrorListener) listener).onError(e);
+                e.printStackTrace();
             }
         };
 
@@ -137,7 +136,6 @@ public class NetworkDeviceLoader
             device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_LENGTH_MAX - 1);
 
         saveProfilePicture(kuick.getContext(), device, deviceInfo);
-
         return device;
     }
 
@@ -154,29 +152,23 @@ public class NetworkDeviceLoader
         return Base64.decode(base64, 0);
     }
 
-    public static boolean saveProfilePicture(Context context, NetworkDevice device, JSONObject object)
+    public static void saveProfilePicture(Context context, NetworkDevice device, JSONObject object)
     {
         try {
-            return saveProfilePicture(context, device, loadProfilePictureFrom(object));
-        } catch (Exception ignored) {
-
+            saveProfilePicture(context, device, loadProfilePictureFrom(object));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        return false;
     }
 
-    public static boolean saveProfilePicture(Context context, NetworkDevice device, byte[] picture)
+    public static void saveProfilePicture(Context context, NetworkDevice device, byte[] picture)
     {
         Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
 
         if (bitmap != null)
-            try {
-                FileOutputStream outputStream = context.openFileOutput(device.generatePictureId(), Context.MODE_PRIVATE);
+            try (FileOutputStream outputStream = context.openFileOutput(device.generatePictureId(),
+                    Context.MODE_PRIVATE)) {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-
-                outputStream.close();
-
-                return true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -184,8 +176,6 @@ public class NetworkDeviceLoader
             }
         else
             Log.d(NetworkDeviceLoader.class.getSimpleName(), "Bitmap was null");
-
-        return false;
     }
 
     public static void showPictureIntoView(NetworkDevice device, ImageView imageView,

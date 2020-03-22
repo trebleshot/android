@@ -46,6 +46,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
+import com.genonbeta.TrebleShot.object.Identifier;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -206,9 +207,7 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (AppUtils.checkRunningConditions(this))
-            AppUtils.startService(this, new Intent(this, BackgroundService.class));
-        else
+        if (!AppUtils.checkRunningConditions(this))
             requestRequiredPermissions(!mSkipPermissionRequest);
     }
 
@@ -400,7 +399,7 @@ public abstract class Activity extends AppCompatActivity
 
     public Identity getIdentity()
     {
-        return Identity.withORs(BackgroundService.hashIntent(getIntent()));
+        return Identity.withORs(Identifier.from(BackgroundTask.Id.HashCode, BackgroundService.hashIntent(getIntent())));
     }
 
     public boolean hasIntroductionShown()

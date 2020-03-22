@@ -238,9 +238,9 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (permissions.length > 0)
-            for (int permIterator = 0; permIterator < permissions.length; permIterator++) {
-                if (Manifest.permission.CAMERA.equals(permissions[permIterator]) &&
-                        grantResults[permIterator] == PackageManager.PERMISSION_GRANTED) {
+            for (int i = 0; i < permissions.length; i++) {
+                if (Manifest.permission.CAMERA.equals(permissions[i]) &&
+                        grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     updateState();
                     mPermissionRequestedCamera = false;
                 }

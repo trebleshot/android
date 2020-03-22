@@ -19,16 +19,6 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.wifi.WifiManager;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
-import androidx.appcompat.app.AlertDialog;
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -51,6 +41,8 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
     {
         final DialogInterface.OnClickListener retryCallback = (dialog, which) -> rerun(AppUtils.getBgService(dialog));
 
+        // FIXME: 21.03.2020
+        /*
         try {
             if (mObject instanceof NetworkDeviceListAdapter.NetworkSpecifier) {
                 boolean canContinue = true;
@@ -129,7 +121,8 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
                 if (task != null && !activity.isFinishing())
                     task.updateTaskStopped();
             });
-        }
+        }*/
+
     }
 
     @Override

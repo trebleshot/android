@@ -101,12 +101,6 @@ abstract public class Shareable implements Editable
     }
 
     @Override
-    public void setId(long id)
-    {
-        this.id = id;
-    }
-
-    @Override
     public String getSelectableTitle()
     {
         return this.friendlyName;
@@ -116,6 +110,12 @@ abstract public class Shareable implements Editable
     public boolean equals(Object obj)
     {
         return obj instanceof Shareable ? ((Shareable) obj).uri.equals(uri) : super.equals(obj);
+    }
+
+    @Override
+    public void setId(long id)
+    {
+        this.id = id;
     }
 
     @Override

@@ -185,6 +185,12 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         mReceiverFlag = flag;
     }
 
+    @Override
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
     public void putFlag(String deviceId, Flag flag)
     {
         if (!Type.OUTGOING.equals(type))
@@ -388,13 +394,6 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     public long getId()
     {
         return String.format("%d_%d", id, type.ordinal()).hashCode();
-    }
-
-    @Override
-    public void setId(long id)
-    {
-        // it will && should be effective on representative text items
-        this.id = id;
     }
 
     @Override

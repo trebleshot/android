@@ -20,8 +20,14 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatEditText;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class IpAddressConnectionActivity extends Activity
 {
@@ -30,5 +36,20 @@ public class IpAddressConnectionActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ip_address_connection);
+
+        final AppCompatEditText editText = findViewById(R.id.editText);
+        findViewById(R.id.confirm_button).setOnClickListener((v) -> {
+            final String ipAddress = editText.getText().toString();
+
+            if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
+                try {
+                    InetAddress inetAddress = InetAddress.getByName(ipAddress);
+                    BackgroundService.run(this, new DeviceIntroductionTask());
+                } catch (UnknownHostException e) {
+                    editText.setError(getString(R.string.mesg_unknownHostError));
+                }
+            } else
+                editText.setError(getString(R.string.mesg_errorNotAnIpAddress));
+        });
     }
 }

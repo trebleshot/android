@@ -219,8 +219,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
 
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)));
         } else if (id == R.id.menu_action_share_trebleshot) {
-            startActivityForResult(new Intent(TextEditorActivity.this, AddDeviceActivity.class)
-                            .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT),
+            startActivityForResult(new Intent(TextEditorActivity.this, AddDeviceActivity.class),
                     REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
@@ -283,6 +282,8 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
     {
         createSnackbar(R.string.mesg_communicating).show();
 
+        // FIXME: 21.03.2020
+        /*
         new BackgroundTask()
         {
             @Override
@@ -319,6 +320,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         }.setTitle(getString(R.string.mesg_communicating))
                 .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
                 .run(this);
+         */
     }
 
     public void removeText()

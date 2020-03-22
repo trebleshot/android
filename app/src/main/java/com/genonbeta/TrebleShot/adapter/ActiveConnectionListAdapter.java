@@ -53,7 +53,8 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
     public List<EditableNetworkInterface> onLoad()
     {
         List<EditableNetworkInterface> resultList = new ArrayList<>();
-        List<NetworkInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+        List<NetworkInterface> interfaceList = NetworkUtils.getInterfaces(true,
+                AppConfig.DEFAULT_DISABLED_INTERFACES);
 
         for (NetworkInterface addressedInterface : interfaceList) {
             EditableNetworkInterface editableInterface = new EditableNetworkInterface(addressedInterface,

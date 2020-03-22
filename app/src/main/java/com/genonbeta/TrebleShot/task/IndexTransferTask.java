@@ -154,7 +154,7 @@ public class IndexTransferTask extends BackgroundTask
 
             if (mNoPrompt)
                 try {
-                    FileTransferTask.startTransferAsClient(getService(), group.id, mDevice.id,
+                    FileTransferTask.createFrom(getService(), group.id, mDevice.id,
                             TransferObject.Type.INCOMING);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -165,5 +165,17 @@ public class IndexTransferTask extends BackgroundTask
         }
 
         kuick.broadcast();
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return null;
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return null;
     }
 }

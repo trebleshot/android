@@ -51,9 +51,11 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.SuperPreferences;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
@@ -354,6 +356,16 @@ public class AppUtils
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.butn_feedbackContact)));
     }
 
+    public static void interruptTasksBy(Activity activity, Identity identity, boolean userAction)
+    {
+        try {
+            BackgroundService service = AppUtils.getBgService(activity);
+            service.interruptTasksBy(identity, userAction);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static boolean isFamiliarHotspot(String ssid)
     {
         String prefix = AppConfig.PREFIX_ACCESS_POINT;
@@ -467,14 +479,6 @@ public class AppUtils
         getDefaultPreferences(context).edit()
                 .putInt("changelog_seen_version", device.versionCode)
                 .apply();
-    }
-
-    public static void startService(Context context, Intent intent)
-    {
-        if (Build.VERSION.SDK_INT >= 26)
-            context.startForegroundService(intent);
-        else
-            context.startService(intent);
     }
 
     public static boolean toggleDeviceScanning(DeviceScannerService service)

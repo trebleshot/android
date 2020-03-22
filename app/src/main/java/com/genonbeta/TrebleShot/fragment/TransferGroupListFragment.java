@@ -105,9 +105,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
         view.findViewById(R.id.sendLayoutButton).setOnClickListener(v -> startActivity(
                 new Intent(getContext(), ContentSharingActivity.class)));
         view.findViewById(R.id.receiveLayoutButton)
-                .setOnClickListener(v -> startActivity(new Intent(getContext(), AddDeviceActivity.class)
-                        .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
-                                AddDeviceActivity.RequestType.MAKE_ACQUAINTANCE)));
+                .setOnClickListener(v -> startActivity(new Intent(getContext(), AddDeviceActivity.class)));
     }
 
     @Override

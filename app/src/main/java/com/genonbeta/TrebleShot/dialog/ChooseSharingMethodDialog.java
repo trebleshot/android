@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +30,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.LocalShareRunningTask;
 
 import java.util.ArrayList;
@@ -40,18 +41,18 @@ public class ChooseSharingMethodDialog extends AlertDialog.Builder
     private LayoutInflater mLayoutInflater;
     private final ArrayList<SharingMethod> mSharingMethodList = new ArrayList<>();
 
-    public ChooseSharingMethodDialog(Context context, final List<? extends Shareable> list)
+    public ChooseSharingMethodDialog(Activity activity, final List<? extends Shareable> list)
     {
-        super(context);
+        super(activity);
 
         mLayoutInflater = LayoutInflater.from(getContext());
 
-        mSharingMethodList.add(new SharingMethod(R.drawable.ic_web_white_24dp, R.string.butn_webShare,
-                () -> new LocalShareRunningTask(list, false, true).run(getContext())));
+        mSharingMethodList.add(new SharingMethod(R.drawable.ic_web_white_24dp, R.string.butn_webShare, () ->
+                BackgroundService.run(activity, new LocalShareRunningTask(list, false, true))));
 
         mSharingMethodList.add(new SharingMethod(R.drawable.ic_compare_arrows_white_24dp,
-                R.string.text_devicesWithAppInstalled, () -> new LocalShareRunningTask(list, true,
-                false).run(getContext())));
+                R.string.text_devicesWithAppInstalled, () -> BackgroundService.run(activity, new LocalShareRunningTask(
+                list, true, false))));
 
         setTitle(R.string.text_chooseSharingMethod);
         setAdapter(new SharingMethodListAdapter(), (dialog, which) -> mSharingMethodList.get(which).call());

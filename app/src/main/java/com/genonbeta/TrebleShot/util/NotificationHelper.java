@@ -47,7 +47,7 @@ import java.util.List;
 
 public class NotificationHelper
 {
-    public static final int SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID = 1;
+    public static final int ID_BG_SERVICE = 1;
 
     private NotificationUtils mNotificationUtils;
 
@@ -56,10 +56,10 @@ public class NotificationHelper
         mNotificationUtils = notificationUtils;
     }
 
-    public DynamicNotification getCommunicationServiceNotification()
+    public DynamicNotification getForegroundNotification()
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(
-                SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+                ID_BG_SERVICE, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
         notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_communicationServiceRunning))

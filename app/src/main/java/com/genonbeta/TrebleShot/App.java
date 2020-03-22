@@ -28,6 +28,7 @@ import android.os.IBinder;
 import android.text.format.DateFormat;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -84,9 +85,9 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
     @Override
     public void onServiceConnected(ComponentName name, IBinder service)
     {
-        if (service instanceof BackgroundService.LocalBinder)
+        if (service instanceof BackgroundService.LocalBinder) {
             mBgService = ((BackgroundService.LocalBinder) service).getService();
-        else
+        } else
             Log.e(TAG, "onServiceConnected: Some unknown binder is given");
     }
 
@@ -162,18 +163,18 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
         mForegroundActivitiesCount += inForeground ? 1 : -1;
         boolean inBg = mForegroundActivitiesCount == 0;
         boolean newlyInFg = mForegroundActivitiesCount == 1;
-        Intent basicIntent = new Intent(this, BackgroundService.class);
+        Intent intent = new Intent(this, BackgroundService.class);
 
         if (newlyInFg) {
-            bindService(basicIntent, this, BIND_AUTO_CREATE);
+            bindService(intent, this, BIND_AUTO_CREATE);
         } else if (inBg) {
             boolean canStop = mBgService.canStopService();
-            unbindService(this);
-
             if (canStop)
-                stopService(basicIntent);
+                stopService(intent);
             else
-                AppUtils.startService(this, basicIntent);
+                ContextCompat.startForegroundService(this, intent);
+
+            unbindService(this);
         }
 
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);

@@ -27,26 +27,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
-import com.genonbeta.android.framework.io.DocumentFile;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by: veli
@@ -125,6 +113,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
     protected void runReceiveTask(final Activity activity, final NetworkDevice device,
                                   final DeviceConnection connection)
     {
+        // FIXME: 21.03.2020
+        /*
         new BackgroundTask()
         {
             @Override
@@ -222,6 +212,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             }
         }.setTitle(getContext().getString(R.string.mesg_ongoingUpdateDownload))
                 .run(activity);
+         */
     }
 
     public void showDialog(Activity activity, AlertDialog.Builder builder)

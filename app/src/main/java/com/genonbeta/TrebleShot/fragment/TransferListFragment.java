@@ -42,22 +42,16 @@ import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -276,7 +270,10 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                         .setMessage(R.string.text_checkOldFiles)
                         .setNeutralButton(R.string.butn_cancel, null)
                         .setNegativeButton(R.string.butn_skip, (dialogInterface, i) -> updateSavePath(selectedPath.toString()))
-                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> new BackgroundTask()
+                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> {
+                                }
+                                // FIXME: 21.03.2020
+                        /*new BackgroundTask()
                         {
                             @Override
                             public void onRun()
@@ -330,7 +327,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                             }
                         }.setTitle(getString(R.string.mesg_organizingFiles))
                                 .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
-                                .run(requireContext()));
+                                .run(requireContext())*/);
 
                 builder.show();
             }

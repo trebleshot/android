@@ -71,6 +71,8 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
                 return false;
             }
 
+            // FIXME: 21.03.2020
+            /*
             new BackgroundTask()
             {
                 @Override
@@ -95,6 +97,7 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
             }.setTitle(context.getString(R.string.text_renameMultipleItems))
                     .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
                     .run(context);
+             */
 
             return true;
         });

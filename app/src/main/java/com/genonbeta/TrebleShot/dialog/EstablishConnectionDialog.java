@@ -25,6 +25,7 @@ import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.AssessNetworkTask;
 import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.framework.util.StoppableImpl;
@@ -53,7 +54,7 @@ public class EstablishConnectionDialog extends ProgressDialog
     public void show()
     {
         super.show();
-        mTask.run(getContext());
+        BackgroundService.run(getOwnerActivity(), mTask);
     }
 
     public static class ConnectionResult

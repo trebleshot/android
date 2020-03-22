@@ -25,6 +25,7 @@ import android.media.MediaScannerConnection;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Identifiable;
+import com.genonbeta.TrebleShot.object.Identifier;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -109,7 +110,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     @Override
     public Identity getIdentity()
     {
-        return Identity.withORs(hashCode());
+        return Identity.withORs(Identifier.from(Id.HashCode, hashCode()));
     }
 
     protected MediaScannerConnection getMediaScanner()
@@ -233,7 +234,8 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         resetInternal();
     }
 
-    private void resetInternal() {
+    private void resetInternal()
+    {
         setFinished(false);
         progressListener().setProgress(null);
     }
@@ -308,5 +310,10 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
             publishStatus();
             return !isInterrupted();
         }
+    }
+
+    public enum Id
+    {
+        HashCode
     }
 }

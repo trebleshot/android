@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -32,7 +33,6 @@ import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -45,6 +45,8 @@ import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
 
 import java.io.*;
+
+import static com.genonbeta.TrebleShot.object.Identifier.from;
 
 public class FileTransferTask extends BackgroundTask
 {
@@ -125,6 +127,52 @@ public class FileTransferTask extends BackgroundTask
 
         if (delayReached || isLast)
             kuick().broadcast();
+    }
+
+    public static FileTransferTask createFrom(Context context, long groupId, String deviceId, TransferObject.Type type)
+            throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException,
+            AssigneeNotFoundException
+    {
+        Kuick kuick = AppUtils.getKuick(context);
+        SQLiteDatabase db = kuick.getReadableDatabase();
+        FileTransferTask task = new FileTransferTask();
+        task.type = type;
+        task.device = new NetworkDevice(deviceId);
+
+        try {
+            kuick.reconstruct(db, task.device);
+        } catch (ReconstructionFailedException e) {
+            throw new DeviceNotFoundException();
+        }
+
+        task.group = new PreloadedGroup(groupId);
+
+        try {
+            kuick.reconstruct(db, task.group);
+        } catch (ReconstructionFailedException e) {
+            throw new TransferGroupNotFoundException();
+        }
+
+        task.assignee = new TransferAssignee(task.group, task.device, task.type);
+
+        try {
+            kuick.reconstruct(db, task.assignee);
+        } catch (ReconstructionFailedException e) {
+            throw new AssigneeNotFoundException();
+        }
+
+        task.connection = new DeviceConnection(task.assignee);
+
+        try {
+            kuick.reconstruct(db, task.connection);
+        } catch (ReconstructionFailedException e) {
+            throw new ConnectionNotFoundException();
+        }
+
+        Log.d(TAG, "startTransferAsClient(): With deviceId=" + task.device.id + " groupId=" + task.group.id
+                + " adapter=" + task.assignee.connectionAdapter);
+
+        return task;
     }
 
     @Override
@@ -591,59 +639,19 @@ public class FileTransferTask extends BackgroundTask
         }
     }
 
-    public static void startTransferAsClient(BackgroundService service, long groupId, String deviceId,
-                                             TransferObject.Type type) throws TransferGroupNotFoundException,
-            DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
-    {
-        Kuick kuick = AppUtils.getKuick(service);
-        SQLiteDatabase db = kuick.getReadableDatabase();
-        FileTransferTask task = new FileTransferTask();
-        task.type = type;
-        task.device = new NetworkDevice(deviceId);
-
-        try {
-            kuick.reconstruct(db, task.device);
-        } catch (ReconstructionFailedException e) {
-            throw new DeviceNotFoundException();
-        }
-
-        task.group = new PreloadedGroup(groupId);
-
-        try {
-            kuick.reconstruct(db, task.group);
-        } catch (ReconstructionFailedException e) {
-            throw new TransferGroupNotFoundException();
-        }
-
-        task.assignee = new TransferAssignee(task.group, task.device, task.type);
-
-        try {
-            kuick.reconstruct(db, task.assignee);
-        } catch (ReconstructionFailedException e) {
-            throw new AssigneeNotFoundException();
-        }
-
-        task.connection = new DeviceConnection(task.assignee);
-
-        try {
-            kuick.reconstruct(db, task.connection);
-        } catch (ReconstructionFailedException e) {
-            throw new ConnectionNotFoundException();
-        }
-
-        Log.d(TAG, "startTransferAsClient(): With deviceId=" + task.device.id + " groupId=" + task.group.id
-                + " adapter=" + task.assignee.connectionAdapter);
-        service.run(task);
-    }
-
     public static Identity identityOf(FileTransferTask task)
     {
-        return identityWith(task.group.id, task.device.id, task.type);
+        return identifyWith(task.group.id, task.device.id, task.type);
     }
 
-    public static Identity identityWith(long groupId, String deviceId, TransferObject.Type type)
+    public static Identity identifyWith(long groupId, TransferObject.Type type)
     {
-        return Identity.withANDs(groupId, deviceId, type);
+        return Identity.withANDs(from(Id.GroupId, groupId), from(Id.Type, type));
+    }
+
+    public static Identity identifyWith(long groupId, String deviceId, TransferObject.Type type)
+    {
+        return Identity.withANDs(from(Id.GroupId, groupId), from(Id.DeviceId, deviceId), from(Id.Type, type));
     }
 
     public void startTransferAsClient()
@@ -701,5 +709,12 @@ public class FileTransferTask extends BackgroundTask
             e.printStackTrace();
             getNotificationHelper().notifyConnectionError(this, null);
         }
+    }
+
+    public enum Id
+    {
+        GroupId,
+        DeviceId,
+        Type
     }
 }

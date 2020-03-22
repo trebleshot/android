@@ -180,6 +180,12 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editab
     }
 
     @Override
+    public void setId(long id)
+    {
+        throw new IllegalStateException("Does not support long integer identity number");
+    }
+
+    @Override
     public boolean setSelectableSelected(boolean selected)
     {
         mIsSelected = selected;

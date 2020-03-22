@@ -127,8 +127,16 @@ public class BackgroundService extends Service
         if (mWifiLock != null)
             mWifiLock.acquire();
 
-        refreshServiceState();
         tryStartingServices();
+        takeForeground(true);
+    }
+
+    private void takeForeground(boolean take)
+    {
+        if (take)
+            startForeground(NotificationHelper.ID_BG_SERVICE, getNotificationHelper().getForegroundNotification().build());
+        else
+            stopForeground(false);
     }
 
     @Override
@@ -179,7 +187,7 @@ public class BackgroundService extends Service
                     });
 
                     if (isAccepted)
-                        FileTransferTask.startTransferAsClient(this, groupId, deviceId,
+                        FileTransferTask.createFrom(this, groupId, deviceId,
                                 TransferObject.Type.INCOMING);
                     else {
                         getKuick().remove(group);
@@ -245,11 +253,11 @@ public class BackgroundService extends Service
 
                 try {
                     TransferObject.Type type = TransferObject.Type.valueOf(typeString);
-                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identityWith(groupId,
+                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(groupId,
                             deviceId, type));
 
                     if (task == null)
-                        FileTransferTask.startTransferAsClient(this, groupId, deviceId, type);
+                        run(FileTransferTask.createFrom(this, groupId, deviceId, type));
                     else
                         Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.object.name),
                                 Toast.LENGTH_SHORT).show();
@@ -287,6 +295,7 @@ public class BackgroundService extends Service
     public void onDestroy()
     {
         super.onDestroy();
+        takeForeground(false);
 
         mCommunicationServer.stop();
         mMediaScanner.disconnect();
@@ -329,8 +338,8 @@ public class BackgroundService extends Service
 
     public boolean canStopService()
     {
-        return mCommunicationServer.getConnections().size() > 0 || getTaskList().size() > 0
-                || mHotspotUtils.isStarted() || mWebShareServer.hadClients();
+        return mCommunicationServer.getConnections().size() > 0 || getTaskList().size() > 0 || mHotspotUtils.isStarted()
+                || mWebShareServer.hadClients();
     }
 
     @Nullable
@@ -426,15 +435,17 @@ public class BackgroundService extends Service
         return false;
     }
 
-    private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
+    public void interruptTasksBy(Identity identity, boolean userAction)
     {
-        return findTaskBy(FileTransferTask.identityWith(groupId, deviceId, type)) != null;
+        synchronized (mTaskList) {
+            for (BackgroundTask task : findTasksBy(identity))
+                task.interrupt(userAction);
+        }
     }
 
-    private void refreshServiceState()
+    private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
     {
-        startForeground(NotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
-                getNotificationHelper().getCommunicationServiceNotification().build());
+        return findTaskBy(FileTransferTask.identifyWith(groupId, deviceId, type)) != null;
     }
 
     protected synchronized <T extends BackgroundTask> void registerWork(T task)

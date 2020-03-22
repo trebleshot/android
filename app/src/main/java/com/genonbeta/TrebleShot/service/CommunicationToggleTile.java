@@ -27,7 +27,7 @@ import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import androidx.annotation.RequiresApi;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import androidx.core.content.ContextCompat;
 
 /**
  * created by: Veli
@@ -73,10 +73,11 @@ public class CommunicationToggleTile extends TileService
     {
         super.onClick();
 
+        Intent serviceIntent = new Intent(getApplicationContext(), BackgroundService.class);
         if (isMyServiceRunning(BackgroundService.class))
-            stopService(new Intent(getApplicationContext(), BackgroundService.class));
+            stopService(serviceIntent);
         else
-            AppUtils.startService(this, new Intent(getApplicationContext(), BackgroundService.class));
+            ContextCompat.startForegroundService(this, serviceIntent);
 
         updateTileState();
     }
@@ -85,6 +86,7 @@ public class CommunicationToggleTile extends TileService
     {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
+        // FIXME: 22.03.2020 Deprecated
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
             if (serviceClass.getName().equals(service.service.getClassName()))
                 return true;
