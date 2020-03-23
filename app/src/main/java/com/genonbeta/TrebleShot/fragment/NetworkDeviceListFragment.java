@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.app.Activity;
 import android.content.*;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,16 +37,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
-import com.genonbeta.TrebleShot.task.AddDeviceTask;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
@@ -56,10 +58,8 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.HotspotNetwork;
-
-public class NetworkDeviceListFragment extends EditableListFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder,
-        NetworkDeviceListAdapter> implements IconProvider
+public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
+        RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -97,24 +97,23 @@ public class NetworkDeviceListFragment extends EditableListFragment<NetworkDevic
 
     private UIConnectionUtils.RequestWatcher mWiFiWatcher = (result, shouldWait) -> mWaitForWiFi = shouldWait;
 
-    public static void openInfo(Activity activity, ConnectionUtils utils, NetworkDevice device)
+    public static void openInfo(Activity activity, ConnectionUtils utils, InfoHolder infoHolder)
     {
-        if (device instanceof HotspotNetwork) {
-            final HotspotNetwork hotspotNetwork = (HotspotNetwork) device;
-
+        Object specifier = infoHolder.object();
+        if (specifier instanceof WifiConfiguration) {
+            WifiConfiguration config = (WifiConfiguration) specifier;
             AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                    .setTitle(device.nickname)
+                    .setTitle(infoHolder.name())
                     .setMessage(R.string.text_trebleshotHotspotDescription)
                     .setNegativeButton(R.string.butn_close, null);
 
             if (Build.VERSION.SDK_INT < 29)
-                builder.setPositiveButton(utils.isConnectedToNetwork(hotspotNetwork)
-                        ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) ->
-                        utils.toggleConnection(hotspotNetwork));
+                builder.setPositiveButton(utils.isConnectedToNetwork(config) ? R.string.butn_disconnect
+                        : R.string.butn_connect, (dialog, which) -> utils.toggleConnection(config));
 
             builder.show();
-        } else
-            new DeviceInfoDialog(activity, AppUtils.getKuick(activity), device).show();
+        } else if (specifier instanceof NetworkDevice)
+            new DeviceInfoDialog(activity, AppUtils.getKuick(activity), (NetworkDevice) specifier).show();
     }
 
     @Override
@@ -198,19 +197,25 @@ public class NetworkDeviceListFragment extends EditableListFragment<NetworkDevic
     @Override
     public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
     {
-        final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
-
-        if (requireActivity() instanceof AddDeviceActivity) {
-            if (device.versionCode != -1 && device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
-                createSnackbar(R.string.mesg_versionNotSupported).show();
-            else if (device instanceof HotspotNetwork)
-                BackgroundService.run(requireActivity(), new DeviceIntroductionTask());
-            else
-                new EstablishConnectionDialog(getActivity(), device, (connection, availableInterfaces) ->
-                        AddDeviceActivity.returnResult(requireActivity(), device, connection)).show();
-        } else
-            openInfo(getActivity(), getConnectionUtils(), device);
-
+        try {
+            InfoHolder infoHolder = getAdapter().getItem(holder.getAdapterPosition());
+            Object specifier = infoHolder.object();
+            if (requireActivity() instanceof AddDeviceActivity) {
+                if (specifier instanceof WifiConfiguration)
+                    BackgroundService.run(requireActivity(), new DeviceIntroductionTask(infoHolder));
+                else if (specifier instanceof NetworkDevice) {
+                    NetworkDevice device = (NetworkDevice) specifier;
+                    if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
+                        createSnackbar(R.string.mesg_versionNotSupported).show();
+                    else
+                        new EstablishConnectionDialog(getActivity(), device, (connection, availableInterfaces) ->
+                                AddDeviceActivity.returnResult(requireActivity(), device, connection)).show();
+                }
+            } else
+                openInfo(getActivity(), getConnectionUtils(), infoHolder);
+        } catch (NotReadyException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 

@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiNetworkSuggestion;
@@ -28,12 +29,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -49,13 +50,13 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment.openInfo;
 
-public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
+public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
 {
     private ConnectionUtils mConnectionUtils;
     private TextDrawable.IShapeBuilder mIconBuilder;
     private List<NetworkDevice.Type> mHiddenDeviceTypes;
 
-    public NetworkDeviceListAdapter(EditableListFragmentBase<NetworkDevice> fragment,
+    public NetworkDeviceListAdapter(EditableListFragmentBase<InfoHolder> fragment,
                                     HolderConsumer<ViewHolder> consumer, ConnectionUtils connectionUtils,
                                     NetworkDevice.Type[] hiddenDeviceTypes)
     {
@@ -66,31 +67,31 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDevice,
     }
 
     @Override
-    public List<NetworkDevice> onLoad()
+    public List<InfoHolder> onLoad()
     {
-        List<NetworkDevice> list = new ArrayList<>();
+        boolean devMode = AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false);
+        List<InfoHolder> list = new ArrayList<>();
 
         if (mConnectionUtils.canReadScanResults()) {
             for (ScanResult result : mConnectionUtils.getWifiManager().getScanResults()) {
                 if (!AppUtils.isFamiliarHotspot(result.SSID))
                     continue;
 
-                HotspotNetwork hotspotNetwork = new HotspotNetwork(ConnectionUtils.createWifiConfig(result,
-                        null));
-                hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-
-                list.add(hotspotNetwork);
+                list.add(new InfoHolder(ConnectionUtils.createWifiConfig(result, null)));
             }
         }
 
-        for (NetworkDevice device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(
-                        Kuick.TABLE_DEVICES).setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
-                NetworkDevice.class))
-            if (filterItem(device) && !mHiddenDeviceTypes.contains(device.type) && (!device.isLocal
-                    || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
-                list.add(device);
+        for (NetworkDevice device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES)
+                .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
+            if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
+                list.add(new InfoHolder(device));
 
-        return list;
+        List<InfoHolder> filteredList = new ArrayList<>();
+        for (InfoHolder infoHolder : list)
+            if (filterItem(infoHolder))
+                filteredList.add(infoHolder);
+
+        return filteredList;
     }
 
     @NonNull
@@ -113,23 +114,22 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDevice,
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
     {
         try {
-            NetworkDevice device = getItem(position);
+            InfoHolder infoHolder = getItem(position);
             View parentView = holder.itemView;
-            boolean hotspotNetwork = device instanceof NetworkSpecifier;
 
-            TextView deviceText = parentView.findViewById(R.id.text2);
-            TextView userText = parentView.findViewById(R.id.text1);
-            ImageView userImage = parentView.findViewById(R.id.image);
+            TextView text1 = parentView.findViewById(R.id.text1);
+            TextView text2 = parentView.findViewById(R.id.text2);
+            ImageView image = parentView.findViewById(R.id.image);
             ImageView statusImage = parentView.findViewById(R.id.imageStatus);
 
-            userText.setText(device.nickname);
-            deviceText.setText(hotspotNetwork ? getContext().getString(R.string.text_trebleshotHotspot) : device.model);
-            NetworkDeviceLoader.showPictureIntoView(device, userImage, mIconBuilder);
+            text1.setText(infoHolder.name());
+            text2.setText(infoHolder.description(getContext()));
+            NetworkDeviceLoader.showPictureIntoView(infoHolder, image, mIconBuilder);
 
-            if (device.isRestricted) {
+            if (infoHolder.isRestricted) {
                 statusImage.setVisibility(View.VISIBLE);
                 statusImage.setImageResource(R.drawable.ic_block_white_24dp);
-            } else if (device.isTrusted) {
+            } else if (infoHolder.isTrusted) {
                 statusImage.setVisibility(View.VISIBLE);
                 statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
             } else {
@@ -140,58 +140,148 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDevice,
         }
     }
 
-    public static class NetworkSpecifier<T> extends NetworkDevice
+    public static final class InfoHolder implements Editable
     {
-        public T object;
+        private Object mObject;
+        private boolean mIsSelected = false;
 
-        public NetworkSpecifier(String nickname, T object)
+        InfoHolder(Object object)
         {
-            super();
+            mObject = object;
+        }
 
-            this.nickname = AppUtils.getFriendlySSID(nickname);
-            this.object = object;
-            this.clientVersion = BuildConfig.CLIENT_VERSION;
-            this.versionName = "stamp";
-            this.versionCode = -1;
+        public InfoHolder(NetworkDevice device)
+        {
+            this((Object) device);
+        }
+
+        public InfoHolder(NetworkSuggestion suggestion)
+        {
+            this((Object) suggestion);
+        }
+
+        public InfoHolder(NetworkDescription description)
+        {
+            this((Object) description);
+        }
+
+        public InfoHolder(WifiConfiguration config)
+        {
+            this((Object) config);
+        }
+
+        @Override
+        public boolean applyFilter(String[] filteringKeywords)
+        {
+            for (String keyword : filteringKeywords)
+                if (keyword.equals(name()) || keyword.equals(description()))
+                    return true;
+            return false;
+        }
+
+        public String description(Context context)
+        {
+            if (mObject instanceof NetworkDevice)
+                return ((NetworkDevice) mObject).model;
+            else if (mObject instanceof WifiConfiguration)
+                return context.getString(R.string.text_trebleshotHotspot);
+
+            return context.getString(R.string.text_unknown);
+        }
+
+        @Override
+        public boolean comparisonSupported()
+        {
+            return mObject instanceof NetworkDevice;
+        }
+
+        @Override
+        public String getComparableName()
+        {
+            return name();
+        }
+
+        @Override
+        public long getComparableDate()
+        {
+            if (mObject instanceof NetworkDevice)
+                return ((NetworkDevice) mObject).lastUsageTime;
+            return 0;
+        }
+
+        @Override
+        public long getComparableSize()
+        {
+            return 0;
         }
 
         @Override
         public long getId()
         {
-            return object.hashCode();
-        }
-    }
+            if (mObject instanceof NetworkDevice)
+                return ((NetworkDevice) mObject).id.hashCode();
 
-    /**
-     * Aimed to be used with Android 9 and below
-     */
-    @Deprecated
-    public static class HotspotNetwork extends NetworkSpecifier<WifiConfiguration>
-    {
-        public HotspotNetwork(WifiConfiguration configuration)
-        {
-            super(configuration.SSID, configuration);
+            return 0;
         }
-    }
 
-    /**
-     * Aimed to be used with Android 9 and below
-     */
-    @Deprecated
-    public static class UnfamiliarNetwork extends NetworkSpecifier<NetworkDescription>
-    {
-        public UnfamiliarNetwork(NetworkDescription networkObject)
+        @Override
+        public String getSelectableTitle()
         {
-            super(networkObject.ssid, networkObject);
+            return name();
+        }
+
+        @Override
+        public boolean isSelectableSelected()
+        {
+            return mIsSelected;
+        }
+
+        public String name()
+        {
+            if (mObject instanceof NetworkDevice)
+                return ((NetworkDevice) mObject).nickname;
+            else if (mObject instanceof WifiConfiguration)
+                return AppUtils.getFriendlySSID(((WifiConfiguration) mObject).SSID);
+            else if (mObject instanceof NetworkDescription)
+                return AppUtils.getFriendlySSID(((NetworkDescription) mObject).ssid);
+            else if (mObject instanceof NetworkSuggestion)
+                return ((NetworkSuggestion) mObject).name;
+
+            return mObject.toString();
+        }
+
+        public Object object()
+        {
+            return mObject;
+        }
+
+        @Override
+        public void setId(long id)
+        {
+            throw new IllegalStateException("This object does not support ID attributing.");
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            if (mObject instanceof NetworkDevice) {
+                mIsSelected = selected;
+                return true;
+            }
+            return false;
         }
     }
 
     @TargetApi(29)
-    public static class NetworkSuggestion extends NetworkSpecifier<WifiNetworkSuggestion>
+    public static class NetworkSuggestion
     {
-        public NetworkSuggestion(String nickname, WifiNetworkSuggestion networkObject)
+        public String name;
+        public WifiNetworkSuggestion object;
+
+        public NetworkSuggestion(String name, WifiNetworkSuggestion object)
         {
-            super(nickname, networkObject);
+            this.name = name;
+            this.object = object;
         }
     }
 

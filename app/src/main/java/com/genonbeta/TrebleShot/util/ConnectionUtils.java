@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.android.framework.util.Stoppable;
 
@@ -44,6 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
 
 /**
  * created by: veli
@@ -150,14 +153,14 @@ public class ConnectionUtils
         return false;
     }
 
-    public InetAddress establishHotspotConnection(final Stoppable stoppable, final NetworkSpecifier<?> hotspotNetwork,
-                                                  final ConnectionCallback connectionCallback)
+    public InetAddress establishHotspotConnection(Stoppable stoppable, InfoHolder infoHolder,
+                                                  ConnectionCallback connectionCallback)
     {
-        return establishHotspotConnection(stoppable, hotspotNetwork, connectionCallback, (short) 4);
+        return establishHotspotConnection(stoppable, infoHolder, connectionCallback, (short) 4);
     }
 
     @WorkerThread
-    private InetAddress establishHotspotConnection(final Stoppable stoppable, NetworkSpecifier<?> specifier,
+    private InetAddress establishHotspotConnection(final Stoppable stoppable, InfoHolder holder,
                                                    final ConnectionCallback connectionCallback, short leftAttempts)
     {
         leftAttempts--;
@@ -166,6 +169,7 @@ public class ConnectionUtils
         final long startTime = System.currentTimeMillis();
 
         InetAddress address = null;
+        Object specifier = holder.object();
         boolean connectionToggled = specifier instanceof NetworkSuggestion; // suggestions comes pretested and initiated
 
         while (true) {
@@ -182,10 +186,10 @@ public class ConnectionUtils
                     Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.");
                     break;
                 }
-            } else if (specifier instanceof UnfamiliarNetwork) {
+            } else if (specifier instanceof NetworkDescription) {
                 Log.d(TAG, "establishHotspotConnection: The network is not ready to be used yet.");
 
-                NetworkDescription description = ((UnfamiliarNetwork) specifier).object;
+                NetworkDescription description = (NetworkDescription) specifier;
                 String ssid = description.ssid;
                 String bssid = description.bssid;
                 String password = description.password;
@@ -196,13 +200,13 @@ public class ConnectionUtils
                 if (result == null)
                     Log.e(TAG, "establishHotspotConnection: No network found with the name " + ssid);
                 else {
-                    specifier = new HotspotNetwork(createWifiConfig(result, password));
+                    specifier = new InfoHolder(createWifiConfig(result, password));
                     Log.d(TAG, "establishHotspotConnection: Created HotspotNetwork object from scan results");
                 }
-            } else if (specifier instanceof HotspotNetwork && !isConnectedToNetwork((HotspotNetwork) specifier)
+            } else if (specifier instanceof WifiConfiguration && !isConnectedToNetwork((WifiConfiguration) specifier)
                     && !connectionToggled) {
                 Log.d(TAG, "establishHotspotConnection(): Requested network toggle");
-                connectionToggled = toggleConnection((HotspotNetwork) specifier);
+                connectionToggled = toggleConnection((WifiConfiguration) specifier);
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
@@ -236,7 +240,7 @@ public class ConnectionUtils
             }
         }
 
-        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(stoppable, specifier,
+        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(stoppable, holder,
                 connectionCallback, leftAttempts);
     }
 
@@ -339,12 +343,12 @@ public class ConnectionUtils
         return info != null && info.getType() == ConnectivityManager.TYPE_WIFI && info.isConnected();
     }
 
-    public boolean isConnectedToNetwork(HotspotNetwork hotspotNetwork)
+    public boolean isConnectedToNetwork(WifiConfiguration config)
     {
         if (!isConnectedToAnyNetwork())
             return false;
 
-        String bssid = hotspotNetwork.object.BSSID;
+        String bssid = config.BSSID;
         Log.d(TAG, "isConnectedToNetwork: " + bssid + " othr: " + getWifiManager().getConnectionInfo().getBSSID());
         return bssid != null && bssid.equalsIgnoreCase(getWifiManager().getConnectionInfo().getBSSID());
     }
@@ -368,14 +372,14 @@ public class ConnectionUtils
     /**
      * Enable and connect to the given network specification.
      *
-     * @param hotspotNetwork The network specifier that will be connected to.
+     * @param config The network specifier that will be connected to.
      * @return True when the request is successful and false when it fails.
      * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
      * APIs it makes use of.
      */
-    public boolean startConnection(HotspotNetwork hotspotNetwork)
+    public boolean startConnection(WifiConfiguration config)
     {
-        if (isConnectedToNetwork(hotspotNetwork)) {
+        if (isConnectedToNetwork(config)) {
             Log.d(TAG, "toggleConnection: Already connected to the network");
             return true;
         }
@@ -386,9 +390,7 @@ public class ConnectionUtils
         }
 
         try {
-            WifiConfiguration config = hotspotNetwork.object;
             WifiConfiguration existingConfig = findFromConfigurations(config);
-
             getWifiManager().disconnect();
 
             if (existingConfig != null) {
@@ -419,15 +421,15 @@ public class ConnectionUtils
     /**
      * This method activates or deactivates a given network depending on its state.
      *
-     * @param hotspotNetwork The network specifier that you want to toggle the connection to.
+     * @param config The network specifier that you want to toggle the connection to.
      * @return True when the request is successful, false if otherwise.
      * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
      * APIs it makes use of.
      */
     @Deprecated
-    public boolean toggleConnection(HotspotNetwork hotspotNetwork)
+    public boolean toggleConnection(WifiConfiguration config)
     {
-        return isConnectedToNetwork(hotspotNetwork) ? getWifiManager().disconnect() : startConnection(hotspotNetwork);
+        return isConnectedToNetwork(config) ? getWifiManager().disconnect() : startConnection(config);
     }
 
     public interface ConnectionCallback

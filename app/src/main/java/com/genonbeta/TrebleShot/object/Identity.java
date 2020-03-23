@@ -145,4 +145,4 @@ public class Identity implements Parcelable
         dest.writeTypedList(mValueListOR);
         dest.writeTypedList(mValueListAND);
     }
-    }
+}

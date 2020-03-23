@@ -55,10 +55,15 @@ import java.util.ArrayList;
 
 public class AddDeviceActivity extends Activity implements SnackbarPlacementProvider
 {
-    public static final String ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT";
-    public static final String EXTRA_FRAGMENT_ENUM = "extraFragmentEnum";
-    public static final String EXTRA_DEVICE_ID = "extraDeviceId";
-    public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
+    public static final String
+            ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT",
+            EXTRA_FRAGMENT_ENUM = "extraFragmentEnum",
+            EXTRA_DEVICE_ID = "extraDeviceId",
+            EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
+
+    public static final int
+            REQUEST_BARCODE_SCAN = 100,
+            REQUEST_IP_DISCOVERY = 110;
 
     private final IntentFilter mFilter = new IntentFilter();
     private HotspotManagerFragment mHotspotManagerFragment;
@@ -78,12 +83,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 String fragmentEnum = intent.getStringExtra(EXTRA_FRAGMENT_ENUM);
 
                 try {
-                    AvailableFragment value = AvailableFragment.valueOf(fragmentEnum);
-
-                    if (AvailableFragment.EnterIpAddress.equals(value))
-                        showEnterIpAddressDialog();
-                    else
-                        setFragment(value);
+                    setFragment(AvailableFragment.valueOf(fragmentEnum));
                 } catch (Exception e) {
                     // do nothing
                 }
@@ -163,6 +163,29 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     {
         super.onPause();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        if (resultCode == RESULT_OK && data != null)
+            if (requestCode == REQUEST_BARCODE_SCAN) {
+                try {
+                    NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
+                    getDatabase().reconstruct(device);
+                    DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(
+                            BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
+                    getDatabase().reconstruct(connection);
+
+                    returnResult(this, device, connection);
+                } catch (Exception e) {
+                    // do nothing
+                }
+            } else if (requestCode == REQUEST_IP_DISCOVERY) {
+                // TODO: 23.03.2020 implement
+            }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -261,10 +284,11 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         Fragment fragmentCandidate;
 
         switch (fragment) {
+            case EnterIpAddress:
+                startIpConnectivity();
+                return;
             case ScanQrCode:
-                //fragmentCandidate = mBarcodeConnectFragment;
-                if (mOptionsFragment.isAdded())
-                    mOptionsFragment.startCodeScanner();
+                startCodeScanner();
                 return;
             case CreateHotspot:
                 fragmentCandidate = mHotspotManagerFragment;
@@ -275,6 +299,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             case UseKnownDevice:
                 fragmentCandidate = mDeviceListFragment;
                 break;
+            case Options:
             default:
                 fragmentCandidate = mOptionsFragment;
         }
@@ -297,9 +322,14 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         }
     }
 
-    protected void showEnterIpAddressDialog()
+    private void startCodeScanner()
     {
-        startActivity(new Intent(this, IpAddressConnectionActivity.class));
+        startActivityForResult(new Intent(this, BarcodeScannerActivity.class), REQUEST_BARCODE_SCAN);
+    }
+
+    protected void startIpConnectivity()
+    {
+        startActivityForResult(new Intent(this, IpAddressConnectionActivity.class), REQUEST_IP_DISCOVERY);
     }
 
     public enum AvailableFragment
@@ -314,8 +344,6 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
     public static class OptionsFragment extends com.genonbeta.android.framework.app.Fragment
     {
-        public static final int REQUEST_CHOOSE_DEVICE = 100;
-
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -338,7 +366,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                         updateFragment(AvailableFragment.EnterIpAddress);
                         break;
                     case R.id.connection_option_scan:
-                        startCodeScanner();
+                        updateFragment(AvailableFragment.ScanQrCode);
                 }
             };
 
@@ -352,33 +380,6 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                     new ConnectionSetUpAssistant(getActivity()).startShowing());
 
             return view;
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data)
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-
-            if (requestCode == REQUEST_CHOOSE_DEVICE)
-                if (resultCode == RESULT_OK && data != null) {
-                    try {
-                        NetworkDevice device = new NetworkDevice(data.getStringExtra(
-                                BarcodeScannerActivity.EXTRA_DEVICE_ID));
-                        AppUtils.getKuick(getContext()).reconstruct(device);
-                        DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(
-                                BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
-                        AppUtils.getKuick(getContext()).reconstruct(connection);
-
-                        returnResult(requireActivity(), device, connection);
-                    } catch (Exception e) {
-                        // do nothing
-                    }
-                }
-        }
-
-        private void startCodeScanner()
-        {
-            startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class), REQUEST_CHOOSE_DEVICE);
         }
 
         public void updateFragment(AvailableFragment fragment)

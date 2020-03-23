@@ -44,15 +44,13 @@ public interface EditableListFragmentBase<T extends Editable> extends ListFragme
 
     EditableListAdapterBase<T> getAdapterImpl();
 
-    EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
+    IEngineConnection<T> getEngineConnection();
 
-    void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
+    EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
 
     RecyclerView getListView();
 
     int getOrderingCriteria();
-
-    IEngineConnection<T> getEngineConnection();
 
     int getSortingCriteria();
 
@@ -73,4 +71,6 @@ public interface EditableListFragmentBase<T extends Editable> extends ListFragme
     boolean loadIfRequested();
 
     boolean openUri(Uri uri);
+
+    void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
 }

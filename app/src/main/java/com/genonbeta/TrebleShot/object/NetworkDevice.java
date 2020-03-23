@@ -29,7 +29,7 @@ import com.genonbeta.android.database.SQLQuery;
 import java.io.Serializable;
 import java.util.List;
 
-public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editable
+public class NetworkDevice implements DatabaseObject<Void>
 {
     public String brand;
     public String model;
@@ -56,16 +56,6 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editab
         this.id = id;
     }
 
-    @Override
-    public boolean applyFilter(String[] filteringKeywords)
-    {
-        for (String keyword : filteringKeywords)
-            if (nickname.toLowerCase().contains(keyword.toLowerCase()))
-                return true;
-
-        return false;
-    }
-
     public void applyPreferences(NetworkDevice otherDevice)
     {
         isLocal = otherDevice.isLocal;
@@ -79,45 +69,9 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editab
             throw new RuntimeException("Secure key for " + nickname + " cannot be invalid when the device is saved");
     }
 
-    @Override
-    public boolean comparisonSupported()
-    {
-        return true;
-    }
-
     public String generatePictureId()
     {
         return String.format("picture_%s", id);
-    }
-
-    @Override
-    public String getComparableName()
-    {
-        return nickname;
-    }
-
-    @Override
-    public long getComparableDate()
-    {
-        return lastUsageTime;
-    }
-
-    @Override
-    public long getComparableSize()
-    {
-        return 0;
-    }
-
-    @Override
-    public long getId()
-    {
-        return id.hashCode();
-    }
-
-    @Override
-    public String getSelectableTitle()
-    {
-        return nickname;
     }
 
     @Override
@@ -149,12 +103,6 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editab
     }
 
     @Override
-    public boolean isSelectableSelected()
-    {
-        return mIsSelected;
-    }
-
-    @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         this.id = item.getAsString(Kuick.FIELD_DEVICES_ID);
@@ -177,19 +125,6 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable, Editab
         } catch (Exception e) {
             this.type = Type.NORMAL;
         }
-    }
-
-    @Override
-    public void setId(long id)
-    {
-        throw new IllegalStateException("Does not support long integer identity number");
-    }
-
-    @Override
-    public boolean setSelectableSelected(boolean selected)
-    {
-        mIsSelected = selected;
-        return true;
     }
 
     @Override

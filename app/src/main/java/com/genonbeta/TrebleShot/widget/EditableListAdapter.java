@@ -89,8 +89,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 
     public boolean filterItem(T item)
     {
-        String[] filteringKeywords = getFragment()
-                .getFilteringDelegate()
+        String[] filteringKeywords = getFragment().getFilteringDelegate()
                 .getFilteringKeyword(getFragment());
 
         return filteringKeywords == null || filteringKeywords.length <= 0 || item.applyFilter(filteringKeywords);

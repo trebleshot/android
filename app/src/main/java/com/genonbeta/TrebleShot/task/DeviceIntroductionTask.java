@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.DialogInterface;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -29,11 +30,11 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
 {
     private boolean mConnected = false;
     private InetAddress mAddress;
-    private Object mObject;
+    private NetworkDeviceListAdapter.InfoHolder mObject;
 
-    public DeviceIntroductionTask()
+    public DeviceIntroductionTask(NetworkDeviceListAdapter.InfoHolder object)
     {
-
+        mObject = object;
     }
 
     @Override
@@ -41,17 +42,16 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
     {
         final DialogInterface.OnClickListener retryCallback = (dialog, which) -> rerun(AppUtils.getBgService(dialog));
 
-        // FIXME: 21.03.2020
         /*
         try {
             if (mObject instanceof NetworkDeviceListAdapter.NetworkSpecifier) {
                 boolean canContinue = true;
 
-                if (mObject instanceof NetworkSuggestion) {
+                if (mObject instanceof NetworkDeviceListAdapter.NetworkSuggestion) {
                     // We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
                     // to proceed, but as we are already going to do concurrent task, it should become available
                     // during that period.
-                    final int status = getConnectionUtils().suggestNetwork((NetworkSuggestion) mObject);
+                    final int status = getConnectionUtils().suggestNetwork((NetworkDeviceListAdapter.NetworkSuggestion) mObject);
 
                     if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
                             && status != WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {

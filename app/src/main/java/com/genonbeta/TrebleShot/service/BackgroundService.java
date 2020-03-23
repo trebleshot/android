@@ -454,6 +454,7 @@ public class BackgroundService extends Service
             mTaskList.add(task);
         }
 
+        Log.d(TAG, "registerWork: " + task.getClass().getSimpleName());
         sendBroadcast(new Intent(ACTION_TASK_CHANGE));
     }
 
@@ -529,13 +530,14 @@ public class BackgroundService extends Service
         return true;
     }
 
-    protected synchronized void unregisterWork(BackgroundTask runningTask)
+    protected synchronized void unregisterWork(BackgroundTask task)
     {
         synchronized (mTaskList) {
-            mTaskList.remove(runningTask);
+            mTaskList.remove(task);
             // FIXME: 20.03.2020 Should we stop the service if there is no task left?
         }
 
+        Log.d(TAG, "unregisterWork: " + task.getClass().getSimpleName());
         sendBroadcast(new Intent(ACTION_TASK_CHANGE));
     }
 
