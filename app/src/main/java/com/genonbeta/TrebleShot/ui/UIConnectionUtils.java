@@ -36,8 +36,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import org.json.JSONException;
@@ -119,41 +118,6 @@ public class UIConnectionUtils
         new Handler(Looper.getMainLooper()).post(() -> {
             if (!activity.isFinishing())
                 dialog.show();
-        });
-    }
-
-    @WorkerThread
-    public NetworkDevice setupConnection(final Activity activity, final InetAddress inetAddress, int accessPin,
-                                         final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
-                                         final DialogInterface.OnClickListener retryButtonListener)
-    {
-        return CommunicationBridge.connect(AppUtils.getKuick(activity), NetworkDevice.class, client -> {
-            try {
-                client.setPin(accessPin);
-
-                CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
-
-                activeConnection.reply(new JSONObject()
-                        .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
-                        .toString());
-
-                NetworkDevice device = client.getDevice();
-                JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
-
-                if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT)
-                        && device.id != null) {
-                    final DeviceConnection connection = NetworkDeviceLoader.processConnection(
-                            AppUtils.getKuick(activity), device, inetAddress.getHostAddress());
-
-                    if (listener != null)
-                        listener.onDeviceRegistered(AppUtils.getKuick(activity), device, connection);
-                } else
-                    showConnectionRejectionInformation(activity, device, receivedReply, retryButtonListener);
-
-                client.setReturn(device);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         });
     }
 

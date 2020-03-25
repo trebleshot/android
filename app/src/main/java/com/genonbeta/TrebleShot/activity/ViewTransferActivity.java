@@ -258,18 +258,16 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        {
-            int devicePosition = findCurrentDevicePosition();
-            Menu thisMenu = menu.findItem(R.id.actions_transfer_limit_to).getSubMenu();
+        int devicePosition = findCurrentDevicePosition();
+        Menu thisMenu = menu.findItem(R.id.actions_transfer_limit_to).getSubMenu();
 
-            MenuItem checkedItem = null;
+        MenuItem checkedItem = null;
 
-            if ((devicePosition < 0 || (checkedItem = thisMenu.getItem(devicePosition)) == null) && thisMenu.size() > 0)
-                checkedItem = thisMenu.getItem(thisMenu.size() - 1);
+        if ((devicePosition < 0 || (checkedItem = thisMenu.getItem(devicePosition)) == null) && thisMenu.size() > 0)
+            checkedItem = thisMenu.getItem(thisMenu.size() - 1);
 
-            if (checkedItem != null)
-                checkedItem.setChecked(true);
-        }
+        if (checkedItem != null)
+            checkedItem.setChecked(true);
 
         return super.onPrepareOptionsMenu(menu);
     }

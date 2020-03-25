@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -33,9 +34,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.android.framework.util.Stoppable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -45,8 +54,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
 
 /**
  * created by: veli
@@ -67,7 +74,8 @@ public class ConnectionUtils
         mContext = context;
 
         mWifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(
+                Context.LOCATION_SERVICE);
         mHotspotUtils = HotspotUtils.getInstance(getContext());
         mConnectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -369,6 +377,73 @@ public class ConnectionUtils
                 && mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
     }
 
+    public static void postConnectionRejectionInformation(Context context, BackgroundTask task,
+                                                          final NetworkDevice device, final JSONObject clientResponse,
+                                                          final TaskMessage.Callback retryCallback)
+    {
+        try {
+            if (clientResponse.has(Keyword.ERROR)) {
+                if (clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED)) {
+                    task.post(TaskMessage.newInstance()
+                            .setTitle(context, R.string.mesg_notAllowed)
+                            .setMessage(context.getString(R.string.text_notAllowedHelp, device.nickname,
+                                    AppUtils.getLocalDeviceName(context)))
+                            .addAction(context, R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
+                            .addAction(context, R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback));
+                }
+            } else
+                postUnknownError(context, task, retryCallback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void postUnknownError(Context context, BackgroundTask task, TaskMessage.Callback retryCallback)
+    {
+        task.post(TaskMessage.newInstance()
+                .setMessage(context, R.string.mesg_somethingWentWrong)
+                .addAction(context, R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
+                .addAction(context, R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback));
+    }
+
+    @WorkerThread
+    public NetworkDevice setupConnection(Context context, BackgroundTask task, final InetAddress inetAddress,
+                                         int accessPin, final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
+                                         final TaskMessage.Callback retryCallback)
+    {
+        CommunicationBridge.Client client = new CommunicationBridge.Client(task.kuick());
+
+        try {
+            client.setPin(accessPin);
+
+            CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
+
+            activeConnection.reply(new JSONObject()
+                    .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
+                    .toString());
+
+            NetworkDevice device = client.getDevice();
+            JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
+
+            if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT)
+                    && device.id != null) {
+                final DeviceConnection connection = NetworkDeviceLoader.processConnection(
+                        task.kuick(), device, inetAddress.getHostAddress());
+
+                if (listener != null)
+                    listener.onDeviceRegistered(task.kuick(), device, connection);
+            } else
+                postConnectionRejectionInformation(context, task, device, receivedReply, retryCallback);
+
+            client.setReturn(device);
+            return device;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     /**
      * Enable and connect to the given network specification.
      *
@@ -414,7 +489,6 @@ public class ConnectionUtils
     {
         final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
         suggestions.add(suggestion.object);
-
         return getWifiManager().addNetworkSuggestions(suggestions);
     }
 

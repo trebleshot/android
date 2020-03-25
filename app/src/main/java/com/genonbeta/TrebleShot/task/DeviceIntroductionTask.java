@@ -18,111 +18,126 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import android.content.DialogInterface;
+import android.app.Dialog;
+import android.content.Intent;
+import android.net.wifi.WifiManager;
+import android.provider.Settings;
+import android.util.Log;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
+import com.genonbeta.TrebleShot.database.Kuick;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 import java.net.InetAddress;
 
 public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListener>
 {
     private boolean mConnected = false;
+    private int mPin;
     private InetAddress mAddress;
-    private NetworkDeviceListAdapter.InfoHolder mObject;
+    private NetworkDeviceListAdapter.InfoHolder mInfoHolder;
 
-    public DeviceIntroductionTask(NetworkDeviceListAdapter.InfoHolder object)
+    public DeviceIntroductionTask(NetworkDeviceListAdapter.InfoHolder infoHolder, int pin)
     {
-        mObject = object;
+        mInfoHolder = infoHolder;
+        mPin = pin;
     }
 
     @Override
     public void onRun()
     {
-        final DialogInterface.OnClickListener retryCallback = (dialog, which) -> rerun(AppUtils.getBgService(dialog));
+        // FIXME: 25.03.2020 rerun
+        final TaskMessage.Callback retryCallback = (service, msg, action) -> rerun(service);
+        final Object object = mInfoHolder.object();
+        final ConnectionUtils utils = ConnectionUtils.getInstance(getService());
 
-        /*
         try {
-            if (mObject instanceof NetworkDeviceListAdapter.NetworkSpecifier) {
-                boolean canContinue = true;
+            if (object instanceof NetworkSuggestion) {
+                // We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
+                // to proceed, but as we are already going to do concurrent task, it should become available
+                // during that period.
+                final int status = utils.suggestNetwork((NetworkSuggestion) object);
 
-                if (mObject instanceof NetworkDeviceListAdapter.NetworkSuggestion) {
-                    // We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
-                    // to proceed, but as we are already going to do concurrent task, it should become available
-                    // during that period.
-                    final int status = getConnectionUtils().suggestNetwork((NetworkDeviceListAdapter.NetworkSuggestion) mObject);
+                if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
+                        && status != WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
 
-                    if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
-                            && status != WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
-                        canContinue = false;
+                    TaskMessage message = TaskMessage.newInstance()
+                            .setTitle(getService(), R.string.text_error)
+                            .addAction(getService(), R.string.butn_close, null);
 
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
-                                .setTitle(R.string.text_error)
-                                .setNegativeButton(R.string.butn_close, null);
+                    switch (status) {
+                        case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
+                            message.setMessage(getService(), R.string.text_errorExceededMaximumSuggestions)
+                                    .addAction(getService(), R.string.butn_openSettings, Dialog.BUTTON_POSITIVE,
+                                            (context, msg, action) -> context.startActivity(new Intent(
+                                                    Settings.ACTION_WIFI_SETTINGS)));
+                            break;
+                        case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
+                            message.setMessage(getService(), R.string.text_errorNetworkSuggestionsDisallowed)
+                                    .addAction(getService(), R.string.butn_openSettings, Dialog.BUTTON_POSITIVE,
+                                            (context, msg, action) -> AppUtils.startApplicationDetails(context));
 
-                        switch (status) {
-                            case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
-                                dialogBuilder.setMessage(R.string.text_errorExceededMaximumSuggestions)
-                                        .setPositiveButton(R.string.butn_openSettings,
-                                                (dialog, which) -> activity.startActivity(new Intent(
-                                                        Settings.ACTION_WIFI_SETTINGS)));
-                                break;
-                            case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
-                                dialogBuilder.setMessage(R.string.text_errorNetworkSuggestionsDisallowed)
-                                        .setPositiveButton(R.string.butn_openSettings,
-                                                (dialog, which) -> AppUtils.startApplicationDetails(activity));
-
-                            case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
-                                dialogBuilder.setMessage(R.string.text_errorNetworkSuggestionInternal)
-                                        .setPositiveButton(R.string.butn_feedbackContact,
-                                                (dialog, which) -> AppUtils.startFeedbackActivity(activity));
-                        }
-
-                        postDialog(activity, dialogBuilder.create());
+                        case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
+                            message.setMessage(getService(), R.string.text_errorNetworkSuggestionInternal)
+                                    .addAction(getService(), R.string.butn_feedbackContact, Dialog.BUTTON_POSITIVE,
+                                            (context, msg, action) -> AppUtils.startFeedbackActivity(context));
                     }
-                }
 
-                if (canContinue) {
-                    mAddress = getConnectionUtils().establishHotspotConnection(this,
-                            (NetworkDeviceListAdapter.NetworkSpecifier<?>) object,
+                    post(message);
+                } else
+                    mAddress = utils.establishHotspotConnection(this, mInfoHolder,
                             (delimiter, timePassed) -> timePassed >= 30000);
-                }
             } else if (object instanceof InetAddress)
                 mAddress = (InetAddress) object;
             else if (object instanceof DeviceConnection)
                 mAddress = ((DeviceConnection) object).toInet4Address();
 
             if (mAddress != null) {
-                mConnected = setupConnection(activity, mAddress, accessPin, (database, device, connection) -> {
-                    // we may be working with direct IP scan
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        if (registerListener != null)
-                            registerListener.onDeviceRegistered(database, device, connection);
-                    });
+                mConnected = utils.setupConnection(getService(), this, mAddress, mPin, new NetworkDeviceLoader
+                        .OnDeviceRegisteredListener()
+                {
+
+                    @Override
+                    public void onTaskStateChanged(BaseAttachableBgTask task)
+                    {
+
+                    }
+
+                    @Override
+                    public void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection)
+                    {
+                        Log.d(DeviceIntroductionTask.class.getSimpleName(), "onDeviceRegistered: " + device.id);
+                    }
                 }, retryCallback) != null;
             }
 
             if (!mConnected && !isInterruptedByUser()) {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
-                        .setMessage(R.string.mesg_connectionFailure)
-                        .setNegativeButton(R.string.butn_close, null)
-                        .setPositiveButton(R.string.butn_retry, retryCallback);
+                TaskMessage message = TaskMessage.newInstance()
+                        .setMessage(getService(), R.string.mesg_connectionFailure)
+                        .addAction(getService(), R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
+                        .addAction(getService(), R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback);
 
+                post(message);
+
+                /*
                 if (object instanceof NetworkDevice)
                     dialogBuilder.setTitle(((NetworkDevice) object).nickname);
 
                 postDialog(activity, dialogBuilder.create());
+                */
             }
         } catch (Exception ignored) {
 
-        } finally {
-            new Handler(Looper.getMainLooper()).post(() -> {
-                if (task != null && !activity.isFinishing())
-                    task.updateTaskStopped();
-            });
-        }*/
-
+        }
     }
 
     @Override

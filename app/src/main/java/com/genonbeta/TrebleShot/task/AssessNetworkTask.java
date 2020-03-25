@@ -71,32 +71,29 @@ public class AssessNetworkTask extends BackgroundTask
         for (DeviceConnection connection : connectionList)
             calculatedConnections.add(new EstablishConnectionDialog.ConnectionResult(connection));
 
-        for (final EstablishConnectionDialog.ConnectionResult connectionResult : calculatedConnections) {
+        for (EstablishConnectionDialog.ConnectionResult connectionResult : calculatedConnections) {
             if (isInterrupted())
                 break;
 
             setCurrentContent(connectionResult.connection.adapterName);
             Progress.addToCurrent(progressListener(), 1);
 
-            final Long calculatedTime = CommunicationBridge.connect(AppUtils.getKuick(getService()), Long.class,
-                    client -> {
-                        try {
-                            long startTime = System.nanoTime();
-                            CoolSocket.ActiveConnection connection = client.connectWithHandshake(
-                                    connectionResult.connection, true);
-                            connectionResult.pingTime = System.nanoTime() - startTime;
-                            connectionResult.successful = true;
+            CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
 
-                            connection.getSocket().close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        } finally {
-                            client.setReturn(connectionResult.pingTime);
-                        }
-                    });
+            try {
+                long startTime = System.nanoTime();
+                CoolSocket.ActiveConnection connection = client.connectWithHandshake(
+                        connectionResult.connection, true);
+                connectionResult.pingTime = System.nanoTime() - startTime;
+                connectionResult.successful = true;
 
-            if (calculatedTime != null && calculatedTime > -1)
-                reachedConnections.add(connectionResult);
+                connection.getSocket().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (connectionResult.pingTime > -1)
+                    reachedConnections.add(connectionResult);
+            }
         }
 
         mDialog.dismiss();

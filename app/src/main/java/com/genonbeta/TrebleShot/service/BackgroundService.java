@@ -63,7 +63,7 @@ import java.util.concurrent.TimeoutException;
 
 public class BackgroundService extends Service
 {
-    public static final String TAG = "CommunicationService";
+    public static final String TAG = BackgroundService.class.getSimpleName();
 
     public static final String
             ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD",
@@ -503,6 +503,8 @@ public class BackgroundService extends Service
      */
     public boolean tryStartingServices()
     {
+        Log.d(TAG, "tryStartingServices: Starting...");
+
         if (mWebShareServer.isAlive() && mCommunicationServer.isServerAlive())
             return true;
 
@@ -512,7 +514,7 @@ public class BackgroundService extends Service
             return false;
         }
 
-        if (!mCommunicationServer.isServerAlive() || !mCommunicationServer.start()) {
+        if (!mCommunicationServer.isServerAlive() && !mCommunicationServer.start()) {
             Log.e(TAG, "tryStartingServices: Cannot start the service. server="
                     + mCommunicationServer.isServerAlive());
             return false;

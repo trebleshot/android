@@ -79,34 +79,38 @@ public class NetworkDeviceLoader
     public static NetworkDevice load(boolean currentThread, final Kuick kuick, final String ipAddress,
                                      final OnDeviceRegisteredListener listener)
     {
-        CommunicationBridge.Client.ConnectionHandler connectionHandler = client -> {
-            try {
-                client.communicate(InetAddress.getByName(ipAddress), true);
-
-                NetworkDevice device = client.getDevice();
-
-                if (device.id != null) {
-                    NetworkDevice localDevice = AppUtils.getLocalDevice(kuick.getContext());
-                    DeviceConnection connection = processConnection(kuick, device, ipAddress);
-
-                    if (!localDevice.id.equals(device.id)) {
-                        device.lastUsageTime = System.currentTimeMillis();
-
-                        if (listener != null)
-                            listener.onDeviceRegistered(kuick, device, connection);
-                    }
-                }
-
-                client.setReturn(device);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        };
-
         if (currentThread)
-            return CommunicationBridge.connect(kuick, NetworkDevice.class, connectionHandler);
-        else
-            CommunicationBridge.connect(kuick, connectionHandler);
+            return loadInternal(new CommunicationBridge.Client(kuick), kuick, ipAddress, listener);
+
+        CommunicationBridge.connect(kuick, (client -> loadInternal(client, kuick, ipAddress, listener)));
+        return null;
+    }
+
+    private static NetworkDevice loadInternal(CommunicationBridge.Client client, Kuick kuick, String ipAddress,
+                                              OnDeviceRegisteredListener listener)
+    {
+        try {
+            client.communicate(InetAddress.getByName(ipAddress), true);
+
+            NetworkDevice device = client.getDevice();
+
+            if (device.id != null) {
+                NetworkDevice localDevice = AppUtils.getLocalDevice(kuick.getContext());
+                DeviceConnection connection = processConnection(kuick, device, ipAddress);
+
+                if (!localDevice.id.equals(device.id)) {
+                    device.lastUsageTime = System.currentTimeMillis();
+
+                    if (listener != null)
+                        listener.onDeviceRegistered(kuick, device, connection);
+                }
+            }
+
+            client.setReturn(device);
+            return device;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return null;
     }

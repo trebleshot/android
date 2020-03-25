@@ -42,7 +42,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -67,7 +67,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.UnfamiliarNetwork;
 
 /**
  * created by: veli
@@ -263,7 +262,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                 String ssid = jsonObject.getString(Keyword.NETWORK_SSID);
                 String bssid = null;
                 String password = null;
-                NetworkDeviceListAdapter.NetworkSpecifier<?> informer;
+                InfoHolder informer;
 
                 if (jsonObject.has(Keyword.NETWORK_BSSID))
                     bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
@@ -283,9 +282,9 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                     if (bssid != null)
                         builder.setBssid(MacAddress.fromString(bssid));
 
-                    informer = new NetworkSuggestion(ssid, builder.build());
+                    informer = new InfoHolder(new NetworkSuggestion(ssid, builder.build()));
                 } else
-                    informer = new UnfamiliarNetwork(new NetworkDescription(ssid, bssid, password));
+                    informer = new InfoHolder(new NetworkDescription(ssid, bssid, password));
 
                 makeAcquaintance(informer, accessPin);
             } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
@@ -295,7 +294,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                 WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
                 Runnable runnable = () -> {
                     try {
-                        makeAcquaintance(InetAddress.getByName(ipAddress), accessPin);
+                        makeAcquaintance(new InfoHolder(InetAddress.getByName(ipAddress)), accessPin);
                     } catch (UnknownHostException e) {
                         new AlertDialog.Builder(requireActivity())
                                 .setMessage(R.string.mesg_unknownHostError)
@@ -366,9 +365,9 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         return context.getString(R.string.text_scanQrCode);
     }
 
-    protected void makeAcquaintance(Object object, int accessPin)
+    protected void makeAcquaintance(InfoHolder infoHolder, int pin)
     {
-        BackgroundService.run(requireActivity(), new DeviceIntroductionTask());
+        BackgroundService.run(requireActivity(), new DeviceIntroductionTask(infoHolder, pin));
     }
 
     // TODO: 21.03.2020 Reimplement this

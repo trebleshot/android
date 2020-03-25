@@ -656,7 +656,7 @@ public class FileTransferTask extends BackgroundTask
 
     public void startTransferAsClient()
     {
-        CommunicationBridge.connect(kuick(), true, this::startTransferAsClientInternal);
+        startTransferAsClientInternal(new CommunicationBridge.Client(kuick()));
     }
 
     void startTransferAsClientInternal(CommunicationBridge.Client client)

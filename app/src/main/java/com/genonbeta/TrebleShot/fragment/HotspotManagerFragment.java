@@ -79,12 +79,9 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     private MenuItem mHelpMenuItem;
     private ColorStateList mColorPassiveState;
     private boolean mWaitForHotspot = false;
-    private boolean mWaitForWiFi = false;
     private boolean mHotspotStartedExternally = false;
 
     private UIConnectionUtils.RequestWatcher mHotspotWatcher = (result, shouldWait) -> mWaitForHotspot = shouldWait;
-
-    private UIConnectionUtils.RequestWatcher mWiFiWatcher = (result, shouldWait) -> mWaitForWiFi = shouldWait;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)

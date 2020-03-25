@@ -71,133 +71,132 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             }
         };
 
-        CommunicationBridge.connect(kuick, true, client -> {
+        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+        try {
+            boolean doUpdate = false;
+            final JSONObject jsonRequest = new JSONObject();
+            final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
+                    mConnection);
+            final List<TransferObject> existingRegistry = kuick.castQuery(db, new SQLQuery.Select(
+                    Kuick.TABLE_TRANSFER).setWhere(Kuick.FIELD_TRANSFER_GROUPID
+                            + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(mGroup.id),
+                    TransferObject.Type.OUTGOING.toString()), TransferObject.class, null);
+
             try {
-                boolean doUpdate = false;
-                final JSONObject jsonRequest = new JSONObject();
-                final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
-                        mConnection);
-                final List<TransferObject> existingRegistry = kuick.castQuery(db, new SQLQuery.Select(
-                        Kuick.TABLE_TRANSFER).setWhere(Kuick.FIELD_TRANSFER_GROUPID
-                                + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(mGroup.id),
-                        TransferObject.Type.OUTGOING.toString()), TransferObject.class, null);
+                // Checks if the current assignee is already on the list, if so, update
+                kuick.reconstruct(db, new TransferAssignee(assignee.groupId, assignee.deviceId,
+                        TransferObject.Type.OUTGOING));
+
+                doUpdate = true;
+            } catch (Exception ignored) {
+            }
+
+            jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
+                    .put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
+
+            if (existingRegistry.size() == 0)
+                throw new Exception("Empty share holder id: " + mGroup.id);
+
+            JSONArray filesArray = new JSONArray();
+
+            for (TransferObject transferObject : existingRegistry) {
+                setCurrentContent(transferObject.name);
+                transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
+
+                if (isInterrupted())
+                    throw new InterruptedException("Interrupted by user");
 
                 try {
-                    // Checks if the current assignee is already on the list, if so, update
-                    kuick.reconstruct(db, new TransferAssignee(assignee.groupId, assignee.deviceId,
-                            TransferObject.Type.OUTGOING));
+                    JSONObject thisJson = new JSONObject()
+                            .put(Keyword.INDEX_FILE_NAME, transferObject.name)
+                            .put(Keyword.INDEX_FILE_SIZE, transferObject.size)
+                            .put(Keyword.TRANSFER_REQUEST_ID, transferObject.id)
+                            .put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
 
-                    doUpdate = true;
-                } catch (Exception ignored) {
-                }
+                    if (transferObject.directory != null)
+                        thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
 
-                jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
-                        .put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
-
-                if (existingRegistry.size() == 0)
-                    throw new Exception("Empty share holder id: " + mGroup.id);
-
-                JSONArray filesArray = new JSONArray();
-
-                for (TransferObject transferObject : existingRegistry) {
-                    setCurrentContent(transferObject.name);
-                    transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
-
-                    if (isInterrupted())
-                        throw new InterruptedException("Interrupted by user");
-
-                    try {
-                        JSONObject thisJson = new JSONObject()
-                                .put(Keyword.INDEX_FILE_NAME, transferObject.name)
-                                .put(Keyword.INDEX_FILE_SIZE, transferObject.size)
-                                .put(Keyword.TRANSFER_REQUEST_ID, transferObject.id)
-                                .put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
-
-                        if (transferObject.directory != null)
-                            thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
-
-                        filesArray.put(thisJson);
-                    } catch (Exception e) {
-                        Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: "
-                                + e.getClass().getName() + " : " + transferObject.name);
-                    }
-                }
-
-                // so that if the user rejects, it won't be removed from the sender
-                jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
-
-                addCloser(userAction -> kuick.remove(assignee));
-
-                final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
-
-                addCloser(userAction -> {
-                    try {
-                        activeConnection.getSocket().close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-                activeConnection.reply(jsonRequest.toString());
-
-                CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                activeConnection.getSocket().close();
-
-                JSONObject clientResponse = new JSONObject(response.response);
-
-                if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                    setCurrentContent(context.getString(R.string.mesg_organizingFiles));
-
-                    if (doUpdate)
-                        kuick.update(db, assignee, mGroup, null);
-                    else
-                        kuick.insert(db, assignee, mGroup, null);
-
-                    kuick.update(db, existingRegistry, mGroup, progressListener());
-                    kuick.broadcast();
-
-                    post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
-                    {
-                        @Override
-                        public void now(AddDevicesToTransferActivity anchor)
-                        {
-                            anchor.setResult(RESULT_OK, new Intent()
-                                    .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
-                                    .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
-
-                            anchor.finish();
-                        }
-                    });
-                } else
-                    post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
-                    {
-                        @Override
-                        public void now(AddDevicesToTransferActivity anchor)
-                        {
-                            UIConnectionUtils.showConnectionRejectionInformation(anchor, mDevice,
-                                    clientResponse, retryButtonListener);
-                        }
-                    });
-            } catch (Exception e) {
-                if (!(e instanceof InterruptedException)) {
-                    e.printStackTrace();
-
-                    post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
-                    {
-                        @Override
-                        public void now(AddDevicesToTransferActivity anchor)
-                        {
-                            anchor.runOnUiThread(() -> new AlertDialog.Builder(anchor)
-                                    .setMessage(context.getString(R.string.mesg_fileSendError,
-                                            context.getString(R.string.mesg_connectionProblem)))
-                                    .setNegativeButton(R.string.butn_close, null)
-                                    .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                    .show());
-                        }
-                    });
+                    filesArray.put(thisJson);
+                } catch (Exception e) {
+                    Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: "
+                            + e.getClass().getName() + " : " + transferObject.name);
                 }
             }
-        });
+
+            // so that if the user rejects, it won't be removed from the sender
+            jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
+
+            addCloser(userAction -> kuick.remove(assignee));
+
+            final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
+
+            addCloser(userAction -> {
+                try {
+                    activeConnection.getSocket().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            activeConnection.reply(jsonRequest.toString());
+
+            CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+            activeConnection.getSocket().close();
+
+            JSONObject clientResponse = new JSONObject(response.response);
+
+            if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+                setCurrentContent(context.getString(R.string.mesg_organizingFiles));
+
+                if (doUpdate)
+                    kuick.update(db, assignee, mGroup, null);
+                else
+                    kuick.insert(db, assignee, mGroup, null);
+
+                kuick.update(db, existingRegistry, mGroup, progressListener());
+                kuick.broadcast();
+
+                post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
+                {
+                    @Override
+                    public void now(AddDevicesToTransferActivity anchor)
+                    {
+                        anchor.setResult(RESULT_OK, new Intent()
+                                .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
+                                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
+
+                        anchor.finish();
+                    }
+                });
+            } else
+                post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
+                {
+                    @Override
+                    public void now(AddDevicesToTransferActivity anchor)
+                    {
+                        UIConnectionUtils.showConnectionRejectionInformation(anchor, mDevice,
+                                clientResponse, retryButtonListener);
+                    }
+                });
+        } catch (Exception e) {
+            if (!(e instanceof InterruptedException)) {
+                e.printStackTrace();
+
+                post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
+                {
+                    @Override
+                    public void now(AddDevicesToTransferActivity anchor)
+                    {
+                        anchor.runOnUiThread(() -> new AlertDialog.Builder(anchor)
+                                .setMessage(context.getString(R.string.mesg_fileSendError,
+                                        context.getString(R.string.mesg_connectionProblem)))
+                                .setNegativeButton(R.string.butn_close, null)
+                                .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                .show());
+                    }
+                });
+            }
+        }
     }
 
     @Override

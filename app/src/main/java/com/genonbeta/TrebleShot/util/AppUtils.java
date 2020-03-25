@@ -55,7 +55,6 @@ import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.SuperPreferences;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
@@ -329,31 +328,33 @@ public class AppUtils
                     .show();
     }
 
-    public static void startApplicationDetails(Activity activity)
+    public static void startApplicationDetails(Context context)
     {
-        activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                .setData(Uri.fromParts("package", activity.getPackageName(), null)));
+        context.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .setData(Uri.fromParts("package", context.getPackageName(), null))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    public static void startFeedbackActivity(Activity activity)
+    public static void startFeedbackActivity(Context context)
     {
         Intent intent = new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
-                .putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.text_appName));
+                .putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.text_appName))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        DocumentFile logFile = AppUtils.createLog(activity);
+        DocumentFile logFile = AppUtils.createLog(context);
 
         if (logFile != null) {
             try {
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(activity, logFile)));
+                        .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(context, logFile)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.butn_feedbackContact)));
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.butn_feedbackContact)));
     }
 
     public static void interruptTasksBy(Activity activity, Identity identity, boolean userAction)

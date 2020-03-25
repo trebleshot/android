@@ -22,6 +22,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
@@ -43,8 +44,8 @@ public class IpAddressConnectionActivity extends Activity
 
             if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
                 try {
-                    InetAddress inetAddress = InetAddress.getByName(ipAddress);
-                    BackgroundService.run(this, new DeviceIntroductionTask());
+                    InetAddress address = InetAddress.getByName(ipAddress);
+                    BackgroundService.run(this, new DeviceIntroductionTask(new InfoHolder(address), -1));
                 } catch (UnknownHostException e) {
                     editText.setError(getString(R.string.mesg_unknownHostError));
                 }

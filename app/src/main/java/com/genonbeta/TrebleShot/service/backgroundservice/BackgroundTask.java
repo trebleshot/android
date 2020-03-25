@@ -189,6 +189,10 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mKuick;
     }
 
+    public void post(TaskMessage message) {
+        // TODO: 24.03.2020 Post this message as a notification
+    }
+
     public Progress progress()
     {
         return Progress.dissect(mProgressListener);

@@ -44,6 +44,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -115,6 +116,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     {
         try {
             InfoHolder infoHolder = getItem(position);
+            Object specifier = infoHolder.object();
             View parentView = holder.itemView;
 
             TextView text1 = parentView.findViewById(R.id.text1);
@@ -124,12 +126,22 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
             text1.setText(infoHolder.name());
             text2.setText(infoHolder.description(getContext()));
-            NetworkDeviceLoader.showPictureIntoView(infoHolder, image, mIconBuilder);
+            boolean isRestricted = false;
+            boolean isTrusted = false;
 
-            if (infoHolder.isRestricted) {
+            if (specifier instanceof NetworkDevice) {
+                NetworkDevice device = (NetworkDevice) specifier;
+                isRestricted = device.isRestricted;
+                isTrusted = device.isTrusted;
+
+                NetworkDeviceLoader.showPictureIntoView(device, image, mIconBuilder);
+            } else
+                image.setImageDrawable(mIconBuilder.buildRound(infoHolder.name()));
+
+            if (isRestricted) {
                 statusImage.setVisibility(View.VISIBLE);
                 statusImage.setImageResource(R.drawable.ic_block_white_24dp);
-            } else if (infoHolder.isTrusted) {
+            } else if (isTrusted) {
                 statusImage.setVisibility(View.VISIBLE);
                 statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
             } else {
@@ -170,11 +182,16 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
             this((Object) config);
         }
 
+        public InfoHolder(InetAddress address)
+        {
+            this((Object) address);
+        }
+
         @Override
         public boolean applyFilter(String[] filteringKeywords)
         {
             for (String keyword : filteringKeywords)
-                if (keyword.equals(name()) || keyword.equals(description()))
+                if (keyword.equals(name()))
                     return true;
             return false;
         }

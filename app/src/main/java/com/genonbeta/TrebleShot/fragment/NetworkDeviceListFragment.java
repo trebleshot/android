@@ -202,7 +202,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
             Object specifier = infoHolder.object();
             if (requireActivity() instanceof AddDeviceActivity) {
                 if (specifier instanceof WifiConfiguration)
-                    BackgroundService.run(requireActivity(), new DeviceIntroductionTask(infoHolder));
+                    BackgroundService.run(requireActivity(), new DeviceIntroductionTask(infoHolder, -1));
                 else if (specifier instanceof NetworkDevice) {
                     NetworkDevice device = (NetworkDevice) specifier;
                     if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
