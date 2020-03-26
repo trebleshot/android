@@ -370,7 +370,7 @@ public class NotificationHelper
         if (errorKey != null)
             switch (errorKey) {
                 case Keyword.ERROR_NOT_ALLOWED:
-                case Keyword.ERROR_REQUIRE_TRUST:
+                case Keyword.ERROR_NOT_TRUSTED:
                     errorMsg = getContext().getString(R.string.mesg_notAllowed);
                     break;
                 case Keyword.ERROR_NOT_FOUND:

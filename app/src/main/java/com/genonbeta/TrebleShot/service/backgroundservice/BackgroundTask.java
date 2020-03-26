@@ -53,6 +53,8 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     private String mCurrentContent;
     private boolean mPublishRequested = false;
     private boolean mFinished = false;
+    private boolean mStarted = false;
+    private boolean mScheduleRerun = false;
     private int mHash = 0;
 
     protected abstract void onRun() throws InterruptedException;
@@ -182,6 +184,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return getStoppable().isInterruptedByUser();
     }
 
+    public boolean isStarted()
+    {
+        return mStarted;
+    }
+
     public Kuick kuick()
     {
         if (mKuick == null)
@@ -189,7 +196,8 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mKuick;
     }
 
-    public void post(TaskMessage message) {
+    public void post(TaskMessage message)
+    {
         // TODO: 24.03.2020 Post this message as a notification
     }
 
@@ -220,26 +228,33 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
     public void rerun(BackgroundService service)
     {
-        reset(true);
-        service.run(this);
+        if (!isStarted() || isFinished()) {
+            reset(true);
+            service.run(this);
+        } else
+            mScheduleRerun = true;
     }
 
     @Override
     public void reset()
     {
-        getStoppable().reset();
         resetInternal();
+        getStoppable().reset();
     }
 
     @Override
     public void reset(boolean resetClosers)
     {
-        getStoppable().reset(resetClosers);
         resetInternal();
+        getStoppable().reset(resetClosers);
     }
 
     private void resetInternal()
     {
+        if (isStarted() && !isFinished())
+            throw new IllegalStateException("Can't reset when the task is running");
+
+        setStarted(false);
         setFinished(false);
         progressListener().setProgress(null);
     }
@@ -252,10 +267,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
     public void run(BackgroundService service)
     {
-        if (isFinished() || isInterrupted())
+        if (isStarted() || isFinished() || isInterrupted())
             throw new IllegalStateException(getClass().getName() + " is already in interrupted state. To run it "
                     + "again with the same configuration you need to use rerun().");
         try {
+            setStarted(true);
             setService(service);
             publishStatus();
             run(getStoppable());
@@ -266,6 +282,9 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
             publishStatus();
             setService(null);
         }
+
+        if (mScheduleRerun)
+            rerun(service);
     }
 
     public void setContentIntent(PendingIntent intent)
@@ -297,6 +316,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     private void setService(@Nullable BackgroundService service)
     {
         mService = service;
+    }
+
+    private void setStarted(boolean started)
+    {
+        mStarted = started;
     }
 
     public BackgroundTask setStoppable(Stoppable stoppable)

@@ -786,7 +786,7 @@ public class BackgroundService extends Service
                                             result = device.isTrusted;
 
                                             if (!result)
-                                                currentReply.put(Keyword.ERROR, Keyword.ERROR_REQUIRE_TRUST);
+                                                currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_TRUSTED);
 
                                             pushReply(activeConnection, currentReply, result);
                                             Log.d(TAG, "onConnected: Replied: " + currentReply.toString());

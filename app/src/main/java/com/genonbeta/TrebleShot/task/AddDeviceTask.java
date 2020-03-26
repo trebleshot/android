@@ -59,9 +59,10 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
     @Override
     public void onRun()
     {
-        final Context context = getService().getApplicationContext();
-        final Kuick kuick = AppUtils.getKuick(context);
-        final SQLiteDatabase db = kuick.getWritableDatabase();
+        Context context = getService().getApplicationContext();
+        Kuick kuick = AppUtils.getKuick(context);
+        SQLiteDatabase db = kuick.getWritableDatabase();
+        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
 
         final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
             try {
@@ -71,7 +72,6 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             }
         };
 
-        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
         try {
             boolean doUpdate = false;
             final JSONObject jsonRequest = new JSONObject();

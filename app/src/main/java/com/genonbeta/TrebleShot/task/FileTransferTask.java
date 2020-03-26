@@ -645,6 +645,11 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         return identifyWith(task.group.id, task.device.id, task.type);
     }
 
+    public static Identity identifyWith(long groupId)
+    {
+        return Identity.withANDs(from(Id.GroupId, groupId));
+    }
+
     public static Identity identifyWith(long groupId, TransferObject.Type type)
     {
         return Identity.withANDs(from(Id.GroupId, groupId), from(Id.Type, type));

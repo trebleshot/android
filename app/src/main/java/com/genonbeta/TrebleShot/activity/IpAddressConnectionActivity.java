@@ -47,7 +47,7 @@ public class IpAddressConnectionActivity extends Activity implements AttachedTas
 
             if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
                 try {
-                    run(new DeviceIntroductionTask(new InfoHolder(InetAddress.getByName(ipAddress)), -1));
+                    runUiTask(new DeviceIntroductionTask(new InfoHolder(InetAddress.getByName(ipAddress)), -1));
                 } catch (UnknownHostException e) {
                     editText.setError(getString(R.string.mesg_unknownHostError));
                 }
@@ -63,19 +63,12 @@ public class IpAddressConnectionActivity extends Activity implements AttachedTas
 
         boolean hasDeviceIntroductionTask = false;
         for (BaseAttachableBgTask task : taskList)
-                if (task instanceof DeviceIntroductionTask) {
-                    hasDeviceIntroductionTask = true;
-                    ((DeviceIntroductionTask) task).setAnchor(this);
-                }
+            if (task instanceof DeviceIntroductionTask) {
+                hasDeviceIntroductionTask = true;
+                ((DeviceIntroductionTask) task).setAnchor(this);
+            }
 
         setShowProgress(hasDeviceIntroductionTask);
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        interruptAllTasks(true);
     }
 
     @Override

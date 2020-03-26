@@ -29,7 +29,7 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
  * created by: veli
  * date: 7/24/19 6:08 PM
  */
-public class PreloadedGroup extends TransferGroup implements GroupEditableListAdapter.GroupEditable
+public final class PreloadedGroup extends TransferGroup implements GroupEditableListAdapter.GroupEditable
 {
     public static final String TAG = PreloadedGroup.class.getSimpleName();
 

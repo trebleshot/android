@@ -38,11 +38,17 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.database.Kuick;
+import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
+import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
+import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
+import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
+import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +59,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
 
@@ -378,27 +385,24 @@ public class ConnectionUtils
                 && mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
     }
 
-    public static void postConnectionRejectionInformation(Context context, BackgroundTask task,
-                                                          final NetworkDevice device, final JSONObject clientResponse,
-                                                          final TaskMessage.Callback retryCallback)
+    public static void postConnectionRejectionInformation(JSONObject clientResponse) throws NotAllowedException,
+            NotTrustedException
     {
         try {
             if (clientResponse.has(Keyword.ERROR)) {
-                if (clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED)) {
-                    task.post(TaskMessage.newInstance()
-                            .setTitle(context, R.string.mesg_notAllowed)
-                            .setMessage(context.getString(R.string.text_notAllowedHelp, device.nickname,
-                                    AppUtils.getLocalDeviceName(context)))
-                            .addAction(context, R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
-                            .addAction(context, R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback));
-                }
-            } else
-                postUnknownError(context, task, retryCallback);
+                String error = clientResponse.getString(Keyword.ERROR);
+                if (error.equals(Keyword.ERROR_NOT_ALLOWED))
+                    throw new NotAllowedException();
+                else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
+                    throw new NotTrustedException();
+            }
+            //postUnknownError(context, task, retryCallback);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    // TODO: 26.03.2020 Use the error create above and make this a part of it
     public static void postUnknownError(Context context, BackgroundTask task, TaskMessage.Callback retryCallback)
     {
         task.post(TaskMessage.newInstance()
@@ -408,32 +412,29 @@ public class ConnectionUtils
     }
 
     @WorkerThread
-    public static DeviceAddress setupConnection(Context context, BackgroundTask task, InetAddress inetAddress,
-                                         int pin, TaskMessage.Callback retryCallback)
+    public static DeviceAddress setupConnection(Context context, InetAddress inetAddress, int pin)
+            throws DifferentClientException, TimeoutException, CommunicationException, IOException, JSONException,
+            NotAllowedException, NotTrustedException
     {
-        CommunicationBridge.Client client = new CommunicationBridge.Client(task.kuick(), pin);
+        Kuick kuick = AppUtils.getKuick(context);
+        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick, pin);
+        CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
 
-        try {
-            CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
+        activeConnection.reply(new JSONObject()
+                .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
+                .toString());
 
-            activeConnection.reply(new JSONObject()
-                    .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
-                    .toString());
+        NetworkDevice device = client.getDevice();
+        JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
 
-            NetworkDevice device = client.getDevice();
-            JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
-
-            if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
-                DeviceConnection connection = NetworkDeviceLoader.processConnection(
-                        task.kuick(), device, inetAddress.getHostAddress());
-                return new DeviceAddress(device, connection);
-            } else
-                postConnectionRejectionInformation(context, task, device, receivedReply, retryCallback);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
+            DeviceConnection connection = NetworkDeviceLoader.processConnection(kuick, device,
+                    inetAddress.getHostAddress());
+            return new DeviceAddress(device, connection);
+        } else
+            postConnectionRejectionInformation(receivedReply);
+        // TODO: 26.03.2020 This should be done by postConnectionRejectionInformation()
+        throw new CommunicationException("Something went wrong. Duh?");
     }
 
     /**

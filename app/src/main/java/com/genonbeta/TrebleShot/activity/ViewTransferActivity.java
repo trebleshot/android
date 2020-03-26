@@ -38,10 +38,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.*;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.PreloadedGroup;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
@@ -102,14 +99,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             }
         }
     };
-
-    public static void startInstance(Context context, long groupId)
-    {
-        context.startActivity(new Intent(context, ViewTransferActivity.class)
-                .setAction(ACTION_LIST_TRANSFERS)
-                .putExtra(EXTRA_GROUP_ID, groupId)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -317,12 +306,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         return true;
     }
 
-    public void startDeviceAddingActivity()
-    {
-        startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, mGroup.id), REQUEST_ADD_DEVICES);
-    }
-
     @Override
     public void onBackPressed()
     {
@@ -345,7 +328,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         if (explorerFragment != null && explorerFragment.isAdded())
             return explorerFragment.createSnackbar(resId, objects);
 
-        return Snackbar.make(findViewById(R.id.activity_transaction_content_frame), getString(resId, objects), Snackbar.LENGTH_LONG);
+        return Snackbar.make(findViewById(R.id.activity_transaction_content_frame), getString(resId, objects),
+                Snackbar.LENGTH_LONG);
     }
 
     public int findCurrentDevicePosition()
@@ -373,6 +357,12 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     {
         return (TransferFileExplorerFragment) getSupportFragmentManager().findFragmentById(
                 R.id.activity_transaction_content_frame);
+    }
+
+    @Override
+    public Identity getIdentity()
+    {
+        return FileTransferTask.identifyWith(mGroup.id);
     }
 
     @Nullable
@@ -458,6 +448,20 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
         setTitle(getResources().getQuantityString(R.plurals.text_files, mGroup.numberOfTotal(),
                 mGroup.numberOfTotal()));
+    }
+
+    public void startDeviceAddingActivity()
+    {
+        startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
+                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, mGroup.id), REQUEST_ADD_DEVICES);
+    }
+
+    public static void startInstance(Context context, long groupId)
+    {
+        context.startActivity(new Intent(context, ViewTransferActivity.class)
+                .setAction(ACTION_LIST_TRANSFERS)
+                .putExtra(EXTRA_GROUP_ID, groupId)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     private void toggleTask()

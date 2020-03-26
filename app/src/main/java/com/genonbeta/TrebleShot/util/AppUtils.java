@@ -152,9 +152,10 @@ public class AppUtils
         DocumentFile logFile = saveDirectory.createFile(null, fileName);
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Service.ACTIVITY_SERVICE);
 
+        if (activityManager == null)
+            return null;
+
         try {
-            if (activityManager == null)
-                throw new Exception("Could not grab the ActivityManager service.");
 
             List<ActivityManager.RunningAppProcessInfo> processList = activityManager.getRunningAppProcesses();
 
@@ -183,8 +184,6 @@ public class AppUtils
             reader.close();
 
             return logFile;
-        } catch (IOException e) {
-            // do nothing
         } catch (Exception e) {
             e.printStackTrace();
         }

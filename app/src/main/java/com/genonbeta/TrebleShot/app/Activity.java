@@ -68,7 +68,8 @@ public abstract class Activity extends AppCompatActivity
 
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
 
-    private final List<BaseAttachableBgTask> mAttachedTasks = new ArrayList<>();
+    private final List<BaseAttachableBgTask> mAttachedTaskList = new ArrayList<>();
+    private final List<BackgroundTask> mUiTaskList = new ArrayList<>();
     private AlertDialog mOngoingRequest;
     private IntentFilter mFilter = new IntentFilter();
     private boolean mDarkThemeRequested = false;
@@ -162,7 +163,6 @@ public abstract class Activity extends AppCompatActivity
         super.onResume();
 
         checkForThemeChange();
-        registerReceiver(mReceiver, mFilter);
 
         if (!hasIntroductionShown() && !mWelcomePageDisallowed) {
             startActivity(new Intent(this, WelcomeActivity.class));
@@ -174,17 +174,11 @@ public abstract class Activity extends AppCompatActivity
     }
 
     @Override
-    protected void onPause()
-    {
-        super.onPause();
-        unregisterReceiver(mReceiver);
-    }
-
-    @Override
     protected void onStart()
     {
         super.onStart();
         attachTasks();
+        registerReceiver(mReceiver, mFilter);
         if (AppUtils.checkRunningConditions(this))
             App.notifyActivityInForeground(this, true);
     }
@@ -193,6 +187,8 @@ public abstract class Activity extends AppCompatActivity
     protected void onStop()
     {
         super.onStop();
+        unregisterReceiver(mReceiver);
+        stopUiTasks();
         detachTasks();
         if (AppUtils.checkRunningConditions(this))
             App.notifyActivityInForeground(this, false);
@@ -271,8 +267,8 @@ public abstract class Activity extends AppCompatActivity
         if (task.getContentIntent() == null)
             task.setContentIntent(this, getIntent());
 
-        synchronized (mAttachedTasks) {
-            mAttachedTasks.add(task);
+        synchronized (mAttachedTaskList) {
+            mAttachedTaskList.add(task);
         }
     }
 
@@ -281,7 +277,7 @@ public abstract class Activity extends AppCompatActivity
         try {
             BackgroundService service = AppUtils.getBgService(this);
             List<BackgroundTask> concurrentTaskList = service.findTasksBy(getIdentity());
-            List<BaseAttachableBgTask> attachableBgTaskList = new ArrayList<>(mAttachedTasks);
+            List<BaseAttachableBgTask> attachableBgTaskList = new ArrayList<>(mAttachedTaskList);
             boolean checkIfExists = attachableBgTaskList.size() > 0;
 
             // If this call is in between of onStart and onStop, it means there could be some tasks held in the
@@ -321,6 +317,13 @@ public abstract class Activity extends AppCompatActivity
         }
     }
 
+    public void attachUiTask(BackgroundTask task)
+    {
+        synchronized (mUiTaskList) {
+            mUiTaskList.add(task);
+        }
+    }
+
     public void checkForThemeChange()
     {
         if (((mDarkThemeRequested != isDarkThemeRequested() || (isDarkThemeRequested()
@@ -329,17 +332,31 @@ public abstract class Activity extends AppCompatActivity
             recreate();
     }
 
+    public void checkUiTasks()
+    {
+        if (mUiTaskList.size() <= 0)
+            return;
+        synchronized (mUiTaskList) {
+            List<BackgroundTask> uiTaskList = new ArrayList<>();
+            for (BackgroundTask task : uiTaskList)
+                if (!task.isFinished())
+                    uiTaskList.add(task);
+            mUiTaskList.clear();
+            mUiTaskList.addAll(uiTaskList);
+        }
+    }
+
     public void detachTask(BaseAttachableBgTask task)
     {
-        synchronized (mAttachedTasks) {
+        synchronized (mAttachedTaskList) {
             task.removeAnchor();
-            mAttachedTasks.remove(task);
+            mAttachedTaskList.remove(task);
         }
     }
 
     private void detachTasks()
     {
-        List<BaseAttachableBgTask> taskList = new ArrayList<>(mAttachedTasks);
+        List<BaseAttachableBgTask> taskList = new ArrayList<>(mAttachedTaskList);
         for (BaseAttachableBgTask task : taskList)
             detachTask(task);
     }
@@ -357,8 +374,8 @@ public abstract class Activity extends AppCompatActivity
 
     public List<BaseAttachableBgTask> findTasksWith(Identity identity)
     {
-        synchronized (mAttachedTasks) {
-            return BackgroundService.findTasksBy(mAttachedTasks, identity);
+        synchronized (mAttachedTaskList) {
+            return BackgroundService.findTasksBy(mAttachedTaskList, identity);
         }
     }
 
@@ -379,8 +396,8 @@ public abstract class Activity extends AppCompatActivity
 
     public <T extends BaseAttachableBgTask> List<T> getTaskListOf(Class<T> clazz)
     {
-        synchronized (mAttachedTasks) {
-            return BackgroundService.getTaskListOf(mAttachedTasks, clazz);
+        synchronized (mAttachedTaskList) {
+            return BackgroundService.getTaskListOf(mAttachedTaskList, clazz);
         }
     }
 
@@ -391,15 +408,15 @@ public abstract class Activity extends AppCompatActivity
 
     public boolean hasTaskOf(Class<? extends BackgroundTask> clazz)
     {
-        synchronized (mAttachedTasks) {
-            return BackgroundService.hasTaskOf(mAttachedTasks, clazz);
+        synchronized (mAttachedTaskList) {
+            return BackgroundService.hasTaskOf(mAttachedTaskList, clazz);
         }
     }
 
     public boolean hasTaskWith(Identity identity)
     {
-        synchronized (mAttachedTasks) {
-            return BackgroundService.hasTaskWith(mAttachedTasks, identity);
+        synchronized (mAttachedTaskList) {
+            return BackgroundService.hasTaskWith(mAttachedTaskList, identity);
         }
     }
 
@@ -414,10 +431,10 @@ public abstract class Activity extends AppCompatActivity
 
     public void interruptAllTasks(boolean userAction)
     {
-        if (mAttachedTasks.size() <= 0)
+        if (mAttachedTaskList.size() <= 0)
             return;
-        synchronized (mAttachedTasks) {
-            for (BaseAttachableBgTask task : mAttachedTasks)
+        synchronized (mAttachedTaskList) {
+            for (BaseAttachableBgTask task : mAttachedTaskList)
                 task.interrupt(userAction);
         }
     }
@@ -479,10 +496,20 @@ public abstract class Activity extends AppCompatActivity
                 break;
     }
 
-    public void run(BaseAttachableBgTask task)
+    public void run(BackgroundTask task)
     {
         task.setContentIntent(this, getIntent());
         BackgroundService.run(this, task);
+    }
+
+    /**
+     * Run a task that will be stopped if the user leaves.
+     *
+     * @param task to be stopped when user leaves
+     */
+    public void runUiTask(BackgroundTask task) {
+        run(task);
+        attachUiTask(task);
     }
 
     public void setSkipPermissionRequest(boolean skip)
@@ -498,6 +525,17 @@ public abstract class Activity extends AppCompatActivity
     public void startProfileEditor()
     {
         new ProfileEditorDialog(this).show();
+    }
+
+    protected void stopUiTasks()
+    {
+        if (mUiTaskList.size() <= 0)
+            return;
+        synchronized (mUiTaskList) {
+            for (BackgroundTask task : mUiTaskList)
+                task.interrupt(true);
+            mUiTaskList.clear();
+        }
     }
 
     public interface OnBackPressedListener

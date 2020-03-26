@@ -60,33 +60,24 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
             InetAddress inetAddress = findAddress();
 
             if (inetAddress != null) {
-                DeviceAddress deviceAddress = ConnectionUtils.setupConnection(getService(), this, inetAddress,
-                        mPin, retryCallback);
-
-                if (deviceAddress != null)
-                    Log.d(TAG, "onRun: Found device - " + deviceAddress.device.nickname);
+                DeviceAddress deviceAddress = ConnectionUtils.setupConnection(getService(), inetAddress, mPin);
+                Log.d(TAG, "onRun: Found device - " + deviceAddress.device.nickname);
             }
 
             if (!isInterruptedByUser()) {
                 TaskMessage message = TaskMessage.newInstance()
+                        .setTitle(mInfoHolder.name())
                         .setMessage(getService(), R.string.mesg_connectionFailure)
                         .addAction(getService(), R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
                         .addAction(getService(), R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback);
 
                 post(message);
-
-                /*
-                if (object instanceof NetworkDevice)
-                    dialogBuilder.setTitle(((NetworkDevice) object).nickname);
-
-                postDialog(activity, dialogBuilder.create());
-                */
             }
         } catch (Exception ignored) {
 
         }
 
-        /**if (isInterrupted())
+        if (isInterrupted())
             return;
 
         try {
@@ -95,7 +86,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
             e.printStackTrace();
         }
         Log.d("DeviceIntroductionTask", "onRun: rerun");
-        onRun();*/
+        onRun();
     }
 
     @Override

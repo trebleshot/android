@@ -25,6 +25,8 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
+import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -232,22 +234,6 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         public interface ConnectionHandler
         {
             void onConnect(Client client);
-        }
-    }
-
-    public static class DifferentClientException extends Exception
-    {
-        public DifferentClientException(String desc)
-        {
-            super(desc);
-        }
-    }
-
-    public static class CommunicationException extends Exception
-    {
-        public CommunicationException(String desc)
-        {
-            super(desc);
         }
     }
 }
