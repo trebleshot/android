@@ -62,9 +62,9 @@ import java.util.List;
 
 public abstract class Activity extends AppCompatActivity
 {
-    private static final String TAG = Activity.class.getSimpleName();
-
-    public static final String ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED";
+    public static final String
+            TAG = Activity.class.getSimpleName(),
+            ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED";
 
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
 
@@ -85,8 +85,11 @@ public abstract class Activity extends AppCompatActivity
         {
             if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED.equals(intent.getAction()))
                 checkForThemeChange();
-            else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction()))
+            else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction())
+                    || App.ACTION_SERVICE_BOUND.equals(intent.getAction()))
                 attachTasks();
+
+            Log.d(TAG, "onReceive: " + intent.getAction());
         }
     };
 
@@ -98,6 +101,8 @@ public abstract class Activity extends AppCompatActivity
         mCustomFontsEnabled = isUsingCustomFonts();
 
         mFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED);
+        mFilter.addAction(BackgroundService.ACTION_TASK_CHANGE);
+        mFilter.addAction(App.ACTION_SERVICE_BOUND);
 
         if (mDarkThemeRequested) {
             try {
@@ -157,9 +162,7 @@ public abstract class Activity extends AppCompatActivity
         super.onResume();
 
         checkForThemeChange();
-
-        if (Build.VERSION.SDK_INT >= 23)
-            registerReceiver(mReceiver, mFilter);
+        registerReceiver(mReceiver, mFilter);
 
         if (!hasIntroductionShown() && !mWelcomePageDisallowed) {
             startActivity(new Intent(this, WelcomeActivity.class));
@@ -174,9 +177,7 @@ public abstract class Activity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
-
-        if (Build.VERSION.SDK_INT >= 23)
-            unregisterReceiver(mReceiver);
+        unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -354,37 +355,11 @@ public abstract class Activity extends AppCompatActivity
         finish();
     }
 
-    public <T extends BaseAttachableBgTask> List<T> findTasks(Class<T> clazz)
+    public List<BaseAttachableBgTask> findTasksWith(Identity identity)
     {
         synchronized (mAttachedTasks) {
-            return findTasks(mAttachedTasks, clazz);
+            return BackgroundService.findTasksBy(mAttachedTasks, identity);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends BaseAttachableBgTask> List<T> findTasks(List<BaseAttachableBgTask> taskList, Class<T> clazz)
-    {
-        List<T> matchingTaskList = new ArrayList<>();
-        for (BaseAttachableBgTask task : taskList)
-            if (clazz.isInstance(task))
-                matchingTaskList.add((T) task);
-        return matchingTaskList;
-    }
-
-    public <T extends BaseAttachableBgTask> boolean hasTask(Class<T> clazz)
-    {
-        synchronized (mAttachedTasks) {
-            return hasTask(mAttachedTasks, clazz);
-        }
-    }
-
-    public <T extends BaseAttachableBgTask> boolean hasTask(List<BaseAttachableBgTask> taskList, Class<T> clazz)
-    {
-        for (BaseAttachableBgTask task : taskList)
-            if (clazz.isInstance(task))
-                return true;
-
-        return false;
     }
 
     public Kuick getDatabase()
@@ -402,9 +377,30 @@ public abstract class Activity extends AppCompatActivity
         return Identity.withORs(Identifier.from(BackgroundTask.Id.HashCode, BackgroundService.hashIntent(getIntent())));
     }
 
+    public <T extends BaseAttachableBgTask> List<T> getTaskListOf(Class<T> clazz)
+    {
+        synchronized (mAttachedTasks) {
+            return BackgroundService.getTaskListOf(mAttachedTasks, clazz);
+        }
+    }
+
     public boolean hasIntroductionShown()
     {
         return getDefaultPreferences().getBoolean("introduction_shown", false);
+    }
+
+    public boolean hasTaskOf(Class<? extends BackgroundTask> clazz)
+    {
+        synchronized (mAttachedTasks) {
+            return BackgroundService.hasTaskOf(mAttachedTasks, clazz);
+        }
+    }
+
+    public boolean hasTaskWith(Identity identity)
+    {
+        synchronized (mAttachedTasks) {
+            return BackgroundService.hasTaskWith(mAttachedTasks, identity);
+        }
     }
 
     public boolean isPowerSaveMode()
@@ -483,6 +479,12 @@ public abstract class Activity extends AppCompatActivity
                 break;
     }
 
+    public void run(BaseAttachableBgTask task)
+    {
+        task.setContentIntent(this, getIntent());
+        BackgroundService.run(this, task);
+    }
+
     public void setSkipPermissionRequest(boolean skip)
     {
         mSkipPermissionRequest = skip;
@@ -501,10 +503,5 @@ public abstract class Activity extends AppCompatActivity
     public interface OnBackPressedListener
     {
         boolean onBackPressed();
-    }
-
-    public interface OnPreloadArgumentWatcher
-    {
-        Bundle passPreLoadingArguments();
     }
 }

@@ -57,8 +57,7 @@ public class IndexTransferTask extends BackgroundTask
     @Override
     protected void onRun() throws InterruptedException
     {
-        final Kuick kuick = AppUtils.getKuick(getService());
-        final SQLiteDatabase db = kuick.getWritableDatabase();
+        final SQLiteDatabase db = kuick().getWritableDatabase();
         final JSONArray jsonArray;
         TransferGroup group = new TransferGroup(mGroupId);
         TransferAssignee assignee = new TransferAssignee(group, mDevice, TransferObject.Type.INCOMING, mConnection);
@@ -78,14 +77,14 @@ public class IndexTransferTask extends BackgroundTask
         boolean usePublishing = false;
 
         try {
-            kuick.reconstruct(group);
+            kuick().reconstruct(group);
             usePublishing = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        kuick.publish(group);
-        kuick.publish(assignee);
+        kuick().publish(group);
+        kuick().publish(assignee);
 
         long uniqueId = System.currentTimeMillis(); // The uniqueIds
         List<TransferObject> pendingRegistry = new ArrayList<>();
@@ -120,6 +119,7 @@ public class IndexTransferTask extends BackgroundTask
             }
         }
 
+        // TODO: 25.03.2020 Use native progressListener
         Progress.Listener progressUpdater = new Progress.SimpleListener()
         {
             long lastNotified = System.currentTimeMillis();
@@ -138,15 +138,15 @@ public class IndexTransferTask extends BackgroundTask
 
         if (pendingRegistry.size() > 0) {
             if (usePublishing)
-                kuick.publish(db, pendingRegistry, group, progressUpdater);
+                kuick().publish(db, pendingRegistry, group, progressUpdater);
             else
-                kuick.insert(db, pendingRegistry, group, progressUpdater);
+                kuick().insert(db, pendingRegistry, group, progressUpdater);
         }
 
         notification.cancel();
 
         if (isInterrupted())
-            kuick.remove(group);
+            kuick().remove(group);
         else if (pendingRegistry.size() > 0) {
             getService().sendBroadcast(new Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BackgroundService.EXTRA_GROUP_ID, mGroupId)
@@ -154,8 +154,8 @@ public class IndexTransferTask extends BackgroundTask
 
             if (mNoPrompt)
                 try {
-                    FileTransferTask.createFrom(getService(), group.id, mDevice.id,
-                            TransferObject.Type.INCOMING);
+                    getService().run(FileTransferTask.createFrom(getService(), group.id, mDevice.id,
+                            TransferObject.Type.INCOMING));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -164,7 +164,7 @@ public class IndexTransferTask extends BackgroundTask
                         pendingRegistry);
         }
 
-        kuick.broadcast();
+        kuick().broadcast();
     }
 
     @Override

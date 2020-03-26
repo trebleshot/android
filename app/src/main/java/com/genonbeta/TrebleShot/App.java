@@ -53,7 +53,8 @@ import java.util.Date;
 
 public class App extends Application implements Thread.UncaughtExceptionHandler, ServiceConnection
 {
-    public static final String TAG = App.class.getSimpleName();
+    public static final String TAG = App.class.getSimpleName(),
+            ACTION_SERVICE_BOUND = "com.genonbeta.intent.action.SERVICE_BOUND";
 
     private int mForegroundActivitiesCount = 0;
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
@@ -66,8 +67,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
     {
         super.onCreate();
 
-        mCrashLogFile = getApplicationContext().getFileStreamPath(
-                Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
+        mCrashLogFile = getApplicationContext().getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
 
@@ -87,6 +87,8 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
     {
         if (service instanceof BackgroundService.LocalBinder) {
             mBgService = ((BackgroundService.LocalBinder) service).getService();
+            sendBroadcast(new Intent(ACTION_SERVICE_BOUND));
+            Log.d(TAG, "onServiceConnected: Service is bound");
         } else
             Log.e(TAG, "onServiceConnected: Some unknown binder is given");
     }
@@ -96,6 +98,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
     {
         mBgServiceRef.clear();
         mBgService = null;
+        Log.d(TAG, "onServiceDisconnected: Service is disconnected");
     }
 
     public WeakReference<BackgroundService> getBackgroundService()
@@ -169,10 +172,13 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
             bindService(intent, this, BIND_AUTO_CREATE);
         } else if (inBg) {
             boolean canStop = mBgService.canStopService();
-            if (canStop)
+            if (canStop) {
+                Log.d(TAG, "notifyActivityInForeground: Service is not needed. Stopping...");
                 stopService(intent);
-            else
+            } else {
+                Log.d(TAG, "notifyActivityInForeground: Service is being taken to the foreground");
                 ContextCompat.startForegroundService(this, intent);
+            }
 
             unbindService(this);
         }

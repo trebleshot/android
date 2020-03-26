@@ -61,6 +61,12 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             mKuick = kuick;
         }
 
+        public Client(Kuick kuick, int pin)
+        {
+            this(kuick);
+            setPin(pin);
+        }
+
         public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection)
                 throws IOException, TimeoutException, DifferentClientException, CommunicationException
         {

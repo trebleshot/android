@@ -40,6 +40,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.android.framework.util.Stoppable;
@@ -407,15 +408,12 @@ public class ConnectionUtils
     }
 
     @WorkerThread
-    public NetworkDevice setupConnection(Context context, BackgroundTask task, final InetAddress inetAddress,
-                                         int accessPin, final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
-                                         final TaskMessage.Callback retryCallback)
+    public static DeviceAddress setupConnection(Context context, BackgroundTask task, InetAddress inetAddress,
+                                         int pin, TaskMessage.Callback retryCallback)
     {
-        CommunicationBridge.Client client = new CommunicationBridge.Client(task.kuick());
+        CommunicationBridge.Client client = new CommunicationBridge.Client(task.kuick(), pin);
 
         try {
-            client.setPin(accessPin);
-
             CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
 
             activeConnection.reply(new JSONObject()
@@ -425,18 +423,12 @@ public class ConnectionUtils
             NetworkDevice device = client.getDevice();
             JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
 
-            if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT)
-                    && device.id != null) {
-                final DeviceConnection connection = NetworkDeviceLoader.processConnection(
+            if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
+                DeviceConnection connection = NetworkDeviceLoader.processConnection(
                         task.kuick(), device, inetAddress.getHostAddress());
-
-                if (listener != null)
-                    listener.onDeviceRegistered(task.kuick(), device, connection);
+                return new DeviceAddress(device, connection);
             } else
                 postConnectionRejectionInformation(context, task, device, receivedReply, retryCallback);
-
-            client.setReturn(device);
-            return device;
         } catch (Exception e) {
             e.printStackTrace();
         }

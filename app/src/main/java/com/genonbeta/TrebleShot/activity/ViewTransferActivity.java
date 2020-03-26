@@ -43,6 +43,8 @@ import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -54,7 +56,6 @@ import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ import java.util.List;
  * Date: 5/23/17 1:43 PM
  */
 
-public class ViewTransferActivity extends Activity implements SnackbarPlacementProvider
+public class ViewTransferActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
     public static final String TAG = ViewTransferActivity.class.getSimpleName();
 
@@ -73,7 +74,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
-    final private List<String> mActiveProcesses = new ArrayList<>();
     private OnBackPressedListener mBackPressedListener;
     private PreloadedGroup mGroup;
     private TransferObject mTransferObject;
@@ -99,8 +99,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                     reconstructGroup();
                 else if (Kuick.TABLE_TRANSFER.equals(data.tableName) && (data.inserted || data.removed))
                     updateCalculations();
-            } else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction()))
-                updateTaskState();
+            }
         }
     };
 
@@ -225,8 +224,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
         registerReceiver(mReceiver, filter);
         reconstructGroup();
-
-        updateTaskState();
         updateCalculations();
     }
 
@@ -385,6 +382,11 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         return explorerFragment != null ? explorerFragment.getToggleButton() : null;
     }
 
+    public boolean isDeviceRunning(String deviceId)
+    {
+        return hasTaskWith(FileTransferTask.identifyWith(mGroup.id, deviceId));
+    }
+
     public void reconstructGroup()
     {
         try {
@@ -397,8 +399,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     public void showMenus()
     {
+        boolean hasRunning = hasTaskOf(FileTransferTask.class);
         boolean hasAnyFiles = mGroup.numberOfTotal() > 0;
-        boolean hasRunning = mActiveProcesses.size() > 0;
         boolean hasIncoming = mGroup.hasIncoming();
         boolean hasOutgoing = mGroup.hasOutgoing();
         ExtendedFloatingActionButton toggleButton = getToggleButton();
@@ -426,8 +428,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 toggleButton.setVisibility(View.GONE);
         }
 
-        mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
-                : R.string.butn_shareOnBrowser);
+        mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser : R.string.butn_shareOnBrowser);
         mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
         mCnTestMenu.setVisible(hasAnyFiles);
         mAddDeviceMenu.setVisible(hasOutgoing);
@@ -438,22 +439,20 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             Menu dynamicMenu = mLimitMenu.setVisible(true).getSubMenu();
             dynamicMenu.clear();
 
-            int iterator = 0;
+            int i = 0;
             ShowingAssignee[] assignees = mGroup.assignees;
 
             if (assignees.length > 0)
-                for (; iterator < assignees.length; iterator++) {
-                    ShowingAssignee assignee = assignees[iterator];
+                for (; i < assignees.length; i++) {
+                    ShowingAssignee assignee = assignees[i];
 
-                    dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to,
-                            0, iterator, assignee.device.nickname);
+                    dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to, 0, i,
+                            assignee.device.nickname);
                 }
 
-            dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to, 0, iterator,
-                    getString(R.string.text_none));
-
-            dynamicMenu.setGroupCheckable(R.id.actions_abs_view_transfer_activity_limit_to,
-                    true, true);
+            dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to, 0, i, R.string.text_none);
+            dynamicMenu.setGroupCheckable(R.id.actions_abs_view_transfer_activity_limit_to, true,
+                    true);
         } else
             mLimitMenu.setVisible(false);
 
@@ -468,18 +467,17 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         if (assigneeList.size() > 0) {
             if (assigneeList.size() == 1) {
                 ShowingAssignee assignee = assigneeList.get(0);
-                toggleTaskForAssignee(assignee, mActiveProcesses.contains(assignee.deviceId));
+                toggleTaskForAssignee(assignee);
             } else
-                new ToggleMultipleTransferDialog(ViewTransferActivity.this, mGroup, mActiveProcesses)
-                        .show();
+                new ToggleMultipleTransferDialog(ViewTransferActivity.this, mGroup).show();
         } else if (mGroup.hasOutgoing())
             startDeviceAddingActivity();
     }
 
-    public void toggleTaskForAssignee(final ShowingAssignee assignee, boolean ongoing)
+    public void toggleTaskForAssignee(final ShowingAssignee assignee)
     {
         try {
-            if (ongoing)
+            if (hasTaskWith(FileTransferTask.identifyWith(mGroup.id, assignee.deviceId)))
                 TransferUtils.pauseTransfer(this, assignee);
             else {
                 getDatabase().reconstruct(new DeviceConnection(assignee));
@@ -516,22 +514,11 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         }
     }
 
-    private void updateTaskState()
+    @Override
+    public void onTaskStateChanged(BaseAttachableBgTask task)
     {
-        try {
-            BackgroundService service = AppUtils.getBgService(ViewTransferActivity.this);
-            List<FileTransferTask> taskList = service.getTaskListOf(FileTransferTask.class);
-
-            synchronized (mActiveProcesses) {
-                mActiveProcesses.clear();
-                for (FileTransferTask task : taskList)
-                    if (task.group != null && mGroup.id == task.group.id)
-                        mActiveProcesses.add(task.device.id);
-            }
-
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
+        if (task instanceof FileTransferTask)
+            ((FileTransferTask) task).setAnchor(this);
     }
 
     public static class CrunchLatestDataTask extends AsyncTask<ViewTransferActivity, Void, Void>

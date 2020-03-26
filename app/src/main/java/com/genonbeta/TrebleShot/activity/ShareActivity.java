@@ -37,8 +37,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShareActivity extends Activity implements SnackbarPlacementProvider, Activity.OnPreloadArgumentWatcher,
-        AttachedTaskListener
+public class ShareActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
     public static final String TAG = "ShareActivity";
 
@@ -47,7 +46,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
             ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE",
             EXTRA_DEVICE_ID = "extraDeviceId";
 
-    private Bundle mPreLoadingBundle = new Bundle();
     private ProgressBar mProgressBar;
     private TextView mProgressTextCurrent;
     private TextView mProgressTextTotal;
@@ -139,7 +137,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
             if (task instanceof OrganizeSharingTask)
                 ((OrganizeSharingTask) task).setAnchor(this);
 
-        if (!hasTask(OrganizeSharingTask.class)) {
+        if (!hasTaskOf(OrganizeSharingTask.class)) {
             if (mHadTask)
                 finish();
             else {
@@ -157,12 +155,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     public ProgressBar getProgressBar()
     {
         return mProgressBar;
-    }
-
-    @Override
-    public Bundle passPreLoadingArguments()
-    {
-        return mPreLoadingBundle;
     }
 }
 

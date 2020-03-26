@@ -19,18 +19,21 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
-public class IpAddressConnectionActivity extends Activity
+public class IpAddressConnectionActivity extends Activity implements AttachedTaskListener
 {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -44,13 +47,45 @@ public class IpAddressConnectionActivity extends Activity
 
             if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
                 try {
-                    InetAddress address = InetAddress.getByName(ipAddress);
-                    BackgroundService.run(this, new DeviceIntroductionTask(new InfoHolder(address), -1));
+                    run(new DeviceIntroductionTask(new InfoHolder(InetAddress.getByName(ipAddress)), -1));
                 } catch (UnknownHostException e) {
                     editText.setError(getString(R.string.mesg_unknownHostError));
                 }
             } else
                 editText.setError(getString(R.string.mesg_errorNotAnIpAddress));
         });
+    }
+
+    @Override
+    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    {
+        super.onAttachTasks(taskList);
+
+        boolean hasDeviceIntroductionTask = false;
+        for (BaseAttachableBgTask task : taskList)
+                if (task instanceof DeviceIntroductionTask) {
+                    hasDeviceIntroductionTask = true;
+                    ((DeviceIntroductionTask) task).setAnchor(this);
+                }
+
+        setShowProgress(hasDeviceIntroductionTask);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        interruptAllTasks(true);
+    }
+
+    @Override
+    public void onTaskStateChanged(BaseAttachableBgTask task)
+    {
+        setShowProgress(task instanceof DeviceIntroductionTask && !task.isFinished());
+    }
+
+    private void setShowProgress(boolean show)
+    {
+        findViewById(R.id.progressBar).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

@@ -20,6 +20,8 @@ package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
@@ -34,7 +36,7 @@ import java.net.UnknownHostException;
  * created by: veli
  * date: 8/3/19 1:22 PM
  */
-public class DeviceConnection implements DatabaseObject<NetworkDevice>
+public final class DeviceConnection implements DatabaseObject<NetworkDevice>, Parcelable
 {
     public String adapterName;
     public String ipAddress;
@@ -68,6 +70,29 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     {
         this.ipAddress = ipAddress;
     }
+
+    protected DeviceConnection(Parcel in)
+    {
+        adapterName = in.readString();
+        ipAddress = in.readString();
+        deviceId = in.readString();
+        lastCheckedDate = in.readLong();
+    }
+
+    public static final Creator<DeviceConnection> CREATOR = new Creator<DeviceConnection>()
+    {
+        @Override
+        public DeviceConnection createFromParcel(Parcel in)
+        {
+            return new DeviceConnection(in);
+        }
+
+        @Override
+        public DeviceConnection[] newArray(int size)
+        {
+            return new DeviceConnection[size];
+        }
+    };
 
     @Override
     public SQLQuery.Select getWhere()
@@ -122,5 +147,20 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
     {
 
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(adapterName);
+        dest.writeString(ipAddress);
+        dest.writeString(deviceId);
+        dest.writeLong(lastCheckedDate);
     }
 }

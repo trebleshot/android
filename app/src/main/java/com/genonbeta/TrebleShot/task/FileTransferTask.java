@@ -33,7 +33,8 @@ import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -48,7 +49,7 @@ import java.io.*;
 
 import static com.genonbeta.TrebleShot.object.Identifier.from;
 
-public class FileTransferTask extends BackgroundTask
+public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 {
     public static final String TAG = FileTransferTask.class.getSimpleName();
 
@@ -647,6 +648,11 @@ public class FileTransferTask extends BackgroundTask
     public static Identity identifyWith(long groupId, TransferObject.Type type)
     {
         return Identity.withANDs(from(Id.GroupId, groupId), from(Id.Type, type));
+    }
+
+    public static Identity identifyWith(long groupId, String deviceId)
+    {
+        return Identity.withANDs(from(Id.GroupId, groupId), from(Id.DeviceId, deviceId));
     }
 
     public static Identity identifyWith(long groupId, String deviceId, TransferObject.Type type)

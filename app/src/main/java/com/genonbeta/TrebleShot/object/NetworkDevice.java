@@ -20,6 +20,8 @@ package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
@@ -29,7 +31,7 @@ import com.genonbeta.android.database.SQLQuery;
 import java.io.Serializable;
 import java.util.List;
 
-public class NetworkDevice implements DatabaseObject<Void>
+public final class NetworkDevice implements DatabaseObject<Void>, Parcelable
 {
     public String brand;
     public String model;
@@ -55,6 +57,38 @@ public class NetworkDevice implements DatabaseObject<Void>
     {
         this.id = id;
     }
+
+    protected NetworkDevice(Parcel in)
+    {
+        brand = in.readString();
+        model = in.readString();
+        nickname = in.readString();
+        id = in.readString();
+        versionName = in.readString();
+        versionCode = in.readInt();
+        clientVersion = in.readInt();
+        secureKey = in.readInt();
+        lastUsageTime = in.readLong();
+        isTrusted = in.readByte() != 0;
+        isRestricted = in.readByte() != 0;
+        isLocal = in.readByte() != 0;
+        mIsSelected = in.readByte() != 0;
+    }
+
+    public static final Creator<NetworkDevice> CREATOR = new Creator<NetworkDevice>()
+    {
+        @Override
+        public NetworkDevice createFromParcel(Parcel in)
+        {
+            return new NetworkDevice(in);
+        }
+
+        @Override
+        public NetworkDevice[] newArray(int size)
+        {
+            return new NetworkDevice[size];
+        }
+    };
 
     public void applyPreferences(NetworkDevice otherDevice)
     {
@@ -153,6 +187,30 @@ public class NetworkDevice implements DatabaseObject<Void>
 
         for (TransferAssignee assignee : assignees)
             kuick.remove(db, assignee, null, listener);
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(brand);
+        dest.writeString(model);
+        dest.writeString(nickname);
+        dest.writeString(id);
+        dest.writeString(versionName);
+        dest.writeInt(versionCode);
+        dest.writeInt(clientVersion);
+        dest.writeInt(secureKey);
+        dest.writeLong(lastUsageTime);
+        dest.writeByte((byte) (isTrusted ? 1 : 0));
+        dest.writeByte((byte) (isRestricted ? 1 : 0));
+        dest.writeByte((byte) (isLocal ? 1 : 0));
+        dest.writeByte((byte) (mIsSelected ? 1 : 0));
     }
 
     public enum Type

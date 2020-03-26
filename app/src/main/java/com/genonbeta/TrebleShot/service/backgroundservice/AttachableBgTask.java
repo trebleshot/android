@@ -18,6 +18,9 @@
 
 package com.genonbeta.TrebleShot.service.backgroundservice;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,9 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
     public static final int OVERRIDE_BY_SELF = 4;
 
     private T mAnchor;
+    private Handler mHandler;
     private final List<Call<T>> mCallList = new ArrayList<>();
+    private Runnable mPostStatus = this::notifyAnchor;
 
     protected boolean doesOverride(Call<T> call, Call<T> currentCall)
     {
@@ -43,6 +48,21 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
     public boolean hasAnchor()
     {
         return mAnchor != null;
+    }
+
+    private Handler getHandler()
+    {
+        if (mHandler == null) {
+            Looper myLooper = Looper.myLooper();
+            mHandler = new Handler(myLooper == null ? Looper.getMainLooper() : myLooper);
+        }
+        return mHandler;
+    }
+
+    private void notifyAnchor()
+    {
+        if (hasAnchor())
+            mAnchor.onTaskStateChanged(this);
     }
 
     public void post(Call<T> currentCall)
@@ -98,8 +118,7 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
     @Override
     public boolean publishStatus()
     {
-        if (hasAnchor())
-            mAnchor.onTaskStateChanged(this);
+        getHandler().post(mPostStatus);
         return super.publishStatus();
     }
 

@@ -76,7 +76,7 @@ public class BackgroundService extends Service
             ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
             ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
             ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
-            ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE",
+            ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE", // FIXME: only the parent activity should listen to this
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
             EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
@@ -187,8 +187,7 @@ public class BackgroundService extends Service
                     });
 
                     if (isAccepted)
-                        FileTransferTask.createFrom(this, groupId, deviceId,
-                                TransferObject.Type.INCOMING);
+                        run(FileTransferTask.createFrom(this, groupId, deviceId, TransferObject.Type.INCOMING));
                     else {
                         getKuick().remove(group);
                         getKuick().broadcast();
@@ -352,14 +351,18 @@ public class BackgroundService extends Service
     @NonNull
     public synchronized List<BackgroundTask> findTasksBy(Identity identity)
     {
-        List<BackgroundTask> taskList = new ArrayList<>();
         synchronized (mTaskList) {
-            for (BackgroundTask task : getTaskList())
-                if (task.getIdentity().equals(identity))
-                    taskList.add(task);
+            return findTasksBy(mTaskList, identity);
         }
+    }
 
-        return taskList;
+    public static <T extends BackgroundTask> List<T> findTasksBy(List<T> taskList, Identity identity)
+    {
+        List<T> foundList = new ArrayList<>();
+        for (T task : taskList)
+            if (task.getIdentity().equals(identity))
+                foundList.add(task);
+        return foundList;
     }
 
     private HotspotUtils getHotspotUtils()
@@ -392,16 +395,22 @@ public class BackgroundService extends Service
         return mTaskList;
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends BackgroundTask> List<T> getTaskListOf(Class<T> clazz)
     {
-        List<T> taskList = new ArrayList<>();
         synchronized (mTaskList) {
-            for (BackgroundTask task : mTaskList)
-                if (clazz.isInstance(task))
-                    taskList.add((T) task);
+            return getTaskListOf(mTaskList, clazz);
         }
-        return taskList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends BackgroundTask> List<T> getTaskListOf(List<? extends BackgroundTask> taskList,
+                                                                   Class<T> clazz)
+    {
+        List<T> foundList = new ArrayList<>();
+        for (BackgroundTask task : taskList)
+            if (clazz.isInstance(task))
+                foundList.add((T) task);
+        return foundList;
     }
 
     private WifiManager.WifiLock getWifiLock()
@@ -425,13 +434,26 @@ public class BackgroundService extends Service
         return builder.toString().hashCode();
     }
 
-    public <T extends BackgroundTask> boolean hasTaskOf(Class<T> clazz)
+    public boolean hasTaskOf(Class<? extends BackgroundTask> clazz)
     {
         synchronized (mTaskList) {
-            for (BackgroundTask task : mTaskList)
-                if (clazz.isInstance(task))
-                    return true;
+            return hasTaskOf(mTaskList, clazz);
         }
+    }
+
+    public static boolean hasTaskOf(List<? extends BackgroundTask> taskList, Class<? extends BackgroundTask> clazz)
+    {
+        for (BackgroundTask task : taskList)
+            if (clazz.isInstance(task))
+                return true;
+        return false;
+    }
+
+    public static boolean hasTaskWith(List<? extends BackgroundTask> taskList, Identity identity)
+    {
+        for (BackgroundTask task : taskList)
+            if (task.getIdentity().equals(identity))
+                return true;
         return false;
     }
 

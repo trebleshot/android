@@ -36,25 +36,21 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 {
+    private ViewTransferActivity mActivity;
     private ShowingAssignee[] mAssignees;
-    private List<String> mActiveList = new ArrayList<>();
     private LayoutInflater mInflater;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity, final PreloadedGroup group,
-                                        final List<String> activeList)
+    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity, final PreloadedGroup group)
     {
         super(activity);
 
+        mActivity = activity;
         mInflater = LayoutInflater.from(activity);
         mIconBuilder = AppUtils.getDefaultIconBuilder(activity);
         mAssignees = group.assignees;
-        mActiveList.addAll(activeList);
 
         if (mAssignees.length > 0)
             setAdapter(new ActiveListAdapter(), (dialog, which) -> startTransfer(activity, group, mAssignees[which]));
@@ -80,7 +76,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 
     private void startTransfer(ViewTransferActivity activity, PreloadedGroup group, ShowingAssignee assignee)
     {
-        if (mActiveList.contains(assignee.deviceId))
+        if (mActivity.isDeviceRunning(assignee.deviceId))
             TransferUtils.pauseTransfer(activity, assignee);
         else
             TransferUtils.startTransferWithTest(activity, group, assignee);
@@ -110,8 +106,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
         public View getView(int position, View convertView, ViewGroup parent)
         {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.list_toggle_transfer, parent,
-                        false);
+                convertView = mInflater.inflate(R.layout.list_toggle_transfer, parent, false);
 
             ShowingAssignee assignee = (ShowingAssignee) getItem(position);
             ImageView image = convertView.findViewById(R.id.image);
@@ -119,10 +114,9 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
             ImageView actionImage = convertView.findViewById(R.id.actionImage);
 
             text.setText(assignee.device.nickname);
-            actionImage.setImageResource(mActiveList.contains(assignee.deviceId)
-                    ? R.drawable.ic_pause_white_24dp : (TransferObject.Type.INCOMING.equals(
-                    assignee.type) ? R.drawable.ic_arrow_down_white_24dp : R.drawable.ic_arrow_up_white_24dp
-            ));
+            actionImage.setImageResource(mActivity.isDeviceRunning(assignee.deviceId) ? R.drawable.ic_pause_white_24dp
+                    : (TransferObject.Type.INCOMING.equals(assignee.type) ? R.drawable.ic_arrow_down_white_24dp
+                    : R.drawable.ic_arrow_up_white_24dp));
             NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
 
             return convertView;
