@@ -20,26 +20,30 @@ package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.*;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -49,6 +53,7 @@ import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,24 +78,17 @@ public class ConnectionUtils
 
     private Context mContext;
     private WifiManager mWifiManager;
-    private HotspotUtils mHotspotUtils;
     private LocationManager mLocationManager;
     private ConnectivityManager mConnectivityManager;
+    private boolean mWirelessEnableRequested = false;
 
-    private ConnectionUtils(Context context)
+    public ConnectionUtils(Context context)
     {
         mContext = context;
-
         mWifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(
                 Context.LOCATION_SERVICE);
-        mHotspotUtils = HotspotUtils.getInstance(getContext());
         mConnectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-    }
-
-    public static ConnectionUtils getInstance(Context context)
-    {
-        return new ConnectionUtils(context);
     }
 
     public static String getCleanNetworkName(String networkName)
@@ -103,7 +101,7 @@ public class ConnectionUtils
 
     public boolean canAccessLocation()
     {
-        return hasLocationPermission(getContext()) && isLocationServiceEnabled();
+        return hasLocationPermission() && isLocationServiceEnabled();
     }
 
     public boolean canReadScanResults()
@@ -169,28 +167,16 @@ public class ConnectionUtils
         return false;
     }
 
-    public InetAddress establishHotspotConnection(Stoppable stoppable, InfoHolder infoHolder,
-                                                  ConnectionCallback connectionCallback)
-    {
-        return establishHotspotConnection(stoppable, infoHolder, connectionCallback, (short) 4);
-    }
-
     @WorkerThread
-    private InetAddress establishHotspotConnection(final Stoppable stoppable, InfoHolder holder,
-                                                   final ConnectionCallback connectionCallback, short leftAttempts)
+    public InetAddress establishHotspotConnection(Stoppable stoppable, InfoHolder holder)
     {
-        leftAttempts--;
-
-        final int pingTimeout = 1000; // ms
-        final long startTime = System.currentTimeMillis();
-
-        InetAddress address = null;
         Object specifier = holder.object();
+        int pingTimeout = 1000; // ms
+        long startTime = System.nanoTime();
         boolean connectionToggled = specifier instanceof NetworkSuggestion; // suggestions comes pretested and initiated
 
         while (true) {
-            int passedTime = (int) (System.currentTimeMillis() - startTime);
-            @NonNull final DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
+            DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
 
             Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
                     + wifiDhcpInfo.toString());
@@ -205,13 +191,14 @@ public class ConnectionUtils
             } else if (specifier instanceof NetworkDescription) {
                 Log.d(TAG, "establishHotspotConnection: The network is not ready to be used yet.");
 
+                if (Build.VERSION.SDK_INT < 29)
+                    getWifiManager().startScan();
+
                 NetworkDescription description = (NetworkDescription) specifier;
                 String ssid = description.ssid;
                 String bssid = description.bssid;
                 String password = description.password;
                 ScanResult result = findFromScanResults(ssid, bssid);
-
-                getWifiManager().startScan();
 
                 if (result == null)
                     Log.e(TAG, "establishHotspotConnection: No network found with the name " + ssid);
@@ -221,20 +208,17 @@ public class ConnectionUtils
                 }
             } else if (specifier instanceof WifiConfiguration && !isConnectedToNetwork((WifiConfiguration) specifier)
                     && !connectionToggled) {
-                Log.d(TAG, "establishHotspotConnection(): Requested network toggle");
                 connectionToggled = toggleConnection((WifiConfiguration) specifier);
+                Log.d(TAG, "establishHotspotConnection(): Requested network toggle " + connectionToggled);
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
                     NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(testAddress);
 
-                    address = testAddress;
-
                     if (testAddress.isReachable(pingTimeout) || testAddress.isReachable(networkInterface,
                             3600, pingTimeout)) {
                         Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                        address = testAddress;
-                        break;
+                        return testAddress;
                     } else
                         Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
                 } catch (IOException e) {
@@ -243,7 +227,8 @@ public class ConnectionUtils
             } else
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
 
-            if (connectionCallback.onTimePassed(1000, passedTime) || stoppable.isInterrupted()) {
+            if (System.nanoTime() - startTime > AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE * 1e6
+                    || stoppable.isInterrupted()) {
                 Log.d(TAG, "establishHotspotConnection(): Timed out or onTimePassed returned true. Exiting...");
                 break;
             }
@@ -256,8 +241,7 @@ public class ConnectionUtils
             }
         }
 
-        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(stoppable, holder,
-                connectionCallback, leftAttempts);
+        return null;
     }
 
     /**
@@ -311,9 +295,9 @@ public class ConnectionUtils
         return null;
     }
 
-    public boolean hasLocationPermission(Context context)
+    public boolean hasLocationPermission()
     {
-        return ContextCompat.checkSelfPermission(context,
+        return ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -325,11 +309,6 @@ public class ConnectionUtils
     public ConnectivityManager getConnectivityManager()
     {
         return mConnectivityManager;
-    }
-
-    public HotspotUtils getHotspotUtils()
-    {
-        return mHotspotUtils;
     }
 
     public LocationManager getLocationManager()
@@ -385,6 +364,13 @@ public class ConnectionUtils
                 && mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
     }
 
+    public boolean notifyWirelessRequestHandled()
+    {
+        boolean returnedState = mWirelessEnableRequested;
+        mWirelessEnableRequested = false;
+        return returnedState;
+    }
+    
     public static void postConnectionRejectionInformation(JSONObject clientResponse) throws NotAllowedException,
             NotTrustedException
     {
@@ -396,6 +382,7 @@ public class ConnectionUtils
                 else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
                     throw new NotTrustedException();
             }
+            // FIXME: 27.03.2020 Also handle unknown errors
             //postUnknownError(context, task, retryCallback);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -435,6 +422,24 @@ public class ConnectionUtils
             postConnectionRejectionInformation(receivedReply);
         // TODO: 26.03.2020 This should be done by postConnectionRejectionInformation()
         throw new CommunicationException("Something went wrong. Duh?");
+    }
+
+    public void showConnectionOptions(Activity activity, SnackbarPlacementProvider provider,
+                                      int locationPermRequestId)
+    {
+        if (!getWifiManager().isWifiEnabled())
+            provider.createSnackbar(R.string.mesg_suggestSelfHotspot)
+                    .setAction(R.string.butn_enable, view -> {
+                        mWirelessEnableRequested = true;
+                        turnOnWiFi(activity, provider);
+                    })
+                    .show();
+        else if (validateLocationPermission(activity, locationPermRequestId)) {
+            provider.createSnackbar(R.string.mesg_scanningSelfHotspot)
+                    .setAction(R.string.butn_wifiSettings, view -> activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+                    .show();
+        }
     }
 
     /**
@@ -499,8 +504,103 @@ public class ConnectionUtils
         return isConnectedToNetwork(config) ? getWifiManager().disconnect() : startConnection(config);
     }
 
-    public interface ConnectionCallback
+    public void toggleHotspot(FragmentActivity activity, SnackbarPlacementProvider provider, HotspotManager manager,
+                              boolean conditional, int locationPermRequestId)
     {
-        boolean onTimePassed(int delimiter, long timePassed);
+        if (!HotspotManager.isSupported())
+            return;
+
+        if (conditional) {
+            if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId))
+                return;
+
+            else if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(activity)) {
+                new AlertDialog.Builder(activity)
+                        .setMessage(R.string.mesg_errorHotspotPermission)
+                        .setNegativeButton(R.string.butn_cancel, null)
+                        .setPositiveButton(R.string.butn_settings, (dialog, which) -> {
+                            activity.startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                                    .setData(Uri.parse("package:" + activity.getPackageName()))
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        })
+                        .show();
+
+                return;
+            } else if (Build.VERSION.SDK_INT < 26 && !manager.isEnabled()
+                    && isMobileDataActive()) {
+                new AlertDialog.Builder(activity)
+                        .setMessage(R.string.mesg_warningHotspotMobileActive)
+                        .setNegativeButton(R.string.butn_cancel, null)
+                        .setPositiveButton(R.string.butn_skip, (dialog, which) -> {
+                            // no need to call watcher due to recycle
+                            toggleHotspot(activity, provider, manager, false, locationPermRequestId);
+                        })
+                        .show();
+
+                return;
+            }
+        }
+
+        WifiConfiguration wifiConfiguration = manager.getConfiguration();
+
+        if (!manager.isEnabled() || (wifiConfiguration != null
+                && AppUtils.getHotspotName(activity).equals(wifiConfiguration.SSID)))
+            provider.createSnackbar(manager.isEnabled() ? R.string.mesg_stoppingSelfHotspot
+                    : R.string.mesg_startingSelfHotspot).show();
+
+        toggleHotspot(activity);
+    }
+
+    private void toggleHotspot(Activity activity)
+    {
+        try {
+            AppUtils.getBgService(activity).toggleHotspot();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void turnOnWiFi(Activity activity, SnackbarPlacementProvider provider)
+    {
+        if (Build.VERSION.SDK_INT >= 29)
+            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        else if (getWifiManager().setWifiEnabled(true)) {
+            provider.createSnackbar(R.string.mesg_turningWiFiOn).show();
+        } else
+            new AlertDialog.Builder(activity)
+                    .setMessage(R.string.mesg_wifiEnableFailed)
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(R.string.butn_settings, (dialog, which) -> activity.startActivity(
+                            new Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+                    .show();
+    }
+
+    public boolean validateLocationPermission(Activity activity, int permRequestId)
+    {
+        if (Build.VERSION.SDK_INT < 23)
+            return true;
+
+        if (!hasLocationPermission()) {
+            new AlertDialog.Builder(activity)
+                    .setMessage(R.string.mesg_locationPermissionRequiredSelfHotspot)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_ask, (dialog, which) -> {
+                        // No, I am not going to add an if statement since when it is not needed
+                        // the main method returns true.
+                        activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION}, permRequestId);
+                    })
+                    .show();
+        } else if (!isLocationServiceEnabled()) {
+            new AlertDialog.Builder(getContext())
+                    .setMessage(R.string.mesg_locationDisabledSelfHotspot)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_locationSettings, (dialog, which) -> activity.startActivity(new Intent(
+                            Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+                    .show();
+        } else
+            return true;
+
+        return false;
     }
 }

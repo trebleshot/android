@@ -45,7 +45,6 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -66,7 +65,7 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
 
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
-    private UIConnectionUtils mConnectionUtils;
+    private ConnectionUtils mConnectionUtils;
 
     private View mContainerText1;
     private View mContainerText2;
@@ -78,15 +77,12 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     private ImageView mCodeView;
     private ColorStateList mColorPassiveState;
 
-    private UIConnectionUtils.RequestWatcher mRequestWatcher = (result, shouldWait) -> {
-
-    };
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+        mConnectionUtils = new ConnectionUtils(requireContext());
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
@@ -111,11 +107,10 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
         mActionButton = view.findViewById(R.id.layout_network_manager_info_toggle_button);
 
         mActionButton.setOnClickListener(v -> {
-            if (!canReadWifiInfo())
-                getUIConnectionUtils().validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION,
-                        mRequestWatcher);
-            else
+            if (canReadWifiInfo())
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            else
+                mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION);
         });
 
         return view;
@@ -135,7 +130,7 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     {
         super.onResume();
 
-        getContext().registerReceiver(mStatusReceiver, mIntentFilter);
+        requireContext().registerReceiver(mStatusReceiver, mIntentFilter);
         updateState();
     }
 
@@ -143,33 +138,19 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     public void onPause()
     {
         super.onPause();
-        getContext().unregisterReceiver(mStatusReceiver);
+        requireContext().unregisterReceiver(mStatusReceiver);
     }
 
     public boolean canReadWifiInfo()
     {
-        return Build.VERSION.SDK_INT < 26 || (getConnectionUtils().hasLocationPermission(getContext())
-                && getConnectionUtils().isLocationServiceEnabled());
-    }
-
-    public ConnectionUtils getConnectionUtils()
-    {
-        return getUIConnectionUtils().getConnectionUtils();
+        return Build.VERSION.SDK_INT < 26 || (mConnectionUtils.hasLocationPermission()
+                && mConnectionUtils.isLocationServiceEnabled());
     }
 
     @Override
     public int getIconRes()
     {
         return R.drawable.ic_wifi_white_24dp;
-    }
-
-
-    public UIConnectionUtils getUIConnectionUtils()
-    {
-        if (mConnectionUtils == null)
-            mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
-
-        return mConnectionUtils;
     }
 
     @Override
@@ -240,11 +221,11 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
 
     public void updateState()
     {
-        WifiInfo connectionInfo = getConnectionUtils().getWifiManager().getConnectionInfo();
+        WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
         if (!canReadWifiInfo()) {
             updateViewsLocationDisabled();
-        } else if (!getConnectionUtils().isConnectedToAnyNetwork())
+        } else if (!mConnectionUtils.isConnectedToAnyNetwork())
             updateViewsWithBlank();
         else {
             String networkName = ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID());

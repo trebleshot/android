@@ -41,9 +41,9 @@ public class IpAddressConnectionActivity extends Activity implements AttachedTas
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ip_address_connection);
 
-        final AppCompatEditText editText = findViewById(R.id.editText);
         findViewById(R.id.confirm_button).setOnClickListener((v) -> {
-            final String ipAddress = editText.getText().toString();
+            AppCompatEditText editText = findViewById(R.id.editText);
+            String ipAddress = editText.getText().toString();
 
             if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
                 try {

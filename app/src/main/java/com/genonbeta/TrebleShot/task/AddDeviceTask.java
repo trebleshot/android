@@ -31,9 +31,9 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
+import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,10 +59,12 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
     @Override
     public void onRun()
     {
+        // TODO: 27.03.2020 Is nested transaction calls possible?
         Context context = getService().getApplicationContext();
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
         CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+        ConnectionUtils utils = new ConnectionUtils(getService());
 
         final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
             try {
@@ -126,8 +128,6 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             // so that if the user rejects, it won't be removed from the sender
             jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
 
-            addCloser(userAction -> kuick.remove(assignee));
-
             final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
 
             addCloser(userAction -> {
@@ -153,6 +153,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 else
                     kuick.insert(db, assignee, mGroup, null);
 
+                addCloser(userAction -> kuick.remove(assignee));
                 kuick.update(db, existingRegistry, mGroup, progressListener());
                 kuick.broadcast();
 
@@ -169,15 +170,8 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     }
                 });
             } else
-                post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
-                {
-                    @Override
-                    public void now(AddDevicesToTransferActivity anchor)
-                    {
-                        UIConnectionUtils.showConnectionRejectionInformation(anchor, mDevice,
-                                clientResponse, retryButtonListener);
-                    }
-                });
+                ConnectionUtils.postConnectionRejectionInformation(clientResponse);
+
         } catch (Exception e) {
             if (!(e instanceof InterruptedException)) {
                 e.printStackTrace();

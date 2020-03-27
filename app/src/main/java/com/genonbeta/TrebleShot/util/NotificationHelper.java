@@ -58,8 +58,8 @@ public class NotificationHelper
 
     public DynamicNotification getForegroundNotification()
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(
-                ID_BG_SERVICE, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+        DynamicNotification notification = getUtils().buildDynamicNotification(ID_BG_SERVICE,
+                NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
         notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_communicationServiceRunning))

@@ -49,7 +49,6 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -70,7 +69,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private UIConnectionUtils mConnectionUtils;
+    private ConnectionUtils mConnectionUtils;
     private NetworkDevice.Type[] mHiddenDeviceTypes;
     private boolean mWaitForWiFi = false;
     private boolean mSwipeRefreshEnabled = true;
@@ -91,11 +90,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
         {
             mService = null;
         }
-
-
     };
-
-    private UIConnectionUtils.RequestWatcher mWiFiWatcher = (result, shouldWait) -> mWaitForWiFi = shouldWait;
 
     public static void openInfo(Activity activity, ConnectionUtils utils, InfoHolder infoHolder)
     {
@@ -269,7 +264,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (REQUEST_LOCATION_PERMISSION == requestCode)
-            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
+            getConnectionUtils().showConnectionOptions(getActivity(), this, REQUEST_LOCATION_PERMISSION);
     }
 
     public void checkRefreshing()
@@ -280,21 +275,15 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
 
     public ConnectionUtils getConnectionUtils()
     {
-        return getUIConnectionUtils().getConnectionUtils();
+        if  (mConnectionUtils == null)
+            mConnectionUtils = new ConnectionUtils(requireContext());
+        return mConnectionUtils;
     }
 
     @Override
     public int getIconRes()
     {
         return R.drawable.ic_devices_white_24dp;
-    }
-
-    public UIConnectionUtils getUIConnectionUtils()
-    {
-        if (mConnectionUtils == null)
-            mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
-
-        return mConnectionUtils;
     }
 
     @Override
@@ -327,7 +316,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
 
     public void requestRefresh()
     {
-        getConnectionUtils().getWifiManager().startScan();
+        if (Build.VERSION.SDK_INT < 29)
+            getConnectionUtils().getWifiManager().startScan();
 
         if (!AppUtils.toggleDeviceScanning(mService))
             Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
@@ -356,8 +346,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                                 .setAction(R.string.butn_disconnect, v -> getConnectionUtils().getWifiManager().disconnect())
                                 .show();
                 } else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION,
-                            mWiFiWatcher);
+                    getConnectionUtils().showConnectionOptions(getActivity(), NetworkDeviceListFragment.this,
+                            REQUEST_LOCATION_PERMISSION);
             } else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
                 createSnackbar(R.string.mesg_scanCompleted)
                         .show();
@@ -367,10 +357,11 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                 Kuick.BroadcastData data = Kuick.toData(intent);
                 if (Kuick.TABLE_DEVICES.equals(data.tableName))
                     refreshList();
-            } else if (getUIConnectionUtils().notifyWirelessRequestHandled()
+            } else if (getConnectionUtils().notifyWirelessRequestHandled()
                     && WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
                     && WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
                     -1)) {
+                mService.getDeviceScanner().run();
                 requestRefresh();
             }
         }

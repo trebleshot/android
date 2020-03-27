@@ -30,41 +30,15 @@ import androidx.annotation.RequiresApi;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-abstract public class HotspotUtils
+abstract public class HotspotManager
 {
     private static final String TAG = "HotspotUtils";
 
-    private static HotspotUtils mInstance = null;
-
     private WifiManager mWifiManager;
 
-    private HotspotUtils(Context context)
+    HotspotManager(Context context)
     {
         mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-    }
-
-    public static HotspotUtils getInstance(Context context)
-    {
-        if (mInstance == null)
-            mInstance = Build.VERSION.SDK_INT >= 26 ? new OreoAPI(context) : new HackAPI(context);
-
-        return mInstance;
-    }
-
-    private static Object invokeSilently(Method method, Object receiver, Object... args)
-    {
-        try {
-            return method.invoke(receiver, args);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            Log.e(TAG, "exception in invoking methods: " + method.getName() + "(): " + e.getMessage());
-        }
-
-        return null;
-    }
-
-    public static boolean isSupported()
-    {
-        return Build.VERSION.SDK_INT >= 26 || HackAPI.supported();
     }
 
     public WifiManager getWifiManager()
@@ -86,14 +60,24 @@ abstract public class HotspotUtils
 
     public abstract boolean isStarted();
 
+    public static boolean isSupported()
+    {
+        return Build.VERSION.SDK_INT >= 26 || OldHotspotManager.supported();
+    }
+
+    public static HotspotManager newInstance(Context context)
+    {
+        return Build.VERSION.SDK_INT >= 26 ? new OreoHotspotManager(context) : new OldHotspotManager(context);
+    }
+
     public abstract boolean unloadPreviousConfig();
 
     @RequiresApi(26)
-    public static class OreoAPI extends HotspotUtils
+    private static class OreoHotspotManager extends HotspotManager
     {
         private WifiManager.LocalOnlyHotspotReservation mHotspotReservation;
 
-        private OreoAPI(Context context)
+        private OreoHotspotManager(Context context)
         {
             super(context);
         }
@@ -169,7 +153,7 @@ abstract public class HotspotUtils
         @Override
         public boolean isEnabled()
         {
-            return HackAPI.enabled(getWifiManager());
+            return OldHotspotManager.enabled(getWifiManager());
         }
 
         @Override
@@ -185,7 +169,7 @@ abstract public class HotspotUtils
         }
     }
 
-    public static class HackAPI extends HotspotUtils
+    private static class OldHotspotManager extends HotspotManager
     {
         private static Method getWifiApConfiguration;
         private static Method getWifiApState;
@@ -217,27 +201,9 @@ abstract public class HotspotUtils
 
         private WifiConfiguration mPreviousConfig;
 
-        private HackAPI(Context context)
+        private OldHotspotManager(Context context)
         {
             super(context);
-        }
-
-        public static boolean enabled(WifiManager wifiManager)
-        {
-            Object result = invokeSilently(isWifiApEnabled, wifiManager);
-
-            if (result == null)
-                return false;
-
-            return (Boolean) result;
-        }
-
-        public static boolean supported()
-        {
-            return getWifiApState != null
-                    && isWifiApEnabled != null
-                    && setWifiApEnabled != null
-                    && getWifiApConfiguration != null;
         }
 
         public boolean disable()
@@ -271,6 +237,27 @@ abstract public class HotspotUtils
                 wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 
             return setHotspotEnabled(wifiConfiguration, true);
+        }
+
+        public static boolean enabled(WifiManager wifiManager)
+        {
+            Object result = invokeSilently(isWifiApEnabled, wifiManager);
+
+            if (result == null)
+                return false;
+
+            return (Boolean) result;
+        }
+
+        private static Object invokeSilently(Method method, Object receiver, Object... args)
+        {
+            try {
+                return method.invoke(receiver, args);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                Log.e(TAG, "exception in invoking methods: " + method.getName() + "(): " + e.getMessage());
+            }
+
+            return null;
         }
 
         @Override
@@ -313,6 +300,12 @@ abstract public class HotspotUtils
                 return false;
 
             return (Boolean) result;
+        }
+
+        public static boolean supported()
+        {
+            return getWifiApState != null && isWifiApEnabled != null && setWifiApEnabled != null
+                    && getWifiApConfiguration != null;
         }
 
         public boolean unloadPreviousConfig()

@@ -48,7 +48,6 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -81,7 +80,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     public static final int REQUEST_TURN_WIFI_ON = 4;
 
     private DecoratedBarcodeView mBarcodeView;
-    private UIConnectionUtils mConnectionUtils;
+    private ConnectionUtils mConnectionUtils;
     private ViewGroup mConductContainer;
     private TextView mConductText;
     private ImageView mConductImage;
@@ -93,24 +92,6 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     private boolean mPermissionRequestedCamera = false;
     private boolean mPermissionRequestedLocation = false;
     private boolean mShowAsText = false;
-    //private String mPreviousScanResult = null;
-
-    private UIConnectionUtils.RequestWatcher mPermissionWatcher = new UIConnectionUtils.RequestWatcher()
-    {
-        @Override
-        public void onResultReturned(boolean result, boolean shouldWait)
-        {
-            if (isResumed()) // isResumed
-                updateState();
-            else
-                mBarcodeView.pauseAndWait();
-
-            // We don't want to keep this when the result is ok
-            // or not asked to wait
-            //if (!shouldWait || result)
-            //    mPreviousScanResult = null;
-        }
-    };
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -128,13 +109,10 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
-
+        mConnectionUtils = new ConnectionUtils(requireActivity());
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
-
         setHasOptionsMenu(true);
     }
 
@@ -143,18 +121,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.layout_barcode_connect, container, false);
-
-        mConductContainer = view.findViewById(R.id.layout_barcode_connect_conduct_container);
-        mTextModeIndicator = view.findViewById(R.id.layout_barcode_connect_mode_text_indicator);
-        mConductButton = view.findViewById(R.id.layout_barcode_connect_conduct_button);
-        mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
-        mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
-        mConductImage = view.findViewById(R.id.layout_barcode_connect_conduct_image);
-        mTaskContainer = view.findViewById(R.id.container_task);
-        mTaskInterruptButton = view.findViewById(R.id.task_interrupter_button);
-
-        return view;
+        return inflater.inflate(R.layout.layout_barcode_connect, container, false);
     }
 
     @Override
@@ -193,6 +160,15 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
+        mConductContainer = view.findViewById(R.id.layout_barcode_connect_conduct_container);
+        mTextModeIndicator = view.findViewById(R.id.layout_barcode_connect_mode_text_indicator);
+        mConductButton = view.findViewById(R.id.layout_barcode_connect_conduct_button);
+        mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
+        mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
+        mConductImage = view.findViewById(R.id.layout_barcode_connect_conduct_image);
+        mTaskContainer = view.findViewById(R.id.container_task);
+        mTaskInterruptButton = view.findViewById(R.id.task_interrupter_button);
 
         mBarcodeView.decodeContinuous(new BarcodeCallback()
         {
@@ -291,7 +267,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                 final String bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
                 final String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
 
-                WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
+                WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
                 Runnable runnable = () -> {
                     try {
                         makeAcquaintance(new InfoHolder(InetAddress.getByName(ipAddress)), accessPin);
@@ -396,12 +372,11 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         if (!isAdded())
             return;
 
-        final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
+        final boolean wifiEnabled = mConnectionUtils.getWifiManager().isWifiEnabled();
         boolean hasCameraPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
         // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
-        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 23
-                || mConnectionUtils.getConnectionUtils().canAccessLocation();
+        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 23 || mConnectionUtils.canAccessLocation();
         final boolean state = (wifiEnabled || mShowAsText) && hasCameraPermission && hasLocationPermission;
 
         if (!state) {
@@ -426,7 +401,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                 mConductButton.setText(R.string.butn_enable);
 
                 mConductButton.setOnClickListener(v -> mConnectionUtils.validateLocationPermission(getActivity(),
-                        REQUEST_PERMISSION_LOCATION, mPermissionWatcher));
+                        REQUEST_PERMISSION_LOCATION));
 
                 if (!mPermissionRequestedLocation)
                     ActivityCompat.requestPermissions(requireActivity(), new String[]{
@@ -437,9 +412,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                 mConductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp);
                 mConductText.setText(R.string.text_scanQRWifiRequired);
                 mConductButton.setText(R.string.butn_enable);
-
-                mConductButton.setOnClickListener(v -> mConnectionUtils.turnOnWiFi(getActivity(), REQUEST_TURN_WIFI_ON,
-                        mPermissionWatcher));
+                mConductButton.setOnClickListener(v -> mConnectionUtils.turnOnWiFi(getActivity(), this));
             }
         } else {
             mBarcodeView.resume();

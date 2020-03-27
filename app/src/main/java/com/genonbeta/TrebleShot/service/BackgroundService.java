@@ -96,7 +96,7 @@ public class BackgroundService extends Service
     private NotificationHelper mNotificationHelper;
     private WifiManager.WifiLock mWifiLock;
     private MediaScannerConnection mMediaScanner;
-    private HotspotUtils mHotspotUtils;
+    private HotspotManager mHotspotManager;
     private LocalBinder mBinder = new LocalBinder();
 
     @Override
@@ -116,7 +116,7 @@ public class BackgroundService extends Service
         mNotificationHelper = new NotificationHelper(getNotificationUtils());
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
-        mHotspotUtils = HotspotUtils.getInstance(this);
+        mHotspotManager = HotspotManager.newInstance(this);
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
@@ -337,7 +337,7 @@ public class BackgroundService extends Service
 
     public boolean canStopService()
     {
-        return mCommunicationServer.getConnections().size() > 0 || getTaskList().size() > 0 || mHotspotUtils.isStarted()
+        return mCommunicationServer.getConnections().size() > 0 || getTaskList().size() > 0 || mHotspotManager.isStarted()
                 || mWebShareServer.hadClients();
     }
 
@@ -365,9 +365,9 @@ public class BackgroundService extends Service
         return foundList;
     }
 
-    private HotspotUtils getHotspotUtils()
+    private HotspotManager getHotspotUtils()
     {
-        return mHotspotUtils;
+        return mHotspotManager;
     }
 
     public WifiConfiguration getHotspotConfig()

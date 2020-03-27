@@ -103,7 +103,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
 
     private InetAddress findAddress()
     {
-        ConnectionUtils utils = ConnectionUtils.getInstance(getService());
+        ConnectionUtils utils = new ConnectionUtils(getService());
         Object object = mInfoHolder.object();
 
         if (object instanceof NetworkSuggestion) {
@@ -139,8 +139,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
 
                 post(message);
             } else
-                return utils.establishHotspotConnection(this, mInfoHolder,
-                        (delimiter, timePassed) -> timePassed >= AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE);
+                return utils.establishHotspotConnection(this, mInfoHolder);
         } else if (object instanceof InetAddress)
             return (InetAddress) object;
         else if (object instanceof DeviceConnection) {

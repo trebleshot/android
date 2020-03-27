@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -29,18 +28,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
@@ -49,7 +43,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-import org.json.JSONObject;
 
 /**
  * Created by: veli

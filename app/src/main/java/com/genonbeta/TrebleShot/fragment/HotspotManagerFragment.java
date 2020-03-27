@@ -42,11 +42,11 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.HotspotManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -66,7 +66,7 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
 
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
-    private UIConnectionUtils mConnectionUtils;
+    private ConnectionUtils mConnectionUtils;
 
     private View mContainerText1;
     private View mContainerText2;
@@ -78,19 +78,19 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     private Button mToggleButton;
     private MenuItem mHelpMenuItem;
     private ColorStateList mColorPassiveState;
+    private HotspotManager mManager;
     private boolean mWaitForHotspot = false;
     private boolean mHotspotStartedExternally = false;
-
-    private UIConnectionUtils.RequestWatcher mHotspotWatcher = (result, shouldWait) -> mWaitForHotspot = shouldWait;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+        mConnectionUtils = new ConnectionUtils(requireContext());
+        mManager = HotspotManager.newInstance(requireContext());
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
         mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
-
         setHasOptionsMenu(true);
     }
 
@@ -136,8 +136,8 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     {
         int id = item.getItemId();
 
-        if (id == R.id.show_help && getConnectionUtils().getHotspotUtils().getConfiguration() != null) {
-            String hotspotName = getConnectionUtils().getHotspotUtils().getConfiguration().SSID;
+        if (id == R.id.show_help && mManager.getConfiguration() != null) {
+            String hotspotName = mManager.getConfiguration().SSID;
             String friendlyName = AppUtils.getFriendlySSID(hotspotName);
 
             new AlertDialog.Builder(requireActivity())
@@ -178,23 +178,10 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         requireContext().unregisterReceiver(mStatusReceiver);
     }
 
-    public ConnectionUtils getConnectionUtils()
-    {
-        return getUIConnectionUtils().getConnectionUtils();
-    }
-
     @Override
     public int getIconRes()
     {
         return R.drawable.ic_wifi_tethering_white_24dp;
-    }
-
-    public UIConnectionUtils getUIConnectionUtils()
-    {
-        if (mConnectionUtils == null)
-            mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
-
-        return mConnectionUtils;
     }
 
     @Override
@@ -207,7 +194,7 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     public WifiConfiguration getWifiConfiguration()
     {
         if (Build.VERSION.SDK_INT < 26)
-            return getConnectionUtils().getHotspotUtils().getConfiguration();
+            return mManager.getConfiguration();
 
         try {
             return AppUtils.getBgService(requireActivity()).getHotspotConfig();
@@ -223,21 +210,20 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         if (mHotspotStartedExternally)
             startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
         else
-            getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT,
-                    mHotspotWatcher);
+            mConnectionUtils.toggleHotspot(requireActivity(), this, mManager, true,
+                    REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT);
     }
 
     private void showMenu()
     {
         if (mHelpMenuItem != null)
-            mHelpMenuItem.setVisible(getConnectionUtils().getHotspotUtils().getConfiguration() != null
-                    && getConnectionUtils().getHotspotUtils().isEnabled());
+            mHelpMenuItem.setVisible(mManager.getConfiguration() != null && mManager.isEnabled());
     }
 
     private void updateState()
     {
         showMenu();
-        boolean enabled = getConnectionUtils().getHotspotUtils().isEnabled();
+        boolean enabled = mManager.isEnabled();
         WifiConfiguration config = getWifiConfiguration();
 
         if (enabled && config != null)
