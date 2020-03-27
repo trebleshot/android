@@ -378,19 +378,6 @@ public class ConnectionUtils
         return returnedState;
     }
 
-    public static void throwCommunicationError(JSONObject clientResponse) throws NotAllowedException,
-            NotTrustedException, JSONException, UnknownCommunicationException
-    {
-        if (clientResponse.has(Keyword.ERROR)) {
-            String error = clientResponse.getString(Keyword.ERROR);
-            if (error.equals(Keyword.ERROR_NOT_ALLOWED))
-                throw new NotAllowedException();
-            else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
-                throw new NotTrustedException();
-        } else
-            throw new UnknownCommunicationException();
-    }
-
     @WorkerThread
     public static DeviceAddress setupConnection(Context context, InetAddress inetAddress, int pin)
             throws TimeoutException, CommunicationException, IOException, JSONException
@@ -411,7 +398,7 @@ public class ConnectionUtils
                     inetAddress.getHostAddress());
             return new DeviceAddress(device, connection);
         } else
-            throwCommunicationError(receivedReply);
+            throwCommunicationError(receivedReply, device);
 
         throw new CommunicationException("Didn't have the result and the errors were unknown");
     }
@@ -481,6 +468,19 @@ public class ConnectionUtils
         final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
         suggestions.add(description.toNetworkSuggestion());
         return getWifiManager().addNetworkSuggestions(suggestions);
+    }
+
+    public static void throwCommunicationError(JSONObject clientResponse, NetworkDevice device)
+            throws NotAllowedException, NotTrustedException, JSONException, UnknownCommunicationException
+    {
+        if (clientResponse.has(Keyword.ERROR)) {
+            String error = clientResponse.getString(Keyword.ERROR);
+            if (error.equals(Keyword.ERROR_NOT_ALLOWED))
+                throw new NotAllowedException(device);
+            else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
+                throw new NotTrustedException(device);
+        } else
+            throw new UnknownCommunicationException();
     }
 
     /**

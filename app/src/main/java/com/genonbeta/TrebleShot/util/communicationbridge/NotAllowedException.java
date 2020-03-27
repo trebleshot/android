@@ -18,6 +18,15 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+
 public class NotAllowedException extends CommunicationException
 {
+    public NetworkDevice device;
+
+    public NotAllowedException(NetworkDevice device)
+    {
+        super();
+        this.device = device;
+    }
 }

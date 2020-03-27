@@ -21,7 +21,10 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -118,19 +121,16 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
-            getListView().smoothScrollBy(0, 30);
-
-            final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
-            final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
+            ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
+            Intent launchIntent = requireContext().getPackageManager()
+                    .getLaunchIntentForPackage(appInfo.packageName);
 
             if (launchIntent != null) {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-
-                dialogBuilder.setMessage(R.string.ques_launchApplication);
-                dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
-                dialogBuilder.setPositiveButton(R.string.butn_appLaunch, (dialog, which) -> startActivity(launchIntent));
-
-                dialogBuilder.show();
+                new AlertDialog.Builder(requireActivity())
+                        .setMessage(R.string.ques_launchApplication)
+                        .setNegativeButton(R.string.butn_cancel, null)
+                        .setPositiveButton(R.string.butn_appLaunch, (dialog, which) -> startActivity(launchIntent))
+                        .show();
             } else
                 Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
 

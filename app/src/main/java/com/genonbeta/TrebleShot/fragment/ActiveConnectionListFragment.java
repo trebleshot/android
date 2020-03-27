@@ -40,7 +40,6 @@ import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -84,7 +83,6 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
-
         mFilter.addAction(WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -97,6 +95,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     {
         super.onViewCreated(view, savedInstanceState);
         setListAdapter(new ActiveConnectionListAdapter(this, this));
+        setEmptyListImage(R.drawable.ic_share_white_24dp);
+        setEmptyListText(getString(R.string.text_listEmptyConnection));
 
         final CardView webShareInfo = view.findViewById(R.id.card_web_share_info);
         Button webShareInfoHideButton = view.findViewById(R.id.card_web_share_info_hide_button);
@@ -119,23 +119,14 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mReceiver, mFilter);
+        requireContext().registerReceiver(mReceiver, mFilter);
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        getActivity().unregisterReceiver(mReceiver);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-
-        setEmptyListImage(R.drawable.ic_share_white_24dp);
-        setEmptyListText(getString(R.string.text_listEmptyConnection));
+        requireContext().unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -144,7 +135,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         try {
             ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
 
-            new WebShareDetailsDialog(getContext(), TextUtils.makeWebShareLink(getContext(),
+            new WebShareDetailsDialog(requireActivity(), TextUtils.makeWebShareLink(requireContext(),
                     NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())).show();
         } catch (NotReadyException e) {
             return false;
@@ -171,9 +162,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         if (!super.performLayoutClickOpen(holder)) {
             try {
                 ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
-
                 Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(
-                        getContext(), NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())));
+                        requireContext(), NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())));
 
                 startActivity(intent);
             } catch (NotReadyException e) {

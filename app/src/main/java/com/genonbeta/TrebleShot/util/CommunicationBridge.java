@@ -192,7 +192,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             NetworkDeviceLoader.processConnection(getKuick(), loadedDevice, activeConnection.getClientAddress());
 
             if (getDevice() != null && !getDevice().id.equals(loadedDevice.id))
-                throw new DifferentClientException("The target device did not match with the connected one");
+                throw new DifferentClientException(getDevice(), loadedDevice);
 
             if (loadedDevice.clientVersion >= 1) {
                 if (getDevice() == null) {

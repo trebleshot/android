@@ -141,14 +141,14 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
+        requireContext().registerReceiver(mReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        getActivity().unregisterReceiver(mReceiver);
+        requireContext().unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         try {
             ShowingAssignee assignee = getAdapter().getItem(holder);
-            new DeviceInfoDialog(getActivity(), AppUtils.getKuick(getContext()), assignee.device).show();
+            new DeviceInfoDialog(requireActivity(), AppUtils.getKuick(getContext()), assignee.device).show();
             return true;
         } catch (Exception e) {
             // do nothing

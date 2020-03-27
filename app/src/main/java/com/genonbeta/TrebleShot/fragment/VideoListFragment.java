@@ -59,7 +59,7 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
     {
         super.onResume();
 
-        getContext().getContentResolver().registerContentObserver(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+        requireContext().getContentResolver().registerContentObserver(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 true, getDefaultContentObserver());
     }
 
@@ -68,7 +68,7 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
     {
         super.onPause();
 
-        getContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
+        requireContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 
     @Override

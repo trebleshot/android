@@ -79,7 +79,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     private MenuItem mHelpMenuItem;
     private ColorStateList mColorPassiveState;
     private HotspotManager mManager;
-    private boolean mWaitForHotspot = false;
     private boolean mHotspotStartedExternally = false;
 
     @Override
@@ -166,9 +165,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
 
         requireContext().registerReceiver(mStatusReceiver, mIntentFilter);
         updateState();
-
-        if (mWaitForHotspot)
-            toggleHotspot();
     }
 
     @Override

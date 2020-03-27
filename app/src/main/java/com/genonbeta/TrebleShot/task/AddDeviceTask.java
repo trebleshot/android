@@ -65,8 +65,9 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         SQLiteDatabase db = kuick.getWritableDatabase();
         CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
         ConnectionUtils utils = new ConnectionUtils(getService());
+        boolean update = false;
 
-        final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
+        DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
             try {
                 rerun(AppUtils.getBgService(dialog));
             } catch (IllegalStateException e) {
@@ -75,33 +76,26 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         };
 
         try {
-            boolean doUpdate = false;
-            final JSONObject jsonRequest = new JSONObject();
-            final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
+            TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
                     mConnection);
-            final List<TransferObject> existingRegistry = kuick.castQuery(db, new SQLQuery.Select(
-                    Kuick.TABLE_TRANSFER).setWhere(Kuick.FIELD_TRANSFER_GROUPID
-                            + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(mGroup.id),
-                    TransferObject.Type.OUTGOING.toString()), TransferObject.class, null);
+            List<TransferObject> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                            .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE
+                                    + "=?", String.valueOf(mGroup.id), TransferObject.Type.OUTGOING.toString()),
+                    TransferObject.class, null);
 
             try {
                 // Checks if the current assignee is already on the list, if so, update
-                kuick.reconstruct(db, new TransferAssignee(assignee.groupId, assignee.deviceId,
-                        TransferObject.Type.OUTGOING));
-
-                doUpdate = true;
+                kuick.reconstruct(db, assignee);
+                update = true;
             } catch (Exception ignored) {
             }
 
-            jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
-                    .put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
-
-            if (existingRegistry.size() == 0)
+            if (objectList.size() == 0)
                 throw new Exception("Empty share holder id: " + mGroup.id);
 
             JSONArray filesArray = new JSONArray();
 
-            for (TransferObject transferObject : existingRegistry) {
+            for (TransferObject transferObject : objectList) {
                 setCurrentContent(transferObject.name);
                 transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
 
@@ -109,16 +103,16 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     throw new InterruptedException("Interrupted by user");
 
                 try {
-                    JSONObject thisJson = new JSONObject()
+                    JSONObject json = new JSONObject()
                             .put(Keyword.INDEX_FILE_NAME, transferObject.name)
                             .put(Keyword.INDEX_FILE_SIZE, transferObject.size)
                             .put(Keyword.TRANSFER_REQUEST_ID, transferObject.id)
                             .put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
 
                     if (transferObject.directory != null)
-                        thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
+                        json.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
 
-                    filesArray.put(thisJson);
+                    filesArray.put(json);
                 } catch (Exception e) {
                     Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: "
                             + e.getClass().getName() + " : " + transferObject.name);
@@ -126,7 +120,10 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             }
 
             // so that if the user rejects, it won't be removed from the sender
-            jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
+            JSONObject jsonObject = new JSONObject()
+                    .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
+                    .put(Keyword.TRANSFER_GROUP_ID, mGroup.id)
+                    .put(Keyword.FILES_INDEX, filesArray.toString());
 
             final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
 
@@ -138,7 +135,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 }
             });
 
-            activeConnection.reply(jsonRequest.toString());
+            activeConnection.reply(jsonObject.toString());
 
             CoolSocket.ActiveConnection.Response response = activeConnection.receive();
             activeConnection.getSocket().close();
@@ -148,13 +145,13 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
                 setCurrentContent(context.getString(R.string.mesg_organizingFiles));
 
-                if (doUpdate)
-                    kuick.update(db, assignee, mGroup, null);
+                if (update)
+                    kuick.update(db, assignee, mGroup, progressListener());
                 else
-                    kuick.insert(db, assignee, mGroup, null);
+                    kuick.insert(db, assignee, mGroup, progressListener());
 
                 addCloser(userAction -> kuick.remove(assignee));
-                kuick.update(db, existingRegistry, mGroup, progressListener());
+                kuick.update(db, objectList, mGroup, progressListener());
                 kuick.broadcast();
 
                 post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
@@ -170,10 +167,10 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     }
                 });
             } else
-                ConnectionUtils.throwCommunicationError(clientResponse);
+                ConnectionUtils.throwCommunicationError(clientResponse, mDevice);
 
         } catch (Exception e) {
-            if (!(e instanceof InterruptedException)) {
+            if (!isInterrupted()) {
                 e.printStackTrace();
 
                 post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)

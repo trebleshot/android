@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
+import com.genonbeta.TrebleShot.util.CommonErrorHelper;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import org.json.JSONException;
@@ -86,35 +87,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
         } catch (TimeoutException e) {
             e.printStackTrace();
         } catch (SuggestNetworkException e) {
-            e.printStackTrace();
-
-            /*
-            if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
-                    && status != WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
-                TaskMessage message = TaskMessage.newInstance()
-                        .setTitle(getService(), R.string.text_error)
-                        .addAction(getService(), R.string.butn_close, null);
-
-                switch (status) {
-                    case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
-                        message.setMessage(getService(), R.string.text_errorExceededMaximumSuggestions)
-                                .addAction(getService(), R.string.butn_openSettings, Dialog.BUTTON_POSITIVE,
-                                        (context, msg, action) -> context.startActivity(new Intent(
-                                                Settings.ACTION_WIFI_SETTINGS)));
-                        break;
-                    case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
-                        message.setMessage(getService(), R.string.text_errorNetworkSuggestionsDisallowed)
-                                .addAction(getService(), R.string.butn_openSettings, Dialog.BUTTON_POSITIVE,
-                                        (context, msg, action) -> AppUtils.startApplicationDetails(context));
-
-                    case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
-                        message.setMessage(getService(), R.string.text_errorNetworkSuggestionInternal)
-                                .addAction(getService(), R.string.butn_feedbackContact, Dialog.BUTTON_POSITIVE,
-                                        (context, msg, action) -> AppUtils.startFeedbackActivity(context));
-                }
-
-                post(message);
-                */
+            post(CommonErrorHelper.messageOf(e, getService()));
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ConnectionUtils.WifiInaccessibleException e) {
@@ -145,11 +118,11 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
             int status = utils.suggestNetwork(mDescription);
             switch (status) {
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
-                    throw new SuggestNetworkException(SuggestNetworkException.Type.ExceededLimit);
+                    throw new SuggestNetworkException(mDescription, SuggestNetworkException.Type.ExceededLimit);
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
-                    throw new SuggestNetworkException(SuggestNetworkException.Type.AppDisallowed);
+                    throw new SuggestNetworkException(mDescription, SuggestNetworkException.Type.AppDisallowed);
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
-                    throw new SuggestNetworkException(SuggestNetworkException.Type.ErrorInternal);
+                    throw new SuggestNetworkException(mDescription, SuggestNetworkException.Type.ErrorInternal);
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE:
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS:
                 default:
@@ -172,16 +145,18 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
         return null;
     }
 
-    private static class SuggestNetworkException extends Exception
+    public static class SuggestNetworkException extends Exception
     {
-        Type mType;
+        public NetworkDescription description;
+        public Type type;
 
-        public SuggestNetworkException(Type type)
+        public SuggestNetworkException(NetworkDescription description, Type type)
         {
-            mType = type;
+            this.description = description;
+            this.type = type;
         }
 
-        enum Type
+        public enum Type
         {
             ExceededLimit,
             ErrorInternal,

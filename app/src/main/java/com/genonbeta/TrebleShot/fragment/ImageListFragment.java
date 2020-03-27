@@ -26,14 +26,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
-import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 public class ImageListFragment extends GalleryGroupEditableListFragment<ImageListAdapter.ImageHolder,
@@ -65,7 +62,8 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     public void onResume()
     {
         super.onResume();
-        getContext().getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+
+        requireContext().getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 true, getDefaultContentObserver());
     }
 
@@ -73,7 +71,7 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     public void onPause()
     {
         super.onPause();
-        getContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
+        requireContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 
     @Override

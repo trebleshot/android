@@ -62,7 +62,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class FileListFragment extends GroupEditableListFragment<FileHolder,
+public abstract class FileListFragment extends GroupEditableListFragment<FileHolder,
         GroupEditableListAdapter.GroupViewHolder, FileListAdapter>
 {
     public static final String TAG = FileListFragment.class.getSimpleName();
