@@ -22,12 +22,12 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class RemoveDeviceDialog extends AlertDialog.Builder
 {
-    public RemoveDeviceDialog(@NonNull final Activity activity, final NetworkDevice device)
+    public RemoveDeviceDialog(@NonNull final Activity activity, final Device device)
     {
         super(activity);
 

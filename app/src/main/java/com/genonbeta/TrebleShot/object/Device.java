@@ -28,10 +28,9 @@ import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
-import java.io.Serializable;
 import java.util.List;
 
-public final class NetworkDevice implements DatabaseObject<Void>, Parcelable
+public final class Device implements DatabaseObject<Void>, Parcelable
 {
     public String brand;
     public String model;
@@ -49,16 +48,16 @@ public final class NetworkDevice implements DatabaseObject<Void>, Parcelable
 
     private boolean mIsSelected = false;
 
-    public NetworkDevice()
+    public Device()
     {
     }
 
-    public NetworkDevice(String id)
+    public Device(String id)
     {
         this.id = id;
     }
 
-    protected NetworkDevice(Parcel in)
+    protected Device(Parcel in)
     {
         brand = in.readString();
         model = in.readString();
@@ -75,22 +74,22 @@ public final class NetworkDevice implements DatabaseObject<Void>, Parcelable
         mIsSelected = in.readByte() != 0;
     }
 
-    public static final Creator<NetworkDevice> CREATOR = new Creator<NetworkDevice>()
+    public static final Creator<Device> CREATOR = new Creator<Device>()
     {
         @Override
-        public NetworkDevice createFromParcel(Parcel in)
+        public Device createFromParcel(Parcel in)
         {
-            return new NetworkDevice(in);
+            return new Device(in);
         }
 
         @Override
-        public NetworkDevice[] newArray(int size)
+        public Device[] newArray(int size)
         {
-            return new NetworkDevice[size];
+            return new Device[size];
         }
     };
 
-    public void applyPreferences(NetworkDevice otherDevice)
+    public void applyPreferences(Device otherDevice)
     {
         isLocal = otherDevice.isLocal;
         isRestricted = otherDevice.isRestricted;

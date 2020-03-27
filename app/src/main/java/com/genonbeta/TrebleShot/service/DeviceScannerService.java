@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
@@ -63,7 +63,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                     List<NetworkInterface> interfaceList = NetworkUtils.getInterfaces(true,
                             AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-                    NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+                    Device localDevice = AppUtils.getLocalDevice(getApplicationContext());
                     getKuick().publish(localDevice);
 
                     for (NetworkInterface networkInterface : interfaceList) {

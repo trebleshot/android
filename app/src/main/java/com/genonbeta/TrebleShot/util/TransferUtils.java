@@ -52,7 +52,7 @@ public class TransferUtils
             group.hasIssues = true;
     }
 
-    public static void changeConnection(final FragmentActivity activity, final NetworkDevice device,
+    public static void changeConnection(final FragmentActivity activity, final Device device,
                                         final TransferAssignee assignee, final ConnectionUpdatedListener listener)
     {
         new ConnectionChooserDialog(activity, device, (connection, connectionList) -> {
@@ -138,7 +138,7 @@ public class TransferUtils
                 .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
 
         List<ShowingAssignee> assignees = kuick.castQuery(select, ShowingAssignee.class, (db, item, object) -> {
-            object.device = new NetworkDevice(object.deviceId);
+            object.device = new Device(object.deviceId);
             object.connection = new DeviceConnection(object);
 
             try {
@@ -192,7 +192,7 @@ public class TransferUtils
 
     public static void loadAssigneeInfo(KuickDb kuick, ShowingAssignee assignee)
     {
-        assignee.device = new NetworkDevice(assignee.deviceId);
+        assignee.device = new Device(assignee.deviceId);
         assignee.connection = new DeviceConnection(assignee);
 
         try {
@@ -309,7 +309,7 @@ public class TransferUtils
 
     @Deprecated
     public static void requestStartSending(final Activity activity, final TransferAssignee assignee,
-                                           final NetworkDevice device, final DeviceConnection connection)
+                                           final Device device, final DeviceConnection connection)
     {
         BackgroundService.run(activity, new InitializeTransferTask(device, connection, assignee));
     }
@@ -386,11 +386,11 @@ public class TransferUtils
         if (activity != null && !activity.isFinishing())
             activity.runOnUiThread(() -> {
                 try {
-                    final NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
+                    final Device device = new Device(assignee.deviceId);
 
-                    AppUtils.getKuick(activity).reconstruct(networkDevice);
+                    AppUtils.getKuick(activity).reconstruct(device);
 
-                    new EstablishConnectionDialog(activity, networkDevice, (connection, availableInterfaces) -> {
+                    new EstablishConnectionDialog(activity, device, (connection, availableInterfaces) -> {
                         if (!assignee.connectionAdapter.equals(connection.adapterName)) {
                             assignee.connectionAdapter = connection.adapterName;
 

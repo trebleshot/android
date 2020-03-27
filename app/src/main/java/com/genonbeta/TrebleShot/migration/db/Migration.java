@@ -25,7 +25,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.object.TransferAssigneeV12;
 import com.genonbeta.TrebleShot.migration.db.object.TransferObjectV12;
 import com.genonbeta.TrebleShot.migration.db.object.WritablePathObjectV12;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -180,7 +180,7 @@ public class Migration
                     // Added: Type
                     db.execSQL("ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                             + " " + typeColumn.getType().toString() + (typeColumn.isNullable() ? " NOT" : "")
-                            + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
+                            + " NULL DEFAULT " + Device.Type.NORMAL.toString());
 
                     // Added: ClientVersion
                     db.execSQL("ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
@@ -304,7 +304,7 @@ public class Migration
                     // Added: IsPaused
                     db.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
                             + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
-                            + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
+                            + " NULL DEFAULT " + Device.Type.NORMAL.toString());
                 }
 
                 {

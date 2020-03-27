@@ -42,7 +42,7 @@ import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.DynamicViewPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -229,7 +229,7 @@ public class WelcomeActivity extends Activity
     protected void setUserProfile()
     {
         if (mProfileView != null) {
-            NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+            Device localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
             ImageView imageView = mProfileView.findViewById(R.id.layout_profile_picture_image_default);
             ImageView editImageView = mProfileView.findViewById(R.id.layout_profile_picture_image_preferred);

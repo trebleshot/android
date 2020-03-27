@@ -24,7 +24,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -55,7 +55,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
     public static class Client extends CoolSocket.Client
     {
         private Kuick mKuick;
-        private NetworkDevice mDevice;
+        private Device mDevice;
         private int mPin = -1;
 
         public Client(Kuick kuick)
@@ -69,13 +69,13 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             setPin(pin);
         }
 
-        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection)
+        public CoolSocket.ActiveConnection communicate(Device targetDevice, DeviceConnection targetConnection)
                 throws IOException, TimeoutException, CommunicationException, JSONException
         {
             return communicate(targetDevice, targetConnection, false);
         }
 
-        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection,
+        public CoolSocket.ActiveConnection communicate(Device targetDevice, DeviceConnection targetConnection,
                                                        boolean handshakeOnly)
                 throws IOException, TimeoutException, CommunicationException, JSONException
         {
@@ -140,7 +140,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return mKuick;
         }
 
-        public NetworkDevice getDevice()
+        public Device getDevice()
         {
             return mDevice;
         }
@@ -161,7 +161,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return activeConnection;
         }
 
-        public NetworkDevice loadDevice(CoolSocket.ActiveConnection activeConnection) throws TimeoutException,
+        public Device loadDevice(CoolSocket.ActiveConnection activeConnection) throws TimeoutException,
                 IOException, CommunicationException
         {
             try {
@@ -174,7 +174,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             }
         }
 
-        public void setDevice(NetworkDevice device)
+        public void setDevice(Device device)
         {
             mDevice = device;
         }
@@ -187,7 +187,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         protected void updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection) throws IOException,
                 TimeoutException, CommunicationException
         {
-            NetworkDevice loadedDevice = loadDevice(activeConnection);
+            Device loadedDevice = loadDevice(activeConnection);
 
             NetworkDeviceLoader.processConnection(getKuick(), loadedDevice, activeConnection.getClientAddress());
 
@@ -197,7 +197,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             if (loadedDevice.clientVersion >= 1) {
                 if (getDevice() == null) {
                     try {
-                        NetworkDevice existingDevice = new NetworkDevice(loadedDevice.id);
+                        Device existingDevice = new Device(loadedDevice.id);
 
                         AppUtils.getKuick(getContext()).reconstruct(existingDevice);
                         setDevice(existingDevice);

@@ -23,10 +23,10 @@ import android.os.Parcelable;
 
 public class DeviceAddress implements Parcelable
 {
-    public NetworkDevice device;
+    public Device device;
     public DeviceConnection connection;
 
-    public DeviceAddress(NetworkDevice device, DeviceConnection connection)
+    public DeviceAddress(Device device, DeviceConnection connection)
     {
         this.device = device;
         this.connection = connection;
@@ -34,7 +34,7 @@ public class DeviceAddress implements Parcelable
 
     protected DeviceAddress(Parcel in)
     {
-        device = in.readParcelable(NetworkDevice.class.getClassLoader());
+        device = in.readParcelable(Device.class.getClassLoader());
         connection = in.readParcelable(DeviceConnection.class.getClassLoader());
     }
 

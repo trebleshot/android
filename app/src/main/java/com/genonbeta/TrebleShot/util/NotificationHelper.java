@@ -29,7 +29,7 @@ import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -82,7 +82,7 @@ public class NotificationHelper
         return mNotificationUtils;
     }
 
-    public void notifyConnectionRequest(NetworkDevice device, int pin)
+    public void notifyConnectionRequest(Device device, int pin)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(AppUtils.getUniqueNumber(),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
@@ -119,7 +119,7 @@ public class NotificationHelper
         notification.show();
     }
 
-    public void notifyTransferRequest(NetworkDevice device, TransferGroup group, TransferObject.Type type,
+    public void notifyTransferRequest(Device device, TransferGroup group, TransferObject.Type type,
                                       List<TransferObject> objectList)
     {
         int numberOfFiles = objectList.size();
@@ -226,7 +226,7 @@ public class NotificationHelper
         notification.show();
     }
 
-    public void notifyClipboardRequest(NetworkDevice device, TextStreamObject object)
+    public void notifyClipboardRequest(Device device, TextStreamObject object)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(object.id,
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
@@ -338,7 +338,7 @@ public class NotificationHelper
         notification.show();
     }
 
-    public void notifyReceiveError(TransferObject transferObject, NetworkDevice device)
+    public void notifyReceiveError(TransferObject transferObject, Device device)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.getId(),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
@@ -391,7 +391,7 @@ public class NotificationHelper
         notification.show();
     }
 
-    public DynamicNotification notifyPrepareFiles(TransferGroup group, NetworkDevice device)
+    public DynamicNotification notifyPrepareFiles(TransferGroup group, Device device)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(
                 TransferUtils.createUniqueTransferId(group.id, device.id, TransferObject.Type.INCOMING),

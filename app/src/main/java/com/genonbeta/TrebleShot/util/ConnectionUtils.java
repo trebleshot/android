@@ -46,7 +46,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
@@ -390,7 +390,7 @@ public class ConnectionUtils
                 .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
                 .toString());
 
-        NetworkDevice device = client.getDevice();
+        Device device = client.getDevice();
         JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
 
         if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
@@ -470,7 +470,7 @@ public class ConnectionUtils
         return getWifiManager().addNetworkSuggestions(suggestions);
     }
 
-    public static void throwCommunicationError(JSONObject clientResponse, NetworkDevice device)
+    public static void throwCommunicationError(JSONObject clientResponse, Device device)
             throws NotAllowedException, NotTrustedException, JSONException, UnknownCommunicationException
     {
         if (clientResponse.has(Keyword.ERROR)) {

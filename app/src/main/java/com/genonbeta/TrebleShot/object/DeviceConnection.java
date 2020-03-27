@@ -36,7 +36,7 @@ import java.net.UnknownHostException;
  * created by: veli
  * date: 8/3/19 1:22 PM
  */
-public final class DeviceConnection implements DatabaseObject<NetworkDevice>, Parcelable
+public final class DeviceConnection implements DatabaseObject<Device>, Parcelable
 {
     public String adapterName;
     public String ipAddress;
@@ -132,19 +132,19 @@ public final class DeviceConnection implements DatabaseObject<NetworkDevice>, Pa
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
 
     }

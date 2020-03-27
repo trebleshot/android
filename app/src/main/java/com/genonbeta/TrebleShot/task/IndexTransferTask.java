@@ -22,11 +22,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.android.database.Progress;
 import org.json.JSONArray;
@@ -41,10 +39,10 @@ public class IndexTransferTask extends BackgroundTask
     private long mGroupId;
     private boolean mNoPrompt;
     private DeviceConnection mConnection;
-    private NetworkDevice mDevice;
+    private Device mDevice;
     private String mJsonIndex;
 
-    public IndexTransferTask(final long groupId, final String jsonIndex, final NetworkDevice device,
+    public IndexTransferTask(final long groupId, final String jsonIndex, final Device device,
                              final DeviceConnection connection, final boolean noPrompt)
     {
         mGroupId = groupId;

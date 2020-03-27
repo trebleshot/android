@@ -22,7 +22,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
@@ -113,7 +113,7 @@ public class UpdateUtils
         socket.close();
     }
 
-    public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Stoppable stoppable,
+    public static DocumentFile receiveUpdate(Context context, Device device, Stoppable stoppable,
                                              OnConnectionReadyListener readyListener) throws IOException
     {
         ServerSocket serverSocket = null;

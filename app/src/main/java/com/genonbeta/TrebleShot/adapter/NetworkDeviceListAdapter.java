@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -49,17 +49,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment.openInfo;
+import static com.genonbeta.TrebleShot.fragment.DeviceListFragment.openInfo;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
 {
     private ConnectionUtils mConnectionUtils;
     private TextDrawable.IShapeBuilder mIconBuilder;
-    private List<NetworkDevice.Type> mHiddenDeviceTypes;
+    private List<Device.Type> mHiddenDeviceTypes;
 
     public NetworkDeviceListAdapter(EditableListFragmentBase<InfoHolder> fragment,
                                     HolderConsumer<ViewHolder> consumer, ConnectionUtils connectionUtils,
-                                    NetworkDevice.Type[] hiddenDeviceTypes)
+                                    Device.Type[] hiddenDeviceTypes)
     {
         super(fragment, consumer);
         mConnectionUtils = connectionUtils;
@@ -81,8 +81,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
             }
         }
 
-        for (NetworkDevice device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES)
-                .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
+        for (Device device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES)
+                .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device.class))
             if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
                 list.add(new InfoHolder(device));
 
@@ -128,8 +128,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
             boolean isRestricted = false;
             boolean isTrusted = false;
 
-            if (specifier instanceof NetworkDevice) {
-                NetworkDevice device = (NetworkDevice) specifier;
+            if (specifier instanceof Device) {
+                Device device = (Device) specifier;
                 isRestricted = device.isRestricted;
                 isTrusted = device.isTrusted;
 
@@ -156,7 +156,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         private Object mObject;
         private boolean mIsSelected = false;
 
-        public InfoHolder(NetworkDevice device)
+        public InfoHolder(Device device)
         {
             mObject = device;
         }
@@ -177,8 +177,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         public String description(Context context)
         {
-            if (mObject instanceof NetworkDevice)
-                return ((NetworkDevice) mObject).model;
+            if (mObject instanceof Device)
+                return ((Device) mObject).model;
             else if (mObject instanceof NetworkDescription)
                 return context.getString(R.string.text_trebleshotHotspot);
 
@@ -188,7 +188,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         @Override
         public boolean comparisonSupported()
         {
-            return mObject instanceof NetworkDevice;
+            return mObject instanceof Device;
         }
 
         @Override
@@ -200,8 +200,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         @Override
         public long getComparableDate()
         {
-            if (mObject instanceof NetworkDevice)
-                return ((NetworkDevice) mObject).lastUsageTime;
+            if (mObject instanceof Device)
+                return ((Device) mObject).lastUsageTime;
             return 0;
         }
 
@@ -214,8 +214,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         @Override
         public long getId()
         {
-            if (mObject instanceof NetworkDevice)
-                return ((NetworkDevice) mObject).id.hashCode();
+            if (mObject instanceof Device)
+                return ((Device) mObject).id.hashCode();
 
             return 0;
         }
@@ -234,8 +234,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         public String name()
         {
-            if (mObject instanceof NetworkDevice)
-                return ((NetworkDevice) mObject).nickname;
+            if (mObject instanceof Device)
+                return ((Device) mObject).nickname;
             else if (mObject instanceof WifiConfiguration)
                 return AppUtils.getFriendlySSID(((WifiConfiguration) mObject).SSID);
             else if (mObject instanceof NetworkDescription)
@@ -258,7 +258,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         @Override
         public boolean setSelectableSelected(boolean selected)
         {
-            if (mObject instanceof NetworkDevice) {
+            if (mObject instanceof Device) {
                 mIsSelected = selected;
                 return true;
             }

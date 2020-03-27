@@ -71,7 +71,7 @@ public class WebShareServer extends NanoHTTPD
     private NotificationUtils mNotificationUtils;
     private Context mContext;
     private MediaScannerConnection mMediaScanner;
-    private NetworkDevice mThisDevice;
+    private Device mThisDevice;
     private boolean mHadClients = false;
 
     public WebShareServer(Context context, int port)
@@ -111,7 +111,7 @@ public class WebShareServer extends NanoHTTPD
         DynamicNotification notification = null;
         String clientAddress = session.getHeaders().get("http-client-ip");
 
-        NetworkDevice device = new NetworkDevice(clientAddress);
+        Device device = new Device(clientAddress);
 
         try {
             AppUtils.getKuick(mContext).reconstruct(device);
@@ -121,7 +121,7 @@ public class WebShareServer extends NanoHTTPD
             device.versionCode = mThisDevice.versionCode;
             device.versionName = mThisDevice.versionName;
             device.nickname = clientAddress;
-            device.type = NetworkDevice.Type.WEB;
+            device.type = Device.Type.WEB;
             device.secureKey = 0; // It is not required for web browsers
         }
 

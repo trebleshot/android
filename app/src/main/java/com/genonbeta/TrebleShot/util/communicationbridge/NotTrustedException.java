@@ -18,13 +18,13 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 
 public class NotTrustedException extends CommunicationException
 {
-    public NetworkDevice device;
+    public Device device;
 
-    public NotTrustedException(NetworkDevice device)
+    public NotTrustedException(Device device)
     {
         super();
         this.device = device;

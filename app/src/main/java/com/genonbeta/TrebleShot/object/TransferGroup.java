@@ -33,7 +33,7 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 09:37
  */
-public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
+public class TransferGroup implements DatabaseObject<Device>, Selectable
 {
     public long id;
     public long dateCreated;
@@ -115,19 +115,19 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDevice parent, Progress.Listener listener)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
         SQLQuery.Select objectSelection = new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
                 String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(id));

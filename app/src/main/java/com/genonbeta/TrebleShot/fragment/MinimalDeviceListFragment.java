@@ -18,24 +18,22 @@
 
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.object.Device;
 
 /**
  * created by: veli
  * date: 3/11/19 7:43 PM
  */
-public class QuickSelectNetworkDeviceListFragment extends NetworkDeviceListFragment
+public class MinimalDeviceListFragment extends DeviceListFragment
 {
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        setHiddenDeviceTypes(new NetworkDevice.Type[]{NetworkDevice.Type.WEB});
+        setHiddenDeviceTypes(new Device.Type[]{Device.Type.WEB});
 
         super.onCreate(savedInstanceState);
 

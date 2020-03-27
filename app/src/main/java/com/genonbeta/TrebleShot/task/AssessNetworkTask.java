@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.ConnectionTestDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -44,10 +44,10 @@ import java.util.List;
 public class AssessNetworkTask extends BackgroundTask
 {
     private EstablishConnectionDialog mDialog;
-    private NetworkDevice mDevice;
+    private Device mDevice;
     private OnDeviceSelectedListener mListener;
 
-    public AssessNetworkTask(EstablishConnectionDialog dialog, NetworkDevice device,
+    public AssessNetworkTask(EstablishConnectionDialog dialog, Device device,
                              OnDeviceSelectedListener listener)
     {
         mDialog = dialog;

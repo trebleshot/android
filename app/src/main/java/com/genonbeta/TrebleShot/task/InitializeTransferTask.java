@@ -18,30 +18,25 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.CoolSocket.CoolSocket;
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.util.Stoppable;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 public class InitializeTransferTask extends BackgroundTask
 {
-    private NetworkDevice mDevice;
+    private Device mDevice;
     private DeviceConnection mConnection;
     private TransferAssignee mAssignee;
 
-    public InitializeTransferTask(NetworkDevice device, DeviceConnection connection, TransferAssignee assignee)
+    public InitializeTransferTask(Device device, DeviceConnection connection, TransferAssignee assignee)
     {
         mDevice = device;
         mConnection = connection;

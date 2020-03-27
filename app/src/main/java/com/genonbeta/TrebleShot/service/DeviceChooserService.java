@@ -31,7 +31,7 @@ import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -55,8 +55,8 @@ public class DeviceChooserService extends ChooserTargetService
         // use default accent color for light theme
         TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext());
 
-        for (NetworkDevice device : kuick.castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES),
-                NetworkDevice.class)) {
+        for (Device device : kuick.castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES),
+                Device.class)) {
             if (device.isLocal)
                 continue;
 

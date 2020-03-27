@@ -32,7 +32,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -109,13 +109,13 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
                 String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
 
                 try {
-                    NetworkDevice networkDevice = new NetworkDevice(deviceId);
+                    Device device = new Device(deviceId);
                     DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
 
-                    getDatabase().reconstruct(networkDevice);
+                    getDatabase().reconstruct(device);
                     getDatabase().reconstruct(connection);
 
-                    doCommunicate(networkDevice, connection);
+                    doCommunicate(device, connection);
                 } catch (Exception e) {
                     Toast.makeText(TextEditorActivity.this, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
                 }
@@ -271,7 +271,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         return Snackbar.make(findViewById(android.R.id.content), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    protected void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
+    protected void doCommunicate(final Device device, final DeviceConnection connection)
     {
         createSnackbar(R.string.mesg_communicating).show();
 

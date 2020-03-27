@@ -41,7 +41,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
@@ -186,13 +186,13 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
                 String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
 
                 try {
-                    NetworkDevice networkDevice = new NetworkDevice(deviceId);
+                    Device device = new Device(deviceId);
                     DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
 
-                    getDatabase().reconstruct(networkDevice);
+                    getDatabase().reconstruct(device);
                     getDatabase().reconstruct(connection);
 
-                    doCommunicate(networkDevice, connection);
+                    doCommunicate(device, connection);
                 } catch (Exception e) {
                     Toast.makeText(AddDevicesToTransferActivity.this,
                             R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
@@ -273,7 +273,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    public void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
+    public void doCommunicate(final Device device, final DeviceConnection connection)
     {
         BackgroundService.run(this, new AddDeviceTask(mGroup, device, connection));
     }

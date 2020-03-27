@@ -157,7 +157,7 @@ public class BackgroundService extends Service
                 getNotificationHelper().getUtils().cancel(notificationId);
 
                 try {
-                    final NetworkDevice device = new NetworkDevice(deviceId);
+                    final Device device = new Device(deviceId);
                     getKuick().reconstruct(device);
 
                     TransferGroup group = new TransferGroup(groupId);
@@ -206,7 +206,7 @@ public class BackgroundService extends Service
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
-                NetworkDevice device = new NetworkDevice(deviceId);
+                Device device = new Device(deviceId);
 
                 try {
                     getKuick().reconstruct(device);
@@ -610,14 +610,14 @@ public class BackgroundService extends Service
                 }
 
                 Log.d(TAG, "onConnected: hasPin: " + hasPin);
-                NetworkDevice device;
+                Device device;
 
                 try {
                     device = NetworkDeviceLoader.loadFrom(getKuick(), responseJSON);
                 } catch (JSONException e) {
                     // Deprecated: This is a fallback option to generate device information.
                     // Clients must send the device info with the requests asking no handshake or not only handshake.
-                    device = new NetworkDevice(responseJSON.getString(Keyword.DEVICE_INFO_SERIAL));
+                    device = new Device(responseJSON.getString(Keyword.DEVICE_INFO_SERIAL));
                 }
 
                 if (device.clientVersion >= 1 && device.secureKey < 0) {
@@ -630,7 +630,7 @@ public class BackgroundService extends Service
                 }
 
                 try {
-                    NetworkDevice existingInfo = new NetworkDevice(device.id);
+                    Device existingInfo = new Device(device.id);
                     getKuick().reconstruct(existingInfo);
 
                     device.applyPreferences(existingInfo); // apply known preferences
@@ -844,7 +844,7 @@ public class BackgroundService extends Service
                     }
                 });
             } else if (Keyword.REQUEST_UPDATE_V2.equals(request)) {
-                NetworkDevice thisDevice = AppUtils.getLocalDevice(BackgroundService.this);
+                Device thisDevice = AppUtils.getLocalDevice(BackgroundService.this);
                 File file = new File(getApplicationInfo().sourceDir);
 
                 {

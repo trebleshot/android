@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -55,7 +55,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
     final private List<DeviceConnection> mConnections = new ArrayList<>();
     final private List<NetworkInterface> mNetworkInterfaces = new ArrayList<>();
 
-    private NetworkDevice mNetworkDevice;
+    private Device mDevice;
 
     @ColorInt
     private int mActiveColor;
@@ -63,12 +63,12 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
     @ColorInt
     private int mPassiveColor;
 
-    public ConnectionChooserDialog(final Activity activity, NetworkDevice networkDevice,
+    public ConnectionChooserDialog(final Activity activity, Device device,
                                    final OnDeviceSelectedListener listener)
     {
         super(activity);
 
-        mNetworkDevice = networkDevice;
+        mDevice = device;
         mActiveColor = ContextCompat.getColor(activity, AppUtils.getReference(activity, R.attr.colorAccent));
         mPassiveColor = ContextCompat.getColor(activity, AppUtils.getReference(activity, R.attr.colorControlNormal));
 
@@ -82,7 +82,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         else
             setMessage(R.string.text_noNetworkAvailable);
 
-        setTitle(getContext().getString(R.string.text_availableNetworks, networkDevice.nickname));
+        setTitle(getContext().getString(R.string.text_availableNetworks, device.nickname));
         setNegativeButton(R.string.butn_cancel, null);
         setNeutralButton(R.string.text_manageDevices, (dialog, which) -> activity.startActivity(new Intent(activity,
                 ManageDevicesActivity.class)));
@@ -100,7 +100,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         {
             mConnections.addAll(AppUtils.getKuick(getContext()).castQuery(
                     new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                            .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.id)
+                            .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.id)
                             .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
                     DeviceConnection.class));
 

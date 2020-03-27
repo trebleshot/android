@@ -33,7 +33,7 @@ import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
@@ -113,7 +113,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
     {
         //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
         SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(this);
-        NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+        Device localDevice = AppUtils.getLocalDevice(getApplicationContext());
         boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
         boolean refVersion = defaultPreferences.contains("referral_version");
 

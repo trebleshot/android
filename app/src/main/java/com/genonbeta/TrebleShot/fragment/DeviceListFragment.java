@@ -45,7 +45,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
@@ -59,7 +59,7 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
 
-public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
+public class DeviceListFragment extends EditableListFragment<InfoHolder,
         RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
@@ -72,7 +72,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ConnectionUtils mConnectionUtils;
-    private NetworkDevice.Type[] mHiddenDeviceTypes;
+    private Device.Type[] mHiddenDeviceTypes;
     private boolean mWaitForWiFi = false;
     private boolean mSwipeRefreshEnabled = true;
     private boolean mDeviceScanAllowed = true;
@@ -109,8 +109,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                         : R.string.butn_connect, (dialog, which) -> utils.toggleConnection(config));
 
             builder.show();
-        } else if (specifier instanceof NetworkDevice)
-            new DeviceInfoDialog(activity, AppUtils.getKuick(activity), (NetworkDevice) specifier).show();
+        } else if (specifier instanceof Device)
+            new DeviceInfoDialog(activity, AppUtils.getKuick(activity), (Device) specifier).show();
     }
 
     @Override
@@ -143,13 +143,13 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                 List<String> hiddenTypes = args.getStringArrayList(ARG_HIDDEN_DEVICES_LIST);
 
                 if (hiddenTypes != null && hiddenTypes.size() > 0) {
-                    mHiddenDeviceTypes = new NetworkDevice.Type[hiddenTypes.size()];
+                    mHiddenDeviceTypes = new Device.Type[hiddenTypes.size()];
 
                     for (int i = 0; i < hiddenTypes.size(); i++) {
-                        NetworkDevice.Type type = NetworkDevice.Type.valueOf(hiddenTypes.get(i));
+                        Device.Type type = Device.Type.valueOf(hiddenTypes.get(i));
                         mHiddenDeviceTypes[i] = type;
 
-                        if (mDeviceScanAllowed && NetworkDevice.Type.NORMAL.equals(type))
+                        if (mDeviceScanAllowed && Device.Type.NORMAL.equals(type))
                             mDeviceScanAllowed = false;
                     }
                 }
@@ -201,8 +201,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                 if (specifier instanceof NetworkDescription)
                     BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
                             (NetworkDescription) specifier, -1));
-                else if (specifier instanceof NetworkDevice) {
-                    NetworkDevice device = (NetworkDevice) specifier;
+                else if (specifier instanceof Device) {
+                    Device device = (Device) specifier;
                     if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
                         createSnackbar(R.string.mesg_versionNotSupported).show();
                     else
@@ -302,7 +302,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                 || super.isHorizontalOrientation();
     }
 
-    public void setHiddenDeviceTypes(NetworkDevice.Type[] types)
+    public void setHiddenDeviceTypes(Device.Type[] types)
     {
         mHiddenDeviceTypes = types;
     }
@@ -349,7 +349,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
                                 .setAction(R.string.butn_disconnect, v -> getConnectionUtils().getWifiManager().disconnect())
                                 .show();
                 } else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-                    getConnectionUtils().showConnectionOptions(getActivity(), NetworkDeviceListFragment.this,
+                    getConnectionUtils().showConnectionOptions(getActivity(), DeviceListFragment.this,
                             REQUEST_LOCATION_PERMISSION);
             } else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
                 createSnackbar(R.string.mesg_scanCompleted)

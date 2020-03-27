@@ -38,10 +38,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
+import com.genonbeta.TrebleShot.fragment.DeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
@@ -68,7 +68,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     private final IntentFilter mFilter = new IntentFilter();
     private HotspotManagerFragment mHotspotManagerFragment;
     private NetworkManagerFragment mNetworkManagerFragment;
-    private NetworkDeviceListFragment mDeviceListFragment;
+    private DeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout mToolbarLayout;
@@ -90,7 +90,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE.equals(intent.getAction())
                     && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ID)
                     && intent.hasExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME)) {
-                NetworkDevice device = new NetworkDevice(intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID));
+                Device device = new Device(intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID));
                 DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(
                         BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME));
 
@@ -120,10 +120,10 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         setContentView(R.layout.activity_connection_manager);
 
         ArrayList<String> hiddenDeviceTypes = new ArrayList<>();
-        hiddenDeviceTypes.add(NetworkDevice.Type.WEB.toString());
+        hiddenDeviceTypes.add(Device.Type.WEB.toString());
 
         Bundle deviceListArgs = new Bundle();
-        deviceListArgs.putStringArrayList(NetworkDeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
+        deviceListArgs.putStringArrayList(DeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
                 hiddenDeviceTypes);
 
         FragmentFactory factory = getSupportFragmentManager().getFragmentFactory();
@@ -136,8 +136,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 HotspotManagerFragment.class.getName());
         mNetworkManagerFragment = (NetworkManagerFragment) factory.instantiate(getClassLoader(),
                 NetworkManagerFragment.class.getName());
-        mDeviceListFragment = (NetworkDeviceListFragment) factory.instantiate(getClassLoader(),
-                NetworkDeviceListFragment.class.getName());
+        mDeviceListFragment = (DeviceListFragment) factory.instantiate(getClassLoader(),
+                DeviceListFragment.class.getName());
         mDeviceListFragment.setArguments(deviceListArgs);
 
         mFilter.addAction(ACTION_CHANGE_FRAGMENT);
@@ -171,7 +171,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         if (resultCode == RESULT_OK && data != null)
             if (requestCode == REQUEST_BARCODE_SCAN) {
                 try {
-                    NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
+                    Device device = new Device(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
                     getDatabase().reconstruct(device);
                     DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(
                             BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
@@ -250,7 +250,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             return AvailableFragment.CreateHotspot;
         else if (fragment instanceof NetworkManagerFragment)
             return AvailableFragment.UseExistingNetwork;
-        else if (fragment instanceof NetworkDeviceListFragment)
+        else if (fragment instanceof DeviceListFragment)
             return AvailableFragment.UseKnownDevice;
 
         // Probably OptionsFragment
@@ -263,7 +263,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         return getSupportFragmentManager().findFragmentById(R.id.activity_connection_establishing_content_view);
     }
 
-    public static void returnResult(android.app.Activity activity, NetworkDevice device, DeviceConnection connection)
+    public static void returnResult(android.app.Activity activity, Device device, DeviceConnection connection)
     {
         returnResult(activity, device.id, connection.adapterName);
     }

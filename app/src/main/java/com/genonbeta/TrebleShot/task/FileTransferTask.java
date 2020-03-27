@@ -55,7 +55,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
     // Static objects
     public CoolSocket.ActiveConnection activeConnection;
-    public NetworkDevice device;
+    public Device device;
     public PreloadedGroup group;
     public TransferAssignee assignee;
     public DeviceConnection connection;
@@ -138,7 +138,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         SQLiteDatabase db = kuick.getReadableDatabase();
         FileTransferTask task = new FileTransferTask();
         task.type = type;
-        task.device = new NetworkDevice(deviceId);
+        task.device = new Device(deviceId);
 
         try {
             kuick.reconstruct(db, task.device);

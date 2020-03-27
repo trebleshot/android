@@ -25,7 +25,6 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -45,15 +44,11 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.framework.ui.PerformerMenu;
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.ByteArrayOutputStream;
@@ -312,7 +307,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         }
 
         if (headerView != null) {
-            NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+            Device localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
             ImageView imageView = headerView.findViewById(R.id.layout_profile_picture_image_default);
             ImageView editImageView = headerView.findViewById(R.id.layout_profile_picture_image_preferred);

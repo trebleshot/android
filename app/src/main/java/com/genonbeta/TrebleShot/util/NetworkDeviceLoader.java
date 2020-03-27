@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONException;
@@ -44,14 +44,14 @@ import java.net.InetAddress;
 
 public class NetworkDeviceLoader
 {
-    public static DeviceConnection processConnection(Kuick kuick, NetworkDevice device, String ipAddress)
+    public static DeviceConnection processConnection(Kuick kuick, Device device, String ipAddress)
     {
         DeviceConnection connection = new DeviceConnection(ipAddress);
         processConnection(kuick, device, connection);
         return connection;
     }
 
-    public static void processConnection(Kuick kuick, NetworkDevice device, DeviceConnection connection)
+    public static void processConnection(Kuick kuick, Device device, DeviceConnection connection)
     {
         try {
             kuick.reconstruct(connection);
@@ -76,8 +76,8 @@ public class NetworkDeviceLoader
         load(false, kuick, ipAddress, listener);
     }
 
-    public static NetworkDevice load(boolean currentThread, final Kuick kuick, final String ipAddress,
-                                     final OnDeviceRegisteredListener listener)
+    public static Device load(boolean currentThread, final Kuick kuick, final String ipAddress,
+                              final OnDeviceRegisteredListener listener)
     {
         if (currentThread)
             return loadInternal(new CommunicationBridge.Client(kuick), kuick, ipAddress, listener);
@@ -86,16 +86,16 @@ public class NetworkDeviceLoader
         return null;
     }
 
-    private static NetworkDevice loadInternal(CommunicationBridge.Client client, Kuick kuick, String ipAddress,
-                                              OnDeviceRegisteredListener listener)
+    private static Device loadInternal(CommunicationBridge.Client client, Kuick kuick, String ipAddress,
+                                       OnDeviceRegisteredListener listener)
     {
         try {
             client.communicate(InetAddress.getByName(ipAddress), true);
 
-            NetworkDevice device = client.getDevice();
+            Device device = client.getDevice();
 
             if (device.id != null) {
-                NetworkDevice localDevice = AppUtils.getLocalDevice(kuick.getContext());
+                Device localDevice = AppUtils.getLocalDevice(kuick.getContext());
                 DeviceConnection connection = processConnection(kuick, device, ipAddress);
 
                 if (!localDevice.id.equals(device.id)) {
@@ -115,11 +115,11 @@ public class NetworkDeviceLoader
         return null;
     }
 
-    public static NetworkDevice loadFrom(Kuick kuick, JSONObject object) throws JSONException
+    public static Device loadFrom(Kuick kuick, JSONObject object) throws JSONException
     {
         JSONObject deviceInfo = object.getJSONObject(Keyword.DEVICE_INFO);
         JSONObject appInfo = object.getJSONObject(Keyword.APP_INFO);
-        NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
+        Device device = new Device(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
 
         try {
             kuick.reconstruct(device);
@@ -156,7 +156,7 @@ public class NetworkDeviceLoader
         return Base64.decode(base64, 0);
     }
 
-    public static void saveProfilePicture(Context context, NetworkDevice device, JSONObject object)
+    public static void saveProfilePicture(Context context, Device device, JSONObject object)
     {
         try {
             saveProfilePicture(context, device, loadProfilePictureFrom(object));
@@ -165,7 +165,7 @@ public class NetworkDeviceLoader
         }
     }
 
-    public static void saveProfilePicture(Context context, NetworkDevice device, byte[] picture)
+    public static void saveProfilePicture(Context context, Device device, byte[] picture)
     {
         Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
 
@@ -182,7 +182,7 @@ public class NetworkDeviceLoader
             Log.d(NetworkDeviceLoader.class.getSimpleName(), "Bitmap was null");
     }
 
-    public static void showPictureIntoView(NetworkDevice device, ImageView imageView,
+    public static void showPictureIntoView(Device device, ImageView imageView,
                                            TextDrawable.IShapeBuilder iconBuilder)
     {
         Context context = imageView.getContext();
@@ -206,6 +206,6 @@ public class NetworkDeviceLoader
 
     public interface OnDeviceRegisteredListener extends AttachedTaskListener
     {
-        void onDeviceRegistered(Kuick kuick, NetworkDevice device, DeviceConnection connection);
+        void onDeviceRegistered(Kuick kuick, Device device, DeviceConnection connection);
     }
 }

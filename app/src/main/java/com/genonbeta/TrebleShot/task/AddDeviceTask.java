@@ -46,10 +46,10 @@ import static android.app.Activity.RESULT_OK;
 public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity>
 {
     private TransferGroup mGroup;
-    private NetworkDevice mDevice;
+    private Device mDevice;
     private DeviceConnection mConnection;
 
-    public AddDeviceTask(TransferGroup group, NetworkDevice device, DeviceConnection connection)
+    public AddDeviceTask(TransferGroup group, Device device, DeviceConnection connection)
     {
         mGroup = group;
         mDevice = device;

@@ -52,7 +52,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Identity;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -107,7 +107,7 @@ public class AppUtils
 
     public static void applyDeviceToJSON(Context context, JSONObject object, int key) throws JSONException
     {
-        NetworkDevice device = getLocalDevice(context);
+        Device device = getLocalDevice(context);
 
         JSONObject deviceInformation = new JSONObject()
                 .put(Keyword.DEVICE_INFO_SERIAL, device.id)
@@ -389,9 +389,9 @@ public class AppUtils
         return deviceName == null || deviceName.length() == 0 ? Build.MODEL.toUpperCase() : deviceName;
     }
 
-    public static NetworkDevice getLocalDevice(Context context)
+    public static Device getLocalDevice(Context context)
     {
-        NetworkDevice device = new NetworkDevice(getDeviceId(context));
+        Device device = new Device(getDeviceId(context));
 
         device.brand = Build.BRAND;
         device.model = Build.MODEL;
@@ -458,7 +458,7 @@ public class AppUtils
     public static boolean isLatestChangeLogSeen(Context context)
     {
         SharedPreferences preferences = getDefaultPreferences(context);
-        NetworkDevice device = getLocalDevice(context);
+        Device device = getLocalDevice(context);
         int lastSeenChangelog = preferences.getInt("changelog_seen_version", -1);
         boolean dialogAllowed = preferences.getBoolean("show_changelog_dialog", true);
 
@@ -468,7 +468,7 @@ public class AppUtils
 
     public static void publishLatestChangelogSeen(Context context)
     {
-        NetworkDevice device = getLocalDevice(context);
+        Device device = getLocalDevice(context);
 
         getDefaultPreferences(context).edit()
                 .putInt("changelog_seen_version", device.versionCode)

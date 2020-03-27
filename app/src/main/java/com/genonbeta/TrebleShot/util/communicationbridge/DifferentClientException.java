@@ -18,14 +18,14 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 
 public class DifferentClientException extends CommunicationException
 {
-    public NetworkDevice expected;
-    public NetworkDevice got;
+    public Device expected;
+    public Device got;
 
-    public DifferentClientException(NetworkDevice expected, NetworkDevice got)
+    public DifferentClientException(Device expected, Device got)
     {
         super();
         this.expected = expected;

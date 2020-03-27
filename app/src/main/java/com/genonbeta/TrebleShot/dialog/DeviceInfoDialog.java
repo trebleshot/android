@@ -32,7 +32,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
@@ -45,7 +45,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 {
     public static final String TAG = DeviceInfoDialog.class.getSimpleName();
 
-    public DeviceInfoDialog(@NonNull final Activity activity, final Kuick kuick, final NetworkDevice device)
+    public DeviceInfoDialog(@NonNull final Activity activity, final Kuick kuick, final Device device)
     {
         super(activity);
 
@@ -55,7 +55,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             @SuppressLint("InflateParams")
             View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
 
-            NetworkDevice localDevice = AppUtils.getLocalDevice(activity);
+            Device localDevice = AppUtils.getLocalDevice(activity);
             ImageView image = rootView.findViewById(R.id.image);
             TextView text1 = rootView.findViewById(R.id.text1);
             TextView notSupportedText = rootView.findViewById(R.id.notSupportedText);
@@ -63,7 +63,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             TextView versionText = rootView.findViewById(R.id.versionText);
             final SwitchCompat accessSwitch = rootView.findViewById(R.id.accessSwitch);
             final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
-            final boolean isDeviceNormal = NetworkDevice.Type.NORMAL.equals(device.type);
+            final boolean isDeviceNormal = Device.Type.NORMAL.equals(device.type);
 
             if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
                 notSupportedText.setVisibility(View.VISIBLE);
@@ -110,7 +110,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         }
     }
 
-    protected void runReceiveTask(final Activity activity, final NetworkDevice device,
+    protected void runReceiveTask(final Activity activity, final Device device,
                                   final DeviceConnection connection)
     {
         // FIXME: 21.03.2020
