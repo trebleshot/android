@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.util;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,6 +34,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
@@ -47,12 +47,10 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
-import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
+import com.genonbeta.TrebleShot.util.communicationbridge.UnknownCommunicationException;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
@@ -66,7 +64,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 
 /**
  * created by: veli
@@ -107,6 +105,11 @@ public class ConnectionUtils
     public boolean canReadScanResults()
     {
         return getWifiManager().isWifiEnabled() && (Build.VERSION.SDK_INT < 23 || canAccessLocation());
+    }
+
+    public boolean canReadWifiInfo()
+    {
+        return Build.VERSION.SDK_INT < 26 || (hasLocationPermission() && isLocationServiceEnabled());
     }
 
     public static WifiConfiguration createWifiConfig(ScanResult result, String password)
@@ -168,48 +171,40 @@ public class ConnectionUtils
     }
 
     @WorkerThread
-    public InetAddress establishHotspotConnection(Stoppable stoppable, InfoHolder holder)
+    public InetAddress establishHotspotConnection(Stoppable stoppable, NetworkDescription description)
+            throws WifiInaccessibleException, InterruptedException, TimeoutException
     {
-        Object specifier = holder.object();
         int pingTimeout = 1000; // ms
         long startTime = System.nanoTime();
-        boolean connectionToggled = specifier instanceof NetworkSuggestion; // suggestions comes pretested and initiated
+        boolean connectionToggled = Build.VERSION.SDK_INT >= 29;
 
-        while (true) {
+        while (System.nanoTime() - startTime < AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE * 1e6) {
             DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
 
             Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
                     + wifiDhcpInfo.toString());
 
-            if (Build.VERSION.SDK_INT < 29 && !getWifiManager().isWifiEnabled()) {
+            if (!getWifiManager().isWifiEnabled()) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
 
-                if (!getWifiManager().setWifiEnabled(true)) {
+                if (Build.VERSION.SDK_INT >= 29 || !getWifiManager().setWifiEnabled(true)) {
                     Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.");
-                    break;
+                    throw new WifiInaccessibleException("Wifi won't turn on. It is either because the device is " +
+                            "running Android 10 or later, or the Wi-Fi access is blocked by some other reasons.");
                 }
-            } else if (specifier instanceof NetworkDescription) {
+            } else if (!connectionToggled && !isConnectedToNetwork(description)) {
                 Log.d(TAG, "establishHotspotConnection: The network is not ready to be used yet.");
 
-                if (Build.VERSION.SDK_INT < 29)
-                    getWifiManager().startScan();
-
-                NetworkDescription description = (NetworkDescription) specifier;
-                String ssid = description.ssid;
-                String bssid = description.bssid;
-                String password = description.password;
-                ScanResult result = findFromScanResults(ssid, bssid);
+                getWifiManager().startScan();
+                ScanResult result = findFromScanResults(description);
 
                 if (result == null)
-                    Log.e(TAG, "establishHotspotConnection: No network found with the name " + ssid);
-                else {
-                    specifier = new InfoHolder(createWifiConfig(result, password));
-                    Log.d(TAG, "establishHotspotConnection: Created HotspotNetwork object from scan results");
-                }
-            } else if (specifier instanceof WifiConfiguration && !isConnectedToNetwork((WifiConfiguration) specifier)
-                    && !connectionToggled) {
-                connectionToggled = toggleConnection((WifiConfiguration) specifier);
-                Log.d(TAG, "establishHotspotConnection(): Requested network toggle " + connectionToggled);
+                    Log.e(TAG, "establishHotspotConnection: No network found with the name " + description.ssid);
+                else if (connectionToggled = toggleConnection(createWifiConfig(result, description.password)))
+                    Log.d(TAG, "establishHotspotConnection: Successfully toggled network from scan results "
+                            + description.ssid);
+                else
+                    Log.d(TAG, "establishHotspotConnection: Toggling network failed " + description.ssid);
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
@@ -227,21 +222,13 @@ public class ConnectionUtils
             } else
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
 
-            if (System.nanoTime() - startTime > AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE * 1e6
-                    || stoppable.isInterrupted()) {
-                Log.d(TAG, "establishHotspotConnection(): Timed out or onTimePassed returned true. Exiting...");
-                break;
-            }
+            Thread.sleep(1000);
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                break;
-            }
+            if (stoppable.isInterrupted())
+                throw new InterruptedException("Task is interrupted.");
         }
 
-        return null;
+        throw new TimeoutException("The process took longer than expected.");
     }
 
     /**
@@ -276,6 +263,11 @@ public class ConnectionUtils
             }
 
         return null;
+    }
+
+    public ScanResult findFromScanResults(NetworkDescription description) throws SecurityException
+    {
+        return findFromScanResults(description.ssid, description.bssid);
     }
 
     public ScanResult findFromScanResults(String ssid, @Nullable String bssid) throws SecurityException
@@ -321,6 +313,12 @@ public class ConnectionUtils
         return mWifiManager;
     }
 
+    public static boolean isClientNetwork(String ssid)
+    {
+        String prefix = AppConfig.PREFIX_ACCESS_POINT;
+        return ssid != null && (ssid.startsWith(prefix) || ssid.startsWith("\"" + prefix));
+    }
+
     public boolean isConnectionToHotspotNetwork()
     {
         WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
@@ -338,12 +336,21 @@ public class ConnectionUtils
         return info != null && info.getType() == ConnectivityManager.TYPE_WIFI && info.isConnected();
     }
 
-    public boolean isConnectedToNetwork(WifiConfiguration config)
+    public boolean isConnectedToNetwork(NetworkDescription description)
+    {
+        return isConnectedToNetwork(description.bssid);
+    }
+
+    public boolean isConnectedToNetwork(WifiConfiguration configuration)
+    {
+        return isConnectedToNetwork(configuration.BSSID);
+    }
+
+    public boolean isConnectedToNetwork(String bssid)
     {
         if (!isConnectedToAnyNetwork())
             return false;
 
-        String bssid = config.BSSID;
         Log.d(TAG, "isConnectedToNetwork: " + bssid + " othr: " + getWifiManager().getConnectionInfo().getBSSID());
         return bssid != null && bssid.equalsIgnoreCase(getWifiManager().getConnectionInfo().getBSSID());
     }
@@ -370,38 +377,23 @@ public class ConnectionUtils
         mWirelessEnableRequested = false;
         return returnedState;
     }
-    
-    public static void postConnectionRejectionInformation(JSONObject clientResponse) throws NotAllowedException,
-            NotTrustedException
-    {
-        try {
-            if (clientResponse.has(Keyword.ERROR)) {
-                String error = clientResponse.getString(Keyword.ERROR);
-                if (error.equals(Keyword.ERROR_NOT_ALLOWED))
-                    throw new NotAllowedException();
-                else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
-                    throw new NotTrustedException();
-            }
-            // FIXME: 27.03.2020 Also handle unknown errors
-            //postUnknownError(context, task, retryCallback);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
-    // TODO: 26.03.2020 Use the error create above and make this a part of it
-    public static void postUnknownError(Context context, BackgroundTask task, TaskMessage.Callback retryCallback)
+    public static void throwCommunicationError(JSONObject clientResponse) throws NotAllowedException,
+            NotTrustedException, JSONException, UnknownCommunicationException
     {
-        task.post(TaskMessage.newInstance()
-                .setMessage(context, R.string.mesg_somethingWentWrong)
-                .addAction(context, R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
-                .addAction(context, R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback));
+        if (clientResponse.has(Keyword.ERROR)) {
+            String error = clientResponse.getString(Keyword.ERROR);
+            if (error.equals(Keyword.ERROR_NOT_ALLOWED))
+                throw new NotAllowedException();
+            else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
+                throw new NotTrustedException();
+        } else
+            throw new UnknownCommunicationException();
     }
 
     @WorkerThread
     public static DeviceAddress setupConnection(Context context, InetAddress inetAddress, int pin)
-            throws DifferentClientException, TimeoutException, CommunicationException, IOException, JSONException,
-            NotAllowedException, NotTrustedException
+            throws TimeoutException, CommunicationException, IOException, JSONException
     {
         Kuick kuick = AppUtils.getKuick(context);
         CommunicationBridge.Client client = new CommunicationBridge.Client(kuick, pin);
@@ -419,11 +411,12 @@ public class ConnectionUtils
                     inetAddress.getHostAddress());
             return new DeviceAddress(device, connection);
         } else
-            postConnectionRejectionInformation(receivedReply);
-        // TODO: 26.03.2020 This should be done by postConnectionRejectionInformation()
-        throw new CommunicationException("Something went wrong. Duh?");
+            throwCommunicationError(receivedReply);
+
+        throw new CommunicationException("Didn't have the result and the errors were unknown");
     }
 
+    @UiThread
     public void showConnectionOptions(Activity activity, SnackbarPlacementProvider provider,
                                       int locationPermRequestId)
     {
@@ -483,10 +476,10 @@ public class ConnectionUtils
     }
 
     @TargetApi(29)
-    public int suggestNetwork(NetworkSuggestion suggestion)
+    public int suggestNetwork(NetworkDescription description)
     {
         final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
-        suggestions.add(suggestion.object);
+        suggestions.add(description.toNetworkSuggestion());
         return getWifiManager().addNetworkSuggestions(suggestions);
     }
 
@@ -505,50 +498,39 @@ public class ConnectionUtils
     }
 
     public void toggleHotspot(FragmentActivity activity, SnackbarPlacementProvider provider, HotspotManager manager,
-                              boolean conditional, int locationPermRequestId)
+                              boolean suggestActions, int locationPermRequestId)
     {
-        if (!HotspotManager.isSupported())
+        if (!HotspotManager.isSupported() || (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity,
+                locationPermRequestId)))
             return;
 
-        if (conditional) {
-            if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId))
-                return;
-
-            else if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(activity)) {
-                new AlertDialog.Builder(activity)
-                        .setMessage(R.string.mesg_errorHotspotPermission)
-                        .setNegativeButton(R.string.butn_cancel, null)
-                        .setPositiveButton(R.string.butn_settings, (dialog, which) -> {
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(activity)) {
+            new AlertDialog.Builder(activity)
+                    .setMessage(R.string.mesg_errorHotspotPermission)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_settings, (dialog, which) ->
                             activity.startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
                                     .setData(Uri.parse("package:" + activity.getPackageName()))
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                        })
-                        .show();
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+                    .show();
+        } else if (Build.VERSION.SDK_INT < 26 && !manager.isEnabled() && isMobileDataActive() && suggestActions) {
+            new AlertDialog.Builder(activity)
+                    .setMessage(R.string.mesg_warningHotspotMobileActive)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_skip, (dialog, which) -> {
+                        // no need to call watcher due to recycle
+                        toggleHotspot(activity, provider, manager, false, locationPermRequestId);
+                    })
+                    .show();
+        } else {
+            WifiConfiguration config = manager.getConfiguration();
 
-                return;
-            } else if (Build.VERSION.SDK_INT < 26 && !manager.isEnabled()
-                    && isMobileDataActive()) {
-                new AlertDialog.Builder(activity)
-                        .setMessage(R.string.mesg_warningHotspotMobileActive)
-                        .setNegativeButton(R.string.butn_cancel, null)
-                        .setPositiveButton(R.string.butn_skip, (dialog, which) -> {
-                            // no need to call watcher due to recycle
-                            toggleHotspot(activity, provider, manager, false, locationPermRequestId);
-                        })
-                        .show();
+            if (!manager.isEnabled() || (config != null && AppUtils.getHotspotName(activity).equals(config.SSID)))
+                provider.createSnackbar(manager.isEnabled() ? R.string.mesg_stoppingSelfHotspot
+                        : R.string.mesg_startingSelfHotspot).show();
 
-                return;
-            }
+            toggleHotspot(activity);
         }
-
-        WifiConfiguration wifiConfiguration = manager.getConfiguration();
-
-        if (!manager.isEnabled() || (wifiConfiguration != null
-                && AppUtils.getHotspotName(activity).equals(wifiConfiguration.SSID)))
-            provider.createSnackbar(manager.isEnabled() ? R.string.mesg_stoppingSelfHotspot
-                    : R.string.mesg_startingSelfHotspot).show();
-
-        toggleHotspot(activity);
     }
 
     private void toggleHotspot(Activity activity)
@@ -602,5 +584,13 @@ public class ConnectionUtils
             return true;
 
         return false;
+    }
+
+    public static class WifiInaccessibleException extends Exception
+    {
+        public WifiInaccessibleException(String message)
+        {
+            super(message);
+        }
     }
 }

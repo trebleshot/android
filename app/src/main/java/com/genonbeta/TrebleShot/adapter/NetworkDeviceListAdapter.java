@@ -18,8 +18,8 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
-import android.annotation.TargetApi;
 import android.content.Context;
+import android.net.MacAddress;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiNetworkSuggestion;
@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -44,7 +45,6 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,10 +75,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         if (mConnectionUtils.canReadScanResults()) {
             for (ScanResult result : mConnectionUtils.getWifiManager().getScanResults()) {
-                if (!AppUtils.isFamiliarHotspot(result.SSID))
-                    continue;
-
-                list.add(new InfoHolder(ConnectionUtils.createWifiConfig(result, null)));
+                if ((result.capabilities == null || result.capabilities.contains("OPEN"))
+                        && ConnectionUtils.isClientNetwork(result.SSID))
+                    list.add(new InfoHolder(new NetworkDescription(result)));
             }
         }
 
@@ -157,34 +156,14 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         private Object mObject;
         private boolean mIsSelected = false;
 
-        InfoHolder(Object object)
-        {
-            mObject = object;
-        }
-
         public InfoHolder(NetworkDevice device)
         {
-            this((Object) device);
-        }
-
-        public InfoHolder(NetworkSuggestion suggestion)
-        {
-            this((Object) suggestion);
+            mObject = device;
         }
 
         public InfoHolder(NetworkDescription description)
         {
-            this((Object) description);
-        }
-
-        public InfoHolder(WifiConfiguration config)
-        {
-            this((Object) config);
-        }
-
-        public InfoHolder(InetAddress address)
-        {
-            this((Object) address);
+            mObject = description;
         }
 
         @Override
@@ -200,7 +179,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         {
             if (mObject instanceof NetworkDevice)
                 return ((NetworkDevice) mObject).model;
-            else if (mObject instanceof WifiConfiguration)
+            else if (mObject instanceof NetworkDescription)
                 return context.getString(R.string.text_trebleshotHotspot);
 
             return context.getString(R.string.text_unknown);
@@ -261,8 +240,6 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
                 return AppUtils.getFriendlySSID(((WifiConfiguration) mObject).SSID);
             else if (mObject instanceof NetworkDescription)
                 return AppUtils.getFriendlySSID(((NetworkDescription) mObject).ssid);
-            else if (mObject instanceof NetworkSuggestion)
-                return ((NetworkSuggestion) mObject).name;
 
             return mObject.toString();
         }
@@ -289,30 +266,40 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
-    @TargetApi(29)
-    public static class NetworkSuggestion
-    {
-        public String name;
-        public WifiNetworkSuggestion object;
-
-        public NetworkSuggestion(String name, WifiNetworkSuggestion object)
-        {
-            this.name = name;
-            this.object = object;
-        }
-    }
-
     public static class NetworkDescription
     {
         public String ssid;
         public String bssid;
         public String password;
 
-        public NetworkDescription(String ssid, @Nullable String bssid, String password)
+        public NetworkDescription(String ssid, @Nullable String bssid, @Nullable String password)
         {
             this.ssid = ssid;
             this.bssid = bssid;
             this.password = password;
+        }
+
+        public NetworkDescription(ScanResult result)
+        {
+            this(result.SSID, result.BSSID, null);
+        }
+
+        @RequiresApi(29)
+        public WifiNetworkSuggestion toNetworkSuggestion()
+        {
+            // TODO: 1/1/20 Ensure using both wpa2 and wpa3 does not cause an issue
+            WifiNetworkSuggestion.Builder builder = new WifiNetworkSuggestion.Builder()
+                    .setSsid(ssid)
+                    .setIsAppInteractionRequired(true);
+
+            if (password != null)
+                builder.setWpa2Passphrase(password)
+                        .setWpa3Passphrase(password);
+
+            if (bssid != null)
+                builder.setBssid(MacAddress.fromString(bssid));
+
+            return builder.build();
         }
     }
 }

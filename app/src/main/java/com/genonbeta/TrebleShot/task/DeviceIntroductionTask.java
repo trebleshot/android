@@ -18,36 +18,51 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import android.app.Dialog;
-import android.content.Intent;
 import android.net.wifi.WifiManager;
-import android.provider.Settings;
+import android.os.Build;
 import android.util.Log;
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
+import org.json.JSONException;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeoutException;
+
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 
 public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListener>
 {
     public static final String TAG = DeviceIntroductionTask.class.getSimpleName();
 
+    private NetworkDescription mDescription;
+    private InetAddress mAddress;
     private int mPin;
-    private NetworkDeviceListAdapter.InfoHolder mInfoHolder;
 
-    public DeviceIntroductionTask(NetworkDeviceListAdapter.InfoHolder infoHolder, int pin)
+    public DeviceIntroductionTask(InetAddress address, int pin)
     {
-        mInfoHolder = infoHolder;
+        assert address != null;
+
+        mAddress = address;
+        mPin = pin;
+    }
+
+    public DeviceIntroductionTask(DeviceConnection connection, int pin) throws UnknownHostException
+    {
+        this(connection.toInet4Address(), pin);
+    }
+
+    public DeviceIntroductionTask(NetworkDescription description, int pin)
+    {
+        assert description != null;
+
+        mDescription = description;
         mPin = pin;
     }
 
@@ -57,64 +72,25 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
         TaskMessage.Callback retryCallback = (service, msg, action) -> rerun(service);
 
         try {
-            InetAddress inetAddress = findAddress();
+            if (mAddress == null)
+                connectToNetwork();
 
-            if (inetAddress != null) {
-                DeviceAddress deviceAddress = ConnectionUtils.setupConnection(getService(), inetAddress, mPin);
-                Log.d(TAG, "onRun: Found device - " + deviceAddress.device.nickname);
-            }
+            DeviceAddress deviceAddress = ConnectionUtils.setupConnection(getService(), mAddress, mPin);
+            Log.d(TAG, "onRun: Found device - " + deviceAddress.device.nickname);
+        } catch (CommunicationException ignored) {
 
-            if (!isInterruptedByUser()) {
-                TaskMessage message = TaskMessage.newInstance()
-                        .setTitle(mInfoHolder.name())
-                        .setMessage(getService(), R.string.mesg_connectionFailure)
-                        .addAction(getService(), R.string.butn_close, Dialog.BUTTON_NEGATIVE, null)
-                        .addAction(getService(), R.string.butn_retry, Dialog.BUTTON_POSITIVE, retryCallback);
-
-                post(message);
-            }
-        } catch (Exception ignored) {
-
-        }
-
-        if (isInterrupted())
-            return;
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        Log.d("DeviceIntroductionTask", "onRun: rerun");
-        onRun();
-    }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (SuggestNetworkException e) {
+            e.printStackTrace();
 
-    @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
-    @Override
-    public String getTitle()
-    {
-        return null;
-    }
-
-    private InetAddress findAddress()
-    {
-        ConnectionUtils utils = new ConnectionUtils(getService());
-        Object object = mInfoHolder.object();
-
-        if (object instanceof NetworkSuggestion) {
-            // We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
-            // to proceed, but as we are already going to do concurrent task, it should become available
-            // during that period.
-            final int status = utils.suggestNetwork((NetworkSuggestion) object);
-
+            /*
             if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
                     && status != WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
-
                 TaskMessage message = TaskMessage.newInstance()
                         .setTitle(getService(), R.string.text_error)
                         .addAction(getService(), R.string.butn_close, null);
@@ -138,18 +114,79 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
                 }
 
                 post(message);
-            } else
-                return utils.establishHotspotConnection(this, mInfoHolder);
-        } else if (object instanceof InetAddress)
-            return (InetAddress) object;
-        else if (object instanceof DeviceConnection) {
-            try {
-                return ((DeviceConnection) object).toInet4Address();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+                */
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ConnectionUtils.WifiInaccessibleException e) {
+            e.printStackTrace();
+        }
+
+        if (isInterrupted())
+            return;
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.d("DeviceIntroductionTask", "onRun: rerun");
+        onRun();
+    }
+
+    private void connectToNetwork() throws SuggestNetworkException, ConnectionUtils.WifiInaccessibleException,
+            TimeoutException, InterruptedException
+    {
+        ConnectionUtils utils = new ConnectionUtils(getService());
+
+        // TODO: 27.03.2020 We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
+        // to proceed, but as we are already going to do concurrent task, it should become available
+        // during that period.
+        if (Build.VERSION.SDK_INT >= 29) {
+            int status = utils.suggestNetwork(mDescription);
+            switch (status) {
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
+                    throw new SuggestNetworkException(SuggestNetworkException.Type.ExceededLimit);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
+                    throw new SuggestNetworkException(SuggestNetworkException.Type.AppDisallowed);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
+                    throw new SuggestNetworkException(SuggestNetworkException.Type.ErrorInternal);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE:
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS:
+                default:
+                    //
             }
         }
 
+        mAddress = utils.establishHotspotConnection(this, mDescription);
+    }
+
+    @Override
+    public String getDescription()
+    {
         return null;
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return null;
+    }
+
+    private static class SuggestNetworkException extends Exception
+    {
+        Type mType;
+
+        public SuggestNetworkException(Type type)
+        {
+            mType = type;
+        }
+
+        enum Type
+        {
+            ExceededLimit,
+            ErrorInternal,
+            AppDisallowed,
+            NetworkDuplicate
+        }
     }
 }

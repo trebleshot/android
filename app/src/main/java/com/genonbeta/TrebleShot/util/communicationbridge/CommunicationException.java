@@ -18,12 +18,25 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
-// TODO: 26.03.2020 Can this class be the base class for other communication errors like NotAllowedException?
-// If it can we can catch this error in a separate catch block and move on from there to show more specific errors.
 public class CommunicationException extends Exception
 {
-    public CommunicationException(String desc)
+    public CommunicationException()
     {
-        super(desc);
+        super();
+    }
+
+    public CommunicationException(String message)
+    {
+        super(message);
+    }
+
+    public CommunicationException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    public CommunicationException(Throwable cause)
+    {
+        super(cause);
     }
 }

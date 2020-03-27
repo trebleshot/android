@@ -57,6 +57,8 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
+
 public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
         RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider
 {
@@ -196,8 +198,9 @@ public class NetworkDeviceListFragment extends EditableListFragment<InfoHolder,
             InfoHolder infoHolder = getAdapter().getItem(holder.getAdapterPosition());
             Object specifier = infoHolder.object();
             if (requireActivity() instanceof AddDeviceActivity) {
-                if (specifier instanceof WifiConfiguration)
-                    BackgroundService.run(requireActivity(), new DeviceIntroductionTask(infoHolder, -1));
+                if (specifier instanceof NetworkDescription)
+                    BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
+                            (NetworkDescription) specifier, -1));
                 else if (specifier instanceof NetworkDevice) {
                     NetworkDevice device = (NetworkDevice) specifier;
                     if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)

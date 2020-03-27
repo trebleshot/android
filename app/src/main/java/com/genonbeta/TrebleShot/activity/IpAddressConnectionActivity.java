@@ -47,7 +47,7 @@ public class IpAddressConnectionActivity extends Activity implements AttachedTas
 
             if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
                 try {
-                    runUiTask(new DeviceIntroductionTask(new InfoHolder(InetAddress.getByName(ipAddress)), -1));
+                    runUiTask(new DeviceIntroductionTask(InetAddress.getByName(ipAddress), -1));
                 } catch (UnknownHostException e) {
                     editText.setError(getString(R.string.mesg_unknownHostError));
                 }

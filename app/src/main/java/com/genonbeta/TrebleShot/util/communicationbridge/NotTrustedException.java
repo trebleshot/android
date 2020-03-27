@@ -18,6 +18,6 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
-public class NotTrustedException extends Exception
+public class NotTrustedException extends CommunicationException
 {
 }

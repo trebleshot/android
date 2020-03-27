@@ -18,10 +18,25 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
-public class DifferentClientException extends Exception
+public class DifferentClientException extends CommunicationException
 {
-    public DifferentClientException(String desc)
+    public DifferentClientException()
     {
-        super(desc);
+        super();
+    }
+
+    public DifferentClientException(String message)
+    {
+        super(message);
+    }
+
+    public DifferentClientException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    public DifferentClientException(Throwable cause)
+    {
+        super(cause);
     }
 }

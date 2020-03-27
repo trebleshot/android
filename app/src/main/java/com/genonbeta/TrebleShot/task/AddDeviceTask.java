@@ -170,7 +170,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     }
                 });
             } else
-                ConnectionUtils.postConnectionRejectionInformation(clientResponse);
+                ConnectionUtils.throwCommunicationError(clientResponse);
 
         } catch (Exception e) {
             if (!(e instanceof InterruptedException)) {

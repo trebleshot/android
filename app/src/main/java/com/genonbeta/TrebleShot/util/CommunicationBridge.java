@@ -70,21 +70,21 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         }
 
         public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection)
-                throws IOException, TimeoutException, DifferentClientException, CommunicationException
+                throws IOException, TimeoutException, CommunicationException, JSONException
         {
             return communicate(targetDevice, targetConnection, false);
         }
 
         public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection,
                                                        boolean handshakeOnly)
-                throws IOException, TimeoutException, DifferentClientException, CommunicationException
+                throws IOException, TimeoutException, CommunicationException, JSONException
         {
             setDevice(targetDevice);
             return communicate(targetConnection.toInet4Address(), handshakeOnly);
         }
 
         public CoolSocket.ActiveConnection communicate(InetAddress address, boolean handshakeOnly)
-                throws IOException, TimeoutException, DifferentClientException, CommunicationException
+                throws IOException, TimeoutException, CommunicationException, JSONException
         {
             CoolSocket.ActiveConnection activeConnection = connectWithHandshake(address, handshakeOnly);
             communicate(activeConnection, handshakeOnly);
@@ -92,19 +92,15 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         }
 
         public void communicate(CoolSocket.ActiveConnection activeConnection, boolean handshakeOnly) throws IOException,
-                TimeoutException, DifferentClientException, CommunicationException
+                TimeoutException, CommunicationException, JSONException
         {
             boolean keyNotSent = getDevice() == null;
             updateDeviceIfOkay(activeConnection);
 
             if (!handshakeOnly && keyNotSent) {
-                try {
-                    activeConnection.reply(new JSONObject().put(Keyword.DEVICE_INFO_KEY, getDevice().secureKey)
-                            .toString());
-                    activeConnection.receive(); // STUB
-                } catch (Exception e) {
-                    throw new CommunicationException("Could not provide the device we are communicating with a key.");
-                }
+                activeConnection.reply(new JSONObject().put(Keyword.DEVICE_INFO_KEY, getDevice().secureKey)
+                        .toString());
+                activeConnection.receive(); // STUB
             }
         }
 
@@ -123,13 +119,13 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         }
 
         public CoolSocket.ActiveConnection connectWithHandshake(DeviceConnection connection, boolean handshakeOnly)
-                throws IOException, TimeoutException, CommunicationException
+                throws IOException, TimeoutException, JSONException
         {
             return connectWithHandshake(connection.toInet4Address(), handshakeOnly);
         }
 
         public CoolSocket.ActiveConnection connectWithHandshake(InetAddress inetAddress, boolean handshakeOnly)
-                throws IOException, TimeoutException, CommunicationException
+                throws IOException, TimeoutException, JSONException
         {
             return handshake(connect(inetAddress), handshakeOnly);
         }
@@ -151,21 +147,16 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
         public CoolSocket.ActiveConnection handshake(CoolSocket.ActiveConnection activeConnection,
                                                      boolean handshakeOnly) throws IOException, TimeoutException,
-                CommunicationException
+                JSONException
         {
-            try {
-                JSONObject reply = new JSONObject()
-                        .put(Keyword.HANDSHAKE_REQUIRED, true)
-                        .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
-                        .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceId(getContext()))
-                        .put(Keyword.DEVICE_PIN, mPin);
+            JSONObject reply = new JSONObject()
+                    .put(Keyword.HANDSHAKE_REQUIRED, true)
+                    .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
+                    .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceId(getContext()))
+                    .put(Keyword.DEVICE_PIN, mPin);
 
-                AppUtils.applyDeviceToJSON(getContext(), reply, mDevice != null ? mDevice.secureKey : -1);
-
-                activeConnection.reply(reply.toString());
-            } catch (JSONException e) {
-                throw new CommunicationException("Failed to open connection between devices");
-            }
+            AppUtils.applyDeviceToJSON(getContext(), reply, mDevice != null ? mDevice.secureKey : -1);
+            activeConnection.reply(reply.toString());
 
             return activeConnection;
         }
@@ -194,7 +185,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         }
 
         protected void updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection) throws IOException,
-                TimeoutException, CommunicationException, DifferentClientException
+                TimeoutException, CommunicationException
         {
             NetworkDevice loadedDevice = loadDevice(activeConnection);
 

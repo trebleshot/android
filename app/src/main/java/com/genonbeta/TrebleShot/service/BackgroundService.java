@@ -565,7 +565,7 @@ public class BackgroundService extends Service
         sendBroadcast(new Intent(ACTION_TASK_CHANGE));
     }
 
-    public class CommunicationServer extends CoolSocket
+    class CommunicationServer extends CoolSocket
     {
         CommunicationServer()
         {

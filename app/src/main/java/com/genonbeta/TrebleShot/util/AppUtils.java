@@ -366,17 +366,11 @@ public class AppUtils
         }
     }
 
-    public static boolean isFamiliarHotspot(String ssid)
-    {
-        String prefix = AppConfig.PREFIX_ACCESS_POINT;
-        return ssid != null && (ssid.startsWith(prefix) || ssid.startsWith("\"" + prefix));
-    }
-
     public static String getFriendlySSID(String ssid)
     {
         ssid = ssid.replace("\"", "");
 
-        if (isFamiliarHotspot(ssid))
+        if (ssid.startsWith(AppConfig.PREFIX_ACCESS_POINT))
             ssid = ssid.substring(AppConfig.PREFIX_ACCESS_POINT.length());
 
         return ssid.replace("_", " ");

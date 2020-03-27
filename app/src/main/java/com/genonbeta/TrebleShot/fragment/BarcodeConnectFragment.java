@@ -24,10 +24,8 @@ import android.content.*;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.MacAddress;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
@@ -42,7 +40,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -64,8 +61,6 @@ import org.json.JSONObject;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
-
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
 
 /**
  * created by: veli
@@ -193,9 +188,6 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
 
         requireContext().registerReceiver(mReceiver, mIntentFilter);
         updateState();
-
-        //if (mPreviousScanResult != null)
-        //    handleBarcode(mPreviousScanResult);
     }
 
     @Override
@@ -227,50 +219,28 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         final DialogInterface.OnDismissListener dismissListener = dialog -> updateState();
 
         try {
-            //mPreviousScanResult = code; // Fail-safe
             if (mShowAsText)
                 throw new JSONException("Showing as text.");
 
-            JSONObject jsonObject = new JSONObject(code);
-            final int accessPin = jsonObject.has(Keyword.NETWORK_PIN) ? jsonObject.getInt(Keyword.NETWORK_PIN) : -1;
+            JSONObject data = new JSONObject(code);
+            final int accessPin = data.has(Keyword.NETWORK_PIN) ? data.getInt(Keyword.NETWORK_PIN) : -1;
 
-            if (jsonObject.has(Keyword.NETWORK_SSID)) {
-                String ssid = jsonObject.getString(Keyword.NETWORK_SSID);
-                String bssid = null;
-                String password = null;
-                InfoHolder informer;
+            if (data.has(Keyword.NETWORK_SSID)) {
+                String ssid = data.getString(Keyword.NETWORK_SSID);
+                String bssid = data.has(Keyword.NETWORK_BSSID) ? data.getString(Keyword.NETWORK_BSSID) : null;
+                String password = data.has(Keyword.NETWORK_PASSWORD) ? data.getString(Keyword.NETWORK_PASSWORD) : null;
+                NetworkDescription description = new NetworkDescription(ssid, bssid, password);
 
-                if (jsonObject.has(Keyword.NETWORK_BSSID))
-                    bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
-
-                if (jsonObject.has(Keyword.NETWORK_PASSWORD))
-                    password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
-
-                if (Build.VERSION.SDK_INT >= 29) {
-                    // TODO: 1/1/20 Ensure using both wpa2 and wpa3 does not cause an issue
-                    WifiNetworkSuggestion.Builder builder = new WifiNetworkSuggestion.Builder()
-                            .setSsid(ssid);
-
-                    if (password != null)
-                        builder.setWpa2Passphrase(password)
-                                .setWpa3Passphrase(password);
-
-                    if (bssid != null)
-                        builder.setBssid(MacAddress.fromString(bssid));
-
-                    informer = new InfoHolder(new NetworkSuggestion(ssid, builder.build()));
-                } else
-                    informer = new InfoHolder(new NetworkDescription(ssid, bssid, password));
-
-                makeAcquaintance(informer, accessPin);
-            } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
-                final String bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
-                final String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
+                BackgroundService.run(requireActivity(), new DeviceIntroductionTask(description, accessPin));
+            } else if (data.has(Keyword.NETWORK_ADDRESS_IP)) {
+                final String bssid = data.getString(Keyword.NETWORK_BSSID);
+                final String ipAddress = data.getString(Keyword.NETWORK_ADDRESS_IP);
 
                 WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
                 Runnable runnable = () -> {
                     try {
-                        makeAcquaintance(new InfoHolder(InetAddress.getByName(ipAddress)), accessPin);
+                        BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
+                                InetAddress.getByName(ipAddress), accessPin));
                     } catch (UnknownHostException e) {
                         new AlertDialog.Builder(requireActivity())
                                 .setMessage(R.string.mesg_unknownHostError)
@@ -339,11 +309,6 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_scanQrCode);
-    }
-
-    protected void makeAcquaintance(InfoHolder infoHolder, int pin)
-    {
-        BackgroundService.run(requireActivity(), new DeviceIntroductionTask(infoHolder, pin));
     }
 
     // TODO: 21.03.2020 Reimplement this

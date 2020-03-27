@@ -27,7 +27,6 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -95,8 +94,8 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     {
         View view = getLayoutInflater().inflate(R.layout.layout_network_manager, container, false);
 
-        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(
-                getContext(), R.attr.colorPassive)));
+        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), AppUtils.getReference(
+                requireContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_network_manager_qr_image);
         mContainerText1 = view.findViewById(R.id.layout_network_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container);
@@ -107,7 +106,7 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
         mActionButton = view.findViewById(R.id.layout_network_manager_info_toggle_button);
 
         mActionButton.setOnClickListener(v -> {
-            if (canReadWifiInfo())
+            if (mConnectionUtils.canReadWifiInfo())
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             else
                 mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION);
@@ -139,12 +138,6 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     {
         super.onPause();
         requireContext().unregisterReceiver(mStatusReceiver);
-    }
-
-    public boolean canReadWifiInfo()
-    {
-        return Build.VERSION.SDK_INT < 26 || (mConnectionUtils.hasLocationPermission()
-                && mConnectionUtils.isLocationServiceEnabled());
     }
 
     @Override
@@ -223,7 +216,7 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     {
         WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
-        if (!canReadWifiInfo()) {
+        if (!mConnectionUtils.canReadWifiInfo()) {
             updateViewsLocationDisabled();
         } else if (!mConnectionUtils.isConnectedToAnyNetwork())
             updateViewsWithBlank();

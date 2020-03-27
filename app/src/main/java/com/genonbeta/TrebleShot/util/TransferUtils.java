@@ -259,7 +259,7 @@ public class TransferUtils
             selection.setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?",
                     String.valueOf(group.id), type.toString());
 
-        List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(context, group.id, type);
+        List<ShowingAssignee> assigneeList = loadAssigneeList(context, group.id, type);
         List<TransferObject> objectList = AppUtils.getKuick(context).castQuery(selection, TransferObject.class);
 
         group.assignees = new ShowingAssignee[assigneeList.size()];

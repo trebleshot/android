@@ -278,7 +278,6 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         boolean showQRCode = codeIndex != null && codeIndex.length() > 0 && getContext() != null;
 
         try {
-
             if (showQRCode) {
                 codeIndex.put(Keyword.NETWORK_PIN, AppUtils.generateNetworkPin(getContext()));
 

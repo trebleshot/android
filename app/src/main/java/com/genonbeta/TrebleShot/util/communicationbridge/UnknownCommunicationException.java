@@ -18,6 +18,10 @@
 
 package com.genonbeta.TrebleShot.util.communicationbridge;
 
-public class NotAllowedException extends CommunicationException
+public class UnknownCommunicationException extends CommunicationException
 {
+    public UnknownCommunicationException()
+    {
+        super();
+    }
 }
