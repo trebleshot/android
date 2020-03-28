@@ -89,6 +89,11 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
         }
     }
 
+    public void post(Runnable runnable)
+    {
+        getHandler().post(runnable);
+    }
+
     private void postAll()
     {
         if (mCallList.size() <= 0)

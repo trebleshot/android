@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 
 import android.content.Context;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 
 import java.util.List;
 
@@ -36,9 +37,9 @@ public interface TaskMessage
 
     TaskMessage addAction(String name, Callback callback);
 
-    TaskMessage addAction(Context context, int nameRes, int type, Callback callback);
+    TaskMessage addAction(Context context, int nameRes, Tone tone, Callback callback);
 
-    TaskMessage addAction(String name, int type, Callback callback);
+    TaskMessage addAction(String name, Tone tone, Callback callback);
 
     List<Action> getActionList();
 
@@ -52,9 +53,20 @@ public interface TaskMessage
 
     TaskMessage setTitle(String title);
 
+    TaskMessage setTone(Tone tone);
+
+    DynamicNotification toNotification(BackgroundTask task);
+
+    enum Tone {
+        Positive,
+        Confused,
+        Neutral,
+        Negative
+    }
+
     class Action
     {
-        public int type;
+        public Tone tone;
         public String name;
         public Callback callback;
     }

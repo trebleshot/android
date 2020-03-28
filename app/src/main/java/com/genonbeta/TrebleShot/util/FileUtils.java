@@ -151,10 +151,10 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return defaultFolder;
     }
 
-    public static boolean openUriForeground(Activity activity, DocumentFile file)
+    public static boolean openUriForeground(Context context, DocumentFile file)
     {
-        if (!openUri(activity, file)) {
-            Toast.makeText(activity, activity.getString(R.string.mesg_openFailure, file.getName()), Toast.LENGTH_SHORT)
+        if (!openUri(context, file)) {
+            Toast.makeText(context, context.getString(R.string.mesg_openFailure, file.getName()), Toast.LENGTH_SHORT)
                     .show();
             return false;
         }

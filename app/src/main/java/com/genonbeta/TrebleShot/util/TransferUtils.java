@@ -55,7 +55,7 @@ public class TransferUtils
     public static void changeConnection(final FragmentActivity activity, final Device device,
                                         final TransferAssignee assignee, final ConnectionUpdatedListener listener)
     {
-        new ConnectionChooserDialog(activity, device, (connection) -> {
+        new ConnectionChooserDialog(activity, device, connection -> {
             try {
                 AppUtils.getKuick(activity).reconstruct(assignee);
                 AppUtils.getKuick(activity).publish(assignee);
@@ -392,7 +392,7 @@ public class TransferUtils
 
                     AppUtils.getKuick(activity).reconstruct(device);
 
-                    EstablishConnectionDialog.show(activity, device, (connection) -> {
+                    EstablishConnectionDialog.show(activity, device, connection -> {
                         if (!assignee.connectionAdapter.equals(connection.adapterName)) {
                             assignee.connectionAdapter = connection.adapterName;
 

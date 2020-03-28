@@ -39,7 +39,7 @@ import java.util.List;
  * date: 12.01.2018 16:55
  */
 
-abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
+public abstract class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
         extends RecyclerViewAdapter<T, V> implements EditableListAdapterBase<T>, SectionTitleProvider
 {
     public static final int VIEW_TYPE_DEFAULT = 0;
@@ -52,7 +52,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
     private IEditableListFragment<T, V> mFragment;
-    private Comparator<T> mGeneratedComparator;
     private Collator mCollator;
     private final List<T> mItemList = new ArrayList<>();
     private int mSortingCriteria = MODE_SORT_BY_NAME;

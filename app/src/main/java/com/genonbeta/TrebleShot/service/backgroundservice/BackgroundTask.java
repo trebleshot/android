@@ -42,7 +42,7 @@ import static com.genonbeta.TrebleShot.service.BackgroundService.hashIntent;
 
 public abstract class BackgroundTask extends StoppableJob implements Stoppable, Identifiable
 {
-    public static final int TASK_GROUP_DEFAULT = 0;
+    public static final String TASK_GROUP_DEFAULT = "TASK_GROUP_DEFAULT";
 
     private Kuick mKuick;
     private BackgroundService mService;
@@ -138,7 +138,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mStoppable;
     }
 
-    public int getTaskGroup()
+    public String getTaskGroup()
     {
         return TASK_GROUP_DEFAULT;
     }
@@ -198,7 +198,8 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
     public void post(TaskMessage message)
     {
-        // TODO: 24.03.2020 Post this message as a notification
+        DynamicNotification notification = message.toNotification(this).show();
+        setCustomNotification(notification);
     }
 
     public Progress progress()

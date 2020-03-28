@@ -56,39 +56,44 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
         progress().addToTotal(knownConnectionList.size());
         publishStatus();
 
-        for (ConnectionResult connectionResult : results) {
-            throwIfInterrupted();
+        if (results.length > 0) {
+            for (int i = 0; i < results.length; i++) {
+                throwIfInterrupted();
 
-            setCurrentContent(connectionResult.connection.adapterName);
-            progress().addToCurrent(1);
-            publishStatus();
+                ConnectionResult connectionResult = results[i] = new ConnectionResult(knownConnectionList.get(i));
 
-            try {
-                CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
-                long startTime = System.nanoTime();
-                CoolSocket.ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
-                        true);
-                connectionResult.pingTime = System.nanoTime() - startTime;
-                connectionResult.successful = true;
+                setCurrentContent(connectionResult.connection.adapterName);
+                progress().addToCurrent(1);
+                publishStatus();
 
-                connection.getSocket().close();
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+                    long startTime = System.nanoTime();
+                    CoolSocket.ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
+                            true);
+                    connectionResult.pingTime = System.nanoTime() - startTime;
+                    connectionResult.successful = true;
+
+                    connection.getSocket().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
+
+            Comparator<ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {
+                // make sure we are not comparing unsuccessful attempts with their pingTime values.
+                if (resultFirst.successful != resultLast.successful)
+                    return resultFirst.successful ? 1 : -1;
+
+                return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime);
+            };
+
+            Arrays.sort(results, connectionComparator);
         }
 
-        Comparator<ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {
-            // make sure we are not comparing unsuccessful attempts with their pingTime values.
-            if (resultFirst.successful != resultLast.successful)
-                return resultFirst.successful ? 1 : -1;
-
-            return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime);
-        };
-
-        Arrays.sort(results, connectionComparator);
-
         if (hasAnchor())
-            getAnchor().onCalculationResult(results);
+            post(() -> getAnchor().onCalculationResult(results));
     }
 
     public static List<ConnectionResult> getAvailableList(ConnectionResult[] results)
@@ -120,7 +125,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
     public static class ConnectionResult
     {
         public DeviceConnection connection;
-        public long pingTime = 0; // nano
+        public long pingTime = 0; // nanoseconds
 
         public boolean successful = false;
 

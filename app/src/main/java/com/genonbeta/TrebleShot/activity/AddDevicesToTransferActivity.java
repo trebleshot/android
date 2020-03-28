@@ -40,10 +40,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -193,7 +192,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
                     getDatabase().reconstruct(device);
                     getDatabase().reconstruct(connection);
 
-                    doCommunicate(device, connection);
+                    runUiTask(new AddDeviceTask(mGroup, device, connection));
                 } catch (Exception e) {
                     Toast.makeText(AddDevicesToTransferActivity.this,
                             R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
@@ -207,9 +206,15 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     {
         super.onAttachTasks(taskList);
 
+        boolean hasOngoing = false;
         for (BaseAttachableBgTask task : taskList)
-            if (task instanceof AddDeviceTask)
+            if (task instanceof AddDeviceTask) {
                 ((AddDeviceTask) task).setAnchor(this);
+                hasOngoing = true;
+            }
+
+        if (!hasOngoing)
+            setNowAdding(false);
     }
 
     @Override
@@ -233,16 +238,20 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public void onTaskStateChanged(BaseAttachableBgTask task)
     {
         if (task instanceof AddDeviceTask) {
-            int progress = task.progress().getCurrent();
-            int total = task.progress().getTotal();
+            if (task.isFinished())
+                setNowAdding(false);
+            else {
+                int progress = task.progress().getCurrent();
+                int total = task.progress().getTotal();
 
-            runOnUiThread(() -> {
-                mProgressTextCurrent.setText(String.valueOf(progress));
-                mProgressTextTotal.setText(String.valueOf(total));
-            });
+                runOnUiThread(() -> {
+                    mProgressTextCurrent.setText(String.valueOf(progress));
+                    mProgressTextTotal.setText(String.valueOf(total));
+                });
 
-            mProgressBar.setProgress(progress);
-            mProgressBar.setMax(total);
+                mProgressBar.setProgress(progress);
+                mProgressBar.setMax(total);
+            }
         }
     }
 
@@ -280,11 +289,6 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    public void doCommunicate(final Device device, final DeviceConnection connection)
-    {
-        BackgroundService.run(this, new AddDeviceTask(mGroup, device, connection));
-    }
-
     public void setNowAdding(boolean adding)
     {
         mLayoutStatusContainer.setVisibility(adding ? View.VISIBLE : View.GONE);
@@ -301,8 +305,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
     private void startConnectionManagerActivity()
     {
-        startActivityForResult(new Intent(AddDevicesToTransferActivity.this, AddDeviceActivity.class),
-                REQUEST_CODE_CHOOSE_DEVICE);
+        startActivityForResult(new Intent(this, AddDeviceActivity.class), REQUEST_CODE_CHOOSE_DEVICE);
     }
 }
 

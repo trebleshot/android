@@ -29,18 +29,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.task.AssessNetworkTask;
 import com.genonbeta.TrebleShot.task.AssessNetworkTask.ConnectionResult;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 
-import java.util.List;
-
-import static com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog.*;
-
 public class ConnectionTestDialog extends AlertDialog.Builder
 {
-    final private List<ConnectionResult> mConnections;
+    private final ConnectionResult[] mResults;
 
     @ColorInt
     private int mActiveColor;
@@ -48,18 +43,18 @@ public class ConnectionTestDialog extends AlertDialog.Builder
     @ColorInt
     private int mPassiveColor;
 
-    public ConnectionTestDialog(Context context, Device device, List<ConnectionResult> resultList)
+    public ConnectionTestDialog(Context context, Device device, ConnectionResult[] results)
     {
         super(context);
 
-        mConnections = resultList;
+        mResults = results;
         mActiveColor = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
         mPassiveColor = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
 
         setTitle(context.getString(R.string.text_connectionTest, device.nickname));
         setNegativeButton(R.string.butn_close, null);
 
-        if (resultList.size() < 1)
+        if (results.length < 1)
             setMessage(R.string.text_empty);
         else
             setAdapter(new ConnectionListAdapter(), null);
@@ -70,13 +65,13 @@ public class ConnectionTestDialog extends AlertDialog.Builder
         @Override
         public int getCount()
         {
-            return mConnections.size();
+            return mResults.length;
         }
 
         @Override
         public Object getItem(int position)
         {
-            return mConnections.get(position);
+            return mResults[position];
         }
 
         @Override
@@ -104,7 +99,7 @@ public class ConnectionTestDialog extends AlertDialog.Builder
 
             if (result.successful)
                 textView3.setText(getContext().getString(R.string.text_textMillisecond,
-                        1e6 / result.pingTime));
+                        (long) (result.pingTime / 1e6)));
             else
                 textView3.setText(R.string.text_error);
 

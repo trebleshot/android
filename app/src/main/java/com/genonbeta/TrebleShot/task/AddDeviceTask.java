@@ -19,11 +19,9 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
@@ -34,12 +32,18 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
+import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
+import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
+import com.genonbeta.TrebleShot.util.communicationbridge.UnknownCommunicationException;
 import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -66,14 +70,6 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
         ConnectionUtils utils = new ConnectionUtils(getService());
         boolean update = false;
-
-        DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
-            try {
-                rerun(AppUtils.getBgService(dialog));
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-        };
 
         try {
             TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
@@ -168,25 +164,24 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 });
             } else
                 ConnectionUtils.throwCommunicationError(clientResponse, mDevice);
-
+        } catch (UnknownCommunicationException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (NotTrustedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (NotAllowedException e) {
+            e.printStackTrace();
+        } catch (CommunicationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         } catch (Exception e) {
-            if (!isInterrupted()) {
-                e.printStackTrace();
-
-                post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
-                {
-                    @Override
-                    public void now(AddDevicesToTransferActivity anchor)
-                    {
-                        anchor.runOnUiThread(() -> new AlertDialog.Builder(anchor)
-                                .setMessage(context.getString(R.string.mesg_fileSendError,
-                                        context.getString(R.string.mesg_connectionProblem)))
-                                .setNegativeButton(R.string.butn_close, null)
-                                .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                .show());
-                    }
-                });
-            }
+            e.printStackTrace();
         }
     }
 

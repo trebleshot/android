@@ -52,8 +52,8 @@ import java.util.List;
 
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
-    final private List<DeviceConnection> mConnections = new ArrayList<>();
-    final private List<NetworkInterface> mNetworkInterfaces = new ArrayList<>();
+    private final List<DeviceConnection> mConnections = new ArrayList<>();
+    private final List<NetworkInterface> mNetworkInterfaces = new ArrayList<>();
 
     private Device mDevice;
 
@@ -74,7 +74,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         ConnectionListAdapter adapter = new ConnectionListAdapter();
 
         if (mConnections.size() > 0)
-            setAdapter(adapter, (dialog, which) -> listener.onConnectionSelection(getConnections().get(which)));
+            setAdapter(adapter, (dialog, which) -> listener.onConnectionSelection(mConnections.get(which)));
         else
             setMessage(R.string.text_noNetworkAvailable);
 
@@ -83,12 +83,6 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         setNeutralButton(R.string.text_manageDevices, (dialog, which) -> activity.startActivity(new Intent(activity,
                 ManageDevicesActivity.class)));
     }
-
-    public synchronized List<DeviceConnection> getConnections()
-    {
-        return new ArrayList<>(mConnections);
-    }
-
 
     private class ConnectionListAdapter extends BaseAdapter
     {

@@ -32,9 +32,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.task.ReceiveUpdateTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
  * Created by: veli
@@ -45,170 +47,63 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 {
     public static final String TAG = DeviceInfoDialog.class.getSimpleName();
 
-    public DeviceInfoDialog(@NonNull final Activity activity, final Kuick kuick, final Device device)
+    public DeviceInfoDialog(@NonNull final Activity activity, final Device device)
     {
         super(activity);
 
+        final Kuick kuick = AppUtils.getKuick(activity);
+
         try {
             kuick.reconstruct(device);
+        } catch (ReconstructionFailedException ignored) {
+        }
 
-            @SuppressLint("InflateParams")
-            View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
+        @SuppressLint("InflateParams")
+        View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
 
-            Device localDevice = AppUtils.getLocalDevice(activity);
-            ImageView image = rootView.findViewById(R.id.image);
-            TextView text1 = rootView.findViewById(R.id.text1);
-            TextView notSupportedText = rootView.findViewById(R.id.notSupportedText);
-            TextView modelText = rootView.findViewById(R.id.modelText);
-            TextView versionText = rootView.findViewById(R.id.versionText);
-            final SwitchCompat accessSwitch = rootView.findViewById(R.id.accessSwitch);
-            final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
-            final boolean isDeviceNormal = Device.Type.NORMAL.equals(device.type);
+        Device localDevice = AppUtils.getLocalDevice(activity);
+        ImageView image = rootView.findViewById(R.id.image);
+        TextView text1 = rootView.findViewById(R.id.text1);
+        TextView notSupportedText = rootView.findViewById(R.id.notSupportedText);
+        TextView modelText = rootView.findViewById(R.id.modelText);
+        TextView versionText = rootView.findViewById(R.id.versionText);
+        final SwitchCompat accessSwitch = rootView.findViewById(R.id.accessSwitch);
+        final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
+        final boolean isDeviceNormal = Device.Type.NORMAL.equals(device.type);
 
-            if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
-                notSupportedText.setVisibility(View.VISIBLE);
+        if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
+            notSupportedText.setVisibility(View.VISIBLE);
 
-            if (isDeviceNormal && (localDevice.versionCode < device.versionCode || BuildConfig.DEBUG))
-                setNeutralButton(R.string.butn_update, (dialog, which) -> EstablishConnectionDialog.show(activity,
-                        device, (connection) -> runReceiveTask(activity, device, connection)));
+        if (isDeviceNormal && (localDevice.versionCode < device.versionCode || BuildConfig.DEBUG))
+            setNeutralButton(R.string.butn_update, (dialog, which) -> EstablishConnectionDialog.show(activity, device,
+                    (connection) -> BackgroundService.run(activity, new ReceiveUpdateTask(device, connection))));
 
-            NetworkDeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
-            text1.setText(device.nickname);
-            modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
-            versionText.setText(device.versionName);
-            accessSwitch.setChecked(!device.isRestricted);
-            trustSwitch.setEnabled(!device.isRestricted);
-            trustSwitch.setChecked(device.isTrusted);
+        NetworkDeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
+        text1.setText(device.nickname);
+        modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
+        versionText.setText(device.versionName);
+        accessSwitch.setChecked(!device.isRestricted);
+        trustSwitch.setEnabled(!device.isRestricted);
+        trustSwitch.setChecked(device.isTrusted);
 
-            accessSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-                device.isRestricted = !isChecked;
+        accessSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            device.isRestricted = !isChecked;
+            kuick.publish(device);
+            kuick.broadcast();
+            trustSwitch.setEnabled(isChecked);
+        });
+
+        if (isDeviceNormal)
+            trustSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+                device.isTrusted = isChecked;
                 kuick.publish(device);
                 kuick.broadcast();
-                trustSwitch.setEnabled(isChecked);
             });
+        else
+            trustSwitch.setVisibility(View.GONE);
 
-            if (isDeviceNormal)
-                trustSwitch.setOnCheckedChangeListener(
-                        (button, isChecked) -> {
-                            device.isTrusted = isChecked;
-                            kuick.publish(device);
-                            kuick.broadcast();
-                        }
-                );
-            else
-                trustSwitch.setVisibility(View.GONE);
-
-            setView(rootView);
-            setPositiveButton(R.string.butn_close, null);
-
-            setNegativeButton(R.string.butn_remove, (dialog, which) -> new RemoveDeviceDialog(activity, device)
-                    .show());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void runReceiveTask(final Activity activity, final Device device, final DeviceConnection connection)
-    {
-        // FIXME: 21.03.2020
-        /*
-        new BackgroundTask()
-        {
-            @Override
-            public void onRun()
-            {
-                try {
-                    publishStatusText(getService().getString(R.string.mesg_waiting));
-
-                    int versionCode = -1;
-                    long updateSize = -1;
-                    CoolSocket.Client client = new CoolSocket.Client();
-                    CoolSocket.ActiveConnection activeConnection = client.connect(
-                            new InetSocketAddress(connection.ipAddress, AppConfig.SERVER_PORT_COMMUNICATION),
-                            AppConfig.DEFAULT_SOCKET_TIMEOUT);
-
-                    activeConnection.reply(new JSONObject()
-                            .put(Keyword.REQUEST, Keyword.REQUEST_UPDATE_V2)
-                            .toString());
-
-                    {
-                        CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                        JSONObject responseJSON = new JSONObject(response.response);
-
-                        if (!responseJSON.getBoolean(Keyword.RESULT))
-                            throw new Exception("Update request was denied by the target");
-
-                        versionCode = responseJSON.getInt(Keyword.APP_INFO_VERSION_CODE);
-                        updateSize = responseJSON.getLong(Keyword.INDEX_FILE_SIZE);
-
-                        if (updateSize < 1)
-                            throw new Exception("The target did not report update size");
-                    }
-
-                    {
-                        activeConnection.reply(new JSONObject()
-                                .put(Keyword.RESULT, true)
-                                .toString());
-                    }
-
-                    publishStatusText(getService().getString(R.string.text_receiving));
-
-                    DocumentFile tmpFile;
-
-                    {
-                        tmpFile = FileUtils.getApplicationDirectory(getContext()).createFile(
-                                null, device.versionName + "_" + System.currentTimeMillis() + ".apk");
-
-                        InputStream inputStream = activeConnection.getSocket().getInputStream();
-                        OutputStream outputStream = getContext().getContentResolver().openOutputStream(
-                                tmpFile.getUri());
-
-                        if (outputStream == null)
-                            throw new Exception("Could open a file to save the update.");
-
-                        long receivedBytes = 0;
-                        long lastRead = 0;
-                        int len;
-                        byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-
-                        while (receivedBytes < updateSize) {
-                            long currentTime = System.nanoTime();
-
-                            if ((len = inputStream.read(buffer)) > 0) {
-                                outputStream.write(buffer, 0, len);
-                                outputStream.flush();
-
-                                receivedBytes += len;
-                                lastRead = currentTime;
-                            }
-
-                            if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6)
-                                throw new TimeoutException("Did not read for 5secs");
-                        }
-
-                        outputStream.close();
-                    }
-
-                    final DocumentFile updateFile = tmpFile;
-
-                    showDialog(activity, new AlertDialog.Builder(activity)
-                            .setTitle(R.string.text_taskCompleted)
-                            .setMessage(R.string.mesg_updateDownloadComplete)
-                            .setNegativeButton(R.string.butn_close, null)
-                            .setPositiveButton(R.string.butn_open, (dialog, which) -> FileUtils.openUriForeground(activity, updateFile)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    interrupt(false);
-
-                    showDialog(activity, new AlertDialog.Builder(activity)
-                            .setTitle(R.string.text_error)
-                            .setMessage(R.string.mesg_somethingWentWrong)
-                            .setNegativeButton(R.string.butn_close, null)
-                            .setPositiveButton(R.string.butn_retry, (dialog, which) -> runReceiveTask(activity, device, connection)));
-                }
-            }
-        }.setTitle(getContext().getString(R.string.mesg_ongoingUpdateDownload))
-                .run(activity);
-         */
+        setView(rootView);
+        setPositiveButton(R.string.butn_close, null);
+        setNegativeButton(R.string.butn_remove, (dialog, which) -> new RemoveDeviceDialog(activity, device).show());
     }
 }

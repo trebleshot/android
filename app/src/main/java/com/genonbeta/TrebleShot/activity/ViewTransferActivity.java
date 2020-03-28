@@ -286,10 +286,9 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
             if (assignees.size() == 1)
                 EstablishConnectionDialog.show(ViewTransferActivity.this, assignees.get(0).device, null);
-            else if (assignees.size() > 1) {
+            else if (assignees.size() > 1)
                 new ChooseAssigneeDialog(this, assignees, (dialog, which) -> EstablishConnectionDialog.show(
                         this, assignees.get(which).device, null)).show();
-            }
         } else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
             mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
             getDatabase().update(mGroup);

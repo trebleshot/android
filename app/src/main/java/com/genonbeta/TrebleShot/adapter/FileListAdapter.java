@@ -98,7 +98,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
 
             if (fileIndex != null && fileIndex.length > 0) {
                 for (DocumentFile file : fileIndex) {
-                    if ((mSearchWord != null && !file.getName().matches(mSearchWord)))
+                    if (mSearchWord != null && !file.getName().matches(mSearchWord))
                         continue;
 
                     lister.offerObliged(this, new FileHolder(getContext(), file));

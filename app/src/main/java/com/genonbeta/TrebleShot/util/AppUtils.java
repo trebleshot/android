@@ -19,9 +19,11 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.app.*;
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Application;
+import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -67,7 +69,6 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class AppUtils
 {
@@ -247,42 +248,28 @@ public class AppUtils
         return mDefaultPreferences;
     }
 
+    public static String getDeviceId()
+    {
+        return Settings.Secure.ANDROID_ID;
+    }
+
     public static String getDeviceId(Context context)
     {
-        if (Build.VERSION.SDK_INT < 26 && Build.SERIAL != null)
-            return Build.SERIAL;
-
+        // The ANDROID_ID is unique to the user it is representing. That's why we don't store this. Because the
+        // app will not have the data and settings that corresponds to that user anyway.
+        /*
         SharedPreferences preferences = getDefaultPreferences(context);
         String uuid = preferences.getString("uuid", null);
 
         if (uuid == null) {
-            uuid = UUID.randomUUID().toString();
             preferences.edit()
-                    .putString("uuid", uuid)
+                    .putString("uuid", Settings.Secure.ANDROID_ID)
                     .apply();
         }
 
-        return uuid;
-    }
-
-    // TODO: 27.03.2020 Remove this. Not reliable.
-    @NonNull
-    public static Activity getActivity(DialogInterface dialog) throws IllegalStateException
-    {
-        Activity activity = null;
-        if (dialog instanceof Dialog)
-            activity = ((Dialog) dialog).getOwnerActivity();
-
-        if (activity == null)
-            throw new IllegalStateException("This dialog type is not a known type to gather the activity from.");
-
-        return activity;
-    }
-
-    @NonNull
-    public static BackgroundService getBgService(DialogInterface dialog) throws IllegalStateException
-    {
-        return getBgService(getActivity(dialog));
+        return uid;
+         */
+        return getDeviceId();
     }
 
     @NonNull

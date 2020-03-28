@@ -153,7 +153,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     @Override
     public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, ShowingAssignee object)
     {
-        new DeviceInfoDialog(requireActivity(), AppUtils.getKuick(getContext()), object.device).show();
+        new DeviceInfoDialog(requireActivity(), object.device).show();
         return true;
     }
 

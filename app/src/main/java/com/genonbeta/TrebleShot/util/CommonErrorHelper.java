@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.util;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
@@ -36,24 +35,23 @@ public class CommonErrorHelper
     public static TaskMessage messageOf(DeviceIntroductionTask.SuggestNetworkException e, Context appContext)
     {
         TaskMessage message = TaskMessage.newInstance()
-                .setTitle(appContext, R.string.text_error)
-                .addAction(appContext, R.string.butn_close, null);
+                .setTitle(appContext, R.string.text_error);
 
         switch (e.type) {
             case ExceededLimit:
                 message.setMessage(appContext, R.string.text_errorExceededMaximumSuggestions)
-                        .addAction(appContext, R.string.butn_openSettings, Dialog.BUTTON_POSITIVE,
+                        .addAction(appContext, R.string.butn_openSettings, TaskMessage.Tone.Positive,
                                 (context, msg, action) -> context.startActivity(new Intent(
                                         Settings.ACTION_WIFI_SETTINGS)));
                 break;
             case AppDisallowed:
                 message.setMessage(appContext, R.string.text_errorNetworkSuggestionsDisallowed)
-                        .addAction(appContext, R.string.butn_openSettings, Dialog.BUTTON_POSITIVE,
+                        .addAction(appContext, R.string.butn_openSettings, TaskMessage.Tone.Positive,
                                 (context, msg, action) -> AppUtils.startApplicationDetails(context));
                 break;
             case ErrorInternal:
                 message.setMessage(appContext, R.string.text_errorNetworkSuggestionInternal)
-                        .addAction(appContext, R.string.butn_feedbackContact, Dialog.BUTTON_POSITIVE,
+                        .addAction(appContext, R.string.butn_feedbackContact, TaskMessage.Tone.Positive,
                                 (context, msg, action) -> AppUtils.startFeedbackActivity(context));
                 break;
         }

@@ -108,7 +108,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
 
             builder.show();
         } else if (specifier instanceof Device)
-            new DeviceInfoDialog(activity, AppUtils.getKuick(activity), (Device) specifier).show();
+            new DeviceInfoDialog(activity, (Device) specifier).show();
     }
 
     @Override
@@ -304,7 +304,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
                     createSnackbar(R.string.mesg_versionNotSupported).show();
                 else
                     EstablishConnectionDialog.show(getActivity(), device,
-                            connection -> AddDeviceActivity.returnResult(requireActivity(), device, connection));
+                            (connection) -> AddDeviceActivity.returnResult(requireActivity(), device, connection));
             } else
                 return false;
         } else
