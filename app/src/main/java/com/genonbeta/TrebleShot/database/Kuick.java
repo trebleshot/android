@@ -178,12 +178,12 @@ public class Kuick extends KuickDb
         return values;
     }
 
-    public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final V object, T parent)
+    public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, V object, T parent)
     {
         BackgroundService.run(activity, new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent));
     }
 
-    public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, final List<V> objects, T parent)
+    public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, List<V> objects, T parent)
     {
         BackgroundService.run(activity, new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent));
     }
@@ -242,7 +242,10 @@ public class Kuick extends KuickDb
         @Override
         protected void onRun() throws InterruptedException
         {
-            AppUtils.getKuick(getService()).remove(getDb(), mObject, mParent, progressListener());
+            Kuick kuick = AppUtils.getKuick(getService());
+
+            kuick.remove(getDb(), mObject, mParent, progressListener());
+            kuick.broadcast();
         }
     }
 
@@ -261,7 +264,10 @@ public class Kuick extends KuickDb
         @Override
         protected void onRun() throws InterruptedException
         {
-            AppUtils.getKuick(getService()).remove(getDb(), mObjectList, mParent, progressListener());
+            Kuick kuick = AppUtils.getKuick(getService());
+
+            kuick.remove(getDb(), mObjectList, mParent, progressListener());
+            kuick.broadcast();
         }
     }
 }
