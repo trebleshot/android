@@ -62,8 +62,6 @@ public interface EditableListFragmentBase<T extends Editable> extends ListFragme
 
     boolean isLocalSelectionActivated();
 
-    boolean isRefreshLocked();
-
     boolean isRefreshRequested();
 
     boolean isSortingSupported();

@@ -55,8 +55,6 @@ import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.*;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -83,7 +81,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
     private IPerformerEngine mPerformerEngine = new PerformerEngine();
     private PerformerMenu mPerformerMenu = null;
     private FilteringDelegate<T> mFilteringDelegate;
-    private Snackbar mRefreshDelayedSnackbar;
     private boolean mRefreshRequested = false;
     private boolean mSortingSupported = true;
     private boolean mFilteringSupported = false;
@@ -552,12 +549,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         }
     }
 
-    public int getActiveViewingGridSize()
-    {
-        return getListView().getLayoutManager() instanceof GridLayoutManager
-                ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() : 1;
-    }
-
     public EditableListAdapterBase<T> getAdapterImpl()
     {
         return getAdapter();
@@ -689,11 +680,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         return mLocalSelectionActivated;
     }
 
-    public boolean isRefreshLocked()
-    {
-        return false;
-    }
-
     public boolean isRefreshRequested()
     {
         return mRefreshRequested;
@@ -774,28 +760,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
                 getAdapterImpl().getItem(position)) || setItemSelected(holder, true);
     }
 
-    @Override
-    public void refreshList()
-    {
-        if (isRefreshLocked()) {
-            setRefreshRequested(true);
-
-            if (mRefreshDelayedSnackbar == null) {
-                mRefreshDelayedSnackbar = createSnackbar(R.string.mesg_listRefreshSnoozed);
-                mRefreshDelayedSnackbar.setDuration(BaseTransientBottomBar.LENGTH_LONG);
-            }
-
-            mRefreshDelayedSnackbar.show();
-        } else {
-            super.refreshList();
-
-            if (mRefreshDelayedSnackbar != null) {
-                mRefreshDelayedSnackbar.dismiss();
-                mRefreshDelayedSnackbar = null;
-            }
-        }
-    }
-
     public void registerLayoutViewClicks(final V holder)
     {
         holder.itemView.setOnClickListener(v -> performLayoutClick(holder));
@@ -864,7 +828,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 
         try {
             getEngineConnection().setSelected(holder);
-            //holder.setSelected();
             return true;
         } catch (SelectableNotFoundException e) {
             e.printStackTrace();

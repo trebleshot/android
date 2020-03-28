@@ -283,8 +283,8 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     }
 
     @Override
-    public int compareItems(int sortingCriteria, int sortingOrder, GenericItem objectOne,
-                            GenericItem objectTwo)
+    public int compareItems(int sortingCriteria, int sortingOrder, GenericItem obj1,
+                            GenericItem obj2)
     {
         //if (sortingCriteria == MODE_SORT_BY_DEFAULT)
         //    return MathUtils.compare(objectTwo.requestId, objectOne.requestId);

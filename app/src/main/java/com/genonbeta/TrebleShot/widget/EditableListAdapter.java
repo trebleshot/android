@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.text.format.DateUtils;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
@@ -53,11 +52,12 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
     private IEditableListFragment<T, V> mFragment;
+    private Comparator<T> mGeneratedComparator;
+    private Collator mCollator;
     private final List<T> mItemList = new ArrayList<>();
     private int mSortingCriteria = MODE_SORT_BY_NAME;
     private int mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING;
     private boolean mGridLayoutRequested = false;
-    private Comparator<T> mGeneratedComparator;
 
     public EditableListAdapter(IEditableListFragment<T, V> fragment)
     {
@@ -77,9 +77,36 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         }
     }
 
-    public int compareItems(int sortingCriteria, int sortingOrder, T objectOne, T objectTwo)
+    @Override
+    public int compare(T compare, T compareTo)
     {
-        return 1;
+        boolean sortingAscending = getSortingOrder(compare, compareTo) == MODE_SORT_ORDER_ASCENDING;
+
+        T obj1 = sortingAscending ? compare : compareTo;
+        T obj2 = sortingAscending ? compareTo : compare;
+
+        if (obj1.comparisonSupported() == obj2.comparisonSupported() && !obj1.comparisonSupported())
+            return 0;
+        else if (!compare.comparisonSupported())
+            return 1;
+        else if (!compareTo.comparisonSupported())
+            return -1;
+
+        return compareItems(getSortingCriteria(compare, compareTo), getSortingOrder(), obj1, obj2);
+    }
+
+    public int compareItems(int sortingCriteria, int sortingOrder, T obj1, T obj2)
+    {
+        switch (sortingCriteria) {
+            case MODE_SORT_BY_DATE:
+                return MathUtils.compare(obj1.getComparableDate(), obj2.getComparableDate());
+            case MODE_SORT_BY_SIZE:
+                return MathUtils.compare(obj1.getComparableSize(), obj2.getComparableSize());
+            case MODE_SORT_BY_NAME:
+                return getDefaultCollator().compare(obj1.getComparableName(), obj2.getComparableName());
+        }
+
+        throw new IllegalStateException("Asked for " + sortingCriteria + " which isn't known.");
     }
 
     public boolean filterItem(T item)
@@ -101,55 +128,14 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return getList().size();
     }
 
-    public Comparator<T> getDefaultComparator()
+    public Collator getDefaultCollator()
     {
-        if (mGeneratedComparator == null)
-            mGeneratedComparator = new Comparator<T>()
-            {
-                Collator mCollator;
+        if (mCollator == null) {
+            mCollator = Collator.getInstance();
+            mCollator.setStrength(Collator.TERTIARY);
+        }
 
-                public Collator getCollator()
-                {
-                    if (mCollator == null) {
-                        mCollator = Collator.getInstance();
-                        mCollator.setStrength(Collator.TERTIARY);
-                    }
-
-                    return mCollator;
-                }
-
-                @Override
-                public int compare(T toCompare, T compareTo)
-                {
-                    boolean sortingAscending = getSortingOrder(toCompare, compareTo) == MODE_SORT_ORDER_ASCENDING;
-
-                    T objectFirst = sortingAscending ? toCompare : compareTo;
-                    T objectSecond = sortingAscending ? compareTo : toCompare;
-
-                    if (objectFirst.comparisonSupported() == objectSecond.comparisonSupported()
-                            && !objectFirst.comparisonSupported())
-                        return 1;
-                    else if (!toCompare.comparisonSupported())
-                        return 1;
-                    else if (!compareTo.comparisonSupported())
-                        return -1;
-
-                    // sorting direction is not used, so that the method doesn't have to guess which
-                    // one is used.
-                    switch (getSortingCriteria(toCompare, compareTo)) {
-                        case MODE_SORT_BY_DATE:
-                            return MathUtils.compare(objectFirst.getComparableDate(), objectSecond.getComparableDate());
-                        case MODE_SORT_BY_SIZE:
-                            return MathUtils.compare(objectFirst.getComparableSize(), objectSecond.getComparableSize());
-                        case MODE_SORT_BY_NAME:
-                            return getCollator().compare(objectFirst.getComparableName(), objectSecond.getComparableName());
-                        default:
-                            return compareItems(getSortingCriteria(), getSortingOrder(), objectFirst, objectSecond);
-                    }
-                }
-            };
-
-        return mGeneratedComparator;
+        return mCollator;
     }
 
     public IEditableListFragment<T, V> getFragment()

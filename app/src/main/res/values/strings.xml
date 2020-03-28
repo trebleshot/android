@@ -324,7 +324,6 @@
     <string name="text_listEmptyMusic">No songs in here</string>
     <string name="text_internalStorage">Internal storage</string>
     <string name="text_emptySearchResult">No result for \"%s\"</string>
-    <string name="mesg_listRefreshSnoozed">The list will be refreshed whenever available</string>
     <string name="mesg_errorReadFolder">Can not access \"%s\"</string>
     <string name="butn_mountDirectory">Mount folder</string>
     <string name="mesg_mountDirectoryHelp">Select the folder you want to access</string>

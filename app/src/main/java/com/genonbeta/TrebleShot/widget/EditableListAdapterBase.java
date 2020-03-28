@@ -22,11 +22,14 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
 import com.genonbeta.android.framework.widget.ListAdapterBase;
 
+import java.util.Comparator;
+
 /**
  * created by: veli
  * date: 14/04/18 00:51
  */
-public interface EditableListAdapterBase<T extends Editable> extends ListAdapterBase<T>, SelectableProvider<T>
+public interface EditableListAdapterBase<T extends Editable> extends ListAdapterBase<T>, SelectableProvider<T>,
+        Comparator<T>
 {
     boolean filterItem(T item);
 

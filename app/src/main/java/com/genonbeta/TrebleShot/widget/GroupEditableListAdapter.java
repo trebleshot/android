@@ -74,7 +74,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             Collections.sort(groupLister.getList(), (o1, o2) -> o2.compareTo(o1));
 
             for (ComparableMerger<T> thisMerger : groupLister.getList()) {
-                Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
+                Collections.sort(thisMerger.getBelongings(), this);
 
                 T generated = onGenerateRepresentative(getRepresentativeText(thisMerger), thisMerger);
                 T firstEditable = thisMerger.getBelongings().get(0);
@@ -89,7 +89,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
                 loadedList.addAll(thisMerger.getBelongings());
             }
         } else
-            Collections.sort(loadedList, getDefaultComparator());
+            Collections.sort(loadedList, this);
 
         return loadedList;
     }
