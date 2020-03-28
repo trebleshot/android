@@ -198,7 +198,7 @@ public class NotificationHelper
 
         notification.setContentTitle(task.object.name);
         notification.setProgress(100, (int) (Math.max(0.01, task.completedBytes + task.currentBytes)
-                / Math.max(0.01, task.group.bytesPending()) * 100), false);
+                / Math.max(0.01, task.index.bytesPending()) * 100), false);
 
         long bytesTransferred = task.completedBytes + task.currentBytes;
 
@@ -209,8 +209,8 @@ public class NotificationHelper
             text.append(FileUtils.sizeExpression(change, false));
             text.append("/s");
 
-            if (task.group.bytesPending() > 0 && change > 0) {
-                long timeNeeded = (task.group.bytesPending() - bytesTransferred) / change;
+            if (task.index.bytesPending() > 0 && change > 0) {
+                long timeNeeded = (task.index.bytesPending() - bytesTransferred) / change;
 
                 text.append(" (");
                 text.append(getContext().getString(R.string.text_remainingTime,

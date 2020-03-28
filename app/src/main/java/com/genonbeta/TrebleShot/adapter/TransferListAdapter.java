@@ -43,12 +43,13 @@ import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.*;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
+import com.genonbeta.TrebleShot.view.EditableListFragmentViewBase;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -89,9 +90,9 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     private int mColorDone;
     private int mColorError;
 
-    public TransferListAdapter(EditableListFragmentBase<GenericItem> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public TransferListAdapter(IEditableListFragment<GenericItem, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
+        super(fragment, MODE_GROUP_BY_DEFAULT);
 
         Context context = getContext();
         mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
@@ -465,9 +466,9 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                 false);
 
         if (!holder.isRepresentative()) {
-            getConsumer().registerLayoutViewClicks(holder);
+            getFragment().registerLayoutViewClicks(holder);
             holder.itemView.findViewById(R.id.layout_image)
-                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                    .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
         }
 
         return holder;

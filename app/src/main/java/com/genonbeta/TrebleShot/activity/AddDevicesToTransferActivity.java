@@ -46,6 +46,7 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.AddDeviceTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -243,6 +244,12 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
             mProgressBar.setProgress(progress);
             mProgressBar.setMax(total);
         }
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
     }
 
     public boolean checkGroupIntegrity()

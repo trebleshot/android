@@ -38,7 +38,7 @@ public class TransferUtils
 {
     public static final String TAG = TransferUtils.class.getSimpleName();
 
-    private static void appendOutgoingData(PreloadedGroup group, TransferObject object, TransferObject.Flag flag)
+    private static void appendOutgoingData(IndexOfTransferGroup group, TransferObject object, TransferObject.Flag flag)
     {
         group.bytesOutgoing += object.size;
         group.numberOfOutgoing++;
@@ -55,7 +55,7 @@ public class TransferUtils
     public static void changeConnection(final FragmentActivity activity, final Device device,
                                         final TransferAssignee assignee, final ConnectionUpdatedListener listener)
     {
-        new ConnectionChooserDialog(activity, device, (connection, connectionList) -> {
+        new ConnectionChooserDialog(activity, device, (connection) -> {
             try {
                 AppUtils.getKuick(activity).reconstruct(assignee);
                 AppUtils.getKuick(activity).publish(assignee);
@@ -222,7 +222,7 @@ public class TransferUtils
                 (db, item, object) -> loadAssigneeInfo(db, object));
     }
 
-    public static void loadGroupInfo(Context context, PreloadedGroup group,
+    public static void loadGroupInfo(Context context, IndexOfTransferGroup group,
                                      @Nullable TransferAssignee assignee)
     {
         if (assignee == null)
@@ -231,24 +231,26 @@ public class TransferUtils
             loadGroupInfo(context, group, assignee.deviceId, assignee.type);
     }
 
-    public static void loadGroupInfo(Context context, PreloadedGroup group)
+    public static void loadGroupInfo(Context context, IndexOfTransferGroup group)
     {
         loadGroupInfo(context, group, null, null);
     }
 
-    public static void loadGroupInfo(Context context, PreloadedGroup group, @Nullable String deviceId,
+    public static void loadGroupInfo(Context context, IndexOfTransferGroup index, @Nullable String deviceId,
                                      @Nullable TransferObject.Type type)
     {
-        group.numberOfOutgoing = 0;
-        group.numberOfIncoming = 0;
-        group.numberOfOutgoingCompleted = 0;
-        group.numberOfIncomingCompleted = 0;
-        group.bytesOutgoing = 0;
-        group.bytesIncoming = 0;
-        group.bytesOutgoingCompleted = 0;
-        group.bytesIncomingCompleted = 0;
-        group.isRunning = false;
-        group.hasIssues = false;
+        TransferGroup group = index.group;
+
+        index.numberOfOutgoing = 0;
+        index.numberOfIncoming = 0;
+        index.numberOfOutgoingCompleted = 0;
+        index.numberOfIncomingCompleted = 0;
+        index.bytesOutgoing = 0;
+        index.bytesIncoming = 0;
+        index.bytesOutgoingCompleted = 0;
+        index.bytesIncomingCompleted = 0;
+        index.isRunning = false;
+        index.hasIssues = false;
 
         SQLQuery.Select selection = new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
                 Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
@@ -262,34 +264,34 @@ public class TransferUtils
         List<ShowingAssignee> assigneeList = loadAssigneeList(context, group.id, type);
         List<TransferObject> objectList = AppUtils.getKuick(context).castQuery(selection, TransferObject.class);
 
-        group.assignees = new ShowingAssignee[assigneeList.size()];
+        index.assignees = new ShowingAssignee[assigneeList.size()];
 
-        assigneeList.toArray(group.assignees);
+        assigneeList.toArray(index.assignees);
 
         for (TransferObject object : objectList) {
             if (TransferObject.Type.INCOMING.equals(object.type)) {
-                group.bytesIncoming += object.size;
-                group.numberOfIncoming++;
+                index.bytesIncoming += object.size;
+                index.numberOfIncoming++;
 
                 TransferObject.Flag flag = object.getFlag();
                 if (TransferObject.Flag.DONE.equals(flag)) {
-                    group.bytesIncomingCompleted += object.size;
-                    group.numberOfIncomingCompleted++;
+                    index.bytesIncomingCompleted += object.size;
+                    index.numberOfIncomingCompleted++;
                 } else if (TransferObject.Flag.IN_PROGRESS.equals(flag))
-                    group.bytesIncomingCompleted += flag.getBytesValue();
+                    index.bytesIncomingCompleted += flag.getBytesValue();
                 else if (TransferUtils.isError(flag))
-                    group.hasIssues = true;
+                    index.hasIssues = true;
             } else if (TransferObject.Type.OUTGOING.equals(object.type)) {
                 if (deviceId != null)
-                    appendOutgoingData(group, object, object.getFlag(deviceId));
+                    appendOutgoingData(index, object, object.getFlag(deviceId));
                 else if (assigneeList.size() < 1)
-                    appendOutgoingData(group, object, TransferObject.Flag.PENDING);
+                    appendOutgoingData(index, object, TransferObject.Flag.PENDING);
                 else {
                     for (ShowingAssignee assignee : assigneeList) {
                         if (!TransferObject.Type.OUTGOING.equals(assignee.type))
                             continue;
 
-                        appendOutgoingData(group, object, object.getFlag(assignee.deviceId));
+                        appendOutgoingData(index, object, object.getFlag(assignee.deviceId));
                     }
                 }
             }
@@ -390,7 +392,7 @@ public class TransferUtils
 
                     AppUtils.getKuick(activity).reconstruct(device);
 
-                    new EstablishConnectionDialog(activity, device, (connection, availableInterfaces) -> {
+                    EstablishConnectionDialog.show(activity, device, (connection) -> {
                         if (!assignee.connectionAdapter.equals(connection.adapterName)) {
                             assignee.connectionAdapter = connection.adapterName;
 
@@ -412,7 +414,7 @@ public class TransferUtils
                         } catch (AssigneeNotFoundException e) {
                             e.printStackTrace();
                         }
-                    }).show();
+                    });
                 } catch (Exception e) {
                     new AlertDialog.Builder(activity)
                             .setMessage(R.string.mesg_somethingWentWrong)

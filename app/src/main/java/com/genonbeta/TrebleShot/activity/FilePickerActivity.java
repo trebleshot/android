@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -116,20 +115,12 @@ public class FilePickerActivity extends Activity
                 mFileExplorerFragment.setLayoutClickListener((listFragment, holder, longClick) -> {
                     if (longClick)
                         return false;
+                    FileListAdapter.FileHolder fileHolder = mFileExplorerFragment.getAdapter().getItem(holder);
 
-                    try {
-                        FileListAdapter.FileHolder fileHolder = mFileExplorerFragment
-                                .getAdapter()
-                                .getItem(holder.getAdapterPosition());
-
-                        if (fileHolder.file.isFile()) {
-                            finishWithResult(fileHolder.file);
-                            return true;
-                        }
-                    } catch (NotReadyException e) {
-                        e.printStackTrace();
+                    if (fileHolder.file.isFile()) {
+                        finishWithResult(fileHolder.file);
+                        return true;
                     }
-
                     return false;
                 });
             } else

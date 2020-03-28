@@ -29,9 +29,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -47,9 +46,9 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     private ContentResolver mResolver;
     private int mSelectedInset;
 
-    public ImageListAdapter(EditableListFragmentBase<ImageHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public ImageListAdapter(IEditableListFragment<ImageHolder, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_ALBUM);
+        super(fragment, MODE_GROUP_BY_ALBUM);
         mResolver = getContext().getContentResolver();
         mSelectedInset = (int) getContext().getResources().getDimension(R.dimen.space_list_grid);
     }
@@ -98,12 +97,12 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
         GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
                 ? R.layout.list_image_grid : R.layout.list_image, parent, false));
 
-        getConsumer().registerLayoutViewClicks(holder);
+        getFragment().registerLayoutViewClicks(holder);
         View visitView = holder.itemView.findViewById(R.id.visitView);
-        visitView.setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
-        visitView.setOnLongClickListener(v -> getConsumer().performLayoutLongClick(holder));
+        visitView.setOnClickListener(v -> getFragment().performLayoutClickOpen(holder));
+        visitView.setOnLongClickListener(v -> getFragment().performLayoutLongClick(holder));
         holder.itemView.findViewById(isGridLayoutRequested() ? R.id.selectorContainer : R.id.selector)
-                .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
 
         return holder;
     }

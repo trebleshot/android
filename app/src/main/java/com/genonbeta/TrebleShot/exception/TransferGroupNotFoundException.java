@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.exception;
 
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
@@ -27,8 +28,11 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 public class TransferGroupNotFoundException extends ReconstructionFailedException
 {
-    public TransferGroupNotFoundException()
+    public TransferGroup group;
+
+    public TransferGroupNotFoundException(TransferGroup group)
     {
         super("Transfer group not found");
+        this.group = group;
     }
 }

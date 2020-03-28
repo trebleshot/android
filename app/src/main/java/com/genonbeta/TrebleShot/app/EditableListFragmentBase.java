@@ -26,13 +26,15 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
 import com.genonbeta.android.framework.app.ListFragmentBase;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
+import com.genonbeta.android.framework.util.actionperformer.SelectableHost;
+import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
 
 /**
  * created by: veli
  * date: 14/04/18 10:35
  */
 public interface EditableListFragmentBase<T extends Editable> extends ListFragmentBase<T>, PerformerEngineProvider,
-        IEngineConnection.SelectionListener<T>, TitleProvider
+        IEngineConnection.SelectionListener<T>, SelectableProvider<T>, SelectableHost<T>, TitleProvider
 {
     void applyViewingChanges(int gridSize);
 

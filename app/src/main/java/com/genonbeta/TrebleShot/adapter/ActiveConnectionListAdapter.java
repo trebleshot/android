@@ -22,13 +22,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -43,10 +41,9 @@ import java.util.List;
 public class ActiveConnectionListAdapter extends EditableListAdapter<
         ActiveConnectionListAdapter.EditableNetworkInterface, RecyclerViewAdapter.ViewHolder>
 {
-    public ActiveConnectionListAdapter(EditableListFragmentBase<EditableNetworkInterface> fragment,
-                                       HolderConsumer<ViewHolder> consumer)
+    public ActiveConnectionListAdapter(IEditableListFragment<EditableNetworkInterface, ViewHolder> fragment)
     {
-        super(fragment, consumer);
+        super(fragment);
     }
 
     @Override
@@ -74,11 +71,11 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
         ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_active_connection, parent,
                 false));
 
-        getConsumer().registerLayoutViewClicks(holder);
+        getFragment().registerLayoutViewClicks(holder);
         holder.itemView.findViewById(R.id.visitView)
-                .setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+                .setOnClickListener(v -> getFragment().performLayoutClickOpen(holder));
         holder.itemView.findViewById(R.id.selector)
-                .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
 
         return holder;
     }
@@ -86,18 +83,14 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position)
     {
-        try {
-            EditableNetworkInterface object = getItem(position);
+        EditableNetworkInterface object = getItem(position);
 
-            TextView text1 = holder.itemView.findViewById(R.id.text);
-            TextView text2 = holder.itemView.findViewById(R.id.text2);
+        TextView text1 = holder.itemView.findViewById(R.id.text);
+        TextView text2 = holder.itemView.findViewById(R.id.text2);
 
-            text1.setText(object.getSelectableTitle());
-            text2.setText(TextUtils.makeWebShareLink(getContext(), NetworkUtils.getFirstInet4Address(object)
-                    .getHostAddress()));
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
+        text1.setText(object.getSelectableTitle());
+        text2.setText(TextUtils.makeWebShareLink(getContext(), NetworkUtils.getFirstInet4Address(object)
+                .getHostAddress()));
     }
 
     public static class EditableNetworkInterface implements Editable

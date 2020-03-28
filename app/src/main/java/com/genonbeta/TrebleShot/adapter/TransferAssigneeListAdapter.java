@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -31,13 +31,10 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
-
-import static com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment.showPopupMenu;
 
 /**
  * created by: veli
@@ -48,10 +45,9 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     private TransferGroup mGroup;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public TransferAssigneeListAdapter(EditableListFragmentBase<ShowingAssignee> fragment,
-                                       HolderConsumer<ViewHolder> consumer, TransferGroup group)
+    public TransferAssigneeListAdapter(IEditableListFragment<ShowingAssignee, ViewHolder> fragment, TransferGroup group)
     {
-        super(fragment, consumer);
+        super(fragment);
         mIconBuilder = AppUtils.getDefaultIconBuilder(fragment.getContext());
         mGroup = group;
     }
@@ -63,9 +59,9 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
         ViewHolder holder = new ViewHolder(getInflater().inflate(isHorizontalOrientation() || isGridLayoutRequested()
                 ? R.layout.list_assignee_grid : R.layout.list_assignee, parent, false));
 
-        getConsumer().registerLayoutViewClicks(holder);
+        getFragment().registerLayoutViewClicks(holder);
         holder.itemView.findViewById(R.id.menu)
-                .setOnClickListener(v -> showPopupMenu(getFragment(), this, mGroup, holder, v));
+                .setOnClickListener(v -> getFragment().performLayoutLongClick(holder));
         return holder;
     }
 

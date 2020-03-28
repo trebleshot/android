@@ -37,9 +37,9 @@ import androidx.cardview.widget.CardView;
 import androidx.transition.TransitionManager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.EditableNetworkInterface;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -53,7 +53,7 @@ import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_S
  * date: 4/7/19 10:59 PM
  */
 public class ActiveConnectionListFragment extends EditableListFragment<
-        ActiveConnectionListAdapter.EditableNetworkInterface, RecyclerViewAdapter.ViewHolder,
+        EditableNetworkInterface, RecyclerViewAdapter.ViewHolder,
         ActiveConnectionListAdapter> implements IconProvider
 {
     private IntentFilter mFilter = new IntentFilter();
@@ -94,7 +94,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        setListAdapter(new ActiveConnectionListAdapter(this, this));
+        setListAdapter(new ActiveConnectionListAdapter(this));
         setEmptyListImage(R.drawable.ic_share_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyConnection));
 
@@ -130,21 +130,6 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     }
 
     @Override
-    public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
-    {
-        try {
-            ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
-
-            new WebShareDetailsDialog(requireActivity(), TextUtils.makeWebShareLink(requireContext(),
-                    NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())).show();
-        } catch (NotReadyException e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
     public int getIconRes()
     {
         return R.drawable.ic_web_white_24dp;
@@ -157,19 +142,19 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     }
 
     @Override
-    public boolean performLayoutClickOpen(RecyclerViewAdapter.ViewHolder holder)
+    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, EditableNetworkInterface object)
     {
-        if (!super.performLayoutClickOpen(holder)) {
-            try {
-                ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
-                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(
-                        requireContext(), NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())));
+        new WebShareDetailsDialog(requireActivity(), TextUtils.makeWebShareLink(requireContext(),
+                NetworkUtils.getFirstInet4Address(object).getHostAddress())).show();
+        return true;
+    }
 
-                startActivity(intent);
-            } catch (NotReadyException e) {
-                return false;
-            }
-        }
+    @Override
+    public boolean performLayoutClickOpen(RecyclerViewAdapter.ViewHolder holder, EditableNetworkInterface object)
+    {
+        if (!super.performLayoutClickOpen(holder, object))
+            startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(requireContext(),
+                    NetworkUtils.getFirstInet4Address(object).getHostAddress()))));
 
         return true;
     }

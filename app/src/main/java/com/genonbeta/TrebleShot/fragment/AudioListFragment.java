@@ -49,7 +49,7 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new AudioListAdapter(this, this));
+        setListAdapter(new AudioListAdapter(this));
         setEmptyListImage(R.drawable.ic_library_music_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyMusic));
     }
@@ -59,7 +59,7 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     {
         super.onResume();
 
-        getContext().getContentResolver().registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        requireContext().getContentResolver().registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 true, getDefaultContentObserver());
     }
 
@@ -68,7 +68,7 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     {
         super.onPause();
 
-        getContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
+        requireContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 
     @Override
@@ -84,16 +84,17 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        return setItemSelected(holder, true) || performLayoutClickOpen(holder);
-    }
-
-    @Override
     public int onGridSpanSize(int viewType, int currentSpanSize)
     {
         return viewType == FileListAdapter.VIEW_TYPE_REPRESENTATIVE ? currentSpanSize
                 : super.onGridSpanSize(viewType, currentSpanSize);
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
+                                             AudioListAdapter.AudioItemHolder object)
+    {
+        return performLayoutClickOpen(holder, object);
     }
 
     @Override

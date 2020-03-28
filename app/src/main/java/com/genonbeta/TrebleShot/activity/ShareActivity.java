@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.OrganizeSharingTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
@@ -127,6 +128,12 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
             mProgressBar.setProgress(progress);
             mProgressBar.setMax(total);
         }
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
     }
 
     @Override

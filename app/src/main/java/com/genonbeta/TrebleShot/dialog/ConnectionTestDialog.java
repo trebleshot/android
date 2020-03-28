@@ -29,6 +29,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.task.AssessNetworkTask;
+import com.genonbeta.TrebleShot.task.AssessNetworkTask.ConnectionResult;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 
@@ -46,8 +48,7 @@ public class ConnectionTestDialog extends AlertDialog.Builder
     @ColorInt
     private int mPassiveColor;
 
-    public ConnectionTestDialog(Context context, Device device,
-                                List<ConnectionResult> resultList)
+    public ConnectionTestDialog(Context context, Device device, List<ConnectionResult> resultList)
     {
         super(context);
 

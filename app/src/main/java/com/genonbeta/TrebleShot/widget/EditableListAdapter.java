@@ -19,16 +19,13 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.text.format.DateUtils;
+import android.util.Log;
 import androidx.annotation.NonNull;
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
+import androidx.recyclerview.widget.RecyclerView;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
-import com.genonbeta.TrebleShot.view.HolderProvider;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTitleProvider;
@@ -44,7 +41,7 @@ import java.util.List;
  */
 
 abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
-        extends RecyclerViewAdapter<T, V> implements EditableListAdapterBase<T>, HolderProvider<V>, SectionTitleProvider
+        extends RecyclerViewAdapter<T, V> implements EditableListAdapterBase<T>, SectionTitleProvider
 {
     public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -55,26 +52,24 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     public static final int MODE_SORT_ORDER_ASCENDING = 100;
     public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
-    private EditableListFragmentBase<T> mFragment;
-    private HolderConsumer<V> mHolderConsumer;
-    private List<T> mItemList = new ArrayList<>();
+    private IEditableListFragment<T, V> mFragment;
+    private final List<T> mItemList = new ArrayList<>();
     private int mSortingCriteria = MODE_SORT_BY_NAME;
     private int mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING;
     private boolean mGridLayoutRequested = false;
     private Comparator<T> mGeneratedComparator;
 
-    public EditableListAdapter(EditableListFragmentBase<T> fragment, HolderConsumer<V> consumer)
+    public EditableListAdapter(IEditableListFragment<T, V> fragment)
     {
         super(fragment.getContext());
         setHasStableIds(true);
         setFragment(fragment);
-        setHolderConsumer(consumer);
     }
 
     @Override
     public void onUpdate(List<T> passedItem)
     {
-        synchronized (getList()) {
+        synchronized (mItemList) {
             mItemList.clear();
             mItemList.addAll(passedItem);
 
@@ -157,14 +152,9 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return mGeneratedComparator;
     }
 
-    public EditableListFragmentBase<T> getFragment()
+    public IEditableListFragment<T, V> getFragment()
     {
         return mFragment;
-    }
-
-    public HolderConsumer<V> getConsumer()
-    {
-        return mHolderConsumer;
     }
 
     @Override
@@ -173,30 +163,25 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return getCount();
     }
 
-    public T getItem(int position) throws NotReadyException
+    public T getItem(int position)
     {
-        if (position >= getCount() || position < 0)
-            throw new NotReadyException("The list does not contain this index: " + position);
-
-        return getList().get(position);
+        synchronized (mItemList) {
+            return mItemList.get(position);
+        }
     }
 
-    public T getItem(V holder) throws NotReadyException
+    public T getItem(V holder)
     {
-        return getItem(holder.getAdapterPosition());
+        int position = holder.getAdapterPosition();
+        if (position == RecyclerView.NO_POSITION)
+            throw new IllegalStateException();
+        return getItem(position);
     }
 
     @Override
     public long getItemId(int position)
     {
-        try {
-            return getItem(position).getId();
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-
-        // This may be changed in the future
-        return AppUtils.getUniqueNumber();
+        return getItem(position).getId();
     }
 
     @Override
@@ -245,13 +230,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
     @Override
     public String getSectionTitle(int position)
     {
-        try {
-            return getSectionName(position, getItem(position));
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-
-        return getContext().getString(R.string.text_emptySymbol);
+        return getSectionName(position, getItem(position));
     }
 
     public int getSortingCriteria(T objectOne, T objectTwo)
@@ -274,20 +253,14 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
         return mSortingOrderAscending;
     }
 
-
     public void notifyGridSizeUpdate(int gridSize, boolean isScreenLarge)
     {
         mGridLayoutRequested = (!isScreenLarge && gridSize > 1) || gridSize > 2;
     }
 
-    public void setFragment(EditableListFragmentBase<T> fragmentImpl)
+    public void setFragment(IEditableListFragment<T, V> fragmentImpl)
     {
         mFragment = fragmentImpl;
-    }
-
-    public void setHolderConsumer(HolderConsumer<V> holderConsumer)
-    {
-        mHolderConsumer = holderConsumer;
     }
 
     public void setSortingCriteria(int sortingCriteria, int sortingOrder)
@@ -312,12 +285,8 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 
     public synchronized void syncSelection(int adapterPosition)
     {
-        try {
-            T item = getItem(adapterPosition);
-            item.setSelectableSelected(mFragment.getEngineConnection().isSelectedOnHost(item));
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
+        T item = getItem(adapterPosition);
+        item.setSelectableSelected(mFragment.getEngineConnection().isSelectedOnHost(item));
     }
 
     public synchronized void syncSelectionList()

@@ -33,13 +33,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.PreloadedGroup;
+import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -53,7 +52,7 @@ import java.util.List;
  * date: 9.11.2017 23:39
  */
 
-public class TransferGroupListAdapter extends GroupEditableListAdapter<PreloadedGroup,
+public class TransferGroupListAdapter extends GroupEditableListAdapter<IndexOfTransferGroup,
         GroupEditableListAdapter.GroupViewHolder>
 {
     private final List<Long> mRunningTasks = new ArrayList<>();
@@ -64,10 +63,9 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     private int mColorDone;
     private int mColorError;
 
-    public TransferGroupListAdapter(EditableListFragmentBase<PreloadedGroup> fragment,
-                                    HolderConsumer<GroupViewHolder> consumer)
+    public TransferGroupListAdapter(IEditableListFragment<IndexOfTransferGroup, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_DATE);
+        super(fragment, MODE_GROUP_BY_DATE);
 
         Context context = getContext();
         mPercentFormat = NumberFormat.getPercentInstance();
@@ -77,23 +75,23 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     }
 
     @Override
-    protected void onLoad(GroupLister<PreloadedGroup> lister)
+    protected void onLoad(GroupLister<IndexOfTransferGroup> lister)
     {
         List<Long> activeList = new ArrayList<>(mRunningTasks);
 
-        for (PreloadedGroup group : AppUtils.getKuick(getContext()).castQuery(
-                new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), PreloadedGroup.class)) {
-            TransferUtils.loadGroupInfo(getContext(), group);
-            group.isRunning = activeList.contains(group.id);
+        for (IndexOfTransferGroup index : AppUtils.getKuick(getContext()).castQuery(
+                new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), IndexOfTransferGroup.class)) {
+            TransferUtils.loadGroupInfo(getContext(), index);
+            index.isRunning = activeList.contains(index.group.id);
 
-            lister.offerObliged(this, group);
+            lister.offerObliged(this, index);
         }
     }
 
     @Override
-    protected PreloadedGroup onGenerateRepresentative(String text, Merger<PreloadedGroup> merger)
+    protected IndexOfTransferGroup onGenerateRepresentative(String text, Merger<IndexOfTransferGroup> merger)
     {
-        return new PreloadedGroup(text);
+        return new IndexOfTransferGroup(text);
     }
 
     @NonNull
@@ -105,9 +103,9 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
                 true);
 
         if (!holder.isRepresentative()) {
-            getConsumer().registerLayoutViewClicks(holder);
+            getFragment().registerLayoutViewClicks(holder);
             holder.itemView.findViewById(R.id.layout_image)
-                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                    .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
         }
 
         return holder;
@@ -117,7 +115,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
     public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, int position)
     {
         try {
-            final PreloadedGroup object = getItem(position);
+            final IndexOfTransferGroup object = getItem(position);
 
             if (!holder.tryBinding(object)) {
                 final View parentView = holder.itemView;
@@ -153,10 +151,11 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<Preloaded
                                 : R.drawable.ic_arrow_down_white_24dp);
                 }
 
-                statusLayoutWeb.setVisibility(object.hasOutgoing() && object.isServedOnWeb ? View.VISIBLE : View.GONE);
+                statusLayoutWeb.setVisibility(object.hasOutgoing() && object.group.isServedOnWeb ? View.VISIBLE
+                        : View.GONE);
                 text1.setText(FileUtils.sizeExpression(object.bytesTotal(), false));
                 text2.setText(assigneesText.length() > 0 ? assigneesText : getContext().getString(
-                        object.isServedOnWeb ? R.string.text_transferSharedOnBrowser : R.string.text_emptySymbol));
+                        object.group.isServedOnWeb ? R.string.text_transferSharedOnBrowser : R.string.text_emptySymbol));
                 text3.setText(mPercentFormat.format(object.percentage()));
                 text4.setText(getContext().getString(R.string.text_transferStatusFiles,
                         object.numberOfCompleted(), object.numberOfTotal()));

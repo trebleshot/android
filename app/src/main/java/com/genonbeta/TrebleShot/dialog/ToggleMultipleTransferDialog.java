@@ -29,8 +29,8 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
+import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -43,43 +43,43 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
     private LayoutInflater mInflater;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity, final PreloadedGroup group)
+    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity, final IndexOfTransferGroup index)
     {
         super(activity);
 
         mActivity = activity;
         mInflater = LayoutInflater.from(activity);
         mIconBuilder = AppUtils.getDefaultIconBuilder(activity);
-        mAssignees = group.assignees;
+        mAssignees = index.assignees;
 
         if (mAssignees.length > 0)
-            setAdapter(new ActiveListAdapter(), (dialog, which) -> startTransfer(activity, group, mAssignees[which]));
+            setAdapter(new ActiveListAdapter(), (dialog, which) -> startTransfer(activity, index, mAssignees[which]));
 
         setNegativeButton(R.string.butn_close, null);
 
-        if (group.hasOutgoing())
+        if (index.hasOutgoing())
             setNeutralButton(R.string.butn_addDevices, (dialog, which) -> activity.startDeviceAddingActivity());
 
         ShowingAssignee senderAssignee = null;
 
-        for (ShowingAssignee assignee : group.assignees)
+        for (ShowingAssignee assignee : index.assignees)
             if (TransferObject.Type.INCOMING.equals(assignee.type)) {
                 senderAssignee = assignee;
                 break;
             }
 
-        if (group.hasIncoming() && senderAssignee != null) {
+        if (index.hasIncoming() && senderAssignee != null) {
             final ShowingAssignee finalSenderAssignee = senderAssignee;
-            setPositiveButton(R.string.butn_receive, (dialog, which) -> startTransfer(activity, group, finalSenderAssignee));
+            setPositiveButton(R.string.butn_receive, (dialog, which) -> startTransfer(activity, index, finalSenderAssignee));
         }
     }
 
-    private void startTransfer(ViewTransferActivity activity, PreloadedGroup group, ShowingAssignee assignee)
+    private void startTransfer(ViewTransferActivity activity, IndexOfTransferGroup index, ShowingAssignee assignee)
     {
         if (mActivity.isDeviceRunning(assignee.deviceId))
             TransferUtils.pauseTransfer(activity, assignee);
         else
-            TransferUtils.startTransferWithTest(activity, group, assignee);
+            TransferUtils.startTransferWithTest(activity, index.group, assignee);
     }
 
     private class ActiveListAdapter extends BaseAdapter

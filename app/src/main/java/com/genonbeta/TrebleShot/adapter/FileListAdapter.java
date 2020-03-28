@@ -38,17 +38,15 @@ import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MimeIconUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
@@ -82,9 +80,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     private String mSearchWord;
     private DocumentFile mPath;
 
-    public FileListAdapter(EditableListFragmentBase<FileHolder> fragment, HolderConsumer<GroupViewHolder> consumer)
+    public FileListAdapter(IEditableListFragment<FileHolder, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_DEFAULT);
+        super(fragment, MODE_GROUP_BY_DEFAULT);
     }
 
     @Override
@@ -250,11 +248,11 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 R.layout.list_file, parent, false)) : createDefaultViews(parent, viewType, false);
 
         if (viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
-            getConsumer().registerLayoutViewClicks(holder);
+            getFragment().registerLayoutViewClicks(holder);
         else if (!holder.isRepresentative()) {
-            getConsumer().registerLayoutViewClicks(holder);
+            getFragment().registerLayoutViewClicks(holder);
             holder.itemView.findViewById(R.id.layout_image)
-                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                    .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
             holder.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                 FileHolder fileHolder = getList().get(holder.getAdapterPosition());
                 boolean isFile = FileHolder.Type.File.equals(fileHolder.getType());
@@ -298,7 +296,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     generateSelectionList.add(fileHolder);
 
                     if (id == R.id.action_mode_file_open) {
-                        getConsumer().performLayoutClickOpen(holder);
+                        getFragment().performLayoutClickOpen(holder, fileHolder);
                     } else if (id == R.id.action_mode_file_show && fileHolder.file.getParentFile() != null) {
                         goPath(fileHolder.file.getParentFile());
                     } else if (id == R.id.action_mode_file_eject_directory) {
@@ -325,43 +323,39 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     @Override
     public void onBindViewHolder(@NonNull final GroupViewHolder holder, final int position)
     {
-        try {
-            final FileHolder object = getItem(position);
+        final FileHolder object = getItem(position);
 
-            if (!holder.tryBinding(object)) {
-                final View parentView = holder.itemView;
-                boolean lookAltered = !mShowFiles || !mShowDirectories;
+        if (!holder.tryBinding(object)) {
+            final View parentView = holder.itemView;
+            boolean lookAltered = !mShowFiles || !mShowDirectories;
 
-                ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
-                ImageView image = parentView.findViewById(R.id.image);
-                TextView text1 = parentView.findViewById(R.id.text);
-                TextView text2 = parentView.findViewById(R.id.text2);
+            ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
+            ImageView image = parentView.findViewById(R.id.image);
+            TextView text1 = parentView.findViewById(R.id.text);
+            TextView text2 = parentView.findViewById(R.id.text2);
 
-                holder.setSelected(object.isSelectableSelected());
+            holder.setSelected(object.isSelectableSelected());
 
-                text1.setText(object.friendlyName);
-                text2.setText(object.getInfo(getContext()));
+            text1.setText(object.friendlyName);
+            text2.setText(object.getInfo(getContext()));
 
-                if (lookAltered) {
-                    boolean enabled = object.file == null || (mShowFiles && object.file.isFile())
-                            || (mShowDirectories && object.file.isDirectory());
+            if (lookAltered) {
+                boolean enabled = object.file == null || (mShowFiles && object.file.isFile())
+                        || (mShowDirectories && object.file.isDirectory());
 
-                    text1.setEnabled(enabled);
-                    text2.setEnabled(enabled);
-                    image.setAlpha(enabled ? 1f : 0.5f);
-                    thumbnail.setAlpha(enabled ? 1f : 0.5f);
-                }
+                text1.setEnabled(enabled);
+                text2.setEnabled(enabled);
+                image.setAlpha(enabled ? 1f : 0.5f);
+                thumbnail.setAlpha(enabled ? 1f : 0.5f);
+            }
 
-                if (!mShowThumbnails || !object.loadThumbnail(getContext(), thumbnail)) {
-                    image.setImageResource(object.getIconRes());
-                    thumbnail.setImageDrawable(null);
-                } else
-                    image.setImageDrawable(null);
-            } else if (holder.getItemViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
-                ((ImageView) holder.itemView.findViewById(R.id.icon)).setImageResource(object.getIconRes());
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
+            if (!mShowThumbnails || !object.loadThumbnail(getContext(), thumbnail)) {
+                image.setImageResource(object.getIconRes());
+                thumbnail.setImageDrawable(null);
+            } else
+                image.setImageDrawable(null);
+        } else if (holder.getItemViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
+            ((ImageView) holder.itemView.findViewById(R.id.icon)).setImageResource(object.getIconRes());
     }
 
     public String buildPath(String[] splitPath, int count)

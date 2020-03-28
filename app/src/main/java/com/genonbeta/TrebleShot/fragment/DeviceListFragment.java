@@ -44,7 +44,6 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -57,7 +56,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 
 public class DeviceListFragment extends EditableListFragment<InfoHolder,
         RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider
@@ -73,7 +72,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ConnectionUtils mConnectionUtils;
     private Device.Type[] mHiddenDeviceTypes;
-    private boolean mWaitForWiFi = false;
     private boolean mSwipeRefreshEnabled = true;
     private boolean mDeviceScanAllowed = true;
     private DeviceScannerService mService;
@@ -162,8 +160,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new NetworkDeviceListAdapter(this, this, getConnectionUtils(),
-                mHiddenDeviceTypes));
+        setListAdapter(new NetworkDeviceListAdapter(this, getConnectionUtils(), mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
         useEmptyListActionButton(getString(R.string.butn_scan), v -> requestRefresh());
@@ -189,32 +186,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
 
         if (AppUtils.getDefaultPreferences(getContext()).getBoolean("scan_devices_auto", false))
             requestRefresh();
-    }
-
-    @Override
-    public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
-    {
-        try {
-            InfoHolder infoHolder = getAdapter().getItem(holder.getAdapterPosition());
-            Object specifier = infoHolder.object();
-            if (requireActivity() instanceof AddDeviceActivity) {
-                if (specifier instanceof NetworkDescription)
-                    BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
-                            (NetworkDescription) specifier, -1));
-                else if (specifier instanceof Device) {
-                    Device device = (Device) specifier;
-                    if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
-                        createSnackbar(R.string.mesg_versionNotSupported).show();
-                    else
-                        new EstablishConnectionDialog(getActivity(), device, (connection, availableInterfaces) ->
-                                AddDeviceActivity.returnResult(requireActivity(), device, connection)).show();
-                }
-            } else
-                openInfo(getActivity(), getConnectionUtils(), infoHolder);
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 
     @Override
@@ -272,13 +243,15 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
 
     public void checkRefreshing()
     {
+        boolean refreshing = mService != null && mService.getDeviceScanner().isBusy();
+        getEmptyListActionButton().setText(refreshing ? R.string.butn_stop : R.string.butn_scan);
         if (mSwipeRefreshLayout != null)
-            mSwipeRefreshLayout.setRefreshing(mService != null && mService.getDeviceScanner().isBusy());
+            mSwipeRefreshLayout.setRefreshing(refreshing);
     }
 
     public ConnectionUtils getConnectionUtils()
     {
-        if  (mConnectionUtils == null)
+        if (mConnectionUtils == null)
             mConnectionUtils = new ConnectionUtils(requireContext());
         return mConnectionUtils;
     }
@@ -315,6 +288,29 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     public void setDeviceScanAllowed(boolean allow)
     {
         mDeviceScanAllowed = allow;
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, InfoHolder object)
+    {
+        Object specifier = object.object();
+        if (requireActivity() instanceof AddDeviceActivity) {
+            if (specifier instanceof NetworkDescription)
+                BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
+                        (NetworkDescription) specifier, -1));
+            else if (specifier instanceof Device) {
+                Device device = (Device) specifier;
+                if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
+                    createSnackbar(R.string.mesg_versionNotSupported).show();
+                else
+                    EstablishConnectionDialog.show(getActivity(), device,
+                            connection -> AddDeviceActivity.returnResult(requireActivity(), device, connection));
+            } else
+                return false;
+        } else
+            openInfo(getActivity(), getConnectionUtils(), object);
+
+        return true;
     }
 
     public void requestRefresh()

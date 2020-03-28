@@ -42,6 +42,7 @@ import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -72,7 +73,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     public static final int REQUEST_ADD_DEVICES = 5045;
     private OnBackPressedListener mBackPressedListener;
-    private PreloadedGroup mGroup;
+    private TransferGroup mGroup;
+    private IndexOfTransferGroup mIndex;
     private TransferObject mTransferObject;
     private ShowingAssignee mAssignee;
     private MenuItem mCnTestMenu;
@@ -134,13 +136,14 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 mTransferObject = new TransferObject();
                 mTransferObject.reconstruct(getDatabase().getWritableDatabase(), getDatabase(), fileData);
 
-                mGroup = new PreloadedGroup(mTransferObject.groupId);
+                mGroup = new TransferGroup(mTransferObject.groupId);
+                mIndex = new IndexOfTransferGroup(mGroup);
                 getDatabase().reconstruct(mGroup);
 
                 getIntent().setAction(ACTION_LIST_TRANSFERS)
                         .putExtra(EXTRA_GROUP_ID, mGroup.id);
 
-                new TransferInfoDialog(ViewTransferActivity.this, mGroup, mTransferObject,
+                new TransferInfoDialog(ViewTransferActivity.this, mIndex, mTransferObject,
                         mAssignee == null ? null : mAssignee.deviceId).show();
 
                 Log.d(TAG, "Created instance from an file intent. Original has been cleaned " +
@@ -151,8 +154,10 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             }
         } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
             try {
-                mGroup = new PreloadedGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
+                mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
                 getDatabase().reconstruct(mGroup);
+
+                mIndex = new IndexOfTransferGroup(mGroup);
 
                 if (getIntent().hasExtra(EXTRA_REQUEST_ID) && getIntent().hasExtra(EXTRA_DEVICE_ID)
                         && getIntent().hasExtra(EXTRA_REQUEST_TYPE)) {
@@ -166,7 +171,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                         TransferObject object = new TransferObject(mGroup.id, requestId, type);
                         getDatabase().reconstruct(object);
 
-                        new TransferInfoDialog(ViewTransferActivity.this, mGroup, object, deviceId).show();
+                        new TransferInfoDialog(ViewTransferActivity.this, mIndex, object, deviceId).show();
                     } catch (Exception e) {
                         // do nothing
                     }
@@ -280,11 +285,10 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             final List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(this, mGroup.id, null);
 
             if (assignees.size() == 1)
-                new EstablishConnectionDialog(ViewTransferActivity.this, assignees.get(0).device, null)
-                        .show();
+                EstablishConnectionDialog.show(ViewTransferActivity.this, assignees.get(0).device, null);
             else if (assignees.size() > 1) {
-                new ChooseAssigneeDialog(this, assignees, (dialog, which) -> new EstablishConnectionDialog(
-                        ViewTransferActivity.this, assignees.get(which).device, null).show()).show();
+                new ChooseAssigneeDialog(this, assignees, (dialog, which) -> EstablishConnectionDialog.show(
+                        this, assignees.get(which).device, null)).show();
             }
         } else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
             mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
@@ -292,7 +296,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             getDatabase().broadcast();
             showMenus();
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_limit_to) {
-            mAssignee = item.getOrder() < mGroup.assignees.length ? mGroup.assignees[item.getOrder()] : null;
+            mAssignee = item.getOrder() < mIndex.assignees.length ? mIndex.assignees[item.getOrder()] : null;
 
             TransferFileExplorerFragment fragment = (TransferFileExplorerFragment)
                     getSupportFragmentManager()
@@ -334,7 +338,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     public int findCurrentDevicePosition()
     {
-        ShowingAssignee[] assignees = mGroup.assignees;
+        ShowingAssignee[] assignees = mIndex.assignees;
 
         if (mAssignee != null && assignees.length > 0) {
             for (int i = 0; i < assignees.length; i++) {
@@ -390,9 +394,9 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     public void showMenus()
     {
         boolean hasRunning = hasTaskOf(FileTransferTask.class);
-        boolean hasAnyFiles = mGroup.numberOfTotal() > 0;
-        boolean hasIncoming = mGroup.hasIncoming();
-        boolean hasOutgoing = mGroup.hasOutgoing();
+        boolean hasAnyFiles = mIndex.numberOfTotal() > 0;
+        boolean hasIncoming = mIndex.hasIncoming();
+        boolean hasOutgoing = mIndex.hasOutgoing();
         ExtendedFloatingActionButton toggleButton = getToggleButton();
 
         if (mRetryMenu == null || mShowFilesMenu == null)
@@ -425,12 +429,12 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         mRetryMenu.setVisible(hasIncoming);
         mShowFilesMenu.setVisible(hasIncoming);
 
-        if (hasOutgoing && (mGroup.assignees.length > 0 || mAssignee != null)) {
+        if (hasOutgoing && (mIndex.assignees.length > 0 || mAssignee != null)) {
             Menu dynamicMenu = mLimitMenu.setVisible(true).getSubMenu();
             dynamicMenu.clear();
 
             int i = 0;
-            ShowingAssignee[] assignees = mGroup.assignees;
+            ShowingAssignee[] assignees = mIndex.assignees;
 
             if (assignees.length > 0)
                 for (; i < assignees.length; i++) {
@@ -446,8 +450,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         } else
             mLimitMenu.setVisible(false);
 
-        setTitle(getResources().getQuantityString(R.plurals.text_files, mGroup.numberOfTotal(),
-                mGroup.numberOfTotal()));
+        setTitle(getResources().getQuantityString(R.plurals.text_files, mIndex.numberOfTotal(),
+                mIndex.numberOfTotal()));
     }
 
     public void startDeviceAddingActivity()
@@ -473,8 +477,8 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 ShowingAssignee assignee = assigneeList.get(0);
                 toggleTaskForAssignee(assignee);
             } else
-                new ToggleMultipleTransferDialog(ViewTransferActivity.this, mGroup).show();
-        } else if (mGroup.hasOutgoing())
+                new ToggleMultipleTransferDialog(ViewTransferActivity.this, mIndex).show();
+        } else if (mIndex.hasOutgoing())
             startDeviceAddingActivity();
     }
 
@@ -504,11 +508,11 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             mDataCruncher = new CrunchLatestDataTask(() -> {
                 showMenus();
                 findViewById(R.id.activity_transaction_no_devices_warning).setVisibility(
-                        mGroup.assignees.length > 0 ? View.GONE : View.VISIBLE);
+                        mIndex.assignees.length > 0 ? View.GONE : View.VISIBLE);
 
-                if (mGroup.assignees.length == 0)
+                if (mIndex.assignees.length == 0)
                     if (mTransferObject != null) {
-                        new TransferInfoDialog(ViewTransferActivity.this, mGroup,
+                        new TransferInfoDialog(ViewTransferActivity.this, mIndex,
                                 mTransferObject, mAssignee == null ? null : mAssignee.deviceId).show();
                         mTransferObject = null;
                     }
@@ -523,6 +527,12 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     {
         if (task instanceof FileTransferTask)
             ((FileTransferTask) task).setAnchor(this);
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
     }
 
     public static class CrunchLatestDataTask extends AsyncTask<ViewTransferActivity, Void, Void>
@@ -544,7 +554,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
                 for (ViewTransferActivity activity : activities)
                     if (activity.mGroup != null)
-                        TransferUtils.loadGroupInfo(activity, activity.mGroup, activity.getAssignee());
+                        TransferUtils.loadGroupInfo(activity, activity.mIndex, activity.getAssignee());
             } while (mRestartRequested && !isCancelled());
 
             return null;

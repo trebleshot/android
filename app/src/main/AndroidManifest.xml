@@ -170,6 +170,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".activity.PickBestConnectionActivity"/>
 
         <provider
                 android:name="androidx.core.content.FileProvider"

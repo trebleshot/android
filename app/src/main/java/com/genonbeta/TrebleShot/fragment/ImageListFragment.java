@@ -53,7 +53,7 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new ImageListAdapter(this, this));
+        setListAdapter(new ImageListAdapter(this));
         setEmptyListImage(R.drawable.ic_photo_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyImage));
     }
@@ -75,14 +75,15 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        return performLayoutClickOpen(holder);
-    }
-
-    @Override
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_photo);
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
+                                             ImageListAdapter.ImageHolder object)
+    {
+        return performLayoutClickOpen(holder, object);
     }
 }

@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder;
 
@@ -95,21 +94,18 @@ public class SwipeSelectionListener<T extends Editable> implements OnItemTouchLi
                                 int startPos = Math.min(currentPos, mLastPosition);
                                 int endPos = Math.max(currentPos, mLastPosition);
 
-                                try {
-                                    for (int i = startPos; i < endPos + 1; i++) {
-                                        boolean selected = currentPos > mLastPosition ? mStartPosition <= i
-                                                : mStartPosition >= i;
+                                for (int i = startPos; i < endPos + 1; i++) {
+                                    boolean selected = currentPos > mLastPosition ? mStartPosition <= i
+                                            : mStartPosition >= i;
 
-                                        boolean selectionResult = mListFragment.getEngineConnection().setSelected(
-                                                mListFragment.getAdapterImpl().getItem(i), selected);
+                                    boolean selectionResult = mListFragment.getEngineConnection().setSelected(
+                                            mListFragment.getAdapterImpl().getItem(i), selected);
 
-                                        ViewHolder viewHolder = (ViewHolder) rv.findViewHolderForAdapterPosition(i);
+                                    // TODO: 28.03.2020 Remove this unneeded code
+                                    ViewHolder viewHolder = (ViewHolder) rv.findViewHolderForAdapterPosition(i);
 
-                                        if (viewHolder != null && selectionResult)
-                                            viewHolder.setSelected(selected);
-                                    }
-                                } catch (NotReadyException e1) {
-                                    // do nothing
+                                    if (viewHolder != null && selectionResult)
+                                        viewHolder.setSelected(selected);
                                 }
                             }
 

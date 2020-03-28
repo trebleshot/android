@@ -32,12 +32,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.Merger;
 
@@ -51,10 +50,9 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     private SharedPreferences mPreferences;
     private PackageManager mManager;
 
-    public ApplicationListAdapter(EditableListFragmentBase<PackageHolder> fragment,
-                                  HolderConsumer<GroupViewHolder> consumer)
+    public ApplicationListAdapter(IEditableListFragment<PackageHolder, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_DATE);
+        super(fragment, MODE_GROUP_BY_DATE);
         mPreferences = AppUtils.getDefaultPreferences(getContext());
         mManager = getContext().getPackageManager();
     }
@@ -92,12 +90,12 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
                 : createDefaultViews(parent, viewType, false);
 
         if (!holder.isRepresentative()) {
-            getConsumer().registerLayoutViewClicks(holder);
+            getFragment().registerLayoutViewClicks(holder);
 
             holder.itemView.findViewById(R.id.visitView)
-                    .setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+                    .setOnClickListener(v -> getFragment().performLayoutClickOpen(holder));
             holder.itemView.findViewById(R.id.selector)
-                    .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                    .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
         }
 
         return holder;

@@ -39,6 +39,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ChooseAssigneeDialog;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
+import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -68,7 +69,8 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
 
     public static final int REQUEST_CHOOSE_FOLDER = 1;
 
-    private TransferGroup mHeldGroup;
+    private TransferGroup mGroup;
+    private IndexOfTransferGroup mIndex;
     private String mLastKnownPath;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -100,7 +102,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TransferListAdapter(this, this));
+        setListAdapter(new TransferListAdapter(this));
         setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
 
         Bundle args = getArguments();
@@ -139,22 +141,6 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            final TransferObject transferObject = getAdapter().getItem(holder);
-            new TransferInfoDialog(requireActivity(), getTransferGroup(), transferObject,
-                    getAdapter().getDeviceId()).show();
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    @Override
     protected void onListRefreshed()
     {
         super.onListRefreshed();
@@ -183,74 +169,6 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         return true;
     }
 
-    public void changeSavePath(String initialPath)
-    {
-        startActivityForResult(new Intent(getActivity(), FilePickerActivity.class)
-                .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
-                .putExtra(FilePickerActivity.EXTRA_START_PATH, initialPath)
-                .putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)), REQUEST_CHOOSE_FOLDER);
-    }
-
-
-    @Override
-    public CharSequence getDistinctiveTitle(Context context)
-    {
-        return context.getString(R.string.text_transfers);
-    }
-
-    @Override
-    public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            final TransferObject transferObject = getAdapter().getItem(holder);
-
-            if (transferObject instanceof TransferListAdapter.DetailsTransferFolder) {
-                final List<ShowingAssignee> list = TransferUtils.loadAssigneeList(getContext(),
-                        getTransferGroup().id, null);
-
-                DialogInterface.OnClickListener listClickListener = (dialog, which) -> {
-                    getAdapter().setAssignee(list.get(which));
-                    getAdapter().setPath(getAdapter().getPath());
-                    refreshList();
-                };
-
-                DialogInterface.OnClickListener noLimitListener = (dialog, which) -> {
-                    getAdapter().setAssignee(null);
-                    getAdapter().setPath(getAdapter().getPath());
-                    refreshList();
-                };
-
-                ChooseAssigneeDialog dialog = new ChooseAssigneeDialog(requireActivity(), list, listClickListener);
-
-                dialog.setTitle(R.string.text_limitTo)
-                        .setNeutralButton(R.string.butn_none, noLimitListener)
-                        .show();
-            } else if (transferObject instanceof StorageStatusItem) {
-                final StorageStatusItem statusItem = (StorageStatusItem) transferObject;
-
-                if (statusItem.hasIssues(getAdapter()))
-                    new AlertDialog.Builder(requireActivity())
-                            .setMessage(getString(R.string.mesg_notEnoughSpace))
-                            .setNegativeButton(R.string.butn_close, null)
-                            .setPositiveButton(R.string.butn_saveTo, (dialog, which) -> changeSavePath(statusItem.directory))
-                            .show();
-                else
-                    changeSavePath(statusItem.directory);
-            } else if (transferObject instanceof TransferListAdapter.TransferFolder) {
-                getAdapter().setPath(transferObject.directory);
-                refreshList();
-                AppUtils.showFolderSelectionHelp(this);
-            } else
-                return super.performLayoutClick(holder);
-
-            return true;
-        } catch (Exception ignored) {
-
-        }
-
-        return false;
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -262,7 +180,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
 
             if (selectedPath == null) {
                 createSnackbar(R.string.mesg_somethingWentWrong).show();
-            } else if (selectedPath.toString().equals(getTransferGroup().savePath)) {
+            } else if (selectedPath.toString().equals(getGroup().savePath)) {
                 createSnackbar(R.string.mesg_pathSameError).show();
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity())
@@ -334,21 +252,42 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         }
     }
 
-    public TransferGroup getTransferGroup()
+    public void changeSavePath(String initialPath)
     {
-        Bundle arguments = getArguments();
+        startActivityForResult(new Intent(getActivity(), FilePickerActivity.class)
+                .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
+                .putExtra(FilePickerActivity.EXTRA_START_PATH, initialPath)
+                .putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)), REQUEST_CHOOSE_FOLDER);
+    }
 
-        if (mHeldGroup == null && arguments != null) {
-            mHeldGroup = new TransferGroup(arguments.getLong(ARG_GROUP_ID, -1));
+    @Override
+    public CharSequence getDistinctiveTitle(Context context)
+    {
+        return context.getString(R.string.text_transfers);
+    }
 
-            try {
-                AppUtils.getKuick(getContext()).reconstruct(mHeldGroup);
-            } catch (Exception e) {
-                e.printStackTrace();
+    public TransferGroup getGroup()
+    {
+        if (mGroup == null) {
+            Bundle arguments = getArguments();
+            if (arguments != null) {
+                mGroup = new TransferGroup(arguments.getLong(ARG_GROUP_ID, -1));
+                try {
+                    AppUtils.getKuick(getContext()).reconstruct(mGroup);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        return mHeldGroup;
+        return mGroup;
+    }
+
+    public IndexOfTransferGroup getIndex()
+    {
+        if (mIndex == null)
+            mIndex = new IndexOfTransferGroup(getGroup());
+        return mIndex;
     }
 
     public void goPath(String path, long groupId, String deviceId, String type)
@@ -379,9 +318,56 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
         refreshList();
     }
 
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
+                                             TransferListAdapter.GenericItem object)
+    {
+        if (object instanceof TransferListAdapter.DetailsTransferFolder) {
+            final List<ShowingAssignee> list = TransferUtils.loadAssigneeList(getContext(),
+                    getGroup().id, null);
+
+            DialogInterface.OnClickListener listClickListener = (dialog, which) -> {
+                getAdapter().setAssignee(list.get(which));
+                getAdapter().setPath(getAdapter().getPath());
+                refreshList();
+            };
+
+            DialogInterface.OnClickListener noLimitListener = (dialog, which) -> {
+                getAdapter().setAssignee(null);
+                getAdapter().setPath(getAdapter().getPath());
+                refreshList();
+            };
+
+            ChooseAssigneeDialog dialog = new ChooseAssigneeDialog(requireActivity(), list, listClickListener);
+
+            dialog.setTitle(R.string.text_limitTo)
+                    .setNeutralButton(R.string.butn_none, noLimitListener)
+                    .show();
+        } else if (object instanceof StorageStatusItem) {
+            final StorageStatusItem statusItem = (StorageStatusItem) object;
+
+            if (statusItem.hasIssues(getAdapter()))
+                new AlertDialog.Builder(requireActivity())
+                        .setMessage(getString(R.string.mesg_notEnoughSpace))
+                        .setNegativeButton(R.string.butn_close, null)
+                        .setPositiveButton(R.string.butn_saveTo, (dialog, which) -> changeSavePath(statusItem.directory))
+                        .show();
+            else
+                changeSavePath(statusItem.directory);
+        } else if (object instanceof TransferListAdapter.TransferFolder) {
+            getAdapter().setPath(object.directory);
+            refreshList();
+            AppUtils.showFolderSelectionHelp(this);
+        } else
+            new TransferInfoDialog(requireActivity(), getIndex(), object,
+                    getAdapter().getDeviceId()).show();
+
+        return true;
+    }
+
     public void updateSavePath(String selectedPath)
     {
-        TransferGroup group = getTransferGroup();
+        TransferGroup group = getGroup();
 
         group.savePath = selectedPath;
         AppUtils.getKuick(getContext()).publish(group);

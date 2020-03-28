@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Veli Tasalı
+ * Copyright (C) 2019 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,11 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.view;
+package com.genonbeta.TrebleShot.callback;
 
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 
-public interface HolderProvider<V extends RecyclerViewAdapter.ViewHolder>
+import java.util.List;
+
+public interface OnConnectionSelectionListener
 {
-    HolderConsumer<V> getConsumer();
+    void onConnectionSelection(DeviceConnection connection);
 }

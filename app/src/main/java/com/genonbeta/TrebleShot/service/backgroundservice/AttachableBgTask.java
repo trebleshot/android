@@ -50,6 +50,11 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
         return mAnchor != null;
     }
 
+    public T getAnchor()
+    {
+        return mAnchor;
+    }
+
     private Handler getHandler()
     {
         if (mHandler == null) {

@@ -30,11 +30,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ManageDevicesActivity;
-import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
+import com.genonbeta.TrebleShot.callback.OnConnectionSelectionListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -63,8 +63,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
     @ColorInt
     private int mPassiveColor;
 
-    public ConnectionChooserDialog(final Activity activity, Device device,
-                                   final OnDeviceSelectedListener listener)
+    public ConnectionChooserDialog(final Activity activity, Device device, OnConnectionSelectionListener listener)
     {
         super(activity);
 
@@ -75,10 +74,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         ConnectionListAdapter adapter = new ConnectionListAdapter();
 
         if (mConnections.size() > 0)
-            setAdapter(adapter, (dialog, which) -> {
-                List<DeviceConnection> connections = getConnections();
-                listener.onDeviceSelected(connections.get(which), connections);
-            });
+            setAdapter(adapter, (dialog, which) -> listener.onConnectionSelection(getConnections().get(which)));
         else
             setMessage(R.string.text_noNetworkAvailable);
 

@@ -53,8 +53,7 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
         this.type = type;
     }
 
-    public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device,
-                            @NonNull TransferObject.Type type)
+    public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device, @NonNull TransferObject.Type type)
     {
         this(group.id, device.id, type);
     }

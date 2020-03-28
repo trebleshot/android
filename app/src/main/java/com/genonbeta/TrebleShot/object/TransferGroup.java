@@ -20,12 +20,13 @@ package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.List;
 
@@ -33,16 +34,14 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 09:37
  */
-public class TransferGroup implements DatabaseObject<Device>, Selectable
+public final class TransferGroup implements DatabaseObject<Device>, Parcelable
 {
     public long id;
     public long dateCreated;
     public String savePath;
     public boolean isPaused;
     public boolean isServedOnWeb;
-
-    private boolean mIsSelected = false;
-    private boolean mDeleteFilesOnRemoval = false;
+    public boolean deleteFilesOnRemoval;
 
     public TransferGroup()
     {
@@ -53,32 +52,41 @@ public class TransferGroup implements DatabaseObject<Device>, Selectable
         this.id = id;
     }
 
+    protected TransferGroup(Parcel in)
+    {
+        id = in.readLong();
+        dateCreated = in.readLong();
+        savePath = in.readString();
+        isPaused = in.readByte() != 0;
+        isServedOnWeb = in.readByte() != 0;
+        deleteFilesOnRemoval = in.readByte() != 0;
+    }
+
+    public static final Creator<TransferGroup> CREATOR = new Creator<TransferGroup>()
+    {
+        @Override
+        public TransferGroup createFromParcel(Parcel in)
+        {
+            return new TransferGroup(in);
+        }
+
+        @Override
+        public TransferGroup[] newArray(int size)
+        {
+            return new TransferGroup[size];
+        }
+    };
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
     @Override
     public boolean equals(Object obj)
     {
         return obj instanceof TransferGroup && ((TransferGroup) obj).id == id;
-    }
-
-    @Override
-    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
-    {
-        this.id = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
-        this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);
-        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_DATECREATED);
-        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
-        this.isPaused = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISPAUSED) == 1;
-    }
-
-    @Override
-    public boolean isSelectableSelected()
-    {
-        return mIsSelected;
-    }
-
-    @Override
-    public String getSelectableTitle()
-    {
-        return String.valueOf(id);
     }
 
     @Override
@@ -102,16 +110,25 @@ public class TransferGroup implements DatabaseObject<Device>, Selectable
                 .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(id));
     }
 
-    public void setDeleteFilesOnRemoval(boolean delete)
+    @Override
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        mDeleteFilesOnRemoval = delete;
+        this.id = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
+        this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);
+        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_DATECREATED);
+        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+        this.isPaused = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISPAUSED) == 1;
     }
 
     @Override
-    public boolean setSelectableSelected(boolean selected)
+    public void writeToParcel(Parcel dest, int flags)
     {
-        mIsSelected = selected;
-        return true;
+        dest.writeLong(id);
+        dest.writeLong(dateCreated);
+        dest.writeString(savePath);
+        dest.writeByte((byte) (isPaused ? 1 : 0));
+        dest.writeByte((byte) (isServedOnWeb ? 1 : 0));
+        dest.writeByte((byte) (deleteFilesOnRemoval ? 1 : 0));
     }
 
     @Override
@@ -135,7 +152,7 @@ public class TransferGroup implements DatabaseObject<Device>, Selectable
         kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE).setWhere(
                 String.format("%s = ?", Kuick.FIELD_TRANSFERASSIGNEE_GROUPID), String.valueOf(id)));
 
-        if (mDeleteFilesOnRemoval) {
+        if (deleteFilesOnRemoval) {
             List<TransferObject> objects = kuick.castQuery(db, objectSelection, TransferObject.class,
                     null);
 

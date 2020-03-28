@@ -25,10 +25,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
+import com.genonbeta.TrebleShot.view.EditableListFragmentViewBase;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -41,10 +42,9 @@ import com.genonbeta.android.framework.util.listing.Merger;
 public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamObject,
         GroupEditableListAdapter.GroupViewHolder>
 {
-    public TextStreamListAdapter(EditableListFragmentBase<TextStreamObject> fragment,
-                                 HolderConsumer<GroupViewHolder> consumer)
+    public TextStreamListAdapter(IEditableListFragment<TextStreamObject, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_DATE);
+        super(fragment, MODE_GROUP_BY_DATE);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TextStreamListAdapter extends GroupEditableListAdapter<TextStreamOb
                 : createDefaultViews(parent, viewType, false);
 
         if (!holder.isRepresentative())
-            getConsumer().registerLayoutViewClicks(holder);
+            getFragment().registerLayoutViewClicks(holder);
         return holder;
     }
 

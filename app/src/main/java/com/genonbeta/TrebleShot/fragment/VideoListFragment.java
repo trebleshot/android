@@ -49,7 +49,7 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new VideoListAdapter(this, this));
+        setListAdapter(new VideoListAdapter(this));
         setEmptyListImage(R.drawable.ic_video_library_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyVideo));
     }
@@ -72,12 +72,6 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        return performLayoutClickOpen(holder);
-    }
-
-    @Override
     public int onGridSpanSize(int viewType, int currentSpanSize)
     {
         return viewType == VideoListAdapter.VIEW_TYPE_TITLE ? currentSpanSize
@@ -88,5 +82,12 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_video);
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
+                                             VideoListAdapter.VideoHolder object)
+    {
+        return performLayoutClickOpen(holder, object);
     }
 }

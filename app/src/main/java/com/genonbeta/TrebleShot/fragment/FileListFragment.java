@@ -42,9 +42,7 @@ import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -197,7 +195,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new FileListAdapter(this, this));
+        setListAdapter(new FileListAdapter(this));
         setEmptyListImage(R.drawable.ic_folder_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyFiles));
     }
@@ -296,13 +294,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        performLayoutClickOpen(holder);
-        return true;
-    }
-
-    @Override
     public void onResume()
     {
         super.onResume();
@@ -373,6 +364,27 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
         refreshList();
     }
 
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder, FileHolder object)
+    {
+        if (object.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
+                && object.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
+            requestMountStorage();
+        else if (object.file != null && object.file.isDirectory()) {
+            FileListFragment.this.goPath(object.file);
+            AppUtils.showFolderSelectionHelp(this);
+        } else
+            performLayoutClickOpen(holder, object);
+
+        return true;
+    }
+
+    @Override
+    public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder, FileHolder object)
+    {
+        return FileUtils.openUriForeground(getActivity(), object.file) || super.performLayoutClickOpen(holder, object);
+    }
+
     public void requestMountStorage()
     {
         if (Build.VERSION.SDK_INT < 21)
@@ -382,40 +394,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
         Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            FileHolder fileInfo = getAdapter().getItem(holder);
-
-            if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
-                    && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
-                requestMountStorage();
-            else if (fileInfo.file != null && fileInfo.file.isDirectory()) {
-                FileListFragment.this.goPath(fileInfo.file);
-                AppUtils.showFolderSelectionHelp(this);
-            } else
-                return super.performLayoutClick(holder);
-
-            return true;
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            return FileUtils.openUriForeground(getActivity(), getAdapter().getItem(holder).file);
-        } catch (NotReadyException e) {
-            // do nothing
-        }
-
-        return super.performLayoutClickOpen(holder);
-    }
 
     public void scanFile(DocumentFile file)
     {

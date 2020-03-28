@@ -71,7 +71,7 @@ public class DialogUtils
                 activity.getString(R.string.text_removeTransferGroupSummary),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 (dialog, which, checkBox) -> {
-                    group.setDeleteFilesOnRemoval(checkBox.isChecked());
+                    group.deleteFilesOnRemoval = checkBox.isChecked();
                     AppUtils.getKuick(activity).removeAsynchronous(activity, group, null);
                 });
     }
@@ -107,7 +107,7 @@ public class DialogUtils
 
 
     public static void showRemoveTransferGroupListDialog(final Activity activity,
-                                                         final List<? extends TransferGroup> groups)
+                                                         List<? extends TransferGroup> groups)
     {
         final List<TransferGroup> copiedGroups = new ArrayList<>(groups);
 
@@ -117,7 +117,7 @@ public class DialogUtils
                     boolean isChecked = checkBox.isChecked();
 
                     for (TransferGroup group : copiedGroups)
-                        group.setDeleteFilesOnRemoval(isChecked);
+                        group.deleteFilesOnRemoval = isChecked;
 
                     AppUtils.getKuick(activity).removeAsynchronous(activity, copiedGroups, null);
                 });

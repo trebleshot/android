@@ -758,7 +758,7 @@ public class BackgroundService extends Service
                                     else if (TransferObject.Type.OUTGOING.equals(type))
                                         type = TransferObject.Type.INCOMING;
 
-                                    PreloadedGroup group = new PreloadedGroup(groupId);
+                                    TransferGroup group = new TransferGroup(groupId);
                                     getKuick().reconstruct(group);
 
                                     Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "

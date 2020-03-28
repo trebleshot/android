@@ -18,20 +18,26 @@
 
 package com.genonbeta.TrebleShot.object;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.database.DatabaseObject;
+import com.genonbeta.android.database.KuickDb;
+import com.genonbeta.android.database.Progress;
+import com.genonbeta.android.database.SQLQuery;
 
 /**
  * created by: veli
  * date: 7/24/19 6:08 PM
  */
-public final class PreloadedGroup extends TransferGroup implements GroupEditableListAdapter.GroupEditable
+public final class IndexOfTransferGroup implements GroupEditableListAdapter.GroupEditable, DatabaseObject<Device>
 {
-    public static final String TAG = PreloadedGroup.class.getSimpleName();
+    public static final String TAG = IndexOfTransferGroup.class.getSimpleName();
 
     public int viewType;
     public String representativeText;
@@ -46,18 +52,22 @@ public final class PreloadedGroup extends TransferGroup implements GroupEditable
     public long bytesIncomingCompleted;
     public boolean isRunning;
     public boolean hasIssues;
+    public TransferGroup group = new TransferGroup();
     public ShowingAssignee[] assignees = new ShowingAssignee[0];
 
-    public PreloadedGroup()
+    private boolean mIsSelected = false;
+
+    public IndexOfTransferGroup()
     {
+        group = new TransferGroup();
     }
 
-    public PreloadedGroup(long id)
+    public IndexOfTransferGroup(TransferGroup group)
     {
-        super(id);
+        this.group = group;
     }
 
-    public PreloadedGroup(String representativeText)
+    public IndexOfTransferGroup(String representativeText)
     {
         this.viewType = TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE;
         this.representativeText = representativeText;
@@ -141,7 +151,7 @@ public final class PreloadedGroup extends TransferGroup implements GroupEditable
     @Override
     public long getComparableDate()
     {
-        return dateCreated;
+        return group.dateCreated;
     }
 
     @Override
@@ -153,13 +163,13 @@ public final class PreloadedGroup extends TransferGroup implements GroupEditable
     @Override
     public long getId()
     {
-        return id;
+        return group.id;
     }
 
     @Override
     public void setId(long id)
     {
-        this.id = id;
+        group.id = id;
     }
 
     @Override
@@ -169,6 +179,12 @@ public final class PreloadedGroup extends TransferGroup implements GroupEditable
         String size = FileUtils.sizeExpression(bytesOutgoing + bytesOutgoing, false);
 
         return title.length() > 0 ? String.format("%s (%s)", title, size) : size;
+    }
+
+    @Override
+    public boolean isSelectableSelected()
+    {
+        return mIsSelected;
     }
 
     @Override
@@ -221,18 +237,57 @@ public final class PreloadedGroup extends TransferGroup implements GroupEditable
     @Override
     public void setDate(long date)
     {
-        dateCreated = date;
+        group.dateCreated = date;
     }
 
     @Override
     public boolean setSelectableSelected(boolean selected)
     {
-        return !isGroupRepresentative() && super.setSelectableSelected(selected);
+        if (!isGroupRepresentative())
+            return false;
+        mIsSelected = selected;
+        return true;
     }
 
     @Override
     public void setSize(long size)
     {
         Log.e(TAG, "setSize: This is not implemented");
+    }
+
+    @Override
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
+    {
+        group.onCreateObject(db, kuick, parent, listener);
+    }
+
+    @Override
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
+    {
+        group.onUpdateObject(db, kuick, parent, listener);
+    }
+
+    @Override
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
+    {
+        group.onRemoveObject(db, kuick, parent, listener);
+    }
+
+    @Override
+    public ContentValues getValues()
+    {
+        return group.getValues();
+    }
+
+    @Override
+    public SQLQuery.Select getWhere()
+    {
+        return group.getWhere();
+    }
+
+    @Override
+    public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
+    {
+        group.reconstruct(db, kuick, item);
     }
 }

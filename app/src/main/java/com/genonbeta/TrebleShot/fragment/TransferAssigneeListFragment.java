@@ -71,10 +71,9 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
 
     public static <T extends Editable> void showPopupMenu(EditableListFragmentBase<T> fragment,
                                                           TransferAssigneeListAdapter adapter, TransferGroup group,
-                                                          RecyclerViewAdapter.ViewHolder clazz, View v)
+                                                          RecyclerViewAdapter.ViewHolder clazz, View v,
+                                                          ShowingAssignee assignee)
     {
-        final ShowingAssignee assignee = adapter.getList().get(clazz.getAdapterPosition());
-
         PopupMenu popupMenu = new PopupMenu(fragment.getContext(), v);
         Menu menu = popupMenu.getMenu();
 
@@ -123,7 +122,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TransferAssigneeListAdapter(this, this, getTransferGroup()));
+        setListAdapter(new TransferAssigneeListAdapter(this, getTransferGroup()));
         setEmptyListImage(R.drawable.ic_device_hub_white_24dp);
         setEmptyListText(getString(R.string.text_noDeviceForTransfer));
 
@@ -152,23 +151,16 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     }
 
     @Override
-    public boolean onDefaultClickAction(RecyclerViewAdapter.ViewHolder holder)
+    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, ShowingAssignee object)
     {
-        try {
-            ShowingAssignee assignee = getAdapter().getItem(holder);
-            new DeviceInfoDialog(requireActivity(), AppUtils.getKuick(getContext()), assignee.device).show();
-            return true;
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        return false;
+        new DeviceInfoDialog(requireActivity(), AppUtils.getKuick(getContext()), object.device).show();
+        return true;
     }
 
     @Override
-    public boolean onDefaultLongClickAction(RecyclerViewAdapter.ViewHolder holder)
+    public boolean performDefaultLayoutLongClick(RecyclerViewAdapter.ViewHolder holder, ShowingAssignee object)
     {
-        showPopupMenu(this, getAdapter(), getTransferGroup(), holder, holder.itemView);
+        showPopupMenu(this, getAdapter(), getTransferGroup(), holder, holder.itemView, object);
         return true;
     }
 
@@ -188,8 +180,8 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     public TransferGroup getTransferGroup()
     {
         if (mHeldGroup == null) {
-            mHeldGroup = new TransferGroup(getArguments() == null ? -1 : getArguments().getLong(
-                    ARG_GROUP_ID, -1));
+            mHeldGroup = new TransferGroup(getArguments() == null ? -1 : getArguments().getLong(ARG_GROUP_ID,
+                    -1));
             updateTransferGroup();
         }
 

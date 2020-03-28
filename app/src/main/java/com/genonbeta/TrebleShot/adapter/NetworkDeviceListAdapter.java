@@ -31,16 +31,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -57,12 +55,11 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     private TextDrawable.IShapeBuilder mIconBuilder;
     private List<Device.Type> mHiddenDeviceTypes;
 
-    public NetworkDeviceListAdapter(EditableListFragmentBase<InfoHolder> fragment,
-                                    HolderConsumer<ViewHolder> consumer, ConnectionUtils connectionUtils,
+    public NetworkDeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, ConnectionUtils utils,
                                     Device.Type[] hiddenDeviceTypes)
     {
-        super(fragment, consumer);
-        mConnectionUtils = connectionUtils;
+        super(fragment);
+        mConnectionUtils = utils;
         mIconBuilder = AppUtils.getDefaultIconBuilder(getContext());
         mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes) : new ArrayList<>();
     }
@@ -102,7 +99,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
                 isHorizontalOrientation() || isGridLayoutRequested() ? R.layout.list_network_device_grid
                         : R.layout.list_network_device, parent, false));
 
-        getConsumer().registerLayoutViewClicks(holder);
+        getFragment().registerLayoutViewClicks(holder);
         holder.itemView.findViewById(R.id.menu)
                 .setOnClickListener(v -> openInfo(getFragment().getActivity(), mConnectionUtils,
                         getList().get(holder.getAdapterPosition())));
@@ -113,41 +110,37 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
     {
-        try {
-            InfoHolder infoHolder = getItem(position);
-            Object specifier = infoHolder.object();
-            View parentView = holder.itemView;
+        InfoHolder infoHolder = getItem(position);
+        Object specifier = infoHolder.object();
+        View parentView = holder.itemView;
 
-            TextView text1 = parentView.findViewById(R.id.text1);
-            TextView text2 = parentView.findViewById(R.id.text2);
-            ImageView image = parentView.findViewById(R.id.image);
-            ImageView statusImage = parentView.findViewById(R.id.imageStatus);
+        TextView text1 = parentView.findViewById(R.id.text1);
+        TextView text2 = parentView.findViewById(R.id.text2);
+        ImageView image = parentView.findViewById(R.id.image);
+        ImageView statusImage = parentView.findViewById(R.id.imageStatus);
 
-            text1.setText(infoHolder.name());
-            text2.setText(infoHolder.description(getContext()));
-            boolean isRestricted = false;
-            boolean isTrusted = false;
+        text1.setText(infoHolder.name());
+        text2.setText(infoHolder.description(getContext()));
+        boolean isRestricted = false;
+        boolean isTrusted = false;
 
-            if (specifier instanceof Device) {
-                Device device = (Device) specifier;
-                isRestricted = device.isRestricted;
-                isTrusted = device.isTrusted;
+        if (specifier instanceof Device) {
+            Device device = (Device) specifier;
+            isRestricted = device.isRestricted;
+            isTrusted = device.isTrusted;
 
-                NetworkDeviceLoader.showPictureIntoView(device, image, mIconBuilder);
-            } else
-                image.setImageDrawable(mIconBuilder.buildRound(infoHolder.name()));
+            NetworkDeviceLoader.showPictureIntoView(device, image, mIconBuilder);
+        } else
+            image.setImageDrawable(mIconBuilder.buildRound(infoHolder.name()));
 
-            if (isRestricted) {
-                statusImage.setVisibility(View.VISIBLE);
-                statusImage.setImageResource(R.drawable.ic_block_white_24dp);
-            } else if (isTrusted) {
-                statusImage.setVisibility(View.VISIBLE);
-                statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
-            } else {
-                statusImage.setVisibility(View.GONE);
-            }
-        } catch (NotReadyException e) {
-            e.printStackTrace();
+        if (isRestricted) {
+            statusImage.setVisibility(View.VISIBLE);
+            statusImage.setImageResource(R.drawable.ic_block_white_24dp);
+        } else if (isTrusted) {
+            statusImage.setVisibility(View.VISIBLE);
+            statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
+        } else {
+            statusImage.setVisibility(View.GONE);
         }
     }
 

@@ -39,13 +39,11 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.SelectionUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
@@ -73,7 +71,7 @@ import java.util.Map;
 
 public abstract class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder,
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
-        implements EditableListFragmentBase<T>, HolderConsumer<V>, SelectableHost<T>
+        implements IEditableListFragment<T, V>
 {
     public final static String
             ARG_SELECT_BY_CLICK = "argSelectByClick",
@@ -128,13 +126,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
             return null;
         }
     };
-
-    abstract public boolean onDefaultClickAction(V holder);
-
-    public boolean onDefaultLongClickAction(V holder)
-    {
-        return false;
-    }
 
     @Nullable
     public PerformerMenu onCreatePerformerMenu(Context context)
@@ -746,29 +737,41 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         return FileUtils.openUri(requireContext(), uri);
     }
 
-    public boolean performLayoutClick(V holder)
+    @Override
+    public final boolean performLayoutClickOpen(V holder)
     {
-        return setItemSelected(holder) || invokeClickListener(holder, false) || onDefaultClickAction(holder);
+        int pos = holder.getAdapterPosition();
+        return pos != RecyclerView.NO_POSITION && performLayoutClickOpen(holder, getAdapterImpl().getItem(pos));
     }
 
-    public boolean performLayoutClickOpen(V holder)
+    public boolean performLayoutClickOpen(V holder, T object)
     {
-        try {
-            T object = getAdapter().getItem(holder);
+        return object instanceof Shareable && openUri(((Shareable) object).uri);
+    }
 
-            if (object instanceof Shareable)
-                return openUri(((Shareable) object).uri);
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-        }
-
+    public boolean performDefaultLayoutLongClick(V holder, T object)
+    {
         return false;
     }
 
-    public boolean performLayoutLongClick(V holder)
+    public final boolean performLayoutClick(V holder)
     {
-        return invokeClickListener(holder, true) || onDefaultLongClickAction(holder)
-                || setItemSelected(holder, true);
+        int position = holder.getAdapterPosition();
+        if (position == RecyclerView.NO_POSITION)
+            return false;
+
+        return setItemSelected(holder) || invokeClickListener(holder, false)
+                || performDefaultLayoutClick(holder, getAdapterImpl().getItem(position));
+    }
+
+    public final boolean performLayoutLongClick(V holder)
+    {
+        int position = holder.getAdapterPosition();
+        if (position == RecyclerView.NO_POSITION)
+            return false;
+
+        return invokeClickListener(holder, true) || performDefaultLayoutLongClick(holder,
+                getAdapterImpl().getItem(position)) || setItemSelected(holder, true);
     }
 
     @Override

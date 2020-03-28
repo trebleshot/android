@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 
 import java.net.InetAddress;
@@ -75,6 +76,12 @@ public class IpAddressConnectionActivity extends Activity implements AttachedTas
     public void onTaskStateChanged(BaseAttachableBgTask task)
     {
         setShowProgress(task instanceof DeviceIntroductionTask && !task.isFinished());
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
     }
 
     private void setShowProgress(boolean show)

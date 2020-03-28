@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.exception;
 
+import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
@@ -26,8 +27,11 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
  */
 public class AssigneeNotFoundException extends ReconstructionFailedException
 {
-    public AssigneeNotFoundException()
+    public TransferAssignee assignee;
+
+    public AssigneeNotFoundException(TransferAssignee assignee)
     {
-        super("Assignee not found");
+        super("Assignee with deviceId=" + assignee.deviceId + " and groupId=" + assignee.groupId + " is not valid");
+        this.assignee = assignee;
     }
 }

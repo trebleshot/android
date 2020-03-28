@@ -16,28 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.view;
+package com.genonbeta.TrebleShot.activity;
 
-import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import android.os.Bundle;
+import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.app.Activity;
 
-/**
- * created by: veli
- * date: 8/24/18 1:36 PM
- */
-public interface HolderConsumer<V extends RecyclerViewAdapter.ViewHolder>
+public class PickBestConnectionActivity extends Activity
 {
-    boolean performLayoutClick(V holder);
-
-    boolean performLayoutLongClick(V holder);
-
-    boolean performLayoutClickOpen(V holder);
-
-    void registerLayoutViewClicks(final V holder);
-
-    boolean setItemSelected(V holder);
-
-    boolean setItemSelected(V holder, boolean force);
-
-    void setLayoutClickListener(EditableListFragment.LayoutClickListener<V> clickListener);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+    }
 }

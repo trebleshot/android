@@ -23,11 +23,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
-import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.android.framework.util.date.DateMerger;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Lister;
@@ -54,15 +52,15 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
     private int mGroupBy;
 
-    public GroupEditableListAdapter(EditableListFragmentBase<T> fragment, HolderConsumer<V> consumer, int groupBy)
+    public GroupEditableListAdapter(IEditableListFragment<T, V> fragment, int groupBy)
     {
-        super(fragment, consumer);
+        super(fragment);
         mGroupBy = groupBy;
     }
 
-    abstract protected void onLoad(GroupLister<T> lister);
+    protected abstract void onLoad(GroupLister<T> lister);
 
-    abstract protected T onGenerateRepresentative(String text, Merger<T> merger);
+    protected abstract T onGenerateRepresentative(String text, Merger<T> merger);
 
     @Override
     public List<T> onLoad()
@@ -126,12 +124,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
     @Override
     public int getItemViewType(int position)
     {
-        try {
-            return getItem(position).getViewType();
-        } catch (NotReadyException e) {
-            e.printStackTrace();
-            return VIEW_TYPE_DEFAULT;
-        }
+        return getItem(position).getViewType();
     }
 
     public String getRepresentativeText(Merger<? extends T> merger)

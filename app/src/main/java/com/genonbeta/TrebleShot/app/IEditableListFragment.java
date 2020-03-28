@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,16 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.exception;
+package com.genonbeta.TrebleShot.app;
 
-/**
- * created by: veli
- * date: 8/26/18 10:48 PM
- */
-public class NotReadyException extends Exception
+import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.view.EditableListFragmentViewBase;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+
+public interface IEditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder>
+        extends EditableListFragmentBase<T>, EditableListFragmentViewBase<V>
 {
-    public NotReadyException(String msg)
-    {
-        super(msg);
-    }
+    boolean performLayoutClickOpen(V holder);
+
+    boolean performLayoutClickOpen(V holder, T object);
+
+    boolean performDefaultLayoutClick(V holder, T object);
+
+    boolean performDefaultLayoutLongClick(V holder, T object);
 }

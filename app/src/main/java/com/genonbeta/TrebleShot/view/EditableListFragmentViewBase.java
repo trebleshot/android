@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,23 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.exception;
+package com.genonbeta.TrebleShot.view;
 
-import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**
- * created by: Veli
- * date: 6.01.2018 22:26
+ * created by: veli
+ * date: 8/24/18 1:36 PM
  */
-
-public class DeviceNotFoundException extends ReconstructionFailedException
+public interface EditableListFragmentViewBase<V extends RecyclerViewAdapter.ViewHolder>
 {
-    public Device device;
+    boolean performLayoutClick(V holder);
 
-    public DeviceNotFoundException(Device device)
-    {
-        super(device.id + " doesn't point to a device");
-        this.device = device;
-    }
+    boolean performLayoutLongClick(V holder);
+
+    void registerLayoutViewClicks(final V holder);
+
+    boolean setItemSelected(V holder);
+
+    boolean setItemSelected(V holder, boolean force);
+
+    void setLayoutClickListener(EditableListFragment.LayoutClickListener<V> clickListener);
 }

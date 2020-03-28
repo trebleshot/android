@@ -270,10 +270,12 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         if (isStarted() || isFinished() || isInterrupted())
             throw new IllegalStateException(getClass().getName() + " is already in interrupted state. To run it "
                     + "again with the same configuration you need to use rerun().");
+
+        setStarted(true);
+        setService(service);
+        publishStatus();
+
         try {
-            setStarted(true);
-            setService(service);
-            publishStatus();
             run(getStoppable());
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -323,10 +325,15 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         mStarted = started;
     }
 
-    public BackgroundTask setStoppable(Stoppable stoppable)
+    public void setStoppable(Stoppable stoppable)
     {
         mStoppable = stoppable;
-        return this;
+    }
+
+    public void throwIfInterrupted() throws InterruptedException
+    {
+        if (isInterrupted())
+            throw new InterruptedException("This task been interrupted by user=" + isInterruptedByUser());
     }
 
     private class ProgressListener extends Progress.SimpleListener

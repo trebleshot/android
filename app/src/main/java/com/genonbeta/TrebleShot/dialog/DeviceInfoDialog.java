@@ -31,8 +31,8 @@ import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
@@ -69,8 +69,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                 notSupportedText.setVisibility(View.VISIBLE);
 
             if (isDeviceNormal && (localDevice.versionCode < device.versionCode || BuildConfig.DEBUG))
-                setNeutralButton(R.string.butn_update, (dialog, which) -> new EstablishConnectionDialog(activity, device,
-                        (connection, availableInterfaces) -> runReceiveTask(activity, device, connection)).show());
+                setNeutralButton(R.string.butn_update, (dialog, which) -> EstablishConnectionDialog.show(activity,
+                        device, (connection) -> runReceiveTask(activity, device, connection)));
 
             NetworkDeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
             text1.setText(device.nickname);
@@ -80,14 +80,12 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             trustSwitch.setEnabled(!device.isRestricted);
             trustSwitch.setChecked(device.isTrusted);
 
-            accessSwitch.setOnCheckedChangeListener(
-                    (button, isChecked) -> {
-                        device.isRestricted = !isChecked;
-                        kuick.publish(device);
-                        kuick.broadcast();
-                        trustSwitch.setEnabled(isChecked);
-                    }
-            );
+            accessSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+                device.isRestricted = !isChecked;
+                kuick.publish(device);
+                kuick.broadcast();
+                trustSwitch.setEnabled(isChecked);
+            });
 
             if (isDeviceNormal)
                 trustSwitch.setOnCheckedChangeListener(
@@ -110,8 +108,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         }
     }
 
-    protected void runReceiveTask(final Activity activity, final Device device,
-                                  final DeviceConnection connection)
+    protected void runReceiveTask(final Activity activity, final Device device, final DeviceConnection connection)
     {
         // FIXME: 21.03.2020
         /*
@@ -213,13 +210,5 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         }.setTitle(getContext().getString(R.string.mesg_ongoingUpdateDownload))
                 .run(activity);
          */
-    }
-
-    public void showDialog(Activity activity, AlertDialog.Builder builder)
-    {
-        if (activity == null || activity.isFinishing())
-            return;
-
-        activity.runOnUiThread(builder::show);
     }
 }

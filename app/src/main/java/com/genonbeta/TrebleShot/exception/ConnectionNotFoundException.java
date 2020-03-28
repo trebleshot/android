@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.exception;
 
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
@@ -27,8 +28,11 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 public class ConnectionNotFoundException extends ReconstructionFailedException
 {
-    public ConnectionNotFoundException()
+    public DeviceConnection connection;
+
+    public ConnectionNotFoundException(DeviceConnection connection)
     {
-        super("Connection not found");
+        super(connection.adapterName + " connection is not found");
+        this.connection = connection;
     }
 }

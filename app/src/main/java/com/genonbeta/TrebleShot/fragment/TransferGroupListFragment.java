@@ -39,11 +39,13 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
-import com.genonbeta.TrebleShot.object.PreloadedGroup;
+import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.ListUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.PerformerMenu;
@@ -59,7 +61,7 @@ import java.util.Map;
  * date: 10.11.2017 00:15
  */
 
-public class TransferGroupListFragment extends GroupEditableListFragment<PreloadedGroup,
+public class TransferGroupListFragment extends GroupEditableListFragment<IndexOfTransferGroup,
         GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter> implements IconProvider
 {
     private IntentFilter mFilter = new IntentFilter();
@@ -98,7 +100,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TransferGroupListAdapter(this, this));
+        setListAdapter(new TransferGroupListAdapter(this));
         setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyTransfer));
 
@@ -154,18 +156,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            ViewTransferActivity.startInstance(requireActivity(), getAdapter().getItem(holder).id);
-            return true;
-        } catch (Exception ignored) {
-        }
-
-        return false;
-    }
-
-    @Override
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_transfers);
@@ -175,6 +165,14 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
     public int getIconRes()
     {
         return R.drawable.ic_swap_vert_white_24dp;
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
+                                             IndexOfTransferGroup object)
+    {
+        ViewTransferActivity.startInstance(requireActivity(), object.group.id);
+        return true;
     }
 
     private static class SelectionCallback extends EditableListFragment.SelectionCallback
@@ -203,25 +201,25 @@ public class TransferGroupListFragment extends GroupEditableListFragment<Preload
                 return false;
 
             List<Selectable> genericList = new ArrayList<>(engine.getSelectionList());
-            List<PreloadedGroup> selectionList = new ArrayList<>();
-
-            for (Selectable selectable : genericList)
-                if (selectable instanceof PreloadedGroup)
-                    selectionList.add((PreloadedGroup) selectable);
+            List<IndexOfTransferGroup> indexList = ListUtils.typedListOf(genericList, IndexOfTransferGroup.class);
 
             if (id == R.id.action_mode_group_delete) {
-                DialogUtils.showRemoveTransferGroupListDialog(getActivity(), selectionList);
+                List<TransferGroup> groupList = new ArrayList<>();
+                for (IndexOfTransferGroup index : indexList)
+                    groupList.add(index.group);
+
+                DialogUtils.showRemoveTransferGroupListDialog(getActivity(), groupList);
                 return true;
             } else if (id == R.id.action_mode_group_serve_on_web || id == R.id.action_mode_group_hide_on_web) {
                 boolean served = id == R.id.action_mode_group_serve_on_web;
-                List<PreloadedGroup> changedList = new ArrayList<>();
+                List<IndexOfTransferGroup> changedList = new ArrayList<>();
 
-                for (PreloadedGroup group : selectionList) {
-                    if (!group.hasOutgoing() || group.isServedOnWeb == served)
+                for (IndexOfTransferGroup index : indexList) {
+                    if (!index.hasOutgoing() || index.group.isServedOnWeb == served)
                         continue;
 
-                    group.isServedOnWeb = served;
-                    changedList.add(group);
+                    index.group.isServedOnWeb = served;
+                    changedList.add(index);
                 }
 
                 kuick.update(changedList);

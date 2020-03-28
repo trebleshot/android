@@ -18,87 +18,66 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import android.app.Activity;
-import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
-import com.genonbeta.TrebleShot.dialog.ConnectionTestDialog;
-import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.MathUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class AssessNetworkTask extends BackgroundTask
+public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.CalculationResultListener>
 {
-    private EstablishConnectionDialog mDialog;
     private Device mDevice;
-    private OnDeviceSelectedListener mListener;
 
-    public AssessNetworkTask(EstablishConnectionDialog dialog, Device device,
-                             OnDeviceSelectedListener listener)
+    public AssessNetworkTask(Device device)
     {
-        mDialog = dialog;
         mDevice = device;
-        mListener = listener;
     }
 
     @Override
-    protected void onRun()
+    protected void onRun() throws InterruptedException
     {
-        final List<EstablishConnectionDialog.ConnectionResult> reachedConnections = new ArrayList<>();
-        final List<EstablishConnectionDialog.ConnectionResult> calculatedConnections = new ArrayList<>();
-        final List<DeviceConnection> connectionList = AppUtils.getKuick(getService()).castQuery(
+        List<DeviceConnection> knownConnectionList = AppUtils.getKuick(getService()).castQuery(
                 new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
                         .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.id)
-                        .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
-                DeviceConnection.class);
+                        .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceConnection.class);
+        ConnectionResult[] results = new ConnectionResult[knownConnectionList.size()];
 
-        Progress.addToTotal(progressListener(), connectionList.size());
+        progress().addToTotal(knownConnectionList.size());
+        publishStatus();
 
-        for (DeviceConnection connection : connectionList)
-            calculatedConnections.add(new EstablishConnectionDialog.ConnectionResult(connection));
-
-        for (EstablishConnectionDialog.ConnectionResult connectionResult : calculatedConnections) {
-            if (isInterrupted())
-                break;
+        for (ConnectionResult connectionResult : results) {
+            throwIfInterrupted();
 
             setCurrentContent(connectionResult.connection.adapterName);
-            Progress.addToCurrent(progressListener(), 1);
-
-            CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+            progress().addToCurrent(1);
+            publishStatus();
 
             try {
+                CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
                 long startTime = System.nanoTime();
-                CoolSocket.ActiveConnection connection = client.connectWithHandshake(
-                        connectionResult.connection, true);
+                CoolSocket.ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
+                        true);
                 connectionResult.pingTime = System.nanoTime() - startTime;
                 connectionResult.successful = true;
 
                 connection.getSocket().close();
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                if (connectionResult.pingTime > -1)
-                    reachedConnections.add(connectionResult);
             }
         }
 
-        mDialog.dismiss();
-
-        Comparator<EstablishConnectionDialog.ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {
+        Comparator<ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {
             // make sure we are not comparing unsuccessful attempts with their pingTime values.
             if (resultFirst.successful != resultLast.successful)
                 return resultFirst.successful ? 1 : -1;
@@ -106,33 +85,19 @@ public class AssessNetworkTask extends BackgroundTask
             return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime);
         };
 
-        Collections.sort(reachedConnections, connectionComparator);
-        Collections.sort(calculatedConnections, connectionComparator);
+        Arrays.sort(results, connectionComparator);
 
-        Activity activity = mDialog.getOwnerActivity();
+        if (hasAnchor())
+            getAnchor().onCalculationResult(results);
+    }
 
-        if (activity != null && !activity.isFinishing())
-            activity.runOnUiThread(() -> {
-                if (mListener == null) {
-                    new ConnectionTestDialog(activity, mDevice, calculatedConnections).show();
-                } else {
-                    if (!isInterrupted())
-                        if (reachedConnections.size() < 1) {
-                            new AlertDialog.Builder(activity)
-                                    .setTitle(R.string.text_error)
-                                    .setMessage(R.string.text_automaticNetworkConnectionFailed)
-                                    .setNeutralButton(R.string.butn_choose, (dialog, which) ->
-                                            new ConnectionChooserDialog(activity, mDevice, mListener)
-                                                    .show())
-                                    .setNegativeButton(R.string.butn_close, null)
-                                    .setPositiveButton(R.string.butn_retry, (dialog, which) -> mDialog.show())
-                                    .show();
-                        } else {
-                            mListener.onDeviceSelected(reachedConnections.get(0).connection, connectionList);
-                            mDialog.dismiss();
-                        }
-                }
-            });
+    public static List<ConnectionResult> getAvailableList(ConnectionResult[] results)
+    {
+        List<ConnectionResult> availableList = new ArrayList<>();
+        for (ConnectionResult result : results)
+            if (result.successful)
+                availableList.add(result);
+        return availableList;
     }
 
     @Override
@@ -147,9 +112,21 @@ public class AssessNetworkTask extends BackgroundTask
         return getService().getString(R.string.text_connectionTest);
     }
 
-    @Override
-    public boolean isInterrupted()
+    public interface CalculationResultListener extends AttachedTaskListener
     {
-        return super.isInterrupted() || !mDialog.isShowing();
+        void onCalculationResult(ConnectionResult[] connectionResults);
+    }
+
+    public static class ConnectionResult
+    {
+        public DeviceConnection connection;
+        public long pingTime = 0; // nano
+
+        public boolean successful = false;
+
+        public ConnectionResult(DeviceConnection connection)
+        {
+            this.connection = connection;
+        }
     }
 }

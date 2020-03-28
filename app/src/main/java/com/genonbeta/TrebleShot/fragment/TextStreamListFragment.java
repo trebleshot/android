@@ -87,7 +87,7 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TextStreamListAdapter(this, this));
+        setListAdapter(new TextStreamListAdapter(this));
         setEmptyListImage(R.drawable.ic_forum_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyTextStream));
 
@@ -118,35 +118,17 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     }
 
     @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        try {
-            TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
-
-            startActivity(new Intent(getContext(), TextEditorActivity.class)
-                    .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-                    .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-
-            return true;
-        } catch (Exception ignored) {
-        }
-
-        return false;
-    }
-
-    @Override
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mStatusReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
+        requireContext().registerReceiver(mStatusReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        getActivity().unregisterReceiver(mStatusReceiver);
+        requireContext().unregisterReceiver(mStatusReceiver);
     }
 
     @Override
@@ -159,6 +141,16 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
     public CharSequence getDistinctiveTitle(Context context)
     {
         return context.getString(R.string.text_textStream);
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder, TextStreamObject object)
+    {
+        startActivity(new Intent(getContext(), TextEditorActivity.class)
+                .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+                .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        return true;
     }
 
     private static class SelectionCallback extends EditableListFragment.SelectionCallback

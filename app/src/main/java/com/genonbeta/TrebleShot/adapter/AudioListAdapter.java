@@ -30,9 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.Merger;
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
@@ -51,10 +50,9 @@ public class AudioListAdapter
 
     private ContentResolver mResolver;
 
-    public AudioListAdapter(EditableListFragmentBase<AudioItemHolder> fragment,
-                            HolderConsumer<GroupViewHolder> consumer)
+    public AudioListAdapter(IEditableListFragment<AudioItemHolder, GroupViewHolder> fragment)
     {
-        super(fragment, consumer, MODE_GROUP_BY_ARTIST);
+        super(fragment, MODE_GROUP_BY_ARTIST);
         mResolver = getContext().getContentResolver();
     }
 
@@ -128,11 +126,11 @@ public class AudioListAdapter
         GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(R.layout.list_music, parent,
                 false));
 
-        getConsumer().registerLayoutViewClicks(holder);
+        getFragment().registerLayoutViewClicks(holder);
         holder.itemView.findViewById(R.id.visitView)
-                .setOnClickListener(v -> getConsumer().performLayoutClickOpen(holder));
+                .setOnClickListener(v -> getFragment().performLayoutClickOpen(holder));
         holder.itemView.findViewById(R.id.selector)
-                .setOnClickListener(v -> getConsumer().setItemSelected(holder, true));
+                .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
 
         return holder;
     }

@@ -56,7 +56,8 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     // Static objects
     public CoolSocket.ActiveConnection activeConnection;
     public Device device;
-    public PreloadedGroup group;
+    public IndexOfTransferGroup index;
+    public TransferGroup group;
     public TransferAssignee assignee;
     public DeviceConnection connection;
     public TransferObject.Type type;
@@ -81,6 +82,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     @Override
     protected void onRun() throws InterruptedException
     {
+
         if (this.activeConnection == null)
             startTransferAsClient();
         else if (TransferObject.Type.OUTGOING.equals(type))
@@ -143,15 +145,15 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         try {
             kuick.reconstruct(db, task.device);
         } catch (ReconstructionFailedException e) {
-            throw new DeviceNotFoundException();
+            throw new DeviceNotFoundException(task.device);
         }
 
-        task.group = new PreloadedGroup(groupId);
+        task.group = new TransferGroup(groupId);
 
         try {
             kuick.reconstruct(db, task.group);
         } catch (ReconstructionFailedException e) {
-            throw new TransferGroupNotFoundException();
+            throw new TransferGroupNotFoundException(task.group);
         }
 
         task.assignee = new TransferAssignee(task.group, task.device, task.type);
@@ -159,7 +161,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         try {
             kuick.reconstruct(db, task.assignee);
         } catch (ReconstructionFailedException e) {
-            throw new AssigneeNotFoundException();
+            throw new AssigneeNotFoundException(task.assignee);
         }
 
         task.connection = new DeviceConnection(task.assignee);
@@ -167,7 +169,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         try {
             kuick.reconstruct(db, task.connection);
         } catch (ReconstructionFailedException e) {
-            throw new ConnectionNotFoundException();
+            throw new ConnectionNotFoundException(task.connection);
         }
 
         Log.d(TAG, "startTransferAsClient(): With deviceId=" + task.device.id + " groupId=" + task.group.id
@@ -225,7 +227,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         boolean retry = false;
 
         try {
-            TransferUtils.loadGroupInfo(getService(), this.group, this.assignee);
+            TransferUtils.loadGroupInfo(getService(), this.index, this.assignee);
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
@@ -458,7 +460,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     private void handleTransferAsSender()
     {
         try {
-            TransferUtils.loadGroupInfo(getService(), this.group, this.assignee);
+            TransferUtils.loadGroupInfo(getService(), this.index, this.assignee);
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;

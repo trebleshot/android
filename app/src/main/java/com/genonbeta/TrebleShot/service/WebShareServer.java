@@ -452,25 +452,24 @@ public class WebShareServer extends NanoHTTPD
     {
         StringBuilder contentBuilder = new StringBuilder();
 
-        List<PreloadedGroup> groupList = AppUtils.getKuick(mContext).castQuery(
+        List<IndexOfTransferGroup> groupList = AppUtils.getKuick(mContext).castQuery(
                 new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
-                        .setOrderBy(Kuick.FIELD_TRANSFERGROUP_DATECREATED + " DESC"),
-                PreloadedGroup.class);
+                        .setOrderBy(Kuick.FIELD_TRANSFERGROUP_DATECREATED + " DESC"), IndexOfTransferGroup.class);
 
-        for (PreloadedGroup group : groupList) {
-            if (!group.isServedOnWeb)
+        for (IndexOfTransferGroup index : groupList) {
+            if (!index.group.isServedOnWeb)
                 continue;
 
-            TransferUtils.loadGroupInfo(mContext, group);
+            TransferUtils.loadGroupInfo(mContext, index);
 
-            if (!group.hasOutgoing())
+            if (!index.hasOutgoing())
                 continue;
 
             contentBuilder.append(makeContent("list_transfer_group", mContext.getString(
                     R.string.mode_itemCountedDetailed, mContext.getResources().getQuantityString(
-                            R.plurals.text_files, group.numberOfOutgoing, group.numberOfOutgoing),
-                    FileUtils.sizeExpression(group.bytesOutgoing, false)),
-                    R.string.butn_show, "show", group.id));
+                            R.plurals.text_files, index.numberOfOutgoing, index.numberOfOutgoing),
+                    FileUtils.sizeExpression(index.bytesOutgoing, false)),
+                    R.string.butn_show, "show", index.group.id));
         }
 
         if (contentBuilder.length() == 0)

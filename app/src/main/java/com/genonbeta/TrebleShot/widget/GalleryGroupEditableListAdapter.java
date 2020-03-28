@@ -20,8 +20,7 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.net.Uri;
 import androidx.annotation.NonNull;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
-import com.genonbeta.TrebleShot.view.HolderConsumer;
+import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.util.List;
@@ -36,16 +35,16 @@ abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEdit
 {
     public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_DATE + 1;
 
-    public GalleryGroupEditableListAdapter(EditableListFragmentBase<T> fragment, HolderConsumer<V> consumer, int groupBy)
+    public GalleryGroupEditableListAdapter(IEditableListFragment<T, V> fragment, int groupBy)
     {
-        super(fragment, consumer, groupBy);
+        super(fragment, groupBy);
     }
 
     @Override
     public boolean onCustomGroupListing(GroupLister<T> lister, int mode, T object)
     {
         if (mode == MODE_GROUP_BY_ALBUM) {
-            lister.offer(object, new StringMerger<T>(object.albumName));
+            lister.offer(object, new StringMerger<>(object.albumName));
             return true;
         }
 

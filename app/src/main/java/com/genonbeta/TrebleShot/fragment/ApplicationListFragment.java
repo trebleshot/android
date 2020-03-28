@@ -57,7 +57,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new ApplicationListAdapter(this, this));
+        setListAdapter(new ApplicationListAdapter(this));
         setEmptyListImage(R.drawable.ic_android_head_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyApp));
     }
@@ -68,12 +68,6 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
         super.onGroupingOptions(options);
         options.put(getString(R.string.text_groupByNothing), ApplicationListAdapter.MODE_GROUP_BY_NOTHING);
         options.put(getString(R.string.text_groupByDate), ApplicationListAdapter.MODE_GROUP_BY_DATE);
-    }
-
-    @Override
-    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-    {
-        return performLayoutClickOpen(holder);
     }
 
     @Override
@@ -118,12 +112,12 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     }
 
     @Override
-    public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder)
+    public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder,
+                                          ApplicationListAdapter.PackageHolder object)
     {
         try {
-            ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
             Intent launchIntent = requireContext().getPackageManager()
-                    .getLaunchIntentForPackage(appInfo.packageName);
+                    .getLaunchIntentForPackage(object.packageName);
 
             if (launchIntent != null) {
                 new AlertDialog.Builder(requireActivity())
@@ -139,5 +133,12 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
         }
 
         return false;
+    }
+
+    @Override
+    public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
+                                             ApplicationListAdapter.PackageHolder object)
+    {
+        return performLayoutClickOpen(holder, object);
     }
 }
