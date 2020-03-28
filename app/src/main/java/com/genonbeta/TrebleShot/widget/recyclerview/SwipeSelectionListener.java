@@ -98,14 +98,8 @@ public class SwipeSelectionListener<T extends Editable> implements OnItemTouchLi
                                     boolean selected = currentPos > mLastPosition ? mStartPosition <= i
                                             : mStartPosition >= i;
 
-                                    boolean selectionResult = mListFragment.getEngineConnection().setSelected(
+                                    mListFragment.getEngineConnection().setSelected(
                                             mListFragment.getAdapterImpl().getItem(i), selected);
-
-                                    // TODO: 28.03.2020 Remove this unneeded code
-                                    ViewHolder viewHolder = (ViewHolder) rv.findViewHolderForAdapterPosition(i);
-
-                                    if (viewHolder != null && selectionResult)
-                                        viewHolder.setSelected(selected);
                                 }
                             }
 
