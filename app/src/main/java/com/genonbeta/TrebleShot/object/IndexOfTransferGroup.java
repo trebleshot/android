@@ -243,7 +243,7 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     @Override
     public boolean setSelectableSelected(boolean selected)
     {
-        if (!isGroupRepresentative())
+        if (isGroupRepresentative())
             return false;
         mIsSelected = selected;
         return true;
