@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -62,14 +63,14 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
 
                 ConnectionResult connectionResult = results[i] = new ConnectionResult(knownConnectionList.get(i));
 
-                setCurrentContent(connectionResult.connection.adapterName);
+                setOngoingContent(connectionResult.connection.adapterName);
                 progress().addToCurrent(1);
                 publishStatus();
 
                 try {
                     CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
                     long startTime = System.nanoTime();
-                    CoolSocket.ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
+                    ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
                             true);
                     connectionResult.pingTime = System.nanoTime() - startTime;
                     connectionResult.successful = true;

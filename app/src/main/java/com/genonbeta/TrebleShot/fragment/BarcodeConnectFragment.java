@@ -51,6 +51,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.util.Stoppable;
+import com.genonbeta.android.framework.util.StoppableImpl;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -70,9 +71,9 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
 {
     public static final String TAG = "BarcodeConnectFragment";
 
-    public static final int REQUEST_PERMISSION_CAMERA = 1;
-    public static final int REQUEST_PERMISSION_LOCATION = 2;
-    public static final int REQUEST_TURN_WIFI_ON = 4;
+    public static final int REQUEST_PERMISSION_CAMERA = 1,
+            REQUEST_PERMISSION_LOCATION = 1 << 1,
+            REQUEST_TURN_WIFI_ON = 1 << 2;
 
     private DecoratedBarcodeView mBarcodeView;
     private ConnectionUtils mConnectionUtils;
@@ -83,6 +84,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     private Button mConductButton;
     private Button mTaskInterruptButton;
     private View mTaskContainer;
+    private Stoppable mStoppable = new StoppableImpl();
     private IntentFilter mIntentFilter = new IntentFilter();
     private boolean mPermissionRequestedCamera = false;
     private boolean mPermissionRequestedLocation = false;
@@ -200,6 +202,20 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     }
 
     @Override
+    public void onStart()
+    {
+        super.onStart();
+        mStoppable.reset(true);
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        mStoppable.interrupt();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -237,28 +253,29 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                 final String ipAddress = data.getString(Keyword.NETWORK_ADDRESS_IP);
 
                 WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
-                Runnable runnable = () -> {
-                    try {
-                        BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
-                                InetAddress.getByName(ipAddress), accessPin));
-                    } catch (UnknownHostException e) {
+                try {
+                    InetAddress address = InetAddress.getByName(ipAddress);
+                    DeviceIntroductionTask task = new DeviceIntroductionTask(address, accessPin);
+                    Runnable runnable = () -> BackgroundService.run(requireActivity(), task);
+
+                    task.setStoppable(mStoppable);
+
+                    if (wifiInfo != null && wifiInfo.getBSSID() != null && wifiInfo.getBSSID().equals(bssid)) {
+                        runnable.run();
+                    } else {
+                        mBarcodeView.pauseAndWait();
+
                         new AlertDialog.Builder(requireActivity())
-                                .setMessage(R.string.mesg_unknownHostError)
-                                .setNeutralButton(R.string.butn_close, null)
+                                .setMessage(R.string.mesg_errorNotSameNetwork)
+                                .setNegativeButton(R.string.butn_cancel, null)
+                                .setPositiveButton(R.string.butn_gotIt, (dialog, which) -> runnable.run())
+                                .setOnDismissListener(dismissListener)
                                 .show();
                     }
-                };
-
-                if (wifiInfo != null && wifiInfo.getBSSID() != null && wifiInfo.getBSSID().equals(bssid)) {
-                    runnable.run();
-                } else {
-                    mBarcodeView.pauseAndWait();
-
+                } catch (UnknownHostException e) {
                     new AlertDialog.Builder(requireActivity())
-                            .setMessage(R.string.mesg_errorNotSameNetwork)
-                            .setNegativeButton(R.string.butn_close, null)
-                            .setPositiveButton(R.string.butn_skip, (dialog, which) -> runnable.run())
-                            .setOnDismissListener(dismissListener)
+                            .setMessage(R.string.mesg_unknownHostError)
+                            .setNeutralButton(R.string.butn_close, null)
                             .show();
                 }
             } else {
@@ -337,12 +354,12 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         if (!isAdded())
             return;
 
-        final boolean wifiEnabled = mConnectionUtils.getWifiManager().isWifiEnabled();
+        boolean wifiEnabled = mConnectionUtils.getWifiManager().isWifiEnabled();
         boolean hasCameraPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
         // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
-        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 23 || mConnectionUtils.canAccessLocation();
-        final boolean state = (wifiEnabled || mShowAsText) && hasCameraPermission && hasLocationPermission;
+        boolean hasLocationPermission = Build.VERSION.SDK_INT < 23 || mConnectionUtils.canAccessLocation();
+        boolean state = hasCameraPermission && (mShowAsText || (wifiEnabled && hasLocationPermission));
 
         if (!state) {
             mBarcodeView.pauseAndWait();

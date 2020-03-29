@@ -205,7 +205,7 @@ public class Kuick extends KuickDb
         protected void onProgressChange(Progress progress)
         {
             super.onProgressChange(progress);
-            setCurrentContent(getService().getString(R.string.text_transferStatusFiles, progress.getCurrent(),
+            setOngoingContent(getService().getString(R.string.text_transferStatusFiles, progress.getCurrent(),
                     progress.getTotal()));
         }
 

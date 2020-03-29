@@ -301,11 +301,6 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
     }
 
-    public void setCurrentContent(String content)
-    {
-        mCurrentContent = content;
-    }
-
     public void setCustomNotification(DynamicNotification notification)
     {
         mCustomNotification = notification;
@@ -314,6 +309,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     private void setFinished(boolean finished)
     {
         mFinished = finished;
+    }
+
+    public void setOngoingContent(String content)
+    {
+        mCurrentContent = content;
     }
 
     private void setService(@Nullable BackgroundService service)

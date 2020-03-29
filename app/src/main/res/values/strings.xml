@@ -368,7 +368,7 @@
     <string name="text_easyDiscoveryHelp">Scan this if both devices are on the same network</string>
     <string name="text_scanQRWifiRequired">To connect to devices, Wi-Fi should be turned on</string>
     <string name="mesg_completing">Completing</string>
-    <string name="mesg_errorNotSameNetwork">The devices are not on the same network</string>
+    <string name="mesg_errorNotSameNetwork">The devices may not be on the same network</string>
     <string name="text_cameraPermissionRequired">Camera permission required</string>
     <string name="text_addDevicesToTransfer">Add devices to transfer</string>
     <string name="text_file">File</string>

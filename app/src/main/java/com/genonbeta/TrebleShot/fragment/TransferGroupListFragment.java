@@ -116,7 +116,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<IndexOf
         super.onActivityCreated(savedInstanceState);
 
         mFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        mFilter.addAction(BackgroundService.ACTION_TASK_CHANGE);
     }
 
     @Nullable
@@ -175,8 +174,26 @@ public class TransferGroupListFragment extends GroupEditableListFragment<IndexOf
         return true;
     }
 
+    public void updateTasks()
+    {
+        try {
+            BackgroundService service = AppUtils.getBgService(requireActivity());
+            List<FileTransferTask> tasks = service.getTaskListOf(FileTransferTask.class);
+            List<Long> activeTaskList = new ArrayList<>();
+            for (FileTransferTask task : tasks)
+                if (task.group != null)
+                    activeTaskList.add(task.group.id);
+
+            getAdapter().updateActiveList(activeTaskList);
+            getAdapter().notifyDataSetChanged();
+        } catch (IllegalStateException ignored) {
+
+        }
+    }
+
     private static class SelectionCallback extends EditableListFragment.SelectionCallback
     {
+
         public SelectionCallback(Activity activity, PerformerEngineProvider provider)
         {
             super(activity, provider);
@@ -228,23 +245,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<IndexOf
                 super.onPerformerMenuSelected(performerMenu, item);
 
             return false;
-        }
-    }
-
-    public void updateTasks()
-    {
-        try {
-            BackgroundService service = AppUtils.getBgService(requireActivity());
-            List<FileTransferTask> tasks = service.getTaskListOf(FileTransferTask.class);
-            List<Long> activeTaskList = new ArrayList<>();
-            for (FileTransferTask task : tasks)
-                if (task.group != null)
-                    activeTaskList.add(task.group.id);
-
-            getAdapter().updateActiveList(activeTaskList);
-            refreshList();
-        } catch (IllegalStateException ignored) {
-
         }
     }
 }

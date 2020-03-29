@@ -18,10 +18,10 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -48,9 +48,7 @@ public class InitializeTransferTask extends BackgroundTask
     {
         CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
 
-        try {
-            final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
-
+        try (final ActiveConnection activeConnection = client.communicate(mDevice, mConnection)) {
             Stoppable.Closer connectionCloser = userAction -> {
                 try {
                     activeConnection.getSocket().close();
@@ -67,7 +65,7 @@ public class InitializeTransferTask extends BackgroundTask
 
             activeConnection.reply(jsonRequest.toString());
 
-            final JSONObject responseJSON = new JSONObject(activeConnection.receive().response);
+            final JSONObject responseJSON = new JSONObject(activeConnection.receive().index);
             activeConnection.getSocket().close();
             removeCloser(connectionCloser);
 

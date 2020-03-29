@@ -264,12 +264,13 @@ public abstract class Activity extends AppCompatActivity
 
     public void attachTask(BaseAttachableBgTask task)
     {
+        synchronized (mAttachedTaskList) {
+            if (!mAttachedTaskList.add(task))
+                return;
+        }
+
         if (task.getContentIntent() == null)
             task.setContentIntent(this, getIntent());
-
-        synchronized (mAttachedTaskList) {
-            mAttachedTaskList.add(task);
-        }
     }
 
     private synchronized void attachTasks()

@@ -23,7 +23,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -54,7 +56,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     public static final String TAG = FileTransferTask.class.getSimpleName();
 
     // Static objects
-    public CoolSocket.ActiveConnection activeConnection;
+    public ActiveConnection activeConnection;
     public Device device;
     public IndexOfTransferGroup index;
     public TransferGroup group;
@@ -263,7 +265,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     }
 
                     {
-                        JSONObject response = new JSONObject(this.activeConnection.receive().response);
+                        JSONObject response = new JSONObject(this.activeConnection.receive().index);
                         Log.d(TAG, "handleTransferAsReceiver(): receive: " + response.toString());
 
                         if (!response.getBoolean(Keyword.RESULT)) {
@@ -311,7 +313,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                                 }
 
                                 Log.d(TAG, "handleTransferAsReceiver(): receive: " +
-                                        this.activeConnection.receive().response);
+                                        this.activeConnection.receive().index);
                             }
 
                             this.activeConnection.reply(Keyword.STUB);
@@ -464,9 +466,9 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
-                CoolSocket.ActiveConnection.Response response = this.activeConnection.receive();
-                Log.d(TAG, "handleTransferAsSender(): receive: " + response.response);
-                JSONObject request = new JSONObject(response.response);
+                Response response = this.activeConnection.receive();
+                Log.d(TAG, "handleTransferAsSender(): receive: " + response.index);
+                JSONObject request = new JSONObject(response.index);
 
                 if (request.has(Keyword.RESULT) && !request.getBoolean(Keyword.RESULT)) {
                     if (request.has(Keyword.TRANSFER_JOB_DONE) && !request.getBoolean(Keyword.TRANSFER_JOB_DONE))
@@ -528,7 +530,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                         this.activeConnection.reply(reply.toString());
                         Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
 
-                        JSONObject validityOfChange = new JSONObject(this.activeConnection.receive().response);
+                        JSONObject validityOfChange = new JSONObject(this.activeConnection.receive().index);
 
                         if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
                                 Keyword.RESULT)) {
@@ -688,11 +690,11 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             }
 
             {
-                CoolSocket.ActiveConnection.Response response = this.activeConnection.receive();
-                JSONObject responseJSON = new JSONObject(response.response);
+                Response response = this.activeConnection.receive();
+                JSONObject responseJSON = new JSONObject(response.index);
 
                 Log.d(TAG, "startTransferAsClient(): " + this.type.toString() + "; About to start with "
-                        + response.response);
+                        + response.index);
 
                 if (responseJSON.getBoolean(Keyword.RESULT)) {
                     this.attemptsLeft = 2;
@@ -706,10 +708,8 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     }
 
                     try {
-                        CoolSocket.ActiveConnection.Response lastResponse = this.activeConnection.receive();
-
-                        Log.d(TAG, "startTransferAsClient(): Final response before " + "exit: "
-                                + lastResponse.response);
+                        Response lastResponse = this.activeConnection.receive();
+                        Log.d(TAG, "startTransferAsClient(): Final response before exit: " + lastResponse.index);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

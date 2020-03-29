@@ -18,7 +18,9 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -53,12 +55,12 @@ public class ReceiveUpdateTask extends BackgroundTask
     public void onRun() throws InterruptedException
     {
         try {
-            setCurrentContent(getService().getString(R.string.mesg_waiting));
+            setOngoingContent(getService().getString(R.string.mesg_waiting));
 
             int versionCode;
             long updateSize;
             CoolSocket.Client client = new CoolSocket.Client();
-            CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(mConnection.ipAddress,
+            ActiveConnection activeConnection = client.connect(new InetSocketAddress(mConnection.ipAddress,
                     AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
             activeConnection.reply(new JSONObject()
@@ -66,8 +68,8 @@ public class ReceiveUpdateTask extends BackgroundTask
                     .toString());
 
             {
-                CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                JSONObject responseJSON = new JSONObject(response.response);
+                Response response = activeConnection.receive();
+                JSONObject responseJSON = new JSONObject(response.index);
 
                 if (!responseJSON.getBoolean(Keyword.RESULT))
                     throw new CommunicationException("Update request was denied by the target");
@@ -86,7 +88,7 @@ public class ReceiveUpdateTask extends BackgroundTask
             }
 
             progress().addToTotal(100);
-            setCurrentContent(getService().getString(R.string.text_receiving));
+            setOngoingContent(getService().getString(R.string.text_receiving));
             publishStatus();
 
             DocumentFile tmpFile;

@@ -65,7 +65,7 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
 
             try {
                 DocumentFile file = FileUtils.fromUri(getService(), uri);
-                setCurrentContent(file.getName());
+                setOngoingContent(file.getName());
                 publishStatus();
 
                 if (file.isDirectory())

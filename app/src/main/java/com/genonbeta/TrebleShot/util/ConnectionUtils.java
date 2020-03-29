@@ -39,6 +39,7 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -384,14 +385,14 @@ public class ConnectionUtils
     {
         Kuick kuick = AppUtils.getKuick(context);
         CommunicationBridge.Client client = new CommunicationBridge.Client(kuick, pin);
-        CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
+        ActiveConnection activeConnection = client.communicate(inetAddress, false);
 
         activeConnection.reply(new JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
                 .toString());
 
         Device device = client.getDevice();
-        JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
+        JSONObject receivedReply = new JSONObject(activeConnection.receive().index);
 
         if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
             DeviceConnection connection = NetworkDeviceLoader.processConnection(kuick, device,

@@ -27,8 +27,9 @@ import com.genonbeta.TrebleShot.app.Activity;
 
 public class BarcodeScannerActivity extends Activity
 {
-    public static final String EXTRA_DEVICE_ID = "extraDeviceId";
-    public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
+    public static final String
+            EXTRA_DEVICE = "extraDevice",
+            EXTRA_CONNECTION = "extraConnectionAdapter";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)

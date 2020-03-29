@@ -22,7 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.CoolSocket.ActiveConnection;
+import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -92,7 +93,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             JSONArray filesArray = new JSONArray();
 
             for (TransferObject transferObject : objectList) {
-                setCurrentContent(transferObject.name);
+                setOngoingContent(transferObject.name);
                 transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
 
                 if (isInterrupted())
@@ -121,11 +122,11 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     .put(Keyword.TRANSFER_GROUP_ID, mGroup.id)
                     .put(Keyword.FILES_INDEX, filesArray.toString());
 
-            final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
+            final ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
 
             addCloser(userAction -> {
                 try {
-                    activeConnection.getSocket().close();
+                    activeConnection.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -133,13 +134,13 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
 
             activeConnection.reply(jsonObject.toString());
 
-            CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+            Response response = activeConnection.receive();
             activeConnection.getSocket().close();
 
-            JSONObject clientResponse = new JSONObject(response.response);
+            JSONObject clientResponse = new JSONObject(response.index);
 
             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                setCurrentContent(context.getString(R.string.mesg_organizingFiles));
+                setOngoingContent(context.getString(R.string.mesg_organizingFiles));
 
                 if (update)
                     kuick.update(db, assignee, mGroup, progressListener());

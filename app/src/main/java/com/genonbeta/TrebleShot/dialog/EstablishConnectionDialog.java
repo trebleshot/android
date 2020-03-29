@@ -53,6 +53,7 @@ public class EstablishConnectionDialog extends ProgressDialog
         task.setAnchor(binder);
         task.setStoppable(stoppable);
 
+        dialog.setTitle(R.string.text_automaticNetworkConnectionOngoing);
         dialog.setOnDismissListener((dialog1 -> stoppable.interrupt()));
         dialog.setOnCancelListener(dialog1 -> stoppable.interrupt());
         dialog.show();

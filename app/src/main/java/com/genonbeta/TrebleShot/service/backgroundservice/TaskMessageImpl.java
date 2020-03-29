@@ -71,7 +71,7 @@ public class TaskMessageImpl implements TaskMessage
         action.name = name;
         action.tone = tone;
         action.callback = callback;
-        return this;
+        return addAction(action);
     }
 
     @Override

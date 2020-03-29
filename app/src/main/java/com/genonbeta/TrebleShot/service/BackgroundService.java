@@ -34,7 +34,9 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -171,7 +173,7 @@ public class BackgroundService extends Service
 
                     CommunicationBridge.connect(getKuick(), client -> {
                         try {
-                            CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
+                            ActiveConnection activeConnection = client.communicate(device, connection);
 
                             activeConnection.reply(new JSONObject()
                                     .put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
@@ -624,7 +626,7 @@ public class BackgroundService extends Service
                     // Because the client didn't know whom it was talking to, it did not provide a key that might be
                     // exchanged between us before. Now we are asking for the key. Also, this does not work with
                     // the older client versions.
-                    device.secureKey = new JSONObject(activeConnection.receive().response).getInt(
+                    device.secureKey = new JSONObject(activeConnection.receive().index).getInt(
                             Keyword.DEVICE_INFO_KEY);
                     activeConnection.reply(Keyword.STUB);
                 }
@@ -790,12 +792,12 @@ public class BackgroundService extends Service
 
                                             pushReply(activeConnection, currentReply, result);
                                             Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
-                                            Log.d(TAG, "onConnected: " + activeConnection.receive().response);
+                                            Log.d(TAG, "onConnected: " + activeConnection.receive().index);
 
                                             if (result)
                                                 attach(task);
 
-                                            Log.d(TAG, "onConnected: " + activeConnection.receive().response);
+                                            Log.d(TAG, "onConnected: " + activeConnection.receive().index);
                                         }
                                     } else
                                         responseJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
@@ -813,9 +815,9 @@ public class BackgroundService extends Service
             }
         }
 
-        JSONObject analyzeResponse(ActiveConnection.Response response) throws JSONException
+        JSONObject analyzeResponse(Response response) throws JSONException
         {
-            return response.totalLength > 0 ? new JSONObject(response.response) : new JSONObject();
+            return response.length > 0 ? new JSONObject(response.index) : new JSONObject();
         }
 
         void pushReply(ActiveConnection activeConnection, JSONObject reply, boolean result)
@@ -856,8 +858,8 @@ public class BackgroundService extends Service
                 }
 
                 {
-                    ActiveConnection.Response responseObject = activeConnection.receive();
-                    JSONObject response = new JSONObject(responseObject.response);
+                    Response responseObject = activeConnection.receive();
+                    JSONObject response = new JSONObject(responseObject.index);
 
                     if (response.getBoolean(Keyword.RESULT) && response.getBoolean(Keyword.RESULT)) {
                         OutputStream outputStream = activeConnection.getSocket().getOutputStream();

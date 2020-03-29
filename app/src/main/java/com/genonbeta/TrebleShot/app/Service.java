@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.util.NotificationUtils;
  * created by: veli
  * date: 31.03.2018 15:23
  */
-abstract public class Service extends android.app.Service
+public abstract class Service extends android.app.Service
 {
     private NotificationUtils mNotificationUtils;
 

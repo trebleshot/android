@@ -37,11 +37,11 @@ import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
-import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.DeviceListFragment;
+import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
@@ -170,17 +170,11 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     {
         if (resultCode == RESULT_OK && data != null)
             if (requestCode == REQUEST_BARCODE_SCAN) {
-                try {
-                    Device device = new Device(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
-                    getDatabase().reconstruct(device);
-                    DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(
-                            BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
-                    getDatabase().reconstruct(connection);
+                Device device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE);
+                DeviceConnection connection = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_CONNECTION);
 
+                if (device != null && connection != null)
                     returnResult(this, device, connection);
-                } catch (Exception e) {
-                    // do nothing
-                }
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
                 // TODO: 23.03.2020 implement
             }

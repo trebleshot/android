@@ -18,9 +18,15 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
@@ -45,6 +51,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
     private NetworkDescription mDescription;
     private InetAddress mAddress;
     private int mPin;
+    private BroadcastReceiver mReceiver = null;
 
     public DeviceIntroductionTask(InetAddress address, int pin)
     {
@@ -92,6 +99,9 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
             e.printStackTrace();
         } catch (ConnectionUtils.WifiInaccessibleException e) {
             e.printStackTrace();
+        } finally {
+            if (mReceiver != null)
+                getService().unregisterReceiver(mReceiver);
         }
 
         if (isInterrupted())
@@ -111,10 +121,20 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
     {
         ConnectionUtils utils = new ConnectionUtils(getService());
 
-        // TODO: 27.03.2020 We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
-        // to proceed, but as we are already going to do concurrent task, it should become available
-        // during that period.
         if (Build.VERSION.SDK_INT >= 29) {
+            mReceiver = new BroadcastReceiver()
+            {
+                @Override
+                public void onReceive(Context context, Intent intent)
+                {
+                    if (WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION.equals(intent.getAction()))
+                        DeviceIntroductionTask.this.notify();
+                }
+            };
+
+            getService().registerReceiver(mReceiver, new IntentFilter(
+                    WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION));
+
             int status = utils.suggestNetwork(mDescription);
             switch (status) {
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
@@ -126,7 +146,12 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE:
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS:
                 default:
-                    //
+                    setOngoingContent(getService().getString(R.string.mesg_connectingToSelfHotspot));
+                    publishStatus();
+                    wait(AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE);
+
+                    if (!utils.isConnectedToNetwork(mDescription))
+                        throw new SuggestNetworkException(mDescription, SuggestNetworkException.Type.DidNotConnect);
             }
         }
 
@@ -161,7 +186,8 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
             ExceededLimit,
             ErrorInternal,
             AppDisallowed,
-            NetworkDuplicate
+            NetworkDuplicate,
+            DidNotConnect
         }
     }
 }
