@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 
-public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListener>
+public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionTask.ResultListener>
 {
     public static final String TAG = DeviceIntroductionTask.class.getSimpleName();
 
@@ -84,6 +84,9 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
                 connectToNetwork();
 
             DeviceAddress deviceAddress = ConnectionUtils.setupConnection(getService(), mAddress, mPin);
+
+            if (hasAnchor())
+                post(() -> getAnchor().onDeviceReached(deviceAddress));
             Log.d(TAG, "onRun: Found device - " + deviceAddress.device.nickname);
         } catch (CommunicationException ignored) {
 
@@ -103,17 +106,6 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
             if (mReceiver != null)
                 getService().unregisterReceiver(mReceiver);
         }
-
-        if (isInterrupted())
-            return;
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Log.d("DeviceIntroductionTask", "onRun: rerun");
-        onRun();
     }
 
     private void connectToNetwork() throws SuggestNetworkException, ConnectionUtils.WifiInaccessibleException,
@@ -168,6 +160,11 @@ public class DeviceIntroductionTask extends AttachableBgTask<AttachedTaskListene
     public String getTitle()
     {
         return null;
+    }
+
+    public interface ResultListener extends AttachedTaskListener
+    {
+        void onDeviceReached(DeviceAddress deviceAddress);
     }
 
     public static class SuggestNetworkException extends Exception

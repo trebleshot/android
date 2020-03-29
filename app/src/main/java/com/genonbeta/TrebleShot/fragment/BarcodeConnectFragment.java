@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Service;
 import android.content.*;
 import android.content.pm.PackageManager;
@@ -39,11 +40,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.BarcodeScannerActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
@@ -67,7 +72,8 @@ import java.util.List;
  * created by: veli
  * date: 12/04/18 17:21
  */
-public class BarcodeConnectFragment extends Fragment implements TitleProvider, IconProvider
+public class BarcodeConnectFragment extends Fragment implements TitleProvider, IconProvider,
+        DeviceIntroductionTask.ResultListener
 {
     public static final String TAG = "BarcodeConnectFragment";
 
@@ -75,6 +81,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
             REQUEST_PERMISSION_LOCATION = 1 << 1,
             REQUEST_TURN_WIFI_ON = 1 << 2;
 
+    private DialogInterface.OnDismissListener mDismissListener = dialog -> updateState();
     private DecoratedBarcodeView mBarcodeView;
     private ConnectionUtils mConnectionUtils;
     private ViewGroup mConductContainer;
@@ -145,7 +152,6 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
 
             createSnackbar(mShowAsText ? R.string.mesg_qrScannerTextMode : R.string.mesg_qrScannerDefaultMode)
                     .show();
-
             updateState();
         } else
             return super.onOptionsItemSelected(item);
@@ -232,61 +238,32 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
 
     protected void handleBarcode(final String code)
     {
-        final DialogInterface.OnDismissListener dismissListener = dialog -> updateState();
-
         try {
             if (mShowAsText)
                 throw new JSONException("Showing as text.");
 
             JSONObject data = new JSONObject(code);
-            final int accessPin = data.has(Keyword.NETWORK_PIN) ? data.getInt(Keyword.NETWORK_PIN) : -1;
+            int pin = data.has(Keyword.NETWORK_PIN) ? data.getInt(Keyword.NETWORK_PIN) : -1;
 
             if (data.has(Keyword.NETWORK_SSID)) {
                 String ssid = data.getString(Keyword.NETWORK_SSID);
                 String bssid = data.has(Keyword.NETWORK_BSSID) ? data.getString(Keyword.NETWORK_BSSID) : null;
                 String password = data.has(Keyword.NETWORK_PASSWORD) ? data.getString(Keyword.NETWORK_PASSWORD) : null;
-                NetworkDescription description = new NetworkDescription(ssid, bssid, password);
 
-                BackgroundService.run(requireActivity(), new DeviceIntroductionTask(description, accessPin));
+                run(new NetworkDescription(ssid, bssid, password), pin);
             } else if (data.has(Keyword.NETWORK_ADDRESS_IP)) {
-                final String bssid = data.getString(Keyword.NETWORK_BSSID);
-                final String ipAddress = data.getString(Keyword.NETWORK_ADDRESS_IP);
-
-                WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
                 try {
-                    InetAddress address = InetAddress.getByName(ipAddress);
-                    DeviceIntroductionTask task = new DeviceIntroductionTask(address, accessPin);
-                    Runnable runnable = () -> BackgroundService.run(requireActivity(), task);
-
-                    task.setStoppable(mStoppable);
-
-                    if (wifiInfo != null && wifiInfo.getBSSID() != null && wifiInfo.getBSSID().equals(bssid)) {
-                        runnable.run();
-                    } else {
-                        mBarcodeView.pauseAndWait();
-
-                        new AlertDialog.Builder(requireActivity())
-                                .setMessage(R.string.mesg_errorNotSameNetwork)
-                                .setNegativeButton(R.string.butn_cancel, null)
-                                .setPositiveButton(R.string.butn_gotIt, (dialog, which) -> runnable.run())
-                                .setOnDismissListener(dismissListener)
-                                .show();
-                    }
+                    run(InetAddress.getByName(data.getString(Keyword.NETWORK_ADDRESS_IP)),
+                            data.getString(Keyword.NETWORK_BSSID), pin);
                 } catch (UnknownHostException e) {
-                    new AlertDialog.Builder(requireActivity())
+                    showDialog(new AlertDialog.Builder(requireActivity())
                             .setMessage(R.string.mesg_unknownHostError)
-                            .setNeutralButton(R.string.butn_close, null)
-                            .show();
+                            .setNeutralButton(R.string.butn_close, null));
                 }
-            } else {
+            } else
                 throw new JSONException("Failed to attain known variables.");
-            }
         } catch (JSONException e) {
-            e.printStackTrace();
-
-            mBarcodeView.pauseAndWait();
-
-            new AlertDialog.Builder(requireActivity())
+            showDialog(new AlertDialog.Builder(requireActivity())
                     .setTitle(R.string.text_unrecognizedQrCode)
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
@@ -310,9 +287,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                                 Toast.makeText(getContext(), R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
                             }
                         }
-                    })
-                    .setOnDismissListener(dismissListener)
-                    .show();
+                    }));
         }
     }
 
@@ -328,8 +303,40 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         return context.getString(R.string.text_scanQrCode);
     }
 
-    // TODO: 21.03.2020 Reimplement this
-    public void updateState(boolean connecting, final Stoppable stoppable)
+    private void run(NetworkDescription description, int pin)
+    {
+        run(new DeviceIntroductionTask(description, pin));
+    }
+
+    private void run(InetAddress address, String bssid, int pin)
+    {
+        Runnable runnable = () -> run(new DeviceIntroductionTask(address, pin));
+        WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
+
+        if (wifiInfo != null && wifiInfo.getBSSID() != null && wifiInfo.getBSSID().equals(bssid)) {
+            runnable.run();
+        } else {
+            showDialog(new AlertDialog.Builder(requireActivity())
+                    .setMessage(R.string.mesg_errorNotSameNetwork)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_gotIt, (dialog, which) -> runnable.run())
+                    .setOnDismissListener(mDismissListener));
+        }
+    }
+
+    private void run(DeviceIntroductionTask task)
+    {
+        task.setStoppable(mStoppable);
+        BackgroundService.run(requireActivity(), task);
+    }
+
+    private void showDialog(AlertDialog.Builder builder)
+    {
+        mBarcodeView.pauseAndWait();
+        builder.setOnDismissListener(mDismissListener).show();
+    }
+
+    public void updateState(boolean connecting)
     {
         if (!isAdded()) {
             mBarcodeView.pauseAndWait();
@@ -346,7 +353,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
         }
 
         mTaskContainer.setVisibility(connecting ? View.VISIBLE : View.GONE);
-        mTaskInterruptButton.setOnClickListener(connecting ? (View.OnClickListener) v -> stoppable.interrupt() : null);
+        mTaskInterruptButton.setOnClickListener(connecting ? (View.OnClickListener) v -> mStoppable.interrupt() : null);
     }
 
     public void updateState()
@@ -408,5 +415,27 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     protected void setConductItemsShowing(boolean showing)
     {
         mConductContainer.setVisibility(showing ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onDeviceReached(DeviceAddress deviceAddress)
+    {
+        requireActivity().setResult(Activity.RESULT_OK, new Intent()
+                .putExtra(BarcodeScannerActivity.EXTRA_DEVICE, deviceAddress.device)
+                .putExtra(BarcodeScannerActivity.EXTRA_CONNECTION, deviceAddress.connection));
+        requireActivity().finish();
+    }
+
+    @Override
+    public void onTaskStateChanged(BaseAttachableBgTask task)
+    {
+        if (task instanceof DeviceIntroductionTask)
+            updateState(!task.isFinished());
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
     }
 }

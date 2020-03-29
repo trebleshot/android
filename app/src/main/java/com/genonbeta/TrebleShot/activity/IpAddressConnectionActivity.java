@@ -25,6 +25,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -34,7 +35,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-public class IpAddressConnectionActivity extends Activity implements AttachedTaskListener
+public class IpAddressConnectionActivity extends Activity implements DeviceIntroductionTask.ResultListener
 {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -87,5 +88,11 @@ public class IpAddressConnectionActivity extends Activity implements AttachedTas
     private void setShowProgress(boolean show)
     {
         findViewById(R.id.progressBar).setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onDeviceReached(DeviceAddress deviceAddress)
+    {
+
     }
 }
