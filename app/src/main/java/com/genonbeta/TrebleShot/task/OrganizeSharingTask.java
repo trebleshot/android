@@ -84,8 +84,8 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
             addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
                     .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(group.id))));
 
-            ViewTransferActivity.startInstance(getService(), group.id);
-            AddDevicesToTransferActivity.startInstance(getService(), group.id, true);
+            ViewTransferActivity.startInstance(getService(), group);
+            AddDevicesToTransferActivity.startInstance(getService(), group, true);
             kuick().broadcast();
         }
     }

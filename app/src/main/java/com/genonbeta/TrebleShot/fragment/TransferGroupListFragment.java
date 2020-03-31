@@ -170,7 +170,7 @@ public class TransferGroupListFragment extends GroupEditableListFragment<IndexOf
     public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
                                              IndexOfTransferGroup object)
     {
-        ViewTransferActivity.startInstance(requireActivity(), object.group.id);
+        ViewTransferActivity.startInstance(requireActivity(), object.group);
         return true;
     }
 

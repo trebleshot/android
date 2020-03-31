@@ -112,13 +112,13 @@ public class LocalShareRunningTask extends BackgroundTask
         }
 
         kuick.insert(db, group, null, null);
-        ViewTransferActivity.startInstance(getService(), group.id);
+        ViewTransferActivity.startInstance(getService(), group);
 
         if (mFlagWebShare)
             getService().startActivity(new Intent(getService(), WebShareActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK));
         else
-            AddDevicesToTransferActivity.startInstance(getService(), group.id, mFlagAddNewDevice);
+            AddDevicesToTransferActivity.startInstance(getService(), group, mFlagAddNewDevice);
 
         kuick.broadcast();
     }

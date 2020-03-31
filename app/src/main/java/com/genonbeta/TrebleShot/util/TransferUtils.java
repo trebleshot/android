@@ -388,20 +388,21 @@ public class TransferUtils
         if (activity != null && !activity.isFinishing())
             activity.runOnUiThread(() -> {
                 try {
-                    final Device device = new Device(assignee.deviceId);
+                    Device device = new Device(assignee.deviceId);
+                    Kuick kuick = AppUtils.getKuick(activity);
 
-                    AppUtils.getKuick(activity).reconstruct(device);
+                    kuick.reconstruct(device);
 
                     EstablishConnectionDialog.show(activity, device, connection -> {
                         if (!assignee.connectionAdapter.equals(connection.adapterName)) {
                             assignee.connectionAdapter = connection.adapterName;
 
-                            AppUtils.getKuick(activity).publish(assignee);
-                            AppUtils.getKuick(activity).broadcast();
+                            kuick.publish(assignee);
+                            kuick.broadcast();
                         }
 
                         try {
-                            FileTransferTask task = FileTransferTask.createFrom(activity, assignee.groupId,
+                            FileTransferTask task = FileTransferTask.createFrom(kuick, assignee.groupId,
                                     assignee.deviceId, assignee.type);
 
                             BackgroundService.run(activity, task);

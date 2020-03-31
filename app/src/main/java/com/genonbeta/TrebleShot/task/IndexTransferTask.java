@@ -147,12 +147,12 @@ public class IndexTransferTask extends BackgroundTask
             kuick().remove(group);
         else if (pendingRegistry.size() > 0) {
             getService().sendBroadcast(new Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
-                    .putExtra(BackgroundService.EXTRA_GROUP_ID, mGroupId)
-                    .putExtra(BackgroundService.EXTRA_DEVICE_ID, mDevice.id));
+                    .putExtra(BackgroundService.EXTRA_GROUP, group)
+                    .putExtra(BackgroundService.EXTRA_DEVICE, mDevice));
 
             if (mNoPrompt)
                 try {
-                    getService().run(FileTransferTask.createFrom(getService(), group.id, mDevice.id,
+                    getService().run(FileTransferTask.createFrom(kuick(), group, mDevice,
                             TransferObject.Type.INCOMING));
                 } catch (Exception e) {
                     e.printStackTrace();

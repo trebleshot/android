@@ -18,15 +18,14 @@
 
 package com.genonbeta.TrebleShot.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
@@ -37,6 +36,11 @@ import java.util.List;
 
 public class IpAddressConnectionActivity extends Activity implements DeviceIntroductionTask.ResultListener
 {
+    public static final String
+            TAG = IpAddressConnectionActivity.class.getSimpleName(),
+            EXTRA_DEVICE = "extraDevice",
+            EXTRA_CONNECTION = "extraConnection";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -93,6 +97,9 @@ public class IpAddressConnectionActivity extends Activity implements DeviceIntro
     @Override
     public void onDeviceReached(DeviceAddress deviceAddress)
     {
-
+        setResult(RESULT_OK, new Intent()
+                .putExtra(EXTRA_DEVICE, deviceAddress.device)
+                .putExtra(EXTRA_CONNECTION, deviceAddress.connection));
+        finish();
     }
 }

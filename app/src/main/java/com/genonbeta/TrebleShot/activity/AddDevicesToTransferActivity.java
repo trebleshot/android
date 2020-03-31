@@ -58,8 +58,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 {
     public static final String
             TAG = AddDevicesToTransferActivity.class.getSimpleName(),
-            EXTRA_DEVICE_ID = "extraDeviceId",
-            EXTRA_GROUP_ID = "extraGroupId",
+            EXTRA_DEVICE = "extraDevice",
+            EXTRA_GROUP = "extraGroup",
             EXTRA_FLAGS = "extraFlags";
 
     public static final int
@@ -88,10 +88,10 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         }
     };
 
-    public static void startInstance(Context context, long groupId, boolean addingNewDevice)
+    public static void startInstance(Context context, TransferGroup group, boolean addingNewDevice)
     {
         context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
-                .putExtra(EXTRA_GROUP_ID, groupId)
+                .putExtra(EXTRA_GROUP, group)
                 .putExtra(EXTRA_FLAGS, addingNewDevice ? FLAG_LAUNCH_DEVICE_CHOOSER : 0)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
@@ -264,12 +264,16 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public boolean checkGroupIntegrity()
     {
         try {
-            if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP_ID))
+            if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP))
                 throw new Exception(getString(R.string.text_empty));
 
-            mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
+            if (mGroup == null)
+                mGroup = getIntent().getParcelableExtra(EXTRA_GROUP);
 
             try {
+                if (mGroup == null)
+                    throw new Exception();
+
                 getDatabase().reconstruct(mGroup);
             } catch (Exception e) {
                 throw new Exception(getString(R.string.mesg_notValidTransfer));

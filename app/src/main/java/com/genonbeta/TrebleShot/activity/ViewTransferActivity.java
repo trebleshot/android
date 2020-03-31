@@ -63,13 +63,13 @@ import java.util.List;
 
 public class ViewTransferActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
-    public static final String TAG = ViewTransferActivity.class.getSimpleName();
-
-    public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
-    public static final String EXTRA_GROUP_ID = "extraGroupId";
-    public static final String EXTRA_REQUEST_ID = "extraRequestId";
-    public static final String EXTRA_DEVICE_ID = "extraDeviceId";
-    public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
+    public static final String
+            TAG = ViewTransferActivity.class.getSimpleName(),
+            ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS",
+            EXTRA_GROUP = "extraGroup",
+            EXTRA_REQUEST_ID = "extraRequestId",
+            EXTRA_DEVICE = "extraDevice",
+            EXTRA_TRANSFER_TYPE = "extraRequestType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
     private OnBackPressedListener mBackPressedListener;
@@ -141,7 +141,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 getDatabase().reconstruct(mGroup);
 
                 getIntent().setAction(ACTION_LIST_TRANSFERS)
-                        .putExtra(EXTRA_GROUP_ID, mGroup.id);
+                        .putExtra(EXTRA_GROUP, mGroup);
 
                 new TransferInfoDialog(ViewTransferActivity.this, mIndex, mTransferObject,
                         mAssignee == null ? null : mAssignee.deviceId).show();
@@ -152,26 +152,24 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 e.printStackTrace();
                 Toast.makeText(this, R.string.mesg_notValidTransfer, Toast.LENGTH_SHORT).show();
             }
-        } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
+        } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP)) {
             try {
-                mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
-                getDatabase().reconstruct(mGroup);
-
+                mGroup = getIntent().getParcelableExtra(EXTRA_GROUP);
                 mIndex = new IndexOfTransferGroup(mGroup);
 
-                if (getIntent().hasExtra(EXTRA_REQUEST_ID) && getIntent().hasExtra(EXTRA_DEVICE_ID)
-                        && getIntent().hasExtra(EXTRA_REQUEST_TYPE)) {
+                if (getIntent().hasExtra(EXTRA_REQUEST_ID) && getIntent().hasExtra(EXTRA_DEVICE)
+                        && getIntent().hasExtra(EXTRA_TRANSFER_TYPE)) {
                     long requestId = getIntent().getLongExtra(EXTRA_REQUEST_ID, -1);
-                    String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+                    Device device = getIntent().getParcelableExtra(EXTRA_DEVICE);
 
                     try {
                         TransferObject.Type type = TransferObject.Type.valueOf(getIntent().getStringExtra(
-                                EXTRA_REQUEST_TYPE));
+                                EXTRA_TRANSFER_TYPE));
 
                         TransferObject object = new TransferObject(mGroup.id, requestId, type);
                         getDatabase().reconstruct(object);
 
-                        new TransferInfoDialog(ViewTransferActivity.this, mIndex, object, deviceId).show();
+                        new TransferInfoDialog(ViewTransferActivity.this, mIndex, object, device.id).show();
                     } catch (Exception e) {
                         // do nothing
                     }
@@ -456,14 +454,14 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     public void startDeviceAddingActivity()
     {
         startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, mGroup.id), REQUEST_ADD_DEVICES);
+                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mGroup), REQUEST_ADD_DEVICES);
     }
 
-    public static void startInstance(Context context, long groupId)
+    public static void startInstance(Context context, TransferGroup group)
     {
         context.startActivity(new Intent(context, ViewTransferActivity.class)
                 .setAction(ACTION_LIST_TRANSFERS)
-                .putExtra(EXTRA_GROUP_ID, groupId)
+                .putExtra(EXTRA_GROUP, group)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 

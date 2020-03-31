@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -37,7 +36,6 @@ import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
@@ -134,48 +132,59 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             kuick().broadcast();
     }
 
-    public static FileTransferTask createFrom(Context context, long groupId, String deviceId, TransferObject.Type type)
+    public static FileTransferTask createFrom(Kuick kuick, long groupId, String deviceId, TransferObject.Type type)
             throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException,
             AssigneeNotFoundException
     {
-        Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getReadableDatabase();
+        Device device = new Device(deviceId);
+
+        try {
+            kuick.reconstruct(db, device);
+        } catch (ReconstructionFailedException e) {
+            throw new DeviceNotFoundException(device);
+        }
+
+        TransferGroup group = new TransferGroup(groupId);
+
+        try {
+            kuick.reconstruct(db, group);
+        } catch (ReconstructionFailedException e) {
+            throw new TransferGroupNotFoundException(group);
+        }
+
+        return createFrom(kuick, group, device, type);
+    }
+
+    public static FileTransferTask createFrom(Kuick kuick, TransferGroup group, Device device, TransferObject.Type type)
+            throws AssigneeNotFoundException, ConnectionNotFoundException
+    {
+        SQLiteDatabase db = kuick.getReadableDatabase();
+        TransferAssignee assignee = new TransferAssignee(group, device, type);
+
+        try {
+            kuick.reconstruct(db, assignee);
+        } catch (ReconstructionFailedException e) {
+            throw new AssigneeNotFoundException(assignee);
+        }
+
+        DeviceConnection connection = new DeviceConnection(assignee);
+
+        try {
+            kuick.reconstruct(db, connection);
+        } catch (ReconstructionFailedException e) {
+            throw new ConnectionNotFoundException(connection);
+        }
+
+        Log.d(TAG, "createFrom: deviceId=" + device.id + " groupId=" + group.id + " adapter="
+                + assignee.connectionAdapter);
+
         FileTransferTask task = new FileTransferTask();
         task.type = type;
-        task.device = new Device(deviceId);
-
-        try {
-            kuick.reconstruct(db, task.device);
-        } catch (ReconstructionFailedException e) {
-            throw new DeviceNotFoundException(task.device);
-        }
-
-        task.group = new TransferGroup(groupId);
-
-        try {
-            kuick.reconstruct(db, task.group);
-        } catch (ReconstructionFailedException e) {
-            throw new TransferGroupNotFoundException(task.group);
-        }
-
-        task.assignee = new TransferAssignee(task.group, task.device, task.type);
-
-        try {
-            kuick.reconstruct(db, task.assignee);
-        } catch (ReconstructionFailedException e) {
-            throw new AssigneeNotFoundException(task.assignee);
-        }
-
-        task.connection = new DeviceConnection(task.assignee);
-
-        try {
-            kuick.reconstruct(db, task.connection);
-        } catch (ReconstructionFailedException e) {
-            throw new ConnectionNotFoundException(task.connection);
-        }
-
-        Log.d(TAG, "startTransferAsClient(): With deviceId=" + task.device.id + " groupId=" + task.group.id
-                + " adapter=" + task.assignee.connectionAdapter);
+        task.device = device;
+        task.group = group;
+        task.assignee = assignee;
+        task.connection = connection;
 
         return task;
     }

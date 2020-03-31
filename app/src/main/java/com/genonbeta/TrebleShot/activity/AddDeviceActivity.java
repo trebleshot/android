@@ -45,7 +45,6 @@ import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -88,24 +87,18 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                     // do nothing
                 }
             } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE.equals(intent.getAction())
-                    && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ID)
-                    && intent.hasExtra(BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME)) {
-                Device device = new Device(intent.getStringExtra(BackgroundService.EXTRA_DEVICE_ID));
-                DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(
-                        BackgroundService.EXTRA_CONNECTION_ADAPTER_NAME));
+                    && intent.hasExtra(BackgroundService.EXTRA_DEVICE)
+                    && intent.hasExtra(BackgroundService.EXTRA_CONNECTION)) {
+                Device device = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE);
+                DeviceConnection connection = intent.getParcelableExtra(BackgroundService.EXTRA_CONNECTION);
 
-                try {
-                    AppUtils.getKuick(AddDeviceActivity.this).reconstruct(device);
-                    AppUtils.getKuick(AddDeviceActivity.this).reconstruct(connection);
+                if (device != null && connection != null)
                     returnResult(AddDeviceActivity.this, device, connection);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
             } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY.equals(intent.getAction())
-                    && intent.hasExtra(BackgroundService.EXTRA_GROUP_ID)) {
+                    && intent.hasExtra(BackgroundService.EXTRA_GROUP)) {
                 ViewTransferActivity.startInstance(AddDeviceActivity.this,
-                        intent.getLongExtra(BackgroundService.EXTRA_GROUP_ID, -1));
+                        intent.getParcelableExtra(BackgroundService.EXTRA_GROUP));
                 finish();
             }
         }
@@ -176,7 +169,11 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 if (device != null && connection != null)
                     returnResult(this, device, connection);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
-                // TODO: 23.03.2020 implement
+                Device device = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_DEVICE);
+                DeviceConnection connection = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_CONNECTION);
+
+                if (device != null && connection != null)
+                    returnResult(this, device, connection);
             }
 
         super.onActivityResult(requestCode, resultCode, data);

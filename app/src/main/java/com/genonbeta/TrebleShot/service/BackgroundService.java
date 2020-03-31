@@ -81,13 +81,13 @@ public class BackgroundService extends Service
             ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE", // FIXME: only the parent activity should listen to this
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
-            EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
-            EXTRA_DEVICE_ID = "extraDeviceId",
+            EXTRA_CONNECTION = "extraConnectionAdapterName",
+            EXTRA_DEVICE = "extraDevice",
             EXTRA_DEVICE_PIN = "extraDevicePin",
-            EXTRA_GROUP_ID = "extraGroupId",
+            EXTRA_GROUP = "extraGroup",
             EXTRA_IDENTITY = "extraIdentity",
             EXTRA_ACCEPTED = "extraAccepted",
-            EXTRA_REQUEST_ID = "extraRequestId",
+            EXTRA_REQUEST_ID = "extraRequest",
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     private final List<BackgroundTask> mTaskList = new ArrayList<>();
@@ -151,33 +151,27 @@ public class BackgroundService extends Service
 
         if (intent != null && AppUtils.checkRunningConditions(this)) {
             if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
-                final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-                final long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
+                Device device = intent.getParcelableExtra(EXTRA_DEVICE);
+                TransferGroup group = intent.getParcelableExtra(EXTRA_GROUP);
                 final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 final boolean isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
                 try {
-                    final Device device = new Device(deviceId);
-                    getKuick().reconstruct(device);
+                    if (device == null || group == null)
+                        throw new Exception("The device or group instance is broken");
 
-                    TransferGroup group = new TransferGroup(groupId);
-                    getKuick().reconstruct(group);
-
-                    TransferAssignee assignee = new TransferAssignee(groupId, deviceId, TransferObject.Type.INCOMING);
-                    getKuick().reconstruct(assignee);
-
-                    final DeviceConnection connection = new DeviceConnection(assignee);
-                    getKuick().reconstruct(connection);
+                    FileTransferTask task = FileTransferTask.createFrom(getKuick(), group, device,
+                            TransferObject.Type.INCOMING);
 
                     CommunicationBridge.connect(getKuick(), client -> {
                         try {
-                            ActiveConnection activeConnection = client.communicate(device, connection);
+                            ActiveConnection activeConnection = client.communicate(device, task.connection);
 
                             activeConnection.reply(new JSONObject()
                                     .put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
-                                    .put(Keyword.TRANSFER_GROUP_ID, groupId)
+                                    .put(Keyword.TRANSFER_GROUP_ID, group.id)
                                     .put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
                                     .toString());
 
@@ -189,9 +183,9 @@ public class BackgroundService extends Service
                     });
 
                     if (isAccepted)
-                        run(FileTransferTask.createFrom(this, groupId, deviceId, TransferObject.Type.INCOMING));
+                        run(task);
                     else {
-                        getKuick().remove(group);
+                        getKuick().remove(getKuick().getWritableDatabase(), task.assignee, task.group, null);
                         getKuick().broadcast();
                     }
                 } catch (Exception e) {
@@ -201,26 +195,21 @@ public class BackgroundService extends Service
                         getNotificationHelper().showToast(R.string.mesg_somethingWentWrong);
                 }
             } else if (ACTION_DEVICE_APPROVAL.equals(intent.getAction())) {
-                String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-                boolean isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
+                Device device = intent.getParcelableExtra(EXTRA_DEVICE);
+                boolean accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 int suggestedPin = intent.getIntExtra(EXTRA_DEVICE_PIN, -1);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
-                Device device = new Device(deviceId);
+                if (device != null) {
+                    device.isRestricted = !accepted;
 
-                try {
-                    getKuick().reconstruct(device);
-                    device.isRestricted = !isAccepted;
-
-                    if (isAccepted)
+                    if (accepted)
                         device.secureKey = suggestedPin;
 
                     getKuick().update(device);
                     getKuick().broadcast();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             } else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
@@ -246,19 +235,21 @@ public class BackgroundService extends Service
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
                 stopSelf();
-            } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_GROUP_ID)
-                    && intent.hasExtra(EXTRA_DEVICE_ID) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
-                long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
-                String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-                String typeString = intent.getStringExtra(EXTRA_TRANSFER_TYPE);
+            } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_GROUP)
+                    && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
+                Device device = intent.getParcelableExtra(EXTRA_DEVICE);
+                TransferGroup group = intent.getParcelableExtra(EXTRA_GROUP);
+                TransferObject.Type type = (TransferObject.Type) intent.getSerializableExtra(EXTRA_TRANSFER_TYPE);
 
                 try {
-                    TransferObject.Type type = TransferObject.Type.valueOf(typeString);
-                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(groupId,
-                            deviceId, type));
+                    if (device == null || group == null || type == null)
+                        throw new Exception();
+
+                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(group.id,
+                            device.id, type));
 
                     if (task == null)
-                        run(FileTransferTask.createFrom(this, groupId, deviceId, type));
+                        run(FileTransferTask.createFrom(getKuick(), group, device, type));
                     else
                         Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.object.name),
                                 Toast.LENGTH_SHORT).show();
@@ -738,8 +729,8 @@ public class BackgroundService extends Service
                             break;
                         case (Keyword.REQUEST_ACQUAINTANCE):
                             sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
-                                    .putExtra(EXTRA_DEVICE_ID, device.id)
-                                    .putExtra(EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
+                                    .putExtra(EXTRA_DEVICE, device)
+                                    .putExtra(EXTRA_CONNECTION, connection));
 
                             result = true;
                             break;

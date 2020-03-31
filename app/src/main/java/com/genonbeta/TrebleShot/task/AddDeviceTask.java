@@ -157,8 +157,8 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     public void now(AddDevicesToTransferActivity anchor)
                     {
                         anchor.setResult(RESULT_OK, new Intent()
-                                .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
-                                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
+                                .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
+                                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mGroup));
 
                         anchor.finish();
                     }
