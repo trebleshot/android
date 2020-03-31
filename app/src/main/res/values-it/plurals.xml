@@ -13,7 +13,7 @@
         <item quantity="other">%d file selezionati</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="one">1 trasferimento in attesa sarà eliminato</item>
+        <item quantity="one">Il trasferimento in attesa sarà eliminato</item>
         <item quantity="other">%d trasferimenti in attesa saranno eliminati</item>
     </plurals>
     <plurals name="text_availableConnections">
@@ -26,14 +26,14 @@
     </plurals>
     <plurals name="text_files">
         <item quantity="one">%d file</item>
-        <item quantity="other">%d files</item>
+        <item quantity="other">%d file</item>
     </plurals>
     <plurals name="text_secondsAgo">
-        <item quantity="one">Un secondo fa</item>
+        <item quantity="one">1 secondo fa</item>
         <item quantity="other">%d secondi fa</item>
     </plurals>
     <plurals name="text_minutesAgo">
-        <item quantity="one">Un minuto fa</item>
+        <item quantity="one">1 minuto fa</item>
         <item quantity="other">%d minuti fa</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
