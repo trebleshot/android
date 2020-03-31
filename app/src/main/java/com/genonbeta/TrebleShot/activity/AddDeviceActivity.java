@@ -57,8 +57,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     public static final String
             ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT",
             EXTRA_FRAGMENT_ENUM = "extraFragmentEnum",
-            EXTRA_DEVICE_ID = "extraDeviceId",
-            EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
+            EXTRA_DEVICE = "extraDevice",
+            EXTRA_CONNECTION = "extraConnection";
 
     public static final int
             REQUEST_BARCODE_SCAN = 100,
@@ -256,14 +256,9 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
     public static void returnResult(android.app.Activity activity, Device device, DeviceConnection connection)
     {
-        returnResult(activity, device.id, connection.adapterName);
-    }
-
-    public static void returnResult(android.app.Activity activity, String deviceId, String adapterName)
-    {
         activity.setResult(RESULT_OK, new Intent()
-                .putExtra(EXTRA_DEVICE_ID, deviceId)
-                .putExtra(EXTRA_CONNECTION_ADAPTER, adapterName));
+                .putExtra(EXTRA_DEVICE, device.id)
+                .putExtra(EXTRA_CONNECTION, connection.adapterName));
 
         activity.finish();
     }

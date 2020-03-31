@@ -43,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  * date: 11.02.2018 15:07
  */
 
-abstract public class CommunicationBridge implements CoolSocket.Client.ConnectionHandler
+public abstract class CommunicationBridge implements CoolSocket.Client.ConnectionHandler
 {
     public static final String TAG = CommunicationBridge.class.getSimpleName();
 
@@ -111,8 +111,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             if (!inetAddress.isReachable(1000))
                 throw new IOException("Ping test before connection to the address has failed");
 
-            return connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
-                    AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            return openConnection(this, inetAddress);
         }
 
         public ActiveConnection connect(DeviceConnection connection) throws IOException
@@ -175,6 +174,13 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             }
         }
 
+        public static ActiveConnection openConnection(CoolSocket.Client client, InetAddress inetAddress)
+                throws IOException
+        {
+            return client.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
+                    AppConfig.DEFAULT_SOCKET_TIMEOUT);
+        }
+
         public void setDevice(Device device)
         {
             mDevice = device;
@@ -200,7 +206,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                     try {
                         Device existingDevice = new Device(loadedDevice.id);
 
-                        AppUtils.getKuick(getContext()).reconstruct(existingDevice);
+                        getKuick().reconstruct(existingDevice);
                         setDevice(existingDevice);
                     } catch (ReconstructionFailedException ignored) {
                         loadedDevice.secureKey = AppUtils.generateKey();

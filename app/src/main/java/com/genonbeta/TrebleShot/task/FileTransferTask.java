@@ -82,7 +82,6 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     @Override
     protected void onRun() throws InterruptedException
     {
-
         if (this.activeConnection == null)
             startTransferAsClient();
         else if (TransferObject.Type.OUTGOING.equals(type))
@@ -185,6 +184,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         task.group = group;
         task.assignee = assignee;
         task.connection = connection;
+        task.index = new IndexOfTransferGroup(group);
 
         return task;
     }

@@ -222,8 +222,7 @@ public class TransferUtils
                 (db, item, object) -> loadAssigneeInfo(db, object));
     }
 
-    public static void loadGroupInfo(Context context, IndexOfTransferGroup group,
-                                     @Nullable TransferAssignee assignee)
+    public static void loadGroupInfo(Context context, IndexOfTransferGroup group, @Nullable TransferAssignee assignee)
     {
         if (assignee == null)
             loadGroupInfo(context, group);
@@ -318,17 +317,15 @@ public class TransferUtils
 
     public static void recoverIncomingInterruptions(Context context, long groupId)
     {
+        Kuick kuick = AppUtils.getKuick(context);
         ContentValues contentValues = new ContentValues();
         contentValues.put(Kuick.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
 
-        AppUtils.getKuick(context).update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
-                                + Kuick.FIELD_TRANSFER_FLAG + "=? AND "
-                                + Kuick.FIELD_TRANSFER_TYPE + "=?",
-                        String.valueOf(groupId),
-                        TransferObject.Flag.INTERRUPTED.toString(),
-                        TransferObject.Type.INCOMING.toString()), contentValues);
-        AppUtils.getKuick(context).broadcast();
+        kuick.update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND  " + Kuick.FIELD_TRANSFER_FLAG + "=? AND "
+                                + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(groupId),
+                        TransferObject.Flag.INTERRUPTED.toString(), TransferObject.Type.INCOMING.toString()), contentValues);
+        kuick.broadcast();
     }
 
     public static void startTransferWithTest(final Activity activity, final TransferGroup group,
@@ -336,51 +333,29 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
-        // FIXME: 21.03.2020
-        /*
-        new BackgroundTask()
-        {
-            @Override
-            protected void onRun()
-            {
-                if (activity.isFinishing())
-                    return;
+        if (activity.isFinishing())
+            return;
 
-                if (TransferObject.Type.INCOMING.equals(assignee.type)
-                        && fetchFirstValidIncomingTransfer(activity, group.id) == null) {
-                    activity.runOnUiThread(() -> {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                        builder.setMessage(R.string.mesg_noPendingTransferObjectExists);
-                        builder.setNegativeButton(R.string.butn_close, null);
-
-                        builder.setPositiveButton(R.string.butn_retryReceiving, (dialog, which) -> {
-                            recoverIncomingInterruptions(activity, group.id);
-                            startTransferWithTest(activity, group, assignee);
-                        });
-
-                        builder.show();
-                    });
-                } else if (TransferObject.Type.INCOMING.equals(assignee.type) && !FileUtils.getSavePath(
-                        activity, group).getUri().toString().equals(group.savePath)) {
-                    activity.runOnUiThread(() -> {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                        builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation,
-                                FileUtils.getReadableUri(group.savePath)));
-                        builder.setNegativeButton(R.string.butn_close, null);
-
-                        builder.setPositiveButton(R.string.butn_gotIt,
-                                (dialog, which) -> startTransfer(activity, assignee));
-
-                        builder.show();
-                    });
-                } else
-                    startTransfer(activity, assignee);
-            }
-        }.run(activity);
-
-         */
+        if (TransferObject.Type.INCOMING.equals(assignee.type)
+                && fetchFirstValidIncomingTransfer(activity, group.id) == null) {
+            activity.runOnUiThread(() -> new AlertDialog.Builder(activity)
+                    .setMessage(R.string.mesg_noPendingTransferObjectExists)
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(R.string.butn_retryReceiving, (dialog, which) -> {
+                        recoverIncomingInterruptions(activity, group.id);
+                        startTransferWithTest(activity, group, assignee);
+                    })
+                    .show());
+        } else if (TransferObject.Type.INCOMING.equals(assignee.type) && !FileUtils.getSavePath(activity, group)
+                .getUri().toString().equals(group.savePath)) {
+            activity.runOnUiThread(() -> new AlertDialog.Builder(activity)
+                    .setMessage(context.getString(R.string.mesg_notSavingToChosenLocation,
+                            FileUtils.getReadableUri(group.savePath)))
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(R.string.butn_gotIt, (dialog, which) -> startTransfer(activity, assignee))
+                    .show());
+        } else
+            startTransfer(activity, assignee);
     }
 
     public static void startTransfer(final Activity activity, final TransferAssignee assignee)

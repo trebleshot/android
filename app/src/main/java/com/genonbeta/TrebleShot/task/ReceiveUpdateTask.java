@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -37,7 +38,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.util.concurrent.TimeoutException;
 
 public class ReceiveUpdateTask extends BackgroundTask
@@ -54,14 +54,13 @@ public class ReceiveUpdateTask extends BackgroundTask
     @Override
     public void onRun() throws InterruptedException
     {
-        try {
-            setOngoingContent(getService().getString(R.string.mesg_waiting));
+        int versionCode;
+        long updateSize;
+        CoolSocket.Client client = new CoolSocket.Client();
 
-            int versionCode;
-            long updateSize;
-            CoolSocket.Client client = new CoolSocket.Client();
-            ActiveConnection activeConnection = client.connect(new InetSocketAddress(mConnection.ipAddress,
-                    AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+        try (ActiveConnection activeConnection = CommunicationBridge.Client.openConnection(client,
+                mConnection.toInet4Address())) {
+            setOngoingContent(getService().getString(R.string.mesg_waiting));
 
             activeConnection.reply(new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_UPDATE_V2)
@@ -91,55 +90,46 @@ public class ReceiveUpdateTask extends BackgroundTask
             setOngoingContent(getService().getString(R.string.text_receiving));
             publishStatus();
 
-            DocumentFile tmpFile;
+            DocumentFile dir = FileUtils.getApplicationDirectory(getService());
+            String fileName = FileUtils.getUniqueFileName(dir, getService().getString(R.string.text_appName)
+                    + "_v" + versionCode + ".apk", true);
+            DocumentFile tmpFile = dir.createFile(null, fileName);
 
-            {
-                DocumentFile dir = FileUtils.getApplicationDirectory(getService());
-                String fileName = getService().getString(R.string.text_appName) + "_v" + versionCode + ".apk";
+            InputStream inputStream = activeConnection.getSocket().getInputStream();
+            OutputStream outputStream = getService().getContentResolver().openOutputStream(tmpFile.getUri());
 
-                fileName = FileUtils.getUniqueFileName(dir, fileName, true);
-                tmpFile = dir.createFile(null, fileName);
+            if (outputStream == null)
+                throw new IOException("Could open a file to save the update.");
 
-                InputStream inputStream = activeConnection.getSocket().getInputStream();
-                OutputStream outputStream = getService().getContentResolver().openOutputStream(tmpFile.getUri());
+            long receivedBytes = 0;
+            long lastRead = System.nanoTime();
+            int len;
+            byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
 
-                if (outputStream == null)
-                    throw new IOException("Could open a file to save the update.");
+            while (receivedBytes < updateSize) {
+                throwIfInterrupted();
 
-                long receivedBytes = 0;
-                long lastRead = System.nanoTime();
-                int len;
-                byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
+                if ((len = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, len);
+                    outputStream.flush();
 
-                while (receivedBytes < updateSize) {
-                    throwIfInterrupted();
+                    receivedBytes += len;
+                    lastRead = System.nanoTime();
 
-                    if ((len = inputStream.read(buffer)) > 0) {
-                        outputStream.write(buffer, 0, len);
-                        outputStream.flush();
-
-                        receivedBytes += len;
-                        lastRead = System.nanoTime();
-
-                        progress().setTotal((int) ((100 / updateSize) * receivedBytes));
-                        publishStatus();
-                    }
-
-                    if (System.nanoTime() - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6)
-                        throw new TimeoutException("Did not read for 5secs");
+                    progress().setTotal((int) ((100 / updateSize) * receivedBytes));
+                    publishStatus();
                 }
 
-                outputStream.close();
+                if (System.nanoTime() - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6)
+                    throw new TimeoutException("Did not read for 5secs");
             }
-
-            final DocumentFile updateFile = tmpFile;
 
             post(TaskMessage.newInstance()
                     .setTone(TaskMessage.Tone.Positive)
                     .setTitle(getService(), R.string.text_taskCompleted)
                     .setMessage(getService(), R.string.mesg_updateDownloadComplete)
                     .addAction(getService(), R.string.butn_open, TaskMessage.Tone.Positive,
-                            (service, msg, action) -> FileUtils.openUriForeground(getService(), updateFile)));
+                            (service, msg, action) -> FileUtils.openUriForeground(getService(), tmpFile)));
         } catch (IOException | CommunicationException | JSONException | TimeoutException e) {
             e.printStackTrace();
 

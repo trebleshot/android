@@ -43,6 +43,8 @@ import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.task.ChangeSaveDirectoryTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
@@ -183,71 +185,16 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
             } else if (selectedPath.toString().equals(getGroup().savePath)) {
                 createSnackbar(R.string.mesg_pathSameError).show();
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity())
+                ChangeSaveDirectoryTask task = new ChangeSaveDirectoryTask(mGroup, selectedPath);
+                new AlertDialog.Builder(requireActivity())
                         .setTitle(R.string.ques_checkOldFiles)
                         .setMessage(R.string.text_checkOldFiles)
                         .setNeutralButton(R.string.butn_cancel, null)
-                        .setNegativeButton(R.string.butn_skip, (dialogInterface, i) -> updateSavePath(selectedPath.toString()))
-                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> {
-                                }
-                                // FIXME: 21.03.2020
-                        /*new BackgroundTask()
-                        {
-                            @Override
-                            public void onRun()
-                            {
-                                TransferUtils.pauseTransfer(getContext(), mHeldGroup, TransferObject.Type.INCOMING);
-                                List<TransferObject> checkList = AppUtils.getKuick(getService()).
-                                        castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
-                                                Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                        + Kuick.FIELD_TRANSFER_TYPE + "=?",
-                                                String.valueOf(getTransferGroup().id),
-                                                TransferObject.Type.INCOMING.toString()),
-                                                TransferObject.class);
-
-                                TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().id);
-
-                                try {
-                                    // Illustrate new change to build the structure accordingly
-                                    AppUtils.getKuick(getService()).reconstruct(pseudoGroup);
-                                    pseudoGroup.savePath = selectedPath.toString();
-
-                                    for (TransferObject transferObject : checkList) {
-                                        if (isInterrupted())
-                                            throw new InterruptedException();
-
-                                        DocumentFile file;
-                                        DocumentFile pseudoFile;
-
-                                        publishStatusText(transferObject.name);
-
-                                        try {
-                                            file = FileUtils.getIncomingPseudoFile(getService(), transferObject,
-                                                    getTransferGroup(), false);
-                                            pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferObject,
-                                                    pseudoGroup, true);
-                                        } catch (Exception e) {
-                                            continue;
-                                        }
-
-                                        if (file != null && pseudoFile != null) {
-                                            if (file.canWrite())
-                                                FileUtils.move(getService(), file, pseudoFile, this);
-                                            else
-                                                throw new IOException("Failed to access: " + file.getUri());
-                                        }
-                                    }
-
-                                    updateSavePath(selectedPath.toString());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.setTitle(getString(R.string.mesg_organizingFiles))
-                                .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
-                                .run(requireContext())*/);
-
-                builder.show();
+                        .setNegativeButton(R.string.butn_skip, (dialogInterface, i) -> BackgroundService.run(
+                                requireActivity(), task.setSkipMoving(true)))
+                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> BackgroundService.run(
+                                requireActivity(), task))
+                        .show();
             }
         }
     }
@@ -367,14 +314,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
 
     public void updateSavePath(String selectedPath)
     {
-        TransferGroup group = getGroup();
-
-        group.savePath = selectedPath;
-        AppUtils.getKuick(getContext()).publish(group);
-        AppUtils.getKuick(getContext()).broadcast();
-
-        if (isAdded())
-            requireActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());
+        requireActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());
     }
 
     private static class SelectionCallback extends EditableListFragment.SelectionCallback

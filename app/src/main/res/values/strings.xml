@@ -183,8 +183,8 @@
     <string name="text_chooseFile">Choose file</string>
     <string name="mesg_pathSameError">You can not select the old folder</string>
     <string name="ques_checkOldFiles">Move files?</string>
-    <string name="text_checkOldFiles">You can move associated files completed and partly completed to this folder and
-        this may take some time depending on the sizes
+    <string name="text_checkOldFiles">Already saved files can be moved to this folder. You will not see them in the see
+        them in the same folder if you don\'t move them.
     </string>
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>

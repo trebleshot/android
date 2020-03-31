@@ -31,9 +31,10 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.task.TextShareTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -103,21 +104,14 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
 
         if (resultCode == android.app.Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
-                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
-                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
-                String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
-                String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
+                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
+                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION)) {
+                Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
+                DeviceConnection connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
+                String text = mEditTextEditor.getText() != null ? mEditTextEditor.getText().toString() : null;
 
-                try {
-                    Device device = new Device(deviceId);
-                    DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
-
-                    getDatabase().reconstruct(device);
-                    getDatabase().reconstruct(connection);
-
-                    doCommunicate(device, connection);
-                } catch (Exception e) {
-                    Toast.makeText(TextEditorActivity.this, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+                if (device != null && connection != null && text != null) {
+                    runUiTask(new TextShareTask(device, connection, text));
                 }
             }
         }
@@ -269,51 +263,6 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
     public Snackbar createSnackbar(int resId, Object... objects)
     {
         return Snackbar.make(findViewById(android.R.id.content), getString(resId, objects), Snackbar.LENGTH_LONG);
-    }
-
-    protected void doCommunicate(final Device device, final DeviceConnection connection)
-    {
-        createSnackbar(R.string.mesg_communicating).show();
-
-        // FIXME: 21.03.2020
-        /*
-        new BackgroundTask()
-        {
-            @Override
-            public void onRun()
-            {
-                final DialogInterface.OnClickListener retryButtonListener = (dialog, which) ->
-                        doCommunicate(device, connection);
-
-                CommunicationBridge.connect(getDatabase(), true, client -> {
-                    try {
-
-                        final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
-                        final JSONObject jsonRequest = new JSONObject()
-                                .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
-                                .put(Keyword.TRANSFER_CLIPBOARD_TEXT, mEditTextEditor.getText().toString());
-
-                        activeConnection.reply(jsonRequest.toString());
-
-                        JSONObject clientResponse = new JSONObject(activeConnection.receive().response);
-                        activeConnection.getSocket().close();
-
-                        if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT))
-                            createSnackbar(R.string.mesg_sent).show();
-                        else
-                            UIConnectionUtils.showConnectionRejectionInformation(
-                                    TextEditorActivity.this,
-                                    device, clientResponse, retryButtonListener);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        UIConnectionUtils.showUnknownError(TextEditorActivity.this, retryButtonListener);
-                    }
-                });
-            }
-        }.setTitle(getString(R.string.mesg_communicating))
-                .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
-                .run(this);
-         */
     }
 
     public void removeText()

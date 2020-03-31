@@ -60,7 +60,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_sharing);
-	    //todo: The menu view has an arbitrary position. Can this be fixed by using Snackbar does?
+	    //todo: The menu view has an arbitrary position. Can this be fixed by using what Snackbar does?
         ActionMenuView menuView = findViewById(R.id.menu_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

@@ -180,23 +180,13 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
         if (resultCode == android.app.Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
-                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
-                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
-                String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
-                String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
+                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
+                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION)) {
+                Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
+                DeviceConnection connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
 
-                try {
-                    Device device = new Device(deviceId);
-                    DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
-
-                    getDatabase().reconstruct(device);
-                    getDatabase().reconstruct(connection);
-
+                if (device != null && connection != null)
                     runUiTask(new AddDeviceTask(mGroup, device, connection));
-                } catch (Exception e) {
-                    Toast.makeText(AddDevicesToTransferActivity.this,
-                            R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
-                }
             }
         }
     }

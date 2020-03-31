@@ -764,6 +764,7 @@ public class BackgroundService extends Service
                                         task.device = device;
                                         task.type = type;
                                         task.assignee = new TransferAssignee(group, device, type);
+                                        task.index = new IndexOfTransferGroup(group);
 
                                         getKuick().reconstruct(task.assignee);
 

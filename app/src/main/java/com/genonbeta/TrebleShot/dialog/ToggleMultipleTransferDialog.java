@@ -29,8 +29,8 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -69,8 +69,9 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
             }
 
         if (index.hasIncoming() && senderAssignee != null) {
-            final ShowingAssignee finalSenderAssignee = senderAssignee;
-            setPositiveButton(R.string.butn_receive, (dialog, which) -> startTransfer(activity, index, finalSenderAssignee));
+            ShowingAssignee finalSenderAssignee = senderAssignee;
+            setPositiveButton(R.string.butn_receive, (dialog, which) -> startTransfer(activity, index,
+                    finalSenderAssignee));
         }
     }
 

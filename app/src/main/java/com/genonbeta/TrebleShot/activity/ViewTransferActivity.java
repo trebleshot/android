@@ -136,8 +136,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                 mTransferObject = new TransferObject();
                 mTransferObject.reconstruct(getDatabase().getWritableDatabase(), getDatabase(), fileData);
 
-                mGroup = new TransferGroup(mTransferObject.groupId);
-                mIndex = new IndexOfTransferGroup(mGroup);
                 getDatabase().reconstruct(mGroup);
 
                 getIntent().setAction(ACTION_LIST_TRANSFERS)
@@ -154,8 +152,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             }
         } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP)) {
             try {
-                mGroup = getIntent().getParcelableExtra(EXTRA_GROUP);
-                mIndex = new IndexOfTransferGroup(mGroup);
+                setGroup(getIntent().getParcelableExtra(EXTRA_GROUP));
 
                 if (getIntent().hasExtra(EXTRA_REQUEST_ID) && getIntent().hasExtra(EXTRA_DEVICE)
                         && getIntent().hasExtra(EXTRA_TRANSFER_TYPE)) {
@@ -386,6 +383,12 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             e.printStackTrace();
             finish();
         }
+    }
+
+    private void setGroup(TransferGroup group)
+    {
+        mGroup = group;
+        mIndex = new IndexOfTransferGroup(group);
     }
 
     public void showMenus()
