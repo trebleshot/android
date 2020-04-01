@@ -237,6 +237,4 @@ public class App extends Application implements Thread.UncaughtExceptionHandler,
 
         mDefaultExceptionHandler.uncaughtException(t, e);
     }
-
-
 }

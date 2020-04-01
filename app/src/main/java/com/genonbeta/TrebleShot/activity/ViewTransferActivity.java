@@ -72,6 +72,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             EXTRA_TRANSFER_TYPE = "extraRequestType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
+
     private OnBackPressedListener mBackPressedListener;
     private TransferGroup mGroup;
     private IndexOfTransferGroup mIndex;
@@ -109,7 +110,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
         setContentView(R.layout.activity_view_transfer);
 
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
@@ -580,7 +581,9 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
          */
         public interface PostExecuteListener
         {
-            void onPostExecute();
+            void onPostExecute() {
+
+            }
         }
     }
 }

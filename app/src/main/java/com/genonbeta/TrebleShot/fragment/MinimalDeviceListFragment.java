@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -31,10 +32,15 @@ import com.genonbeta.TrebleShot.object.Device;
 public class MinimalDeviceListFragment extends DeviceListFragment
 {
     @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        setHiddenDeviceTypes(new Device.Type[]{Device.Type.WEB});
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        setHiddenDeviceTypes(new Device.Type[]{Device.Type.WEB});
-
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(false);

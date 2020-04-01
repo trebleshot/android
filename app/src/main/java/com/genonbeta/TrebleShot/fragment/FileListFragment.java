@@ -297,7 +297,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     public void onResume()
     {
         super.onResume();
-        getActivity().registerReceiver(mReceiver, mIntentFilter);
+        requireActivity().registerReceiver(mReceiver, mIntentFilter);
         mMediaScanner.connect();
     }
 
@@ -305,7 +305,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     public void onPause()
     {
         super.onPause();
-        getActivity().unregisterReceiver(mReceiver);
+        requireActivity().unregisterReceiver(mReceiver);
         mMediaScanner.disconnect();
     }
 

@@ -35,26 +35,21 @@ import java.util.List;
  * date: 26.02.2018 08:53
  */
 
-public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends AbstractSingleTextInputDialog
+public class FileRenameDialog extends AbstractSingleTextInputDialog
 {
     public static final String TAG = FileRenameDialog.class.getSimpleName();
-    public static final int JOB_RENAME_FILES = 0;
 
-    private List<T> mItemList = new ArrayList<>();
+    private List<FileListAdapter.FileHolder> mItemList = new ArrayList<>();
 
-    public FileRenameDialog(final Context context, List<T> itemList, final OnFileRenameListener renameListener)
+    public FileRenameDialog(Context context, List<? extends FileListAdapter.FileHolder> itemList,
+                            final OnFileRenameListener renameListener)
     {
         super(context);
 
         mItemList.addAll(itemList);
 
-        setTitle(mItemList.size() > 1
-                ? R.string.text_renameMultipleItems
-                : R.string.text_rename);
-
-        getEditText().setText(mItemList.size() > 1
-                ? "%d"
-                : mItemList.get(0).fileName);
+        setTitle(mItemList.size() > 1 ? R.string.text_renameMultipleItems : R.string.text_rename);
+        getEditText().setText(mItemList.size() > 1 ? "%d" : mItemList.get(0).fileName);
 
         setOnProceedClickListener(R.string.butn_rename, dialog -> {
             final String renameTo = getEditText().getText().toString();
@@ -71,41 +66,8 @@ public class FileRenameDialog<T extends FileListAdapter.FileHolder> extends Abst
                 return false;
             }
 
-            // FIXME: 21.03.2020
-            /*
-            new BackgroundTask()
-            {
-                @Override
-                protected void onRun()
-                {
-                    int fileId = 0;
-
-                    for (T fileHolder : getItemList()) {
-                        publishStatusText(fileHolder.friendlyName);
-
-                        String ext = FileUtils.getFileFormat(fileHolder.file.getName());
-                        ext = ext != null ? String.format(".%s", ext) : "";
-
-                        renameFile(fileHolder, String.format("%s%s", String.format(renameTo, fileId), ext),
-                                renameListener);
-                        fileId++;
-                    }
-
-                    if (renameListener != null)
-                        renameListener.onFileRenameCompleted(getService());
-                }
-            }.setTitle(context.getString(R.string.text_renameMultipleItems))
-                    .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
-                    .run(context);
-             */
-
             return true;
         });
-    }
-
-    public List<T> getItemList()
-    {
-        return mItemList;
     }
 
     public boolean renameFile(T holder, String renameTo, OnFileRenameListener renameListener)
