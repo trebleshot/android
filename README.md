@@ -18,15 +18,7 @@ Send and receive files over available connections. [FAQ](https://github.com/geno
 
 ## Project status
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
-[![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
-
-## Donate
-If you value this work, you can help it along. Only a few methods of monetary contribution work in Turkey,
-you can use Bitcoin or install the Google Play version (using App Billing) to do so (taxes will apply).
-
-Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
-
-![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
+[![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/svg-badge.svg)](https://hosted.weblate.org/engage/trebleshot/)
 
 ## Build from source
 Run the following command. This will build `fossReliant` variant in debug mode.  
