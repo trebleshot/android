@@ -330,7 +330,7 @@
     <string name="butn_gridSize">Gittergröße</string>
     <string name="butn_singleRow">Einzelne Zeile</string>
     <string name="butn_groupBy">Gruppieren nach</string>
-    <string name="text_photo">Foto</string>
+    <string name="text_photo">Bild</string>
     <string name="text_groupByNothing">Nichts</string>
     <string name="text_groupByDate">Datum</string>
     <string name="text_groupByAlbum">Album</string>
@@ -468,5 +468,5 @@
     <string name="mesg_qrScannerTextMode">QR Codes werden als Text angezeigt</string>
     <string name="mesg_qrScannerDefaultMode">Zurück zu den Standardaktionen für QR-Codes</string>
     <string name="butn_showAsQrCode">Als QR-Code anzeigen</string>
-    <string name="text_unrecognizedQrCode">Unbekannter Code</string>
+    <string name="text_unrecognizedQrCode">unbekannter Code</string>
 </resources>
