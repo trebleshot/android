@@ -54,41 +54,17 @@ public class FileRenameDialog extends AbstractSingleTextInputDialog
         setOnProceedClickListener(R.string.butn_rename, dialog -> {
             final String renameTo = getEditText().getText().toString();
 
-            if (getItemList().size() == 1 && renameFile(getItemList().get(0), renameTo, renameListener)) {
-                if (renameListener != null)
-                    renameListener.onFileRenameCompleted(getContext());
-                return true;
+            if (mItemList.size() > 1) {
             }
 
             try {
-                String.format(renameTo, getItemList().size());
+                String.format(renameTo, mItemList.size());
             } catch (Exception e) {
                 return false;
             }
 
             return true;
         });
-    }
-
-    public boolean renameFile(T holder, String renameTo, OnFileRenameListener renameListener)
-    {
-        try {
-            if (FileListAdapter.FileHolder.Type.Bookmarked.equals(holder.getType())
-                    || FileListAdapter.FileHolder.Type.Mounted.equals(holder.getType())) {
-                holder.friendlyName = renameTo;
-                AppUtils.getKuick(getContext()).publish(holder);
-                AppUtils.getKuick(getContext()).broadcast();
-            } else if (holder.file.canWrite() && holder.file.renameTo(renameTo)) {
-                if (renameListener != null)
-                    renameListener.onFileRename(holder.file, renameTo);
-
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
     }
 
     public interface OnFileRenameListener

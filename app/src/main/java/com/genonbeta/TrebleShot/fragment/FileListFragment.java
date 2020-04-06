@@ -139,7 +139,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
                 }
             }).show();
         } else if (id == R.id.action_mode_file_rename) {
-            new FileRenameDialog<>(fragment.getContext(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
+            new FileRenameDialog(fragment.getContext(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
             {
                 @Override
                 public void onFileRename(DocumentFile file, String displayName)

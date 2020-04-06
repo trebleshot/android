@@ -581,9 +581,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
          */
         public interface PostExecuteListener
         {
-            void onPostExecute() {
-
-            }
+            void onPostExecute();
         }
     }
 }

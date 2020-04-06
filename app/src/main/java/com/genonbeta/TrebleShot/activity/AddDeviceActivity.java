@@ -257,8 +257,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     public static void returnResult(android.app.Activity activity, Device device, DeviceConnection connection)
     {
         activity.setResult(RESULT_OK, new Intent()
-                .putExtra(EXTRA_DEVICE, device.id)
-                .putExtra(EXTRA_CONNECTION, connection.adapterName));
+                .putExtra(EXTRA_DEVICE, device)
+                .putExtra(EXTRA_CONNECTION, connection));
 
         activity.finish();
     }
