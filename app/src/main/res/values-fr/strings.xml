@@ -321,7 +321,7 @@
     <string name="text_removeCertainPendingTransfersSummary">Cela va supprimer tous les transferts en attente affichés ici</string>
     <string name="text_requestPermissionStorageSummary">Cette autorisation permet à TrebleShot l\'accès en lecture et écriture vers l’unité de stockage de votre appareil afin de recevoir et partager des fichiers.</string>
     <string name="mesg_textShareLimit">Vous ne pouvez partager qu’un seul texte à la fois</string>
-    <string name="mesg_hotspotCreatedInfo">Connectez-vous à «%s» via votre Wi-Fi ou envoyez des fichiers via \"%s\" dans TrebleShot</string>
+    <string name="mesg_hotspotCreatedInfo">Connectez-vous à « %s » via votre Wi-Fi ou envoyez des fichiers via « %s » dans TrebleShot</string>
     <string name="butn_qrScanToSend">Scannez le QR code à envoyer</string>
     <string name="text_receivedTextSummary">Texte reçu dans le presse-papiers</string>
     <string name="text_stopping">Arrêt en cours !</string>
@@ -370,7 +370,7 @@
     <string name="text_minuteCountShort">%d min</string>
     <string name="text_secondCountShort">%d sec</string>
     <string name="butn_queueCounted">File d’attente (%d)</string>
-    <string name="mesg_updateDownloadComplete">Mise à jour reçue avec succès et sauvegardée dans vos fichiers reçus</string>
+    <string name="mesg_updateDownloadComplete">Mise à jour reçue et sauvegardée dans vos fichiers reçus</string>
     <string name="mesg_listRefreshSnoozed">La liste sera actualisée dès que disponible</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone sera également lancé en conséquence</string>
     <string name="text_qrAllowTrustZone">TrustZone pour le code QR</string>
