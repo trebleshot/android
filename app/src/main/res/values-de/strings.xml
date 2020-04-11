@@ -248,7 +248,7 @@
     <string name="mesg_ongoingUpdateDownload">Neue Version herunterladen</string>
     <string name="butn_gotIt">Verstanden</string>
     <string name="mesg_helpFolderSelection">Um einen Ordner auszuwählen, auf das Symbol tippen</string>
-    <string name="mesg_hotspotCreatedInfo">Mit \"%s\" in den WLAN-Einstellungen verbinden oder Dateien über \"%s\" in TrebleShot senden</string>
+    <string name="mesg_hotspotCreatedInfo">Mit „%s“ in den WLAN-Einstellungen verbinden oder Dateien über „%s“ in TrebleShot senden</string>
     <string name="butn_selectAll">Alle auswählen</string>
     <string name="butn_selectNone">Auswahl aufheben</string>
     <string name="butn_previewSelections">Vorschau der Auswahl</string>
