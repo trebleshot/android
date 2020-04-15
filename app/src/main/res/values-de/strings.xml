@@ -11,7 +11,7 @@
     <string name="ques_receiveFile">Datei empfangen?</string>
     <string name="butn_accept">Akzeptieren</string>
     <string name="butn_reject">Abweisen</string>
-    <string name="butn_stop">Stop</string>
+    <string name="butn_stop">Stopp</string>
     <string name="text_sending">Sende</string>
     <string name="butn_cancelSending">Senden abbrechen</string>
     <string name="text_receiving">Empfange</string>
@@ -252,7 +252,7 @@
     <string name="butn_selectAll">Alle auswählen</string>
     <string name="butn_selectNone">Auswahl aufheben</string>
     <string name="butn_previewSelections">Vorschau der Auswahl</string>
-    <string name="mesg_deviceConnectionError">Verbindung mit \"%s\" über \"%s\" fehlgeschlagen</string>
+    <string name="mesg_deviceConnectionError">Verbindung mit „%s“ über „%s“ fehlgeschlagen</string>
     <string name="mesg_retryReceivingNotice">TrebleShot versucht, unterbrochene Dateitransfers zu wiederholen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Bitte erst die Verbindungsart wählen</string>
     <string name="butn_setUp">Einrichten</string>
