@@ -54,8 +54,9 @@
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">Один ряд</item>
-        <item quantity="few"/>
+        <item quantity="few">%d ряда</item>
         <item quantity="many">%d рядов</item>
+        <item quantity="other">%d рядов</item>
     </plurals>
     <plurals name="text_devicesShared">
         <item quantity="one">Поделиться с одним устройством</item>
