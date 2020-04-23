@@ -256,7 +256,7 @@
 \n
 \nУстройства &gt; %2$s &gt; Разрешить подключение &gt; (установите флажок)</string>
     <string name="mesg_pathSaved">Папка сохранена</string>
-    <string name="text_savingDetails">" Сохранение дополнительной информации"</string>
+    <string name="text_savingDetails">Сохранение дополнительной информации</string>
     <string name="text_flagPending">Ожидание</string>
     <string name="text_flagRunning">Запуск</string>
     <string name="text_flagInterrupted">Прервать</string>
