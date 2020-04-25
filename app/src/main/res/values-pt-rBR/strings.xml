@@ -287,7 +287,7 @@
     <string name="text_secondCountShort">%d seg</string>
     <string name="butn_exit">Sair</string>
     <string name="butn_queueCounted">Fila (%d)</string>
-    <string name="mesg_updateDownloadComplete">Atualização recebida com sucesso e salva em seus arquivos recebidos</string>
+    <string name="mesg_updateDownloadComplete">Atualização recebida e salvada em seus arquivos recebidos</string>
     <string name="text_listEmptyFiles">Nenhum arquivo aqui</string>
     <string name="text_listEmptyImage">Nenhuma foto aqui</string>
     <string name="text_listEmptyApp">Nenhum aplicativo aqui</string>
@@ -339,7 +339,7 @@
     <string name="butn_shareWithOtherApps">Compartilhar com outros aplicativos</string>
     <string name="butn_startHotspot">Configurar ponto de acesso</string>
     <string name="butn_stopHotspot">Parar ponto de acesso</string>
-    <string name="text_easyDiscoveryHelp">Escaneie isso se ambos os dispositivos estiverem na mesma rede</string>
+    <string name="text_easyDiscoveryHelp">Escaneie isso se ambos dispositivos estiverem na mesma rede</string>
     <string name="mesg_completing">Concluindo</string>
     <string name="mesg_errorNotSameNetwork">Os dispositivos não estão na mesma rede</string>
     <string name="text_cameraPermissionRequired">A permissão da câmera é necessária</string>
