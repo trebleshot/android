@@ -98,7 +98,7 @@
     <string name="text_receivedTextSummary">Zwischenablagentext empfangen</string>
     <string name="butn_checkForUpdates">Nach neuer Version suchen</string>
     <string name="butn_seeSourceCode">Quelltext anschauen</string>
-    <string name="text_typeText">Schreibe etwas, das gesendet werden soll…</string>
+    <string name="text_typeText">Schreibe etwas, das gesendet werden soll …</string>
     <string name="text_textEditor">Textbearbeitung</string>
     <string name="butn_done">Fertig</string>
     <string name="text_empty">(leer)</string>
