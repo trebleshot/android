@@ -86,7 +86,7 @@
     <string name="text_textReceived">Texte reçu</string>
     <string name="butn_checkForUpdates">Vérifier la présence d\'une nouvelle version</string>
     <string name="butn_seeSourceCode">Voir le code source</string>
-    <string name="text_typeText">Ecrivez quelque chose à envoyer …</string>
+    <string name="text_typeText">Écrivez quelque chose à envoyer…</string>
     <string name="text_textEditor">Éditeur de texte</string>
     <string name="butn_done">Fait</string>
     <string name="text_empty">(vide)</string>
@@ -322,7 +322,7 @@
     <string name="text_requestPermissionStorageSummary">Cette autorisation permet à TrebleShot l\'accès en lecture et écriture vers l’unité de stockage de votre appareil afin de recevoir et partager des fichiers.</string>
     <string name="mesg_textShareLimit">Vous ne pouvez partager qu’un seul texte à la fois</string>
     <string name="mesg_hotspotCreatedInfo">Connectez-vous à « %s » via votre Wi-Fi ou envoyez des fichiers via « %s » dans TrebleShot</string>
-    <string name="butn_qrScanToSend">Scannez le QR code à envoyer</string>
+    <string name="butn_qrScanToSend">Scannez le code QR à envoyer</string>
     <string name="text_receivedTextSummary">Texte reçu dans le presse-papiers</string>
     <string name="text_stopping">Arrêt en cours !</string>
     <string name="mesg_communicating">En cours de communication</string>
