@@ -404,7 +404,7 @@
     <string name="mesg_locationPermissionRequiredAny">Сначала включите службу определения местоположения, чтобы продолжить</string>
     <string name="mesg_connectToWiFiNetworkHelp">Подключитесь к сети Wi-Fi, чтобы продолжить</string>
     <string name="mesg_removing">Удаление... Может занять много времени</string>
-    <string name="butn_help">Помощь!</string>
+    <string name="butn_help">Помощь</string>
     <string name="butn_choose">Выберите</string>
     <string name="butn_fixConnection">Исправьте соединение</string>
     <string name="butn_never">Никогда</string>
