@@ -29,7 +29,7 @@ import java.util.List;
  * created by: Veli
  * date: 30.03.2018 14:58
  */
-abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEditableListAdapter.GalleryGroupShareable,
+public abstract class GalleryGroupEditableListAdapter<T extends GalleryGroupEditableListAdapter.GalleryGroupShareable,
         V extends GroupEditableListAdapter.GroupViewHolder> extends GroupEditableListAdapter<T, V>
         implements GroupEditableListAdapter.GroupLister.CustomGroupLister<T>
 {

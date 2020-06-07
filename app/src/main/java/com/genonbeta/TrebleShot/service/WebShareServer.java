@@ -615,8 +615,7 @@ public class WebShareServer extends NanoHTTPD
 
     private static Pattern getFieldPattern()
     {
-        // Android Studio may say the escape characters at the end are redundant.
-        // They are not in Java 1.7.
+        // Android Studio may say the escape characters at the end are redundant. They are not.
         return Pattern.compile("\\$\\{([a-zA-Z_]+)\\}");
     }
 
@@ -683,10 +682,9 @@ public class WebShareServer extends NanoHTTPD
     }
 
     /**
-     * Most of the members of the parent {@link fi.iki.elonen.NanoHTTPD.Response}
-     * class had private access, which made impossible to create concurrent zip streams.
-     * The biggest problem is that {@link fi.iki.elonen.NanoHTTPD.Response} is not an interface, but
-     * a class. To overcome these issues, I created a wrapper that imitates the similar behaviour.
+     * Most the members of the parent {@link fi.iki.elonen.NanoHTTPD.Response} class is private, which made it
+     * impossible to create concurrent zip streams. For that reason this class copies some of the methods from another
+     * class.
      */
     protected class ZipBundleResponse extends NanoHTTPD.Response
     {

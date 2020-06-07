@@ -34,9 +34,8 @@ import java.util.List;
  * created by: veli
  * date: 7/15/18 10:12 PM
  */
-public class InAppDonationItemListFragment
-        extends DynamicRecyclerViewFragment<SkuDetails, RecyclerViewAdapter.ViewHolder, InAppDonationItemListFragment.DefaultAdapter>
-        implements BillingProcessor.IBillingHandler
+public class InAppDonationItemListFragment extends DynamicRecyclerViewFragment<SkuDetails,
+        RecyclerViewAdapter.ViewHolder, InAppDonationItemListFragment.DefaultAdapter> implements BillingProcessor.IBillingHandler
 {
     private static final String TAG = InAppDonationItemListFragment.class.getSimpleName();
 
