@@ -58,7 +58,6 @@ import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.preference.SuperPreferences;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,7 +76,7 @@ public class AppUtils
     private static int mUniqueNumber = 0;
     private static Kuick mKuick;
     private static SharedPreferences mDefaultPreferences;
-    private static SuperPreferences mViewingPreferences;
+    private static SharedPreferences mViewingPreferences;
 
     public static void applyAdapterName(DeviceConnection connection)
     {
@@ -434,11 +433,10 @@ public class AppUtils
         return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);
     }
 
-    public static SuperPreferences getViewingPreferences(Context context)
+    public static SharedPreferences getViewingPreferences(Context context)
     {
         if (mViewingPreferences == null)
-            mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING,
-                    Context.MODE_PRIVATE));
+            mViewingPreferences = context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE);
 
         return mViewingPreferences;
     }
