@@ -77,8 +77,8 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
             ARG_SELECTION_CLASSES = "argSelectionClasses",
             ARG_SELECTION_OBJECTS = "argSelectionObjects";
 
-    private IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
-    private IPerformerEngine mPerformerEngine = new PerformerEngine();
+    private final IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
+    private final IPerformerEngine mPerformerEngine = new PerformerEngine();
     private PerformerMenu mPerformerMenu = null;
     private FilteringDelegate<T> mFilteringDelegate;
     private boolean mRefreshRequested = false;
@@ -98,13 +98,13 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
     private int mDividerResId = R.id.abstract_layout_fast_scroll_recyclerview_bottom_divider;
     private int mLayoutResId = R.layout.abstract_layout_editable_list_fragment;
     private FastScroller mFastScroller;
-    private Map<String, Integer> mSortingOptions = new ArrayMap<>();
-    private Map<String, Integer> mOrderingOptions = new ArrayMap<>();
-    private List<T> mSelectableList = new ArrayList<>();
+    private final Map<String, Integer> mSortingOptions = new ArrayMap<>();
+    private final Map<String, Integer> mOrderingOptions = new ArrayMap<>();
+    private final List<T> mSelectableList = new ArrayList<>();
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
     private String mSearchText;
-    private FilteringDelegate<T> mDefaultFilteringDelegate = new FilteringDelegate<T>()
+    private final FilteringDelegate<T> mDefaultFilteringDelegate = new FilteringDelegate<T>()
     {
         @Override
         public boolean changeFilteringKeyword(@Nullable String keyword)
