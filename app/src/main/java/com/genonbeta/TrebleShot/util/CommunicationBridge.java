@@ -19,9 +19,9 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.CoolSocket;
-import com.genonbeta.CoolSocket.Response;
+import com.genonbeta.coolsocket.ActiveConnection;
+import com.genonbeta.coolsocket.CoolSocket;
+import com.genonbeta.coolsocket.Response;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
