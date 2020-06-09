@@ -449,7 +449,7 @@
     <string name="text_transferSharedOnBrowser">Udostępnione w przeglądarce</string>
     <string name="text_or">lub</string>
     <string name="text_visitWebShareAddress">Odwiedź ten link za pomocą przeglądarki</string>
-    <string name="text_webShareInfo">Włącz udostępnianie sieci Web dla transferów pojedynczo i odwiedź dowolne łącze internetowe pokazane poniżej z urządzeniem podłączonym do tej samej sieci.</string>
+    <string name="text_webShareInfo">Włącz udostępnianie sieci Web dla transferów pojedynczo i odwiedź dowolne łącze internetowe pokazane poniżej z urządzenia podłączonego do tej samej sieci.</string>
     <string name="text_dowloadTrebleshotAndroid">Pobierz TrebleShot dla Android</string>
     <string name="text_listEmptyConnection">Sieci pojawiają się tutaj</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
