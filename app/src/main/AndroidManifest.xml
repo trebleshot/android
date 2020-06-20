@@ -67,6 +67,7 @@
 
         <activity
             android:name=".activity.ContentSharingActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/text_send"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
