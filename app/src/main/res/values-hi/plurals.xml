@@ -1,2 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="text_devicesShared">
+        <item quantity="one">एक के साथ बाँटना</item>
+        <item quantity="other">%d यंत्रो के साथ बाँट रहे हैं</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">एक पंक्ति</item>
+        <item quantity="other">%d पंक्तियाँ</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d फाइल समाप्त कर दी गयी है</item>
+        <item quantity="other">फाइलें समाप्त कर दी गयी हैं</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">एक मिनट पहले</item>
+        <item quantity="other">%d मिनट पहले</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">एक सेकंड पहले</item>
+        <item quantity="other">%d सेकंड पहले</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">यह अपूर्ण ट्रांसफर समाप्त हो जाएगा</item>
+        <item quantity="other">%d अपूर्ण ट्रांसफर समाप्त हो जाएंगे</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d फाइल</item>
+        <item quantity="other">%d फाइलें</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d संपर्क</item>
+        <item quantity="other">%d संपर्क</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d फाइल प्राप्त हुई है</item>
+        <item quantity="other">%d फाइलें प्राप्त हुई हैं</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d फाइल चुनी हुई है</item>
+        <item quantity="other">%d फाइलें चुनी हुई हैं</item>
+    </plurals>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">क्या आप ये फ़ाइल हटाना चाहते हैं \?</item>
+        <item quantity="other">क्या आप ये %d फ़ाइलें हटाना चाहते हैं \?</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">क्या यह फाइल प्राप्त की जाये\?</item>
+        <item quantity="other">क्या %d फाइलें प्राप्त की जाये\?</item>
+    </plurals>
+</resources>
