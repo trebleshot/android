@@ -150,4 +150,16 @@
     <string name="mesg_groupOngoingNotice">यह फाइल ट्रांसफर करने के पहले %s समाप्त होने की प्रतीक्षा की जा रही है</string>
     <string name="butn_killNow">ज़बरदस्ती रोका जाये</string>
     <string name="text_cancellingTransfer">काम रद्द करा जा रहा है …</string>
+    <string name="text_flagResume">फिर से शुरू</string>
+    <string name="text_flagInterrupted">अन्तरायित</string>
+    <string name="text_flagRunning">चल रहा है</string>
+    <string name="text_flagPending">रूका हुआ</string>
+    <string name="text_version">संस्करण</string>
+    <string name="text_savingDetails">सहेजा जा रहा है विवरण</string>
+    <string name="text_preparingFiles">फाइलें तैयार करना</string>
+    <string name="butn_show">प्रदर्शन</string>
+    <string name="mesg_newFilesReceived">नई फाइलें प्राप्त हुई हैं</string>
+    <string name="text_checkOldFiles">आप संबंधित फ़ाइलों को पूर्ण और आंशिक रूप से इस फ़ोल्डर में ले जा सकते हैं और आकारों के आधार पर इसमें कुछ समय लग सकता है</string>
+    <string name="ques_checkOldFiles">फ़ाइलें स्थानांतरित करें\?</string>
+    <string name="mesg_pathSameError">आप पुराने फ़ोल्डर का चयन नहीं कर सकते</string>
 </resources>
