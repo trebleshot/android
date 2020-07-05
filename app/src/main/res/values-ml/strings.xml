@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_navigationDrawerOpen">നാവിഗേഷൻ ഡ്രോയർ തുറക്കുക</string>n
-    </resources>
+    <string name="text_ipAddress">IP അഡ്രസ്സ്</string>
+    <string name="mesg_stillScanning">സ്കാൻ ചെയ്യുന്നു</string>
+    <string name="text_deviceList">ഡിവൈസുകൾ</string>
+    <string name="text_multipleFileReceiveCompleted">ഫയലുകൾ സ്വീകരിച്ചു</string>
+    <string name="mesg_fileSendError">File അയക്കാൻ സാധിച്ചില്ല. %s</string>
+    <string name="mesg_formatNotSupported">പിന്തുണയ്‌ക്കാത്ത ഫോർമാറ്റ്</string>
+    <string name="text_deviceNameSummary">മറ്റ് ഡിവൈസുകളിൽ ഈ പേര് കാണിക്കുന്നതാണ്</string>
+    <string name="text_deviceName">ഡിവൈസിന്റെ പേര്</string>
+    <string name="text_developerMode">ഡെവലപ്പർ മോഡ്‌</string>
+    <string name="mesg_fileReceived">%s റിസീവ് ചെയ്തു</string>
+    <string name="text_sending">അയക്കുന്നു</string>
+    <string name="butn_stop">നിർത്തുക</string>
+    <string name="ques_receiveFile">ഫയൽ റിസ്സീവ് ചെയ്യട്ടെ\?</string>
+    <string name="mesg_scanningDevices">അടുത്തുള്ള ഡിവൈസുകൾ തിരയുന്നു</string>
+    <string name="mesg_noNetwork">അടുത്തുള്ള ഡിവൈസുകൾ തിരയാൻ വൈഫൈ പോലുള്ള കണക്ഷൻ ഇല്ല</string>
+    <string name="text_preferences">മുൻഗണനകൾ</string>
+    <string name="mesg_errorNotAnIpAddress">IP അഡ്രസ്സ് അല്ല
+\n(192.168.1.2 പോലെ)</string>
+    <string name="ques_shareAsApkOrLink">APK അതോ LInk ആയാണോ ഷെയർ ചെയ്യേണ്ടത്\?</string>
+    <string name="butn_asApk">APK രൂപത്തിൽ</string>
+    <string name="butn_downloadAllAsZip">ZIP ആയി ഡൗൺലോഡ് ചെയ്യുക ( compress ചെയ്യാതെ )</string>
+    <string name="butn_changeMode">മോഡ് മാറ്റുക</string>
+</resources>
