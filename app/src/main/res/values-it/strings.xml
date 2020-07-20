@@ -9,7 +9,7 @@
     <string name="text_available">Disponibile</string>
     <string name="text_notAvailable">Non disponibile</string>
     <string name="text_deviceListEmpty">Nessun dispositivo</string>
-    <string name="mesg_noNetwork">Nessuna connessione per trovare dispositivi nelle vicinanze (es. Wi-Fi)</string>
+    <string name="mesg_noNetwork">Nessuna connessione disponibile (es. Wi-Fi) per cercare dispositivi vicini</string>
     <string name="mesg_scanningDevices">Ricerca dispositivi nelle vicinanze</string>
     <string name="ques_receiveFile">Ricevere il file?</string>
     <string name="butn_accept">Accetta</string>
@@ -22,19 +22,19 @@
     <string name="text_fileReceived">Il file è stato ricevuto</string>
     <string name="mesg_fileReceived">%s ricevuti</string>
     <string name="butn_scan">Scansiona</string>
-    <string name="text_listEmpty">Nessun Elemento</string>
+    <string name="text_listEmpty">Nessun elemento</string>
     <string name="text_developerMode">Modalità Sviluppatore</string>
     <string name="text_developerModeSummary">Disattiva la configurazione utente</string>
     <string name="text_deviceName">Nome Dispositivo</string>
     <string name="text_deviceNameSummary">Verrà mostrato sugli altri dispositivi</string>
-    <string name="text_deviceNameTitle">Inserisci Nome Dispositivo</string>
+    <string name="text_deviceNameTitle">Inserisci il nome di un dispositivo</string>
     <string name="mesg_formatNotSupported">Formato non supportato</string>
     <string name="mesg_fileSendError">Impossibile inviare \"%s\"</string>
     <string name="mesg_fileReceiveError">Impossibile ricevere %s.</string>
     <string name="text_multipleFileReceiveCompleted">File Ricevuti</string>
     <string name="text_deviceList">Dispositivi</string>
     <string name="text_fileOpenAppChoose">Apri con</string>
-    <string name="text_fileShareAppChoose">Scegli un\'Applicazione con cui Condividere</string>
+    <string name="text_fileShareAppChoose">Scegli un\'applicazione con cui condividere</string>
     <string name="text_receivedFiles">File Ricevuti</string>
     <string name="butn_edit">Modifica</string>
     <string name="butn_share">Condividi</string>
@@ -54,7 +54,7 @@
     <string name="butn_pendingTransfers">Coda</string>
     <string name="butn_shareWithTrebleshot">Condividi con TrebleShot</string>
     <string name="mesg_somethingWentWrong">Qualcosa è andato storto</string>
-    <string name="text_findDevicesHint">Nessun Dispositivo Conosciuto</string>
+    <string name="text_findDevicesHint">Nessun dispositivo conosciuto</string>
     <string name="text_autoScanDevices">Scansiona Dispositivi Automaticamente</string>
     <string name="text_autoScanDevicesSummary">Scansiona Dispositivi quando Necessario</string>
     <string name="mesg_stillScanning">Scansione in corso</string>
@@ -121,7 +121,7 @@
     <string name="text_removeDeviceNotice">Alla rimozione di un dispositivo verranno rimossi anche i trasferimenti</string>
     <string name="text_removePendingTransferSummary">Questo rimuoverà \"%s\" dalla coda</string>
     <string name="ques_removeAll">Rimuovere tutto\?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Questo rimuoverà tutti i trasferimenti in sospeso che vedi qui</string>
+    <string name="text_removeCertainPendingTransfersSummary">Questo rimuoverà tutti i trasferimenti in attesa che vedi qui</string>
     <string name="text_availableNetworks">Scegli Rete - %s</string>
     <string name="text_noNetworkAvailable">Nessuna rete disponibile</string>
     <string name="mesg_deviceNotExits">Il destinatario non esiste più nella lista dei dispositivi</string>
@@ -135,7 +135,7 @@
     <string name="ques_why">Perché?</string>
     <string name="text_notAllowedHelp">Controlla se sei autorizzato su %1$s. 
 \n 
-\nDispositivi &gt; %2$s &gt; Consenti Connessione &gt; (check it)</string>
+\nDispositivi &gt; %2$s &gt; Consenti Connessione &gt; (attiva)</string>
     <string name="butn_saveTo">Salva in</string>
     <string name="mesg_secureExit">Premi ancora per uscire</string>
     <string name="butn_create">Crea</string>
@@ -191,7 +191,7 @@
     <string name="text_permissionRequest">Richiesta Autorizzazione</string>
     <string name="text_requestPermissionStorage">Autorizzazione Archiviazione</string>
     <string name="text_requestPermissionReadPhoneState">Autorizzazione di leggere lo stato del telefono</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot necessita del numero seriale del dispositivo per creare un\'identità a lungo termine, questo aiuta altri dispositivi a riconoscerlo</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot ha bisogno di accedere al numero di serie del tuo dispositivo per creare un\'identità a lungo termine, aiutando il riconoscimento dagli altri dispositivi</string>
     <string name="mesg_notEnoughSpace">Non c\'è abbastanza spazio</string>
     <string name="text_totalIncomingSize">Dimensione totale dei files in entrata</string>
     <string name="text_totalOutgoingSize">Dimensione totale dei file in uscita</string>
@@ -221,7 +221,7 @@
     <string name="butn_connect">Connetti</string>
     <string name="butn_disconnect">Disconnetti</string>
     <string name="text_trebleshotHotspotDescription">È possibile inviare direttamente file attraverso questa rete aperta, creata da un dispositivo TrebleShot nelle vicinanze.</string>
-    <string name="mesg_connectingToSelfHotspot">Connessione all\'hotspot TrebleShot</string>
+    <string name="mesg_connectingToSelfHotspot">Connessione ad un hotspot TrebleShot</string>
     <string name="mesg_warningHotspotMobileActive">I dispositivi collegati potrebbero utilizzare i dati della connessione mobile. Si consiglia di spegnerla.</string>
     <string name="butn_skip">Salta</string>
     <string name="mesg_scanningSelfHotspot">Ricerca dell\'hotspot TrebleShot</string>
@@ -275,19 +275,19 @@
     <string name="text_listEmptyPendingTransfer">I trasferimenti in attesa appariranno qui</string>
     <string name="mesg_communicating">Comunicazione</string>
     <string name="text_communicationService">Servizio di Comunicazione</string>
-    <string name="text_chooserTargetService">Fornitore di opzioni del dispositivo</string>
+    <string name="text_chooserTargetService">Provider selezione dispositivo</string>
     <string name="text_longAgo">Molto tempo fa</string>
     <string name="text_mediaDirectory">Cartella Multimedia</string>
     <string name="text_emulatedMediaDirectory">Emulato (%s)</string>
     <string name="text_transactionGroupDetails">Dettagli del gruppo di transazione</string>
-    <string name="text_remainingTime">Tempo Rimanente Stimato %s</string>
+    <string name="text_remainingTime">Tempo Stimato %s</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Consenti a TrebleShot di cercare e creare hotspot</string>
     <string name="butn_locationSettings">Posizione</string>
-    <string name="mesg_locationDisabledSelfHotspot">Abilita il servizio di localizzazione per vedere i risultati della scansione e creare l\'hotspot</string>
+    <string name="mesg_locationDisabledSelfHotspot">Attiva il servizio di localizzazione per vedere i risultati delle scansioni e creare hotspot</string>
     <string name="text_previewAndEditList">Anteprima e Modifica</string>
     <string name="mesg_connectionUpdated">Comunicazione tramite la connessione \"%s\"</string>
-    <string name="mesg_hotspotCreatedInfo">Collegati a \"%s\" in \"Impostazioni Wi-Fi\" o invia file tramite \"%s\" all\'interno di TrebleShot</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Scegliere prima il metodo di connessione</string>
+    <string name="mesg_hotspotCreatedInfo">Connetti a \"%s\" in \"Impostazioni Wi-Fi\" o invia file attraverso \"%s\" in TrebleShot</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Scegli un metodo di connessione</string>
     <string name="butn_setUp">Imposta</string>
     <string name="text_location">Posizione</string>
     <string name="text_receivedSize">Dimensione Ricevuta</string>
