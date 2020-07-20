@@ -21,7 +21,7 @@
         <item quantity="other">%d connessioni</item>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">Ricevere il file\?</item>
+        <item quantity="one">Ricevere 1 file\?</item>
         <item quantity="other">Ricevere %d file\?</item>
     </plurals>
     <plurals name="text_files">
@@ -45,7 +45,7 @@
         <item quantity="other">%d righe</item>
     </plurals>
     <plurals name="text_devicesShared">
-        <item quantity="one">Condivisione con 1 dispositivo</item>
+        <item quantity="one">Condivisione singola</item>
         <item quantity="other">Condivisione con %d dispositivi</item>
     </plurals>
 </resources>
