@@ -304,7 +304,7 @@
     <string name="text_minuteCountShort">%d min</string>
     <string name="text_secondCountShort">%d sec</string>
     <string name="text_previewThenProceedNotice">Controlla le tue selezioni toccando \"Coda\" per continuare</string>
-    <string name="text_listEmptyTextStream">Qui saranno visualizzate le scritte</string>
+    <string name="text_listEmptyTextStream">Lo scritto apparirà qui</string>
     <string name="text_listEmptyMusic">Nessun audio presente</string>
     <string name="text_internalStorage">Archivio Interno</string>
     <string name="text_restrictedAccessStorage">%s (accesso limitato)</string>
