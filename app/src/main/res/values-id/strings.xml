@@ -144,7 +144,7 @@
     <string name="text_fileStatus">Status Berkas</string>
     <string name="butn_resume">Lanjutkan</string>
     <string name="text_transactionDetails">Detail</string>
-    <string name="text_fileExplorer">Penjelajah file</string>
+    <string name="text_fileExplorer">Penjelajah berkas</string>
     <string name="butn_createFolder">Buat folder</string>
     <string name="text_chooseFolder">Pilih folder</string>
     <string name="text_chooseFile">pilih berkas</string>
@@ -226,7 +226,7 @@
     <string name="mesg_warningHotspotMobileActive">Perangkat terhubung bisa menggunakan data selulermu. Kamu mungkin perlu mematikannya.</string>
     <string name="butn_skip">Lewati</string>
     <string name="mesg_connectingToSelfHotspot">Menghubungkan ke hotspot TrebleShot</string>
-    <string name="text_trebleshotHotspotDescription">Kamu bisa mengirim berkas langsung lewat jaringan terbuka ini yang dibuat oleh perangkat TrebleShot dieskitar</string>
+    <string name="text_trebleshotHotspotDescription">Kamu bisa mengirim berkas langsung lewat jaringan terbuka ini yang dibuat oleh perangkat TrebleShot disekitar.</string>
     <string name="butn_disconnect">Putus koneksi</string>
     <string name="butn_connect">Hubungkan</string>
     <string name="text_trebleshotHotspot">Hotspot TrebleShot</string>
@@ -430,4 +430,24 @@
     <string name="text_webShareInfo">Aktifkan berbagi dengan web untuk transfer secara individu dan kunjungi semua tautan web yang ada di bawah dengan perangkat yang terkoneksi dengan jaringan yang sama.</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_transferSharedOnBrowser">Dibagikan lewat peramban</string>
+    <string name="mesg_errorHotspotPermission">TrebleShot memerlukan izin untuk membuat hotspot</string>
+    <string name="mesg_providerNotAllowedError">Folder awalan tidak dapat diakses oleh aplikasi lain</string>
+    <string name="mesg_textShareLimit">Teks hanya bisa dibagikan satu-satu</string>
+    <string name="mesg_textSaveNotice">Simpan teks atau tekan lagi untuk keluar</string>
+    <string name="mesg_clipboardUpdateNotice">Periksa teks atau tekan lagi untuk keluar</string>
+    <string name="butn_typeNewEntry">Masukkan entri baru</string>
+    <string name="text_trustZoneEnabledSummary">ZonaDipercaya aktif sejak mulai</string>
+    <string name="text_trustZoneEnabled">ZonaDipercaya</string>
+    <string name="butn_turnTrustZoneOff">Matikan ZonaDipercaya</string>
+    <string name="butn_turnTrustZoneOn">Nyalakan ZonaDipercaya</string>
+    <string name="butn_trustZoneDevice">Atur sebagai perangkat ZonaDipercaya</string>
+    <string name="text_communicationServiceRunning">TrebleShot bisa membagi berkas sekarang</string>
+    <string name="butn_copyToClipboard">Salin ke papan klip</string>
+    <string name="text_flagRemoved">Dihapus</string>
+    <string name="text_usedConnection">Koneksi dipakai</string>
+    <string name="text_transactionGroupDetails">Detail kelompok transaksi</string>
+    <string name="text_emulatedMediaDirectory">Diemulasi (%s)</string>
+    <string name="text_mediaDirectory">Direktori media</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot membutuhkan akses nomor serial perangkatmu untuk membuat ID identitas jangka panjang, agar mudah dikenali perangkat lain</string>
+    <string name="text_chooserTargetService">Penyedia pilihan perangkat</string>
 </resources>
