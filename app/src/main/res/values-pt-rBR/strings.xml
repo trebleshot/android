@@ -105,7 +105,7 @@
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Transferências pendentes</string>
     <string name="text_stopping">Parando!</string>
-    <string name="mesg_warningHotspotMobileActive">Dispositivos conectados podem usar seus dados móveis. Você pode querer desativar isso.</string>
+    <string name="mesg_warningHotspotMobileActive">Dispositivos conectados podem usar sua franquia de dados. Você pode querer desativar isso.</string>
     <string name="butn_check">Marcar</string>
     <string name="butn_uncheck">Desmarcar</string>
     <string name="text_scanQRWifiRequired">Para se conectar a dispositivos, o Wi-Fi deve estar ligado</string>
@@ -135,9 +135,10 @@
     <string name="text_transactionViewer">Exibir transação</string>
     <string name="text_error">Erro</string>
     <string name="ques_why">Por quê\?</string>
-    <string name="text_notAllowedHelp">Verifique se você está autorizado em %1$s
+    <string name="text_notAllowedHelp">Verifique se você está autorizado em %1$s 
 \n
-\nDispositivos &gt; %2$s &gt; Permitir conexão &gt; (marcar)</string>
+\n
+\nDispositivos &gt; %2$s &gt; Permitir a conexão &gt; (verifique)</string>
     <string name="butn_saveTo">Salvar em</string>
     <string name="mesg_secureExit">Pressione novamente para sair</string>
     <string name="butn_create">Criar</string>
@@ -198,7 +199,7 @@
     <string name="text_requestPermissionReadPhoneState">Permissão para ler o estado do telefone</string>
     <string name="text_requestPermissionReadPhoneStateSummary">O TrebleShot precisa acessar o número de série do seu dispositivo para criar um número de identidade de longo prazo, ajudando outros dispositivos a reconhecê-lo</string>
     <string name="text_mediaDirectory">Pasta de mídia</string>
-    <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
+    <string name="text_emulatedMediaDirectory">Emulado (%s)</string>
     <string name="mesg_notEnoughSpace">Espaço insuficiente</string>
     <string name="text_savePath">Caminho onde salvar</string>
     <string name="text_transactionGroupDetails">Detalhes do grupo de transação</string>
@@ -212,7 +213,7 @@
     <string name="butn_trustZoneDevice">Definir como dispositivo de TrustZone</string>
     <string name="butn_turnTrustZoneOn">Ativar o TrustZone</string>
     <string name="butn_turnTrustZoneOff">Desligar o TrustZone</string>
-    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="text_trustZoneEnabled">Zona de Confiança</string>
     <string name="text_trustZoneEnabledSummary">O TrustZone está ativado ao iniciar</string>
     <string name="butn_typeNewEntry">Digitar a nova entrada</string>
     <string name="butn_download">Baixar</string>
@@ -452,8 +453,7 @@
     <string name="ques_shareAsApkOrLink">Compartilhar como APK ou link\?</string>
     <string name="butn_asApk">Como APK</string>
     <string name="butn_asLink">Como um link</string>
-    <string name="text_linkTrebleshot">Compartilhe arquivos com o TrebleShot!
-\nBaixe aqui: %s</string>
+    <string name="text_linkTrebleshot">Compartilhe arquivos com o TrebleShot! Baixe aqui: %s</string>
     <string name="butn_downloadAllAsZip">Baixar tudo como ZIP (único, descomprimido)</string>
     <string name="text_interfaceVPN">Servidor VPN</string>
     <string name="text_unrecognizedQrCode">Código não reconhecido</string>
