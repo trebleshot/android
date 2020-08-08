@@ -105,7 +105,7 @@
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Transferências pendentes</string>
     <string name="text_stopping">Parando!</string>
-    <string name="mesg_warningHotspotMobileActive">Dispositivos conectados podem usar sua franquia de dados. Você pode querer desativar isso.</string>
+    <string name="mesg_warningHotspotMobileActive">Dispositivos conectados podem usar sua franquia de dados. Talvez queira desativar isso.</string>
     <string name="butn_check">Marcar</string>
     <string name="butn_uncheck">Desmarcar</string>
     <string name="text_scanQRWifiRequired">Para se conectar a dispositivos, o Wi-Fi deve estar ligado</string>
@@ -136,7 +136,6 @@
     <string name="text_error">Erro</string>
     <string name="ques_why">Por quê\?</string>
     <string name="text_notAllowedHelp">Verifique se você está autorizado em %1$s 
-\n
 \n
 \nDispositivos &gt; %2$s &gt; Permitir a conexão &gt; (verifique)</string>
     <string name="butn_saveTo">Salvar em</string>
