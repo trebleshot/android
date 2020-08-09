@@ -39,8 +39,6 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -56,6 +54,7 @@ import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -384,15 +383,14 @@ public class ConnectionUtils
             throws TimeoutException, CommunicationException, IOException, JSONException
     {
         Kuick kuick = AppUtils.getKuick(context);
-        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick, pin);
-        ActiveConnection activeConnection = client.communicate(inetAddress, false);
+        CommunicationBridge bridge = new CommunicationBridge(kuick, pin);
+        ActiveConnection activeConnection = bridge.communicate(inetAddress, false);
 
         activeConnection.reply(new JSONObject()
-                .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
-                .toString());
+                .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
 
-        Device device = client.getDevice();
-        JSONObject receivedReply = new JSONObject(activeConnection.receive().index);
+        Device device = bridge.getDevice();
+        JSONObject receivedReply = activeConnection.receive().getAsJson();
 
         if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
             DeviceConnection connection = NetworkDeviceLoader.processConnection(kuick, device,

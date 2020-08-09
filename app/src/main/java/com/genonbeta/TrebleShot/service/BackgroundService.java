@@ -34,9 +34,6 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.CoolSocket;
-import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -52,6 +49,9 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.CoolSocket;
+import org.monora.coolsocket.core.response.Response;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -289,7 +289,11 @@ public class BackgroundService extends Service
         super.onDestroy();
         takeForeground(false);
 
-        mCommunicationServer.stop();
+        try {
+            mCommunicationServer.stop();
+        } catch (InterruptedException ignored) {
+        }
+
         mMediaScanner.disconnect();
         mNsdDiscovery.unregisterService();
         mWebShareServer.stop();
@@ -330,8 +334,7 @@ public class BackgroundService extends Service
 
     public boolean canStopService()
     {
-        return mCommunicationServer.getConnections().size() > 0 || getTaskList().size() > 0 || mHotspotManager.isStarted()
-                || mWebShareServer.hadClients();
+        return getTaskList().size() > 0 || mHotspotManager.isStarted() || mWebShareServer.hadClients();
     }
 
     @Nullable
@@ -520,7 +523,7 @@ public class BackgroundService extends Service
     {
         Log.d(TAG, "tryStartingServices: Starting...");
 
-        if (mWebShareServer.isAlive() && mCommunicationServer.isServerAlive())
+        if (mWebShareServer.isAlive() && mCommunicationServer.isListening())
             return true;
 
         if (!AppUtils.checkRunningConditions(this)) {
@@ -529,10 +532,14 @@ public class BackgroundService extends Service
             return false;
         }
 
-        if (!mCommunicationServer.isServerAlive() && !mCommunicationServer.start()) {
-            Log.e(TAG, "tryStartingServices: Cannot start the service. server="
-                    + mCommunicationServer.isServerAlive());
-            return false;
+
+        if (!mCommunicationServer.isListening()) {
+            try {
+                mCommunicationServer.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "tryStartingServices: Cannot start the service=" + mCommunicationServer.isListening());
+            }
         }
 
         try {
@@ -563,18 +570,16 @@ public class BackgroundService extends Service
         CommunicationServer()
         {
             super(AppConfig.SERVER_PORT_COMMUNICATION);
-            setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE);
+            getConfigFactory().setAcceptTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE);
+            getConfigFactory().setReadTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
         }
 
         @Override
-        protected void onConnected(final ActiveConnection activeConnection)
+        public void onConnected(final ActiveConnection activeConnection)
         {
             // check if the same address has other connections and limit that to 5
-            if (getConnectionCountByAddress(activeConnection.getAddress()) > 5)
-                return;
-
             try {
-                JSONObject responseJSON = analyzeResponse(activeConnection.receive());
+                JSONObject responseJSON = activeConnection.receive().getAsJson();
 
                 if (isUpdateRequest(activeConnection, responseJSON))
                     return;
@@ -617,8 +622,7 @@ public class BackgroundService extends Service
                     // Because the client didn't know whom it was talking to, it did not provide a key that might be
                     // exchanged between us before. Now we are asking for the key. Also, this does not work with
                     // the older client versions.
-                    device.secureKey = new JSONObject(activeConnection.receive().index).getInt(
-                            Keyword.DEVICE_INFO_KEY);
+                    device.secureKey = activeConnection.receive().getAsJson().getInt(Keyword.DEVICE_INFO_KEY);
                     activeConnection.reply(Keyword.STUB);
                 }
 
@@ -652,7 +656,7 @@ public class BackgroundService extends Service
                 } catch (ReconstructionFailedException ignored) {
                     if (device.clientVersion < 1)
                         device = NetworkDeviceLoader.load(true, getKuick(),
-                                activeConnection.getClientAddress(), null);
+                                activeConnection.getAddress().getHostAddress(), null);
 
                     if (device == null || device.id == null || device.id.length() < 1)
                         throw new Exception("Device is not valid.");
@@ -669,12 +673,12 @@ public class BackgroundService extends Service
                 }
 
                 if (handshakeRequired) {
-                    responseJSON = analyzeResponse(activeConnection.receive());
+                    responseJSON = activeConnection.receive().getAsJson();
                     replyJSON = new JSONObject();
                 }
 
                 DeviceConnection connection = NetworkDeviceLoader.processConnection(getKuick(), device,
-                        activeConnection.getClientAddress());
+                        activeConnection.getAddress().getHostAddress());
 
                 getKuick().broadcast();
 
@@ -731,7 +735,6 @@ public class BackgroundService extends Service
                             sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
                                     .putExtra(EXTRA_DEVICE, device)
                                     .putExtra(EXTRA_CONNECTION, connection));
-
                             result = true;
                             break;
                         case (Keyword.REQUEST_HANDSHAKE):
@@ -784,12 +787,12 @@ public class BackgroundService extends Service
 
                                             pushReply(activeConnection, currentReply, result);
                                             Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
-                                            Log.d(TAG, "onConnected: " + activeConnection.receive().index);
+                                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
 
                                             if (result)
                                                 attach(task);
 
-                                            Log.d(TAG, "onConnected: " + activeConnection.receive().index);
+                                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
                                         }
                                     } else
                                         responseJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
@@ -805,11 +808,6 @@ public class BackgroundService extends Service
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-
-        JSONObject analyzeResponse(Response response) throws JSONException
-        {
-            return response.length > 0 ? new JSONObject(response.index) : new JSONObject();
         }
 
         void pushReply(ActiveConnection activeConnection, JSONObject reply, boolean result)
@@ -832,7 +830,7 @@ public class BackgroundService extends Service
 
                 getSelfExecutor().submit(() -> {
                     try {
-                        UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getClientAddress());
+                        UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getAddress().getHostAddress());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -851,7 +849,7 @@ public class BackgroundService extends Service
 
                 {
                     Response responseObject = activeConnection.receive();
-                    JSONObject response = new JSONObject(responseObject.index);
+                    JSONObject response = responseObject.getAsJson();
 
                     if (response.getBoolean(Keyword.RESULT) && response.getBoolean(Keyword.RESULT)) {
                         OutputStream outputStream = activeConnection.getSocket().getOutputStream();

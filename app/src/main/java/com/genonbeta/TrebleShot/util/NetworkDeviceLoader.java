@@ -80,19 +80,19 @@ public class NetworkDeviceLoader
                               final OnDeviceRegisteredListener listener)
     {
         if (currentThread)
-            return loadInternal(new CommunicationBridge.Client(kuick), kuick, ipAddress, listener);
+            return loadInternal(new CommunicationBridge(kuick), kuick, ipAddress, listener);
 
         CommunicationBridge.connect(kuick, (client -> loadInternal(client, kuick, ipAddress, listener)));
         return null;
     }
 
-    private static Device loadInternal(CommunicationBridge.Client client, Kuick kuick, String ipAddress,
+    private static Device loadInternal(CommunicationBridge bridge, Kuick kuick, String ipAddress,
                                        OnDeviceRegisteredListener listener)
     {
         try {
-            client.communicate(InetAddress.getByName(ipAddress), true);
+            bridge.communicate(InetAddress.getByName(ipAddress), true);
 
-            Device device = client.getDevice();
+            Device device = bridge.getDevice();
 
             if (device.id != null) {
                 Device localDevice = AppUtils.getLocalDevice(kuick.getContext());
@@ -106,7 +106,6 @@ public class NetworkDeviceLoader
                 }
             }
 
-            client.setReturn(device);
             return device;
         } catch (Exception e) {
             e.printStackTrace();

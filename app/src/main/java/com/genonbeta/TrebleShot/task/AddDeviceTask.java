@@ -22,8 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -41,6 +39,8 @@ import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.response.Response;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,9 +50,9 @@ import static android.app.Activity.RESULT_OK;
 
 public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity>
 {
-    private TransferGroup mGroup;
-    private Device mDevice;
-    private DeviceConnection mConnection;
+    private final TransferGroup mGroup;
+    private final Device mDevice;
+    private final DeviceConnection mConnection;
 
     public AddDeviceTask(TransferGroup group, Device device, DeviceConnection connection)
     {
@@ -68,7 +68,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         Context context = getService().getApplicationContext();
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
-        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+        CommunicationBridge bridge = new CommunicationBridge(kuick());
         ConnectionUtils utils = new ConnectionUtils(getService());
         boolean update = false;
 
@@ -122,7 +122,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     .put(Keyword.TRANSFER_GROUP_ID, mGroup.id)
                     .put(Keyword.FILES_INDEX, filesArray.toString());
 
-            final ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
+            final ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection);
 
             addCloser(userAction -> {
                 try {
@@ -137,7 +137,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             Response response = activeConnection.receive();
             activeConnection.getSocket().close();
 
-            JSONObject clientResponse = new JSONObject(response.index);
+            JSONObject clientResponse = response.getAsJson();
 
             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
                 setOngoingContent(context.getString(R.string.mesg_organizingFiles));

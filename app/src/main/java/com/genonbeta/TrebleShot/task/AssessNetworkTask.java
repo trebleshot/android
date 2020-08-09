@@ -18,8 +18,6 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
@@ -30,6 +28,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.MathUtils;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +37,7 @@ import java.util.List;
 
 public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.CalculationResultListener>
 {
-    private Device mDevice;
+    private final Device mDevice;
 
     public AssessNetworkTask(Device device)
     {
@@ -68,7 +67,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
                 publishStatus();
 
                 try {
-                    CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+                    CommunicationBridge client = new CommunicationBridge(kuick());
                     long startTime = System.nanoTime();
                     ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
                             true);
@@ -79,7 +78,6 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
 
             Comparator<ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {

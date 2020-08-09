@@ -18,9 +18,6 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.CoolSocket;
-import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -34,6 +31,8 @@ import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.response.Response;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,8 +41,8 @@ import java.util.concurrent.TimeoutException;
 
 public class ReceiveUpdateTask extends BackgroundTask
 {
-    private Device mDevice;
-    private DeviceConnection mConnection;
+    private final Device mDevice;
+    private final DeviceConnection mConnection;
 
     public ReceiveUpdateTask(Device device, DeviceConnection connection)
     {
@@ -56,10 +55,8 @@ public class ReceiveUpdateTask extends BackgroundTask
     {
         int versionCode;
         long updateSize;
-        CoolSocket.Client client = new CoolSocket.Client();
 
-        try (ActiveConnection activeConnection = CommunicationBridge.Client.openConnection(client,
-                mConnection.toInet4Address())) {
+        try (ActiveConnection activeConnection = CommunicationBridge.openConnection(mConnection.toInet4Address())) {
             setOngoingContent(getService().getString(R.string.mesg_waiting));
 
             activeConnection.reply(new JSONObject()
@@ -68,7 +65,7 @@ public class ReceiveUpdateTask extends BackgroundTask
 
             {
                 Response response = activeConnection.receive();
-                JSONObject responseJSON = new JSONObject(response.index);
+                JSONObject responseJSON = response.getAsJson();
 
                 if (!responseJSON.getBoolean(Keyword.RESULT))
                     throw new CommunicationException("Update request was denied by the target");

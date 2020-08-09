@@ -55,6 +55,7 @@ android {
         versionCode 99
         versionName "2.0"
         buildConfigField "int", "CLIENT_VERSION", "1"
+        multiDexEnabled true
 
         vectorDrawables {
             useSupportLibrary = true
@@ -86,6 +87,11 @@ android {
             dimension 'mode'
             signingConfig signingConfigs.gbDistribution
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/plexus/components.xml'
     }
 }
 
@@ -122,16 +128,16 @@ preBuild.dependsOn copyHebrewResources
 dependencies {
     testImplementation 'junit:junit:4.13'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.collection:collection:1.1.0"
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.esotericsoftware:kryo:4.0.2'
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.2.0'
     implementation 'com.genonbeta.android:framework:1.0.4-local46'
     implementation 'com.genonbeta.android:gdatabase:1.0.3.2-local8'
-    implementation 'com.genonbeta.coolsocket:main:1.0.4'
+    implementation 'org.monora.coolsocket:core:2.0-rc01'
     implementation 'com.google.zxing:core:3.3.0' // 3.3.2 requires minimum Android SDK 16
     implementation 'org.nanohttpd:nanohttpd:2.2.0'
     implementation 'com.velitasali.tools.android:zxing:3.6.3'
@@ -140,5 +146,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.10.0'
     googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }

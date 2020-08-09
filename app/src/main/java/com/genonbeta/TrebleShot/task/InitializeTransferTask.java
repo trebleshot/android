@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -27,14 +26,15 @@ import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 
 public class InitializeTransferTask extends BackgroundTask
 {
-    private Device mDevice;
-    private DeviceConnection mConnection;
-    private TransferAssignee mAssignee;
+    private final Device mDevice;
+    private final DeviceConnection mConnection;
+    private final TransferAssignee mAssignee;
 
     public InitializeTransferTask(Device device, DeviceConnection connection, TransferAssignee assignee)
     {
@@ -46,9 +46,9 @@ public class InitializeTransferTask extends BackgroundTask
     @Override
     protected void onRun()
     {
-        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+        CommunicationBridge bridge = new CommunicationBridge(kuick());
 
-        try (final ActiveConnection activeConnection = client.communicate(mDevice, mConnection)) {
+        try (final ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection)) {
             Stoppable.Closer connectionCloser = userAction -> {
                 try {
                     activeConnection.getSocket().close();
@@ -65,7 +65,7 @@ public class InitializeTransferTask extends BackgroundTask
 
             activeConnection.reply(jsonRequest.toString());
 
-            final JSONObject responseJSON = new JSONObject(activeConnection.receive().index);
+            final JSONObject responseJSON = activeConnection.receive().getAsJson();
             activeConnection.getSocket().close();
             removeCloser(connectionCloser);
 

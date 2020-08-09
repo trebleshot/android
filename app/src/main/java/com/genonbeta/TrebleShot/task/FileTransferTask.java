@@ -22,9 +22,6 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
-import com.genonbeta.CoolSocket.ActiveConnection;
-import com.genonbeta.CoolSocket.CoolSocket;
-import com.genonbeta.CoolSocket.Response;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -44,6 +41,8 @@ import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.response.Response;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.*;
 
@@ -274,7 +273,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     }
 
                     {
-                        JSONObject response = new JSONObject(this.activeConnection.receive().index);
+                        JSONObject response = this.activeConnection.receive().getAsJson();
                         Log.d(TAG, "handleTransferAsReceiver(): receive: " + response.toString());
 
                         if (!response.getBoolean(Keyword.RESULT)) {
@@ -322,7 +321,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                                 }
 
                                 Log.d(TAG, "handleTransferAsReceiver(): receive: " +
-                                        this.activeConnection.receive().index);
+                                        this.activeConnection.receive().getAsString());
                             }
 
                             this.activeConnection.reply(Keyword.STUB);
@@ -332,20 +331,12 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                             try {
                                 outputStream = streamInfo.openOutputStream();
                                 int readLength;
-                                long lastReceivedTime = 0;
-                                long timeout = this.activeConnection.getTimeout();
                                 byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-                                InputStream inputStream = this.activeConnection.getSocket()
-                                        .getInputStream();
+                                ActiveConnection.Description description = activeConnection.readBegin();
 
-                                while (this.currentBytes < this.object.size) {
-                                    if ((readLength = inputStream.read(buffer)) > 0) {
-                                        this.currentBytes += readLength;
-                                        outputStream.write(buffer, 0, readLength);
-                                        outputStream.flush();
-
-                                        lastReceivedTime = System.currentTimeMillis();
-                                    }
+                                while ((readLength = activeConnection.read(description)) != -1) {
+                                    this.currentBytes += readLength;
+                                    outputStream.write(buffer, 0, readLength);
 
                                     broadcastTransferState(false);
 
@@ -353,11 +344,9 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                                         this.object.setFlag(TransferObject.Flag.INTERRUPTED);
                                         break;
                                     }
-
-                                    if (timeout != CoolSocket.NO_TIMEOUT
-                                            && System.currentTimeMillis() - lastReceivedTime > timeout)
-                                        break;
                                 }
+
+                                outputStream.flush();
 
                                 completed = this.currentBytes == this.object.size;
                                 this.object.setFlag(completed ? TransferObject.Flag.DONE
@@ -476,8 +465,8 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
                 Response response = this.activeConnection.receive();
-                Log.d(TAG, "handleTransferAsSender(): receive: " + response.index);
-                JSONObject request = new JSONObject(response.index);
+                Log.d(TAG, "handleTransferAsSender(): receive: " + response.getAsString());
+                JSONObject request = response.getAsJson();
 
                 if (request.has(Keyword.RESULT) && !request.getBoolean(Keyword.RESULT)) {
                     if (request.has(Keyword.TRANSFER_JOB_DONE) && !request.getBoolean(Keyword.TRANSFER_JOB_DONE))
@@ -539,7 +528,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                         this.activeConnection.reply(reply.toString());
                         Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
 
-                        JSONObject validityOfChange = new JSONObject(this.activeConnection.receive().index);
+                        JSONObject validityOfChange = activeConnection.receive().getAsJson();
 
                         if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
                                 Keyword.RESULT)) {
@@ -680,13 +669,13 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
     public void startTransferAsClient()
     {
-        startTransferAsClientInternal(new CommunicationBridge.Client(kuick()));
+        startTransferAsClientInternal(new CommunicationBridge(kuick()));
     }
 
-    void startTransferAsClientInternal(CommunicationBridge.Client client)
+    void startTransferAsClientInternal(CommunicationBridge bridge)
     {
         try {
-            this.activeConnection = client.communicate(this.device, this.connection);
+            this.activeConnection = bridge.communicate(this.device, this.connection);
 
             {
                 JSONObject reply = new JSONObject()
@@ -700,10 +689,10 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
             {
                 Response response = this.activeConnection.receive();
-                JSONObject responseJSON = new JSONObject(response.index);
+                JSONObject responseJSON = response.getAsJson();
 
                 Log.d(TAG, "startTransferAsClient(): " + this.type.toString() + "; About to start with "
-                        + response.index);
+                        + response.getAsString());
 
                 if (responseJSON.getBoolean(Keyword.RESULT)) {
                     this.attemptsLeft = 2;
@@ -718,7 +707,8 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
                     try {
                         Response lastResponse = this.activeConnection.receive();
-                        Log.d(TAG, "startTransferAsClient(): Final response before exit: " + lastResponse.index);
+                        Log.d(TAG, "startTransferAsClient(): Final response before exit: "
+                                + lastResponse.getAsString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

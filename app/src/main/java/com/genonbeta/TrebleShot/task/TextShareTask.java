@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.task;
 
-import com.genonbeta.CoolSocket.ActiveConnection;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -26,12 +25,13 @@ import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import org.json.JSONObject;
+import org.monora.coolsocket.core.session.ActiveConnection;
 
 public class TextShareTask extends BackgroundTask
 {
-    private Device mDevice;
-    private DeviceConnection mConnection;
-    private String mText;
+    private final Device mDevice;
+    private final DeviceConnection mConnection;
+    private final String mText;
 
     public TextShareTask(Device device, DeviceConnection connection, String text)
     {
@@ -43,16 +43,16 @@ public class TextShareTask extends BackgroundTask
     @Override
     protected void onRun() throws InterruptedException
     {
-        CommunicationBridge.Client client = new CommunicationBridge.Client(kuick());
+        CommunicationBridge bridge = new CommunicationBridge(kuick());
 
-        try (ActiveConnection activeConnection = client.communicate(mDevice, mConnection)) {
+        try (ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection)) {
             final JSONObject jsonRequest = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
                     .put(Keyword.TRANSFER_CLIPBOARD_TEXT, mText);
 
             activeConnection.reply(jsonRequest.toString());
 
-            JSONObject response = new JSONObject(activeConnection.receive().index);
+            JSONObject response = activeConnection.receive().getAsJson();
 
             if (response.has(Keyword.RESULT) && response.getBoolean(Keyword.RESULT)) {
                 // TODO: 31.03.2020 implement
