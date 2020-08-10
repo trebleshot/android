@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
@@ -28,6 +29,7 @@ import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.Closeable;
@@ -119,6 +121,14 @@ public class CommunicationBridge implements Closeable
     public Kuick getKuick()
     {
         return kuick;
+    }
+
+    public void notifyStateOfTransferRequest(long groupId, boolean accepted) throws JSONException, IOException
+    {
+        getActiveConnection().reply(new JSONObject()
+                .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_STATE)
+                .put(Keyword.TRANSFER_GROUP_ID, groupId)
+                .put(Keyword.TRANSFER_IS_ACCEPTED, accepted));
     }
 
     public static ActiveConnection openConnection(InetAddress inetAddress)

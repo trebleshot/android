@@ -164,12 +164,9 @@ public class BackgroundService extends Service
 
                     new Thread(() -> {
                         try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.connection,
-                                task.device, 0)){
+                                task.device, 0)) {
 
-                            activeConnection.reply(new JSONObject()
-                                    .put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
-                                    .put(Keyword.TRANSFER_GROUP_ID, group.id)
-                                    .put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted));
+                            bridge.notifyStateOfTransferRequest(group.id, isAccepted);
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (DifferentClientException e) {
@@ -613,7 +610,7 @@ public class BackgroundService extends Service
                             run(new IndexTransferTask(groupId, jsonIndex, device, deviceAddress, hasPin));
                         }
                         break;
-                    case (Keyword.REQUEST_RESPONSE):
+                    case (Keyword.REQUEST_TRANSFER_STATE):
                         if (response.has(Keyword.TRANSFER_GROUP_ID)) {
                             int groupId = response.getInt(Keyword.TRANSFER_GROUP_ID);
                             boolean isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);

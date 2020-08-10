@@ -28,13 +28,13 @@ public class Keyword
     public static final String
             RESULT = "result",
             REQUEST = "request",
-            REQUEST_TRANSFER = "request",
-            REQUEST_RESPONSE = "requestResponse",
+            REQUEST_TRANSFER = "transfer",
+            REQUEST_TRANSFER_STATE = "transferState",
             REQUEST_ACQUAINTANCE = "acquaintance",
             REQUEST_CLIPBOARD = "text",
             REQUEST_HANDSHAKE = "handshake",
             REQUEST_TRANSFER_JOB = "transfer", // Introduced in 99
-            TRANSFER_TYPE = "transferType", // Introduced in 99
+            TRANSFER_TYPE = "type", // Introduced in 99
             TRANSFER_REQUEST_ID = "requestId",
             TRANSFER_GROUP_ID = "groupId",
             TRANSFER_IS_ACCEPTED = "isAccepted",
