@@ -35,7 +35,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.ReceiveUpdateTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
@@ -78,16 +78,16 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             setNeutralButton(R.string.butn_update, (dialog, which) -> EstablishConnectionDialog.show(activity, device,
                     (connection) -> BackgroundService.run(activity, new ReceiveUpdateTask(device, connection))));
 
-        NetworkDeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
-        text1.setText(device.nickname);
+        DeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
+        text1.setText(device.username);
         modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
         versionText.setText(device.versionName);
-        accessSwitch.setChecked(!device.isRestricted);
-        trustSwitch.setEnabled(!device.isRestricted);
+        accessSwitch.setChecked(!device.isBlocked);
+        trustSwitch.setEnabled(!device.isBlocked);
         trustSwitch.setChecked(device.isTrusted);
 
         accessSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            device.isRestricted = !isChecked;
+            device.isBlocked = !isChecked;
             kuick.publish(device);
             kuick.broadcast();
             trustSwitch.setEnabled(isChecked);

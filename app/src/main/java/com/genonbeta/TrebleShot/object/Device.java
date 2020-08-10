@@ -34,15 +34,17 @@ public final class Device implements DatabaseObject<Void>, Parcelable
 {
     public String brand;
     public String model;
-    public String nickname;
-    public String id;
+    public String username;
+    public String uid;
     public String versionName;
     public int versionCode;
-    public int clientVersion;
-    public int secureKey = -1;
+    public int protocolVersion;
+    public int protocolVersionMin;
+    public int sendKey;
+    public int receiveKey;
     public long lastUsageTime;
     public boolean isTrusted = false;
-    public boolean isRestricted = false;
+    public boolean isBlocked = false;
     public boolean isLocal = false;
     public Type type = Type.NORMAL;
 
@@ -52,24 +54,26 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     {
     }
 
-    public Device(String id)
+    public Device(String uid)
     {
-        this.id = id;
+        this.uid = uid;
     }
 
     protected Device(Parcel in)
     {
         brand = in.readString();
         model = in.readString();
-        nickname = in.readString();
-        id = in.readString();
+        username = in.readString();
+        uid = in.readString();
         versionName = in.readString();
         versionCode = in.readInt();
-        clientVersion = in.readInt();
-        secureKey = in.readInt();
+        protocolVersion = in.readInt();
+        protocolVersionMin = in.readInt();
+        sendKey = in.readInt();
+        receiveKey = in.readInt();
         lastUsageTime = in.readLong();
         isTrusted = in.readByte() != 0;
-        isRestricted = in.readByte() != 0;
+        isBlocked = in.readByte() != 0;
         isLocal = in.readByte() != 0;
         mIsSelected = in.readByte() != 0;
     }
@@ -92,44 +96,45 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     public void applyPreferences(Device otherDevice)
     {
         isLocal = otherDevice.isLocal;
-        isRestricted = otherDevice.isRestricted;
+        isBlocked = otherDevice.isBlocked;
         isTrusted = otherDevice.isTrusted;
     }
 
     private void checkSecureKey()
     {
-        if (secureKey < 0)
-            throw new RuntimeException("Secure key for " + nickname + " cannot be invalid when the device is saved");
+        if (sendKey == 0 || receiveKey == 0)
+            throw new RuntimeException("Keys for " + username + " cannot be invalid when the device is saved");
     }
 
     public String generatePictureId()
     {
-        return String.format("picture_%s", id);
+        return String.format("picture_%s", uid);
     }
 
     @Override
     public SQLQuery.Select getWhere()
     {
         return new SQLQuery.Select(Kuick.TABLE_DEVICES)
-                .setWhere(Kuick.FIELD_DEVICES_ID + "=?", id);
+                .setWhere(Kuick.FIELD_DEVICES_ID + "=?", uid);
     }
 
     public ContentValues getValues()
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_DEVICES_ID, id);
-        values.put(Kuick.FIELD_DEVICES_USER, nickname);
+        values.put(Kuick.FIELD_DEVICES_ID, uid);
+        values.put(Kuick.FIELD_DEVICES_USER, username);
         values.put(Kuick.FIELD_DEVICES_BRAND, brand);
         values.put(Kuick.FIELD_DEVICES_MODEL, model);
         values.put(Kuick.FIELD_DEVICES_BUILDNAME, versionName);
         values.put(Kuick.FIELD_DEVICES_BUILDNUMBER, versionCode);
-        values.put(Kuick.FIELD_DEVICES_CLIENTVERSION, clientVersion);
+        values.put(Kuick.FIELD_DEVICES_PROTOCOLVERSION, protocolVersion);
         values.put(Kuick.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
-        values.put(Kuick.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
+        values.put(Kuick.FIELD_DEVICES_ISRESTRICTED, isBlocked ? 1 : 0);
         values.put(Kuick.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
         values.put(Kuick.FIELD_DEVICES_ISLOCALADDRESS, isLocal ? 1 : 0);
-        values.put(Kuick.FIELD_DEVICES_SECUREKEY, secureKey);
+        values.put(Kuick.FIELD_DEVICES_SENDKEY, sendKey);
+        values.put(Kuick.FIELD_DEVICES_RECEIVEKEY, receiveKey);
         values.put(Kuick.FIELD_DEVICES_TYPE, type.toString());
 
         return values;
@@ -138,20 +143,21 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.id = item.getAsString(Kuick.FIELD_DEVICES_ID);
-        this.nickname = item.getAsString(Kuick.FIELD_DEVICES_USER);
+        this.uid = item.getAsString(Kuick.FIELD_DEVICES_ID);
+        this.username = item.getAsString(Kuick.FIELD_DEVICES_USER);
         this.brand = item.getAsString(Kuick.FIELD_DEVICES_BRAND);
         this.model = item.getAsString(Kuick.FIELD_DEVICES_MODEL);
         this.versionName = item.getAsString(Kuick.FIELD_DEVICES_BUILDNAME);
         this.versionCode = item.getAsInteger(Kuick.FIELD_DEVICES_BUILDNUMBER);
         this.lastUsageTime = item.getAsLong(Kuick.FIELD_DEVICES_LASTUSAGETIME);
         this.isTrusted = item.getAsInteger(Kuick.FIELD_DEVICES_ISTRUSTED) == 1;
-        this.isRestricted = item.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1;
+        this.isBlocked = item.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1;
         this.isLocal = item.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1;
-        this.secureKey = item.getAsInteger(Kuick.FIELD_DEVICES_SECUREKEY);
+        this.sendKey = item.getAsInteger(Kuick.FIELD_DEVICES_SENDKEY);
+        this.receiveKey = item.getAsInteger(Kuick.FIELD_DEVICES_RECEIVEKEY);
 
-        if (item.containsKey(Kuick.FIELD_DEVICES_CLIENTVERSION))
-            this.clientVersion = item.getAsInteger(Kuick.FIELD_DEVICES_CLIENTVERSION);
+        if (item.containsKey(Kuick.FIELD_DEVICES_PROTOCOLVERSION))
+            this.protocolVersion = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSION);
 
         try {
             this.type = Type.valueOf(item.getAsString(Kuick.FIELD_DEVICES_TYPE));
@@ -178,11 +184,11 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         kuick.getContext().deleteFile(generatePictureId());
 
         kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", id));
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", uid));
 
         List<TransferAssignee> assignees = kuick.castQuery(db, new SQLQuery.Select(
                 Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID
-                + "=?", id), TransferAssignee.class, null);
+                + "=?", uid), TransferAssignee.class, null);
 
         for (TransferAssignee assignee : assignees)
             kuick.remove(db, assignee, null, listener);
@@ -199,15 +205,17 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     {
         dest.writeString(brand);
         dest.writeString(model);
-        dest.writeString(nickname);
-        dest.writeString(id);
+        dest.writeString(username);
+        dest.writeString(uid);
         dest.writeString(versionName);
         dest.writeInt(versionCode);
-        dest.writeInt(clientVersion);
-        dest.writeInt(secureKey);
+        dest.writeInt(protocolVersion);
+        dest.writeInt(protocolVersionMin);
+        dest.writeInt(sendKey);
+        dest.writeInt(receiveKey);
         dest.writeLong(lastUsageTime);
         dest.writeByte((byte) (isTrusted ? 1 : 0));
-        dest.writeByte((byte) (isRestricted ? 1 : 0));
+        dest.writeByte((byte) (isBlocked ? 1 : 0));
         dest.writeByte((byte) (isLocal ? 1 : 0));
         dest.writeByte((byte) (mIsSelected ? 1 : 0));
     }

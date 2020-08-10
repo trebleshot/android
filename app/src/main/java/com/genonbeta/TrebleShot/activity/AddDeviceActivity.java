@@ -41,7 +41,7 @@ import com.genonbeta.TrebleShot.fragment.DeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
@@ -90,7 +90,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                     && intent.hasExtra(BackgroundService.EXTRA_DEVICE)
                     && intent.hasExtra(BackgroundService.EXTRA_CONNECTION)) {
                 Device device = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE);
-                DeviceConnection connection = intent.getParcelableExtra(BackgroundService.EXTRA_CONNECTION);
+                DeviceAddress connection = intent.getParcelableExtra(BackgroundService.EXTRA_CONNECTION);
 
                 if (device != null && connection != null)
                     returnResult(AddDeviceActivity.this, device, connection);
@@ -164,13 +164,13 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         if (resultCode == RESULT_OK && data != null)
             if (requestCode == REQUEST_BARCODE_SCAN) {
                 Device device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE);
-                DeviceConnection connection = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_CONNECTION);
+                DeviceAddress connection = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_CONNECTION);
 
                 if (device != null && connection != null)
                     returnResult(this, device, connection);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
                 Device device = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_DEVICE);
-                DeviceConnection connection = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_CONNECTION);
+                DeviceAddress connection = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_CONNECTION);
 
                 if (device != null && connection != null)
                     returnResult(this, device, connection);
@@ -254,7 +254,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         return getSupportFragmentManager().findFragmentById(R.id.activity_connection_establishing_content_view);
     }
 
-    public static void returnResult(android.app.Activity activity, Device device, DeviceConnection connection)
+    public static void returnResult(android.app.Activity activity, Device device, DeviceAddress connection)
     {
         activity.setResult(RESULT_OK, new Intent()
                 .putExtra(EXTRA_DEVICE, device)

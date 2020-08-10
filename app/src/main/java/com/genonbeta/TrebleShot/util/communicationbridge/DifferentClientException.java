@@ -23,12 +23,12 @@ import com.genonbeta.TrebleShot.object.Device;
 public class DifferentClientException extends CommunicationException
 {
     public Device expected;
-    public Device got;
+    public String gotUid;
 
-    public DifferentClientException(Device expected, Device got)
+    public DifferentClientException(Device expected, String gotUid)
     {
         super();
         this.expected = expected;
-        this.got = got;
+        this.gotUid = gotUid;
     }
 }

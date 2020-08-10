@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.task;
 
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -33,10 +33,10 @@ import java.io.IOException;
 public class InitializeTransferTask extends BackgroundTask
 {
     private final Device mDevice;
-    private final DeviceConnection mConnection;
+    private final DeviceAddress mConnection;
     private final TransferAssignee mAssignee;
 
-    public InitializeTransferTask(Device device, DeviceConnection connection, TransferAssignee assignee)
+    public InitializeTransferTask(Device device, DeviceAddress connection, TransferAssignee assignee)
     {
         mDevice = device;
         mConnection = connection;

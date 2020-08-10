@@ -58,7 +58,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     public IndexOfTransferGroup index;
     public TransferGroup group;
     public TransferAssignee assignee;
-    public DeviceConnection connection;
+    public DeviceAddress connection;
     public TransferObject.Type type;
 
     // Changing objects
@@ -118,7 +118,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                 if (TransferObject.Type.INCOMING.equals(this.type))
                     this.object.setFlag(flag);
                 else if (TransferObject.Type.OUTGOING.equals(this.type))
-                    this.object.putFlag(this.device.id, flag);
+                    this.object.putFlag(this.device.uid, flag);
 
                 kuick().update(getDatabase(), this.object, this.group, null);
             } catch (Exception e) {
@@ -166,7 +166,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             throw new AssigneeNotFoundException(assignee);
         }
 
-        DeviceConnection connection = new DeviceConnection(assignee);
+        DeviceAddress connection = new DeviceAddress(assignee);
 
         try {
             kuick.reconstruct(db, connection);
@@ -174,7 +174,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             throw new ConnectionNotFoundException(connection);
         }
 
-        Log.d(TAG, "createFrom: deviceId=" + device.id + " groupId=" + group.id + " adapter="
+        Log.d(TAG, "createFrom: deviceId=" + device.uid + " groupId=" + group.id + " adapter="
                 + assignee.connectionAdapter);
 
         FileTransferTask task = new FileTransferTask();
@@ -532,7 +532,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
                         if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
                                 Keyword.RESULT)) {
-                            this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
+                            this.object.putFlag(this.device.uid, TransferObject.Flag.INTERRUPTED);
                             kuick().update(getDatabase(), this.object, this.group, null);
                             continue;
                         }
@@ -544,7 +544,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     }
 
                     this.activeConnection.receive();
-                    this.object.putFlag(this.device.id, TransferObject.Flag.IN_PROGRESS);
+                    this.object.putFlag(this.device.uid, TransferObject.Flag.IN_PROGRESS);
                     kuick().update(getDatabase(), this.object, this.group, null);
 
                     try {
@@ -571,7 +571,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                             }
 
                             if (isInterrupted()) {
-                                this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
+                                this.object.putFlag(this.device.uid, TransferObject.Flag.INTERRUPTED);
                                 break;
                             }
                         }
@@ -579,11 +579,11 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                         if (this.currentBytes == this.object.size) {
                             this.completedBytes += this.currentBytes;
                             this.completedCount++;
-                            this.object.putFlag(this.device.id, TransferObject.Flag.DONE);
+                            this.object.putFlag(this.device.uid, TransferObject.Flag.DONE);
                         } else if (sizeExceeded)
-                            this.object.putFlag(this.device.id, TransferObject.Flag.REMOVED);
+                            this.object.putFlag(this.device.uid, TransferObject.Flag.REMOVED);
                         else
-                            this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
+                            this.object.putFlag(this.device.uid, TransferObject.Flag.INTERRUPTED);
 
                         kuick().update(getDatabase(), this.object, this.group, null);
 
@@ -591,7 +591,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     } catch (Exception e) {
                         e.printStackTrace();
                         interrupt(false);
-                        this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
+                        this.object.putFlag(this.device.uid, TransferObject.Flag.INTERRUPTED);
                         kuick().update(getDatabase(), this.object, this.group, null);
                     } finally {
                         inputStream.close();
@@ -605,7 +605,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                             .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
                             .toString());
 
-                    this.object.putFlag(this.device.id, TransferObject.Flag.REMOVED);
+                    this.object.putFlag(this.device.uid, TransferObject.Flag.REMOVED);
                     kuick().update(getDatabase(), this.object, this.group, null);
                 } catch (FileNotFoundException | StreamCorruptedException e) {
                     Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + this.object.name);
@@ -616,7 +616,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                             .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
                             .toString());
 
-                    this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
+                    this.object.putFlag(this.device.uid, TransferObject.Flag.INTERRUPTED);
                     kuick().update(getDatabase(), this.object, this.group, null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -627,7 +627,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                             .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
                             .toString());
 
-                    this.object.putFlag(this.device.id, TransferObject.Flag.INTERRUPTED);
+                    this.object.putFlag(this.device.uid, TransferObject.Flag.INTERRUPTED);
                     kuick().update(getDatabase(), this.object, this.group, null);
                 }
             }
@@ -644,7 +644,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
     public static Identity identityOf(FileTransferTask task)
     {
-        return identifyWith(task.group.id, task.device.id, task.type);
+        return identifyWith(task.group.id, task.device.uid, task.type);
     }
 
     public static Identity identifyWith(long groupId)

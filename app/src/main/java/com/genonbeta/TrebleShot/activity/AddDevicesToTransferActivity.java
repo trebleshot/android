@@ -41,7 +41,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
@@ -183,7 +183,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                     && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION)) {
                 Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
-                DeviceConnection connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
+                DeviceAddress connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
 
                 if (device != null && connection != null)
                     runUiTask(new AddDeviceTask(mGroup, device, connection));

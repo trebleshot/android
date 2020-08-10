@@ -42,14 +42,12 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.*;
-import com.genonbeta.TrebleShot.view.EditableListFragmentViewBase;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -154,7 +152,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         transferArgs.toArray(transferSelect.whereArgs);
 
         DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.id, currentPath == null
-                ? (assignee == null ? getContext().getString(R.string.text_home) : assignee.device.nickname) : currentPath.contains(
+                ? (assignee == null ? getContext().getString(R.string.text_home) : assignee.device.username) : currentPath.contains(
                 File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1)
                 : currentPath, currentPath);
         lister.offerObliged(this, statusItem);
@@ -714,7 +712,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         public String getSecondText(TransferListAdapter adapter)
         {
             if (adapter.getAssignee() != null)
-                return adapter.getAssignee().device.nickname;
+                return adapter.getAssignee().device.username;
 
             int totalDevices = 1;
 

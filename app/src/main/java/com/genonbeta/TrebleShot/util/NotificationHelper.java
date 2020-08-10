@@ -107,7 +107,7 @@ public class NotificationHelper
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_connectionPermission))
                 .setContentText(getContext().getString(R.string.ques_allowDeviceToConnect))
-                .setContentInfo(device.nickname)
+                .setContentInfo(device.username)
                 .setContentIntent(PendingIntent.getBroadcast(getContext(), AppUtils.getUniqueNumber(), dialogIntent,
                         0))
                 .setDefaults(getUtils().getNotificationSettings())
@@ -124,7 +124,7 @@ public class NotificationHelper
     {
         int numberOfFiles = objectList.size();
         DynamicNotification notification = getUtils().buildDynamicNotification(
-                TransferUtils.createUniqueTransferId(group.id, device.id, type),
+                TransferUtils.createUniqueTransferId(group.id, device.uid, type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(
                 R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : objectList.get(0).name;
@@ -147,7 +147,7 @@ public class NotificationHelper
         notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(getContext().getString(R.string.ques_receiveFile))
                 .setContentText(message)
-                .setContentInfo(device.nickname)
+                .setContentInfo(device.username)
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), ViewTransferActivity.class)
                         .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
@@ -169,7 +169,7 @@ public class NotificationHelper
         if (notification == null) {
             boolean isIncoming = TransferObject.Type.INCOMING.equals(task.object.type);
             notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                    task.group.id, task.device.id, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+                    task.group.id, task.device.uid, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
             task.setCustomNotification(notification);
 
@@ -184,7 +184,7 @@ public class NotificationHelper
             notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
                     : android.R.drawable.stat_sys_upload)
                     .setContentText(getContext().getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
-                    .setContentInfo(task.device.nickname)
+                    .setContentInfo(task.device.username)
                     .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                             getContext(), ViewTransferActivity.class)
                             .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
@@ -260,7 +260,7 @@ public class NotificationHelper
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(object.text)
                         .setBigContentTitle(getContext().getString(R.string.ques_copyToClipboard)))
-                .setContentInfo(device.nickname)
+                .setContentInfo(device.username)
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), activityIntent,
                         0))
                 .setDefaults(getUtils().getNotificationSettings())
@@ -278,11 +278,11 @@ public class NotificationHelper
     public void notifyFileReceived(FileTransferTask task, DocumentFile savePath)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                task.group.id, task.device.id, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+                task.group.id, task.device.uid, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
         notification
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                .setContentInfo(task.device.nickname)
+                .setContentInfo(task.device.username)
                 .setAutoCancel(true)
                 .setDefaults(getUtils().getNotificationSettings())
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -322,7 +322,7 @@ public class NotificationHelper
     public void notifyReceiveError(FileTransferTask task)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                task.group.id, task.device.id, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+                task.group.id, task.device.uid, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_error))
@@ -363,8 +363,8 @@ public class NotificationHelper
     public void notifyConnectionError(FileTransferTask task, @Nullable String errorKey)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                task.group.id, task.device.id, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, task.device.nickname,
+                task.group.id, task.device.uid, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, task.device.username,
                 TextUtils.getAdapterName(getContext(), task.connection));
 
         if (errorKey != null)
@@ -394,7 +394,7 @@ public class NotificationHelper
     public DynamicNotification notifyPrepareFiles(TransferGroup group, Device device)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(
-                TransferUtils.createUniqueTransferId(group.id, device.id, TransferObject.Type.INCOMING),
+                TransferUtils.createUniqueTransferId(group.id, device.uid, TransferObject.Type.INCOMING),
                 NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
         // TODO: 15.03.2020 Fix the action matching the close action
@@ -427,7 +427,7 @@ public class NotificationHelper
     public DynamicNotification notifyStuckThread(TransferGroup group, Device device, TransferObject.Type type)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
-                group.id, device.id, type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+                group.id, device.uid, type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
         Intent killIntent = new Intent(getContext(), BackgroundService.class)
                 .setAction(BackgroundService.ACTION_STOP_TASK)

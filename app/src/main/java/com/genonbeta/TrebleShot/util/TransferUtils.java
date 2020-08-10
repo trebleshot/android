@@ -139,7 +139,7 @@ public class TransferUtils
 
         List<ShowingAssignee> assignees = kuick.castQuery(select, ShowingAssignee.class, (db, item, object) -> {
             object.device = new Device(object.deviceId);
-            object.connection = new DeviceConnection(object);
+            object.connection = new DeviceAddress(object);
 
             try {
                 db.reconstruct(object.device);
@@ -193,7 +193,7 @@ public class TransferUtils
     public static void loadAssigneeInfo(KuickDb kuick, ShowingAssignee assignee)
     {
         assignee.device = new Device(assignee.deviceId);
-        assignee.connection = new DeviceConnection(assignee);
+        assignee.connection = new DeviceAddress(assignee);
 
         try {
             kuick.reconstruct(assignee.device);
@@ -310,7 +310,7 @@ public class TransferUtils
 
     @Deprecated
     public static void requestStartSending(final Activity activity, final TransferAssignee assignee,
-                                           final Device device, final DeviceConnection connection)
+                                           final Device device, final DeviceAddress connection)
     {
         BackgroundService.run(activity, new InitializeTransferTask(device, connection, assignee));
     }
@@ -403,6 +403,6 @@ public class TransferUtils
 
     public interface ConnectionUpdatedListener
     {
-        void onConnectionUpdated(DeviceConnection connection, TransferAssignee assignee);
+        void onConnectionUpdated(DeviceAddress connection, TransferAssignee assignee);
     }
 }

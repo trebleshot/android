@@ -32,7 +32,7 @@ public class DeviceNotFoundException extends ReconstructionFailedException
 
     public DeviceNotFoundException(Device device)
     {
-        super(device.id + " doesn't point to a device");
+        super(device.uid + " doesn't point to a device");
         this.device = device;
     }
 }

@@ -32,7 +32,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.task.TextShareTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -107,7 +107,7 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                     && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION)) {
                 Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
-                DeviceConnection connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
+                DeviceAddress connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
                 String text = mEditTextEditor.getText() != null ? mEditTextEditor.getText().toString() : null;
 
                 if (device != null && connection != null && text != null) {

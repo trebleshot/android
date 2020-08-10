@@ -38,12 +38,12 @@ public class IndexTransferTask extends BackgroundTask
 {
     private long mGroupId;
     private boolean mNoPrompt;
-    private DeviceConnection mConnection;
+    private DeviceAddress mConnection;
     private Device mDevice;
     private String mJsonIndex;
 
     public IndexTransferTask(final long groupId, final String jsonIndex, final Device device,
-                             final DeviceConnection connection, final boolean noPrompt)
+                             final DeviceAddress connection, final boolean noPrompt)
     {
         mGroupId = groupId;
         mJsonIndex = jsonIndex;

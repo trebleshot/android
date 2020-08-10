@@ -24,10 +24,10 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 
@@ -67,8 +67,8 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                     getKuick().publish(localDevice);
 
                     for (NetworkInterface networkInterface : interfaceList) {
-                        DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(),
-                                NetworkUtils.getFirstInet4Address(networkInterface).getHostAddress(), localDevice.id,
+                        DeviceAddress connection = new DeviceAddress(networkInterface.getDisplayName(),
+                                NetworkUtils.getFirstInet4Address(networkInterface).getHostAddress(), localDevice.uid,
                                 System.currentTimeMillis());
                         getKuick().publish(connection);
                     }
@@ -96,11 +96,11 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
     @Override
     public void onDeviceFound(InetAddress address, NetworkInterface networkInterface)
     {
-        DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(), address.getHostAddress(),
+        DeviceAddress connection = new DeviceAddress(networkInterface.getDisplayName(), address.getHostAddress(),
                 "", System.currentTimeMillis());
         getKuick().publish(connection);
 
-        NetworkDeviceLoader.load(getKuick(), address.getHostAddress(), null);
+        DeviceLoader.load(getKuick(), address.getHostAddress(), null);
         getKuick().broadcast();
     }
 

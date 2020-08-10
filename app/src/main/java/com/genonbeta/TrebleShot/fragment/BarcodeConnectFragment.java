@@ -44,7 +44,7 @@ import com.genonbeta.TrebleShot.activity.BarcodeScannerActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
@@ -418,11 +418,11 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     }
 
     @Override
-    public void onDeviceReached(DeviceAddress deviceAddress)
+    public void onDeviceReached(DeviceRoute deviceRoute)
     {
         requireActivity().setResult(Activity.RESULT_OK, new Intent()
-                .putExtra(BarcodeScannerActivity.EXTRA_DEVICE, deviceAddress.device)
-                .putExtra(BarcodeScannerActivity.EXTRA_CONNECTION, deviceAddress.connection));
+                .putExtra(BarcodeScannerActivity.EXTRA_DEVICE, deviceRoute.device)
+                .putExtra(BarcodeScannerActivity.EXTRA_CONNECTION, deviceRoute.connection));
         requireActivity().finish();
     }
 

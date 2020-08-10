@@ -18,10 +18,9 @@
 
 package com.genonbeta.TrebleShot.callback;
 
-import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.task.AssessNetworkTask;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 
 public interface OnConnectionSelectionListener
 {
-    void onConnectionSelection(DeviceConnection connection);
+    void onConnectionSelection(DeviceAddress connection);
 }

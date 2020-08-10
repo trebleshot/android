@@ -43,7 +43,7 @@ public class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAda
     public Index<String> onFirstItem()
     {
         if (mAssignee != null)
-            return new Index<>(mAssignee.device.nickname, R.drawable.ic_device_hub_white_24dp, null);
+            return new Index<>(mAssignee.device.username, R.drawable.ic_device_hub_white_24dp, null);
 
         return new Index<>(mHomeName, R.drawable.ic_home_white_24dp, null);
     }

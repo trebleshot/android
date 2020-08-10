@@ -23,7 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TransferObject;
 
 import java.net.NetworkInterface;
@@ -55,7 +55,7 @@ public class TextUtils
         return -1;
     }
 
-    public static String getAdapterName(Context context, DeviceConnection connection)
+    public static String getAdapterName(Context context, DeviceAddress connection)
     {
         return getAdapterName(context, connection.adapterName);
     }

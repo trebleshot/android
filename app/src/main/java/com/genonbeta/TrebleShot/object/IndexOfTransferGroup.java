@@ -80,7 +80,7 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
 
         for (String keyword : filteringKeywords)
             for (ShowingAssignee assignee : copyAssignees)
-                if (assignee.device.nickname.toLowerCase().contains(keyword.toLowerCase()))
+                if (assignee.device.username.toLowerCase().contains(keyword.toLowerCase()))
                     return true;
 
         return false;
@@ -125,7 +125,7 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
         for (ShowingAssignee assignee : copyAssignees) {
             if (title.length() > 0)
                 title.append(", ");
-            title.append(assignee.device.nickname);
+            title.append(assignee.device.username);
         }
 
         return title.toString();
@@ -136,7 +136,7 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
         ShowingAssignee[] copyAssignees = assignees;
 
         if (copyAssignees.length == 1)
-            return copyAssignees[0].device.nickname;
+            return copyAssignees[0].device.username;
 
         return context.getResources().getQuantityString(R.plurals.text_devices,
                 copyAssignees.length, copyAssignees.length);

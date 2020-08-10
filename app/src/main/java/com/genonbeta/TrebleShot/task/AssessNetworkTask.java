@@ -21,7 +21,7 @@ package com.genonbeta.TrebleShot.task;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -47,10 +47,10 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
     @Override
     protected void onRun() throws InterruptedException
     {
-        List<DeviceConnection> knownConnectionList = AppUtils.getKuick(getService()).castQuery(
+        List<DeviceAddress> knownConnectionList = AppUtils.getKuick(getService()).castQuery(
                 new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                        .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.id)
-                        .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceConnection.class);
+                        .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.uid)
+                        .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceAddress.class);
         ConnectionResult[] results = new ConnectionResult[knownConnectionList.size()];
 
         progress().addToTotal(knownConnectionList.size());
@@ -123,12 +123,12 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
 
     public static class ConnectionResult
     {
-        public DeviceConnection connection;
+        public DeviceAddress connection;
         public long pingTime = 0; // nanoseconds
 
         public boolean successful = false;
 
-        public ConnectionResult(DeviceConnection connection)
+        public ConnectionResult(DeviceAddress connection)
         {
             this.connection = connection;
         }

@@ -19,113 +19,86 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.TimeoutException;
 
 /**
  * created by: Veli
  * date: 11.02.2018 15:07
  */
 
-public class CommunicationBridge
+public class CommunicationBridge implements Closeable
 {
     public static final String TAG = CommunicationBridge.class.getSimpleName();
 
-    private final Kuick mKuick;
-    private Device mDevice;
-    private int mPin = -1;
+    private final Kuick kuick;
 
-    public CommunicationBridge(Kuick kuick)
+    private final ActiveConnection activeConnection;
+
+    private final Device device;
+
+    private final DeviceAddress deviceAddress;
+
+    public CommunicationBridge(Kuick kuick, ActiveConnection activeConnection, Device device, DeviceAddress deviceAddress)
     {
-        mKuick = kuick;
+        this.kuick = kuick;
+        this.activeConnection = activeConnection;
+        this.device = device;
+        this.deviceAddress = deviceAddress;
     }
 
-    public CommunicationBridge(Kuick kuick, int pin)
+    @Override
+    public void close() throws IOException
     {
-        this(kuick);
-        setPin(pin);
+        activeConnection.close();
     }
 
-    public ActiveConnection communicate(Device targetDevice, DeviceConnection targetConnection)
-            throws IOException, TimeoutException, CommunicationException, JSONException
+    public static CommunicationBridge connect(Kuick kuick, DeviceAddress deviceAddress, @Nullable Device device, int pin)
+            throws IOException, DifferentClientException, JSONException
     {
-        return communicate(targetDevice, targetConnection, false);
-    }
+        ActiveConnection activeConnection = openConnection(deviceAddress.toInet4Address());
+        String remoteDeviceId = activeConnection.receive().getAsString();
 
-    public ActiveConnection communicate(Device targetDevice, DeviceConnection targetConnection,
-                                        boolean handshakeOnly)
-            throws IOException, TimeoutException, CommunicationException, JSONException
-    {
-        setDevice(targetDevice);
-        return communicate(targetConnection.toInet4Address(), handshakeOnly);
-    }
+        if (device != null && device.uid != null && !device.uid.equals(remoteDeviceId))
+            throw new DifferentClientException(device, remoteDeviceId);
 
-    public ActiveConnection communicate(InetAddress address, boolean handshakeOnly) throws IOException,
-            TimeoutException, CommunicationException, JSONException
-    {
-        ActiveConnection activeConnection = connectWithHandshake(address, handshakeOnly);
-        communicate(activeConnection, handshakeOnly);
-        return activeConnection;
-    }
+        if (device == null)
+            device = new Device(remoteDeviceId);
 
-    public static CommunicationBridge connect(Kuick kuick, final ConnectionHandler handler)
-    {
-        final CommunicationBridge communicationBridge = new CommunicationBridge(kuick);
-        new Thread(() -> handler.onConnect(communicationBridge)).start();
-        return communicationBridge;
-    }
-
-
-    public void communicate(ActiveConnection activeConnection, boolean handshakeOnly) throws IOException,
-            TimeoutException, CommunicationException, JSONException
-    {
-        boolean keyNotSent = getDevice() == null;
-        updateDeviceIfOkay(activeConnection);
-
-        if (!handshakeOnly && keyNotSent) {
-            activeConnection.reply(new JSONObject().put(Keyword.DEVICE_INFO_KEY, getDevice().secureKey)
-                    .toString());
-            activeConnection.receive(); // STUB
+        try {
+            kuick.reconstruct(device);
+        } catch (ReconstructionFailedException e) {
+            device.sendKey = AppUtils.generateKey();
         }
+
+        activeConnection.reply(AppUtils.getLocalDeviceAsJson(kuick.getContext(), device, pin));
+
+        try {
+            DeviceLoader.loadFrom(kuick, activeConnection.receive().getAsJson(), device, false);
+        } catch (DeviceInsecureException ignored) {
+        }
+
+        DeviceLoader.processConnection(kuick, device, deviceAddress);
+
+        return new CommunicationBridge(kuick, activeConnection, device, deviceAddress);
     }
 
-    public ActiveConnection connect(InetAddress inetAddress) throws IOException
+    public ActiveConnection getActiveConnection()
     {
-        if (!inetAddress.isReachable(1000))
-            throw new IOException("Ping test before connection to the address has failed");
-
-        return openConnection(inetAddress);
-    }
-
-    public ActiveConnection connect(DeviceConnection connection) throws IOException
-    {
-        return connect(connection.toInet4Address());
-    }
-
-    public ActiveConnection connectWithHandshake(DeviceConnection connection, boolean handshakeOnly)
-            throws IOException, TimeoutException, JSONException
-    {
-        return connectWithHandshake(connection.toInet4Address(), handshakeOnly);
-    }
-
-    public ActiveConnection connectWithHandshake(InetAddress inetAddress, boolean handshakeOnly)
-            throws IOException, TimeoutException, JSONException
-    {
-        return handshake(connect(inetAddress), handshakeOnly);
+        return activeConnection;
     }
 
     public Context getContext()
@@ -133,39 +106,19 @@ public class CommunicationBridge
         return getKuick().getContext();
     }
 
-    public Kuick getKuick()
-    {
-        return mKuick;
-    }
-
     public Device getDevice()
     {
-        return mDevice;
+        return device;
     }
 
-    public ActiveConnection handshake(ActiveConnection activeConnection, boolean handshakeOnly) throws IOException,
-            TimeoutException, JSONException
+    public DeviceAddress getDeviceAddress()
     {
-        JSONObject reply = new JSONObject()
-                .put(Keyword.HANDSHAKE_REQUIRED, true)
-                .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
-                .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceId(getContext()))
-                .put(Keyword.DEVICE_PIN, mPin);
-
-        AppUtils.applyDeviceToJSON(getContext(), reply, mDevice != null ? mDevice.secureKey : -1);
-        activeConnection.reply(reply.toString());
-
-        return activeConnection;
+        return deviceAddress;
     }
 
-    public Device loadDevice(ActiveConnection activeConnection) throws TimeoutException, IOException,
-            CommunicationException
+    public Kuick getKuick()
     {
-        try {
-            return NetworkDeviceLoader.loadFrom(getKuick(), activeConnection.receive().getAsJson());
-        } catch (JSONException e) {
-            throw new CommunicationException("Cannot read the device from JSON");
-        }
+        return kuick;
     }
 
     public static ActiveConnection openConnection(InetAddress inetAddress)
@@ -173,58 +126,5 @@ public class CommunicationBridge
     {
         return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);
-    }
-
-    public void setDevice(Device device)
-    {
-        mDevice = device;
-    }
-
-    public void setPin(int pin)
-    {
-        mPin = pin;
-    }
-
-    protected void updateDeviceIfOkay(ActiveConnection activeConnection) throws IOException,
-            TimeoutException, CommunicationException
-    {
-        Device loadedDevice = loadDevice(activeConnection);
-
-        NetworkDeviceLoader.processConnection(getKuick(), loadedDevice, activeConnection.getAddress().getHostAddress());
-
-        if (getDevice() != null && !getDevice().id.equals(loadedDevice.id))
-            throw new DifferentClientException(getDevice(), loadedDevice);
-
-        if (loadedDevice.clientVersion >= 1) {
-            if (getDevice() == null) {
-                try {
-                    Device existingDevice = new Device(loadedDevice.id);
-
-                    getKuick().reconstruct(existingDevice);
-                    setDevice(existingDevice);
-                } catch (ReconstructionFailedException ignored) {
-                    loadedDevice.secureKey = AppUtils.generateKey();
-                }
-            }
-
-            if (getDevice() != null) {
-                loadedDevice.applyPreferences(getDevice());
-
-                loadedDevice.secureKey = getDevice().secureKey;
-                loadedDevice.isRestricted = false;
-            } else
-                loadedDevice.isLocal = AppUtils.getDeviceId(getContext()).equals(loadedDevice.id);
-        }
-
-        loadedDevice.lastUsageTime = System.currentTimeMillis();
-
-        getKuick().publish(loadedDevice);
-        getKuick().broadcast();
-        setDevice(loadedDevice);
-    }
-
-    public interface ConnectionHandler
-    {
-        void onConnect(CommunicationBridge bridge);
     }
 }

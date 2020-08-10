@@ -56,12 +56,14 @@ public class Kuick extends KuickDb
             FIELD_DEVICES_MODEL = "model",
             FIELD_DEVICES_BUILDNAME = "buildName",
             FIELD_DEVICES_BUILDNUMBER = "buildNumber",
-            FIELD_DEVICES_CLIENTVERSION = "clientVersion",
+            FIELD_DEVICES_PROTOCOLVERSION = "clientVersion",
+            FIELD_DEVICES_PROTOCOLVERSIONMIN = "protocolVersionMin",
             FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime",
             FIELD_DEVICES_ISRESTRICTED = "isRestricted",
             FIELD_DEVICES_ISTRUSTED = "isTrusted",
             FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress",
-            FIELD_DEVICES_SECUREKEY = "tmpSecureKey",
+            FIELD_DEVICES_SENDKEY = "sendKey",
+            FIELD_DEVICES_RECEIVEKEY = "receiveKey",
             FIELD_DEVICES_TYPE = "type";
 
     public static final String TABLE_DEVICECONNECTION = "deviceConnection",
@@ -132,12 +134,14 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
                 .define(new Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
                 .define(new Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
-                .define(new Column(FIELD_DEVICES_CLIENTVERSION, SQLType.INTEGER, false))
+                .define(new Column(FIELD_DEVICES_PROTOCOLVERSION, SQLType.INTEGER, false))
+                .define(new Column(FIELD_DEVICES_PROTOCOLVERSIONMIN, SQLType.INTEGER, false))
                 .define(new Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
                 .define(new Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
                 .define(new Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
                 .define(new Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
-                .define(new Column(FIELD_DEVICES_SECUREKEY, SQLType.INTEGER, true))
+                .define(new Column(FIELD_DEVICES_SENDKEY, SQLType.INTEGER, true))
+                .define(new Column(FIELD_DEVICES_RECEIVEKEY, SQLType.INTEGER, true))
                 .define(new Column(FIELD_DEVICES_TYPE, SQLType.TEXT, false));
 
         values.defineTable(TABLE_DEVICECONNECTION)
@@ -190,9 +194,9 @@ public class Kuick extends KuickDb
 
     private static abstract class BgTaskImpl extends BackgroundTask
     {
-        private SQLiteDatabase mDb;
-        private String mTitle;
-        private String mDescription;
+        private final SQLiteDatabase mDb;
+        private final String mTitle;
+        private final String mDescription;
 
         BgTaskImpl(Context context, int titleRes, int descriptionRes, SQLiteDatabase db)
         {
@@ -229,8 +233,8 @@ public class Kuick extends KuickDb
 
     private static class SingleRemovalTask<T, V extends DatabaseObject<T>> extends BgTaskImpl
     {
-        private V mObject;
-        private T mParent;
+        private final V mObject;
+        private final T mParent;
 
         SingleRemovalTask(Context context, SQLiteDatabase db, V object, T parent)
         {
@@ -240,7 +244,7 @@ public class Kuick extends KuickDb
         }
 
         @Override
-        protected void onRun() throws InterruptedException
+        protected void onRun()
         {
             Kuick kuick = AppUtils.getKuick(getService());
 
@@ -251,8 +255,8 @@ public class Kuick extends KuickDb
 
     private static class MultipleRemovalTask<T, V extends DatabaseObject<T>> extends BgTaskImpl
     {
-        private List<V> mObjectList;
-        private T mParent;
+        private final List<V> mObjectList;
+        private final T mParent;
 
         MultipleRemovalTask(Context context, SQLiteDatabase db, List<V> objectList, T parent)
         {
@@ -262,7 +266,7 @@ public class Kuick extends KuickDb
         }
 
         @Override
-        protected void onRun() throws InterruptedException
+        protected void onRun()
         {
             Kuick kuick = AppUtils.getKuick(getService());
 

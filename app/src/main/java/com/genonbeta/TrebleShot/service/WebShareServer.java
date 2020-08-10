@@ -120,7 +120,7 @@ public class WebShareServer extends NanoHTTPD
             device.model = "Web";
             device.versionCode = mThisDevice.versionCode;
             device.versionName = mThisDevice.versionName;
-            device.nickname = clientAddress;
+            device.username = clientAddress;
             device.type = Device.Type.WEB;
             device.secureKey = 0; // It is not required for web browsers
         }
@@ -129,7 +129,7 @@ public class WebShareServer extends NanoHTTPD
         AppUtils.getKuick(mContext).publish(device);
         AppUtils.getKuick(mContext).broadcast();
 
-        if (device.isRestricted)
+        if (device.isBlocked)
             return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
                     makePage("arrow-left.svg", R.string.text_send,
                             makeNotFoundTemplate(R.string.mesg_somethingWentWrong,
@@ -143,7 +143,7 @@ public class WebShareServer extends NanoHTTPD
                 notification.setSmallIcon(android.R.drawable.stat_sys_download)
                         .setContentInfo(mContext.getString(R.string.text_webShare))
                         .setContentTitle(mContext.getString(R.string.text_receiving))
-                        .setContentText(device.nickname);
+                        .setContentText(device.username);
 
                 notification.show();
 
@@ -251,8 +251,8 @@ public class WebShareServer extends NanoHTTPD
                                 destFile.getType(), destFile.length(), TransferObject.Type.INCOMING);
                         transferObject.setFlag(TransferObject.Flag.DONE);
 
-                        DeviceConnection connection = new DeviceConnection(
-                                Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.id,
+                        DeviceAddress connection = new DeviceAddress(
+                                Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.uid,
                                 System.currentTimeMillis());
                         AppUtils.applyAdapterName(connection);
 

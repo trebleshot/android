@@ -40,28 +40,25 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
+import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
+import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.CoolSocket;
-import org.monora.coolsocket.core.response.Response;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
 
 public class BackgroundService extends Service
 {
@@ -91,15 +88,15 @@ public class BackgroundService extends Service
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     private final List<BackgroundTask> mTaskList = new ArrayList<>();
-    private CommunicationServer mCommunicationServer = new CommunicationServer();
+    private final CommunicationServer mCommunicationServer = new CommunicationServer();
+    private final ExecutorService mExecutor = Executors.newFixedThreadPool(10);
+    private final LocalBinder mBinder = new LocalBinder();
     private WebShareServer mWebShareServer;
-    private ExecutorService mExecutor = Executors.newFixedThreadPool(10);
     private NsdDiscovery mNsdDiscovery;
     private NotificationHelper mNotificationHelper;
     private WifiManager.WifiLock mWifiLock;
     private MediaScannerConnection mMediaScanner;
     private HotspotManager mHotspotManager;
-    private LocalBinder mBinder = new LocalBinder();
 
     @Override
     public IBinder onBind(Intent intent)
@@ -165,22 +162,22 @@ public class BackgroundService extends Service
                     FileTransferTask task = FileTransferTask.createFrom(getKuick(), group, device,
                             TransferObject.Type.INCOMING);
 
-                    CommunicationBridge.connect(getKuick(), client -> {
-                        try {
-                            ActiveConnection activeConnection = client.communicate(device, task.connection);
+                    new Thread(() -> {
+                        try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.connection,
+                                task.device, 0)){
 
                             activeConnection.reply(new JSONObject()
                                     .put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
                                     .put(Keyword.TRANSFER_GROUP_ID, group.id)
-                                    .put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
-                                    .toString());
-
-                            activeConnection.receive();
-                            activeConnection.getSocket().close();
-                        } catch (Exception e) {
+                                    .put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (DifferentClientException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    });
+                    }).start();
 
                     if (isAccepted)
                         run(task);
@@ -203,10 +200,10 @@ public class BackgroundService extends Service
                 getNotificationHelper().getUtils().cancel(notificationId);
 
                 if (device != null) {
-                    device.isRestricted = !accepted;
+                    device.isBlocked = !accepted;
 
                     if (accepted)
-                        device.secureKey = suggestedPin;
+                        device.receiveKey = suggestedPin;
 
                     getKuick().update(device);
                     getKuick().broadcast();
@@ -246,7 +243,7 @@ public class BackgroundService extends Service
                         throw new Exception();
 
                     FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(group.id,
-                            device.id, type));
+                            device.uid, type));
 
                     if (task == null)
                         run(FileTransferTask.createFrom(getKuick(), group, device, type));
@@ -487,7 +484,7 @@ public class BackgroundService extends Service
 
     public void run(final BackgroundTask runningTask)
     {
-        mExecutor.submit(() -> attach(runningTask));
+        getSelfExecutor().submit(() -> attach(runningTask));
     }
 
     private void runInternal(BackgroundTask runningTask)
@@ -579,307 +576,144 @@ public class BackgroundService extends Service
         {
             // check if the same address has other connections and limit that to 5
             try {
-                JSONObject responseJSON = activeConnection.receive().getAsJson();
+                activeConnection.reply(AppUtils.getDeviceId(BackgroundService.this));
 
-                if (isUpdateRequest(activeConnection, responseJSON))
-                    return;
-
-                boolean result = false;
-                boolean shouldContinue = false;
-                boolean handshakeRequired = responseJSON.has(Keyword.HANDSHAKE_REQUIRED) && responseJSON.getBoolean(
-                        Keyword.HANDSHAKE_REQUIRED);
-                boolean handshakeOnly = responseJSON.has(Keyword.HANDSHAKE_ONLY)
-                        && responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY);
+                JSONObject response = activeConnection.receive().getAsJson();
                 final int activePin = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
-                final boolean hasPin = activePin != -1 && responseJSON.has(Keyword.DEVICE_PIN)
-                        && activePin == responseJSON.getInt(Keyword.DEVICE_PIN);
+                final boolean hasPin = activePin != -1 && response.has(Keyword.DEVICE_PIN)
+                        && activePin == response.getInt(Keyword.DEVICE_PIN);
+                final Device device = new Device();
+                final DeviceAddress deviceAddress = new DeviceAddress(activeConnection.getAddress().getHostAddress());
+
+                try {
+                    DeviceLoader.loadFrom(getKuick(), response, device, hasPin);
+                } catch (DeviceBlockedException e) {
+                    throw e;
+                } catch (DeviceInsecureException e) {
+                    getNotificationHelper().notifyConnectionRequest(device, device.receiveKey);
+                } finally {
+                    DeviceLoader.processConnection(getKuick(), device, deviceAddress);
+                    activeConnection.reply(AppUtils.getLocalDeviceAsJson(BackgroundService.this, device, 0));
+                }
 
                 if (hasPin) // pin is known, should be changed. Warn the listeners.
                     sendBroadcast(new Intent(ACTION_PIN_USED));
 
-                JSONObject replyJSON = new JSONObject();
-                AppUtils.applyDeviceToJSON(BackgroundService.this, replyJSON);
-
-                if (handshakeRequired) {
-                    pushReply(activeConnection, replyJSON, true);
-
-                    if (handshakeOnly)
-                        return;
-                }
-
-                Log.d(TAG, "onConnected: hasPin: " + hasPin);
-                Device device;
-
-                try {
-                    device = NetworkDeviceLoader.loadFrom(getKuick(), responseJSON);
-                } catch (JSONException e) {
-                    // Deprecated: This is a fallback option to generate device information.
-                    // Clients must send the device info with the requests asking no handshake or not only handshake.
-                    device = new Device(responseJSON.getString(Keyword.DEVICE_INFO_SERIAL));
-                }
-
-                if (device.clientVersion >= 1 && device.secureKey < 0) {
-                    // Because the client didn't know whom it was talking to, it did not provide a key that might be
-                    // exchanged between us before. Now we are asking for the key. Also, this does not work with
-                    // the older client versions.
-                    device.secureKey = activeConnection.receive().getAsJson().getInt(Keyword.DEVICE_INFO_KEY);
-                    activeConnection.reply(Keyword.STUB);
-                }
-
-                try {
-                    Device existingInfo = new Device(device.id);
-                    getKuick().reconstruct(existingInfo);
-
-                    device.applyPreferences(existingInfo); // apply known preferences
-
-                    boolean keysMatch = existingInfo.secureKey == device.secureKey;
-                    boolean needsBlocking = device.clientVersion >= 1 && !keysMatch && !hasPin;
-
-                    // We don't update the device info. Instead, we request a check from the user.
-                    // If she or he accepts the request, we update the old key with the new one.
-                    if (!existingInfo.isRestricted && needsBlocking) {
-                        Log.d(TAG, "onConnected: Notifying a PIN issue. Revoked the access for now.");
-                        getNotificationHelper().notifyConnectionRequest(existingInfo, device.secureKey);
-
-                        // Previously, the device had the access rights which should now be revoked, because
-                        // the device does not have a matching key or valid PIN.
-                        existingInfo.isRestricted = true;
-                        getKuick().publish(existingInfo);
-                    } else {
-                        shouldContinue = true;
-
-                        // The device does not have a matching key, but has a valid PIN. So we accept the new key it
-                        // sent us and save it.
-                        if (device.clientVersion >= 1 && !keysMatch && hasPin)
-                            getKuick().publish(device);
-                    }
-                } catch (ReconstructionFailedException ignored) {
-                    if (device.clientVersion < 1)
-                        device = NetworkDeviceLoader.load(true, getKuick(),
-                                activeConnection.getAddress().getHostAddress(), null);
-
-                    if (device == null || device.id == null || device.id.length() < 1)
-                        throw new Exception("Device is not valid.");
-
-                    device.isTrusted = hasPin;
-                    device.isRestricted = !hasPin;
-
-                    getKuick().publish(device);
-
-                    shouldContinue = true; // For the first round, we let the client pass.
-
-                    if (device.isRestricted)
-                        getNotificationHelper().notifyConnectionRequest(device, device.secureKey);
-                }
-
-                if (handshakeRequired) {
-                    responseJSON = activeConnection.receive().getAsJson();
-                    replyJSON = new JSONObject();
-                }
-
-                DeviceConnection connection = NetworkDeviceLoader.processConnection(getKuick(), device,
-                        activeConnection.getAddress().getHostAddress());
-
                 getKuick().broadcast();
 
-                if (!shouldContinue || device.clientVersion < 1)
-                    replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
-                else if (responseJSON.has(Keyword.REQUEST)) {
-                    switch (responseJSON.getString(Keyword.REQUEST)) {
-                        case (Keyword.REQUEST_TRANSFER):
-                            if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID)
-                                    && !hasTaskOf(IndexTransferTask.class)) {
-                                long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
-                                String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
-                                result = true;
+                response = activeConnection.receive().getAsJson();
 
-                                run(new IndexTransferTask(groupId, jsonIndex, device, connection, hasPin));
+                switch (response.getString(Keyword.REQUEST)) {
+                    case (Keyword.REQUEST_TRANSFER):
+                        if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_GROUP_ID)
+                                && !hasTaskOf(IndexTransferTask.class)) {
+                            long groupId = response.getLong(Keyword.TRANSFER_GROUP_ID);
+                            String jsonIndex = response.getString(Keyword.INDEX);
+
+                            run(new IndexTransferTask(groupId, jsonIndex, device, deviceAddress, hasPin));
+                        }
+                        break;
+                    case (Keyword.REQUEST_RESPONSE):
+                        if (response.has(Keyword.TRANSFER_GROUP_ID)) {
+                            int groupId = response.getInt(Keyword.TRANSFER_GROUP_ID);
+                            boolean isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
+
+                            TransferGroup group = new TransferGroup(groupId);
+                            TransferAssignee assignee = new TransferAssignee(group, device,
+                                    TransferObject.Type.OUTGOING);
+
+                            try {
+                                getKuick().reconstruct(group);
+                                getKuick().reconstruct(assignee);
+
+                                if (!isAccepted) {
+                                    getKuick().remove(assignee);
+                                    getKuick().broadcast();
+                                }
+                            } catch (Exception ignored) {
                             }
-                            break;
-                        case (Keyword.REQUEST_RESPONSE):
-                            if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)) {
-                                int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
-                                boolean isAccepted = responseJSON.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
+                        }
+                        break;
+                    case (Keyword.REQUEST_CLIPBOARD):
+                        if (response.has(Keyword.TRANSFER_TEXT)) {
+                            TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(),
+                                    response.getString(Keyword.TRANSFER_TEXT));
+
+                            getKuick().publish(textStreamObject);
+                            getKuick().broadcast();
+                            getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
+                        }
+                        break;
+                    case (Keyword.REQUEST_ACQUAINTANCE):
+                        sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
+                                .putExtra(EXTRA_DEVICE, device)
+                                .putExtra(EXTRA_CONNECTION, deviceAddress));
+                        break;
+                    case (Keyword.REQUEST_HANDSHAKE):
+                        break;
+                    case (Keyword.REQUEST_TRANSFER_JOB):
+                        if (response.has(Keyword.TRANSFER_GROUP_ID)) {
+                            int groupId = response.getInt(Keyword.TRANSFER_GROUP_ID);
+                            String typeValue = response.getString(Keyword.TRANSFER_TYPE);
+
+                            try {
+                                TransferObject.Type type = TransferObject.Type.valueOf(typeValue);
+
+                                // The type is reversed to match our side
+                                if (TransferObject.Type.INCOMING.equals(type))
+                                    type = TransferObject.Type.OUTGOING;
+                                else if (TransferObject.Type.OUTGOING.equals(type))
+                                    type = TransferObject.Type.INCOMING;
 
                                 TransferGroup group = new TransferGroup(groupId);
-                                TransferAssignee assignee = new TransferAssignee(group, device,
-                                        TransferObject.Type.OUTGOING);
+                                getKuick().reconstruct(group);
 
-                                try {
-                                    getKuick().reconstruct(group);
-                                    getKuick().reconstruct(assignee);
+                                Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
+                                        + "groupId=" + groupId + " typeValue=" + typeValue);
 
-                                    if (!isAccepted) {
-                                        getKuick().remove(assignee);
-                                        getKuick().broadcast();
-                                    }
+                                if (!isProcessRunning(groupId, device.uid, type)) {
+                                    FileTransferTask task = new FileTransferTask();
+                                    task.activeConnection = activeConnection;
+                                    task.group = group;
+                                    task.device = device;
+                                    task.type = type;
+                                    task.assignee = new TransferAssignee(group, device, type);
+                                    task.index = new IndexOfTransferGroup(group);
 
-                                    result = true;
-                                } catch (Exception ignored) {
-                                }
-                            }
-                            break;
-                        case (Keyword.REQUEST_CLIPBOARD):
-                            if (responseJSON.has(Keyword.TRANSFER_CLIPBOARD_TEXT)) {
-                                TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(),
-                                        responseJSON.getString(Keyword.TRANSFER_CLIPBOARD_TEXT));
+                                    getKuick().reconstruct(task.assignee);
 
-                                getKuick().publish(textStreamObject);
-                                getKuick().broadcast();
-                                getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
+                                    if (TransferObject.Type.OUTGOING.equals(type)) {
+                                        Log.d(TAG, "onConnected: Informing before starting to send.");
 
-                                result = true;
-                            }
-                            break;
-                        case (Keyword.REQUEST_ACQUAINTANCE):
-                            sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
-                                    .putExtra(EXTRA_DEVICE, device)
-                                    .putExtra(EXTRA_CONNECTION, connection));
-                            result = true;
-                            break;
-                        case (Keyword.REQUEST_HANDSHAKE):
-                            result = true;
-                            break;
-                        case (Keyword.REQUEST_TRANSFER_JOB):
-                            if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)) {
-                                int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
-                                String typeValue = responseJSON.getString(Keyword.TRANSFER_TYPE);
+                                        attach(task);
+                                    } else if (TransferObject.Type.INCOMING.equals(type)) {
+                                        JSONObject currentReply = new JSONObject();
+                                        boolean result = device.isTrusted;
 
-                                try {
-                                    TransferObject.Type type = TransferObject.Type.valueOf(typeValue);
+                                        if (!result)
+                                            currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_TRUSTED);
 
-                                    // The type is reversed to match our side
-                                    if (TransferObject.Type.INCOMING.equals(type))
-                                        type = TransferObject.Type.OUTGOING;
-                                    else if (TransferObject.Type.OUTGOING.equals(type))
-                                        type = TransferObject.Type.INCOMING;
+                                        Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
+                                        Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
 
-                                    TransferGroup group = new TransferGroup(groupId);
-                                    getKuick().reconstruct(group);
-
-                                    Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
-                                            + "groupId=" + groupId + " typeValue=" + typeValue);
-
-                                    if (!isProcessRunning(groupId, device.id, type)) {
-                                        FileTransferTask task = new FileTransferTask();
-                                        task.activeConnection = activeConnection;
-                                        task.group = group;
-                                        task.device = device;
-                                        task.type = type;
-                                        task.assignee = new TransferAssignee(group, device, type);
-                                        task.index = new IndexOfTransferGroup(group);
-
-                                        getKuick().reconstruct(task.assignee);
-
-                                        if (TransferObject.Type.OUTGOING.equals(type)) {
-                                            Log.d(TAG, "onConnected: Informing before starting to send.");
-
-                                            pushReply(activeConnection, new JSONObject(), true);
+                                        if (result)
                                             attach(task);
 
-                                            result = true;
-                                        } else if (TransferObject.Type.INCOMING.equals(type)) {
-                                            JSONObject currentReply = new JSONObject();
-                                            result = device.isTrusted;
-
-                                            if (!result)
-                                                currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_TRUSTED);
-
-                                            pushReply(activeConnection, currentReply, result);
-                                            Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
-                                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
-
-                                            if (result)
-                                                attach(task);
-
-                                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
-                                        }
-                                    } else
-                                        responseJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
-                                } catch (Exception e) {
-                                    responseJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
-                                }
+                                        Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
+                                    }
+                                } else
+                                    response.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
+                            } catch (Exception e) {
+                                response.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
                             }
-                            break;
-                    }
+                        }
+                        break;
                 }
-
-                pushReply(activeConnection, replyJSON, result);
+            } catch (DeviceInsecureException e) {
+                // TODO: 8/11/20 Close safely
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-
-        void pushReply(ActiveConnection activeConnection, JSONObject reply, boolean result)
-                throws JSONException, TimeoutException, IOException
-        {
-            activeConnection.reply(reply.put(Keyword.RESULT, result).toString());
-        }
-
-        private boolean isUpdateRequest(ActiveConnection activeConnection, JSONObject responseJSON)
-                throws TimeoutException, JSONException, IOException
-        {
-            if (!responseJSON.has(Keyword.REQUEST))
-                return false;
-
-            JSONObject replyJSON = new JSONObject();
-            String request = responseJSON.getString(Keyword.REQUEST);
-
-            if (Keyword.REQUEST_UPDATE.equals(request)) {
-                activeConnection.reply(replyJSON.put(Keyword.RESULT, true).toString());
-
-                getSelfExecutor().submit(() -> {
-                    try {
-                        UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getAddress().getHostAddress());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } else if (Keyword.REQUEST_UPDATE_V2.equals(request)) {
-                Device thisDevice = AppUtils.getLocalDevice(BackgroundService.this);
-                File file = new File(getApplicationInfo().sourceDir);
-
-                {
-                    JSONObject reply = new JSONObject()
-                            .put(Keyword.RESULT, true)
-                            .put(Keyword.INDEX_FILE_SIZE, file.length())
-                            .put(Keyword.APP_INFO_VERSION_CODE, thisDevice.versionCode);
-                    activeConnection.reply(reply.toString());
-                }
-
-                {
-                    Response responseObject = activeConnection.receive();
-                    JSONObject response = responseObject.getAsJson();
-
-                    if (response.getBoolean(Keyword.RESULT) && response.getBoolean(Keyword.RESULT)) {
-                        OutputStream outputStream = activeConnection.getSocket().getOutputStream();
-                        FileInputStream inputStream = new FileInputStream(file);
-
-                        byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-                        int len;
-                        long lastRead = 0;
-
-                        while ((len = inputStream.read(buffer)) != -1) {
-                            long currentTime = System.nanoTime();
-
-                            if (len > 0) {
-                                lastRead = currentTime;
-
-                                outputStream.write(buffer, 0, len);
-                                outputStream.flush();
-                            }
-
-                            if (currentTime - lastRead > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6)
-                                throw new TimeoutException("Did not read any bytes for 5secs.");
-                        }
-
-                        inputStream.close();
-                    }
-                }
-            } else
-                return false;
-
-            return true;
         }
     }
 

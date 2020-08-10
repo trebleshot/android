@@ -43,8 +43,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
+import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
@@ -379,7 +379,7 @@ public class ConnectionUtils
     }
 
     @WorkerThread
-    public static DeviceAddress setupConnection(Context context, InetAddress inetAddress, int pin)
+    public static DeviceRoute setupConnection(Context context, InetAddress inetAddress, int pin)
             throws TimeoutException, CommunicationException, IOException, JSONException
     {
         Kuick kuick = AppUtils.getKuick(context);
@@ -392,10 +392,10 @@ public class ConnectionUtils
         Device device = bridge.getDevice();
         JSONObject receivedReply = activeConnection.receive().getAsJson();
 
-        if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.id != null) {
-            DeviceConnection connection = NetworkDeviceLoader.processConnection(kuick, device,
+        if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.uid != null) {
+            DeviceAddress connection = DeviceLoader.processConnection(kuick, device,
                     inetAddress.getHostAddress());
-            return new DeviceAddress(device, connection);
+            return new DeviceRoute(device, connection);
         } else
             throwCommunicationError(receivedReply, device);
 

@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -126,10 +126,10 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         if (specifier instanceof Device) {
             Device device = (Device) specifier;
-            isRestricted = device.isRestricted;
+            isRestricted = device.isBlocked;
             isTrusted = device.isTrusted;
 
-            NetworkDeviceLoader.showPictureIntoView(device, image, mIconBuilder);
+            DeviceLoader.showPictureIntoView(device, image, mIconBuilder);
         } else
             image.setImageDrawable(mIconBuilder.buildRound(infoHolder.name()));
 
@@ -208,7 +208,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         public long getId()
         {
             if (mObject instanceof Device)
-                return ((Device) mObject).id.hashCode();
+                return ((Device) mObject).uid.hashCode();
 
             return 0;
         }
@@ -228,7 +228,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         public String name()
         {
             if (mObject instanceof Device)
-                return ((Device) mObject).nickname;
+                return ((Device) mObject).username;
             else if (mObject instanceof WifiConfiguration)
                 return AppUtils.getFriendlySSID(((WifiConfiguration) mObject).SSID);
             else if (mObject instanceof NetworkDescription)

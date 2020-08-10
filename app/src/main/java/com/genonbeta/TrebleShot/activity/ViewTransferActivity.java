@@ -167,7 +167,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                         TransferObject object = new TransferObject(mGroup.id, requestId, type);
                         getDatabase().reconstruct(object);
 
-                        new TransferInfoDialog(ViewTransferActivity.this, mIndex, object, device.id).show();
+                        new TransferInfoDialog(ViewTransferActivity.this, mIndex, object, device.uid).show();
                     } catch (Exception e) {
                         // do nothing
                     }
@@ -339,7 +339,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             for (int i = 0; i < assignees.length; i++) {
                 ShowingAssignee assignee = assignees[i];
 
-                if (mAssignee.deviceId.equals(assignee.device.id))
+                if (mAssignee.deviceId.equals(assignee.device.uid))
                     return i;
             }
         }
@@ -442,7 +442,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                     ShowingAssignee assignee = assignees[i];
 
                     dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to, 0, i,
-                            assignee.device.nickname);
+                            assignee.device.username);
                 }
 
             dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to, 0, i, R.string.text_none);
@@ -489,7 +489,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             if (hasTaskWith(FileTransferTask.identifyWith(mGroup.id, assignee.deviceId)))
                 TransferUtils.pauseTransfer(this, assignee);
             else {
-                getDatabase().reconstruct(new DeviceConnection(assignee));
+                getDatabase().reconstruct(new DeviceAddress(assignee));
                 TransferUtils.startTransferWithTest(this, mGroup, assignee);
             }
         } catch (Exception e) {

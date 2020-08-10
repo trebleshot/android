@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
@@ -74,9 +74,9 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
         TextView text1 = holder.itemView.findViewById(R.id.text1);
         TextView text2 = holder.itemView.findViewById(R.id.text2);
 
-        text1.setText(assignee.device.nickname);
+        text1.setText(assignee.device.username);
         text2.setText(TextUtils.getAdapterName(getContext(), assignee.connection));
-        NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
+        DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
     }
 
     @Override

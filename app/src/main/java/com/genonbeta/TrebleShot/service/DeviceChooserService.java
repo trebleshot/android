@@ -61,9 +61,9 @@ public class DeviceChooserService extends ChooserTargetService
                 continue;
 
             Bundle bundle = new Bundle();
-            bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.id);
+            bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.uid);
 
-            TextDrawable textImage = iconBuilder.buildRound(device.nickname);
+            TextDrawable textImage = iconBuilder.buildRound(device.username);
             Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
 
@@ -72,7 +72,7 @@ public class DeviceChooserService extends ChooserTargetService
 
             float result = (float) device.lastUsageTime / (float) System.currentTimeMillis();
 
-            list.add(new ChooserTarget(device.nickname, Icon.createWithBitmap(bitmap), result, targetActivityName,
+            list.add(new ChooserTarget(device.username, Icon.createWithBitmap(bitmap), result, targetActivityName,
                     bundle
             ));
         }

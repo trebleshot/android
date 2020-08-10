@@ -175,7 +175,7 @@ public class Migration
                 {
                     SQLValues.Table table = tables.getTable(TABLE_DEVICES);
                     SQLValues.Column typeColumn = table.getColumn(FIELD_DEVICES_TYPE);
-                    SQLValues.Column clientVerCol = table.getColumn(FIELD_DEVICES_CLIENTVERSION);
+                    SQLValues.Column clientVerCol = table.getColumn(FIELD_DEVICES_PROTOCOLVERSIONMIN);
 
                     // Added: Type
                     db.execSQL("ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()

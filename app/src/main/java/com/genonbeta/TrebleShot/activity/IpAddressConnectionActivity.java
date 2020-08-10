@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
@@ -95,11 +95,11 @@ public class IpAddressConnectionActivity extends Activity implements DeviceIntro
     }
 
     @Override
-    public void onDeviceReached(DeviceAddress deviceAddress)
+    public void onDeviceReached(DeviceRoute deviceRoute)
     {
         setResult(RESULT_OK, new Intent()
-                .putExtra(EXTRA_DEVICE, deviceAddress.device)
-                .putExtra(EXTRA_CONNECTION, deviceAddress.connection));
+                .putExtra(EXTRA_DEVICE, deviceRoute.device)
+                .putExtra(EXTRA_CONNECTION, deviceRoute.connection));
         finish();
     }
 }

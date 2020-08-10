@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.callback.OnConnectionSelectionListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -52,7 +52,7 @@ import java.util.List;
 
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
-    private final List<DeviceConnection> mConnections = new ArrayList<>();
+    private final List<DeviceAddress> mConnections = new ArrayList<>();
     private final List<NetworkInterface> mNetworkInterfaces = new ArrayList<>();
 
     private Device mDevice;
@@ -78,7 +78,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         else
             setMessage(R.string.text_noNetworkAvailable);
 
-        setTitle(getContext().getString(R.string.text_availableNetworks, device.nickname));
+        setTitle(getContext().getString(R.string.text_availableNetworks, device.username));
         setNegativeButton(R.string.butn_cancel, null);
         setNeutralButton(R.string.text_manageDevices, (dialog, which) -> activity.startActivity(new Intent(activity,
                 ManageDevicesActivity.class)));
@@ -90,9 +90,9 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         {
             mConnections.addAll(AppUtils.getKuick(getContext()).castQuery(
                     new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                            .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.id)
+                            .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.uid)
                             .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
-                    DeviceConnection.class));
+                    DeviceAddress.class));
 
             mNetworkInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));
         }
@@ -122,7 +122,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent,
                         false);
 
-            DeviceConnection address = (DeviceConnection) getItem(position);
+            DeviceAddress address = (DeviceAddress) getItem(position);
 
             TextView textView1 = convertView.findViewById(R.id.pending_available_interface_text1);
             TextView textView2 = convertView.findViewById(R.id.pending_available_interface_text2);

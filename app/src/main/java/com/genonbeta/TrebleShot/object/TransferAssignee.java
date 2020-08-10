@@ -55,7 +55,7 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
 
     public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device, @NonNull TransferObject.Type type)
     {
-        this(group.id, device.id, type);
+        this(group.id, device.uid, type);
     }
 
     public TransferAssignee(long groupId, String deviceId, TransferObject.Type type, String connectionAdapter)
@@ -64,9 +64,9 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
         this.connectionAdapter = connectionAdapter;
     }
     public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device,
-                            @NonNull TransferObject.Type type, @NonNull DeviceConnection connection)
+                            @NonNull TransferObject.Type type, @NonNull DeviceAddress connection)
     {
-        this(group.id, device.id, type, connection.adapterName);
+        this(group.id, device.uid, type, connection.adapterName);
     }
 
     @Override

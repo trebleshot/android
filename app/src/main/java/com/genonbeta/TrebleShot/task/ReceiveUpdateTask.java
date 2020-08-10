@@ -22,7 +22,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -42,9 +42,9 @@ import java.util.concurrent.TimeoutException;
 public class ReceiveUpdateTask extends BackgroundTask
 {
     private final Device mDevice;
-    private final DeviceConnection mConnection;
+    private final DeviceAddress mConnection;
 
-    public ReceiveUpdateTask(Device device, DeviceConnection connection)
+    public ReceiveUpdateTask(Device device, DeviceAddress connection)
     {
         mDevice = device;
         mConnection = connection;
@@ -59,9 +59,7 @@ public class ReceiveUpdateTask extends BackgroundTask
         try (ActiveConnection activeConnection = CommunicationBridge.openConnection(mConnection.toInet4Address())) {
             setOngoingContent(getService().getString(R.string.mesg_waiting));
 
-            activeConnection.reply(new JSONObject()
-                    .put(Keyword.REQUEST, Keyword.REQUEST_UPDATE_V2)
-                    .toString());
+            activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_UPDATE));
 
             {
                 Response response = activeConnection.receive();
@@ -70,7 +68,7 @@ public class ReceiveUpdateTask extends BackgroundTask
                 if (!responseJSON.getBoolean(Keyword.RESULT))
                     throw new CommunicationException("Update request was denied by the target");
 
-                versionCode = responseJSON.getInt(Keyword.APP_INFO_VERSION_CODE);
+                versionCode = responseJSON.getInt(Keyword.DEVICE_VERSION_CODE);
                 updateSize = responseJSON.getLong(Keyword.INDEX_FILE_SIZE);
 
                 if (updateSize < 1)
@@ -78,9 +76,7 @@ public class ReceiveUpdateTask extends BackgroundTask
             }
 
             {
-                activeConnection.reply(new JSONObject()
-                        .put(Keyword.RESULT, true)
-                        .toString());
+                activeConnection.reply(new JSONObject().put(Keyword.RESULT, true));
             }
 
             progress().addToTotal(100);

@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 
 public class ToggleMultipleTransferDialog extends AlertDialog.Builder
@@ -114,11 +114,11 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
             TextView text = convertView.findViewById(R.id.text);
             ImageView actionImage = convertView.findViewById(R.id.actionImage);
 
-            text.setText(assignee.device.nickname);
+            text.setText(assignee.device.username);
             actionImage.setImageResource(mActivity.isDeviceRunning(assignee.deviceId) ? R.drawable.ic_pause_white_24dp
                     : (TransferObject.Type.INCOMING.equals(assignee.type) ? R.drawable.ic_arrow_down_white_24dp
                     : R.drawable.ic_arrow_up_white_24dp));
-            NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
+            DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
 
             return convertView;
         }

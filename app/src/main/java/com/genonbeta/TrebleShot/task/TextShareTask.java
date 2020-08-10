@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.task;
 
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -30,10 +30,10 @@ import org.monora.coolsocket.core.session.ActiveConnection;
 public class TextShareTask extends BackgroundTask
 {
     private final Device mDevice;
-    private final DeviceConnection mConnection;
+    private final DeviceAddress mConnection;
     private final String mText;
 
-    public TextShareTask(Device device, DeviceConnection connection, String text)
+    public TextShareTask(Device device, DeviceAddress connection, String text)
     {
         mDevice = device;
         mConnection = connection;
@@ -48,7 +48,7 @@ public class TextShareTask extends BackgroundTask
         try (ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection)) {
             final JSONObject jsonRequest = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
-                    .put(Keyword.TRANSFER_CLIPBOARD_TEXT, mText);
+                    .put(Keyword.TRANSFER_TEXT, mText);
 
             activeConnection.reply(jsonRequest.toString());
 

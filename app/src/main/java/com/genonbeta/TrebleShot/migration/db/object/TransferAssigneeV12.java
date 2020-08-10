@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
@@ -63,7 +63,7 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     }
 
     public TransferAssigneeV12(@NonNull TransferGroupV12 group, @NonNull NetworkDeviceV12 device,
-                               @NonNull DeviceConnection connection)
+                               @NonNull DeviceAddress connection)
     {
         this(group.groupId, device.deviceId, connection.adapterName);
     }

@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,10 +97,10 @@ public class ChooseAssigneeDialog extends AlertDialog.Builder
             ImageView actionImage = convertView.findViewById(R.id.actionImage);
             TextView text = convertView.findViewById(R.id.text);
 
-            text.setText(assignee.device.nickname);
+            text.setText(assignee.device.username);
             actionImage.setImageResource(TransferObject.Type.INCOMING.equals(assignee.type)
                     ? R.drawable.ic_arrow_down_white_24dp : R.drawable.ic_arrow_up_white_24dp);
-            NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
+            DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
 
             return convertView;
         }

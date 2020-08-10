@@ -52,7 +52,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
@@ -78,7 +78,7 @@ public class AppUtils
     private static SharedPreferences mDefaultPreferences;
     private static SharedPreferences mViewingPreferences;
 
-    public static void applyAdapterName(DeviceConnection connection)
+    public static void applyAdapterName(DeviceAddress connection)
     {
         if (connection.ipAddress == null) {
             Log.e(TAG, "Connection should be provided with IP address");
@@ -98,42 +98,6 @@ public class AppUtils
 
         if (connection.adapterName == null)
             connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
-    }
-
-    public static void applyDeviceToJSON(Context context, JSONObject object) throws JSONException
-    {
-        applyDeviceToJSON(context, object, -1);
-    }
-
-    public static void applyDeviceToJSON(Context context, JSONObject object, int key) throws JSONException
-    {
-        Device device = getLocalDevice(context);
-
-        JSONObject deviceInformation = new JSONObject()
-                .put(Keyword.DEVICE_INFO_SERIAL, device.id)
-                .put(Keyword.DEVICE_INFO_BRAND, device.brand)
-                .put(Keyword.DEVICE_INFO_MODEL, device.model)
-                .put(Keyword.DEVICE_INFO_USER, device.nickname);
-
-        if (key >= 0)
-            deviceInformation.put(Keyword.DEVICE_INFO_KEY, key);
-
-        try {
-            ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(context.openFileInput("profilePicture"));
-
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
-            deviceInformation.put(Keyword.DEVICE_INFO_PICTURE, Base64.encodeToString(imageBytes.toByteArray(), 0));
-        } catch (Exception ignored) {
-        }
-
-        JSONObject appInfo = new JSONObject()
-                .put(Keyword.APP_INFO_VERSION_CODE, device.versionCode)
-                .put(Keyword.APP_INFO_VERSION_NAME, device.versionName)
-                .put(Keyword.APP_INFO_CLIENT_VERSION, device.clientVersion);
-
-        object.put(Keyword.APP_INFO, appInfo)
-                .put(Keyword.DEVICE_INFO, deviceInformation);
     }
 
     public static boolean checkRunningConditions(Context context)
@@ -207,69 +171,6 @@ public class AppUtils
         return networkPin;
     }
 
-    public static TextDrawable.IShapeBuilder getDefaultIconBuilder(Context context)
-    {
-        TextDrawable.IShapeBuilder builder = TextDrawable.builder();
-
-        builder.beginConfig()
-                .firstLettersOnly(true)
-                .textMaxLength(1)
-                .textColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal)))
-                .shapeColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorPassive)));
-
-        return builder;
-    }
-
-    public static Kuick getKuick(Context context)
-    {
-        if (mKuick == null)
-            mKuick = new Kuick(context);
-
-        return mKuick;
-    }
-
-    public static Keyword.Flavor getBuildFlavor()
-    {
-        try {
-            return Keyword.Flavor.valueOf(BuildConfig.FLAVOR);
-        } catch (Exception e) {
-            Log.e(TAG, "Current build flavor " + BuildConfig.FLAVOR + " is not specified in " +
-                    "the vocab. Is this a custom build?");
-            return Keyword.Flavor.unknown;
-        }
-    }
-
-    public static SharedPreferences getDefaultPreferences(final Context context)
-    {
-        if (mDefaultPreferences == null)
-            mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-
-        return mDefaultPreferences;
-    }
-
-    public static String getDeviceId()
-    {
-        return Settings.Secure.ANDROID_ID;
-    }
-
-    public static String getDeviceId(Context context)
-    {
-        // The ANDROID_ID is unique to the user it is representing. That's why we don't store this. Because the
-        // app will not have the data and settings that corresponds to that user anyway.
-        /*
-        SharedPreferences preferences = getDefaultPreferences(context);
-        String uuid = preferences.getString("uuid", null);
-
-        if (uuid == null) {
-            preferences.edit()
-                    .putString("uuid", Settings.Secure.ANDROID_ID)
-                    .apply();
-        }
-
-        return uid;
-         */
-        return getDeviceId();
-    }
 
     @NonNull
     public static BackgroundService getBgService(Activity activity) throws IllegalStateException
@@ -298,6 +199,94 @@ public class AppUtils
         return new WeakReference<>(null);
     }
 
+    public static Keyword.Flavor getBuildFlavor()
+    {
+        try {
+            return Keyword.Flavor.valueOf(BuildConfig.FLAVOR);
+        } catch (Exception e) {
+            Log.e(TAG, "Current build flavor " + BuildConfig.FLAVOR + " is not specified in " +
+                    "the vocab. Is this a custom build?");
+            return Keyword.Flavor.unknown;
+        }
+    }
+
+    public static TextDrawable.IShapeBuilder getDefaultIconBuilder(Context context)
+    {
+        TextDrawable.IShapeBuilder builder = TextDrawable.builder();
+
+        builder.beginConfig()
+                .firstLettersOnly(true)
+                .textMaxLength(1)
+                .textColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal)))
+                .shapeColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorPassive)));
+
+        return builder;
+    }
+
+    public static SharedPreferences getDefaultPreferences(final Context context)
+    {
+        if (mDefaultPreferences == null)
+            mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return mDefaultPreferences;
+    }
+
+
+    public static String getDeviceId(Context context)
+    {
+        // The ANDROID_ID is unique to the user it is representing. That's why we don't store this. Because the
+        // app will not have the data and settings that corresponds to that user anyway.
+        /*
+        SharedPreferences preferences = getDefaultPreferences(context);
+        String uuid = preferences.getString("uuid", null);
+
+        if (uuid == null) {
+            preferences.edit()
+                    .putString("uuid", Settings.Secure.ANDROID_ID)
+                    .apply();
+        }
+
+        return uid;
+         */
+        return Settings.Secure.ANDROID_ID;
+    }
+
+    public static Kuick getKuick(Context context)
+    {
+        if (mKuick == null)
+            mKuick = new Kuick(context);
+
+        return mKuick;
+    }
+
+    public static JSONObject getLocalDeviceAsJson(Context context, Device targetDevice, int pin) throws JSONException
+    {
+        Device device = getLocalDevice(context);
+        JSONObject object = new JSONObject()
+                .put(Keyword.DEVICE_UID, device.uid)
+                .put(Keyword.DEVICE_BRAND, device.brand)
+                .put(Keyword.DEVICE_MODEL, device.model)
+                .put(Keyword.DEVICE_USERNAME, device.username)
+                .put(Keyword.DEVICE_VERSION_CODE, device.versionCode)
+                .put(Keyword.DEVICE_VERSION_NAME, device.versionName)
+                .put(Keyword.DEVICE_PROTOCOL_VERSION, device.protocolVersion)
+                .put(Keyword.DEVICE_PROTOCOL_VERSION_MIN, device.protocolVersionMin)
+                .put(Keyword.DEVICE_KEY, targetDevice.sendKey);
+
+        if (pin != 0)
+            object.put(Keyword.DEVICE_PIN, pin);
+
+        try {
+            ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(context.openFileInput("profilePicture"));
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
+            object.put(Keyword.DEVICE_AVATAR, Base64.encodeToString(imageBytes.toByteArray(), 0));
+        } catch (Exception ignored) {
+        }
+
+        return object;
+    }
 
     public static <T extends Editable> void showFolderSelectionHelp(EditableListFragmentBase<T> fragment)
     {
@@ -382,12 +371,14 @@ public class AppUtils
 
         device.brand = Build.BRAND;
         device.model = Build.MODEL;
-        device.nickname = AppUtils.getLocalDeviceName(context);
-        device.clientVersion = BuildConfig.CLIENT_VERSION;
+        device.username = AppUtils.getLocalDeviceName(context);
+        device.protocolVersion = BuildConfig.PROTOCOL_VERSION;
+        device.protocolVersionMin = BuildConfig.PROTOCOL_VERSION_MIN;
         device.versionCode = BuildConfig.VERSION_CODE;
         device.versionName = BuildConfig.VERSION_NAME;
         device.isLocal = true;
-        device.secureKey = AppUtils.generateKey();
+        device.sendKey = AppUtils.generateKey();
+        device.receiveKey = AppUtils.generateKey();
 
         return device;
     }

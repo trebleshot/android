@@ -27,8 +27,8 @@ import android.os.Build;
 import android.util.Log;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -61,7 +61,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionT
         mPin = pin;
     }
 
-    public DeviceIntroductionTask(DeviceConnection connection, int pin) throws UnknownHostException
+    public DeviceIntroductionTask(DeviceAddress connection, int pin) throws UnknownHostException
     {
         this(connection.toInet4Address(), pin);
     }
@@ -83,11 +83,11 @@ public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionT
             if (mAddress == null)
                 connectToNetwork();
 
-            DeviceAddress deviceAddress = ConnectionUtils.setupConnection(getService(), mAddress, mPin);
+            DeviceRoute deviceRoute = ConnectionUtils.setupConnection(getService(), mAddress, mPin);
 
             if (hasAnchor())
-                post(() -> getAnchor().onDeviceReached(deviceAddress));
-            Log.d(TAG, "onRun: Found device - " + deviceAddress.device.nickname);
+                post(() -> getAnchor().onDeviceReached(deviceRoute));
+            Log.d(TAG, "onRun: Found device - " + deviceRoute.device.username);
         } catch (CommunicationException ignored) {
 
         } catch (IOException e) {
@@ -164,7 +164,7 @@ public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionT
 
     public interface ResultListener extends AttachedTaskListener
     {
-        void onDeviceReached(DeviceAddress deviceAddress);
+        void onDeviceReached(DeviceRoute deviceRoute);
     }
 
     public static class SuggestNetworkException extends Exception

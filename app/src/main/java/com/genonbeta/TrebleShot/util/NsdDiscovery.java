@@ -113,7 +113,7 @@ public class NsdDiscovery
                                 Log.v(TAG, "Resolved with success " + serviceInfo.getServiceName()
                                         + " with IP address of " + serviceInfo.getHost().getHostAddress());
 
-                                NetworkDeviceLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(),
+                                DeviceLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(),
                                         null);
                             }
                         });

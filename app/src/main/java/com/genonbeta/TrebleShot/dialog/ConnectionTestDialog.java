@@ -51,7 +51,7 @@ public class ConnectionTestDialog extends AlertDialog.Builder
         mActiveColor = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
         mPassiveColor = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
 
-        setTitle(context.getString(R.string.text_connectionTest, device.nickname));
+        setTitle(context.getString(R.string.text_connectionTest, device.username));
         setNegativeButton(R.string.butn_close, null);
 
         if (results.length < 1)

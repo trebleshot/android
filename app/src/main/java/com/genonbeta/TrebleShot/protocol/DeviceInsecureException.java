@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,23 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.exception;
+package com.genonbeta.TrebleShot.protocol;
 
-import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**
- * created by: Veli
- * date: 6.01.2018 22:25
+ * Thrown when a known device connects with a different key.
  */
-
-public class ConnectionNotFoundException extends ReconstructionFailedException
+public class DeviceInsecureException extends ReconstructionFailedException
 {
-    public DeviceAddress connection;
+    public final Device device;
 
-    public ConnectionNotFoundException(DeviceAddress connection)
+    public DeviceInsecureException(String message, Device device)
     {
-        super(connection.adapterName + " connection is not found");
-        this.connection = connection;
+        super(message);
+        this.device = device;
     }
 }

@@ -29,10 +29,14 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
+import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
+import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,18 +44,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 
-public class NetworkDeviceLoader
+public class DeviceLoader
 {
-    public static DeviceConnection processConnection(Kuick kuick, Device device, String ipAddress)
+    public static DeviceAddress processConnection(Kuick kuick, Device device, String ipAddress)
     {
-        DeviceConnection connection = new DeviceConnection(ipAddress);
+        DeviceAddress connection = new DeviceAddress(ipAddress);
         processConnection(kuick, device, connection);
         return connection;
     }
 
-    public static void processConnection(Kuick kuick, Device device, DeviceConnection connection)
+    public static void processConnection(Kuick kuick, Device device, DeviceAddress connection)
     {
         try {
             kuick.reconstruct(connection);
@@ -60,7 +63,7 @@ public class NetworkDeviceLoader
         }
 
         connection.lastCheckedDate = System.currentTimeMillis();
-        connection.deviceId = device.id;
+        connection.deviceId = device.uid;
 
         kuick.remove(new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
                 .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
@@ -71,81 +74,59 @@ public class NetworkDeviceLoader
         kuick.publish(connection);
     }
 
-    public static void load(final Kuick kuick, final String ipAddress, OnDeviceRegisteredListener listener)
+    public static void loadFrom(Kuick kuick, JSONObject object, Device device, boolean hasPin) throws JSONException,
+            DeviceInsecureException
     {
-        load(false, kuick, ipAddress, listener);
-    }
-
-    public static Device load(boolean currentThread, final Kuick kuick, final String ipAddress,
-                              final OnDeviceRegisteredListener listener)
-    {
-        if (currentThread)
-            return loadInternal(new CommunicationBridge(kuick), kuick, ipAddress, listener);
-
-        CommunicationBridge.connect(kuick, (client -> loadInternal(client, kuick, ipAddress, listener)));
-        return null;
-    }
-
-    private static Device loadInternal(CommunicationBridge bridge, Kuick kuick, String ipAddress,
-                                       OnDeviceRegisteredListener listener)
-    {
-        try {
-            bridge.communicate(InetAddress.getByName(ipAddress), true);
-
-            Device device = bridge.getDevice();
-
-            if (device.id != null) {
-                Device localDevice = AppUtils.getLocalDevice(kuick.getContext());
-                DeviceConnection connection = processConnection(kuick, device, ipAddress);
-
-                if (!localDevice.id.equals(device.id)) {
-                    device.lastUsageTime = System.currentTimeMillis();
-
-                    if (listener != null)
-                        listener.onDeviceRegistered(kuick, device, connection);
-                }
-            }
-
-            return device;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static Device loadFrom(Kuick kuick, JSONObject object) throws JSONException
-    {
-        JSONObject deviceInfo = object.getJSONObject(Keyword.DEVICE_INFO);
-        JSONObject appInfo = object.getJSONObject(Keyword.APP_INFO);
-        Device device = new Device(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
+        device.uid = object.getString(Keyword.DEVICE_UID);
+        int receiveKey = object.getInt(Keyword.DEVICE_KEY);
 
         try {
             kuick.reconstruct(device);
-        } catch (Exception ignored) {
+            if (device.isBlocked)
+                throw new DeviceBlockedException("The device is blocked.", device);
+            else if (receiveKey != device.receiveKey)
+                throw new DeviceVerificationException("The device receive key is different.", device, receiveKey);
+        } catch (ReconstructionFailedException e) {
+            device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
+
+            if (hasPin) {
+                device.isBlocked = false;
+                device.receiveKey = receiveKey;
+                device.sendKey = AppUtils.generateKey();
+            } else if (e instanceof DeviceBlockedException) {
+                throw (DeviceBlockedException) e;
+            } else {
+                device.isBlocked = true;
+
+                if (e instanceof DeviceVerificationException) {
+                    throw (DeviceInsecureException) e;
+                } else {
+                    throw new DeviceInsecureException("The device is not known.", device);
+                }
+            }
+        } finally {
+            device.brand = object.getString(Keyword.DEVICE_BRAND);
+            device.model = object.getString(Keyword.DEVICE_MODEL);
+            device.username = object.getString(Keyword.DEVICE_USERNAME);
+            device.lastUsageTime = System.currentTimeMillis();
+            device.versionCode = object.getInt(Keyword.DEVICE_VERSION_CODE);
+            device.versionName = object.getString(Keyword.DEVICE_VERSION_NAME);
+            device.protocolVersion = object.getInt(Keyword.DEVICE_PROTOCOL_VERSION);
+            device.protocolVersionMin = object.getInt(Keyword.DEVICE_PROTOCOL_VERSION_MIN);
+
+            if (device.username.length() > AppConfig.NICKNAME_LENGTH_MAX)
+                device.username = device.username.substring(0, AppConfig.NICKNAME_LENGTH_MAX);
+
+            kuick.publish(device);
+
+            saveProfilePicture(kuick.getContext(), device, object);
         }
-
-        device.brand = deviceInfo.getString(Keyword.DEVICE_INFO_BRAND);
-        device.model = deviceInfo.getString(Keyword.DEVICE_INFO_MODEL);
-        device.nickname = deviceInfo.getString(Keyword.DEVICE_INFO_USER);
-        device.secureKey = deviceInfo.has(Keyword.DEVICE_INFO_KEY) ? deviceInfo.getInt(Keyword.DEVICE_INFO_KEY) : -1;
-        device.lastUsageTime = System.currentTimeMillis();
-        device.versionCode = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
-        device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
-        device.clientVersion = appInfo.has(Keyword.APP_INFO_CLIENT_VERSION)
-                ? appInfo.getInt(Keyword.APP_INFO_CLIENT_VERSION) : 0;
-
-        if (device.nickname.length() > AppConfig.NICKNAME_LENGTH_MAX)
-            device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_LENGTH_MAX - 1);
-
-        saveProfilePicture(kuick.getContext(), device, deviceInfo);
-        return device;
     }
 
     public static byte[] loadProfilePictureFrom(JSONObject deviceInfo) throws Exception
     {
-        if (deviceInfo.has(Keyword.DEVICE_INFO_PICTURE))
-            return loadProfilePictureFrom(deviceInfo.getString(Keyword.DEVICE_INFO_PICTURE));
+        if (deviceInfo.has(Keyword.DEVICE_AVATAR))
+            return loadProfilePictureFrom(deviceInfo.getString(Keyword.DEVICE_AVATAR));
 
         throw new Exception(deviceInfo.toString());
     }
@@ -178,7 +159,7 @@ public class NetworkDeviceLoader
                 e.printStackTrace();
             }
         else
-            Log.d(NetworkDeviceLoader.class.getSimpleName(), "Bitmap was null");
+            Log.d(DeviceLoader.class.getSimpleName(), "Bitmap was null");
     }
 
     public static void showPictureIntoView(Device device, ImageView imageView,
@@ -200,11 +181,11 @@ public class NetworkDeviceLoader
             }
         }
 
-        imageView.setImageDrawable(iconBuilder.buildRound(device.nickname));
+        imageView.setImageDrawable(iconBuilder.buildRound(device.username));
     }
 
     public interface OnDeviceRegisteredListener extends AttachedTaskListener
     {
-        void onDeviceRegistered(Kuick kuick, Device device, DeviceConnection connection);
+        void onDeviceRegistered(Kuick kuick, Device device, DeviceAddress connection);
     }
 }

@@ -52,9 +52,9 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
 {
     private final TransferGroup mGroup;
     private final Device mDevice;
-    private final DeviceConnection mConnection;
+    private final DeviceAddress mConnection;
 
-    public AddDeviceTask(TransferGroup group, Device device, DeviceConnection connection)
+    public AddDeviceTask(TransferGroup group, Device device, DeviceAddress connection)
     {
         mGroup = group;
         mDevice = device;
@@ -120,7 +120,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
             JSONObject jsonObject = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
                     .put(Keyword.TRANSFER_GROUP_ID, mGroup.id)
-                    .put(Keyword.FILES_INDEX, filesArray.toString());
+                    .put(Keyword.INDEX, filesArray.toString());
 
             final ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection);
 

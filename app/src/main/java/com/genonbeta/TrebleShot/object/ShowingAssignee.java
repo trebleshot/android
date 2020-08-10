@@ -23,7 +23,7 @@ import java.util.Locale;
 public class ShowingAssignee extends TransferAssignee implements Editable
 {
     public Device device;
-    public DeviceConnection connection;
+    public DeviceAddress connection;
 
     public ShowingAssignee()
     {
@@ -62,7 +62,7 @@ public class ShowingAssignee extends TransferAssignee implements Editable
     @Override
     public String getComparableName()
     {
-        return device.nickname;
+        return device.username;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ShowingAssignee extends TransferAssignee implements Editable
     @Override
     public String getSelectableTitle()
     {
-        return device.nickname;
+        return device.username;
     }
 
     @Override

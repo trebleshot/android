@@ -236,9 +236,9 @@ public class WelcomeActivity extends Activity
             TextView deviceNameText = mProfileView.findViewById(R.id.header_default_device_name_text);
             TextView versionText = mProfileView.findViewById(R.id.header_default_device_version_text);
 
-            deviceNameText.setText(localDevice.nickname);
+            deviceNameText.setText(localDevice.username);
             versionText.setText(localDevice.versionName);
-            loadProfilePictureInto(localDevice.nickname, imageView);
+            loadProfilePictureInto(localDevice.username, imageView);
 
             editImageView.setOnClickListener(v -> startProfileEditor());
 
