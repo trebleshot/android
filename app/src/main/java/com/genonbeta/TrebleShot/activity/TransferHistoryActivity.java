@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,37 +18,17 @@
 
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 
-public class ManageDevicesActivity extends Activity
+public class TransferHistoryActivity extends Activity
 {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_devices);
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        int id = item.getItemId();
-
-        if (id == android.R.id.home)
-            finish();
-        else
-            return super.onOptionsItemSelected(item);
-
-        return true;
+        setContentView(R.layout.activity_transfer_history);
     }
 }

@@ -52,8 +52,9 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
     private Activity.OnBackPressedListener mBackPressedListener;
-    private PerformerEngine mPerformerEngine = new PerformerEngine();
-    private SharingPerformerMenuCallback mMenuCallback = new SharingPerformerMenuCallback(this, this);
+    private final PerformerEngine mPerformerEngine = new PerformerEngine();
+    private final SharingPerformerMenuCallback mMenuCallback = new SharingPerformerMenuCallback(this,
+            this);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)

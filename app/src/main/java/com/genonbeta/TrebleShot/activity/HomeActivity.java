@@ -25,6 +25,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,13 +43,11 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
-import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.ByteArrayOutputStream;
@@ -62,8 +61,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
     private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
-    private PerformerEngine mPerformerEngine = new PerformerEngine();
-    private HomeFragment mHomeFragment;
 
     private long mExitPressTime;
     private int mChosenMenuItemId;
@@ -78,7 +75,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mHomeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_home_fragment);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
@@ -110,6 +106,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
                 donateItem.setVisible(true);
         }
 
+        findViewById(R.id.sendLayoutButton).setOnClickListener(v -> startActivity(
+                new Intent(this, ContentSharingActivity.class)));
+        findViewById(R.id.receiveLayoutButton)
+                .setOnClickListener(v -> startActivity(new Intent(this, AddDeviceActivity.class)));
+
         checkAndShowCrashReport();
         checkAndShowChangelog();
     }
@@ -119,6 +120,24 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
     {
         super.onStart();
         createHeaderView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.actions_home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        if (item.getItemId() == R.id.actions_home_transfer_history) {
+            startActivity(new Intent(this, TransferHistoryActivity.class));
+        } else
+            return super.onOptionsItemSelected(item);
+
+        return true;
     }
 
     @Override
@@ -135,9 +154,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
     @Override
     public void onBackPressed()
     {
-        if (mHomeFragment.onBackPressed())
-            return;
-
         long pressTime = System.nanoTime();
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -288,23 +304,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
     private void createHeaderView()
     {
         View headerView = mNavigationView.getHeaderView(0);
-
-        {
-            /*MenuItem surveyItem = mNavigationView.getMenu().findItem(R.id.menu_activity_main_dev_survey);
-            Configuration configuration = getApplication().getResources().getConfiguration();
-
-            if (Build.VERSION.SDK_INT >= 24) {
-                LocaleList list = configuration.getLocales();
-
-                if (list.size() > 0)
-                    for (int pos = 0; pos < list.size(); pos++)
-                        if (list.get(pos).toLanguageTag().startsWith("en")) {
-                            surveyItem.setVisible(true);
-                            break;
-                        }
-            } else
-                surveyItem.setVisible(configuration.locale.toString().startsWith("en"));*/
-        }
 
         if (headerView != null) {
             Device localDevice = AppUtils.getLocalDevice(getApplicationContext());

@@ -85,7 +85,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<IndexOf
     {
         super.onCreate(savedInstanceState);
 
-        setLayoutResId(R.layout.layout_transfer_group);
         setFilteringSupported(true);
         setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
@@ -103,11 +102,6 @@ public class TransferGroupListFragment extends GroupEditableListFragment<IndexOf
         setListAdapter(new TransferGroupListAdapter(this));
         setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
         setEmptyListText(getString(R.string.text_listEmptyTransfer));
-
-        view.findViewById(R.id.sendLayoutButton).setOnClickListener(v -> startActivity(
-                new Intent(getContext(), ContentSharingActivity.class)));
-        view.findViewById(R.id.receiveLayoutButton)
-                .setOnClickListener(v -> startActivity(new Intent(getContext(), AddDeviceActivity.class)));
     }
 
     @Override

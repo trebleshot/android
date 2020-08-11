@@ -47,7 +47,7 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
 {
     public static final int VIEW_TYPE_TITLE = 1;
 
-    private ContentResolver mResolver;
+    private final ContentResolver mResolver;
     private int mSelectedInset;
 
     public VideoListAdapter(IEditableListFragment<VideoHolder, GroupViewHolder> fragment)

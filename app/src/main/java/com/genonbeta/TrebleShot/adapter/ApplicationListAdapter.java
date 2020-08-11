@@ -124,7 +124,6 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
                 GlideApp.with(getContext())
                         .load(object.appInfo)
                         .override(160)
-                        .centerCrop()
                         .into(image);
             }
         } catch (Exception e) {

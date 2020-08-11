@@ -27,8 +27,6 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -67,8 +65,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private ConnectionUtils mConnectionUtils;
     private Device.Type[] mHiddenDeviceTypes;
-    private boolean mSwipeRefreshEnabled = true;
-    private boolean mDeviceScanAllowed = true;
 
     public static void openInfo(Activity activity, ConnectionUtils utils, InfoHolder infoHolder)
     {
@@ -119,9 +115,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
                     for (int i = 0; i < hiddenTypes.size(); i++) {
                         Device.Type type = Device.Type.valueOf(hiddenTypes.get(i));
                         mHiddenDeviceTypes[i] = type;
-
-                        if (mDeviceScanAllowed && Device.Type.NORMAL.equals(type))
-                            mDeviceScanAllowed = false;
                     }
                 }
             }
@@ -164,17 +157,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
-    {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        if (!isHorizontalOrientation()) {
-            inflater.inflate(R.menu.actions_network_device, menu);
-            menu.findItem(R.id.network_devices_scan).setVisible(mDeviceScanAllowed);
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -212,16 +194,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     public void setHiddenDeviceTypes(Device.Type[] types)
     {
         mHiddenDeviceTypes = types;
-    }
-
-    public void setSwipeRefreshEnabled(boolean enabled)
-    {
-        mSwipeRefreshEnabled = enabled;
-    }
-
-    public void setDeviceScanAllowed(boolean allow)
-    {
-        mDeviceScanAllowed = allow;
     }
 
     @Override

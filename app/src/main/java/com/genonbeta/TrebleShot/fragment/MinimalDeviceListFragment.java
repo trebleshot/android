@@ -47,8 +47,6 @@ public class MinimalDeviceListFragment extends DeviceListFragment
         setFilteringSupported(false);
         setUseDefaultPaddingDecoration(false);
         setUseDefaultPaddingDecorationSpaceForEdges(false);
-        setSwipeRefreshEnabled(false);
-        setDeviceScanAllowed(false);
 
         if (isScreenLarge())
             setDefaultViewingGridSize(4, 5);

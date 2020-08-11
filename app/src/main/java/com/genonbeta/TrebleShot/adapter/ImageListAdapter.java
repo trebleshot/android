@@ -43,7 +43,7 @@ import com.genonbeta.android.framework.util.listing.Merger;
 public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListAdapter.ImageHolder,
         GroupEditableListAdapter.GroupViewHolder>
 {
-    private ContentResolver mResolver;
+    private final ContentResolver mResolver;
     private int mSelectedInset;
 
     public ImageListAdapter(IEditableListFragment<ImageHolder, GroupViewHolder> fragment)

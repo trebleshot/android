@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2019 Veli Tasalı
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2020 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
   ~ modify it under the terms of the GNU General Public License
@@ -17,21 +16,15 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <item
-            android:id="@+id/action_mode_network_device_toggle_connection"
-            android:title="@string/butn_connect"
-            android:visible="false"/>
+    <androidx.fragment.app.FragmentContainerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.genonbeta.TrebleShot.fragment.TransferGroupListFragment"
+        android:id="@+id/transfer_history_fragment" />
 
-    <item
-            android:id="@+id/action_mode_network_device_toggle_access"
-            android:title="@string/butn_allow"
-            android:visible="false"/>
-
-    <item
-            android:id="@+id/action_mode_network_device_remove"
-            android:title="@string/butn_remove"
-            android:visible="false"/>
-
-</menu>
+</LinearLayout>

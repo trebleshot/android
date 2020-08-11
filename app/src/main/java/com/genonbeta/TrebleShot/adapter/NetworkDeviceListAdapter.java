@@ -51,9 +51,9 @@ import static com.genonbeta.TrebleShot.fragment.DeviceListFragment.openInfo;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
 {
-    private ConnectionUtils mConnectionUtils;
-    private TextDrawable.IShapeBuilder mIconBuilder;
-    private List<Device.Type> mHiddenDeviceTypes;
+    private final ConnectionUtils mConnectionUtils;
+    private final TextDrawable.IShapeBuilder mIconBuilder;
+    private final List<Device.Type> mHiddenDeviceTypes;
 
     public NetworkDeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, ConnectionUtils utils,
                                     Device.Type[] hiddenDeviceTypes)

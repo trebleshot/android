@@ -26,7 +26,7 @@
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="text_appName" translatable="false">TrebleShot</string>
+    <string name="text_appName" translatable="false">Eagle File Transfer</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
     <string name="text_preferences">Preferences</string>
@@ -565,4 +565,7 @@
     <string name="butn_addMore">Add more</string>
     <string name="mesg_mayTakeLong">May take long!</string>
     <string name="mesg_updateDownloadError">Could not download your update</string>
+    <string name="transfer_history">Transfer history</string>
+    <string name="text_appLogo">App logo</string>
+    <string name="help_shareFilesNotice">Let\'s share those files</string>
 </resources>

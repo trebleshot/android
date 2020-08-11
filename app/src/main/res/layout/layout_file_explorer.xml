@@ -42,7 +42,7 @@
 
         <View
                 android:id="@+id/fragment_fileexplorer_separator"
-                style="@style/DividerStyle"
+                style="@style/DividerStyle.Raw"
                 android:layout_gravity="bottom"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
