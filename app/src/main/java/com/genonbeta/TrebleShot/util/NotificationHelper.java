@@ -364,8 +364,8 @@ public class NotificationHelper
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(TransferUtils.createUniqueTransferId(
                 task.group.id, task.device.uid, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, task.device.username,
-                TextUtils.getAdapterName(getContext(), task.connection));
+        // TODO: 8/11/20 The msg "hey" should be removed.
+        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, task.device.username, "hey");
 
         if (errorKey != null)
             switch (errorKey) {

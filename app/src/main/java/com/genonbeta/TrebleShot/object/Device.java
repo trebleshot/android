@@ -102,7 +102,7 @@ public final class Device implements DatabaseObject<Void>, Parcelable
 
     private void checkSecureKey()
     {
-        if (sendKey == 0 || receiveKey == 0)
+        if (Type.NORMAL.equals(type) && (sendKey == 0 || receiveKey == 0))
             throw new RuntimeException("Keys for " + username + " cannot be invalid when the device is saved");
     }
 

@@ -40,9 +40,9 @@ public class NsdDiscovery
     private NsdManager mNsdManager;
     private NsdManager.DiscoveryListener mNsdDiscoveryListener;
     private NsdManager.RegistrationListener mNsdRegistrationListener;
-    private Context mContext;
-    private Kuick mKuick;
-    private SharedPreferences mPreferences;
+    private final Context mContext;
+    private final Kuick mKuick;
+    private final SharedPreferences mPreferences;
 
     public NsdDiscovery(Context context, Kuick kuick, SharedPreferences preferences)
     {
@@ -113,8 +113,7 @@ public class NsdDiscovery
                                 Log.v(TAG, "Resolved with success " + serviceInfo.getServiceName()
                                         + " with IP address of " + serviceInfo.getHost().getHostAddress());
 
-                                DeviceLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(),
-                                        null);
+                                DeviceLoader.load(getDatabase(), serviceInfo.getHost(),null);
                             }
                         });
                     }

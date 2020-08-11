@@ -26,7 +26,6 @@ import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONObject;
-import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 
@@ -46,28 +45,14 @@ public class InitializeTransferTask extends BackgroundTask
     @Override
     protected void onRun()
     {
-        CommunicationBridge bridge = new CommunicationBridge(kuick());
-
-        try (final ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection)) {
-            Stoppable.Closer connectionCloser = userAction -> {
-                try {
-                    activeConnection.getSocket().close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            };
-
-            addCloser(connectionCloser);
-
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mConnection, mDevice, 0)) {
             JSONObject jsonRequest = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
                     .put(Keyword.TRANSFER_GROUP_ID, mAssignee.groupId);
 
-            activeConnection.reply(jsonRequest.toString());
+            bridge.getActiveConnection().reply(jsonRequest.toString());
 
-            final JSONObject responseJSON = activeConnection.receive().getAsJson();
-            activeConnection.getSocket().close();
-            removeCloser(connectionCloser);
+            final JSONObject responseJSON = bridge.getActiveConnection().receive().getAsJson();
 
             // FIXME: 21.03.2020 How to achieve these back?
             /*

@@ -42,8 +42,8 @@ import java.util.List;
  */
 public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
 {
-    private TransferGroup mGroup;
-    private TextDrawable.IShapeBuilder mIconBuilder;
+    private final TransferGroup mGroup;
+    private final TextDrawable.IShapeBuilder mIconBuilder;
 
     public TransferAssigneeListAdapter(IEditableListFragment<ShowingAssignee, ViewHolder> fragment, TransferGroup group)
     {
@@ -75,7 +75,8 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
         TextView text2 = holder.itemView.findViewById(R.id.text2);
 
         text1.setText(assignee.device.username);
-        text2.setText(TextUtils.getAdapterName(getContext(), assignee.connection));
+        // TODO: 8/11/20 Show a proper message
+        text2.setText(String.valueOf(assignee.device.lastUsageTime));
         DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
     }
 

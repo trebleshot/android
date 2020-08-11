@@ -61,9 +61,9 @@ public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionT
         mPin = pin;
     }
 
-    public DeviceIntroductionTask(DeviceAddress connection, int pin) throws UnknownHostException
+    public DeviceIntroductionTask(DeviceAddress connection, int pin)
     {
-        this(connection.toInet4Address(), pin);
+        this(connection.inetAddress, pin);
     }
 
     public DeviceIntroductionTask(NetworkDescription description, int pin)

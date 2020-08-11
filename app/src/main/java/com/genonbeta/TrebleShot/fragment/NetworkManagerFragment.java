@@ -48,7 +48,7 @@ import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
+import com.genonbeta.TrebleShot.util.InetAddresses;
 import com.genonbeta.android.framework.app.Fragment;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -56,6 +56,7 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NetworkManagerFragment extends Fragment implements TitleProvider, IconProvider
@@ -225,7 +226,8 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
             String hostAddress;
 
             try {
-                hostAddress = NetworkUtils.convertInet4Address(connectionInfo.getIpAddress()).getHostAddress();
+                hostAddress = InetAddress.getByAddress(InetAddresses.toByteArray(
+                        connectionInfo.getIpAddress())).getHostAddress();
             } catch (UnknownHostException e) {
                 hostAddress = "0.0.0.0";
             }

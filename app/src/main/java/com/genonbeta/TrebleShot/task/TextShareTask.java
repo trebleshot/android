@@ -43,13 +43,12 @@ public class TextShareTask extends BackgroundTask
     @Override
     protected void onRun() throws InterruptedException
     {
-        CommunicationBridge bridge = new CommunicationBridge(kuick());
-
-        try (ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection)) {
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mConnection, mDevice, 0)) {
             final JSONObject jsonRequest = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
                     .put(Keyword.TRANSFER_TEXT, mText);
 
+            ActiveConnection activeConnection = bridge.getActiveConnection();
             activeConnection.reply(jsonRequest.toString());
 
             JSONObject response = activeConnection.receive().getAsJson();

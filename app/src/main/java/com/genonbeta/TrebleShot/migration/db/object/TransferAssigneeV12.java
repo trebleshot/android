@@ -62,12 +62,6 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
         this.connectionAdapter = connectionAdapter;
     }
 
-    public TransferAssigneeV12(@NonNull TransferGroupV12 group, @NonNull NetworkDeviceV12 device,
-                               @NonNull DeviceAddress connection)
-    {
-        this(group.groupId, device.deviceId, connection.adapterName);
-    }
-
     @Override
     public boolean equals(@Nullable Object obj)
     {
@@ -94,7 +88,6 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
 
         values.put(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
         values.put(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
         values.put(Migration.v12.FIELD_TRANSFERASSIGNEE_ISCLONE, 1);
 
         return values;
@@ -105,7 +98,6 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     {
         this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID);
         this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID);
-        this.connectionAdapter = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
     }
 
     @Override

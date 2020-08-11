@@ -58,7 +58,7 @@ public class IndexTransferTask extends BackgroundTask
         final SQLiteDatabase db = kuick().getWritableDatabase();
         final JSONArray jsonArray;
         TransferGroup group = new TransferGroup(mGroupId);
-        TransferAssignee assignee = new TransferAssignee(group, mDevice, TransferObject.Type.INCOMING, mConnection);
+        TransferAssignee assignee = new TransferAssignee(group, mDevice, TransferObject.Type.INCOMING);
         final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, mDevice);
 
         notification.setProgress(0, 0, true);

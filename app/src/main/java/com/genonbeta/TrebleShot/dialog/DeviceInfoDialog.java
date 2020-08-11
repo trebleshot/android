@@ -27,13 +27,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
-import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.task.ReceiveUpdateTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -73,10 +70,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
         if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
             notSupportedText.setVisibility(View.VISIBLE);
-
-        if (isDeviceNormal && (localDevice.versionCode < device.versionCode || BuildConfig.DEBUG))
-            setNeutralButton(R.string.butn_update, (dialog, which) -> EstablishConnectionDialog.show(activity, device,
-                    (connection) -> BackgroundService.run(activity, new ReceiveUpdateTask(device, connection))));
 
         DeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
         text1.setText(device.username);

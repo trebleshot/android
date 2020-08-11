@@ -67,9 +67,9 @@ public class Kuick extends KuickDb
             FIELD_DEVICES_TYPE = "type";
 
     public static final String TABLE_DEVICECONNECTION = "deviceConnection",
+            FIELD_DEVICECONNECTION_IPADDRESSTEXT = "ipAddressText",
             FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress",
             FIELD_DEVICECONNECTION_DEVICEID = "deviceId",
-            FIELD_DEVICECONNECTION_ADAPTERNAME = "adapterName",
             FIELD_DEVICECONNECTION_LASTCHECKEDDATE = "lastCheckedDate";
 
     public static final String TABLE_FILEBOOKMARK = "fileBookmark",
@@ -79,7 +79,6 @@ public class Kuick extends KuickDb
     public static final String TABLE_TRANSFERASSIGNEE = "transferAssignee",
             FIELD_TRANSFERASSIGNEE_GROUPID = "groupId",
             FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId",
-            FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter",
             FIELD_TRANSFERASSIGNEE_TYPE = "type";
 
     public static final String TABLE_TRANSFER = "transfer",
@@ -145,9 +144,9 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_DEVICES_TYPE, SQLType.TEXT, false));
 
         values.defineTable(TABLE_DEVICECONNECTION)
-                .define(new Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
+                .define(new Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.BLOB, false))
+                .define(new Column(FIELD_DEVICECONNECTION_IPADDRESSTEXT, SQLType.TEXT, false))
                 .define(new Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
-                .define(new Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
                 .define(new Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
 
         values.defineTable(TABLE_FILEBOOKMARK)
@@ -169,7 +168,6 @@ public class Kuick extends KuickDb
         values.defineTable(TABLE_TRANSFERASSIGNEE)
                 .define(new Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
                 .define(new Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, false))
                 .define(new Column(FIELD_TRANSFERASSIGNEE_TYPE, SQLType.TEXT, false));
 
         values.defineTable(TABLE_TRANSFERGROUP)

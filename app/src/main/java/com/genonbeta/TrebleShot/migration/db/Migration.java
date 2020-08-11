@@ -87,7 +87,6 @@ public class Migration
             values.defineTable(TABLE_TRANSFERASSIGNEE)
                     .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
                     .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
                     .define(new SQLValues.Column(v12.FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
 
             return values;

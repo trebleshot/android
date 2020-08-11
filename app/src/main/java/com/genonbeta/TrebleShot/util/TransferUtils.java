@@ -5,11 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
@@ -22,7 +20,6 @@ import com.genonbeta.TrebleShot.task.InitializeTransferTask;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
@@ -50,23 +47,6 @@ public class TransferUtils
             group.bytesOutgoingCompleted += flag.getBytesValue();
         else if (TransferUtils.isError(flag))
             group.hasIssues = true;
-    }
-
-    public static void changeConnection(final FragmentActivity activity, final Device device,
-                                        final TransferAssignee assignee, final ConnectionUpdatedListener listener)
-    {
-        new ConnectionChooserDialog(activity, device, connection -> {
-            try {
-                AppUtils.getKuick(activity).reconstruct(assignee);
-                AppUtils.getKuick(activity).publish(assignee);
-                AppUtils.getKuick(activity).broadcast();
-
-                if (listener != null)
-                    listener.onConnectionUpdated(connection, assignee);
-            } catch (ReconstructionFailedException e) {
-                e.printStackTrace();
-            }
-        }).show();
     }
 
     public static void createFolderStructure(List<TransferObject> list, long groupId, DocumentFile file,
@@ -139,11 +119,9 @@ public class TransferUtils
 
         List<ShowingAssignee> assignees = kuick.castQuery(select, ShowingAssignee.class, (db, item, object) -> {
             object.device = new Device(object.deviceId);
-            object.connection = new DeviceAddress(object);
 
             try {
                 db.reconstruct(object.device);
-                db.reconstruct(object.connection);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -193,15 +171,9 @@ public class TransferUtils
     public static void loadAssigneeInfo(KuickDb kuick, ShowingAssignee assignee)
     {
         assignee.device = new Device(assignee.deviceId);
-        assignee.connection = new DeviceAddress(assignee);
 
         try {
             kuick.reconstruct(assignee.device);
-        } catch (Exception ignored) {
-        }
-
-        try {
-            kuick.reconstruct(assignee.connection);
         } catch (Exception ignored) {
         }
     }
@@ -369,13 +341,6 @@ public class TransferUtils
                     kuick.reconstruct(device);
 
                     EstablishConnectionDialog.show(activity, device, connection -> {
-                        if (!assignee.connectionAdapter.equals(connection.adapterName)) {
-                            assignee.connectionAdapter = connection.adapterName;
-
-                            kuick.publish(assignee);
-                            kuick.broadcast();
-                        }
-
                         try {
                             FileTransferTask task = FileTransferTask.createFrom(kuick, assignee.groupId,
                                     assignee.deviceId, assignee.type);

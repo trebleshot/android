@@ -52,11 +52,9 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import org.json.JSONException;
@@ -64,8 +62,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,28 +73,6 @@ public class AppUtils
     private static Kuick mKuick;
     private static SharedPreferences mDefaultPreferences;
     private static SharedPreferences mViewingPreferences;
-
-    public static void applyAdapterName(DeviceAddress connection)
-    {
-        if (connection.ipAddress == null) {
-            Log.e(TAG, "Connection should be provided with IP address");
-            return;
-        }
-
-        try {
-            NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(connection.toInet4Address());
-
-            if (networkInterface != null)
-                connection.adapterName = networkInterface.getDisplayName();
-            else
-                Log.d(TAG, "applyAdapterName(): No network interface found");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
-        if (connection.adapterName == null)
-            connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
-    }
 
     public static boolean checkRunningConditions(Context context)
     {
@@ -450,17 +424,5 @@ public class AppUtils
         getDefaultPreferences(context).edit()
                 .putInt("changelog_seen_version", device.versionCode)
                 .apply();
-    }
-
-    public static boolean toggleDeviceScanning(DeviceScannerService service)
-    {
-        if (!service.getDeviceScanner().isBusy()) {
-            service.startService(new Intent(service, DeviceScannerService.class)
-                    .setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
-            return true;
-        }
-
-        service.getDeviceScanner().interrupt();
-        return false;
     }
 }

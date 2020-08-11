@@ -19,34 +19,30 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.app.Activity;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -67,30 +63,12 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     public static final String ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList";
 
     private NsdDiscovery mNsdDiscovery;
-    private IntentFilter mIntentFilter = new IntentFilter();
-    private StatusReceiver mStatusReceiver = new StatusReceiver();
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private final IntentFilter mIntentFilter = new IntentFilter();
+    private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private ConnectionUtils mConnectionUtils;
     private Device.Type[] mHiddenDeviceTypes;
     private boolean mSwipeRefreshEnabled = true;
     private boolean mDeviceScanAllowed = true;
-    private DeviceScannerService mService;
-
-    private ServiceConnection mScannerConnection = new ServiceConnection()
-    {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service)
-        {
-            mService = ((DeviceScannerService.Binder) service).getService();
-            checkRefreshing();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name)
-        {
-            mService = null;
-        }
-    };
 
     public static void openInfo(Activity activity, ConnectionUtils utils, InfoHolder infoHolder)
     {
@@ -116,17 +94,12 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onCreate(savedInstanceState);
 
-        if (!isHorizontalOrientation() && mSwipeRefreshEnabled)
-            setLayoutResId(R.layout.layout_network_device);
-
         setFilteringSupported(true);
         setSortingSupported(false);
         setUseDefaultPaddingDecoration(true);
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
-        mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
-        mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
         mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
         mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -163,19 +136,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
         setListAdapter(new NetworkDeviceListAdapter(this, getConnectionUtils(), mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
-        useEmptyListActionButton(getString(R.string.butn_scan), v -> requestRefresh());
-
-        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
-
-        if (mSwipeRefreshLayout != null) {
-            Context context = requireContext();
-
-            mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context,
-                    AppUtils.getReference(context, R.attr.colorAccent)));
-            mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(context,
-                    AppUtils.getReference(context, R.attr.colorSurface)));
-            mSwipeRefreshLayout.setOnRefreshListener(this::requestRefresh);
-        }
     }
 
     @Override
@@ -183,9 +143,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-
-        if (AppUtils.getDefaultPreferences(getContext()).getBoolean("scan_devices_auto", false))
-            requestRefresh();
     }
 
     @Override
@@ -193,9 +150,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onResume();
         requireActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-        requireActivity().bindService(new Intent(getContext(), DeviceScannerService.class), mScannerConnection,
-                Service.BIND_AUTO_CREATE);
-
         mNsdDiscovery.startDiscovering();
     }
 
@@ -204,7 +158,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onPause();
         requireActivity().unregisterReceiver(mStatusReceiver);
-        requireActivity().unbindService(mScannerConnection);
 
         mNsdDiscovery.stopDiscovering();
 
@@ -222,31 +175,12 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        if (R.id.network_devices_scan == item.getItemId())
-            requestRefresh();
-        else
-            return super.onOptionsItemSelected(item);
-
-        return true;
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (REQUEST_LOCATION_PERMISSION == requestCode)
             getConnectionUtils().showConnectionOptions(getActivity(), this, REQUEST_LOCATION_PERMISSION);
-    }
-
-    public void checkRefreshing()
-    {
-        boolean refreshing = mService != null && mService.getDeviceScanner().isBusy();
-        getEmptyListActionButton().setText(refreshing ? R.string.butn_stop : R.string.butn_scan);
-        if (mSwipeRefreshLayout != null)
-            mSwipeRefreshLayout.setRefreshing(refreshing);
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -313,55 +247,17 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
         return true;
     }
 
-    public void requestRefresh()
-    {
-        if (Build.VERSION.SDK_INT < 29)
-            getConnectionUtils().getWifiManager().startScan();
-
-        if (!AppUtils.toggleDeviceScanning(mService))
-            Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
-    }
-
     private class StatusReceiver extends BroadcastReceiver
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            checkRefreshing();
-
-            if (DeviceScannerService.ACTION_SCAN_STARTED.equals(intent.getAction())
-                    && intent.hasExtra(DeviceScannerService.EXTRA_SCAN_STATUS)) {
-                String scanStatus = intent.getStringExtra(DeviceScannerService.EXTRA_SCAN_STATUS);
-
-                if (DeviceScannerService.STATUS_OK.equals(scanStatus)
-                        || DeviceScannerService.SCANNER_NOT_AVAILABLE.equals(scanStatus)) {
-                    boolean selfNetwork = getConnectionUtils().isConnectionToHotspotNetwork();
-
-                    if (!selfNetwork)
-                        createSnackbar(DeviceScannerService.STATUS_OK.equals(scanStatus) ? R.string.mesg_scanningDevices
-                                : R.string.mesg_stillScanning).show();
-                    else
-                        createSnackbar(R.string.mesg_scanningDevicesSelfHotspot)
-                                .setAction(R.string.butn_disconnect, v -> getConnectionUtils().getWifiManager().disconnect())
-                                .show();
-                } else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-                    getConnectionUtils().showConnectionOptions(getActivity(), DeviceListFragment.this,
-                            REQUEST_LOCATION_PERMISSION);
-            } else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
-                createSnackbar(R.string.mesg_scanCompleted)
-                        .show();
-            } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction()))
+            if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction()))
                 refreshList();
-            if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+            else if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
                 if (Kuick.TABLE_DEVICES.equals(data.tableName))
                     refreshList();
-            } else if (getConnectionUtils().notifyWirelessRequestHandled()
-                    && WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
-                    && WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
-                    -1)) {
-                mService.getDeviceScanner().run();
-                requestRefresh();
             }
         }
     }

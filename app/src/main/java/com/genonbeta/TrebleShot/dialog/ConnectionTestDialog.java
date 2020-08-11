@@ -94,8 +94,9 @@ public class ConnectionTestDialog extends AlertDialog.Builder
             TextView textView3 = convertView.findViewById(R.id.pending_available_interface_text3);
 
             textView1.setTextColor(result.successful ? mActiveColor : mPassiveColor);
-            textView1.setText(TextUtils.getAdapterName(getContext(), result.connection));
-            textView2.setText(result.connection.ipAddress);
+            // FIXME: 8/11/20 The view has disable network adapter related fields.
+            //textView1.setText(TextUtils.getAdapterName(getContext(), result.connection));
+            //textView2.setText(result.connection.ipAddress);
 
             if (result.successful)
                 textView3.setText(getContext().getString(R.string.text_textMillisecond,

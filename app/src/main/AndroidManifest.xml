@@ -214,14 +214,6 @@
                 <action android:name="android.service.chooser.ChooserTargetService"/>
             </intent-filter>
         </service>
-        <service android:name=".service.DeviceScannerService">
-            <intent-filter>
-                <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
-                <action android:name="genonbeta.intent.action.ADD_IP"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </service>
 
         <service
                 android:name=".service.CommunicationToggleTile"

@@ -38,7 +38,6 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
 {
     public long groupId;
     public String deviceId;
-    public String connectionAdapter;
     public TransferObject.Type type;
 
     public TransferAssignee()
@@ -56,17 +55,6 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device, @NonNull TransferObject.Type type)
     {
         this(group.id, device.uid, type);
-    }
-
-    public TransferAssignee(long groupId, String deviceId, TransferObject.Type type, String connectionAdapter)
-    {
-        this(groupId, deviceId, type);
-        this.connectionAdapter = connectionAdapter;
-    }
-    public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device,
-                            @NonNull TransferObject.Type type, @NonNull DeviceAddress connection)
-    {
-        this(group.id, device.uid, type, connection.adapterName);
     }
 
     @Override
@@ -98,7 +86,6 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
 
         values.put(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
         values.put(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
         values.put(Kuick.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
 
         return values;
@@ -109,7 +96,6 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     {
         this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID);
         this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID);
-        this.connectionAdapter = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
 
         // Added in DB version 13 and might be null and may throw an error since ContentValues doesn't like it when
         // when the requested column name doesn't exist or has type different than requested.

@@ -55,11 +55,6 @@ public class TextUtils
         return -1;
     }
 
-    public static String getAdapterName(Context context, DeviceAddress connection)
-    {
-        return getAdapterName(context, connection.adapterName);
-    }
-
     public static String getAdapterName(Context context, NetworkInterface networkInterface)
     {
         return getAdapterName(context, networkInterface.getDisplayName());

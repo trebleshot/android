@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -35,6 +36,7 @@ import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
@@ -44,38 +46,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class DeviceLoader
 {
-    public static DeviceAddress processConnection(Kuick kuick, Device device, String ipAddress)
-    {
-        DeviceAddress connection = new DeviceAddress(ipAddress);
-        processConnection(kuick, device, connection);
-        return connection;
-    }
-
-    public static void processConnection(Kuick kuick, Device device, DeviceAddress connection)
-    {
-        try {
-            kuick.reconstruct(connection);
-        } catch (Exception e) {
-            AppUtils.applyAdapterName(connection);
-        }
-
-        connection.lastCheckedDate = System.currentTimeMillis();
-        connection.deviceId = device.uid;
-
-        kuick.remove(new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
-                                + Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME + " =? AND "
-                                + Kuick.FIELD_DEVICECONNECTION_IPADDRESS + " != ?",
-                        connection.deviceId, connection.adapterName, connection.ipAddress));
-
-        kuick.publish(connection);
-    }
-
-    public static void loadFrom(Kuick kuick, JSONObject object, Device device, boolean hasPin) throws JSONException,
-            DeviceInsecureException
+    public static void loadFrom(Kuick kuick, JSONObject object, Device device, boolean hasPin, boolean asClient)
+            throws JSONException, DeviceInsecureException
     {
         device.uid = object.getString(Keyword.DEVICE_UID);
         int receiveKey = object.getInt(Keyword.DEVICE_KEY);
@@ -89,8 +65,9 @@ public class DeviceLoader
         } catch (ReconstructionFailedException e) {
             device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
 
-            if (hasPin) {
+            if (hasPin || asClient) {
                 device.isBlocked = false;
+                device.isTrusted = hasPin;
                 device.receiveKey = receiveKey;
                 device.sendKey = AppUtils.generateKey();
             } else if (e instanceof DeviceBlockedException) {
@@ -123,6 +100,24 @@ public class DeviceLoader
         }
     }
 
+    public static void load(Kuick kuick, InetAddress address, @Nullable OnDeviceRegisteredListener listener)
+    {
+        new Thread(() -> {
+            try (CommunicationBridge communicationBridge = CommunicationBridge.connect(kuick,
+                    new DeviceAddress(address), null, 0)) {
+                if (listener != null)
+                    listener.onDeviceRegistered(kuick, communicationBridge.getDevice(),
+                            communicationBridge.getDeviceAddress());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (DifferentClientException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     public static byte[] loadProfilePictureFrom(JSONObject deviceInfo) throws Exception
     {
         if (deviceInfo.has(Keyword.DEVICE_AVATAR))
@@ -134,6 +129,23 @@ public class DeviceLoader
     public static byte[] loadProfilePictureFrom(String base64) throws IllegalArgumentException
     {
         return Base64.decode(base64, 0);
+    }
+
+    public static DeviceAddress processConnection(Kuick kuick, Device device, InetAddress address)
+    {
+        DeviceAddress deviceAddress = new DeviceAddress(device.uid, address, System.currentTimeMillis());
+        processConnection(kuick, device, deviceAddress);
+        return deviceAddress;
+    }
+
+    public static void processConnection(Kuick kuick, Device device, DeviceAddress deviceAddress)
+    {
+        deviceAddress.lastCheckedDate = System.currentTimeMillis();
+        deviceAddress.deviceId = device.uid;
+
+        kuick.remove(new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_IPADDRESSTEXT + "=?", deviceAddress.getHostAddress()));
+        kuick.publish(deviceAddress);
     }
 
     public static void saveProfilePicture(Context context, Device device, JSONObject object)
@@ -162,8 +174,7 @@ public class DeviceLoader
             Log.d(DeviceLoader.class.getSimpleName(), "Bitmap was null");
     }
 
-    public static void showPictureIntoView(Device device, ImageView imageView,
-                                           TextDrawable.IShapeBuilder iconBuilder)
+    public static void showPictureIntoView(Device device, ImageView imageView, TextDrawable.IShapeBuilder iconBuilder)
     {
         Context context = imageView.getContext();
 

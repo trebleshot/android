@@ -33,7 +33,7 @@ public class Keyword
             REQUEST_ACQUAINTANCE = "acquaintance",
             REQUEST_CLIPBOARD = "text",
             REQUEST_HANDSHAKE = "handshake",
-            REQUEST_TRANSFER_JOB = "transfer", // Introduced in 99
+            REQUEST_TRANSFER_JOB = "transferJob", // Introduced in 99
             TRANSFER_TYPE = "type", // Introduced in 99
             TRANSFER_REQUEST_ID = "requestId",
             TRANSFER_GROUP_ID = "groupId",
@@ -83,7 +83,6 @@ public class Keyword
     public static class Local
     {
         public static final String
-                NETWORK_INTERFACE_UNKNOWN = "unk0",
                 FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt",
                 SETTINGS_VIEWING = "sorting_settings";
     }

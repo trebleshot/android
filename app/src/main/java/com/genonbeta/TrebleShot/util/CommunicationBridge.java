@@ -71,7 +71,7 @@ public class CommunicationBridge implements Closeable
     public static CommunicationBridge connect(Kuick kuick, DeviceAddress deviceAddress, @Nullable Device device, int pin)
             throws IOException, DifferentClientException, JSONException
     {
-        ActiveConnection activeConnection = openConnection(deviceAddress.toInet4Address());
+        ActiveConnection activeConnection = openConnection(deviceAddress.inetAddress);
         String remoteDeviceId = activeConnection.receive().getAsString();
 
         if (device != null && device.uid != null && !device.uid.equals(remoteDeviceId))
@@ -89,8 +89,10 @@ public class CommunicationBridge implements Closeable
         activeConnection.reply(AppUtils.getLocalDeviceAsJson(kuick.getContext(), device, pin));
 
         try {
-            DeviceLoader.loadFrom(kuick, activeConnection.receive().getAsJson(), device, false);
+            DeviceLoader.loadFrom(kuick, activeConnection.receive().getAsJson(), device, false, true);
         } catch (DeviceInsecureException ignored) {
+            device.isBlocked = false;
+            kuick.publish(device);
         }
 
         DeviceLoader.processConnection(kuick, device, deviceAddress);
@@ -131,8 +133,7 @@ public class CommunicationBridge implements Closeable
                 .put(Keyword.TRANSFER_IS_ACCEPTED, accepted));
     }
 
-    public static ActiveConnection openConnection(InetAddress inetAddress)
-            throws IOException
+    public static ActiveConnection openConnection(InetAddress inetAddress) throws IOException
     {
         return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);

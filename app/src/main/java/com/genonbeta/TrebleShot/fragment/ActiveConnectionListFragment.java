@@ -42,7 +42,6 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -144,17 +143,23 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     @Override
     public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, EditableNetworkInterface object)
     {
+        // TODO: 8/11/20 Fix the url open from Web Share pane
+        /**
         new WebShareDetailsDialog(requireActivity(), TextUtils.makeWebShareLink(requireContext(),
                 NetworkUtils.getFirstInet4Address(object).getHostAddress())).show();
+         **/
         return true;
     }
 
     @Override
     public boolean performLayoutClickOpen(RecyclerViewAdapter.ViewHolder holder, EditableNetworkInterface object)
     {
+        // TODO: 8/11/20 Fix the url open from Web Share pane.
+        /**
         if (!super.performLayoutClickOpen(holder, object))
             startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(requireContext(),
                     NetworkUtils.getFirstInet4Address(object).getHostAddress()))));
+         **/
 
         return true;
     }

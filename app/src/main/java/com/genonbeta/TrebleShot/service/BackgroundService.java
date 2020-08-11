@@ -580,10 +580,10 @@ public class BackgroundService extends Service
                 final boolean hasPin = activePin != -1 && response.has(Keyword.DEVICE_PIN)
                         && activePin == response.getInt(Keyword.DEVICE_PIN);
                 final Device device = new Device();
-                final DeviceAddress deviceAddress = new DeviceAddress(activeConnection.getAddress().getHostAddress());
+                final DeviceAddress deviceAddress = new DeviceAddress(activeConnection.getAddress());
 
                 try {
-                    DeviceLoader.loadFrom(getKuick(), response, device, hasPin);
+                    DeviceLoader.loadFrom(getKuick(), response, device, hasPin, false);
                 } catch (DeviceBlockedException e) {
                     throw e;
                 } catch (DeviceInsecureException e) {

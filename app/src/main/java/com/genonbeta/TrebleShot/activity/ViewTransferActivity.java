@@ -489,17 +489,19 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
             if (hasTaskWith(FileTransferTask.identifyWith(mGroup.id, assignee.deviceId)))
                 TransferUtils.pauseTransfer(this, assignee);
             else {
-                getDatabase().reconstruct(new DeviceAddress(assignee));
+                // FIXME: 8/11/20 Fix this.
+                //getDatabase().reconstruct(new DeviceAddress(assignee));
                 TransferUtils.startTransferWithTest(this, mGroup, assignee);
             }
         } catch (Exception e) {
             e.printStackTrace();
 
-            createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
+            // TODO: 8/11/20 Fix showing choose communication method.
+            /*createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
                     .setAction(R.string.butn_setUp, v -> TransferUtils.changeConnection(ViewTransferActivity.this,
                             assignee.device, assignee, (connection, assignee1) -> createSnackbar(
                                     R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(),
-                                            connection)).show())).show();
+                                            connection)).show())).show();*/
         }
     }
 

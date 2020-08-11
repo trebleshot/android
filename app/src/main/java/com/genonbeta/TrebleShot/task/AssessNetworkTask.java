@@ -62,19 +62,15 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
 
                 ConnectionResult connectionResult = results[i] = new ConnectionResult(knownConnectionList.get(i));
 
-                setOngoingContent(connectionResult.connection.adapterName);
+                setOngoingContent(connectionResult.connection.getHostAddress());
                 progress().addToCurrent(1);
                 publishStatus();
+                long startTime = System.nanoTime();
 
-                try {
-                    CommunicationBridge client = new CommunicationBridge(kuick());
-                    long startTime = System.nanoTime();
-                    ActiveConnection connection = client.connectWithHandshake(connectionResult.connection,
-                            true);
+                try (CommunicationBridge client = CommunicationBridge.connect(kuick(), connectionResult.connection,
+                        mDevice, 0)) {
                     connectionResult.pingTime = System.nanoTime() - startTime;
                     connectionResult.successful = true;
-
-                    connection.getSocket().close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -43,9 +43,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.DeviceRoute;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
 import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
@@ -54,12 +54,10 @@ import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -74,10 +72,10 @@ public class ConnectionUtils
 {
     public static final String TAG = ConnectionUtils.class.getSimpleName();
 
-    private Context mContext;
-    private WifiManager mWifiManager;
-    private LocationManager mLocationManager;
-    private ConnectivityManager mConnectivityManager;
+    private final Context mContext;
+    private final WifiManager mWifiManager;
+    private final LocationManager mLocationManager;
+    private final ConnectivityManager mConnectivityManager;
     private boolean mWirelessEnableRequested = false;
 
     public ConnectionUtils(Context context)
@@ -206,18 +204,19 @@ public class ConnectionUtils
                 else
                     Log.d(TAG, "establishHotspotConnection: Toggling network failed " + description.ssid);
             } else if (wifiDhcpInfo.gateway != 0) {
-                try {
-                    Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
-                    NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(testAddress);
+                Kuick kuick = AppUtils.getKuick(getContext());
 
-                    if (testAddress.isReachable(pingTimeout) || testAddress.isReachable(networkInterface,
-                            3600, pingTimeout)) {
-                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                        return testAddress;
-                    } else
-                        Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
-                } catch (IOException e) {
-                    e.printStackTrace();
+                try {
+                    InetAddress address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway));
+                    DeviceAddress deviceAddress = new DeviceAddress(address);
+
+                    CommunicationBridge.connect(kuick, deviceAddress, null, 0);
+                    Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
+                    return address;
+                } catch (UnknownHostException e) {
+                    Log.d(TAG, "establishHotspotConnection(): Host is unknown.");
+                } catch (Exception e) {
+                    Log.d(TAG, "establishHotspotConnection(): Connection failed.");
                 }
             } else
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
@@ -380,21 +379,20 @@ public class ConnectionUtils
 
     @WorkerThread
     public static DeviceRoute setupConnection(Context context, InetAddress inetAddress, int pin)
-            throws TimeoutException, CommunicationException, IOException, JSONException
+            throws CommunicationException, IOException, JSONException
     {
         Kuick kuick = AppUtils.getKuick(context);
-        CommunicationBridge bridge = new CommunicationBridge(kuick, pin);
-        ActiveConnection activeConnection = bridge.communicate(inetAddress, false);
+        DeviceAddress deviceAddress = new DeviceAddress(inetAddress);
+        CommunicationBridge bridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin);
 
-        activeConnection.reply(new JSONObject()
+        bridge.getActiveConnection().reply(new JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
 
         Device device = bridge.getDevice();
-        JSONObject receivedReply = activeConnection.receive().getAsJson();
+        JSONObject receivedReply = bridge.getActiveConnection().receive().getAsJson();
 
         if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.uid != null) {
-            DeviceAddress connection = DeviceLoader.processConnection(kuick, device,
-                    inetAddress.getHostAddress());
+            DeviceAddress connection = DeviceLoader.processConnection(kuick, device, inetAddress);
             return new DeviceRoute(device, connection);
         } else
             throwCommunicationError(receivedReply, device);

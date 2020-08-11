@@ -30,13 +30,13 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
@@ -51,6 +51,7 @@ import com.genonbeta.android.framework.util.StoppableImpl;
 import fi.iki.elonen.NanoHTTPD;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -67,11 +68,11 @@ public class WebShareServer extends NanoHTTPD
 {
     public static final String TAG = WebShareServer.class.getSimpleName();
 
-    private AssetManager mAssetManager;
-    private NotificationUtils mNotificationUtils;
-    private Context mContext;
-    private MediaScannerConnection mMediaScanner;
-    private Device mThisDevice;
+    private final AssetManager mAssetManager;
+    private final NotificationUtils mNotificationUtils;
+    private final Context mContext;
+    private final MediaScannerConnection mMediaScanner;
+    private final Device mThisDevice;
     private boolean mHadClients = false;
 
     public WebShareServer(Context context, int port)
@@ -83,13 +84,6 @@ public class WebShareServer extends NanoHTTPD
         mNotificationUtils = new NotificationUtils(context, AppUtils.getKuick(context),
                 AppUtils.getDefaultPreferences(context));
         mThisDevice = AppUtils.getLocalDevice(mContext);
-    }
-
-    @Override
-    public void start(int timeout, boolean daemon) throws IOException
-    {
-        super.start(timeout, daemon);
-        mMediaScanner.connect();
     }
 
     @Override
@@ -122,7 +116,6 @@ public class WebShareServer extends NanoHTTPD
             device.versionName = mThisDevice.versionName;
             device.username = clientAddress;
             device.type = Device.Type.WEB;
-            device.secureKey = 0; // It is not required for web browsers
         }
 
         device.lastUsageTime = System.currentTimeMillis();
@@ -251,15 +244,11 @@ public class WebShareServer extends NanoHTTPD
                                 destFile.getType(), destFile.length(), TransferObject.Type.INCOMING);
                         transferObject.setFlag(TransferObject.Flag.DONE);
 
-                        DeviceAddress connection = new DeviceAddress(
-                                Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.uid,
+                        DeviceAddress connection = new DeviceAddress(device.uid, InetAddress.getByName(clientAddress),
                                 System.currentTimeMillis());
-                        AppUtils.applyAdapterName(connection);
 
                         TransferAssignee assignee = new TransferAssignee(webShareGroup,
                                 device, TransferObject.Type.INCOMING);
-                        assignee.connectionAdapter = connection.adapterName;
-
 
                         kuick.publish(webShareGroup);
                         kuick.publish(assignee);
@@ -650,7 +639,7 @@ public class WebShareServer extends NanoHTTPD
 
     public static class BoundRunner implements NanoHTTPD.AsyncRunner
     {
-        private ExecutorService executorService;
+        private final ExecutorService executorService;
         private final List<ClientHandler> running = Collections.synchronizedList(new ArrayList<>());
 
         public BoundRunner(ExecutorService executorService)
@@ -706,13 +695,13 @@ public class WebShareServer extends NanoHTTPD
             }
 
             @Override
-            public void write(byte[] b) throws IOException
+            public void write(@NonNull byte[] b) throws IOException
             {
                 write(b, 0, b.length);
             }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException
+            public void write(@NonNull byte[] b, int off, int len) throws IOException
             {
                 if (len == 0)
                     return;
@@ -728,7 +717,7 @@ public class WebShareServer extends NanoHTTPD
 
         }
 
-        private List<TransferObject> mFiles;
+        private final List<TransferObject> mFiles;
 
         private IStatus mStatus;
 

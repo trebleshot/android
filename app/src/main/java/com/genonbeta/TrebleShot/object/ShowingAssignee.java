@@ -23,7 +23,6 @@ import java.util.Locale;
 public class ShowingAssignee extends TransferAssignee implements Editable
 {
     public Device device;
-    public DeviceAddress connection;
 
     public ShowingAssignee()
     {

@@ -49,7 +49,6 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.Identifier;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -79,7 +78,7 @@ public abstract class Activity extends AppCompatActivity
     private boolean mSkipPermissionRequest = false;
     private boolean mWelcomePageDisallowed = false;
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
@@ -339,7 +338,7 @@ public abstract class Activity extends AppCompatActivity
             return;
         synchronized (mUiTaskList) {
             List<BackgroundTask> uiTaskList = new ArrayList<>();
-            for (BackgroundTask task : uiTaskList)
+            for (BackgroundTask task : mUiTaskList)
                 if (!task.isFinished())
                     uiTaskList.add(task);
             mUiTaskList.clear();
@@ -367,9 +366,7 @@ public abstract class Activity extends AppCompatActivity
      */
     public void exitApp()
     {
-        stopService(new Intent(this, DeviceScannerService.class));
         stopService(new Intent(this, BackgroundService.class));
-
         finish();
     }
 

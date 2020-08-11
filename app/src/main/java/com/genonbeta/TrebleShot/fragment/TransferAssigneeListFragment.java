@@ -81,11 +81,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         popupMenu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
 
-            if (id == R.id.popup_changeChangeConnection) {
-                TransferUtils.changeConnection(fragment.getActivity(), assignee.device, assignee,
-                        (connection, assignee1) -> fragment.createSnackbar(R.string.mesg_connectionUpdated,
-                                TextUtils.getAdapterName(fragment.getContext(), connection)).show());
-            } else if (id == R.id.popup_remove) {
+            if (id == R.id.popup_remove) {
                 AppUtils.getKuick(fragment.getContext()).removeAsynchronous(fragment.getActivity(), assignee, group);
             } else
                 return false;

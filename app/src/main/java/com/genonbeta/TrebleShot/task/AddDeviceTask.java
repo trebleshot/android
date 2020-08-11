@@ -68,13 +68,12 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         Context context = getService().getApplicationContext();
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
-        CommunicationBridge bridge = new CommunicationBridge(kuick());
+
         ConnectionUtils utils = new ConnectionUtils(getService());
         boolean update = false;
 
-        try {
-            TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING,
-                    mConnection);
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mConnection, mDevice, 0)) {
+            TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING);
             List<TransferObject> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
                             .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE
                                     + "=?", String.valueOf(mGroup.id), TransferObject.Type.OUTGOING.toString()),
@@ -122,7 +121,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                     .put(Keyword.TRANSFER_GROUP_ID, mGroup.id)
                     .put(Keyword.INDEX, filesArray.toString());
 
-            final ActiveConnection activeConnection = bridge.communicate(mDevice, mConnection);
+            final ActiveConnection activeConnection = bridge.getActiveConnection();
 
             addCloser(userAction -> {
                 try {

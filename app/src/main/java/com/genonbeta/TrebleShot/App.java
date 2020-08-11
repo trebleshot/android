@@ -29,6 +29,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -51,7 +52,7 @@ import java.util.Date;
  * date: 25.02.2018 01:23
  */
 
-public class App extends Application implements Thread.UncaughtExceptionHandler, ServiceConnection
+public class App extends MultiDexApplication implements Thread.UncaughtExceptionHandler, ServiceConnection
 {
     public static final String TAG = App.class.getSimpleName(),
             ACTION_SERVICE_BOUND = "com.genonbeta.intent.action.SERVICE_BOUND";

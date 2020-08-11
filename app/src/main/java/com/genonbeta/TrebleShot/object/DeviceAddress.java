@@ -28,7 +28,6 @@ import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -38,47 +37,6 @@ import java.net.UnknownHostException;
  */
 public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
 {
-    public String adapterName;
-    public String ipAddress;
-    public String deviceId;
-    public long lastCheckedDate;
-
-    public DeviceAddress()
-    {
-    }
-
-    public DeviceAddress(String adapterName, String ipAddress, String deviceId, long lastCheckedDate)
-    {
-        this.adapterName = adapterName;
-        this.ipAddress = ipAddress;
-        this.deviceId = deviceId;
-        this.lastCheckedDate = lastCheckedDate;
-    }
-
-    public DeviceAddress(String deviceId, String adapterName)
-    {
-        this.deviceId = deviceId;
-        this.adapterName = adapterName;
-    }
-
-    public DeviceAddress(TransferAssignee assignee)
-    {
-        this(assignee.deviceId, assignee.connectionAdapter);
-    }
-
-    public DeviceAddress(String ipAddress)
-    {
-        this.ipAddress = ipAddress;
-    }
-
-    protected DeviceAddress(Parcel in)
-    {
-        adapterName = in.readString();
-        ipAddress = in.readString();
-        deviceId = in.readString();
-        lastCheckedDate = in.readLong();
-    }
-
     public static final Creator<DeviceAddress> CREATOR = new Creator<DeviceAddress>()
     {
         @Override
@@ -94,14 +52,43 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
         }
     };
 
+    public InetAddress inetAddress;
+    public String deviceId;
+    public long lastCheckedDate;
+
+    public DeviceAddress()
+    {
+    }
+
+    public DeviceAddress(InetAddress inetAddress)
+    {
+        this.inetAddress = inetAddress;
+    }
+
+    public DeviceAddress(String deviceId, InetAddress inetAddress, long lastCheckedDate)
+    {
+        this(inetAddress);
+        this.deviceId = deviceId;
+        this.lastCheckedDate = lastCheckedDate;
+    }
+
+    protected DeviceAddress(Parcel in)
+    {
+        deviceId = in.readString();
+        inetAddress = (InetAddress) in.readSerializable();
+        lastCheckedDate = in.readLong();
+    }
+
+    public String getHostAddress()
+    {
+        return inetAddress.getHostAddress();
+    }
+
     @Override
     public SQLQuery.Select getWhere()
     {
-        SQLQuery.Select select = new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION);
-
-        return ipAddress == null ? select.setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
-                + Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
-                : select.setWhere(Kuick.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
+        return new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_IPADDRESSTEXT + "=?", getHostAddress());
     }
 
     @Override
@@ -110,8 +97,8 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
         ContentValues values = new ContentValues();
 
         values.put(Kuick.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
-        values.put(Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME, adapterName);
-        values.put(Kuick.FIELD_DEVICECONNECTION_IPADDRESS, ipAddress);
+        values.put(Kuick.FIELD_DEVICECONNECTION_IPADDRESS, inetAddress.getAddress());
+        values.put(Kuick.FIELD_DEVICECONNECTION_IPADDRESSTEXT, inetAddress.getHostAddress());
         values.put(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
 
         return values;
@@ -120,15 +107,14 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.adapterName = item.getAsString(Kuick.FIELD_DEVICECONNECTION_ADAPTERNAME);
-        this.ipAddress = item.getAsString(Kuick.FIELD_DEVICECONNECTION_IPADDRESS);
+        try {
+            this.inetAddress = InetAddress.getByAddress(item.getAsByteArray(Kuick.FIELD_DEVICECONNECTION_IPADDRESS));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
         this.deviceId = item.getAsString(Kuick.FIELD_DEVICECONNECTION_DEVICEID);
         this.lastCheckedDate = item.getAsLong(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
-    }
-
-    public Inet4Address toInet4Address() throws UnknownHostException
-    {
-        return (Inet4Address) InetAddress.getByName(ipAddress);
     }
 
     @Override
@@ -158,9 +144,8 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeString(adapterName);
-        dest.writeString(ipAddress);
         dest.writeString(deviceId);
+        dest.writeSerializable(inetAddress);
         dest.writeLong(lastCheckedDate);
     }
 }

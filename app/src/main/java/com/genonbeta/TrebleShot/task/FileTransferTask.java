@@ -166,7 +166,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             throw new AssigneeNotFoundException(assignee);
         }
 
-        DeviceAddress connection = new DeviceAddress(assignee);
+        DeviceAddress connection = new DeviceAddress();
 
         try {
             kuick.reconstruct(db, connection);
@@ -175,7 +175,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         }
 
         Log.d(TAG, "createFrom: deviceId=" + device.uid + " groupId=" + group.id + " adapter="
-                + assignee.connectionAdapter);
+                + connection.inetAddress);
 
         FileTransferTask task = new FileTransferTask();
         task.type = type;
@@ -324,7 +324,6 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                                         this.activeConnection.receive().getAsString());
                             }
 
-                            this.activeConnection.reply(Keyword.STUB);
                             OutputStream outputStream = null;
                             boolean completed = false;
 
@@ -536,8 +535,6 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                             kuick().update(getDatabase(), this.object, this.group, null);
                             continue;
                         }
-
-                        this.activeConnection.reply(Keyword.STUB);
                     } else {
                         this.activeConnection.reply(reply.toString());
                         Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
@@ -669,13 +666,14 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
     public void startTransferAsClient()
     {
-        startTransferAsClientInternal(new CommunicationBridge(kuick()));
+        startTransferAsClientInternal();
     }
 
-    void startTransferAsClientInternal(CommunicationBridge bridge)
+    void startTransferAsClientInternal()
     {
         try {
-            this.activeConnection = bridge.communicate(this.device, this.connection);
+            startTransferAsClient();
+            CommunicationBridge bridge = CommunicationBridge.connect(kuick(), connection, device, 0);
 
             {
                 JSONObject reply = new JSONObject()
@@ -700,9 +698,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     if (TransferObject.Type.INCOMING.equals(this.type)) {
                         handleTransferAsReceiver();
                     } else if (TransferObject.Type.OUTGOING.equals(this.type)) {
-                        this.activeConnection.reply(Keyword.STUB);
                         handleTransferAsSender();
-                        this.activeConnection.reply(Keyword.STUB);
                     }
 
                     try {
