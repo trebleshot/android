@@ -129,6 +129,7 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         values.put(Kuick.FIELD_DEVICES_BUILDNAME, versionName);
         values.put(Kuick.FIELD_DEVICES_BUILDNUMBER, versionCode);
         values.put(Kuick.FIELD_DEVICES_PROTOCOLVERSION, protocolVersion);
+        values.put(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN, protocolVersionMin);
         values.put(Kuick.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
         values.put(Kuick.FIELD_DEVICES_ISRESTRICTED, isBlocked ? 1 : 0);
         values.put(Kuick.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);

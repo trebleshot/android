@@ -24,7 +24,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -47,11 +50,15 @@ import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotManager;
+import com.genonbeta.TrebleShot.util.InetAddresses;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import org.json.JSONObject;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * created by: veli
@@ -60,12 +67,13 @@ import org.json.JSONObject;
 public class HotspotManagerFragment extends com.genonbeta.android.framework.app.Fragment implements IconProvider,
         TitleProvider
 {
-    public static final int REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 643;
+    public static final int REQUEST_LOCATION_PERMISSION = 1;
+    public static final int REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 2;
 
     public static final String WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED";
 
-    private IntentFilter mIntentFilter = new IntentFilter();
-    private StatusReceiver mStatusReceiver = new StatusReceiver();
+    private final IntentFilter mIntentFilter = new IntentFilter();
+    private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private ConnectionUtils mConnectionUtils;
 
     private View mContainerText1;
@@ -90,6 +98,9 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         mManager = HotspotManager.newInstance(requireContext());
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
         mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
+        mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
         setHasOptionsMenu(true);
     }
 
@@ -156,6 +167,8 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
 
         if (REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT == requestCode)
             toggleHotspot();
+        else if (REQUEST_LOCATION_PERMISSION == requestCode)
+            updateState();
     }
 
     @Override
@@ -177,13 +190,13 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     @Override
     public int getIconRes()
     {
-        return R.drawable.ic_wifi_tethering_white_24dp;
+        return R.drawable.ic_qrcode_white_24dp;
     }
 
     @Override
     public CharSequence getDistinctiveTitle(Context context)
     {
-        return context.getString(R.string.text_startHotspot);
+        return context.getString(R.string.butn_generateQrCode);
     }
 
     @Nullable
@@ -219,24 +232,38 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
     private void updateState()
     {
         showMenu();
-        boolean enabled = mManager.isEnabled();
         WifiConfiguration config = getWifiConfiguration();
+        WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
-        if (enabled && config != null)
-            updateViews(config);
-        else if (!enabled)
+        if (mManager.isEnabled()) {
+            if (config != null)
+                updateViews(config);
+            else {
+                updateViewsAsStartedExternally();
+            }
+        } else if (!mConnectionUtils.canReadWifiInfo())
+            updateViewsLocationDisabled();
+        else if (mConnectionUtils.isConnectedToAnyNetwork()) {
+            String networkName = ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID());
+            String hostAddress;
+
+            try {
+                hostAddress = InetAddress.getByAddress(InetAddresses.toByteArray(
+                        connectionInfo.getIpAddress())).getHostAddress();
+            } catch (UnknownHostException e) {
+                hostAddress = "0.0.0.0";
+            }
+
+            updateViews(networkName, hostAddress, connectionInfo.getBSSID());
+        } else
             updateViewsWithBlank();
-        else {
-            updateViewsAsStartedExternally();
-        }
     }
 
     private void updateViewsWithBlank()
     {
         mHotspotStartedExternally = false;
 
-        updateViews(null, getString(R.string.text_qrCodeHotspotDisabledHelp), null, null,
-                R.string.text_startHotspot);
+        updateViews(null, null, null, null, R.string.text_qrCodeHotspotDisabledHelp);
     }
 
     private void updateViewsAsStartedExternally()
@@ -245,6 +272,12 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
 
         updateViews(null, getString(R.string.text_hotspotStartedExternallyNotice),
                 null, null, R.string.butn_stopHotspot);
+    }
+
+    public void updateViewsLocationDisabled()
+    {
+        updateViews(null, getString(R.string.butn_enable), getString(R.string.mesg_locationPermissionRequiredAny),
+                null, R.string.butn_locationSettings);
     }
 
     // for hotspot
@@ -263,6 +296,21 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
                     .put(Keyword.NETWORK_PASSWORD, key);
 
             updateViews(object, getString(R.string.text_qrCodeAvailableHelp), ssid, key, R.string.butn_stopHotspot);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // for connection addressing purpose
+    public void updateViews(String networkName, String ipAddress, String bssid)
+    {
+        try {
+            JSONObject object = new JSONObject()
+                    .put(Keyword.NETWORK_ADDRESS_IP, ipAddress)
+                    .put(Keyword.NETWORK_BSSID, bssid);
+
+            updateViews(object, getString(R.string.text_easyDiscoveryHelp), networkName, ipAddress,
+                    R.string.butn_wifiSettings);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -311,6 +359,9 @@ public class HotspotManagerFragment extends com.genonbeta.android.framework.app.
         {
             // FIXME: 25.03.2020 Doesn't get called when the hotspot state is changed
             if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
+                    || BackgroundService.ACTION_PIN_USED.equals(intent.getAction())
+                    || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
+                    || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
                     || BackgroundService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
         }

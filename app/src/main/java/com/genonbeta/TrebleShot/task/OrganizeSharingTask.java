@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -69,7 +69,7 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
                 publishStatus();
 
                 if (file.isDirectory())
-                    TransferUtils.createFolderStructure(list, group.id, file, file.getName(), this,
+                    Transfers.createFolderStructure(list, group.id, file, file.getName(), this,
                             progressListener());
                 else
                     list.add(TransferObject.from(file, group.id, null));

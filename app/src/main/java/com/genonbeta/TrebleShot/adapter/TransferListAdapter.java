@@ -119,7 +119,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
 
         Map<String, TransferFolder> folders = new ArrayMap<>();
         ShowingAssignee assignee = getAssignee();
-        List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(getContext(), getGroupId(), null);
+        List<ShowingAssignee> assignees = Transfers.loadAssigneeList(getContext(), getGroupId(), null);
         ShowingAssignee[] assigneeArray = new ShowingAssignee[assignees.size()];
 
         assignees.toArray(assigneeArray);
@@ -347,7 +347,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                 folder.numberOfCompleted++;
                 folder.bytesCompleted += object.size;
             }
-        } else if (TransferUtils.isError(flag)) {
+        } else if (Transfers.isError(flag)) {
             details.hasIssues = true;
 
             if (folder != null)
@@ -762,13 +762,13 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                 return false;
 
             if (Type.INCOMING.equals(type))
-                return TransferUtils.isError(getFlag());
+                return Transfers.isError(getFlag());
             else if (adapter.getDeviceId() != null) {
-                return TransferUtils.isError(getFlag(adapter.getDeviceId()));
+                return Transfers.isError(getFlag(adapter.getDeviceId()));
             } else
                 synchronized (mSenderFlagList) {
                     for (ShowingAssignee assignee : assignees)
-                        if (TransferUtils.isError(getFlag(assignee.deviceId)))
+                        if (Transfers.isError(getFlag(assignee.deviceId)))
                             return true;
                 }
 

@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.io.FileNotFoundException;
@@ -80,7 +80,7 @@ public class LocalShareRunningTask extends BackgroundTask
 
             if (shareable instanceof FileListAdapter.FileHolder) {
                 DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;
-                TransferUtils.createFolderStructure(list, group.id, file, shareable.fileName, this,
+                Transfers.createFolderStructure(list, group.id, file, shareable.fileName, this,
                         null);
             } else
                 list.add(TransferObject.from(shareable, group.id, containable == null ? null : shareable.friendlyName));

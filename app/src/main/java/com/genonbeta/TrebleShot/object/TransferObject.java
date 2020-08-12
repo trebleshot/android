@@ -28,7 +28,7 @@ import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
@@ -207,9 +207,9 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
             return 0;
 
         if (Type.INCOMING.equals(type))
-            return TransferUtils.getPercentageByFlag(getFlag(), size);
+            return Transfers.getPercentageByFlag(getFlag(), size);
         else if (deviceId != null)
-            return TransferUtils.getPercentageByFlag(getFlag(deviceId), size);
+            return Transfers.getPercentageByFlag(getFlag(deviceId), size);
 
         double percentageIndex = 0;
         int senderAssignees = 0;
@@ -218,7 +218,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
                 continue;
 
             senderAssignees++;
-            percentageIndex += TransferUtils.getPercentageByFlag(getFlag(
+            percentageIndex += Transfers.getPercentageByFlag(getFlag(
                     assignee.deviceId), size);
         }
 

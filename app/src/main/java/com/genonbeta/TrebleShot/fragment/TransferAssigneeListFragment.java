@@ -38,8 +38,6 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**

@@ -29,8 +29,7 @@ import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
-import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -83,6 +82,6 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     @Override
     public List<ShowingAssignee> onLoad()
     {
-        return TransferUtils.loadAssigneeList(getContext(), mGroup.id, null);
+        return Transfers.loadAssigneeList(getContext(), mGroup.id, null);
     }
 }

@@ -47,8 +47,8 @@ import java.util.List;
 public class ApplicationListAdapter extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder,
         GroupEditableListAdapter.GroupViewHolder>
 {
-    private SharedPreferences mPreferences;
-    private PackageManager mManager;
+    private final SharedPreferences mPreferences;
+    private final PackageManager mManager;
 
     public ApplicationListAdapter(IEditableListFragment<PackageHolder, GroupViewHolder> fragment)
     {

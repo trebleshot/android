@@ -74,8 +74,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     private TextView mProgressTextTotal;
     private int mColorActive;
     private int mColorNormal;
-    private IntentFilter mFilter = new IntentFilter(Kuick.ACTION_DATABASE_CHANGE);
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    private final IntentFilter mFilter = new IntentFilter(Kuick.ACTION_DATABASE_CHANGE);
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
@@ -113,10 +113,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         } else
             return;
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         Bundle assigneeFragmentArgs = new Bundle();
         assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.id);

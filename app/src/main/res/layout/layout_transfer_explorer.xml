@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,42 +17,43 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/layout_transfer_explorer_recycler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:clipToPadding="false"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:scrollbars="none"/>
+        android:id="@+id/layout_transfer_explorer_recycler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:clipToPadding="false"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:scrollbars="none" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/layout_transfer_explorer_recycler"
-            android:layout_alignParentTop="true">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/layout_transfer_explorer_recycler"
+        android:layout_alignParentTop="true">
 
-        <include layout="@layout/abstract_layout_editable_list_fragment"/>
+        <include layout="@layout/abstract_layout_editable_list_fragment" />
 
         <View
-                android:id="@+id/layout_transfer_explorer_separator"
-                style="@style/DividerStyle"
-                android:layout_gravity="bottom"/>
+            android:id="@+id/layout_transfer_explorer_separator"
+            style="@style/DividerStyle.Raw"
+            android:layout_gravity="bottom" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/layout_transfer_explorer_efab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:contentDescription="@string/text_startTransferButtonHelp"
-                android:text="@string/butn_start"
-                android:layout_gravity="center_horizontal|bottom"
-                app:icon="@drawable/ic_play_arrow_white_24dp"/>
+            android:id="@+id/layout_transfer_explorer_efab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/text_startTransferButtonHelp"
+            android:text="@string/butn_start"
+            android:layout_gravity="center_horizontal|bottom"
+            app:icon="@drawable/ic_play_arrow_white_24dp" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

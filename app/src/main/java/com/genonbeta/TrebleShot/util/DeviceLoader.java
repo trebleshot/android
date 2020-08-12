@@ -34,6 +34,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
+import com.genonbeta.TrebleShot.protocol.DeviceUnknownException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
@@ -65,8 +66,8 @@ public class DeviceLoader
         } catch (ReconstructionFailedException e) {
             device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
 
-            if (hasPin || asClient) {
-                device.isBlocked = false;
+            if (hasPin || asClient || !(e instanceof DeviceInsecureException)) {
+                device.isBlocked = hasPin || asClient;
                 device.isTrusted = hasPin;
                 device.receiveKey = receiveKey;
                 device.sendKey = AppUtils.generateKey();
@@ -78,7 +79,7 @@ public class DeviceLoader
                 if (e instanceof DeviceVerificationException) {
                     throw (DeviceInsecureException) e;
                 } else {
-                    throw new DeviceInsecureException("The device is not known.", device);
+                    throw new DeviceUnknownException("The device is not known.", device);
                 }
             }
         } finally {
@@ -123,7 +124,7 @@ public class DeviceLoader
         if (deviceInfo.has(Keyword.DEVICE_AVATAR))
             return loadProfilePictureFrom(deviceInfo.getString(Keyword.DEVICE_AVATAR));
 
-        throw new Exception(deviceInfo.toString());
+        throw new Exception();
     }
 
     public static byte[] loadProfilePictureFrom(String base64) throws IllegalArgumentException

@@ -35,7 +35,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
@@ -45,6 +45,7 @@ import org.monora.coolsocket.core.response.Response;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.*;
+import java.util.List;
 
 import static com.genonbeta.TrebleShot.object.Identifier.from;
 
@@ -58,7 +59,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     public IndexOfTransferGroup index;
     public TransferGroup group;
     public TransferAssignee assignee;
-    public DeviceAddress connection;
+    public List<DeviceAddress> addressList;
     public TransferObject.Type type;
 
     // Changing objects
@@ -166,23 +167,16 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             throw new AssigneeNotFoundException(assignee);
         }
 
-        DeviceAddress connection = new DeviceAddress();
+        List<DeviceAddress> addressList =Transfers.getAddressListFor(kuick, device.uid);
 
-        try {
-            kuick.reconstruct(db, connection);
-        } catch (ReconstructionFailedException e) {
-            throw new ConnectionNotFoundException(connection);
-        }
-
-        Log.d(TAG, "createFrom: deviceId=" + device.uid + " groupId=" + group.id + " adapter="
-                + connection.inetAddress);
+        Log.d(TAG, "createFrom: deviceId=" + device.uid + " groupId=" + group.id + " adapter=");
 
         FileTransferTask task = new FileTransferTask();
         task.type = type;
         task.device = device;
         task.group = group;
         task.assignee = assignee;
-        task.connection = connection;
+        task.addressList = addressList;
         task.index = new IndexOfTransferGroup(group);
 
         return task;
@@ -237,7 +231,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         boolean retry = false;
 
         try {
-            TransferUtils.loadGroupInfo(getService(), this.index, this.assignee);
+            Transfers.loadGroupInfo(getService(), this.index, this.assignee);
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
@@ -245,7 +239,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     break;
 
                 try {
-                    TransferObject object = TransferUtils.fetchFirstValidIncomingTransfer(getService(), this.group.id);
+                    TransferObject object = Transfers.fetchFirstValidIncomingTransfer(getService(), this.group.id);
 
                     if (object == null) {
                         Log.d(TAG, "handleTransferAsReceiver(): Exiting because there is no pending file " +
@@ -396,7 +390,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     retry = true;
 
                     if (!this.recoverInterruptions) {
-                        TransferUtils.recoverIncomingInterruptions(getService(), this.group.id);
+                        Transfers.recoverIncomingInterruptions(getService(), this.group.id);
                         this.recoverInterruptions = true;
                     }
 
@@ -413,7 +407,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             try {
                 DocumentFile savePath = FileUtils.getSavePath(getService(), this.group);
                 boolean areFilesDone = kuick().getFirstFromTable(getDatabase(),
-                        TransferUtils.createIncomingSelection(this.group.id, TransferObject.Flag.DONE,
+                        Transfers.createIncomingSelection(this.group.id, TransferObject.Flag.DONE,
                                 false)) == null;
                 boolean jobDone = !isInterrupted() && areFilesDone;
 
@@ -459,7 +453,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     private void handleTransferAsSender()
     {
         try {
-            TransferUtils.loadGroupInfo(getService(), this.index, this.assignee);
+            Transfers.loadGroupInfo(getService(), this.index, this.assignee);
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
@@ -666,14 +660,8 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
     public void startTransferAsClient()
     {
-        startTransferAsClientInternal();
-    }
-
-    void startTransferAsClientInternal()
-    {
         try {
-            startTransferAsClient();
-            CommunicationBridge bridge = CommunicationBridge.connect(kuick(), connection, device, 0);
+            CommunicationBridge bridge = CommunicationBridge.connect(kuick(), addressList, device, 0);
 
             {
                 JSONObject reply = new JSONObject()

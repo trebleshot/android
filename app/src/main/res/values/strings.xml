@@ -279,7 +279,7 @@
     <string name="butn_previewSelections">Preview selections</string>
     <string name="mesg_deviceConnectionError">Connection with \"%s\" over \"%s\" failed</string>
     <string name="mesg_retryReceivingNotice">TrebleShot will retry receiving interrupted transfers</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Please choose the connection method first</string>
+    <string name="mesg_transferConnectionNotSetUpFix">This device is not available at the moment.</string>
     <string name="butn_setUp">Set up</string>
     <string name="text_location">Location</string>
     <string name="butn_saveAnyway">Save anyway</string>
@@ -568,4 +568,10 @@
     <string name="transfer_history">Transfer history</string>
     <string name="text_appLogo">App logo</string>
     <string name="help_shareFilesNotice">Let\'s share those files</string>
+    <string name="text_chooseDevice">Choose Device</string>
+    <string name="butn_showAll">Show All</string>
+    <string name="text_availableDevices">Available Devices</string>
+    <string name="text_addNewDevice">Add a New Device</string>
+    <string name="butn_generateQrCode">Generate QR Code</string>
+    <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
 </resources>

@@ -26,11 +26,6 @@
             android:visible="false"/>
 
     <item
-            android:id="@+id/actions_transfer_test_connection"
-            android:title="@string/butn_connectionTest"
-            android:visible="false"/>
-
-    <item
             android:id="@+id/actions_transfer_receiver_show_files"
             android:title="@string/butn_showFiles"
             android:visible="false"/>

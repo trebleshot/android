@@ -23,7 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
@@ -127,7 +127,7 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
                 kuick.reconstruct(db, parent);
             }
 
-            SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId, TransferObject.Flag.INTERRUPTED,
+            SQLQuery.Select selection = Transfers.createIncomingSelection(groupId, TransferObject.Flag.INTERRUPTED,
                     true);
 
             kuick.removeAsObject(db, selection, TransferObject.class, parent, listener, null);

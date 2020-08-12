@@ -23,7 +23,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.util.Networks;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -48,9 +50,8 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
     public List<EditableNetworkInterface> onLoad()
     {
         List<EditableNetworkInterface> resultList = new ArrayList<>();
-        List<NetworkInterface> interfaceList = new ArrayList<>();
-        // TODO: 8/11/20 Load network interfaces
-        // NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+        List<NetworkInterface> interfaceList = Networks.getInterfaces(true,
+                AppConfig.DEFAULT_DISABLED_INTERFACES);
 
         for (NetworkInterface addressedInterface : interfaceList) {
             EditableNetworkInterface editableInterface = new EditableNetworkInterface(addressedInterface,
@@ -88,15 +89,13 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<
         TextView text2 = holder.itemView.findViewById(R.id.text2);
 
         text1.setText(object.getSelectableTitle());
-        // TODO: 8/11/20 Show the network interface address in view
-        //text2.setText(TextUtils.makeWebShareLink(getContext(), NetworkUtils.getFirstInet4Address(object)
-        //.getHostAddress()));
+        text2.setText(TextUtils.makeWebShareLink(getContext(), Networks.getFirstInet4Address(object).getHostAddress()));
     }
 
     public static class EditableNetworkInterface implements Editable
     {
-        private NetworkInterface mInterface;
-        private String mName;
+        private final NetworkInterface mInterface;
+        private final String mName;
 
         public EditableNetworkInterface(NetworkInterface addressedInterface, String name)
         {

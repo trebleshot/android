@@ -36,6 +36,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.util.List;
 
 /**
  * created by: Veli
@@ -66,6 +68,20 @@ public class CommunicationBridge implements Closeable
     public void close() throws IOException
     {
         activeConnection.close();
+    }
+
+    public static CommunicationBridge connect(Kuick kuick, List<DeviceAddress> addressList, @Nullable Device device,
+                                              int pin)
+            throws IOException, DifferentClientException, JSONException
+    {
+        for (DeviceAddress address : addressList) {
+            try (ActiveConnection activeConnection = openConnection(address.inetAddress)) {
+                return connect(kuick, addressList, device, pin);
+            } catch (IOException ignored) {
+            }
+        }
+
+        throw new SocketException("Failed to connect to the socket address.");
     }
 
     public static CommunicationBridge connect(Kuick kuick, DeviceAddress deviceAddress, @Nullable Device device, int pin)

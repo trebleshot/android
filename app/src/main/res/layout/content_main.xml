@@ -82,17 +82,17 @@
         android:layout_above="@id/actionsContainer"
         android:layout_alignParentTop="true">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/help_shareFilesNotice" />
+
         <ImageView
             android:layout_width="200dip"
             android:layout_height="200dip"
             app:srcCompat="@drawable/ic_trebleshot_original_white_128dp"
             app:tint="?colorPassive"
             android:contentDescription="@string/text_appLogo" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/help_shareFilesNotice" />
 
     </LinearLayout>
 

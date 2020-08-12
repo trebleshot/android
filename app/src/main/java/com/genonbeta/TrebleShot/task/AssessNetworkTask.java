@@ -19,16 +19,14 @@
 package com.genonbeta.TrebleShot.task;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.framework.util.MathUtils;
-import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,20 +35,18 @@ import java.util.List;
 
 public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.CalculationResultListener>
 {
-    private final Device mDevice;
+    private final Device device;
 
     public AssessNetworkTask(Device device)
     {
-        mDevice = device;
+        this.device = device;
     }
 
     @Override
     protected void onRun() throws InterruptedException
     {
         List<DeviceAddress> knownConnectionList = AppUtils.getKuick(getService()).castQuery(
-                new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                        .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", mDevice.uid)
-                        .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceAddress.class);
+                Transfers.createAddressSelection(device.uid), DeviceAddress.class);
         ConnectionResult[] results = new ConnectionResult[knownConnectionList.size()];
 
         progress().addToTotal(knownConnectionList.size());
@@ -68,7 +64,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
                 long startTime = System.nanoTime();
 
                 try (CommunicationBridge client = CommunicationBridge.connect(kuick(), connectionResult.connection,
-                        mDevice, 0)) {
+                        device, 0)) {
                     connectionResult.pingTime = System.nanoTime() - startTime;
                     connectionResult.successful = true;
                 } catch (Exception e) {

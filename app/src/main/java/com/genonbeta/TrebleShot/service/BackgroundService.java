@@ -163,9 +163,8 @@ public class BackgroundService extends Service
                             TransferObject.Type.INCOMING);
 
                     new Thread(() -> {
-                        try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.connection,
+                        try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.addressList,
                                 task.device, 0)) {
-
                             bridge.notifyStateOfTransferRequest(group.id, isAccepted);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -706,8 +705,8 @@ public class BackgroundService extends Service
                         }
                         break;
                 }
-            } catch (DeviceInsecureException e) {
-                // TODO: 8/11/20 Close safely
+            } catch (DeviceBlockedException e) {
+                
             } catch (Exception e) {
                 e.printStackTrace();
             }

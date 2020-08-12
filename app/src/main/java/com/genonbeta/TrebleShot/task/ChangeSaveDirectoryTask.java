@@ -24,7 +24,7 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
             task.interrupt(true);
 
         List<TransferObject> checkList = AppUtils.getKuick(getService()).castQuery(
-                TransferUtils.createIncomingSelection(mGroup.id), TransferObject.class);
+                Transfers.createIncomingSelection(mGroup.id), TransferObject.class);
         TransferGroup pseudoGroup = new TransferGroup(mGroup.id);
 
         try {

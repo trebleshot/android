@@ -31,9 +31,9 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 17:01
  */
-public class TransferUtils
+public class Transfers
 {
-    public static final String TAG = TransferUtils.class.getSimpleName();
+    public static final String TAG = Transfers.class.getSimpleName();
 
     private static void appendOutgoingData(IndexOfTransferGroup group, TransferObject object, TransferObject.Flag flag)
     {
@@ -45,7 +45,7 @@ public class TransferUtils
             group.numberOfOutgoingCompleted++;
         } else if (TransferObject.Flag.IN_PROGRESS.equals(flag))
             group.bytesOutgoingCompleted += flag.getBytesValue();
-        else if (TransferUtils.isError(flag))
+        else if (Transfers.isError(flag))
             group.hasIssues = true;
     }
 
@@ -103,6 +103,13 @@ public class TransferUtils
                 TransferObject.Type.INCOMING.toString(), flag.toString());
     }
 
+    public static SQLQuery.Select createAddressSelection(String deviceId)
+    {
+        return new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
+                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId)
+                .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC");
+    }
+
     public static double getPercentageByFlag(TransferObject.Flag flag, long size)
     {
         if (TransferObject.Flag.DONE.equals(flag))
@@ -156,6 +163,15 @@ public class TransferUtils
         TransferObject object = new TransferObject();
         object.reconstruct(kuick.getWritableDatabase(), kuick, receiverInstance);
         return object;
+    }
+
+    public static List<DeviceAddress> getAddressListFor(KuickDb kuick, String deviceId)
+            throws ConnectionNotFoundException
+    {
+        List<DeviceAddress> addressList = kuick.castQuery(createAddressSelection(deviceId), DeviceAddress.class);
+        if (addressList.size() <= 0)
+            throw new ConnectionNotFoundException(deviceId);
+        return addressList;
     }
 
     public static boolean isError(TransferObject.Flag flag)
@@ -250,7 +266,7 @@ public class TransferUtils
                     index.numberOfIncomingCompleted++;
                 } else if (TransferObject.Flag.IN_PROGRESS.equals(flag))
                     index.bytesIncomingCompleted += flag.getBytesValue();
-                else if (TransferUtils.isError(flag))
+                else if (Transfers.isError(flag))
                     index.hasIssues = true;
             } else if (TransferObject.Type.OUTGOING.equals(object.type)) {
                 if (deviceId != null)

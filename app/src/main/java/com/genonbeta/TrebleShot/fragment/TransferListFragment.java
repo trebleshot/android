@@ -47,7 +47,7 @@ import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.ChangeSaveDirectoryTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.PerformerMenu;
@@ -244,7 +244,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                 ShowingAssignee assignee = new ShowingAssignee(groupId, deviceId, TransferObject.Type.valueOf(type));
 
                 AppUtils.getKuick(getContext()).reconstruct(assignee);
-                TransferUtils.loadAssigneeInfo(getContext(), assignee);
+                Transfers.loadAssigneeInfo(getContext(), assignee);
 
                 getAdapter().setAssignee(assignee);
             } catch (Exception ignored) {
@@ -270,7 +270,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferList
                                              TransferListAdapter.GenericItem object)
     {
         if (object instanceof TransferListAdapter.DetailsTransferFolder) {
-            final List<ShowingAssignee> list = TransferUtils.loadAssigneeList(getContext(),
+            final List<ShowingAssignee> list = Transfers.loadAssigneeList(getContext(),
                     getGroup().id, null);
 
             DialogInterface.OnClickListener listClickListener = (dialog, which) -> {

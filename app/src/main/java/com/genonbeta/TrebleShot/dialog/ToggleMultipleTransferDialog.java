@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 
 public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 {
@@ -78,9 +78,9 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
     private void startTransfer(ViewTransferActivity activity, IndexOfTransferGroup index, ShowingAssignee assignee)
     {
         if (mActivity.isDeviceRunning(assignee.deviceId))
-            TransferUtils.pauseTransfer(activity, assignee);
+            Transfers.pauseTransfer(activity, assignee);
         else
-            TransferUtils.startTransferWithTest(activity, index.group, assignee);
+            Transfers.startTransferWithTest(activity, index.group, assignee);
     }
 
     private class ActiveListAdapter extends BaseAdapter

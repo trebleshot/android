@@ -66,10 +66,8 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null) {
+        if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-        }
 
         PerformerMenu performerMenu = new PerformerMenu(this, mMenuCallback);
 

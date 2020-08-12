@@ -44,10 +44,8 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
-import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -70,7 +68,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     private DeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
     private AppBarLayout mAppBarLayout;
-    private CollapsingToolbarLayout mToolbarLayout;
+    private Toolbar mToolbar;
     private ProgressBar mProgressBar;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -123,7 +121,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         Toolbar toolbar = findViewById(R.id.toolbar);
         mAppBarLayout = findViewById(R.id.app_bar);
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
-        mToolbarLayout = findViewById(R.id.toolbar_layout);
+        mToolbar = findViewById(R.id.toolbar);
         mOptionsFragment = (OptionsFragment) factory.instantiate(getClassLoader(), OptionsFragment.class.getName());
         mHotspotManagerFragment = (HotspotManagerFragment) factory.instantiate(getClassLoader(),
                 HotspotManagerFragment.class.getName());
@@ -206,9 +204,9 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         boolean isOptions = fragment instanceof OptionsFragment;
 
         if (getSupportActionBar() != null) {
-            mToolbarLayout.setTitle(fragment instanceof TitleProvider
+            mToolbar.setTitle(fragment instanceof TitleProvider
                     ? ((TitleProvider) fragment).getDistinctiveTitle(AddDeviceActivity.this)
-                    : getString(R.string.butn_addDevices));
+                    : getString(R.string.text_chooseDevice));
         }
 
         mAppBarLayout.setExpanded(isOptions, true);
@@ -361,9 +359,6 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             view.findViewById(R.id.connection_option_network).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_manual_ip).setOnClickListener(listener);
-
-            view.findViewById(R.id.connection_option_guide).setOnClickListener(v ->
-                    new ConnectionSetUpAssistant(getActivity()).startShowing());
 
             return view;
         }

@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -81,7 +81,7 @@ public class TransferGroupListAdapter extends GroupEditableListAdapter<IndexOfTr
 
         for (IndexOfTransferGroup index : AppUtils.getKuick(getContext()).castQuery(
                 new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), IndexOfTransferGroup.class)) {
-            TransferUtils.loadGroupInfo(getContext(), index);
+            Transfers.loadGroupInfo(getContext(), index);
             index.isRunning = activeList.contains(index.group.id);
 
             lister.offerObliged(this, index);

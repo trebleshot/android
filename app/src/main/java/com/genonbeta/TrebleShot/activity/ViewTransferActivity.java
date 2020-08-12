@@ -36,7 +36,10 @@ import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.dialog.*;
+import com.genonbeta.TrebleShot.dialog.DialogUtils;
+import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
+import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
+import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
@@ -46,8 +49,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -78,7 +80,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     private IndexOfTransferGroup mIndex;
     private TransferObject mTransferObject;
     private ShowingAssignee mAssignee;
-    private MenuItem mCnTestMenu;
     private MenuItem mRetryMenu;
     private MenuItem mShowFilesMenu;
     private MenuItem mAddDeviceMenu;
@@ -87,7 +88,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
     private int mColorActive;
     private int mColorNormal;
     private CrunchLatestDataTask mDataCruncher;
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
@@ -230,7 +231,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
 
-        mCnTestMenu = menu.findItem(R.id.actions_transfer_test_connection);
         mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving);
         mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
         mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
@@ -269,7 +269,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         } else if (id == R.id.actions_transfer_remove) {
             DialogUtils.showRemoveDialog(this, mGroup);
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
-            TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.id);
+            Transfers.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.id);
             createSnackbar(R.string.mesg_retryReceivingNotice).show();
         } else if (id == R.id.actions_transfer_receiver_show_files) {
             startActivity(new Intent(this, FileExplorerActivity.class)
@@ -277,14 +277,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
                             FileUtils.getSavePath(this, mGroup).getUri()));
         } else if (id == R.id.actions_transfer_sender_add_device) {
             startDeviceAddingActivity();
-        } else if (id == R.id.actions_transfer_test_connection) {
-            final List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(this, mGroup.id, null);
-
-            if (assignees.size() == 1)
-                EstablishConnectionDialog.show(ViewTransferActivity.this, assignees.get(0).device, null);
-            else if (assignees.size() > 1)
-                new ChooseAssigneeDialog(this, assignees, (dialog, which) -> EstablishConnectionDialog.show(
-                        this, assignees.get(which).device, null)).show();
         } else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
             mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
             getDatabase().update(mGroup);
@@ -425,7 +417,6 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
         mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser : R.string.butn_shareOnBrowser);
         mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
-        mCnTestMenu.setVisible(hasAnyFiles);
         mAddDeviceMenu.setVisible(hasOutgoing);
         mRetryMenu.setVisible(hasIncoming);
         mShowFilesMenu.setVisible(hasIncoming);
@@ -471,7 +462,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     private void toggleTask()
     {
-        List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(this, mGroup.id, null);
+        List<ShowingAssignee> assigneeList = Transfers.loadAssigneeList(this, mGroup.id, null);
 
         if (assigneeList.size() > 0) {
             if (assigneeList.size() == 1) {
@@ -485,23 +476,15 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     public void toggleTaskForAssignee(final ShowingAssignee assignee)
     {
-        try {
-            if (hasTaskWith(FileTransferTask.identifyWith(mGroup.id, assignee.deviceId)))
-                TransferUtils.pauseTransfer(this, assignee);
-            else {
-                // FIXME: 8/11/20 Fix this.
-                //getDatabase().reconstruct(new DeviceAddress(assignee));
-                TransferUtils.startTransferWithTest(this, mGroup, assignee);
+        if (hasTaskWith(FileTransferTask.identifyWith(mGroup.id, assignee.deviceId)))
+            Transfers.pauseTransfer(this, assignee);
+        else {
+            try {
+                Transfers.getAddressListFor(getDatabase(), assignee.deviceId);
+                Transfers.startTransferWithTest(this, mGroup, assignee);
+            } catch (ConnectionNotFoundException e) {
+                createSnackbar(R.string.mesg_transferConnectionNotSetUpFix).show();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // TODO: 8/11/20 Fix showing choose communication method.
-            /*createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
-                    .setAction(R.string.butn_setUp, v -> TransferUtils.changeConnection(ViewTransferActivity.this,
-                            assignee.device, assignee, (connection, assignee1) -> createSnackbar(
-                                    R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(),
-                                            connection)).show())).show();*/
         }
     }
 
@@ -540,10 +523,10 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
     public static class CrunchLatestDataTask extends AsyncTask<ViewTransferActivity, Void, Void>
     {
-        private PostExecuteListener mListener;
+        private final PostExecutionListener mListener;
         private boolean mRestartRequested = false;
 
-        public CrunchLatestDataTask(PostExecuteListener listener)
+        public CrunchLatestDataTask(PostExecutionListener listener)
         {
             mListener = listener;
         }
@@ -557,7 +540,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
 
                 for (ViewTransferActivity activity : activities)
                     if (activity.mGroup != null)
-                        TransferUtils.loadGroupInfo(activity, activity.mIndex, activity.getAssignee());
+                        Transfers.loadGroupInfo(activity, activity.mIndex, activity.getAssignee());
             } while (mRestartRequested && !isCancelled());
 
             return null;
@@ -581,7 +564,7 @@ public class ViewTransferActivity extends Activity implements SnackbarPlacementP
         /* Should we have used a generic type class for this?
          * This interface aims to keep its parent class non-anonymous
          */
-        public interface PostExecuteListener
+        public interface PostExecutionListener
         {
             void onPostExecute();
         }

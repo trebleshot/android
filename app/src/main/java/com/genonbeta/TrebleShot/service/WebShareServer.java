@@ -449,7 +449,7 @@ public class WebShareServer extends NanoHTTPD
             if (!index.group.isServedOnWeb)
                 continue;
 
-            TransferUtils.loadGroupInfo(mContext, index);
+            Transfers.loadGroupInfo(mContext, index);
 
             if (!index.hasOutgoing())
                 continue;
