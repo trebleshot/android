@@ -64,14 +64,17 @@ public class DeviceLoader
             device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
 
             if (hasPin || asClient || !(e instanceof DeviceInsecureException)) {
-                device.isBlocked = hasPin || asClient;
                 device.isTrusted = hasPin;
                 device.receiveKey = receiveKey;
 
                 if (device.sendKey == 0)
                     device.sendKey = AppUtils.generateKey();
-            } else
-                throw (DeviceBlockedException) e;
+            } else {
+                if (e instanceof DeviceVerificationException)
+                    device.isBlocked = true;
+
+                throw (DeviceInsecureException) e;
+            }
         } finally {
             device.brand = object.getString(Keyword.DEVICE_BRAND);
             device.model = object.getString(Keyword.DEVICE_MODEL);

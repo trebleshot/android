@@ -25,7 +25,7 @@ import com.genonbeta.TrebleShot.object.Device;
  */
 public class DeviceVerificationException extends DeviceInsecureException
 {
-    private final int receiveKey;
+    public final int receiveKey;
 
     public DeviceVerificationException(String message, Device device, int receiveKey)
     {

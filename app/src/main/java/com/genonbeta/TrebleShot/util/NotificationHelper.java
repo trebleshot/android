@@ -82,7 +82,7 @@ public class NotificationHelper
         return mNotificationUtils;
     }
 
-    public void notifyConnectionRequest(Device device, int pin)
+    public void notifyKeyChanged(Device device, int receiveKey, int sendKey)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(AppUtils.getUniqueNumber(),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
@@ -90,11 +90,12 @@ public class NotificationHelper
         Intent acceptIntent = new Intent(getContext(), BackgroundService.class);
         Intent dialogIntent = new Intent(getContext(), DialogEventReceiver.class);
 
-        acceptIntent.setAction(BackgroundService.ACTION_DEVICE_APPROVAL)
+        acceptIntent.setAction(BackgroundService.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
                 .putExtra(BackgroundService.EXTRA_DEVICE, device)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
                 .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
-                .putExtra(BackgroundService.EXTRA_DEVICE_PIN, pin);
+                .putExtra(BackgroundService.EXTRA_RECEIVE_KEY, receiveKey)
+                .putExtra(BackgroundService.EXTRA_SEND_KEY, sendKey);
 
         Intent rejectIntent = ((Intent) acceptIntent.clone())
                 .putExtra(BackgroundService.EXTRA_ACCEPTED, false);
@@ -105,8 +106,8 @@ public class NotificationHelper
                 0);
 
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-                .setContentTitle(getContext().getString(R.string.text_connectionPermission))
-                .setContentText(getContext().getString(R.string.ques_allowDeviceToConnect))
+                .setContentTitle(getContext().getString(R.string.text_deviceKeyChanged))
+                .setContentText(getContext().getString(R.string.ques_acceptNewDeviceKey, device.username))
                 .setContentInfo(device.username)
                 .setContentIntent(PendingIntent.getBroadcast(getContext(), AppUtils.getUniqueNumber(), dialogIntent,
                         0))

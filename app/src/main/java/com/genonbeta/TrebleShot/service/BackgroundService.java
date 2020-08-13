@@ -66,7 +66,7 @@ public class BackgroundService extends Service
     public static final String
             ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD",
             ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
-            ACTION_DEVICE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL",
+            ACTION_DEVICE_KEY_CHANGE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL",
             ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION",
             ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
@@ -79,7 +79,8 @@ public class BackgroundService extends Service
             EXTRA_CLIPBOARD_ID = "extraTextId",
             EXTRA_CONNECTION = "extraConnectionAdapterName",
             EXTRA_DEVICE = "extraDevice",
-            EXTRA_DEVICE_PIN = "extraDevicePin",
+            EXTRA_RECEIVE_KEY = "extraReceiveKey",
+            EXTRA_SEND_KEY = "extraSendKey",
             EXTRA_GROUP = "extraGroup",
             EXTRA_IDENTITY = "extraIdentity",
             EXTRA_ACCEPTED = "extraAccepted",
@@ -186,19 +187,22 @@ public class BackgroundService extends Service
                     if (isAccepted)
                         getNotificationHelper().showToast(R.string.mesg_somethingWentWrong);
                 }
-            } else if (ACTION_DEVICE_APPROVAL.equals(intent.getAction())) {
+            } else if (ACTION_DEVICE_KEY_CHANGE_APPROVAL.equals(intent.getAction())) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
                 boolean accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-                int requestedPin = intent.getIntExtra(EXTRA_DEVICE_PIN, -1);
+                int receiveKey = intent.getIntExtra(EXTRA_RECEIVE_KEY, -1);
+                int sendKey = intent.getIntExtra(EXTRA_RECEIVE_KEY, -1);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
                 if (device != null) {
                     device.isBlocked = !accepted;
 
-                    if (accepted)
-                        device.receiveKey = requestedPin;
+                    if (accepted) {
+                        device.receiveKey = receiveKey;
+                        device.sendKey = sendKey;
+                    }
 
                     getKuick().update(device);
                     getKuick().broadcast();
@@ -578,16 +582,19 @@ public class BackgroundService extends Service
                         && activePin == response.getInt(Keyword.DEVICE_PIN);
                 final Device device = new Device();
                 final DeviceAddress deviceAddress = new DeviceAddress(activeConnection.getAddress());
-
-                Log.d(TAG, "Device: " + response.toString());
+                int sendKey = 0;
 
                 try {
                     DeviceLoader.loadFrom(getKuick(), response, device, hasPin, false);
                 } catch (DeviceVerificationException e) {
-                    getNotificationHelper().notifyConnectionRequest(device, device.receiveKey);
+                    sendKey = AppUtils.generateKey();
+                    getNotificationHelper().notifyKeyChanged(device, e.receiveKey, sendKey);
                 } finally {
+                    if (sendKey == 0)
+                        sendKey = device.sendKey;
+
                     DeviceLoader.processConnection(getKuick(), device, deviceAddress);
-                    activeConnection.reply(AppUtils.getLocalDeviceAsJson(BackgroundService.this, device, 0));
+                    activeConnection.reply(AppUtils.getLocalDeviceAsJson(BackgroundService.this, sendKey, 0));
                     getKuick().broadcast();
                 }
 

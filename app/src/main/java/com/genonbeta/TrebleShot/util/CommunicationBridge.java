@@ -105,7 +105,7 @@ public class CommunicationBridge implements Closeable
             device.sendKey = AppUtils.generateKey();
         }
 
-        activeConnection.reply(AppUtils.getLocalDeviceAsJson(kuick.getContext(), device, pin));
+        activeConnection.reply(AppUtils.getLocalDeviceAsJson(kuick.getContext(), device.sendKey, pin));
 
         try {
             DeviceLoader.loadFrom(kuick, activeConnection.receive().getAsJson(), device, false, true);

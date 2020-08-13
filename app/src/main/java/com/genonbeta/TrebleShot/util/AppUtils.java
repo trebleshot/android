@@ -234,7 +234,7 @@ public class AppUtils
         return mKuick;
     }
 
-    public static JSONObject getLocalDeviceAsJson(Context context, Device targetDevice, int pin) throws JSONException
+    public static JSONObject getLocalDeviceAsJson(Context context, int sendKey, int pin) throws JSONException
     {
         Device device = getLocalDevice(context);
         JSONObject object = new JSONObject()
@@ -246,7 +246,7 @@ public class AppUtils
                 .put(Keyword.DEVICE_VERSION_NAME, device.versionName)
                 .put(Keyword.DEVICE_PROTOCOL_VERSION, device.protocolVersion)
                 .put(Keyword.DEVICE_PROTOCOL_VERSION_MIN, device.protocolVersionMin)
-                .put(Keyword.DEVICE_KEY, targetDevice.sendKey);
+                .put(Keyword.DEVICE_KEY, sendKey);
 
         if (pin != 0)
             object.put(Keyword.DEVICE_PIN, pin);
