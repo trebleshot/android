@@ -100,7 +100,7 @@
                 android:layout_weight="1">
 
                 <Button
-                    android:id="@+id/connection_option_network"
+                    android:id="@+id/connection_option_generate_qr_code"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="15dp"
@@ -155,38 +155,6 @@
                 style="?borderlessButtonStyle"
                 android:text="@string/butn_enterIpAddress" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/connection_option_hotspot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?rectSelector"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="15dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginRight="30dp"
-                    app:srcCompat="@drawable/ic_wifi_tethering_white_24dp"
-                    app:tint="?colorSecondary"
-                    android:contentDescription="@string/text_startHotspot" />
-
-                <TextView
-                    style="@style/TextAppearance.Primary.SingleLine"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/butn_startHotspot" />
-
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

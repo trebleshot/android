@@ -362,7 +362,7 @@
     <string name="text_qrCodeAvailableHelp">Scansiona questo codice per condividere e connettere i dispositivi</string>
     <string name="text_qrCodeHotspotDisabledHelp">Impostare un hotspot in modo che gli altri possano connettersi
     </string>
-    <string name="text_scanQRCodeHelp">Scansiona il codice QR sullo schermo del dispositivo host</string>
+    <string name="help_scanQRCode">Scansiona il codice QR sullo schermo del dispositivo host</string>
     <string name="butn_qrScanToSend">Scansiona Codice QR per Inviare</string>
     <string name="butn_qrToggle">Visibilità Codice QR</string>
     <string name="text_notificationSettingsSummary">Apri Impostazioni di Notifica</string>

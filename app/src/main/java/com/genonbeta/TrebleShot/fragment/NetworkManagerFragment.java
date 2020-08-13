@@ -25,19 +25,19 @@ import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
@@ -48,34 +48,52 @@ import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.HotspotManager;
 import com.genonbeta.TrebleShot.util.InetAddresses;
-import com.genonbeta.android.framework.app.Fragment;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class NetworkManagerFragment extends Fragment implements TitleProvider, IconProvider
+/**
+ * created by: veli
+ * date: 11/04/18 20:53
+ */
+public class NetworkManagerFragment extends com.genonbeta.android.framework.app.Fragment implements IconProvider,
+        TitleProvider
 {
-    private final int REQUEST_LOCATION_PERMISSION = 1;
+    public static final int REQUEST_LOCATION_PERMISSION = 1;
+    public static final int REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 2;
 
-    private IntentFilter mIntentFilter = new IntentFilter();
-    private StatusReceiver mStatusReceiver = new StatusReceiver();
+    public static final String WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED";
+
+    private final IntentFilter mIntentFilter = new IntentFilter();
+    private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private ConnectionUtils mConnectionUtils;
 
     private View mContainerText1;
     private View mContainerText2;
     private View mContainerText3;
-    private Button mActionButton;
+    private TextView mCodeText;
     private TextView mText1;
     private TextView mText2;
     private TextView mText3;
+    private ImageView mImageView2;
+    private ImageView mImageView3;
     private ImageView mCodeView;
+    private Button mToggleButton;
+    private Button mSecondButton;
+    private MenuItem mHelpMenuItem;
     private ColorStateList mColorPassiveState;
+    private HotspotManager mManager;
+    private Type mActiveType;
+    private ColorStateList mToggleButtonDefaultStateList;
+    private ColorStateList mToggleButtonEnabledStateList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -83,9 +101,13 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
         super.onCreate(savedInstanceState);
 
         mConnectionUtils = new ConnectionUtils(requireContext());
+        mManager = HotspotManager.newInstance(requireContext());
+        mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
+        mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -93,27 +115,63 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        View view = getLayoutInflater().inflate(R.layout.layout_network_manager, container, false);
+        return getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        mToggleButtonEnabledStateList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),
+                AppUtils.getReference(requireContext(), R.attr.colorError)));
         mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), AppUtils.getReference(
                 requireContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_network_manager_qr_image);
-        mContainerText1 = view.findViewById(R.id.layout_network_manager_info_container_text1_container);
+        mCodeText = view.findViewById(R.id.layout_network_manager_qr_help_text);
+        mToggleButton = view.findViewById(R.id.layout_network_manager_info_toggle_button);
+        mSecondButton = view.findViewById(R.id.layout_network_manager_info_second_toggle_button);
+        mContainerText1 = view.findViewById(R.id.layout_netowrk_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container);
         mContainerText3 = view.findViewById(R.id.layout_network_manager_info_container_text3_container);
         mText1 = view.findViewById(R.id.layout_network_manager_info_container_text1);
         mText2 = view.findViewById(R.id.layout_network_manager_info_container_text2);
         mText3 = view.findViewById(R.id.layout_network_manager_info_container_text3);
-        mActionButton = view.findViewById(R.id.layout_network_manager_info_toggle_button);
+        mImageView2 = view.findViewById(R.id.layout_network_manager_info_container_text2_icon);
+        mImageView3 = view.findViewById(R.id.layout_network_manager_info_container_text3_icon);
+        mToggleButtonDefaultStateList = mToggleButton.getBackgroundTintList();
 
-        mActionButton.setOnClickListener(v -> {
-            if (mConnectionUtils.canReadWifiInfo())
-                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-            else
-                mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION);
-        });
+        mToggleButton.setOnClickListener(this::toggle);
+        mSecondButton.setOnClickListener(this::toggle);
+    }
 
-        return view;
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.actions_hotspot_manager, menu);
+        mHelpMenuItem = menu.findItem(R.id.show_help);
+
+        showMenu();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        int id = item.getItemId();
+
+        if (id == R.id.show_help && mManager.getConfiguration() != null) {
+            String hotspotName = mManager.getConfiguration().SSID;
+            String friendlyName = AppUtils.getFriendlySSID(hotspotName);
+
+            new AlertDialog.Builder(requireActivity())
+                    .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, friendlyName))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        } else
+            return super.onOptionsItemSelected(item);
+
+        return true;
     }
 
     @Override
@@ -121,7 +179,9 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_LOCATION_PERMISSION)
+        if (REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT == requestCode)
+            toggleHotspot();
+        else if (REQUEST_LOCATION_PERMISSION == requestCode)
             updateState();
     }
 
@@ -144,50 +204,180 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
     @Override
     public int getIconRes()
     {
-        return R.drawable.ic_wifi_white_24dp;
+        return R.drawable.ic_qrcode_white_24dp;
     }
 
     @Override
     public CharSequence getDistinctiveTitle(Context context)
     {
-        return context.getString(R.string.text_useExistingNetwork);
+        return context.getString(R.string.butn_generateQrCode);
     }
 
-    public void updateViewsLocationDisabled()
+    @Nullable
+    public WifiConfiguration getWifiConfiguration()
     {
-        updateViews(null, R.string.butn_enable, getString(R.string.mesg_locationPermissionRequiredAny), null, null);
-    }
+        if (Build.VERSION.SDK_INT < 26)
+            return mManager.getConfiguration();
 
-    public void updateViewsWithBlank()
-    {
-        updateViews(null, R.string.butn_wifiSettings, getString(R.string.mesg_connectToWiFiNetworkHelp), null, null);
-    }
-
-    // for connection addressing purpose
-    public void updateViews(String networkName, String ipAddress, String bssid)
-    {
         try {
-            JSONObject object = new JSONObject()
-                    .put(Keyword.NETWORK_ADDRESS_IP, ipAddress)
-                    .put(Keyword.NETWORK_BSSID, bssid);
+            return AppUtils.getBgService(requireActivity()).getHotspotConfig();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
 
-            updateViews(object, R.string.butn_wifiSettings, getString(R.string.text_easyDiscoveryHelp), networkName, ipAddress);
-        } catch (Exception e) {
+        return null;
+    }
+
+    public void openWifiSettings()
+    {
+        startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+    }
+
+    private void toggleHotspot()
+    {
+        mConnectionUtils.toggleHotspot(requireActivity(), this, mManager, true,
+                REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT);
+    }
+
+    public void toggle(View v)
+    {
+        if (v.getId() == R.id.layout_network_manager_info_toggle_button) {
+            switch (mActiveType) {
+                case LocationPermissionNeeded:
+                    mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION);
+                    break;
+                case WiFi:
+                case HotspotExternal:
+                    openWifiSettings();
+                    break;
+                case Hotspot:
+                case None:
+                default:
+                    toggleHotspot();
+            }
+        } else if (v.getId() == R.id.layout_network_manager_info_second_toggle_button) {
+            switch (mActiveType) {
+                case LocationPermissionNeeded:
+                case WiFi:
+                    toggleHotspot();
+                    break;
+                case HotspotExternal:
+                case Hotspot:
+                case None:
+                default:
+                    openWifiSettings();
+            }
+        }
+    }
+
+    private void showMenu()
+    {
+        if (mHelpMenuItem != null)
+            mHelpMenuItem.setVisible(mManager.getConfiguration() != null && mManager.isEnabled());
+    }
+
+    private void updateState()
+    {
+        showMenu();
+        try {
+            updateViews();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateViews(@Nullable JSONObject codeIndex, @StringRes int buttonText, @Nullable String text1,
-                            @Nullable String text2, @Nullable String text3)
+    private void updateViews() throws JSONException
     {
-        boolean showQRCode = codeIndex != null && codeIndex.length() > 0 && getContext() != null;
+        showMenu();
+        JSONObject json = new JSONObject();
+        WifiConfiguration config = getWifiConfiguration();
+        WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
+
+        if (mManager.isEnabled()) {
+            if (config != null) {
+                mActiveType = Type.Hotspot;
+                String ssid = config.SSID;
+                String bssid = config.BSSID;
+                String key = config.preSharedKey;
+
+                json.put(Keyword.NETWORK_SSID, ssid)
+                        .put(Keyword.NETWORK_BSSID, bssid)
+                        .put(Keyword.NETWORK_PASSWORD, key);
+
+                mImageView2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp);
+                mImageView3.setImageResource(R.drawable.ic_vpn_key_white_24dp);
+                mText1.setText(R.string.text_qrCodeAvailableHelp);
+                mText2.setText(ssid);
+                mText3.setText(key);
+            } else {
+                mActiveType = Type.HotspotExternal;
+                mText1.setText(R.string.text_hotspotStartedExternallyNotice);
+            }
+            mToggleButton.setText(R.string.butn_stopHotspot);
+            mSecondButton.setText(R.string.butn_wifiSettings);
+        } else if (!mConnectionUtils.canReadWifiInfo() && mConnectionUtils.getWifiManager().isWifiEnabled()) {
+            mActiveType = Type.LocationPermissionNeeded;
+            mText1.setText(R.string.mesg_locationPermissionRequiredAny);
+            mToggleButton.setText(R.string.butn_enable);
+            mSecondButton.setText(R.string.text_startHotspot);
+        } else if (mConnectionUtils.isConnectedToAnyNetwork()) {
+            mActiveType = Type.WiFi;
+            String hostAddress;
+
+            try {
+                hostAddress = InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.getIpAddress()))
+                        .getHostAddress();
+            } catch (UnknownHostException e) {
+                hostAddress = "0.0.0.0";
+            }
+
+            json.put(Keyword.NETWORK_ADDRESS_IP, hostAddress)
+                    .put(Keyword.NETWORK_BSSID, connectionInfo.getBSSID());
+
+            mImageView2.setImageResource(R.drawable.ic_wifi_white_24dp);
+            mImageView3.setImageResource(R.drawable.ic_ip_white_24dp);
+            mText1.setText(R.string.help_scanQRCode);
+            mText2.setText(ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID()));
+            mText3.setText(hostAddress);
+            mToggleButton.setText(R.string.butn_wifiSettings);
+            mSecondButton.setText(R.string.text_startHotspot);
+        } else {
+            mActiveType = Type.None;
+            mText1.setText(R.string.help_setUpNetwork);
+            mToggleButton.setText(R.string.text_startHotspot);
+            mSecondButton.setText(R.string.butn_wifiSettings);
+        }
+
+        switch (mActiveType) {
+            case Hotspot:
+            case WiFi:
+            case HotspotExternal:
+                mToggleButton.setBackgroundTintList(mToggleButtonEnabledStateList);
+                break;
+            default:
+                mToggleButton.setBackgroundTintList(mToggleButtonDefaultStateList);
+        }
+
+        switch (mActiveType) {
+            case LocationPermissionNeeded:
+            case None:
+            case HotspotExternal:
+                mText2.setText(null);
+                mText3.setText(null);
+        }
+
+        mContainerText1.setVisibility(mText1.length() > 0 ? View.VISIBLE : View.GONE);
+        mContainerText2.setVisibility(mText2.length() > 0 ? View.VISIBLE : View.GONE);
+        mContainerText3.setVisibility(mText3.length() > 0 ? View.VISIBLE : View.GONE);
+
+        boolean showQRCode = json.length() > 0 && getContext() != null;
 
         try {
             if (showQRCode) {
-                codeIndex.put(Keyword.NETWORK_PIN, AppUtils.generateNetworkPin(getContext()));
+                json.put(Keyword.NETWORK_PIN, AppUtils.generateNetworkPin(getContext()));
 
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
-                BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400,
+                BitMatrix bitMatrix = formatWriter.encode(json.toString(), BarcodeFormat.QR_CODE, 400,
                         400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
@@ -198,41 +388,10 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
             } else
                 mCodeView.setImageResource(R.drawable.ic_qrcode_white_128dp);
 
+            mCodeText.setVisibility(showQRCode ? View.GONE : View.VISIBLE);
             ImageViewCompat.setImageTintList(mCodeView, showQRCode ? null : mColorPassiveState);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            mContainerText1.setVisibility(text1 == null ? View.GONE : View.VISIBLE);
-            mContainerText2.setVisibility(text2 == null ? View.GONE : View.VISIBLE);
-            mContainerText3.setVisibility(text3 == null ? View.GONE : View.VISIBLE);
-
-            mActionButton.setText(buttonText);
-            mText1.setText(text1);
-            mText2.setText(text2);
-            mText3.setText(text3);
-        }
-    }
-
-    public void updateState()
-    {
-        WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
-
-        if (!mConnectionUtils.canReadWifiInfo()) {
-            updateViewsLocationDisabled();
-        } else if (!mConnectionUtils.isConnectedToAnyNetwork())
-            updateViewsWithBlank();
-        else {
-            String networkName = ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID());
-            String hostAddress;
-
-            try {
-                hostAddress = InetAddress.getByAddress(InetAddresses.toByteArray(
-                        connectionInfo.getIpAddress())).getHostAddress();
-            } catch (UnknownHostException e) {
-                hostAddress = "0.0.0.0";
-            }
-
-            updateViews(networkName, hostAddress, connectionInfo.getBSSID());
         }
     }
 
@@ -241,10 +400,22 @@ public class NetworkManagerFragment extends Fragment implements TitleProvider, I
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
+            // FIXME: 25.03.2020 Doesn't get called when the hotspot state is changed
+            if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
+                    || BackgroundService.ACTION_PIN_USED.equals(intent.getAction())
+                    || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
                     || BackgroundService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
         }
+    }
+
+    private enum Type
+    {
+        None,
+        WiFi,
+        Hotspot,
+        HotspotExternal,
+        LocationPermissionNeeded
     }
 }

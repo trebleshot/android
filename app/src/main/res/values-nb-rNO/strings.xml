@@ -386,7 +386,7 @@
     <string name="text_qrCodeAvailableHelp">Skann denne koden for å dele og koble til enheter</string>
     <string name="text_qrCodeHotspotDisabledHelp">Sett opp et lokalt trådløsnett slik at andre kan koble seg til deg
     </string>
-    <string name="text_scanQRCodeHelp">Skann QR-koden på vertenhetens skjerm</string>
+    <string name="help_scanQRCode">Skann QR-koden på vertenhetens skjerm</string>
     <string name="butn_qrScanToSend">Skann QR-koden for å sende</string>
     <string name="butn_qrToggle">Veksle visning av QR-kode</string>
     <string name="text_notificationSettingsSummary">Åpne merknadsinnstillinger</string>

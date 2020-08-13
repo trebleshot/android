@@ -297,7 +297,7 @@
     <string name="text_qrCodeHotspotDisabledHelp">Configurez un point d’accès pour que d’autres personnes puissent se
         connecter à vous
     </string>
-    <string name="text_scanQRCodeHelp">Scannez le code QR figurant sur l\'écran de l’appareil hôte</string>
+    <string name="help_scanQRCode">Scannez le code QR figurant sur l\'écran de l’appareil hôte</string>
     <string name="butn_qrToggle">Activer/désactiver la visibilité du code QR</string>
     <string name="text_notificationSettingsSummary">Ouvrir les paramètres des notifications</string>
     <string name="text_notificationSettings">Paramètres des notifications</string>

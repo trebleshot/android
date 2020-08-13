@@ -346,7 +346,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">איזור מהימן יופעל בהתאם</string>
     <string name="text_qrCodeAvailableHelp">יש לסרוק את הקוד הזה כדי לשתף ולהתחבר למכשירים</string>
     <string name="text_qrCodeHotspotDisabledHelp">יש להפעיל נקודה חמה כדי לאפשר לאחרים להתחבר אליך</string>
-    <string name="text_scanQRCodeHelp">יש לסרוק את קוד ה־QR שעל המסך של המכשיר המארח</string>
+    <string name="help_scanQRCode">יש לסרוק את קוד ה־QR שעל המסך של המכשיר המארח</string>
     <string name="butn_qrScanToSend">יש לסרוק קוד QR כדי לשלוח</string>
     <string name="butn_qrToggle">הפעלת מצב הצגת קוד QR</string>
     <string name="text_notificationSettingsSummary">פתיחת הגדרות התראה</string>

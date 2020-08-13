@@ -354,7 +354,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">Area fidagarria ere abiatuko da ondorioz</string>
     <string name="text_qrCodeAvailableHelp">Eskaneatu kode hau partekatzeko eta gailuak konektatzeko</string>
     <string name="text_qrCodeHotspotDisabledHelp">Ezarri Wifigunea besteek zurekin konektatu ahal izateko</string>
-    <string name="text_scanQRCodeHelp">Eskaneatu gailu ostalariaren pantailako QR kodea</string>
+    <string name="help_scanQRCode">Eskaneatu gailu ostalariaren pantailako QR kodea</string>
     <string name="butn_qrScanToSend">Eskaneatu QR kodea bidaltzeko</string>
     <string name="butn_qrToggle">Txandakatu QR kodearen ikusgaitasuna</string>
     <string name="text_notificationSettingsSummary">Ireki jakinarazpenen ezarpenak</string>

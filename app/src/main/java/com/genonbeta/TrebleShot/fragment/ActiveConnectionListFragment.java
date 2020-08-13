@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
@@ -39,13 +38,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.EditableNetworkInterface;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
-import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_STATE_CHANGED;
+import static com.genonbeta.TrebleShot.fragment.NetworkManagerFragment.WIFI_AP_STATE_CHANGED;
 
 /**
  * created by: veli

@@ -345,7 +345,7 @@
     <string name="text_qrCodeHotspotDisabledHelp">Configure um ponto de acesso para que outras pessoas se possam
         conectar a si
     </string>
-    <string name="text_scanQRCodeHelp">Digitalize o código QR no ecrã do dispositivo hospedeiro</string>
+    <string name="help_scanQRCode">Digitalize o código QR no ecrã do dispositivo hospedeiro</string>
     <string name="butn_qrScanToSend">Digitalize o código QR para enviar</string>
     <string name="butn_qrToggle">Alternar a visibilidade do código QR</string>
     <string name="text_notificationSettingsSummary">Abrir configuração de notificações</string>

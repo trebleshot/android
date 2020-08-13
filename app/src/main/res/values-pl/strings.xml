@@ -351,7 +351,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone również zostanie uruchomiony</string>
     <string name="text_qrCodeAvailableHelp">Zeskanuj ten kod, aby udostępnić i podłączyć urządzenia</string>
     <string name="text_qrCodeHotspotDisabledHelp">Skonfiguruj hotspot, aby inni mogli się z Tobą połączyć</string>
-    <string name="text_scanQRCodeHelp">Zeskanuj kod QR na ekranie urządzenia hosta</string>
+    <string name="help_scanQRCode">Zeskanuj kod QR na ekranie urządzenia hosta</string>
     <string name="butn_qrScanToSend">Zeskanuj kod QR, aby wysłać</string>
     <string name="butn_qrToggle">Przełącz widoczność kodu QR</string>
     <string name="text_notificationSettingsSummary">Otwórz ustawienia powiadomień</string>

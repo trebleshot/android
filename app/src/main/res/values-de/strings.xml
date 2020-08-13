@@ -361,7 +361,7 @@
     <string name="text_qrCodeHotspotDisabledHelp">Richten Sie einen Hotspot ein, damit sich andere mit Ihnen verbinden
         können
     </string>
-    <string name="text_scanQRCodeHelp">QR-Code auf dem Display des anderen Gerätes scannen</string>
+    <string name="help_scanQRCode">QR-Code auf dem Display des anderen Gerätes scannen</string>
     <string name="butn_qrScanToSend">QR-Code scannen, um zu senden</string>
     <string name="butn_qrToggle">QR-Code-Anzeige umschalten</string>
     <string name="text_notificationSettingsSummary">Benachrichtigungseinstellungen öffnen</string>

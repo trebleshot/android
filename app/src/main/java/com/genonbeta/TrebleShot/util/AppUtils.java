@@ -351,8 +351,8 @@ public class AppUtils
         device.versionCode = BuildConfig.VERSION_CODE;
         device.versionName = BuildConfig.VERSION_NAME;
         device.isLocal = true;
-        device.sendKey = AppUtils.generateKey();
-        device.receiveKey = AppUtils.generateKey();
+        device.sendKey = 100;
+        device.receiveKey = 200;
 
         return device;
     }

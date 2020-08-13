@@ -142,7 +142,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
 
         if (id == R.id.show_help)
             new AlertDialog.Builder(requireActivity())
-                    .setMessage(R.string.text_scanQRCodeHelp)
+                    .setMessage(R.string.help_scanQRCode)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
         else if (id == R.id.change_mode) {
@@ -405,7 +405,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
             }
         } else {
             mBarcodeView.resume();
-            mConductText.setText(R.string.text_scanQRCodeHelp);
+            mConductText.setText(R.string.help_scanQRCode);
         }
 
         setConductItemsShowing(!state);

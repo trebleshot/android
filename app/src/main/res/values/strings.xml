@@ -333,7 +333,7 @@
     <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
     <string name="text_qrCodeAvailableHelp">Scan this code to share and connect devices</string>
     <string name="text_qrCodeHotspotDisabledHelp">Set up a hotspot so that others can connect to you</string>
-    <string name="text_scanQRCodeHelp">Scan the QR code on the screen of the host device</string>
+    <string name="help_scanQRCode">Scan the QR code on the screen of the host device</string>
     <string name="butn_qrScanToSend">Scan QR code to send</string>
     <string name="butn_qrToggle">Toggle QR code visibility</string>
     <string name="text_notificationSettingsSummary">Open notification settings</string>
@@ -574,4 +574,6 @@
     <string name="text_addNewDevice">Add a New Device</string>
     <string name="butn_generateQrCode">Generate QR Code</string>
     <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
+    <string name="help_qrCodePosition">QR Code will appear here!</string>
+    <string name="help_setUpNetwork">Set up a hotspot network or connect to a Wi-Fi network.</string>
 </resources>

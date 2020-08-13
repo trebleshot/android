@@ -377,7 +377,7 @@
     <string name="text_movedCacheFiles">தற்காலிக கோப்புகள் நீக்கப்பட்டது</string>
     <string name="text_hotspotStartsTrustZone">Hotspot TrustZone-ஐ துவக்கிவைக்கும்</string>
     <string name="text_hotspotStartsTrustZoneSummary">Trustzoneம் துவக்கிவைக்கப்படும்</string>
-    <string name="text_scanQRCodeHelp">மற்றொரு சாதனத்திலுள்ள QR Code-ஐ Scan செய்யவும்</string>
+    <string name="help_scanQRCode">மற்றொரு சாதனத்திலுள்ள QR Code-ஐ Scan செய்யவும்</string>
     <string name="butn_qrToggle">QR Code காண்பிப்பதை மாற்று</string>
     <string name="text_notificationSettingsSummary">அறிவிப்பு அமைப்புகளை திற</string>
     <string name="text_rename">பெயர்மாற்று</string>

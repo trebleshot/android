@@ -82,7 +82,7 @@ public class ConnectionSetUpAssistant
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // open network settings
-                        updateFragment(AddDeviceActivity.AvailableFragment.UseExistingNetwork);
+                        updateFragment(AddDeviceActivity.AvailableFragment.GenerateQrCode);
                     }
                 })
                 .setNegativeButton(R.string.butn_no, new DialogInterface.OnClickListener()
@@ -107,7 +107,7 @@ public class ConnectionSetUpAssistant
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // open known devices settings
-                        updateFragment(AddDeviceActivity.AvailableFragment.UseKnownDevice);
+                        updateFragment(AddDeviceActivity.AvailableFragment.AllDevices);
                     }
                 })
                 .setNegativeButton(R.string.butn_retry, new DialogInterface.OnClickListener()

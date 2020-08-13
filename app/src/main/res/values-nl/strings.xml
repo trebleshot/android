@@ -401,7 +401,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
     <string name="text_qrCodeAvailableHelp">Scan deze code om te delen en apparaten te verbinden</string>
     <string name="text_qrCodeHotspotDisabledHelp">Stel een hotspot in zodat anderen met je kunnen verbinden</string>
-    <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de afzender</string>
+    <string name="help_scanQRCode">Scan de QR-code op het scherm van de afzender</string>
     <string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
     <string name="butn_qrToggle">QR-code tonen/verbergen</string>
     <string name="text_notificationSettingsSummary">Meldingsinstellingen openen</string>

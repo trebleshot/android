@@ -336,7 +336,7 @@
     <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın veya hızlı bağlantı için bir ağa
         bağlanın
     </string>
-    <string name="text_scanQRCodeHelp">Bağlanılacak cihazın ekranı üzerindeki QR kodunu tarayın</string>
+    <string name="help_scanQRCode">Bağlanılacak cihazın ekranı üzerindeki QR kodunu tarayın</string>
     <string name="butn_qrScanToSend">Göndermek için QR tara</string>
     <string name="butn_qrToggle">QR Kod gösterimi</string>
     <string name="text_notificationSettingsSummary">Bildirim ayarlarını aç</string>

@@ -348,7 +348,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">信任域也会相应的被启用</string>
     <string name="text_qrCodeAvailableHelp">扫描二维码来分享并连接设备</string>
     <string name="text_qrCodeHotspotDisabledHelp">建立热点以允许其他设备连接</string>
-    <string name="text_scanQRCodeHelp">扫描主设备屏幕上的二维码</string>
+    <string name="help_scanQRCode">扫描主设备屏幕上的二维码</string>
     <string name="butn_qrScanToSend">扫描二维码以发送</string>
     <string name="butn_qrToggle">工作服务</string>
     <string name="text_notificationSettingsSummary">打开通知设置</string>

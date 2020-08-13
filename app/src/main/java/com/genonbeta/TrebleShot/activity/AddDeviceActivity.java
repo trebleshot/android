@@ -38,7 +38,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.DeviceListFragment;
-import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
@@ -63,7 +62,6 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             REQUEST_IP_DISCOVERY = 110;
 
     private final IntentFilter mFilter = new IntentFilter();
-    private HotspotManagerFragment mHotspotManagerFragment;
     private NetworkManagerFragment mNetworkManagerFragment;
     private DeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
@@ -123,8 +121,6 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
         mToolbar = findViewById(R.id.toolbar);
         mOptionsFragment = (OptionsFragment) factory.instantiate(getClassLoader(), OptionsFragment.class.getName());
-        mHotspotManagerFragment = (HotspotManagerFragment) factory.instantiate(getClassLoader(),
-                HotspotManagerFragment.class.getName());
         mNetworkManagerFragment = (NetworkManagerFragment) factory.instantiate(getClassLoader(),
                 NetworkManagerFragment.class.getName());
         mDeviceListFragment = (DeviceListFragment) factory.instantiate(getClassLoader(),
@@ -235,12 +231,10 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
         if (fragment instanceof BarcodeConnectFragment)
             return AvailableFragment.ScanQrCode;
-        else if (fragment instanceof HotspotManagerFragment)
-            return AvailableFragment.CreateHotspot;
         else if (fragment instanceof NetworkManagerFragment)
-            return AvailableFragment.UseExistingNetwork;
+            return AvailableFragment.GenerateQrCode;
         else if (fragment instanceof DeviceListFragment)
-            return AvailableFragment.UseKnownDevice;
+            return AvailableFragment.AllDevices;
 
         // Probably OptionsFragment
         return AvailableFragment.Options;
@@ -274,13 +268,10 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             case ScanQrCode:
                 startCodeScanner();
                 return;
-            case CreateHotspot:
-                fragmentCandidate = mHotspotManagerFragment;
-                break;
-            case UseExistingNetwork:
+            case GenerateQrCode:
                 fragmentCandidate = mNetworkManagerFragment;
                 break;
-            case UseKnownDevice:
+            case AllDevices:
                 fragmentCandidate = mDeviceListFragment;
                 break;
             case Options:
@@ -319,8 +310,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     public enum AvailableFragment
     {
         Options,
-        UseExistingNetwork,
-        UseKnownDevice,
+        GenerateQrCode,
+        AllDevices,
         ScanQrCode,
         CreateHotspot,
         EnterIpAddress
@@ -338,13 +329,10 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             View.OnClickListener listener = v -> {
                 switch (v.getId()) {
                     case R.id.connection_option_devices:
-                        updateFragment(AvailableFragment.UseKnownDevice);
+                        updateFragment(AvailableFragment.AllDevices);
                         break;
-                    case R.id.connection_option_hotspot:
-                        updateFragment(AvailableFragment.CreateHotspot);
-                        break;
-                    case R.id.connection_option_network:
-                        updateFragment(AvailableFragment.UseExistingNetwork);
+                    case R.id.connection_option_generate_qr_code:
+                        updateFragment(AvailableFragment.GenerateQrCode);
                         break;
                     case R.id.connection_option_manual_ip:
                         updateFragment(AvailableFragment.EnterIpAddress);
@@ -355,8 +343,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             };
 
             view.findViewById(R.id.connection_option_devices).setOnClickListener(listener);
-            view.findViewById(R.id.connection_option_hotspot).setOnClickListener(listener);
-            view.findViewById(R.id.connection_option_network).setOnClickListener(listener);
+            view.findViewById(R.id.connection_option_generate_qr_code).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_manual_ip).setOnClickListener(listener);
 

@@ -131,7 +131,7 @@
     <string name="butn_ask">Hỏi</string>
     <string name="butn_changeSavePath">Thay đổi nơi lưu file</string>
     <string name="text_preparingFiles">Đang chuẩn bị file</string>
-    <string name="text_scanQRCodeHelp">Scan mã QR trên thiết bị của máy chủ</string>
+    <string name="help_scanQRCode">Scan mã QR trên thiết bị của máy chủ</string>
     <string name="text_listEmpty">Không có gì cả</string>
     <string name="text_permissionRequest">Yêu cầu cấp quyền</string>
     <string name="butn_showSystemApps">Hiện app hệ thống</string>

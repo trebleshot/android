@@ -308,7 +308,7 @@
     <string name="text_hotspotStartsTrustZone">Hotspot aktiverar även TrustZone</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone kommer också att startas</string>
     <string name="text_qrCodeAvailableHelp">Skanna den här koden för att dela och ansluta enheter</string>
-    <string name="text_scanQRCodeHelp">Skanna QR-koden på värddatorns skärm</string>
+    <string name="help_scanQRCode">Skanna QR-koden på värddatorns skärm</string>
     <string name="butn_qrScanToSend">Skanna QR-koden för att skicka</string>
     <string name="butn_qrToggle">Växla QR-kodens synlighet</string>
     <string name="text_notificationSettingsSummary">Öppna aviseringsinställningarna</string>

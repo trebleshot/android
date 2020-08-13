@@ -381,7 +381,7 @@
     <string name="text_qrCodeAvailableHelp">برای اشتراک گزاری با دستگاه ها این کد را اسکن کنید</string>
     <string name="text_qrCodeHotspotDisabledHelp">یک هات اسپات راه بیاندازید تا دیگران امکان اتصال به شما را بیابند
     </string>
-    <string name="text_scanQRCodeHelp">کد QR موجود در صفحه دستگاه میزبان را اسکن کنید</string>
+    <string name="help_scanQRCode">کد QR موجود در صفحه دستگاه میزبان را اسکن کنید</string>
     <string name="butn_qrScanToSend">برای ارسال کد QR را اسکن کنید</string>
     <string name="butn_qrToggle">نماش و مخفی کردن کد QR</string>
     <string name="butn_startHotspot">تنظیم هات اسپات</string>

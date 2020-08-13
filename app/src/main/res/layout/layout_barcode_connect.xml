@@ -97,7 +97,7 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
                 android:padding="15dp"
-                android:text="@string/text_scanQRCodeHelp"/>
+                android:text="@string/help_scanQRCode"/>
 
         <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/layout_barcode_connect_conduct_button"

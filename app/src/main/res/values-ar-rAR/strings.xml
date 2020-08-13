@@ -352,7 +352,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">سيتم أيضا تشغيل المنطقة الموثوقة تبعاً لذلك</string>
     <string name="text_qrCodeAvailableHelp">امسح هذه الرمز لتبادل وتوصيل الأجهزة</string>
     <string name="text_qrCodeHotspotDisabledHelp">شغّل نقطة الوصول الساخنة ليتمكن الآخرون الاتصال بك</string>
-    <string name="text_scanQRCodeHelp">مسح رمز الباركود على شاشة الجهاز الاخر</string>
+    <string name="help_scanQRCode">مسح رمز الباركود على شاشة الجهاز الاخر</string>
     <string name="butn_qrScanToSend">امسح رمز الكيو آر للقيام بالإرسال</string>
     <string name="butn_qrToggle">تبديل ظهور رمز الباركود</string>
     <string name="text_notificationSettingsSummary">فتح إعدادات إشعاراتك</string>

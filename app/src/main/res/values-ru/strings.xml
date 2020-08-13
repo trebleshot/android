@@ -347,7 +347,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone также будет запущен</string>
     <string name="text_qrCodeHotspotDisabledHelp">Настройте точку доступа, чтобы другие могли подключаться к вам
     </string>
-    <string name="text_scanQRCodeHelp">Сканируйте QR-код на экране устройства отправителя.</string>
+    <string name="help_scanQRCode">Сканируйте QR-код на экране устройства отправителя.</string>
     <string name="butn_qrToggle">Переключить видимость QR-кода</string>
     <string name="text_notificationSettingsSummary">Открыть настройки уведомлений</string>
     <string name="text_notificationSettings">Настройки уведомлений</string>

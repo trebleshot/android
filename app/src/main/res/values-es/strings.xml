@@ -361,7 +361,7 @@
     <string name="text_qrCodeHotspotDisabledHelp">Configura un punto de acceso para que otros puedan conectarse
         contigo
     </string>
-    <string name="text_scanQRCodeHelp">Lea el código QR en la pantalla del dispositivo anfitrión</string>
+    <string name="help_scanQRCode">Lea el código QR en la pantalla del dispositivo anfitrión</string>
     <string name="butn_qrScanToSend">Escanea el código QR para enviar</string>
     <string name="text_notificationSettingsSummary">Abrir los ajustes de notificaciones</string>
     <string name="text_notificationSettings">Ajustes de notificaciones</string>
