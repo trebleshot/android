@@ -163,8 +163,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 if (device != null && connection != null)
                     returnResult(this, device, connection);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
-                Device device = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_DEVICE);
-                DeviceAddress connection = data.getParcelableExtra(IpAddressConnectionActivity.EXTRA_CONNECTION);
+                Device device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE);
+                DeviceAddress connection = data.getParcelableExtra(ManualConnectionActivity.EXTRA_CONNECTION);
 
                 if (device != null && connection != null)
                     returnResult(this, device, connection);
@@ -304,7 +304,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
 
     protected void startIpConnectivity()
     {
-        startActivityForResult(new Intent(this, IpAddressConnectionActivity.class), REQUEST_IP_DISCOVERY);
+        startActivityForResult(new Intent(this, ManualConnectionActivity.class), REQUEST_IP_DISCOVERY);
     }
 
     public enum AvailableFragment

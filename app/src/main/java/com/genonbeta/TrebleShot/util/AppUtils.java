@@ -55,6 +55,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import org.json.JSONException;
@@ -222,7 +223,7 @@ public class AppUtils
 
         return uid;
          */
-        return Settings.Secure.ANDROID_ID;
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     public static Kuick getKuick(Context context)
@@ -342,6 +343,18 @@ public class AppUtils
     public static Device getLocalDevice(Context context)
     {
         Device device = new Device(getDeviceId(context));
+        boolean publishNeeded = false;
+
+        try {
+            getKuick(context).reconstruct(device);
+
+            if (device.sendKey != device.receiveKey || device.sendKey == 0)
+                throw new ReconstructionFailedException("The keys need a reset.");
+        } catch (ReconstructionFailedException e) {
+            device.sendKey = generateKey();
+            device.receiveKey = device.sendKey;
+            publishNeeded = true;
+        }
 
         device.brand = Build.BRAND;
         device.model = Build.MODEL;
@@ -351,8 +364,9 @@ public class AppUtils
         device.versionCode = BuildConfig.VERSION_CODE;
         device.versionName = BuildConfig.VERSION_NAME;
         device.isLocal = true;
-        device.sendKey = 100;
-        device.receiveKey = 200;
+
+        if (publishNeeded)
+            getKuick(context).publish(device);
 
         return device;
     }

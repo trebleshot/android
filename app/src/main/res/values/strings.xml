@@ -535,7 +535,7 @@
     <string name="text_chooseSharingMethod">Choose sharing method</string>
     <string name="mesg_noActivityFound">Found no activity that can do this action</string>
     <string name="text_devicesWithAppInstalled">TrebleShot to TrebleShot</string>
-    <string name="mesg_unknownHostError">The host is unknown to system</string>
+    <string name="mesg_unknownHostError">Could not resolve this host address!</string>
     <string name="text_thirdPartyLibrariesHelp">The libraries shown here may not be directly involved in the final
         product. For more details, please refer to the source code.
     </string>
@@ -576,4 +576,5 @@
     <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
     <string name="help_qrCodePosition">QR Code will appear here!</string>
     <string name="help_setUpNetwork">Set up a hotspot network or connect to a Wi-Fi network.</string>
+    <string name="mesg_enterValidHostAddress">Please enter an internet address!</string>
 </resources>

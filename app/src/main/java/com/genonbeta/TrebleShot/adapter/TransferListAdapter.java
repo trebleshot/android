@@ -40,7 +40,7 @@ import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
-import com.genonbeta.TrebleShot.GlideApp;
+import com.genonbeta.TrebleShot .GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -79,14 +79,14 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
     private SQLQuery.Select mSelect;
     private String mPath;
     private ShowingAssignee mAssignee;
-    private TransferGroup mGroup = new TransferGroup();
+    private final TransferGroup mGroup = new TransferGroup();
     private PathChangedListener mListener;
-    private NumberFormat mPercentFormat = NumberFormat.getPercentInstance();
+    private final NumberFormat mPercentFormat = NumberFormat.getPercentInstance();
 
     @ColorInt
-    private int mColorPending;
-    private int mColorDone;
-    private int mColorError;
+    private final int mColorPending;
+    private final int mColorDone;
+    private final int mColorError;
 
     public TransferListAdapter(IEditableListFragment<GenericItem, GroupViewHolder> fragment)
     {

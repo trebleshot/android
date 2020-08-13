@@ -40,8 +40,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
-import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
+import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
@@ -191,7 +190,7 @@ public class BackgroundService extends Service
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
                 boolean accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-                int suggestedPin = intent.getIntExtra(EXTRA_DEVICE_PIN, -1);
+                int requestedPin = intent.getIntExtra(EXTRA_DEVICE_PIN, -1);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
@@ -199,7 +198,7 @@ public class BackgroundService extends Service
                     device.isBlocked = !accepted;
 
                     if (accepted)
-                        device.receiveKey = suggestedPin;
+                        device.receiveKey = requestedPin;
 
                     getKuick().update(device);
                     getKuick().broadcast();
@@ -563,7 +562,6 @@ public class BackgroundService extends Service
         CommunicationServer()
         {
             super(AppConfig.SERVER_PORT_COMMUNICATION);
-            getConfigFactory().setAcceptTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE);
             getConfigFactory().setReadTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
         }
 
@@ -581,15 +579,16 @@ public class BackgroundService extends Service
                 final Device device = new Device();
                 final DeviceAddress deviceAddress = new DeviceAddress(activeConnection.getAddress());
 
+                Log.d(TAG, "Device: " + response.toString());
+
                 try {
                     DeviceLoader.loadFrom(getKuick(), response, device, hasPin, false);
-                } catch (DeviceBlockedException e) {
-                    throw e;
-                } catch (DeviceInsecureException e) {
+                } catch (DeviceVerificationException e) {
                     getNotificationHelper().notifyConnectionRequest(device, device.receiveKey);
                 } finally {
                     DeviceLoader.processConnection(getKuick(), device, deviceAddress);
                     activeConnection.reply(AppUtils.getLocalDeviceAsJson(BackgroundService.this, device, 0));
+                    getKuick().broadcast();
                 }
 
                 if (hasPin) // pin is known, should be changed. Warn the listeners.
@@ -705,8 +704,6 @@ public class BackgroundService extends Service
                         }
                         break;
                 }
-            } catch (DeviceBlockedException e) {
-                
             } catch (Exception e) {
                 e.printStackTrace();
             }

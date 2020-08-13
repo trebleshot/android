@@ -70,7 +70,7 @@ public abstract class Activity extends AppCompatActivity
     private final List<BaseAttachableBgTask> mAttachedTaskList = new ArrayList<>();
     private final List<BackgroundTask> mUiTaskList = new ArrayList<>();
     private AlertDialog mOngoingRequest;
-    private IntentFilter mFilter = new IntentFilter();
+    private final IntentFilter mFilter = new IntentFilter();
     private boolean mDarkThemeRequested = false;
     private boolean mAmoledDarkThemeRequested = false;
     private boolean mThemeLoadingFailed = false;

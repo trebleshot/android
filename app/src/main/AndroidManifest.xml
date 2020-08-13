@@ -179,17 +179,16 @@
             android:name=".activity.WebShareActivity"
             android:label="@string/text_webShare" />
 
-        <activity android:name=".activity.IpAddressConnectionActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name=".activity.ManualConnectionActivity"
+            android:label="@string/text_enterIpAddress"
+            android:windowSoftInputMode="stateVisible" />
+
         <activity android:name=".activity.PickBestConnectionActivity" />
+
         <activity
             android:name=".activity.TransferHistoryActivity"
-            android:label="@string/transfer_history"
-            android:parentActivityName=".activity.HomeActivity"/>
+            android:label="@string/transfer_history" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

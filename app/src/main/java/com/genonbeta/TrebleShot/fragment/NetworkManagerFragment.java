@@ -39,6 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -139,7 +140,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
         mText3 = view.findViewById(R.id.layout_network_manager_info_container_text3);
         mImageView2 = view.findViewById(R.id.layout_network_manager_info_container_text2_icon);
         mImageView3 = view.findViewById(R.id.layout_network_manager_info_container_text3_icon);
-        mToggleButtonDefaultStateList = mToggleButton.getBackgroundTintList();
+        mToggleButtonDefaultStateList = ViewCompat.getBackgroundTintList(mToggleButton);
 
         mToggleButton.setOnClickListener(this::toggle);
         mSecondButton.setOnClickListener(this::toggle);
@@ -352,10 +353,10 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
             case Hotspot:
             case WiFi:
             case HotspotExternal:
-                mToggleButton.setBackgroundTintList(mToggleButtonEnabledStateList);
+                ViewCompat.setBackgroundTintList(mToggleButton, mToggleButtonEnabledStateList);
                 break;
             default:
-                mToggleButton.setBackgroundTintList(mToggleButtonDefaultStateList);
+                ViewCompat.setBackgroundTintList(mToggleButton, mToggleButtonDefaultStateList);
         }
 
         switch (mActiveType) {

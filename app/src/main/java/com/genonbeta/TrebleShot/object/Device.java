@@ -93,13 +93,6 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         }
     };
 
-    public void applyPreferences(Device otherDevice)
-    {
-        isLocal = otherDevice.isLocal;
-        isBlocked = otherDevice.isBlocked;
-        isTrusted = otherDevice.isTrusted;
-    }
-
     private void checkSecureKey()
     {
         if (Type.NORMAL.equals(type) && (sendKey == 0 || receiveKey == 0))

@@ -75,8 +75,9 @@ public class CommunicationBridge implements Closeable
             throws IOException, DifferentClientException, JSONException
     {
         for (DeviceAddress address : addressList) {
-            try (ActiveConnection activeConnection = openConnection(address.inetAddress)) {
-                return connect(kuick, addressList, device, pin);
+            try {
+                openConnection(address.inetAddress);
+                return connect(kuick, address, device, pin);
             } catch (IOException ignored) {
             }
         }
@@ -90,8 +91,10 @@ public class CommunicationBridge implements Closeable
         ActiveConnection activeConnection = openConnection(deviceAddress.inetAddress);
         String remoteDeviceId = activeConnection.receive().getAsString();
 
-        if (device != null && device.uid != null && !device.uid.equals(remoteDeviceId))
+        if (device != null && device.uid != null && !device.uid.equals(remoteDeviceId)) {
+            activeConnection.closeSafely();
             throw new DifferentClientException(device, remoteDeviceId);
+        }
 
         if (device == null)
             device = new Device(remoteDeviceId);

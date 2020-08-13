@@ -22,7 +22,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
-import android.util.Log;
 import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
@@ -34,7 +33,6 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
-import com.genonbeta.TrebleShot.protocol.DeviceUnknownException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
@@ -44,7 +42,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -70,18 +67,11 @@ public class DeviceLoader
                 device.isBlocked = hasPin || asClient;
                 device.isTrusted = hasPin;
                 device.receiveKey = receiveKey;
-                device.sendKey = AppUtils.generateKey();
-            } else if (e instanceof DeviceBlockedException) {
-                throw (DeviceBlockedException) e;
-            } else {
-                device.isBlocked = true;
 
-                if (e instanceof DeviceVerificationException) {
-                    throw (DeviceInsecureException) e;
-                } else {
-                    throw new DeviceUnknownException("The device is not known.", device);
-                }
-            }
+                if (device.sendKey == 0)
+                    device.sendKey = AppUtils.generateKey();
+            } else
+                throw (DeviceBlockedException) e;
         } finally {
             device.brand = object.getString(Keyword.DEVICE_BRAND);
             device.model = object.getString(Keyword.DEVICE_MODEL);
@@ -119,19 +109,6 @@ public class DeviceLoader
         }).start();
     }
 
-    public static byte[] loadProfilePictureFrom(JSONObject deviceInfo) throws Exception
-    {
-        if (deviceInfo.has(Keyword.DEVICE_AVATAR))
-            return loadProfilePictureFrom(deviceInfo.getString(Keyword.DEVICE_AVATAR));
-
-        throw new Exception();
-    }
-
-    public static byte[] loadProfilePictureFrom(String base64) throws IllegalArgumentException
-    {
-        return Base64.decode(base64, 0);
-    }
-
     public static DeviceAddress processConnection(Kuick kuick, Device device, InetAddress address)
     {
         DeviceAddress deviceAddress = new DeviceAddress(device.uid, address, System.currentTimeMillis());
@@ -151,28 +128,24 @@ public class DeviceLoader
 
     public static void saveProfilePicture(Context context, Device device, JSONObject object)
     {
+        if (!object.has(Keyword.DEVICE_AVATAR))
+            return;
+
         try {
-            saveProfilePicture(context, device, loadProfilePictureFrom(object));
-        } catch (Exception e) {
-            e.printStackTrace();
+            saveProfilePicture(context, device, Base64.decode(object.getString(Keyword.DEVICE_AVATAR), 0));
+        } catch (Exception ignored) {
         }
     }
 
-    public static void saveProfilePicture(Context context, Device device, byte[] picture)
+    public static void saveProfilePicture(Context context, Device device, byte[] picture) throws IOException
     {
         Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
+        if (bitmap == null)
+            return;
 
-        if (bitmap != null)
-            try (FileOutputStream outputStream = context.openFileOutput(device.generatePictureId(),
-                    Context.MODE_PRIVATE)) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        else
-            Log.d(DeviceLoader.class.getSimpleName(), "Bitmap was null");
+        try (FileOutputStream outputStream = context.openFileOutput(device.generatePictureId(), Context.MODE_PRIVATE)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        }
     }
 
     public static void showPictureIntoView(Device device, ImageView imageView, TextDrawable.IShapeBuilder iconBuilder)
