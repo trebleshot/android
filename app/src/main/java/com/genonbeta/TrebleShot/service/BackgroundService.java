@@ -24,16 +24,14 @@ import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -96,7 +94,6 @@ public class BackgroundService extends Service
     private NotificationHelper mNotificationHelper;
     private WifiManager.WifiLock mWifiLock;
     private MediaScannerConnection mMediaScanner;
-    private HotspotManager mHotspotManager;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -115,7 +112,6 @@ public class BackgroundService extends Service
         mNotificationHelper = new NotificationHelper(getNotificationUtils());
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
-        mHotspotManager = HotspotManager.newInstance(this);
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
@@ -302,8 +298,12 @@ public class BackgroundService extends Service
                             String.valueOf(1)), values);
         }
 
-        if (getHotspotUtils().unloadPreviousConfig())
-            Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + getHotspotUtils().disable());
+        App app = getSelfApplication();
+        if (app != null) {
+            HotspotManager manager = app.getHotspotManager();
+            if (manager.unloadPreviousConfig())
+                Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + manager.disable());
+        }
 
         if (getWifiLock() != null && getWifiLock().isHeld()) {
             getWifiLock().release();
@@ -330,7 +330,7 @@ public class BackgroundService extends Service
 
     public boolean canStopService()
     {
-        return getTaskList().size() > 0 || mHotspotManager.isStarted() || mWebShareServer.hadClients();
+        return getTaskList().size() > 0 || isHotspotStarted() || mWebShareServer.hadClients();
     }
 
     @Nullable
@@ -355,16 +355,6 @@ public class BackgroundService extends Service
             if (task.getIdentity().equals(identity))
                 foundList.add(task);
         return foundList;
-    }
-
-    private HotspotManager getHotspotUtils()
-    {
-        return mHotspotManager;
-    }
-
-    public WifiConfiguration getHotspotConfig()
-    {
-        return getHotspotUtils().getConfiguration();
     }
 
     public MediaScannerConnection getMediaScanner()
@@ -457,6 +447,11 @@ public class BackgroundService extends Service
         }
     }
 
+    public boolean isHotspotStarted()
+    {
+        return getSelfApplication() != null && getSelfApplication().getHotspotManager().isStarted();
+    }
+
     private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
     {
         return findTaskBy(FileTransferTask.identifyWith(groupId, deviceId, type)) != null;
@@ -497,18 +492,6 @@ public class BackgroundService extends Service
         }
 
         unregisterWork(runningTask);
-    }
-
-    public void toggleHotspot()
-    {
-        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(this))
-            return;
-
-        if (getHotspotUtils().isEnabled())
-            getHotspotUtils().disable();
-        else
-            Log.d(TAG, "toggleHotspot: Enabling=" + getHotspotUtils().enableConfigured(AppUtils.getHotspotName(
-                    this), null));
     }
 
     /**

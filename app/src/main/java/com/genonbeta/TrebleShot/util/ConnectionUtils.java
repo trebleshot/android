@@ -72,6 +72,7 @@ public class ConnectionUtils
 {
     public static final String TAG = ConnectionUtils.class.getSimpleName();
 
+
     private final Context mContext;
     private final WifiManager mWifiManager;
     private final LocationManager mLocationManager;
@@ -533,7 +534,7 @@ public class ConnectionUtils
     private void toggleHotspot(Activity activity)
     {
         try {
-            AppUtils.getBgService(activity).toggleHotspot();
+            AppUtils.getApp(activity).toggleHotspot();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }

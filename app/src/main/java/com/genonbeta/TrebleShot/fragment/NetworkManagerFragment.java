@@ -41,6 +41,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -103,6 +104,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
 
         mConnectionUtils = new ConnectionUtils(requireContext());
         mManager = HotspotManager.newInstance(requireContext());
+        mIntentFilter.addAction(App.ACTION_OREO_HOTSPOT_STARTED);
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
         mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -221,7 +223,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
             return mManager.getConfiguration();
 
         try {
-            return AppUtils.getBgService(requireActivity()).getHotspotConfig();
+            return AppUtils.getApp(requireActivity()).getHotspotConfig();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
@@ -406,7 +408,8 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
                     || BackgroundService.ACTION_PIN_USED.equals(intent.getAction())
                     || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
-                    || BackgroundService.ACTION_PIN_USED.equals(intent.getAction()))
+                    || BackgroundService.ACTION_PIN_USED.equals(intent.getAction())
+                    || App.ACTION_OREO_HOTSPOT_STARTED.equals(intent.getAction()))
                 updateState();
         }
     }

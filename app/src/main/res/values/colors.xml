@@ -47,7 +47,7 @@
 
 
     <color name="dark_colorControlNormal">#ffffff</color>
-    <color name="dark_colorError">#ffeb3b</color>
+    <color name="dark_colorError">#CDDC39</color>
     <color name="dark_colorOnPrimary">@color/dark_colorControlNormal</color>
     <color name="dark_colorOnSecondary">@color/dark_colorControlNormal</color>
     <color name="dark_colorPrimary">#1E1E1E</color>

@@ -146,6 +146,13 @@ public class AppUtils
         return networkPin;
     }
 
+    public static App getApp(Activity activity) throws IllegalStateException
+    {
+        if (activity.getApplication() instanceof App)
+            return (App) activity.getApplication();
+
+        throw new IllegalStateException("The app does not have an App instance.");
+    }
 
     @NonNull
     public static BackgroundService getBgService(Activity activity) throws IllegalStateException

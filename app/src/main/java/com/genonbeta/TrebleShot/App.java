@@ -18,16 +18,19 @@
 
 package com.genonbeta.TrebleShot;
 
-import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
@@ -37,6 +40,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.HotspotManager;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
 
@@ -54,14 +58,21 @@ import java.util.Date;
 
 public class App extends MultiDexApplication implements Thread.UncaughtExceptionHandler, ServiceConnection
 {
-    public static final String TAG = App.class.getSimpleName(),
-            ACTION_SERVICE_BOUND = "com.genonbeta.intent.action.SERVICE_BOUND";
+    public static final String TAG = App.class.getSimpleName();
+
+    public static final String ACTION_SERVICE_BOUND = "com.genonbeta.intent.action.SERVICE_BOUND";
+
+    public static final String ACTION_OREO_HOTSPOT_STARTED = "org.monora.trebleshot.intent.action.HOTSPOT_STARTED";
+
+    public static final String EXTRA_HOTSPOT_CONFIG = "hotspotConfig";
 
     private int mForegroundActivitiesCount = 0;
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private File mCrashLogFile;
     private BackgroundService mBgService;
     private WeakReference<BackgroundService> mBgServiceRef;
+    private HotspotManager mHotspotManager;
+
 
     @Override
     public void onCreate()
@@ -70,8 +81,12 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
 
         mCrashLogFile = getApplicationContext().getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
+        mHotspotManager = HotspotManager.newInstance(this);
 
+        if (Build.VERSION.SDK_INT >= 26)
+            mHotspotManager.setSecondaryCallback(new SecondaryHotspotCallback());
+
+        Thread.setDefaultUncaughtExceptionHandler(this);
         initializeSettings();
 
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
@@ -108,6 +123,16 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             mBgServiceRef = new WeakReference<>(mBgService);
 
         return mBgServiceRef;
+    }
+
+    public HotspotManager getHotspotManager()
+    {
+        return mHotspotManager;
+    }
+
+    public WifiConfiguration getHotspotConfig()
+    {
+        return getHotspotManager().getConfiguration();
     }
 
     private void initializeSettings()
@@ -187,6 +212,18 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
     }
 
+    public void toggleHotspot()
+    {
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(this))
+            return;
+
+        if (getHotspotManager().isEnabled())
+            getHotspotManager().disable();
+        else
+            Log.d(TAG, "toggleHotspot: Enabling=" + getHotspotManager().enableConfigured(AppUtils.getHotspotName(
+                    this), null));
+    }
+
     @Override
     public void uncaughtException(@NonNull Thread t, @NonNull Throwable e)
     {
@@ -237,5 +274,17 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
 
         mDefaultExceptionHandler.uncaughtException(t, e);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private class SecondaryHotspotCallback extends WifiManager.LocalOnlyHotspotCallback
+    {
+        @Override
+        public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation)
+        {
+            super.onStarted(reservation);
+            sendBroadcast(new Intent(ACTION_OREO_HOTSPOT_STARTED)
+                    .putExtra(EXTRA_HOTSPOT_CONFIG, reservation.getWifiConfiguration()));
+        }
     }
 }

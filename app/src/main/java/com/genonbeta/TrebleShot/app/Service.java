@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.content.SharedPreferences;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
@@ -47,5 +48,10 @@ public abstract class Service extends android.app.Service
             mNotificationUtils = new NotificationUtils(getApplicationContext(), getKuick(), getDefaultPreferences());
 
         return mNotificationUtils;
+    }
+
+    public App getSelfApplication()
+    {
+        return getApplication() instanceof App ? (App) getApplication() : null;
     }
 }

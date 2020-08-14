@@ -34,7 +34,9 @@ abstract public class HotspotManager
 {
     private static final String TAG = "HotspotUtils";
 
-    private WifiManager mWifiManager;
+    private final WifiManager mWifiManager;
+
+    protected WifiManager.LocalOnlyHotspotCallback mSecondaryCallback;
 
     HotspotManager(Context context)
     {
@@ -70,11 +72,17 @@ abstract public class HotspotManager
         return Build.VERSION.SDK_INT >= 26 ? new OreoHotspotManager(context) : new OldHotspotManager(context);
     }
 
+    @RequiresApi()
+    public void setSecondaryCallback(WifiManager.LocalOnlyHotspotCallback callback)
+    {
+        mSecondaryCallback = callback;
+    }
+
     public abstract boolean unloadPreviousConfig();
 
     @RequiresApi(26)
-    private static class OreoHotspotManager extends HotspotManager
-    {
+    public static class OreoHotspotManager extends HotspotManager
+    {;
         private WifiManager.LocalOnlyHotspotReservation mHotspotReservation;
 
         private OreoHotspotManager(Context context)
@@ -105,6 +113,9 @@ abstract public class HotspotManager
                     {
                         super.onStarted(reservation);
                         mHotspotReservation = reservation;
+
+                        if (mSecondaryCallback != null)
+                            mSecondaryCallback.onStarted(reservation);
                     }
 
                     @Override
@@ -112,6 +123,9 @@ abstract public class HotspotManager
                     {
                         super.onStopped();
                         mHotspotReservation = null;
+
+                        if (mSecondaryCallback != null)
+                            mSecondaryCallback.onStopped();
                     }
 
                     @Override
@@ -119,6 +133,9 @@ abstract public class HotspotManager
                     {
                         super.onFailed(reason);
                         mHotspotReservation = null;
+
+                        if (mSecondaryCallback != null)
+                            mSecondaryCallback.onFailed(reason);
                     }
                 }, new Handler(Looper.getMainLooper()));
 
@@ -161,6 +178,7 @@ abstract public class HotspotManager
         {
             return mHotspotReservation != null;
         }
+
 
         @Override
         public boolean unloadPreviousConfig()

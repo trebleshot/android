@@ -399,6 +399,11 @@ public abstract class Activity extends AppCompatActivity
         }
     }
 
+    public App getSelfApplication()
+    {
+        return getApplication() instanceof App ? (App) getApplication() : null;
+    }
+
     public boolean hasIntroductionShown()
     {
         return getDefaultPreferences().getBoolean("introduction_shown", false);
