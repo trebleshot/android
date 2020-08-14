@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,20 +17,20 @@
   -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          style="@style/TextAppearance.Primary.Big.SingleLine"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="12dp"
-          android:layout_marginRight="12dp"
-          android:background="?fastScrollBackground"
-          android:gravity="center"
-          android:paddingLeft="15dp"
-          android:paddingTop="8dp"
-          android:paddingRight="15dp"
-          android:paddingBottom="8dp"
-          android:textColor="@android:color/white"
-          android:textSize="@dimen/font_size_giant"
-          android:visibility="invisible"
-          tools:text="A"
-          tools:visibility="visible"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TextAppearance.Primary.Big.SingleLine"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:background="?fastScrollBackground"
+    android:gravity="center"
+    android:paddingLeft="15dp"
+    android:paddingTop="8dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="8dp"
+    android:textColor="@android:color/white"
+    android:textSize="@dimen/font_size_giant"
+    android:visibility="invisible"
+    tools:text="A"
+    tools:visibility="visible" />

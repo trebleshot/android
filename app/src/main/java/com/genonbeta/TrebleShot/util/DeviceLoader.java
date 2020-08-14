@@ -35,7 +35,6 @@ import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.util.communication.DifferentClientException;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;

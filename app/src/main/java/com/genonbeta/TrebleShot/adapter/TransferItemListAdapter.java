@@ -40,7 +40,7 @@ import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
-import com.genonbeta.TrebleShot .GlideApp;
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;

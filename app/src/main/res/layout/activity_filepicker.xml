@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,29 +17,29 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     xmlns:tools="http://schemas.android.com/tools"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent"
-                                                     android:fitsSystemWindows="false"
-                                                     tools:context=".activity.FilePickerActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context=".activity.FilePickerActivity">
 
     <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/activitiy_filepicker_fragment_files"
-            android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        android:id="@+id/activitiy_filepicker_fragment_files"
+        android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/content_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginLeft="@dimen/fab_margin"
-            android:layout_marginRight="@dimen/fab_margin"
-            android:layout_marginTop="@dimen/fab_margin"
-            android:layout_marginBottom="70dp"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_done_white_24dp"/>
+        android:id="@+id/content_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_marginBottom="70dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_done_white_24dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

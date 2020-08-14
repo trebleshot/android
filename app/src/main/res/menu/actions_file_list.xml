@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -20,14 +19,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/actions_file_list_toggle_shortcut"
-            android:orderInCategory="98"
-            android:title="@string/butn_addShortcut"
-            android:visible="true"/>
+        android:id="@+id/actions_file_list_toggle_shortcut"
+        android:orderInCategory="98"
+        android:title="@string/butn_addShortcut"
+        android:visible="true" />
 
     <item
-            android:id="@+id/actions_file_list_mount_directory"
-            android:orderInCategory="99"
-            android:title="@string/butn_mountDirectory"
-            android:visible="false"/>
+        android:id="@+id/actions_file_list_mount_directory"
+        android:orderInCategory="99"
+        android:title="@string/butn_mountDirectory"
+        android:visible="false" />
 </menu>

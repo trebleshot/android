@@ -20,7 +20,10 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;

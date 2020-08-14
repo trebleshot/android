@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -22,7 +21,7 @@
         <item quantity="one">Хотите удалить %d файл?</item>
         <item quantity="few">Хотите удалить %d файла?</item>
         <item quantity="many">Хотите удалить %d файлов?</item>
-        <item quantity="other"/>
+        <item quantity="other" />
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
         <item quantity="one">%d файл получен</item>
@@ -38,7 +37,7 @@
         <item quantity="one">Принять %d файл?</item>
         <item quantity="few">Принять %d файла?</item>
         <item quantity="many">Принять %d файлов?</item>
-        <item quantity="other"/>
+        <item quantity="other" />
     </plurals>
     <plurals name="text_removeQueueSummary">
         <item quantity="one">Эта ожидающая передача будет удалена</item>
@@ -72,7 +71,7 @@
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">Один ряд</item>
-        <item quantity="few"/>
+        <item quantity="few" />
         <item quantity="many">%d рядов</item>
     </plurals>
     <plurals name="text_devicesShared">

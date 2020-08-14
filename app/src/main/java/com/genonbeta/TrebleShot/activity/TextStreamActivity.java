@@ -24,10 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 
 public class TextStreamActivity extends Activity
 {

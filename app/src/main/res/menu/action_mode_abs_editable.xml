@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -17,23 +16,24 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:orderInCategory="0"
-            android:id="@+id/action_mode_abs_editable_preview_selections"
-            android:title="@string/butn_previewSelections"
-            app:showAsAction="always"/>
+        android:orderInCategory="0"
+        android:id="@+id/action_mode_abs_editable_preview_selections"
+        android:title="@string/butn_previewSelections"
+        app:showAsAction="always" />
 
     <item
-            android:id="@+id/action_mode_abs_editable_select_all"
-            android:title="@string/butn_selectAll"/>
+        android:id="@+id/action_mode_abs_editable_select_all"
+        android:title="@string/butn_selectAll" />
 
     <item
-            android:id="@+id/action_mode_abs_editable_select_none"
-            android:title="@string/butn_selectNone"/>
+        android:id="@+id/action_mode_abs_editable_select_none"
+        android:title="@string/butn_selectNone" />
 
     <item
-            android:id="@+id/action_mode_abs_editable_cancel_selection"
-            android:title="@string/butn_cancelSelection"/>
+        android:id="@+id/action_mode_abs_editable_cancel_selection"
+        android:title="@string/butn_cancelSelection" />
 
 </menu>

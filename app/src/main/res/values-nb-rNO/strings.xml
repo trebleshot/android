@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -188,7 +187,7 @@
         gjeldende filnavn har problemer med en fil i forvalgt mappe. Hvis det er en delvis mottatt versjon av samme fil,
         velg \"Behold\", eller velg \"Ny fil\", for å generere ny fil.
     </string>
-    <string name="text_fileConflictUseDefault"/>
+    <string name="text_fileConflictUseDefault" />
     <string name="mesg_currentPathUnavailable">Mappen kan ikke brukes</string>
     <string name="text_defaultFolder">Forvalgt mappe</string>
     <string name="text_storage">Lagring</string>

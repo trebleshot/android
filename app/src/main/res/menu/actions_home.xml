@@ -22,6 +22,6 @@
         android:icon="@drawable/ic_swap_vert_white_24dp"
         android:title="@string/transfer_history"
         android:id="@+id/actions_home_transfer_history"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
 </menu>

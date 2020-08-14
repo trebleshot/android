@@ -164,8 +164,8 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
     /**
      * When the transfer is done, this saves the uniquely named file to its actual name held in {@link TransferItem}.
      *
-     * @param savePath       The save path that contains currentFile
-     * @param currentFile    The file that should be renamed
+     * @param savePath     The save path that contains currentFile
+     * @param currentFile  The file that should be renamed
      * @param transferItem The transfer request
      * @return File moved to its actual name
      * @throws IOException Thrown when rename fails

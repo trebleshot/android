@@ -21,10 +21,6 @@ package com.genonbeta.TrebleShot.dialog;
 import android.content.Context;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.ArrayList;

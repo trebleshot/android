@@ -19,40 +19,40 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/action_mode_file_open"
-            android:title="@string/butn_open"
-            android:visible="false"/>
+        android:id="@+id/action_mode_file_open"
+        android:title="@string/butn_open"
+        android:visible="false" />
 
     <item
-            android:id="@+id/action_mode_file_show"
-            android:title="@string/butn_show"
-            android:visible="false"/>
+        android:id="@+id/action_mode_file_show"
+        android:title="@string/butn_show"
+        android:visible="false" />
 
     <item
-            android:id="@+id/action_mode_file_eject_directory"
-            android:title="@string/butn_ejectDirectory"
-            android:visible="false"/>
+        android:id="@+id/action_mode_file_eject_directory"
+        android:title="@string/butn_ejectDirectory"
+        android:visible="false" />
 
     <item
-            android:id="@+id/action_mode_file_change_save_path"
-            android:title="@string/butn_changeSavePath"
-            android:visible="false"/>
+        android:id="@+id/action_mode_file_change_save_path"
+        android:title="@string/butn_changeSavePath"
+        android:visible="false" />
 
     <item
-            android:id="@+id/action_mode_file_toggle_shortcut"
-            android:title="@string/butn_removeShortcut"
-            android:visible="false"/>
+        android:id="@+id/action_mode_file_toggle_shortcut"
+        android:title="@string/butn_removeShortcut"
+        android:visible="false" />
 
     <item
-            android:id="@+id/action_mode_file_copy_here"
-            android:title="@string/butn_copyHere"
-            android:visible="false"/>
+        android:id="@+id/action_mode_file_copy_here"
+        android:title="@string/butn_copyHere"
+        android:visible="false" />
 
     <item
-            android:id="@+id/action_mode_file_rename"
-            android:title="@string/butn_rename"/>
+        android:id="@+id/action_mode_file_rename"
+        android:title="@string/butn_rename" />
 
     <item
-            android:id="@+id/action_mode_file_delete"
-            android:title="@string/butn_delete"/>
+        android:id="@+id/action_mode_file_delete"
+        android:title="@string/butn_delete" />
 </menu>

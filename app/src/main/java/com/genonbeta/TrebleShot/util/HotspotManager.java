@@ -82,7 +82,8 @@ abstract public class HotspotManager
 
     @RequiresApi(26)
     public static class OreoHotspotManager extends HotspotManager
-    {;
+    {
+        ;
         private WifiManager.LocalOnlyHotspotReservation mHotspotReservation;
 
         private OreoHotspotManager(Context context)

@@ -60,7 +60,8 @@ public class Containable implements Parcelable
         children.toArray(this.children);
     }
 
-    public Containable(Uri targetUri, Uri[] children) {
+    public Containable(Uri targetUri, Uri[] children)
+    {
         this.targetUri = targetUri;
         this.children = children;
     }

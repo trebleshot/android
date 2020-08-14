@@ -31,7 +31,6 @@ import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTit
 
 import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**

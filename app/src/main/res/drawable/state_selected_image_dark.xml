@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-          android:enterFadeDuration="@android:integer/config_shortAnimTime"
-          android:exitFadeDuration="@android:integer/config_shortAnimTime">
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:enterFadeDuration="@android:integer/config_shortAnimTime" android:exitFadeDuration="@android:integer/config_shortAnimTime">
     <item android:state_selected="true">
         <layer-list>
             <item>
-                <color android:color="@color/dark_colorSelection"/>
+                <color android:color="@color/dark_colorSelection" />
             </item>
             <item android:gravity="center">
-                <bitmap android:gravity="center" android:src="@drawable/ic_check_white_24dp_static"/>
+                <bitmap android:gravity="center" android:src="@drawable/ic_check_white_24dp_static" />
             </item>
         </layer-list>
     </item>
     <item>
-        <color android:color="@android:color/transparent"/>
+        <color android:color="@android:color/transparent" />
     </item>
 </selector>

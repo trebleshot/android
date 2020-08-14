@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
 import android.widget.Toast;
-import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.io.DocumentFile;
 

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,40 +17,40 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     xmlns:tools="http://schemas.android.com/tools"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent"
-                                                     android:fitsSystemWindows="false">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
     <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:showIn="@layout/layout_connect_devices">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/layout_connect_devices">
 
         <FrameLayout
-                android:id="@+id/layout_connect_devices_content_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+            android:id="@+id/layout_connect_devices_content_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </RelativeLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/bar"
-            style="?bottomAppBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:backgroundTint="@color/colorSecondary"
-            app:fabCradleVerticalOffset="3dp"
-            app:navigationIcon="@drawable/ic_add_white_24dp"/>
+        android:id="@+id/bar"
+        style="?bottomAppBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:backgroundTint="@color/colorSecondary"
+        app:fabCradleVerticalOffset="3dp"
+        app:navigationIcon="@drawable/ic_add_white_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_anchor="@id/bar"
-            app:srcCompat="@drawable/ic_qrcode_scan_white_24dp"/>
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/bar"
+        app:srcCompat="@drawable/ic_qrcode_scan_white_24dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

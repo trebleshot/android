@@ -18,8 +18,6 @@
 
 package com.genonbeta.TrebleShot.util;
 
-import java.net.InetAddress;
-
 public class InetAddresses
 {
     public static byte[] toByteArray(int address)

@@ -2,21 +2,21 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_selected="true">
-        <color android:color="@color/dark_colorSelection"/>
+        <color android:color="@color/dark_colorSelection" />
     </item>
 
     <item android:state_activated="true" android:state_pressed="true">
-        <color android:color="@color/dark_colorSelection"/>
+        <color android:color="@color/dark_colorSelection" />
     </item>
 
     <item android:state_activated="true">
-        <color android:color="@color/dark_colorSelection"/>
+        <color android:color="@color/dark_colorSelection" />
     </item>
 
     <item android:state_pressed="true">
-        <color android:color="@color/dark_colorSelection"/>
+        <color android:color="@color/dark_colorSelection" />
     </item>
 
-    <item android:drawable="@android:color/transparent"/>
+    <item android:drawable="@android:color/transparent" />
 
 </selector>

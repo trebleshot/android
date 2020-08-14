@@ -17,83 +17,83 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <group android:id="@+id/nav_group_other">
 
         <item
-                android:id="@+id/menu_activity_main_manage_devices"
-                android:icon="@drawable/ic_devices_white_24dp"
-                android:orderInCategory="1"
-                android:title="@string/text_manageDevices"/>
+            android:id="@+id/menu_activity_main_manage_devices"
+            android:icon="@drawable/ic_devices_white_24dp"
+            android:orderInCategory="1"
+            android:title="@string/text_manageDevices" />
 
         <item
-                android:id="@+id/menu_activity_main_send_application"
-                android:icon="@drawable/ic_redo_white_24dp"
-                android:orderInCategory="11"
-                android:title="@string/butn_shareTrebleshot"/>
+            android:id="@+id/menu_activity_main_send_application"
+            android:icon="@drawable/ic_redo_white_24dp"
+            android:orderInCategory="11"
+            android:title="@string/butn_shareTrebleshot" />
 
         <item
-                android:id="@+id/menu_activity_main_preferences"
-                android:icon="@drawable/ic_settings_white_24dp"
-                android:orderInCategory="12"
-                android:title="@string/text_preferences"/>
+            android:id="@+id/menu_activity_main_preferences"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:orderInCategory="12"
+            android:title="@string/text_preferences" />
 
         <item
-                android:id="@+id/menu_activity_main_dev_survey"
-                android:icon="@drawable/ic_poll_box_white_24dp"
-                android:orderInCategory="13"
-                android:title="@string/text_developmentSurvey"
-                android:visible="false"/>
+            android:id="@+id/menu_activity_main_dev_survey"
+            android:icon="@drawable/ic_poll_box_white_24dp"
+            android:orderInCategory="13"
+            android:title="@string/text_developmentSurvey"
+            android:visible="false" />
 
         <item
-                android:id="@+id/menu_activity_main_about"
-                android:icon="@drawable/ic_info_white_24dp"
-                android:orderInCategory="13"
-                android:title="@string/text_about"/>
+            android:id="@+id/menu_activity_main_about"
+            android:icon="@drawable/ic_info_white_24dp"
+            android:orderInCategory="13"
+            android:title="@string/text_about" />
 
         <item
-                android:id="@+id/menu_activity_main_exit"
-                android:icon="@drawable/ic_exit_to_app_white_24dp"
-                android:orderInCategory="14"
-                android:title="@string/butn_exit"/>
+            android:id="@+id/menu_activity_main_exit"
+            android:icon="@drawable/ic_exit_to_app_white_24dp"
+            android:orderInCategory="14"
+            android:title="@string/butn_exit" />
 
     </group>
 
     <group android:id="@+id/nav_group_dev_options">
         <item
-                android:id="@+id/menu_activity_main_crash_test"
-                android:icon="@drawable/ic_refresh_white_24dp"
-                android:orderInCategory="15"
-                android:title="Crash now"/>
+            android:id="@+id/menu_activity_main_crash_test"
+            android:icon="@drawable/ic_refresh_white_24dp"
+            android:orderInCategory="15"
+            android:title="Crash now" />
 
         <item
-                android:id="@+id/menu_activity_main_db_migration"
-                android:icon="@drawable/ic_refresh_white_24dp"
-                android:orderInCategory="16"
-                android:title="Run DB Migration"/>
+            android:id="@+id/menu_activity_main_db_migration"
+            android:icon="@drawable/ic_refresh_white_24dp"
+            android:orderInCategory="16"
+            android:title="Run DB Migration" />
     </group>
 
     <group android:id="@+id/nav_group_support">
         <item
-                android:id="@+id/menu_activity_feedback"
-                android:icon="@drawable/ic_email_white_24dp"
-                android:orderInCategory="17"
-                android:title="@string/butn_feedbackContact"/>
+            android:id="@+id/menu_activity_feedback"
+            android:icon="@drawable/ic_email_white_24dp"
+            android:orderInCategory="17"
+            android:title="@string/butn_feedbackContact" />
 
         <item
-                android:id="@+id/menu_activity_main_donate"
-                android:icon="@drawable/ic_favorite_white_24dp"
-                android:orderInCategory="18"
-                android:title="@string/butn_donate"
-                android:visible="false"/>
+            android:id="@+id/menu_activity_main_donate"
+            android:icon="@drawable/ic_favorite_white_24dp"
+            android:orderInCategory="18"
+            android:title="@string/butn_donate"
+            android:visible="false" />
 
         <item
-                android:id="@+id/menu_activity_main_ts_dt"
-                android:orderInCategory="19"
-                app:actionLayout="@layout/layout_main_navigationview_footer"
-                tools:ignore="MenuTitle"/>
+            android:id="@+id/menu_activity_main_ts_dt"
+            android:orderInCategory="19"
+            app:actionLayout="@layout/layout_main_navigationview_footer"
+            tools:ignore="MenuTitle" />
 
     </group>
 </menu>

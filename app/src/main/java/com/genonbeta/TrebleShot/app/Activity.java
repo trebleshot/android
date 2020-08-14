@@ -518,12 +518,14 @@ public abstract class Activity extends AppCompatActivity
      *
      * @param task to be stopped when user leaves
      */
-    public void runUiTask(BackgroundTask task) {
+    public void runUiTask(BackgroundTask task)
+    {
         attachUiTask(task);
         run(task);
     }
 
-    public <T extends AttachedTaskListener, V extends AttachableBgTask<T>> void runUiTask(V task, T anchor) {
+    public <T extends AttachedTaskListener, V extends AttachableBgTask<T>> void runUiTask(V task, T anchor)
+    {
         task.setAnchor(anchor);
         runUiTask(task);
     }

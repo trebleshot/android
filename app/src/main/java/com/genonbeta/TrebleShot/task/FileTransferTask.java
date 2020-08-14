@@ -25,9 +25,9 @@ import android.util.Log;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
+import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
@@ -168,7 +168,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             throw new MemberNotFoundException(member);
         }
 
-        List<DeviceAddress> addressList =Transfers.getAddressListFor(kuick, device.uid);
+        List<DeviceAddress> addressList = Transfers.getAddressListFor(kuick, device.uid);
 
         Log.d(TAG, "createFrom: deviceId=" + device.uid + " transferId=" + transfer.id + " adapter=");
 

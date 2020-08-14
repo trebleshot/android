@@ -142,8 +142,8 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     {
         // TODO: 8/11/20 Fix the url open from Web Share pane
         /**
-        new WebShareDetailsDialog(requireActivity(), TextUtils.makeWebShareLink(requireContext(),
-                NetworkUtils.getFirstInet4Address(object).getHostAddress())).show();
+         new WebShareDetailsDialog(requireActivity(), TextUtils.makeWebShareLink(requireContext(),
+         NetworkUtils.getFirstInet4Address(object).getHostAddress())).show();
          **/
         return true;
     }
@@ -153,9 +153,9 @@ public class ActiveConnectionListFragment extends EditableListFragment<
     {
         // TODO: 8/11/20 Fix the url open from Web Share pane.
         /**
-        if (!super.performLayoutClickOpen(holder, object))
-            startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(requireContext(),
-                    NetworkUtils.getFirstInet4Address(object).getHostAddress()))));
+         if (!super.performLayoutClickOpen(holder, object))
+         startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(requireContext(),
+         NetworkUtils.getFirstInet4Address(object).getHostAddress()))));
          **/
 
         return true;

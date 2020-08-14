@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,10 +17,10 @@
   -->
 
 <resources>
-    <item name="actions_abs_editable_group_grid_size" type="id"/>
-    <item name="actions_abs_group_shareable_group_grouping" type="id"/>
-    <item name="actions_abs_editable_group_sorting" type="id"/>
-    <item name="actions_abs_view_transfer_activity_limit_to" type="id"/>
-    <item name="actions_abs_editable_group_sort_order" type="id"/>
+    <item name="actions_abs_editable_group_grid_size" type="id" />
+    <item name="actions_abs_group_shareable_group_grouping" type="id" />
+    <item name="actions_abs_editable_group_sorting" type="id" />
+    <item name="actions_abs_view_transfer_activity_limit_to" type="id" />
+    <item name="actions_abs_editable_group_sort_order" type="id" />
 
 </resources>

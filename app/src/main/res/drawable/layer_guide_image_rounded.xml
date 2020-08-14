@@ -2,17 +2,19 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <corners android:radius="50dp"/>
+            <corners android:radius="50dp" />
 
             <padding
-                    android:bottom="1dp"
-                    android:left="1dp"
-                    android:right="1dp"
-                    android:top="1dp"/>
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp"
+                android:top="1dp" />
 
-            <solid android:color="@color/colorPassive"/>
+            <solid android:color="@color/colorPassive" />
 
-            <stroke android:color="@color/colorSecondary" android:width="2dp"/>
+            <stroke
+                android:color="@color/colorSecondary"
+                android:width="2dp" />
         </shape>
     </item>
 </layer-list>

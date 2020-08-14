@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2020 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -17,28 +16,27 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <include layout="@layout/genfw_layout_listfragment_emptyview"/>
+    <include layout="@layout/genfw_layout_listfragment_emptyview" />
 
-    <include layout="@layout/genfw_layout_listfragment_recyclerview"/>
+    <include layout="@layout/genfw_layout_listfragment_recyclerview" />
 
     <com.genonbeta.android.framework.widget.recyclerview.FastScroller
-            android:id="@+id/abstract_layout_fast_scroll_recyclerview_fastscroll_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical"/>
+        android:id="@+id/abstract_layout_fast_scroll_recyclerview_fastscroll_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical" />
 
     <View
-            android:id="@+id/abstract_layout_fast_scroll_recyclerview_bottom_divider"
-            style="@style/DividerStyle"
-            android:visibility="gone"
-            android:layout_gravity="bottom"/>
+        android:id="@+id/abstract_layout_fast_scroll_recyclerview_bottom_divider"
+        style="@style/DividerStyle"
+        android:visibility="gone"
+        android:layout_gravity="bottom" />
 
 </FrameLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -19,8 +18,8 @@
 
 <resources>
     <declare-styleable name="ComparativeRelativeLayout">
-        <attr name="baseOnSmallerLength" format="boolean"/>
-        <attr name="tallerLengthExtra" format="dimension"/>
-        <attr name="alwaysUseWidth" format="boolean"/> <!-- Do not define baseOnSmallerLength to use this -->
+        <attr name="baseOnSmallerLength" format="boolean" />
+        <attr name="tallerLengthExtra" format="dimension" />
+        <attr name="alwaysUseWidth" format="boolean" /> <!-- Do not define baseOnSmallerLength to use this -->
     </declare-styleable>
 </resources>

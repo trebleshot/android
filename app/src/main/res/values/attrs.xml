@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,34 +17,34 @@
   -->
 
 <resources>
-    <attr name="backgroundButton" format="reference"/>
-    <attr name="backgroundDialog" format="reference"/>
-    <attr name="backgroundEdgeAction" format="reference"/>
-    <attr name="backgroundGradient" format="reference"/>
-    <attr name="backgroundGradientBottom" format="reference"/>
-    <attr name="backgroundGradientTop" format="reference"/>
-    <attr name="backgroundPopupMenu" format="reference"/>
-    <attr name="colorDonation" format="reference"/>
-    <attr name="colorTranslucent" format="reference"/>
-    <attr name="colorDivider" format="reference"/>
-    <attr name="colorPassive" format="reference"/>
-    <attr name="colorPrimaryDark23" format="reference"/> <!-- Marshmallow devices use dark tint color -->
-    <attr name="colorSelection" format="reference"/>
-    <attr name="contentShowingBackground" format="reference"/>
-    <attr name="fastScrollBackground" format="reference"/>
-    <attr name="rectSelector" format="reference"/>
-    <attr name="rippleBackground" format="reference"/>
-    <attr name="roundSelector" format="reference"/>
-    <attr name="roundProgressBar" format="reference"/>
-    <attr name="roundProgressBarShape" format="reference"/>
-    <attr name="selectionColor" format="reference"/>
-    <attr name="selectionAccentColor" format="reference"/>
-    <attr name="selectableItemBackground" format="reference"/>
-    <attr name="snackbarBackground" format="reference"/>
-    <attr name="stateSelectedImage" format="reference"/>
-    <attr name="stateSelectedImageRounded" format="reference"/>
-    <attr name="stateSelectedImageRoundedGuiding" format="reference"/>
-    <attr name="stateSelectedImageSquare" format="reference"/>
-    <attr name="statusBarColor" format="reference"/>
-    <attr name="useLightStatusBar" format="boolean"/>
+    <attr name="backgroundButton" format="reference" />
+    <attr name="backgroundDialog" format="reference" />
+    <attr name="backgroundEdgeAction" format="reference" />
+    <attr name="backgroundGradient" format="reference" />
+    <attr name="backgroundGradientBottom" format="reference" />
+    <attr name="backgroundGradientTop" format="reference" />
+    <attr name="backgroundPopupMenu" format="reference" />
+    <attr name="colorDonation" format="reference" />
+    <attr name="colorTranslucent" format="reference" />
+    <attr name="colorDivider" format="reference" />
+    <attr name="colorPassive" format="reference" />
+    <attr name="colorPrimaryDark23" format="reference" /> <!-- Marshmallow devices use dark tint color -->
+    <attr name="colorSelection" format="reference" />
+    <attr name="contentShowingBackground" format="reference" />
+    <attr name="fastScrollBackground" format="reference" />
+    <attr name="rectSelector" format="reference" />
+    <attr name="rippleBackground" format="reference" />
+    <attr name="roundSelector" format="reference" />
+    <attr name="roundProgressBar" format="reference" />
+    <attr name="roundProgressBarShape" format="reference" />
+    <attr name="selectionColor" format="reference" />
+    <attr name="selectionAccentColor" format="reference" />
+    <attr name="selectableItemBackground" format="reference" />
+    <attr name="snackbarBackground" format="reference" />
+    <attr name="stateSelectedImage" format="reference" />
+    <attr name="stateSelectedImageRounded" format="reference" />
+    <attr name="stateSelectedImageRoundedGuiding" format="reference" />
+    <attr name="stateSelectedImageSquare" format="reference" />
+    <attr name="statusBarColor" format="reference" />
+    <attr name="useLightStatusBar" format="boolean" />
 </resources>

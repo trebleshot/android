@@ -41,8 +41,6 @@ import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.signature.ObjectKey;
 import com.bumptech.glide.util.Util;
 
-import java.io.IOException;
-
 /**
  * created by: Veli
  * date: 28.03.2018 17:29

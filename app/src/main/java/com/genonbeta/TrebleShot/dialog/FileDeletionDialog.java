@@ -19,16 +19,13 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +52,7 @@ public class FileDeletionDialog extends AlertDialog.Builder
 
         setNegativeButton(R.string.butn_cancel, null);
         setPositiveButton(R.string.butn_delete, (dialog, p2) -> {
-            // FIXME: 21.03.2020
+                    // FIXME: 21.03.2020
             /*
             new BackgroundTask()
             {
@@ -111,7 +108,7 @@ public class FileDeletionDialog extends AlertDialog.Builder
                     .run(context);
 
              */
-        }
+                }
         );
     }
 

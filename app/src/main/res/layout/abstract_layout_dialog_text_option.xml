@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,22 +17,22 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="?attr/dialogPreferredPadding">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="?attr/dialogPreferredPadding">
 
     <TextView
-            android:id="@+id/text1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.Primary"/>
+        android:id="@+id/text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.Primary" />
 
     <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/checkbox1"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textAppearance="@style/TextAppearance.Secondary"
-            android:layout_height="wrap_content"/>
+        android:id="@+id/checkbox1"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="15dp"
+        android:textAppearance="@style/TextAppearance.Secondary"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
