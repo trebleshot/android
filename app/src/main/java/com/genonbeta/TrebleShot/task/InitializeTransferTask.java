@@ -22,11 +22,11 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TransferMember;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import org.json.JSONObject;
 
-public class InitializeTransferTask extends BackgroundTask
+public class InitializeTransferTask extends AsyncTask
 {
     private final Device mDevice;
     private final DeviceAddress mAddress;

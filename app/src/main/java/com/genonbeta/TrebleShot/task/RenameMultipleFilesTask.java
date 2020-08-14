@@ -22,13 +22,13 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.util.List;
 
-public class RenameMultipleFilesTask extends BackgroundTask
+public class RenameMultipleFilesTask extends AsyncTask
 {
     private final List<FileListAdapter.FileHolder> mList;
     private final String mNewName;
@@ -79,7 +79,7 @@ public class RenameMultipleFilesTask extends BackgroundTask
     @Override
     public String getTitle()
     {
-        return getService().getString(R.string.text_renameMultipleItems);
+        return getContext().getString(R.string.text_renameMultipleItems);
     }
 
     public boolean renameFile(Kuick kuick, FileListAdapter.FileHolder holder, String renameTo,

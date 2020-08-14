@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Identifiable;
 import com.genonbeta.TrebleShot.object.Identifier;
@@ -40,13 +41,13 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.service.BackgroundService.hashIntent;
 
-public abstract class BackgroundTask extends StoppableJob implements Stoppable, Identifiable
+public abstract class AsyncTask extends StoppableJob implements Stoppable, Identifiable
 {
     public static final String TASK_GROUP_DEFAULT = "TASK_GROUP_DEFAULT";
 
     private final ProgressListener mProgressListener = new ProgressListener();
     private Kuick mKuick;
-    private BackgroundService mService;
+    private App mApp;
     private Stoppable mStoppable;
     private PendingIntent mActivityIntent;
     private DynamicNotification mCustomNotification; // The notification that is not part of the default notification.
@@ -85,6 +86,16 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
             interrupt();
     }
 
+    protected App getApp()
+    {
+        return mApp;
+    }
+
+    protected Context getContext()
+    {
+        return getApp().getApplicationContext();
+    }
+
     @Override
     public List<Closer> getClosers()
     {
@@ -118,17 +129,12 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
     protected MediaScannerConnection getMediaScanner()
     {
-        return getService().getMediaScanner();
+        return getApp().getMediaScanner();
     }
 
     protected NotificationHelper getNotificationHelper()
     {
-        return getService().getNotificationHelper();
-    }
-
-    protected BackgroundService getService()
-    {
-        return mService;
+        return getApp().getNotificationHelper();
     }
 
     private Stoppable getStoppable()
@@ -193,7 +199,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     public Kuick kuick()
     {
         if (mKuick == null)
-            mKuick = AppUtils.getKuick(getService());
+            mKuick = AppUtils.getKuick(getContext());
         return mKuick;
     }
 
@@ -230,11 +236,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return getStoppable().removeCloser(closer);
     }
 
-    public void rerun(BackgroundService service)
+    public void rerun(App app)
     {
         if (!isStarted() || isFinished()) {
             reset(true);
-            service.run(this);
+            app.run(this);
         } else
             mScheduleRerun = true;
     }
@@ -269,14 +275,14 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         getStoppable().removeClosers();
     }
 
-    public void run(BackgroundService service)
+    public void run(App app)
     {
         if (isStarted() || isFinished() || isInterrupted())
             throw new IllegalStateException(getClass().getName() + " is already in interrupted state. To run it "
                     + "again with the same configuration you need to use rerun().");
 
         setStarted(true);
-        setService(service);
+        setApp(app);
         publishStatus();
 
         try {
@@ -285,11 +291,11 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         } finally {
             setFinished(true);
             publishStatus();
-            setService(null);
+            setApp(null);
         }
 
         if (mScheduleRerun)
-            rerun(service);
+            rerun(app);
     }
 
     public void setContentIntent(PendingIntent intent)
@@ -318,9 +324,9 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         mCurrentContent = content;
     }
 
-    private void setService(@Nullable BackgroundService service)
+    private void setApp(@Nullable App service)
     {
-        mService = service;
+        mApp = service;
     }
 
     private void setStarted(boolean started)
@@ -344,7 +350,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         @Override
         public boolean onProgressChange(Progress progress)
         {
-            BackgroundTask.this.onProgressChange(progress);
+            AsyncTask.this.onProgressChange(progress);
             publishStatus();
             return !isInterrupted();
         }

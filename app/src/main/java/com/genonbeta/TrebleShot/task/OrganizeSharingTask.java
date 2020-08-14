@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -39,7 +39,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
+public class OrganizeSharingTask extends AttachableAsyncTask<AttachedTaskListener>
 {
     private final List<Uri> mUriList;
 
@@ -64,7 +64,7 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
             progress().addToCurrent(1);
 
             try {
-                DocumentFile file = FileUtils.fromUri(getService(), uri);
+                DocumentFile file = FileUtils.fromUri(getContext(), uri);
                 setOngoingContent(file.getName());
                 publishStatus();
 
@@ -83,8 +83,8 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
             addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                     .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(transfer.id))));
 
-            TransferDetailActivity.startInstance(getService(), transfer);
-            AddDevicesToTransferActivity.startInstance(getService(), transfer, true);
+            TransferDetailActivity.startInstance(getContext(), transfer);
+            AddDevicesToTransferActivity.startInstance(getContext(), transfer, true);
             kuick().broadcast();
         }
     }
@@ -92,12 +92,12 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
     @Override
     public String getDescription()
     {
-        return getService().getString(R.string.mesg_organizingFiles);
+        return getContext().getString(R.string.mesg_organizingFiles);
     }
 
     @Override
     public String getTitle()
     {
-        return getService().getString(R.string.mesg_organizingFiles);
+        return getContext().getString(R.string.mesg_organizingFiles);
     }
 }

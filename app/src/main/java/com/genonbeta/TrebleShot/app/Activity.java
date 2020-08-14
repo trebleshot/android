@@ -49,10 +49,10 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.Identifier;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.io.FileInputStream;
@@ -69,9 +69,10 @@ public abstract class Activity extends AppCompatActivity
 
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
 
-    private final List<BaseAttachableBgTask> mAttachedTaskList = new ArrayList<>();
-    private final List<BackgroundTask> mUiTaskList = new ArrayList<>();
+    private final List<BaseAttachableAsyncTask> mAttachedTaskList = new ArrayList<>();
+    private final List<AsyncTask> mUiTaskList = new ArrayList<>();
     private AlertDialog mOngoingRequest;
+    private App mApp;
     private final IntentFilter mFilter = new IntentFilter();
     private boolean mDarkThemeRequested = false;
     private boolean mAmoledDarkThemeRequested = false;
@@ -87,8 +88,7 @@ public abstract class Activity extends AppCompatActivity
         {
             if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED.equals(intent.getAction()))
                 checkForThemeChange();
-            else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction())
-                    || App.ACTION_SERVICE_BOUND.equals(intent.getAction()))
+            else if (App.ACTION_TASK_CHANGE.equals(intent.getAction()))
                 attachTasks();
 
             Log.d(TAG, "onReceive: " + intent.getAction());
@@ -98,13 +98,17 @@ public abstract class Activity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
+        if (getApplication() instanceof App)
+            mApp = (App) getApplication();
+        else
+            throw new IllegalStateException("This activity cannot run a different Application class.");
+
         mDarkThemeRequested = isDarkThemeRequested();
         mAmoledDarkThemeRequested = isAmoledDarkThemeRequested();
         mCustomFontsEnabled = isUsingCustomFonts();
 
         mFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED);
-        mFilter.addAction(BackgroundService.ACTION_TASK_CHANGE);
-        mFilter.addAction(App.ACTION_SERVICE_BOUND);
+        mFilter.addAction(App.ACTION_TASK_CHANGE);
 
         if (mDarkThemeRequested) {
             try {
@@ -201,7 +205,7 @@ public abstract class Activity extends AppCompatActivity
         detachTasks();
     }
 
-    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
     {
 
     }
@@ -269,7 +273,7 @@ public abstract class Activity extends AppCompatActivity
 
     }
 
-    public void attachTask(BaseAttachableBgTask task)
+    public void attachTask(BaseAttachableAsyncTask task)
     {
         synchronized (mAttachedTaskList) {
             if (!mAttachedTaskList.add(task))
@@ -282,50 +286,45 @@ public abstract class Activity extends AppCompatActivity
 
     private synchronized void attachTasks()
     {
-        try {
-            BackgroundService service = AppUtils.getBgService(this);
-            List<BackgroundTask> concurrentTaskList = service.findTasksBy(getIdentity());
-            List<BaseAttachableBgTask> attachableBgTaskList = new ArrayList<>(mAttachedTaskList);
-            boolean checkIfExists = attachableBgTaskList.size() > 0;
+        List<AsyncTask> concurrentTaskList = getSelfApplication().findTasksBy(getIdentity());
+        List<BaseAttachableAsyncTask> attachableBgTaskList = new ArrayList<>(mAttachedTaskList);
+        boolean checkIfExists = attachableBgTaskList.size() > 0;
 
-            // If this call is in between of onStart and onStop, it means there could be some tasks held in the
-            // attached task list. To avoid duplicates, we check for them using 'checkIfExists'.
-            if (concurrentTaskList.size() > 0) {
-                for (BackgroundTask task : concurrentTaskList) {
-                    if (task instanceof BaseAttachableBgTask) {
-                        BaseAttachableBgTask attachableBgTask = (BaseAttachableBgTask) task;
-                        if (!checkIfExists || !attachableBgTaskList.contains(task)) {
-                            attachTask(attachableBgTask);
-                            attachableBgTaskList.add(attachableBgTask);
-                        }
+        // If this call is in between of onStart and onStop, it means there could be some tasks held in the
+        // attached task list. To avoid duplicates, we check for them using 'checkIfExists'.
+        if (concurrentTaskList.size() > 0) {
+            for (AsyncTask task : concurrentTaskList) {
+                if (task instanceof BaseAttachableAsyncTask) {
+                    BaseAttachableAsyncTask attachableBgTask = (BaseAttachableAsyncTask) task;
+                    if (!checkIfExists || !attachableBgTaskList.contains(task)) {
+                        attachTask(attachableBgTask);
+                        attachableBgTaskList.add(attachableBgTask);
                     }
                 }
             }
-
-            // In this phase, we remove the tasks that are no longer known to the background service.
-            if (checkIfExists && attachableBgTaskList.size() > 0) {
-                if (concurrentTaskList.size() == 0)
-                    detachTasks();
-                else {
-                    List<BaseAttachableBgTask> unrefreshedTaskList = new ArrayList<>(attachableBgTaskList);
-                    for (BaseAttachableBgTask task : unrefreshedTaskList) {
-                        if (!concurrentTaskList.contains(task))
-                            detachTask(task);
-                    }
-                }
-            }
-
-            onAttachTasks(attachableBgTaskList);
-            for (BaseAttachableBgTask bgTask : attachableBgTaskList)
-                if (!bgTask.hasAnchor())
-                    throw new RuntimeException("The task " + bgTask.getClass().getSimpleName() + " owner "
-                            + getClass().getSimpleName() + "  did not provide the anchor.");
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
         }
+
+        // In this phase, we remove the tasks that are no longer known to the background service.
+        if (checkIfExists && attachableBgTaskList.size() > 0) {
+            if (concurrentTaskList.size() == 0)
+                detachTasks();
+            else {
+                List<BaseAttachableAsyncTask> unrefreshedTaskList = new ArrayList<>(attachableBgTaskList);
+                for (BaseAttachableAsyncTask task : unrefreshedTaskList) {
+                    if (!concurrentTaskList.contains(task))
+                        detachTask(task);
+                }
+            }
+        }
+
+        onAttachTasks(attachableBgTaskList);
+        for (BaseAttachableAsyncTask bgTask : attachableBgTaskList)
+            if (!bgTask.hasAnchor())
+                throw new RuntimeException("The task " + bgTask.getClass().getSimpleName() + " owner "
+                        + getClass().getSimpleName() + "  did not provide the anchor.");
     }
 
-    public void attachUiTask(BackgroundTask task)
+    public void attachUiTask(AsyncTask task)
     {
         synchronized (mUiTaskList) {
             mUiTaskList.add(task);
@@ -345,8 +344,8 @@ public abstract class Activity extends AppCompatActivity
         if (mUiTaskList.size() <= 0)
             return;
         synchronized (mUiTaskList) {
-            List<BackgroundTask> uiTaskList = new ArrayList<>();
-            for (BackgroundTask task : mUiTaskList)
+            List<AsyncTask> uiTaskList = new ArrayList<>();
+            for (AsyncTask task : mUiTaskList)
                 if (!task.isFinished())
                     uiTaskList.add(task);
             mUiTaskList.clear();
@@ -354,7 +353,7 @@ public abstract class Activity extends AppCompatActivity
         }
     }
 
-    public void detachTask(BaseAttachableBgTask task)
+    public void detachTask(BaseAttachableAsyncTask task)
     {
         synchronized (mAttachedTaskList) {
             task.removeAnchor();
@@ -364,8 +363,8 @@ public abstract class Activity extends AppCompatActivity
 
     private void detachTasks()
     {
-        List<BaseAttachableBgTask> taskList = new ArrayList<>(mAttachedTaskList);
-        for (BaseAttachableBgTask task : taskList)
+        List<BaseAttachableAsyncTask> taskList = new ArrayList<>(mAttachedTaskList);
+        for (BaseAttachableAsyncTask task : taskList)
             detachTask(task);
     }
 
@@ -378,10 +377,10 @@ public abstract class Activity extends AppCompatActivity
         finish();
     }
 
-    public List<BaseAttachableBgTask> findTasksWith(Identity identity)
+    public List<BaseAttachableAsyncTask> findTasksWith(Identity identity)
     {
         synchronized (mAttachedTaskList) {
-            return BackgroundService.findTasksBy(mAttachedTaskList, identity);
+            return App.findTasksBy(mAttachedTaskList, identity);
         }
     }
 
@@ -397,19 +396,19 @@ public abstract class Activity extends AppCompatActivity
 
     public Identity getIdentity()
     {
-        return Identity.withORs(Identifier.from(BackgroundTask.Id.HashCode, BackgroundService.hashIntent(getIntent())));
+        return Identity.withORs(Identifier.from(AsyncTask.Id.HashCode, BackgroundService.hashIntent(getIntent())));
     }
 
-    public <T extends BaseAttachableBgTask> List<T> getTaskListOf(Class<T> clazz)
+    public <T extends BaseAttachableAsyncTask> List<T> getTaskListOf(Class<T> clazz)
     {
         synchronized (mAttachedTaskList) {
-            return BackgroundService.getTaskListOf(mAttachedTaskList, clazz);
+            return App.getTaskListOf(mAttachedTaskList, clazz);
         }
     }
 
     public App getSelfApplication()
     {
-        return getApplication() instanceof App ? (App) getApplication() : null;
+        return mApp;
     }
 
     public boolean hasIntroductionShown()
@@ -417,17 +416,17 @@ public abstract class Activity extends AppCompatActivity
         return getDefaultPreferences().getBoolean("introduction_shown", false);
     }
 
-    public boolean hasTaskOf(Class<? extends BackgroundTask> clazz)
+    public boolean hasTaskOf(Class<? extends AsyncTask> clazz)
     {
         synchronized (mAttachedTaskList) {
-            return BackgroundService.hasTaskOf(mAttachedTaskList, clazz);
+            return App.hasTaskOf(mAttachedTaskList, clazz);
         }
     }
 
     public boolean hasTaskWith(Identity identity)
     {
         synchronized (mAttachedTaskList) {
-            return BackgroundService.hasTaskWith(mAttachedTaskList, identity);
+            return App.hasTaskWith(mAttachedTaskList, identity);
         }
     }
 
@@ -445,7 +444,7 @@ public abstract class Activity extends AppCompatActivity
         if (mAttachedTaskList.size() <= 0)
             return;
         synchronized (mAttachedTaskList) {
-            for (BaseAttachableBgTask task : mAttachedTaskList)
+            for (BaseAttachableAsyncTask task : mAttachedTaskList)
                 task.interrupt(userAction);
         }
     }
@@ -507,10 +506,10 @@ public abstract class Activity extends AppCompatActivity
                 break;
     }
 
-    public void run(BackgroundTask task)
+    public void run(AsyncTask task)
     {
         task.setContentIntent(this, getIntent());
-        BackgroundService.run(this, task);
+        App.run(this, task);
     }
 
     /**
@@ -518,13 +517,13 @@ public abstract class Activity extends AppCompatActivity
      *
      * @param task to be stopped when user leaves
      */
-    public void runUiTask(BackgroundTask task)
+    public void runUiTask(AsyncTask task)
     {
         attachUiTask(task);
         run(task);
     }
 
-    public <T extends AttachedTaskListener, V extends AttachableBgTask<T>> void runUiTask(V task, T anchor)
+    public <T extends AttachedTaskListener, V extends AttachableAsyncTask<T>> void runUiTask(V task, T anchor)
     {
         task.setAnchor(anchor);
         runUiTask(task);
@@ -550,7 +549,7 @@ public abstract class Activity extends AppCompatActivity
         if (mUiTaskList.size() <= 0)
             return;
         synchronized (mUiTaskList) {
-            for (BackgroundTask task : mUiTaskList)
+            for (AsyncTask task : mUiTaskList)
                 task.interrupt(true);
             mUiTaskList.clear();
         }

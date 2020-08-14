@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
@@ -40,7 +41,6 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -202,15 +202,14 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
         Object specifier = object.object();
         if (requireActivity() instanceof AddDeviceActivity) {
             if (specifier instanceof NetworkDescription)
-                BackgroundService.run(requireActivity(), new DeviceIntroductionTask(
-                        (NetworkDescription) specifier, -1));
+                App.run(requireActivity(), new DeviceIntroductionTask((NetworkDescription) specifier, -1));
             else if (specifier instanceof Device) {
                 Device device = (Device) specifier;
                 if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
                     createSnackbar(R.string.mesg_versionNotSupported).show();
                 else
                     EstablishConnectionDialog.show(getActivity(), device,
-                            (connection) -> AddDeviceActivity.returnResult(requireActivity(), device, connection));
+                            (connection) -> AddDeviceActivity.handleResult(requireActivity(), device, connection));
             } else
                 return false;
         } else

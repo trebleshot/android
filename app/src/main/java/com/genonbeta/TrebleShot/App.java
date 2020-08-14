@@ -18,18 +18,17 @@
 
 package com.genonbeta.TrebleShot;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.media.MediaScannerConnection;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.multidex.MultiDexApplication;
@@ -38,41 +37,46 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.HotspotManager;
-import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
+import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * created by: Veli
  * date: 25.02.2018 01:23
  */
 
-public class App extends MultiDexApplication implements Thread.UncaughtExceptionHandler, ServiceConnection
+public class App extends MultiDexApplication implements Thread.UncaughtExceptionHandler
 {
     public static final String TAG = App.class.getSimpleName();
 
-    public static final String ACTION_SERVICE_BOUND = "com.genonbeta.intent.action.SERVICE_BOUND";
-
     public static final String ACTION_OREO_HOTSPOT_STARTED = "org.monora.trebleshot.intent.action.HOTSPOT_STARTED";
+
+    public static final String ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE";
 
     public static final String EXTRA_HOTSPOT_CONFIG = "hotspotConfig";
 
+
+    private final ExecutorService mExecutor = Executors.newFixedThreadPool(10);
+    private final List<AsyncTask> mTaskList = new ArrayList<>();
     private int mForegroundActivitiesCount = 0;
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private File mCrashLogFile;
-    private BackgroundService mBgService;
-    private WeakReference<BackgroundService> mBgServiceRef;
     private HotspotManager mHotspotManager;
-
+    private MediaScannerConnection mMediaScanner;
+    private NotificationHelper mNotificationHelper;
 
     @Override
     public void onCreate()
@@ -82,12 +86,16 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         mCrashLogFile = getApplicationContext().getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         mHotspotManager = HotspotManager.newInstance(this);
+        mMediaScanner = new MediaScannerConnection(this, null);
+        mNotificationHelper = new NotificationHelper(new NotificationUtils(getApplicationContext(),
+                AppUtils.getKuick(getApplicationContext()), AppUtils.getDefaultPreferences(getApplicationContext())));
+
+        mMediaScanner.connect();
+        Thread.setDefaultUncaughtExceptionHandler(this);
+        initializeSettings();
 
         if (Build.VERSION.SDK_INT >= 26)
             mHotspotManager.setSecondaryCallback(new SecondaryHotspotCallback());
-
-        Thread.setDefaultUncaughtExceptionHandler(this);
-        initializeSettings();
 
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
                 && !UpdateUtils.hasNewVersion(getApplicationContext())
@@ -98,31 +106,41 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service)
+    public void attach(AsyncTask task)
     {
-        if (service instanceof BackgroundService.LocalBinder) {
-            mBgService = ((BackgroundService.LocalBinder) service).getService();
-            sendBroadcast(new Intent(ACTION_SERVICE_BOUND));
-            Log.d(TAG, "onServiceConnected: Service is bound");
-        } else
-            Log.e(TAG, "onServiceConnected: Some unknown binder is given");
+        runInternal(task);
     }
 
-    @Override
-    public void onServiceDisconnected(ComponentName name)
+    @Nullable
+    public AsyncTask findTaskBy(Identity identity)
     {
-        mBgServiceRef.clear();
-        mBgService = null;
-        Log.d(TAG, "onServiceDisconnected: Service is disconnected");
+        List<AsyncTask> taskList = findTasksBy(identity);
+        return taskList.size() > 0 ? taskList.get(0) : null;
     }
 
-    public WeakReference<BackgroundService> getBackgroundService()
+    @NonNull
+    public synchronized List<AsyncTask> findTasksBy(Identity identity)
     {
-        if (mBgServiceRef == null || mBgServiceRef.get() == null)
-            mBgServiceRef = new WeakReference<>(mBgService);
+        synchronized (mTaskList) {
+            return findTasksBy(mTaskList, identity);
+        }
+    }
 
-        return mBgServiceRef;
+    public static <T extends AsyncTask> List<T> findTasksBy(List<T> taskList, Identity identity)
+    {
+        List<T> foundList = new ArrayList<>();
+        for (T task : taskList)
+            if (task.getIdentity().equals(identity))
+                foundList.add(task);
+        return foundList;
+    }
+
+    public static App from(android.app.Activity activity) throws IllegalStateException
+    {
+        if (activity.getApplication() instanceof App)
+            return (App) activity.getApplication();
+
+        throw new IllegalStateException("The app does not have an App instance.");
     }
 
     public HotspotManager getHotspotManager()
@@ -133,6 +151,71 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     public WifiConfiguration getHotspotConfig()
     {
         return getHotspotManager().getConfiguration();
+    }
+
+    public MediaScannerConnection getMediaScanner()
+    {
+        return mMediaScanner;
+    }
+
+    public NotificationHelper getNotificationHelper()
+    {
+        return mNotificationHelper;
+    }
+
+    private ExecutorService getSelfExecutor()
+    {
+        return mExecutor;
+    }
+
+    protected List<AsyncTask> getTaskList()
+    {
+        return mTaskList;
+    }
+
+    public <T extends AsyncTask> List<T> getTaskListOf(Class<T> clazz)
+    {
+        synchronized (mTaskList) {
+            return getTaskListOf(mTaskList, clazz);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends AsyncTask> List<T> getTaskListOf(List<? extends AsyncTask> taskList, Class<T> clazz)
+    {
+        List<T> foundList = new ArrayList<>();
+        for (AsyncTask task : taskList)
+            if (clazz.isInstance(task))
+                foundList.add((T) task);
+        return foundList;
+    }
+
+    public boolean hasTaskOf(Class<? extends AsyncTask> clazz)
+    {
+        synchronized (mTaskList) {
+            return hasTaskOf(mTaskList, clazz);
+        }
+    }
+
+    public static boolean hasTaskOf(List<? extends AsyncTask> taskList, Class<? extends AsyncTask> clazz)
+    {
+        for (AsyncTask task : taskList)
+            if (clazz.isInstance(task))
+                return true;
+        return false;
+    }
+
+    public boolean hasTasks()
+    {
+        return mTaskList.size() > 0;
+    }
+
+    public static boolean hasTaskWith(List<? extends AsyncTask> taskList, Identity identity)
+    {
+        for (AsyncTask task : taskList)
+            if (task.getIdentity().equals(identity))
+                return true;
+        return false;
     }
 
     private void initializeSettings()
@@ -179,6 +262,33 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
                     .apply();
     }
 
+    public void interruptTasksBy(Identity identity, boolean userAction)
+    {
+        synchronized (mTaskList) {
+            for (AsyncTask task : findTasksBy(identity))
+                task.interrupt(userAction);
+        }
+    }
+
+    public void interruptAllTasks()
+    {
+        synchronized (mTaskList) {
+            for (AsyncTask task : mTaskList) {
+                task.interrupt(false);
+                Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getTitle());
+            }
+        }
+    }
+
+    public static void interruptTasksBy(android.app.Activity activity, Identity identity, boolean userAction)
+    {
+        try {
+            App.from(activity).interruptTasksBy(identity, userAction);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void notifyActivityInForeground(Activity activity, boolean inForeground)
     {
         ((App) activity.getApplication()).notifyActivityInForeground(inForeground);
@@ -194,22 +304,52 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         boolean newlyInFg = mForegroundActivitiesCount == 1;
         Intent intent = new Intent(this, BackgroundService.class);
 
-        if (newlyInFg) {
-            bindService(intent, this, BIND_AUTO_CREATE);
-        } else if (inBg) {
-            boolean canStop = mBgService.canStopService();
-            if (canStop) {
-                Log.d(TAG, "notifyActivityInForeground: Service is not needed. Stopping...");
-                stopService(intent);
-            } else {
-                Log.d(TAG, "notifyActivityInForeground: Service is being taken to the foreground");
-                ContextCompat.startForegroundService(this, intent);
-            }
-
-            unbindService(this);
+        if (newlyInFg)
+            ContextCompat.startForegroundService(getApplicationContext(), intent);
+        else if (inBg) {
+            intent.setAction(BackgroundService.ACTION_END_SESSION)
+                    .putExtra(BackgroundService.EXTRA_CHECK_FOR_TASKS, true);
+            ContextCompat.startForegroundService(getApplicationContext(), intent);
         }
 
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
+    }
+
+    protected synchronized <T extends AsyncTask> void registerWork(T task)
+    {
+        synchronized (mTaskList) {
+            mTaskList.add(task);
+        }
+
+        Log.d(TAG, "registerWork: " + task.getClass().getSimpleName());
+        sendBroadcast(new Intent(ACTION_TASK_CHANGE));
+    }
+
+    public void run(final AsyncTask runningTask)
+    {
+        getSelfExecutor().submit(() -> attach(runningTask));
+    }
+
+    public static <T extends AsyncTask> void run(android.app.Activity activity, T task)
+    {
+        try {
+            from(activity).run(task);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void runInternal(AsyncTask runningTask)
+    {
+        registerWork(runningTask);
+
+        try {
+            runningTask.run(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        unregisterWork(runningTask);
     }
 
     public void toggleHotspot()
@@ -274,6 +414,17 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
 
         mDefaultExceptionHandler.uncaughtException(t, e);
+    }
+
+    protected synchronized void unregisterWork(AsyncTask task)
+    {
+        synchronized (mTaskList) {
+            mTaskList.remove(task);
+            // FIXME: 20.03.2020 Should we stop the service if there is no task left?
+        }
+
+        Log.d(TAG, "unregisterWork: " + task.getClass().getSimpleName());
+        sendBroadcast(new Intent(ACTION_TASK_CHANGE));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

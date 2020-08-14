@@ -32,7 +32,7 @@ import androidx.transition.TransitionManager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 
@@ -45,7 +45,7 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     public static final String
             TAG = ManualConnectionActivity.class.getSimpleName(),
             EXTRA_DEVICE = "extraDevice",
-            EXTRA_DEVICE_ADDRESS = "extraConnection";
+            EXTRA_DEVICE_ADDRESS = "extraDeviceAddress";
 
     private final CheckHostnameListener hostnameListener = new CheckHostnameListener();
 
@@ -93,12 +93,12 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     }
 
     @Override
-    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
     {
         super.onAttachTasks(taskList);
 
         boolean hasDeviceIntroductionTask = false;
-        for (BaseAttachableBgTask task : taskList)
+        for (BaseAttachableAsyncTask task : taskList)
             if (task instanceof DeviceIntroductionTask) {
                 hasDeviceIntroductionTask = true;
                 ((DeviceIntroductionTask) task).setAnchor(this);
@@ -109,7 +109,7 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         setShowProgress(task instanceof DeviceIntroductionTask && !task.isFinished());
     }

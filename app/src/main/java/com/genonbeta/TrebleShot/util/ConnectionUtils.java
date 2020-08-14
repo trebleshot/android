@@ -39,6 +39,7 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -540,7 +541,7 @@ public class ConnectionUtils
     private void toggleHotspot(Activity activity)
     {
         try {
-            AppUtils.getApp(activity).toggleHotspot();
+            App.from(activity).toggleHotspot();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }

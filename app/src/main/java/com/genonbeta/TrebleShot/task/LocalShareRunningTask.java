@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -47,7 +47,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalShareRunningTask extends BackgroundTask
+public class LocalShareRunningTask extends AsyncTask
 {
     public static final String TAG = LocalShareRunningTask.class.getSimpleName();
 
@@ -68,7 +68,7 @@ public class LocalShareRunningTask extends BackgroundTask
         if (mList.size() <= 0)
             return;
 
-        final Kuick kuick = AppUtils.getKuick(getService());
+        final Kuick kuick = AppUtils.getKuick(getContext());
         final SQLiteDatabase db = kuick.getWritableDatabase();
         final Transfer transfer = new Transfer(AppUtils.getUniqueNumber());
         final List<TransferItem> list = new ArrayList<>();
@@ -88,7 +88,7 @@ public class LocalShareRunningTask extends BackgroundTask
             if (containable != null)
                 for (Uri uri : containable.children)
                     try {
-                        list.add(TransferItem.from(FileUtils.fromUri(getService(), uri), transfer.id,
+                        list.add(TransferItem.from(FileUtils.fromUri(getContext(), uri), transfer.id,
                                 shareable.friendlyName));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -107,18 +107,18 @@ public class LocalShareRunningTask extends BackgroundTask
         if (mFlagWebShare) {
             transfer.isServedOnWeb = true;
 
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getService(),
+            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getContext(),
                     R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
         }
 
         kuick.insert(db, transfer, null, null);
-        TransferDetailActivity.startInstance(getService(), transfer);
+        TransferDetailActivity.startInstance(getContext(), transfer);
 
         if (mFlagWebShare)
-            getService().startActivity(new Intent(getService(), WebShareActivity.class).addFlags(
+            getContext().startActivity(new Intent(getContext(), WebShareActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK));
         else
-            AddDevicesToTransferActivity.startInstance(getService(), transfer, mFlagAddNewDevice);
+            AddDevicesToTransferActivity.startInstance(getContext(), transfer, mFlagAddNewDevice);
 
         kuick.broadcast();
     }

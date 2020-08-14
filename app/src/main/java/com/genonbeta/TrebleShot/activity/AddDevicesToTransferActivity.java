@@ -44,7 +44,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.AddDeviceTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -59,7 +59,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public static final String
             TAG = AddDevicesToTransferActivity.class.getSimpleName(),
             EXTRA_DEVICE = "extraDevice",
-            EXTRA_GROUP = "extraGroup",
+            EXTRA_TRANSFER = "extraTransfer",
             EXTRA_FLAGS = "extraFlags";
 
     public static final int
@@ -91,7 +91,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public static void startInstance(Context context, Transfer transfer, boolean addingNewDevice)
     {
         context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
-                .putExtra(EXTRA_GROUP, transfer)
+                .putExtra(EXTRA_TRANSFER, transfer)
                 .putExtra(EXTRA_FLAGS, addingNewDevice ? FLAG_LAUNCH_DEVICE_CHOOSER : 0)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
@@ -190,12 +190,12 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
     {
         super.onAttachTasks(taskList);
 
         boolean hasOngoing = false;
-        for (BaseAttachableBgTask task : taskList)
+        for (BaseAttachableAsyncTask task : taskList)
             if (task instanceof AddDeviceTask) {
                 ((AddDeviceTask) task).setAnchor(this);
                 hasOngoing = true;
@@ -223,7 +223,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         if (task instanceof AddDeviceTask) {
             if (task.isFinished())
@@ -252,11 +252,11 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public boolean checkGroupIntegrity()
     {
         try {
-            if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP))
+            if (getIntent() == null || !getIntent().hasExtra(EXTRA_TRANSFER))
                 throw new Exception(getString(R.string.text_empty));
 
             if (mTransfer == null)
-                mTransfer = getIntent().getParcelableExtra(EXTRA_GROUP);
+                mTransfer = getIntent().getParcelableExtra(EXTRA_TRANSFER);
 
             try {
                 if (mTransfer == null)

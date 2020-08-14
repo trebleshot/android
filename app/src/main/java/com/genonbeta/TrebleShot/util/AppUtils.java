@@ -19,9 +19,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +40,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
-import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
@@ -53,8 +50,6 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.object.Identity;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
@@ -62,7 +57,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,41 +138,6 @@ public class AppUtils
                 .apply();
 
         return networkPin;
-    }
-
-    public static App getApp(Activity activity) throws IllegalStateException
-    {
-        if (activity.getApplication() instanceof App)
-            return (App) activity.getApplication();
-
-        throw new IllegalStateException("The app does not have an App instance.");
-    }
-
-    @NonNull
-    public static BackgroundService getBgService(Activity activity) throws IllegalStateException
-    {
-        BackgroundService service = getBgServiceRef(activity).get();
-        if (service == null)
-            throw new IllegalStateException("The service is not ready or removed from the scope. Do not call this " +
-                    "method after the application process exits.");
-        return service;
-    }
-
-    /**
-     * A reference object for the service. If you don't want to deal with 'null' state, use
-     * {@link #getBgService(Activity)} instead
-     *
-     * @param activity That will be used to extract the right {@link Application} instance which should be
-     *                 {@link App}
-     * @return the service instance that was bound to the {@link Application} class
-     */
-    public static WeakReference<BackgroundService> getBgServiceRef(Activity activity)
-    {
-        Application application = activity.getApplication();
-        if (application instanceof App)
-            return ((App) application).getBackgroundService();
-
-        return new WeakReference<>(null);
     }
 
     public static Keyword.Flavor getBuildFlavor()
@@ -312,16 +271,6 @@ public class AppUtils
         }
 
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.butn_feedbackContact)));
-    }
-
-    public static void interruptTasksBy(Activity activity, Identity identity, boolean userAction)
-    {
-        try {
-            BackgroundService service = AppUtils.getBgService(activity);
-            service.interruptTasksBy(identity, userAction);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
     }
 
     public static String getFriendlySSID(String ssid)

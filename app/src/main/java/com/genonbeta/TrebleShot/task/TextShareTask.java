@@ -21,12 +21,12 @@ package com.genonbeta.TrebleShot.task;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
-public class TextShareTask extends BackgroundTask
+public class TextShareTask extends AsyncTask
 {
     private final Device mDevice;
     private final DeviceAddress mAddress;

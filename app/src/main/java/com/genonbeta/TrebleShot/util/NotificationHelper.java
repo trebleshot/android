@@ -152,7 +152,7 @@ public class NotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), TransferDetailActivity.class)
                         .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_GROUP, transfer), 0))
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer), 0))
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
                 .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_receive), positiveIntent)
@@ -176,7 +176,7 @@ public class NotificationHelper
 
             Intent cancelIntent = new Intent(getContext(), BackgroundService.class)
                     .setAction(BackgroundService.ACTION_STOP_TASK)
-                    .putExtra(BackgroundService.EXTRA_REQUEST_ID, task.object.id)
+                    .putExtra(BackgroundService.EXTRA_TRANSFER_ITEM_ID, task.object.id)
                     .putExtra(BackgroundService.EXTRA_TRANSFER, task.transfer)
                     .putExtra(BackgroundService.EXTRA_DEVICE, task.device)
                     .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, task.type)
@@ -189,7 +189,7 @@ public class NotificationHelper
                     .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                             getContext(), TransferDetailActivity.class)
                             .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                            .putExtra(TransferDetailActivity.EXTRA_GROUP, task.transfer), 0))
+                            .putExtra(TransferDetailActivity.EXTRA_TRANSFER, task.transfer), 0))
                     .setOngoing(true)
                     .setWhen(task.timeStarted)
                     .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(isIncoming
@@ -334,7 +334,7 @@ public class NotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), TransferDetailActivity.class)
                         .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_GROUP, task.transfer), 0));
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, task.transfer), 0));
 
         notification.show();
     }
@@ -353,8 +353,8 @@ public class NotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), TransferDetailActivity.class)
                         .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_GROUP, transfer)
-                        .putExtra(TransferDetailActivity.EXTRA_REQUEST_ID, transferItem.id)
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer)
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER_ITEM_ID, transferItem.id)
                         .putExtra(TransferDetailActivity.EXTRA_TRANSFER_TYPE, transferItem.type.toString())
                         .putExtra(TransferDetailActivity.EXTRA_DEVICE, device), 0));
 
@@ -387,7 +387,7 @@ public class NotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), TransferDetailActivity.class)
                         .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_GROUP, task.transfer), 0));
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, task.transfer), 0));
 
         notification.show();
     }
@@ -415,7 +415,7 @@ public class NotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                         getContext(), TransferDetailActivity.class)
                         .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_GROUP, transfer), 0));
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer), 0));
 
         return notification.show();
     }

@@ -42,9 +42,8 @@ import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.fragment.TransferItemDetailExplorerFragment;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -68,10 +67,10 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     public static final String
             TAG = TransferDetailActivity.class.getSimpleName(),
             ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS",
-            EXTRA_GROUP = "extraGroup",
-            EXTRA_REQUEST_ID = "extraRequestId",
+            EXTRA_TRANSFER = "extraTransfer",
+            EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId",
             EXTRA_DEVICE = "extraDevice",
-            EXTRA_TRANSFER_TYPE = "extraRequestType";
+            EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
 
@@ -141,7 +140,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
                 getDatabase().reconstruct(mTransfer);
 
                 getIntent().setAction(ACTION_LIST_TRANSFERS)
-                        .putExtra(EXTRA_GROUP, mTransfer);
+                        .putExtra(EXTRA_TRANSFER, mTransfer);
 
                 new TransferInfoDialog(TransferDetailActivity.this, mIndex, mTransferItem,
                         mMember == null ? null : mMember.deviceId).show();
@@ -152,13 +151,13 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
                 e.printStackTrace();
                 Toast.makeText(this, R.string.mesg_notValidTransfer, Toast.LENGTH_SHORT).show();
             }
-        } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP)) {
+        } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_TRANSFER)) {
             try {
-                setTransfer(getIntent().getParcelableExtra(EXTRA_GROUP));
+                setTransfer(getIntent().getParcelableExtra(EXTRA_TRANSFER));
 
-                if (getIntent().hasExtra(EXTRA_REQUEST_ID) && getIntent().hasExtra(EXTRA_DEVICE)
+                if (getIntent().hasExtra(EXTRA_TRANSFER_ITEM_ID) && getIntent().hasExtra(EXTRA_DEVICE)
                         && getIntent().hasExtra(EXTRA_TRANSFER_TYPE)) {
-                    long requestId = getIntent().getLongExtra(EXTRA_REQUEST_ID, -1);
+                    long requestId = getIntent().getLongExtra(EXTRA_TRANSFER_ITEM_ID, -1);
                     Device device = getIntent().getParcelableExtra(EXTRA_DEVICE);
 
                     try {
@@ -211,7 +210,6 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         IntentFilter filter = new IntentFilter();
 
         filter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-        filter.addAction(BackgroundService.ACTION_TASK_CHANGE);
 
         registerReceiver(mReceiver, filter);
         reconstructGroup();
@@ -449,14 +447,14 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     public void startDeviceAddingActivity()
     {
         startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mTransfer), REQUEST_ADD_DEVICES);
+                .putExtra(AddDevicesToTransferActivity.EXTRA_TRANSFER, mTransfer), REQUEST_ADD_DEVICES);
     }
 
     public static void startInstance(Context context, Transfer transfer)
     {
         context.startActivity(new Intent(context, TransferDetailActivity.class)
                 .setAction(ACTION_LIST_TRANSFERS)
-                .putExtra(EXTRA_GROUP, transfer)
+                .putExtra(EXTRA_TRANSFER, transfer)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
@@ -509,7 +507,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         if (task instanceof FileTransferTask)
             ((FileTransferTask) task).setAnchor(this);

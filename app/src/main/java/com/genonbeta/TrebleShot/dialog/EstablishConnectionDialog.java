@@ -21,12 +21,13 @@ package com.genonbeta.TrebleShot.dialog;
 import android.app.Activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.callback.OnConnectionSelectionListener;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.AssessNetworkTask;
 import com.genonbeta.TrebleShot.task.AssessNetworkTask.ConnectionResult;
@@ -58,7 +59,7 @@ public class EstablishConnectionDialog extends ProgressDialog
         dialog.setOnCancelListener(dialog1 -> stoppable.interrupt());
         dialog.show();
 
-        BackgroundService.run(activity, task);
+        App.run(activity, task);
     }
 
     static class LocalTaskBinder implements AssessNetworkTask.CalculationResultListener
@@ -78,7 +79,7 @@ public class EstablishConnectionDialog extends ProgressDialog
         }
 
         @Override
-        public void onTaskStateChanged(BaseAttachableBgTask task)
+        public void onTaskStateChanged(BaseAttachableAsyncTask task)
         {
             if (task.isFinished()) {
                 dialog.dismiss();

@@ -21,7 +21,7 @@ package com.genonbeta.TrebleShot.task;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.CalculationResultListener>
+public class AssessNetworkTask extends AttachableAsyncTask<AssessNetworkTask.CalculationResultListener>
 {
     private final Device device;
 
@@ -46,7 +46,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
     @Override
     protected void onRun() throws TaskStoppedException
     {
-        List<DeviceAddress> knownConnectionList = AppUtils.getKuick(getService()).castQuery(
+        List<DeviceAddress> knownConnectionList = AppUtils.getKuick(getContext()).castQuery(
                 Transfers.createAddressSelection(device.uid), DeviceAddress.class);
         ConnectionResult[] results = new ConnectionResult[knownConnectionList.size()];
 
@@ -107,7 +107,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
     @Override
     public String getTitle()
     {
-        return getService().getString(R.string.text_connectionTest);
+        return getContext().getString(R.string.text_connectionTest);
     }
 
     public interface CalculationResultListener extends AttachedTaskListener

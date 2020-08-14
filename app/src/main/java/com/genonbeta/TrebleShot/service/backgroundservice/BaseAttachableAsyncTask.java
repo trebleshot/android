@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.service.backgroundservice;
 
-public abstract class BaseAttachableBgTask extends BackgroundTask
+public abstract class BaseAttachableAsyncTask extends AsyncTask
 {
     public abstract boolean hasAnchor();
 

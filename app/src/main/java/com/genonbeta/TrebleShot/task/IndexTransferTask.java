@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.object.TransferMember;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.android.database.Progress;
 import org.json.JSONArray;
@@ -37,7 +37,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IndexTransferTask extends BackgroundTask
+public class IndexTransferTask extends AsyncTask
 {
     private final long mTransferId;
     private final boolean mNoPrompt;
@@ -146,14 +146,13 @@ public class IndexTransferTask extends BackgroundTask
         if (isInterrupted())
             kuick().remove(transfer);
         else if (pendingRegistry.size() > 0) {
-            getService().sendBroadcast(new Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
+            getContext().sendBroadcast(new Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
                     .putExtra(BackgroundService.EXTRA_DEVICE, mDevice));
 
             if (mNoPrompt)
                 try {
-                    getService().run(FileTransferTask.createFrom(kuick(), transfer, mDevice,
-                            TransferItem.Type.INCOMING));
+                    getApp().run(FileTransferTask.createFrom(kuick(), transfer, mDevice, TransferItem.Type.INCOMING));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

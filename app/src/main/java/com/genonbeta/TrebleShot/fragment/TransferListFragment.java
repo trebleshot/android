@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
@@ -39,7 +40,6 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.object.Transfer;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -73,7 +73,7 @@ public class TransferListFragment extends GroupEditableListFragment<IndexOfTrans
                 if (data != null && (Kuick.TABLE_TRANSFER.equals(data.tableName)
                         || Kuick.TABLE_TRANSFERITEM.equals(data.tableName)))
                     refreshList();
-            } else if (BackgroundService.ACTION_TASK_CHANGE.equals(intent.getAction()))
+            } else if (App.ACTION_TASK_CHANGE.equals(intent.getAction())) // TODO: 8/14/20 This class should not be using a custom Tasks loader.
                 updateTasks();
         }
     };
@@ -169,8 +169,7 @@ public class TransferListFragment extends GroupEditableListFragment<IndexOfTrans
     public void updateTasks()
     {
         try {
-            BackgroundService service = AppUtils.getBgService(requireActivity());
-            List<FileTransferTask> tasks = service.getTaskListOf(FileTransferTask.class);
+            List<FileTransferTask> tasks = App.from(requireActivity()).getTaskListOf(FileTransferTask.class);
             List<Long> activeTaskList = new ArrayList<>();
             for (FileTransferTask task : tasks)
                 if (task.transfer != null)

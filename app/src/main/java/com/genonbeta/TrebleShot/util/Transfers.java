@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -15,7 +16,7 @@ import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.InitializeTransferTask;
@@ -51,7 +52,7 @@ public class Transfers
     }
 
     public static void createFolderStructure(List<TransferItem> list, long transferId, DocumentFile file,
-                                             String directory, BackgroundTask task, Progress.Listener progress)
+                                             String directory, AsyncTask task, Progress.Listener progress)
             throws TaskStoppedException
     {
         DocumentFile[] files = file.listFiles();
@@ -293,14 +294,14 @@ public class Transfers
     public static void pauseTransfer(Activity activity, long transferId, @Nullable String deviceId,
                                      TransferItem.Type type)
     {
-        AppUtils.interruptTasksBy(activity, FileTransferTask.identifyWith(transferId, deviceId, type), true);
+        App.interruptTasksBy(activity, FileTransferTask.identifyWith(transferId, deviceId, type), true);
     }
 
     @Deprecated
     public static void requestStartSending(Activity activity, TransferMember member, Device device,
                                            DeviceAddress address)
     {
-        BackgroundService.run(activity, new InitializeTransferTask(device, address, member));
+        App.run(activity, new InitializeTransferTask(device, address, member));
     }
 
     public static void recoverIncomingInterruptions(Context context, long transferId)
@@ -361,7 +362,7 @@ public class Transfers
                             FileTransferTask task = FileTransferTask.createFrom(kuick, member.transferId,
                                     member.deviceId, member.type);
 
-                            BackgroundService.run(activity, task);
+                            App.run(activity, task);
                         } catch (TransferNotFoundException e) {
                             e.printStackTrace();
                         } catch (DeviceNotFoundException e) {

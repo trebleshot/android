@@ -48,7 +48,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -71,7 +71,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
 {
     public static final String EXTRA_DEVICE = "extraDevice";
 
-    public static final String EXTRA_DEVICE_ADDRESS = "extraConnectionAdapter";
+    public static final String EXTRA_DEVICE_ADDRESS = "extraDeviceAddress";
 
     public static final int REQUEST_PERMISSION_CAMERA = 1;
 
@@ -165,6 +165,13 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     }
 
     @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mBarcodeView.pause();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -214,12 +221,12 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     }
 
     @Override
-    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
     {
         super.onAttachTasks(taskList);
 
         boolean hasDeviceIntroductionTask = false;
-        for (BaseAttachableBgTask task : taskList)
+        for (BaseAttachableAsyncTask task : taskList)
             if (task instanceof DeviceIntroductionTask) {
                 hasDeviceIntroductionTask = true;
                 ((DeviceIntroductionTask) task).setAnchor(this);
@@ -406,7 +413,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         if (task instanceof DeviceIntroductionTask)
             updateState(!task.isFinished());

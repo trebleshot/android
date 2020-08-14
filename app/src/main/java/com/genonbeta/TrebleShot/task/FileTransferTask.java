@@ -31,7 +31,7 @@ import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -50,7 +50,7 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.object.Identifier.from;
 
-public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
+public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 {
     public static final String TAG = FileTransferTask.class.getSimpleName();
 
@@ -232,7 +232,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
         boolean retry = false;
 
         try {
-            Transfers.loadGroupInfo(getService(), this.index, this.member);
+            Transfers.loadGroupInfo(getContext(), this.index, this.member);
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
@@ -240,7 +240,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     break;
 
                 try {
-                    TransferItem object = Transfers.fetchFirstValidIncomingTransferItem(getService(), this.transfer.id);
+                    TransferItem object = Transfers.fetchFirstValidIncomingTransferItem(getContext(), this.transfer.id);
 
                     if (object == null) {
                         Log.d(TAG, "handleTransferAsReceiver(): Exiting because there is no pending file " +
@@ -250,8 +250,8 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                         Log.d(TAG, "handleTransferAsReceiver(): Starting to receive " + object);
 
                     this.object = object;
-                    this.currentFile = FileUtils.getIncomingFile(getService(), this.object, this.transfer);
-                    StreamInfo streamInfo = StreamInfo.getStreamInfo(getService(), this.currentFile.getUri());
+                    this.currentFile = FileUtils.getIncomingFile(getContext(), this.object, this.transfer);
+                    StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), this.currentFile.getUri());
                     this.currentBytes = this.currentFile.length();
                     broadcastTransferState(false);
 
@@ -369,7 +369,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                                                 + this.currentFile.getUri().toString()
                                                 + " and the name is " + this.object.file);
 
-                                        getService().sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                                        getContext().sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
                                                 .putExtra(FileListFragment.EXTRA_FILE_PARENT,
                                                         this.currentFile.getParentFile().getUri())
                                                 .putExtra(FileListFragment.EXTRA_FILE_NAME,
@@ -391,7 +391,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                     retry = true;
 
                     if (!this.recoverInterruptions) {
-                        Transfers.recoverIncomingInterruptions(getService(), this.transfer.id);
+                        Transfers.recoverIncomingInterruptions(getContext(), this.transfer.id);
                         this.recoverInterruptions = true;
                     }
 
@@ -406,7 +406,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
             }
 
             try {
-                DocumentFile savePath = FileUtils.getSavePath(getService(), this.transfer);
+                DocumentFile savePath = FileUtils.getSavePath(getContext(), this.transfer);
                 boolean areFilesDone = kuick().getFirstFromTable(getDatabase(),
                         Transfers.createIncomingSelection(this.transfer.id, TransferItem.Flag.DONE,
                                 false)) == null;
@@ -423,7 +423,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
                         Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
                                 "notified");
                     } else if (isInterrupted()) {
-                        getService().getNotificationHelper().notifyReceiveError(this);
+                        getNotificationHelper().notifyReceiveError(this);
                         Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
                     } else if (this.completedCount > 0) {
                         getNotificationHelper().notifyFileReceived(this, savePath);
@@ -454,7 +454,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     private void handleTransferAsSender()
     {
         try {
-            Transfers.loadGroupInfo(getService(), this.index, this.member);
+            Transfers.loadGroupInfo(getContext(), this.index, this.member);
 
             while (this.activeConnection.getSocket().isConnected()) {
                 this.currentBytes = 0;
@@ -489,9 +489,9 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
 
                     kuick().reconstruct(getDatabase(), this.object);
 
-                    this.currentFile = FileUtils.fromUri(getService(), Uri.parse(this.object.file));
+                    this.currentFile = FileUtils.fromUri(getContext(), Uri.parse(this.object.file));
                     long fileSize = this.currentFile.length();
-                    InputStream inputStream = getService().getContentResolver()
+                    InputStream inputStream = getContext().getContentResolver()
                             .openInputStream(this.currentFile.getUri());
 
                     if (inputStream == null)

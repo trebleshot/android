@@ -21,10 +21,10 @@ package com.genonbeta.TrebleShot.database;
 import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.*;
 import com.genonbeta.android.database.SQLValues.Column;
@@ -182,15 +182,16 @@ public class Kuick extends KuickDb
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, V object, T parent)
     {
-        BackgroundService.run(activity, new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent));
+        App.run(activity, new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent));
     }
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, List<V> objects, T parent)
     {
-        BackgroundService.run(activity, new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent));
+
+        App.run(activity, new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent));
     }
 
-    private static abstract class BgTaskImpl extends BackgroundTask
+    private static abstract class BgTaskImpl extends AsyncTask
     {
         private final SQLiteDatabase mDb;
         private final String mTitle;
@@ -207,7 +208,7 @@ public class Kuick extends KuickDb
         protected void onProgressChange(Progress progress)
         {
             super.onProgressChange(progress);
-            setOngoingContent(getService().getString(R.string.text_transferStatusFiles, progress.getCurrent(),
+            setOngoingContent(getContext().getString(R.string.text_transferStatusFiles, progress.getCurrent(),
                     progress.getTotal()));
         }
 
@@ -244,7 +245,7 @@ public class Kuick extends KuickDb
         @Override
         protected void onRun()
         {
-            Kuick kuick = AppUtils.getKuick(getService());
+            Kuick kuick = AppUtils.getKuick(getContext());
 
             kuick.remove(getDb(), mObject, mParent, progressListener());
             kuick.broadcast();
@@ -266,7 +267,7 @@ public class Kuick extends KuickDb
         @Override
         protected void onRun()
         {
-            Kuick kuick = AppUtils.getKuick(getService());
+            Kuick kuick = AppUtils.getKuick(getContext());
 
             kuick.remove(getDb(), mObjectList, mParent, progressListener());
             kuick.broadcast();

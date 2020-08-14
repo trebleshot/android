@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.BarcodeScannerActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
@@ -47,7 +48,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.BackgroundService;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
@@ -327,7 +328,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     private void run(DeviceIntroductionTask task)
     {
         task.setStoppable(mStoppable);
-        BackgroundService.run(requireActivity(), task);
+        App.run(requireActivity(), task);
     }
 
     private void showDialog(AlertDialog.Builder builder)
@@ -427,7 +428,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         if (task instanceof DeviceIntroductionTask)
             updateState(!task.isFinished());

@@ -27,9 +27,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.OrganizeSharingTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -108,7 +107,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableBgTask task)
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         if (task instanceof OrganizeSharingTask) {
             if (task.isFinished()) {
@@ -137,10 +136,10 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
     {
         super.onAttachTasks(taskList);
-        for (BaseAttachableBgTask task : taskList)
+        for (BaseAttachableAsyncTask task : taskList)
             if (task instanceof OrganizeSharingTask)
                 ((OrganizeSharingTask) task).setAnchor(this);
 
@@ -148,7 +147,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
             if (mHadTask)
                 finish();
             else {
-                BackgroundService.run(this, new OrganizeSharingTask(mFileUris));
+                getSelfApplication().run(new OrganizeSharingTask(mFileUris));
                 mHadTask = true;
             }
         }

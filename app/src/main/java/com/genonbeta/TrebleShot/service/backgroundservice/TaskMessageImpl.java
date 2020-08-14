@@ -206,9 +206,9 @@ public class TaskMessageImpl implements TaskMessage
     }
 
     @Override
-    public DynamicNotification toNotification(BackgroundTask task)
+    public DynamicNotification toNotification(AsyncTask task)
     {
-        Context context = task.getService().getApplicationContext();
+        Context context = task.getContext().getApplicationContext();
         NotificationUtils utils = task.getNotificationHelper().getUtils();
         DynamicNotification notification = utils.buildDynamicNotification(task.hashCode(),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);

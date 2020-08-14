@@ -51,15 +51,20 @@ import java.util.ArrayList;
 
 public class AddDeviceActivity extends Activity implements SnackbarPlacementProvider
 {
-    public static final String
-            ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT",
-            EXTRA_FRAGMENT_ENUM = "extraFragmentEnum",
-            EXTRA_DEVICE = "extraDevice",
-            EXTRA_DEVICE_ADDRESS = "extraConnection";
+    public static final String ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CHANGE_FRAGMENT";
 
-    public static final int
-            REQUEST_BARCODE_SCAN = 100,
-            REQUEST_IP_DISCOVERY = 110;
+    public static final String EXTRA_FRAGMENT_ENUM = "extraFragmentEnum";
+
+    public static final String EXTRA_DEVICE = "extraDevice";
+
+    public static final String EXTRA_DEVICE_ADDRESS = "extraDeviceAddress";
+
+    public static final String EXTRA_CONNECTION_MODE = "exraConnectionMode";
+
+
+    public static final int REQUEST_BARCODE_SCAN = 100;
+
+    public static final int REQUEST_IP_DISCOVERY = 110;
 
     private final IntentFilter mFilter = new IntentFilter();
     private NetworkManagerFragment mNetworkManagerFragment;
@@ -68,6 +73,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
+    private ConnectionMode connectionMode = ConnectionMode.RequestAcquaintance;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -89,7 +95,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 DeviceAddress address = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    returnResult(AddDeviceActivity.this, device, address);
+                    handleResult(AddDeviceActivity.this, device, address);
 
             } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY.equals(intent.getAction())
                     && intent.hasExtra(BackgroundService.EXTRA_TRANSFER)) {
@@ -104,6 +110,10 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if (getIntent() != null && getIntent().hasExtra(EXTRA_CONNECTION_MODE)) {
+            connectionMode = (ConnectionMode) getIntent().getSerializableExtra(EXTRA_CONNECTION_MODE);
+        }
 
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_connection_manager);
@@ -161,13 +171,13 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 DeviceAddress address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    returnResult(this, device, address);
+                    handleResult(this, device, address);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
                 Device device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE);
                 DeviceAddress address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    returnResult(this, device, address);
+                    handleResult(this, device, address);
             }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -246,7 +256,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         return getSupportFragmentManager().findFragmentById(R.id.activity_connection_establishing_content_view);
     }
 
-    public static void returnResult(android.app.Activity activity, Device device, DeviceAddress connection)
+    public static void handleResult(android.app.Activity activity, Device device, DeviceAddress connection)
     {
         activity.setResult(RESULT_OK, new Intent()
                 .putExtra(EXTRA_DEVICE, device)
@@ -356,5 +366,11 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 getContext().sendBroadcast(new Intent(ACTION_CHANGE_FRAGMENT)
                         .putExtra(EXTRA_FRAGMENT_ENUM, fragment.toString()));
         }
+    }
+
+    public enum ConnectionMode {
+        RequestAcquaintance,
+        ReturnTheDeviceAndQuit,
+        JustQuit
     }
 }

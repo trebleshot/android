@@ -28,6 +28,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransferItemListAdapter;
@@ -43,7 +44,6 @@ import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
 import com.genonbeta.TrebleShot.object.LoadedMember;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.ChangeSaveDirectoryTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -190,10 +190,9 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
                         .setTitle(R.string.ques_checkOldFiles)
                         .setMessage(R.string.text_checkOldFiles)
                         .setNeutralButton(R.string.butn_cancel, null)
-                        .setNegativeButton(R.string.butn_skip, (dialogInterface, i) -> BackgroundService.run(
-                                requireActivity(), task.setSkipMoving(true)))
-                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> BackgroundService.run(
-                                requireActivity(), task))
+                        .setNegativeButton(R.string.butn_skip, (dialogInterface, i) -> App.run(requireActivity(),
+                                task.setSkipMoving(true)))
+                        .setPositiveButton(R.string.butn_proceed, (dialogInterface, i) -> App.run(requireActivity(), task))
                         .show();
             }
         }

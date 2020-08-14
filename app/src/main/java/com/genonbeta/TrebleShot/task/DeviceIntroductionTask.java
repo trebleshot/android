@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.task;
 
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.CommonErrorHelper;
@@ -30,7 +30,7 @@ import java.net.InetAddress;
 
 import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
-public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionTask.ResultListener>
+public class DeviceIntroductionTask extends AttachableAsyncTask<DeviceIntroductionTask.ResultListener>
 {
     public static final String TAG = DeviceIntroductionTask.class.getSimpleName();
 
@@ -64,16 +64,16 @@ public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionT
     {
         try {
             if (mAddress == null) {
-                ConnectionUtils connectionUtils = new ConnectionUtils(getService());
+                ConnectionUtils connectionUtils = new ConnectionUtils(getContext());
                 mAddress = connectionUtils.connectToNetwork(this, mDescription);
             }
 
-            DeviceRoute deviceRoute = ConnectionUtils.setupConnection(getService(), mAddress, mPin);
+            DeviceRoute deviceRoute = ConnectionUtils.setupConnection(getContext(), mAddress, mPin);
             DeviceIntroductionTask.ResultListener anchor = getAnchor();
             if (anchor != null)
                 post(() -> anchor.onDeviceReached(deviceRoute));
         } catch (Exception e) {
-            post(CommonErrorHelper.messageOf(getService(), e));
+            post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }
 

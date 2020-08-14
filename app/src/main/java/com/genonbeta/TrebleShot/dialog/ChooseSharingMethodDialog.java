@@ -28,9 +28,9 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.task.LocalShareRunningTask;
 
 import java.util.ArrayList;
@@ -48,11 +48,11 @@ public class ChooseSharingMethodDialog extends AlertDialog.Builder
         mLayoutInflater = LayoutInflater.from(getContext());
 
         mSharingMethodList.add(new SharingMethod(R.drawable.ic_web_white_24dp, R.string.butn_webShare, () ->
-                BackgroundService.run(activity, new LocalShareRunningTask(list, false, true))));
+                App.run(activity, new LocalShareRunningTask(list, false, true))));
 
         mSharingMethodList.add(new SharingMethod(R.drawable.ic_compare_arrows_white_24dp,
-                R.string.text_devicesWithAppInstalled, () -> BackgroundService.run(activity, new LocalShareRunningTask(
-                list, true, false))));
+                R.string.text_devicesWithAppInstalled, () -> App.run(activity, new LocalShareRunningTask(list,
+                true, false))));
 
         setTitle(R.string.text_chooseSharingMethod);
         setAdapter(new SharingMethodListAdapter(), (dialog, which) -> mSharingMethodList.get(which).call());

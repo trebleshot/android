@@ -43,7 +43,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -125,13 +125,13 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
             new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
             {
                 @Override
-                public void onFileDeletion(BackgroundTask runningTask, Context context, DocumentFile file)
+                public void onFileDeletion(AsyncTask runningTask, Context context, DocumentFile file)
                 {
                     fragment.scanFile(file);
                 }
 
                 @Override
-                public void onCompleted(BackgroundTask runningTask, Context context, int fileSize)
+                public void onCompleted(AsyncTask runningTask, Context context, int fileSize)
                 {
                     context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
                             .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null ? null

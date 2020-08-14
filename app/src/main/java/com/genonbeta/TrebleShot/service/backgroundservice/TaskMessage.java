@@ -70,7 +70,7 @@ public interface TaskMessage
 
     AlertDialog.Builder toDialogBuilder(Activity activity);
 
-    DynamicNotification toNotification(BackgroundTask task);
+    DynamicNotification toNotification(AsyncTask task);
 
     Snackbar toSnackbar(View view);
 

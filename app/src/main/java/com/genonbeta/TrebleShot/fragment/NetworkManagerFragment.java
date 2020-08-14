@@ -223,7 +223,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
             return mManager.getConfiguration();
 
         try {
-            return AppUtils.getApp(requireActivity()).getHotspotConfig();
+            return App.from(requireActivity()).getHotspotConfig();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
@@ -233,7 +233,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
 
     public void openWifiSettings()
     {
-        startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
     }
 
     private void toggleHotspot()

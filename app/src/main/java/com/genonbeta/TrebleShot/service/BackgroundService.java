@@ -18,19 +18,16 @@
 
 package com.genonbeta.TrebleShot.service;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -40,7 +37,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
@@ -50,9 +47,6 @@ import org.json.JSONObject;
 import org.monora.coolsocket.core.CoolSocket;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BackgroundService extends Service
@@ -70,28 +64,25 @@ public class BackgroundService extends Service
             ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
             ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
             ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
-            ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE", // FIXME: only the parent activity should listen to this
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
-            EXTRA_DEVICE_ADDRESS = "extraConnectionAdapterName",
+            EXTRA_DEVICE_ADDRESS = "extraDeviceAddress",
             EXTRA_DEVICE = "extraDevice",
             EXTRA_RECEIVE_KEY = "extraReceiveKey",
             EXTRA_SEND_KEY = "extraSendKey",
-            EXTRA_TRANSFER = "extraGroup",
+            EXTRA_TRANSFER = "extraTransfer",
             EXTRA_IDENTITY = "extraIdentity",
             EXTRA_ACCEPTED = "extraAccepted",
-            EXTRA_REQUEST_ID = "extraRequest",
-            EXTRA_TRANSFER_TYPE = "extraTransferType";
+            EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId",
+            EXTRA_TRANSFER_TYPE = "extraTransferType",
+            EXTRA_CHECK_FOR_TASKS = "extraCheckForTasks";
 
-    private final List<BackgroundTask> mTaskList = new ArrayList<>();
     private final CommunicationServer mCommunicationServer = new CommunicationServer();
-    private final ExecutorService mExecutor = Executors.newFixedThreadPool(10);
     private final LocalBinder mBinder = new LocalBinder();
     private WebShareServer mWebShareServer;
     private NsdDiscovery mNsdDiscovery;
-    private NotificationHelper mNotificationHelper;
     private WifiManager.WifiLock mWifiLock;
-    private MediaScannerConnection mMediaScanner;
+    private App mApp;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -104,17 +95,21 @@ public class BackgroundService extends Service
     {
         super.onCreate();
 
-        WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
+        if (getApplication() instanceof App)
+            mApp = (App) getApplication();
+        else {
+            Log.d(TAG, "The service is not able to work with a different app class.");
+            stopSelf();
+            return;
+        }
 
+        WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
         mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
-        mNotificationHelper = new NotificationHelper(getNotificationUtils());
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
-        mMediaScanner = new MediaScannerConnection(this, null);
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
 
-        mMediaScanner.connect();
         mNsdDiscovery.registerService();
 
         if (mWifiLock != null)
@@ -129,7 +124,7 @@ public class BackgroundService extends Service
         if (take)
             startForeground(NotificationHelper.ID_BG_SERVICE, getNotificationHelper().getForegroundNotification().build());
         else
-            stopForeground(false);
+            stopForeground(true);
     }
 
     @Override
@@ -165,7 +160,7 @@ public class BackgroundService extends Service
                     }).start();
 
                     if (isAccepted)
-                        run(task);
+                        mApp.run(task);
                     else {
                         getKuick().remove(getKuick().getWritableDatabase(), task.member, task.transfer, null);
                         getKuick().broadcast();
@@ -219,7 +214,9 @@ public class BackgroundService extends Service
                     e.printStackTrace();
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
-                stopSelf();
+                Log.d(TAG, !intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false) + ":" + canStopService());
+                if (!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false) || canStopService())
+                    stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
@@ -230,11 +227,11 @@ public class BackgroundService extends Service
                     if (device == null || transfer == null || type == null)
                         throw new Exception();
 
-                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(transfer.id,
-                            device.uid, type));
+                    FileTransferTask task = (FileTransferTask) mApp.findTaskBy(FileTransferTask.identifyWith(
+                            transfer.id, device.uid, type));
 
                     if (task == null)
-                        run(FileTransferTask.createFrom(getKuick(), transfer, device, type));
+                        mApp.run(FileTransferTask.createFrom(getKuick(), transfer, device, type));
                     else
                         Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.object.name),
                                 Toast.LENGTH_SHORT).show();
@@ -246,7 +243,7 @@ public class BackgroundService extends Service
                 Identity identity = intent.getParcelableExtra(EXTRA_IDENTITY);
 
                 try {
-                    BackgroundTask task = findTaskBy(identity);
+                    AsyncTask task = mApp.findTaskBy(identity);
 
                     if (task == null) {
                         getNotificationHelper().getUtils().cancel(notificationId);
@@ -279,23 +276,24 @@ public class BackgroundService extends Service
         } catch (InterruptedException ignored) {
         }
 
-        mMediaScanner.disconnect();
-        mNsdDiscovery.unregisterService();
-        mWebShareServer.stop();
+        if (mNsdDiscovery != null)
+            mNsdDiscovery.unregisterService();
 
-        {
-            ContentValues values = new ContentValues();
-            values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
-            getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
-                            String.valueOf(1)), values);
-        }
+        if (mWebShareServer != null)
+            mWebShareServer.stop();
 
-        App app = getSelfApplication();
-        if (app != null) {
-            HotspotManager manager = app.getHotspotManager();
+        ContentValues values = new ContentValues();
+        values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
+        getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
+                        String.valueOf(1)), values);
+
+        if (mApp != null) {
+            HotspotManager manager = mApp.getHotspotManager();
             if (manager.unloadPreviousConfig())
                 Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + manager.disable());
+
+            mApp.interruptAllTasks();
         }
 
         if (getWifiLock() != null && getWifiLock().isHeld()) {
@@ -303,89 +301,18 @@ public class BackgroundService extends Service
             Log.d(TAG, "onDestroy: Releasing Wi-Fi lock");
         }
 
-        stopForeground(true);
-
-        synchronized (mTaskList) {
-            for (BackgroundTask task : mTaskList) {
-                task.interrupt(false);
-                Log.d(TAG, "onDestroy(): Ongoing indexing stopped: " + task.getTitle());
-            }
-        }
-
         AppUtils.generateNetworkPin(this);
         getKuick().broadcast();
     }
 
-    public void attach(BackgroundTask task)
-    {
-        runInternal(task);
-    }
-
     public boolean canStopService()
     {
-        return getTaskList().size() > 0 || isHotspotStarted() || mWebShareServer.hadClients();
+        return !mApp.hasTasks() && !isHotspotStarted() && !mWebShareServer.hadClients();
     }
 
-    @Nullable
-    public BackgroundTask findTaskBy(Identity identity)
+    private NotificationHelper getNotificationHelper()
     {
-        List<BackgroundTask> taskList = findTasksBy(identity);
-        return taskList.size() > 0 ? taskList.get(0) : null;
-    }
-
-    @NonNull
-    public synchronized List<BackgroundTask> findTasksBy(Identity identity)
-    {
-        synchronized (mTaskList) {
-            return findTasksBy(mTaskList, identity);
-        }
-    }
-
-    public static <T extends BackgroundTask> List<T> findTasksBy(List<T> taskList, Identity identity)
-    {
-        List<T> foundList = new ArrayList<>();
-        for (T task : taskList)
-            if (task.getIdentity().equals(identity))
-                foundList.add(task);
-        return foundList;
-    }
-
-    public MediaScannerConnection getMediaScanner()
-    {
-        return mMediaScanner;
-    }
-
-    public NotificationHelper getNotificationHelper()
-    {
-        return mNotificationHelper;
-    }
-
-    private ExecutorService getSelfExecutor()
-    {
-        return mExecutor;
-    }
-
-    public List<BackgroundTask> getTaskList()
-    {
-        return mTaskList;
-    }
-
-    public <T extends BackgroundTask> List<T> getTaskListOf(Class<T> clazz)
-    {
-        synchronized (mTaskList) {
-            return getTaskListOf(mTaskList, clazz);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends BackgroundTask> List<T> getTaskListOf(List<? extends BackgroundTask> taskList,
-                                                                   Class<T> clazz)
-    {
-        List<T> foundList = new ArrayList<>();
-        for (BackgroundTask task : taskList)
-            if (clazz.isInstance(task))
-                foundList.add((T) task);
-        return foundList;
+        return mApp.getNotificationHelper();
     }
 
     private WifiManager.WifiLock getWifiLock()
@@ -409,37 +336,6 @@ public class BackgroundService extends Service
         return builder.toString().hashCode();
     }
 
-    public boolean hasTaskOf(Class<? extends BackgroundTask> clazz)
-    {
-        synchronized (mTaskList) {
-            return hasTaskOf(mTaskList, clazz);
-        }
-    }
-
-    public static boolean hasTaskOf(List<? extends BackgroundTask> taskList, Class<? extends BackgroundTask> clazz)
-    {
-        for (BackgroundTask task : taskList)
-            if (clazz.isInstance(task))
-                return true;
-        return false;
-    }
-
-    public static boolean hasTaskWith(List<? extends BackgroundTask> taskList, Identity identity)
-    {
-        for (BackgroundTask task : taskList)
-            if (task.getIdentity().equals(identity))
-                return true;
-        return false;
-    }
-
-    public void interruptTasksBy(Identity identity, boolean userAction)
-    {
-        synchronized (mTaskList) {
-            for (BackgroundTask task : findTasksBy(identity))
-                task.interrupt(userAction);
-        }
-    }
-
     public boolean isHotspotStarted()
     {
         return getSelfApplication() != null && getSelfApplication().getHotspotManager().isStarted();
@@ -447,44 +343,7 @@ public class BackgroundService extends Service
 
     private boolean isProcessRunning(long transferId, String deviceId, TransferItem.Type type)
     {
-        return findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null;
-    }
-
-    protected synchronized <T extends BackgroundTask> void registerWork(T task)
-    {
-        synchronized (mTaskList) {
-            mTaskList.add(task);
-        }
-
-        Log.d(TAG, "registerWork: " + task.getClass().getSimpleName());
-        sendBroadcast(new Intent(ACTION_TASK_CHANGE));
-    }
-
-    public static <T extends BackgroundTask> void run(Activity activity, T task)
-    {
-        try {
-            AppUtils.getBgService(activity).run(task);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void run(final BackgroundTask runningTask)
-    {
-        getSelfExecutor().submit(() -> attach(runningTask));
-    }
-
-    private void runInternal(BackgroundTask runningTask)
-    {
-        registerWork(runningTask);
-
-        try {
-            runningTask.run(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        unregisterWork(runningTask);
+        return mApp.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null;
     }
 
     /**
@@ -524,17 +383,6 @@ public class BackgroundService extends Service
         }
 
         return true;
-    }
-
-    protected synchronized void unregisterWork(BackgroundTask task)
-    {
-        synchronized (mTaskList) {
-            mTaskList.remove(task);
-            // FIXME: 20.03.2020 Should we stop the service if there is no task left?
-        }
-
-        Log.d(TAG, "unregisterWork: " + task.getClass().getSimpleName());
-        sendBroadcast(new Intent(ACTION_TASK_CHANGE));
     }
 
     class CommunicationServer extends CoolSocket
@@ -586,11 +434,11 @@ public class BackgroundService extends Service
                 switch (response.getString(Keyword.REQUEST)) {
                     case (Keyword.REQUEST_TRANSFER):
                         if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_ID)
-                                && !hasTaskOf(IndexTransferTask.class)) {
+                                && !mApp.hasTaskOf(IndexTransferTask.class)) {
                             long transferId = response.getLong(Keyword.TRANSFER_ID);
                             String jsonIndex = response.getString(Keyword.INDEX);
 
-                            run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
+                            mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
                         }
                         break;
                     case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE):
@@ -662,7 +510,7 @@ public class BackgroundService extends Service
                                     if (TransferItem.Type.OUTGOING.equals(type)) {
                                         Log.d(TAG, "onConnected: Informing before starting to send.");
 
-                                        attach(task);
+                                        mApp.attach(task);
                                     } else if (TransferItem.Type.INCOMING.equals(type)) {
                                         JSONObject currentReply = new JSONObject();
                                         boolean result = device.isTrusted;
@@ -674,7 +522,7 @@ public class BackgroundService extends Service
                                         Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
 
                                         if (result)
-                                            attach(task);
+                                            mApp.attach(task);
 
                                         Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
                                     }

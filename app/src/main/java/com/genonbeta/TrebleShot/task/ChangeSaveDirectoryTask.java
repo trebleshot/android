@@ -21,7 +21,7 @@ package com.genonbeta.TrebleShot.task;
 import android.net.Uri;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -30,7 +30,7 @@ import com.genonbeta.android.framework.io.DocumentFile;
 import java.io.IOException;
 import java.util.List;
 
-public class ChangeSaveDirectoryTask extends BackgroundTask
+public class ChangeSaveDirectoryTask extends AsyncTask
 {
     private final Transfer mTransfer;
     private final Uri mNewSavePath;
@@ -46,11 +46,11 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
     protected void onRun()
     {
         // TODO: 31.03.2020 Should we stop the tasks or not allow this operation while there are ongoing tasks?
-        for (BackgroundTask task : getService().findTasksBy(FileTransferTask.identifyWith(mTransfer.id,
+        for (AsyncTask task : getApp().findTasksBy(FileTransferTask.identifyWith(mTransfer.id,
                 TransferItem.Type.INCOMING)))
             task.interrupt(true);
 
-        List<TransferItem> checkList = AppUtils.getKuick(getService()).castQuery(
+        List<TransferItem> checkList = AppUtils.getKuick(getContext()).castQuery(
                 Transfers.createIncomingSelection(mTransfer.id), TransferItem.class);
         Transfer pseudoGroup = new Transfer(mTransfer.id);
 
@@ -67,14 +67,14 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
                     publishStatus();
 
                     try {
-                        DocumentFile file = FileUtils.getIncomingPseudoFile(getService(), transferItem, mTransfer,
+                        DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), transferItem, mTransfer,
                                 false);
-                        DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferItem,
+                        DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), transferItem,
                                 pseudoGroup, true);
 
                         if (file != null && pseudoFile != null) {
                             if (file.canWrite())
-                                FileUtils.move(getService(), file, pseudoFile, this);
+                                FileUtils.move(getContext(), file, pseudoFile, this);
                             else
                                 throw new IOException("Failed to access: " + file.getUri());
                         }

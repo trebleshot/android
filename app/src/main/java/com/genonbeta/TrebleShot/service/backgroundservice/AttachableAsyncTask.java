@@ -21,12 +21,8 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 import android.os.Handler;
 import android.os.Looper;
 
-public abstract class AttachableBgTask<T extends AttachedTaskListener> extends BaseAttachableBgTask
+public abstract class AttachableAsyncTask<T extends AttachedTaskListener> extends BaseAttachableAsyncTask
 {
-    public static final int OVERRIDE_BY_ALL = 1;
-    public static final int OVERRIDE_BY_NONE = 2;
-    public static final int OVERRIDE_BY_SELF = 4;
-
     private T mAnchor;
     private Handler mHandler;
     private final Runnable mPostStatus = this::notifyAnchor;

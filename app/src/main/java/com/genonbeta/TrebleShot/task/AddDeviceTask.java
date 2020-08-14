@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommonErrorHelper;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity>
+public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActivity>
 {
     private final Transfer mTransfer;
     private final Device mDevice;
@@ -59,11 +59,11 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
     @Override
     public void onRun() throws TaskStoppedException
     {
-        Context context = getService().getApplicationContext();
+        Context context = getContext().getApplicationContext();
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
 
-        ConnectionUtils utils = new ConnectionUtils(getService());
+        ConnectionUtils utils = new ConnectionUtils(getContext());
         boolean update = false;
 
         try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mAddress, mDevice, 0)) {
@@ -142,13 +142,13 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 if (anchor != null) {
                     anchor.setResult(RESULT_OK, new Intent()
                             .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
-                            .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mTransfer));
+                            .putExtra(AddDevicesToTransferActivity.EXTRA_TRANSFER, mTransfer));
 
                     anchor.finish();
                 }
             }
         } catch (Exception e) {
-            post(CommonErrorHelper.messageOf(getService(), e));
+            post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }
 

@@ -23,7 +23,7 @@ import android.net.Uri;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.ArrayList;
@@ -114,8 +114,8 @@ public class FileDeletionDialog extends AlertDialog.Builder
 
     public interface Listener
     {
-        void onFileDeletion(BackgroundTask runningTask, Context context, DocumentFile file);
+        void onFileDeletion(AsyncTask runningTask, Context context, DocumentFile file);
 
-        void onCompleted(BackgroundTask runningTask, Context context, int fileSize);
+        void onCompleted(AsyncTask runningTask, Context context, int fileSize);
     }
 }
