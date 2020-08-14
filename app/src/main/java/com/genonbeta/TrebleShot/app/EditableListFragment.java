@@ -444,7 +444,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         return 1;
     }
 
-    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, Map<String, Integer> options)
+    protected void applyDynamicMenuItems(MenuItem mainItem, int transferId, Map<String, Integer> options)
     {
         if (mainItem != null) {
             mainItem.setVisible(true);
@@ -453,10 +453,10 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 
             for (String currentKey : options.keySet()) {
                 int modeId = options.get(currentKey);
-                dynamicMenu.add(groupId, 0, modeId, currentKey);
+                dynamicMenu.add(transferId, 0, modeId, currentKey);
             }
 
-            dynamicMenu.setGroupCheckable(groupId, true, true);
+            dynamicMenu.setGroupCheckable(transferId, true, true);
         }
     }
 

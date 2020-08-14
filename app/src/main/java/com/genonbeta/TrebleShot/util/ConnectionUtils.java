@@ -41,7 +41,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
@@ -51,7 +50,6 @@ import com.genonbeta.TrebleShot.util.communication.CommunicationException;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -60,7 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
+import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
 /**
  * created by: veli
@@ -415,8 +413,8 @@ public class ConnectionUtils
         bridge.requestAcquaintance();
 
         if (bridge.receiveResult() && device.uid != null) {
-            DeviceAddress connection = DeviceLoader.processConnection(kuick, device, inetAddress);
-            return new DeviceRoute(device, connection);
+            DeviceLoader.processConnection(kuick, device, deviceAddress);
+            return new DeviceRoute(device, deviceAddress);
         }
 
         throw new CommunicationException("Didn't have the result and the errors were unknown");

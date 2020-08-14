@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -28,8 +27,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.Stoppable;
 
@@ -91,16 +90,16 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return lastDot >= 0 ? fileName.substring(lastDot + 1).toLowerCase() : null;
     }
 
-    public static DocumentFile getIncomingPseudoFile(Context context, TransferObject transferObject,
-                                                     TransferGroup group, boolean createIfNotExists) throws IOException
+    public static DocumentFile getIncomingPseudoFile(Context context, TransferItem transferItem,
+                                                     Transfer transfer, boolean createIfNotExists) throws IOException
     {
-        return fetchFile(getSavePath(context, group), transferObject.directory, transferObject.file, createIfNotExists);
+        return fetchFile(getSavePath(context, transfer), transferItem.directory, transferItem.file, createIfNotExists);
     }
 
-    public static DocumentFile getIncomingFile(Context context, TransferObject transferObject, TransferGroup group)
+    public static DocumentFile getIncomingFile(Context context, TransferItem transferItem, Transfer transfer)
             throws IOException
     {
-        DocumentFile pseudoFile = getIncomingPseudoFile(context, transferObject, group, true);
+        DocumentFile pseudoFile = getIncomingPseudoFile(context, transferItem, transfer, true);
 
         if (!pseudoFile.canWrite())
             throw new IOException("File cannot be created or you don't have permission write on it");
@@ -130,13 +129,13 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
-    public static DocumentFile getSavePath(Context context, TransferGroup group)
+    public static DocumentFile getSavePath(Context context, Transfer transfer)
     {
         DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context);
 
-        if (group.savePath != null) {
+        if (transfer.savePath != null) {
             try {
-                DocumentFile savePath = fromUri(context, Uri.parse(group.savePath));
+                DocumentFile savePath = fromUri(context, Uri.parse(transfer.savePath));
 
                 if (savePath.isDirectory() && savePath.canWrite())
                     return savePath;
@@ -144,8 +143,8 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
                 e.printStackTrace();
             }
         } else {
-            group.savePath = defaultFolder.getUri().toString();
-            AppUtils.getKuick(context).publish(group);
+            transfer.savePath = defaultFolder.getUri().toString();
+            AppUtils.getKuick(context).publish(transfer);
         }
 
         return defaultFolder;
@@ -163,24 +162,24 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
     }
 
     /**
-     * When the transfer is done, this saves the uniquely named file to its actual name held in {@link TransferObject}.
+     * When the transfer is done, this saves the uniquely named file to its actual name held in {@link TransferItem}.
      *
      * @param savePath       The save path that contains currentFile
      * @param currentFile    The file that should be renamed
-     * @param transferObject The transfer request
+     * @param transferItem The transfer request
      * @return File moved to its actual name
      * @throws IOException Thrown when rename fails
      */
     public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile,
-                                                TransferObject transferObject) throws Exception
+                                                TransferItem transferItem) throws Exception
     {
-        String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.name, true);
+        String uniqueName = FileUtils.getUniqueFileName(savePath, transferItem.name, true);
 
         // FIXME: 7/30/19 The rename always fails when renaming TreeDocumentFile
         if (!currentFile.renameTo(uniqueName))
             throw new IOException("Failed to rename object: " + currentFile);
 
-        transferObject.file = uniqueName;
+        transferItem.file = uniqueName;
         savePath.sync();
 
         return savePath.findFile(uniqueName);

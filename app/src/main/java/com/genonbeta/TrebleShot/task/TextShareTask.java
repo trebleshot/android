@@ -23,27 +23,26 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
 public class TextShareTask extends BackgroundTask
 {
     private final Device mDevice;
-    private final DeviceAddress mConnection;
+    private final DeviceAddress mAddress;
     private final String mText;
 
-    public TextShareTask(Device device, DeviceAddress connection, String text)
+    public TextShareTask(Device device, DeviceAddress address, String text)
     {
         mDevice = device;
-        mConnection = connection;
+        mAddress = address;
         mText = text;
     }
 
     @Override
     protected void onRun()
     {
-        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mConnection, mDevice, 0)) {
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mAddress, mDevice, 0)) {
             final JSONObject jsonRequest = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
                     .put(Keyword.TRANSFER_TEXT, mText);

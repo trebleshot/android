@@ -105,13 +105,13 @@ public class TextEditorActivity extends Activity implements SnackbarPlacementPro
         if (resultCode == android.app.Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
-                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION)) {
+                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)) {
                 Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
-                DeviceAddress connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
+                DeviceAddress address = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS);
                 String text = mEditTextEditor.getText() != null ? mEditTextEditor.getText().toString() : null;
 
-                if (device != null && connection != null && text != null) {
-                    runUiTask(new TextShareTask(device, connection, text));
+                if (device != null && address != null && text != null) {
+                    runUiTask(new TextShareTask(device, address, text));
                 }
             }
         }

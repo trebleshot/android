@@ -35,7 +35,7 @@ public class Keyword
             REQUEST_TRANSFER_JOB = "transferJob", // Introduced in 99
             TRANSFER_TYPE = "type", // Introduced in 99
             TRANSFER_REQUEST_ID = "requestId",
-            TRANSFER_GROUP_ID = "groupId",
+            TRANSFER_ID = "transferId",
             TRANSFER_IS_ACCEPTED = "isAccepted",
             TRANSFER_TEXT = "text",
             TRANSFER_JOB_DONE = "jobDone",

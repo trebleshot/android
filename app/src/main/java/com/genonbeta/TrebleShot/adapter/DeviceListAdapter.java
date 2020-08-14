@@ -49,14 +49,14 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.fragment.DeviceListFragment.openInfo;
 
-public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
+public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
 {
     private final ConnectionUtils mConnectionUtils;
     private final TextDrawable.IShapeBuilder mIconBuilder;
     private final List<Device.Type> mHiddenDeviceTypes;
 
-    public NetworkDeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, ConnectionUtils utils,
-                                    Device.Type[] hiddenDeviceTypes)
+    public DeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, ConnectionUtils utils,
+                             Device.Type[] hiddenDeviceTypes)
     {
         super(fragment);
         mConnectionUtils = utils;

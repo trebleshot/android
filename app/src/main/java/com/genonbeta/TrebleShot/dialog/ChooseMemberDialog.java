@@ -30,8 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.LoadedMember;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 
@@ -42,22 +42,22 @@ import java.util.List;
  * created by: veli
  * date: 4/4/19 10:06 AM
  */
-public class ChooseAssigneeDialog extends AlertDialog.Builder
+public class ChooseMemberDialog extends AlertDialog.Builder
 {
-    private List<ShowingAssignee> mList = new ArrayList<>();
-    private LayoutInflater mInflater;
-    private TextDrawable.IShapeBuilder mIconBuilder;
+    private final List<LoadedMember> mList = new ArrayList<>();
+    private final LayoutInflater mInflater;
+    private final TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ChooseAssigneeDialog(@NonNull Activity activity, List<ShowingAssignee> assigneeList,
-                                DialogInterface.OnClickListener clickListener)
+    public ChooseMemberDialog(@NonNull Activity activity, List<LoadedMember> memberList,
+                              DialogInterface.OnClickListener clickListener)
     {
         super(activity);
 
-        mList.addAll(assigneeList);
+        mList.addAll(memberList);
         mInflater = LayoutInflater.from(activity);
         mIconBuilder = AppUtils.getDefaultIconBuilder(activity);
 
-        if (assigneeList.size() > 0)
+        if (memberList.size() > 0)
             setAdapter(new ListAdapter(), clickListener);
         else
             setMessage(R.string.text_listEmpty);
@@ -90,17 +90,17 @@ public class ChooseAssigneeDialog extends AlertDialog.Builder
         public View getView(int position, View convertView, ViewGroup parent)
         {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.list_assignee_selector, parent, false);
+                convertView = mInflater.inflate(R.layout.list_transfer_member_selector, parent, false);
 
-            ShowingAssignee assignee = (ShowingAssignee) getItem(position);
+            LoadedMember member = (LoadedMember) getItem(position);
             ImageView image = convertView.findViewById(R.id.image);
             ImageView actionImage = convertView.findViewById(R.id.actionImage);
             TextView text = convertView.findViewById(R.id.text);
 
-            text.setText(assignee.device.username);
-            actionImage.setImageResource(TransferObject.Type.INCOMING.equals(assignee.type)
+            text.setText(member.device.username);
+            actionImage.setImageResource(TransferItem.Type.INCOMING.equals(member.type)
                     ? R.drawable.ic_arrow_down_white_24dp : R.drawable.ic_arrow_up_white_24dp);
-            DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
+            DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder);
 
             return convertView;
         }

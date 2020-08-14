@@ -71,7 +71,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
-            android:id="@+id/assigneeListFragment"
+            android:id="@+id/membersListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minHeight="220dp"

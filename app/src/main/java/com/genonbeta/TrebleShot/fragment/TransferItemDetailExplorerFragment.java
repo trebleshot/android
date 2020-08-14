@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.adapter.TransferPathResolverRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
@@ -36,7 +36,7 @@ import java.io.File;
  * created by: veli
  * date: 3/11/19 7:37 PM
  */
-public class TransferFileExplorerFragment extends TransferListFragment
+public class TransferItemDetailExplorerFragment extends TransferItemListFragment
 {
     private RecyclerView mPathView;
     private TransferPathResolverRecyclerAdapter mPathAdapter;
@@ -76,8 +76,8 @@ public class TransferFileExplorerFragment extends TransferListFragment
 
         mPathAdapter.setOnClickListener(holder -> goPath(holder.index.object));
 
-        if (getActivity() instanceof ViewTransferActivity)
-            ((ViewTransferActivity) getActivity()).showMenus();
+        if (getActivity() instanceof TransferDetailActivity)
+            ((TransferDetailActivity) getActivity()).showMenus();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class TransferFileExplorerFragment extends TransferListFragment
 
         String path = getAdapter().getPath();
 
-        mPathAdapter.goTo(getAdapter().getAssignee(), path == null ? null : path.split(File.separator));
+        mPathAdapter.goTo(getAdapter().getMember(), path == null ? null : path.split(File.separator));
         mPathAdapter.notifyDataSetChanged();
 
         if (mPathAdapter.getItemCount() > 0)

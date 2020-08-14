@@ -107,7 +107,7 @@
             android:label="@string/text_fileExplorer" />
 
         <activity
-            android:name=".activity.ViewTransferActivity"
+            android:name=".activity.TransferDetailActivity"
             android:label="@string/text_transactionViewer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>

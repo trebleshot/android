@@ -20,18 +20,18 @@ package com.genonbeta.TrebleShot.object;
 
 import java.util.Locale;
 
-public class ShowingAssignee extends TransferAssignee implements Editable
+public class LoadedMember extends TransferMember implements Editable
 {
     public Device device;
 
-    public ShowingAssignee()
+    public LoadedMember()
     {
 
     }
 
-    public ShowingAssignee(long groupId, String deviceId, TransferObject.Type type)
+    public LoadedMember(long transferId, String deviceId, TransferItem.Type type)
     {
-        super(groupId, deviceId, type);
+        super(transferId, deviceId, type);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ShowingAssignee extends TransferAssignee implements Editable
     @Override
     public long getId()
     {
-        return String.format(Locale.getDefault(), "%s_%d", deviceId, groupId).hashCode();
+        return String.format(Locale.getDefault(), "%s_%d", deviceId, transferId).hashCode();
     }
 
     @Override

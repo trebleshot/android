@@ -27,8 +27,8 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.util.ArrayList;
@@ -65,20 +65,20 @@ public class DialogUtils
                 .show();
     }
 
-    public static void showRemoveDialog(final Activity activity, final TransferGroup group)
+    public static void showRemoveDialog(final Activity activity, final Transfer transfer)
     {
         showGenericCheckBoxDialog(activity, R.string.ques_removeAll,
                 activity.getString(R.string.text_removeTransferGroupSummary),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 (dialog, which, checkBox) -> {
-                    group.deleteFilesOnRemoval = checkBox.isChecked();
-                    AppUtils.getKuick(activity).removeAsynchronous(activity, group, null);
+                    transfer.deleteFilesOnRemoval = checkBox.isChecked();
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, transfer, null);
                 });
     }
 
-    public static void showRemoveDialog(final Activity activity, final TransferObject object)
+    public static void showRemoveDialog(final Activity activity, final TransferItem object)
     {
-        int checkBox = TransferObject.Type.INCOMING.equals(object.type) ? R.string.text_alsoDeleteReceivedFiles : 0;
+        int checkBox = TransferItem.Type.INCOMING.equals(object.type) ? R.string.text_alsoDeleteReceivedFiles : 0;
         showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer, activity.getString(
                 R.string.text_removeTransferSummary, object.name),
                 R.string.butn_remove, checkBox, (dialog, which, checkBox1) -> {
@@ -88,9 +88,9 @@ public class DialogUtils
     }
 
     public static void showRemoveTransferObjectListDialog(final Activity activity,
-                                                          final List<? extends TransferObject> objects)
+                                                          final List<? extends TransferItem> objects)
     {
-        final List<TransferObject> copiedObjects = new ArrayList<>(objects);
+        final List<TransferItem> copiedObjects = new ArrayList<>(objects);
 
         showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer,
                 activity.getResources().getQuantityString(R.plurals.text_removeQueueSummary, objects.size(), objects.size()),
@@ -98,7 +98,7 @@ public class DialogUtils
                 (dialog, which, checkBox) -> {
                     boolean isChecked = checkBox.isChecked();
 
-                    for (TransferObject object : copiedObjects)
+                    for (TransferItem object : copiedObjects)
                         object.setDeleteOnRemoval(isChecked);
 
                     AppUtils.getKuick(activity).removeAsynchronous(activity, copiedObjects, null);
@@ -107,19 +107,19 @@ public class DialogUtils
 
 
     public static void showRemoveTransferGroupListDialog(final Activity activity,
-                                                         List<? extends TransferGroup> groups)
+                                                         List<? extends Transfer> groups)
     {
-        final List<TransferGroup> copiedGroups = new ArrayList<>(groups);
+        final List<Transfer> copiedTransfers = new ArrayList<>(groups);
 
         showGenericCheckBoxDialog(activity, R.string.ques_removeAll, activity.getString(R.string.text_removeSelected),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 (dialog, which, checkBox) -> {
                     boolean isChecked = checkBox.isChecked();
 
-                    for (TransferGroup group : copiedGroups)
-                        group.deleteFilesOnRemoval = isChecked;
+                    for (Transfer transfer : copiedTransfers)
+                        transfer.deleteFilesOnRemoval = isChecked;
 
-                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedGroups, null);
+                    AppUtils.getKuick(activity).removeAsynchronous(activity, copiedTransfers, null);
                 });
     }
 

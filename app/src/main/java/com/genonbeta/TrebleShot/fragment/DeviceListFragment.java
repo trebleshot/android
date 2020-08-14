@@ -32,8 +32,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.InfoHolder;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -50,10 +50,10 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
+import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
 public class DeviceListFragment extends EditableListFragment<InfoHolder,
-        RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter> implements IconProvider
+        RecyclerViewAdapter.ViewHolder, DeviceListAdapter> implements IconProvider
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -126,7 +126,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new NetworkDeviceListAdapter(this, getConnectionUtils(), mHiddenDeviceTypes));
+        setListAdapter(new DeviceListAdapter(this, getConnectionUtils(), mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
     }

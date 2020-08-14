@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
@@ -76,9 +75,9 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE)
-                .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND " +
-                        Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", deviceId, String.valueOf(groupId));
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
+                .setWhere(Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=? AND " +
+                        Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", deviceId, String.valueOf(groupId));
     }
 
     @Override
@@ -86,8 +85,8 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFERMEMBER_DEVICEID, deviceId);
+        values.put(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID, groupId);
         values.put(Migration.v12.FIELD_TRANSFERASSIGNEE_ISCLONE, 1);
 
         return values;
@@ -96,8 +95,8 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID);
-        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID);
+        this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID);
     }
 
     @Override

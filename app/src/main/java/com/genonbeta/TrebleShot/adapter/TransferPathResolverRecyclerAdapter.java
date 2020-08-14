@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
+import com.genonbeta.TrebleShot.object.LoadedMember;
 
 import java.io.File;
 
@@ -30,8 +30,8 @@ import java.io.File;
  */
 public class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
 {
-    private ShowingAssignee mAssignee;
-    private String mHomeName;
+    private LoadedMember mMember;
+    private final String mHomeName;
 
     public TransferPathResolverRecyclerAdapter(Context context)
     {
@@ -42,15 +42,15 @@ public class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAda
     @Override
     public Index<String> onFirstItem()
     {
-        if (mAssignee != null)
-            return new Index<>(mAssignee.device.username, R.drawable.ic_device_hub_white_24dp, null);
+        if (mMember != null)
+            return new Index<>(mMember.device.username, R.drawable.ic_device_hub_white_24dp, null);
 
         return new Index<>(mHomeName, R.drawable.ic_home_white_24dp, null);
     }
 
-    public void goTo(ShowingAssignee assignee, String[] paths)
+    public void goTo(LoadedMember member, String[] paths)
     {
-        mAssignee = assignee;
+        mMember = member;
 
         StringBuilder mergedPath = new StringBuilder();
         initAdapter();

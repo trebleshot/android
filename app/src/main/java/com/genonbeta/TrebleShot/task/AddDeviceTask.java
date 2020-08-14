@@ -45,15 +45,15 @@ import static android.app.Activity.RESULT_OK;
 
 public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity>
 {
-    private final TransferGroup mGroup;
+    private final Transfer mTransfer;
     private final Device mDevice;
-    private final DeviceAddress mConnection;
+    private final DeviceAddress mAddress;
 
-    public AddDeviceTask(TransferGroup group, Device device, DeviceAddress connection)
+    public AddDeviceTask(Transfer transfer, Device device, DeviceAddress address)
     {
-        mGroup = group;
+        mTransfer = transfer;
         mDevice = device;
-        mConnection = connection;
+        mAddress = address;
     }
 
     @Override
@@ -66,52 +66,52 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
         ConnectionUtils utils = new ConnectionUtils(getService());
         boolean update = false;
 
-        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mConnection, mDevice, 0)) {
-            TransferAssignee assignee = new TransferAssignee(mGroup, mDevice, TransferObject.Type.OUTGOING);
-            List<TransferObject> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                            .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE
-                                    + "=?", String.valueOf(mGroup.id), TransferObject.Type.OUTGOING.toString()),
-                    TransferObject.class, null);
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mAddress, mDevice, 0)) {
+            TransferMember member = new TransferMember(mTransfer, mDevice, TransferItem.Type.OUTGOING);
+            List<TransferItem> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                            .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE
+                                    + "=?", String.valueOf(mTransfer.id), TransferItem.Type.OUTGOING.toString()),
+                    TransferItem.class, null);
 
             try {
-                // Checks if the current assignee is already on the list, if so, update
-                kuick.reconstruct(db, assignee);
+                // Checks if the current member is already on the list, if so, update
+                kuick.reconstruct(db, member);
                 update = true;
             } catch (Exception ignored) {
             }
 
             if (objectList.size() == 0)
-                throw new Exception("Empty share holder id: " + mGroup.id);
+                throw new Exception("Empty share holder id: " + mTransfer.id);
 
             JSONArray filesArray = new JSONArray();
 
-            for (TransferObject transferObject : objectList) {
-                setOngoingContent(transferObject.name);
-                transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
+            for (TransferItem transferItem : objectList) {
+                setOngoingContent(transferItem.name);
+                transferItem.putFlag(member.deviceId, TransferItem.Flag.PENDING);
 
                 throwIfStopped();
 
                 try {
                     JSONObject json = new JSONObject()
-                            .put(Keyword.INDEX_FILE_NAME, transferObject.name)
-                            .put(Keyword.INDEX_FILE_SIZE, transferObject.size)
-                            .put(Keyword.TRANSFER_REQUEST_ID, transferObject.id)
-                            .put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
+                            .put(Keyword.INDEX_FILE_NAME, transferItem.name)
+                            .put(Keyword.INDEX_FILE_SIZE, transferItem.size)
+                            .put(Keyword.TRANSFER_REQUEST_ID, transferItem.id)
+                            .put(Keyword.INDEX_FILE_MIME, transferItem.mimeType);
 
-                    if (transferObject.directory != null)
-                        json.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
+                    if (transferItem.directory != null)
+                        json.put(Keyword.INDEX_DIRECTORY, transferItem.directory);
 
                     filesArray.put(json);
                 } catch (Exception e) {
                     Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: "
-                            + e.getClass().getName() + " : " + transferObject.name);
+                            + e.getClass().getName() + " : " + transferItem.name);
                 }
             }
 
             // so that if the user rejects, it won't be removed from the sender
             JSONObject jsonObject = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
-                    .put(Keyword.TRANSFER_GROUP_ID, mGroup.id)
+                    .put(Keyword.TRANSFER_ID, mTransfer.id)
                     .put(Keyword.INDEX, filesArray.toString());
 
             final ActiveConnection activeConnection = bridge.getActiveConnection();
@@ -130,19 +130,19 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 setOngoingContent(context.getString(R.string.mesg_organizingFiles));
 
                 if (update)
-                    kuick.update(db, assignee, mGroup, progressListener());
+                    kuick.update(db, member, mTransfer, progressListener());
                 else
-                    kuick.insert(db, assignee, mGroup, progressListener());
+                    kuick.insert(db, member, mTransfer, progressListener());
 
-                addCloser(userAction -> kuick.remove(assignee));
-                kuick.update(db, objectList, mGroup, progressListener());
+                addCloser(userAction -> kuick.remove(member));
+                kuick.update(db, objectList, mTransfer, progressListener());
                 kuick.broadcast();
 
                 AddDevicesToTransferActivity anchor = getAnchor();
                 if (anchor != null) {
                     anchor.setResult(RESULT_OK, new Intent()
                             .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
-                            .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mGroup));
+                            .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mTransfer));
 
                     anchor.finish();
                 }

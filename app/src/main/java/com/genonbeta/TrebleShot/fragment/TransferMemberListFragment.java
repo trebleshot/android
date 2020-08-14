@@ -35,8 +35,8 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.LoadedMember;
+import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -44,43 +44,43 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
  * created by: veli
  * date: 06.04.2018 12:58
  */
-public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee, RecyclerViewAdapter.ViewHolder,
+public class TransferMemberListFragment extends EditableListFragment<LoadedMember, RecyclerViewAdapter.ViewHolder,
         TransferMemberListAdapter>
 {
-    public static final String ARG_GROUP_ID = "groupId";
+    public static final String ARG_TRANSFER_ID = "transferId";
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
             if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
-                if (Kuick.TABLE_TRANSFERASSIGNEE.equals(data.tableName))
+                if (Kuick.TABLE_TRANSFERMEMBER.equals(data.tableName))
                     refreshList();
-                else if (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName))
+                else if (Kuick.TABLE_TRANSFER.equals(data.tableName))
                     updateTransferGroup();
             }
         }
     };
 
-    private TransferGroup mHeldGroup;
+    private Transfer mHeldGroup;
 
     public static <T extends Editable> void showPopupMenu(EditableListFragmentBase<T> fragment,
-                                                          TransferMemberListAdapter adapter, TransferGroup group,
+                                                          TransferMemberListAdapter adapter, Transfer transfer,
                                                           RecyclerViewAdapter.ViewHolder clazz, View v,
-                                                          ShowingAssignee assignee)
+                                                          LoadedMember member)
     {
         PopupMenu popupMenu = new PopupMenu(fragment.getContext(), v);
         Menu menu = popupMenu.getMenu();
 
-        popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
+        popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_member, menu);
         popupMenu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.popup_remove) {
-                AppUtils.getKuick(fragment.getContext()).removeAsynchronous(fragment.getActivity(), assignee, group);
+                AppUtils.getKuick(fragment.getContext()).removeAsynchronous(fragment.getActivity(), member, transfer);
             } else
                 return false;
 
@@ -145,14 +145,14 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     }
 
     @Override
-    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, ShowingAssignee object)
+    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, LoadedMember object)
     {
         new DeviceInfoDialog(requireActivity(), object.device).show();
         return true;
     }
 
     @Override
-    public boolean performDefaultLayoutLongClick(RecyclerViewAdapter.ViewHolder holder, ShowingAssignee object)
+    public boolean performDefaultLayoutLongClick(RecyclerViewAdapter.ViewHolder holder, LoadedMember object)
     {
         showPopupMenu(this, getAdapter(), getTransferGroup(), holder, holder.itemView, object);
         return true;
@@ -171,10 +171,10 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
         return context.getString(R.string.text_deviceList);
     }
 
-    public TransferGroup getTransferGroup()
+    public Transfer getTransferGroup()
     {
         if (mHeldGroup == null) {
-            mHeldGroup = new TransferGroup(getArguments() == null ? -1 : getArguments().getLong(ARG_GROUP_ID,
+            mHeldGroup = new Transfer(getArguments() == null ? -1 : getArguments().getLong(ARG_TRANSFER_ID,
                     -1));
             updateTransferGroup();
         }

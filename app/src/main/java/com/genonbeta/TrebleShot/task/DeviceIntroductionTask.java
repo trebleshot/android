@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 
 import java.net.InetAddress;
 
-import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
+import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
 public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionTask.ResultListener>
 {
@@ -46,9 +46,9 @@ public class DeviceIntroductionTask extends AttachableBgTask<DeviceIntroductionT
         mPin = pin;
     }
 
-    public DeviceIntroductionTask(DeviceAddress connection, int pin)
+    public DeviceIntroductionTask(DeviceAddress address, int pin)
     {
-        this(connection.inetAddress, pin);
+        this(address.inetAddress, pin);
     }
 
     public DeviceIntroductionTask(NetworkDescription description, int pin)

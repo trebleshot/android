@@ -26,9 +26,9 @@ import com.genonbeta.TrebleShot.migration.db.object.TransferAssigneeV12;
 import com.genonbeta.TrebleShot.migration.db.object.TransferObjectV12;
 import com.genonbeta.TrebleShot.migration.db.object.WritablePathObjectV12;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.TransferAssignee;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.TransferMember;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
@@ -65,9 +65,9 @@ public class Migration
 
             values.getTables().putAll(currentValues.getTables());
 
-            values.defineTable(TABLE_TRANSFER)
+            values.defineTable(TABLE_TRANSFERITEM)
                     .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
+                    .define(new SQLValues.Column(FIELD_TRANSFER_TRANSFERID, SQLType.LONG, false))
                     .define(new SQLValues.Column(v12.FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
                     .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
                     .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
@@ -80,13 +80,13 @@ public class Migration
                     .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
 
             // define the transfer division table based on the transfer table
-            SQLValues.Table transferTable = values.getTables().get(TABLE_TRANSFER);
+            SQLValues.Table transferTable = values.getTables().get(TABLE_TRANSFERITEM);
             SQLValues.Table transDivisionTable = new SQLValues.Table(v12.TABLE_DIVISTRANSFER);
             transDivisionTable.getColumns().putAll(transferTable.getColumns());
 
-            values.defineTable(TABLE_TRANSFERASSIGNEE)
-                    .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
+            values.defineTable(TABLE_TRANSFERMEMBER)
+                    .define(new SQLValues.Column(FIELD_TRANSFERMEMBER_TRANSFERID, SQLType.LONG, false))
+                    .define(new SQLValues.Column(FIELD_TRANSFERMEMBER_DEVICEID, SQLType.TEXT, false))
                     .define(new SQLValues.Column(v12.FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
 
             return values;
@@ -111,9 +111,9 @@ public class Migration
                 SQLQuery.createTables(db, tables12);
                 break; // Database has already been recreated. No need for fallthrough.
             case 6:
-                SQLValues.Table groupTable = tables12.getTable(TABLE_TRANSFERGROUP);
+                SQLValues.Table groupTable = tables12.getTable(TABLE_TRANSFER);
                 SQLValues.Table devicesTable = tables12.getTable(TABLE_DEVICES);
-                SQLValues.Table targetDevicesTable = tables12.getTable(TABLE_TRANSFERASSIGNEE);
+                SQLValues.Table targetDevicesTable = tables12.getTable(TABLE_TRANSFERMEMBER);
 
                 db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
                 db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
@@ -130,15 +130,15 @@ public class Migration
                 // to allow users distinguish individual transfer file
 
                 try {
-                    SQLValues.Table tableTransfer = tables12.getTable(TABLE_TRANSFER);
+                    SQLValues.Table tableTransfer = tables12.getTable(TABLE_TRANSFERITEM);
                     SQLValues.Table divisTransfer = tables12.getTable(v12.TABLE_DIVISTRANSFER);
                     Map<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObjectV12> supportedItems = new ArrayList<>();
                     List<TransferAssigneeV12> availableAssignees = kuick.castQuery(db,
-                            new SQLQuery.Select(TABLE_TRANSFERASSIGNEE),
+                            new SQLQuery.Select(TABLE_TRANSFERMEMBER),
                             TransferAssigneeV12.class, null);
                     List<TransferObjectV12> availableTransfers = kuick.castQuery(db,
-                            new SQLQuery.Select(TABLE_TRANSFER), TransferObjectV12.class, null);
+                            new SQLQuery.Select(TABLE_TRANSFERITEM), TransferObjectV12.class, null);
 
                     for (TransferAssigneeV12 assignee : availableAssignees) {
                         if (!mapDist.containsKey(assignee.groupId))
@@ -163,9 +163,9 @@ public class Migration
                 SQLValues.Table tableFileBookmark = tables12.getTable(TABLE_FILEBOOKMARK);
                 SQLQuery.createTable(db, tableFileBookmark);
             case 12:
-                List<TransferGroup> totalGroupList = kuick.castQuery(db, new SQLQuery.Select(
-                        TABLE_TRANSFERGROUP), TransferGroup.class, null);
-                SQLValues.Table tableTransferGroup = tables12.getTable(TABLE_TRANSFERGROUP);
+                List<Transfer> totalGroupList = kuick.castQuery(db, new SQLQuery.Select(
+                        TABLE_TRANSFER), Transfer.class, null);
+                SQLValues.Table tableTransferGroup = tables12.getTable(TABLE_TRANSFER);
 
                 db.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`");
                 SQLQuery.createTable(db, tableTransferGroup);
@@ -189,40 +189,40 @@ public class Migration
 
                 {
                     List<TransferAssigneeV12> oldList = kuick.castQuery(db, new SQLQuery.Select(
-                            TABLE_TRANSFERASSIGNEE), TransferAssigneeV12.class, null);
+                            TABLE_TRANSFERMEMBER), TransferAssigneeV12.class, null);
 
                     // Added: Type, Removed: IsClone
-                    db.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFERASSIGNEE + "`");
-                    SQLQuery.createTable(db, tables.getTable(TABLE_TRANSFERASSIGNEE));
+                    db.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFERMEMBER + "`");
+                    SQLQuery.createTable(db, tables.getTable(TABLE_TRANSFERMEMBER));
 
-                    List<TransferAssignee> newAssignees = new ArrayList<>();
+                    List<TransferMember> newAssignees = new ArrayList<>();
 
                     // The `transfer` table will be removed below. We can use the old versions
                     // columns still.
                     for (TransferAssigneeV12 assigneeV12 : oldList) {
-                        SQLQuery.Select selection = new SQLQuery.Select(TABLE_TRANSFER);
+                        SQLQuery.Select selection = new SQLQuery.Select(TABLE_TRANSFERITEM);
                         selection.setWhere(FIELD_TRANSFER_TYPE + "=? AND "
-                                + FIELD_TRANSFER_GROUPID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                + FIELD_TRANSFER_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                 + "=?", TransferObjectV12.Type.INCOMING.toString(), String.valueOf(
                                 assigneeV12.groupId), assigneeV12.deviceId);
 
                         if (kuick.getFirstFromTable(db, selection) != null) {
-                            TransferAssignee incomingAssignee = new TransferAssignee();
-                            incomingAssignee.reconstruct(db, kuick, assigneeV12.getValues());
-                            incomingAssignee.type = TransferObject.Type.INCOMING;
-                            newAssignees.add(incomingAssignee);
+                            TransferMember incomingMember = new TransferMember();
+                            incomingMember.reconstruct(db, kuick, assigneeV12.getValues());
+                            incomingMember.type = TransferItem.Type.INCOMING;
+                            newAssignees.add(incomingMember);
                         }
 
                         selection.setWhere(FIELD_TRANSFER_TYPE + "=? AND "
-                                + FIELD_TRANSFER_GROUPID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                + FIELD_TRANSFER_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                 + "=?", TransferObjectV12.Type.OUTGOING.toString(), String.valueOf(
                                 assigneeV12.groupId), assigneeV12.deviceId);
 
                         if (kuick.getFirstFromTable(db, selection) != null) {
-                            TransferAssignee outgoingAssignee = new TransferAssignee();
-                            outgoingAssignee.reconstruct(db, kuick, assigneeV12.getValues());
-                            outgoingAssignee.type = TransferObject.Type.OUTGOING;
-                            newAssignees.add(outgoingAssignee);
+                            TransferMember outgoingMember = new TransferMember();
+                            outgoingMember.reconstruct(db, kuick, assigneeV12.getValues());
+                            outgoingMember.type = TransferItem.Type.OUTGOING;
+                            newAssignees.add(outgoingMember);
                         }
                     }
 
@@ -231,50 +231,50 @@ public class Migration
                 }
 
                 {
-                    SQLValues.Table table = tables.getTable(TABLE_TRANSFER);
+                    SQLValues.Table table = tables.getTable(TABLE_TRANSFERITEM);
 
                     // Changed Flag as Flag[] for Type.OUTGOING objects
                     List<TransferObjectV12> outgoingBaseObjects = kuick.castQuery(db, new SQLQuery.Select(
                             v12.TABLE_DIVISTRANSFER), TransferObjectV12.class, null);
 
                     List<TransferObjectV12> outgoingMirrorObjects = kuick.castQuery(db, new SQLQuery.Select(
-                            TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
+                            TABLE_TRANSFERITEM).setWhere(FIELD_TRANSFER_TYPE + "=?",
                             TransferObjectV12.Type.OUTGOING.toString()), TransferObjectV12.class, null);
 
                     List<TransferObjectV12> incomingObjects = kuick.castQuery(db, new SQLQuery.Select(
-                            TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
+                            TABLE_TRANSFERITEM).setWhere(FIELD_TRANSFER_TYPE + "=?",
                             TransferObjectV12.Type.INCOMING.toString()), TransferObjectV12.class, null);
 
                     // Remove: Table `divisTransfer`
                     db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`");
 
                     // Added: LastChangeTime, Removed: AccessPort, SkippedBytes
-                    db.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFER + "`");
+                    db.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFERITEM + "`");
                     SQLQuery.createTable(db, table);
 
                     if (outgoingBaseObjects.size() > 0) {
-                        Map<Long, TransferObject> newObjects = new ArrayMap<>();
+                        Map<Long, TransferItem> newObjects = new ArrayMap<>();
 
                         for (TransferObjectV12 objectV12 : outgoingBaseObjects) {
-                            TransferObject object = newObjects.get(objectV12.requestId);
+                            TransferItem object = newObjects.get(objectV12.requestId);
 
                             if (object != null)
                                 continue;
 
-                            object = new TransferObject();
+                            object = new TransferItem();
                             object.reconstruct(db, kuick, objectV12.getValues());
 
                             newObjects.put(objectV12.requestId, object);
                         }
 
                         for (TransferObjectV12 objectV12 : outgoingMirrorObjects) {
-                            TransferObject object = newObjects.get(objectV12.requestId);
+                            TransferItem object = newObjects.get(objectV12.requestId);
 
                             if (object == null)
                                 continue;
 
                             try {
-                                object.putFlag(objectV12.deviceId, TransferObject.Flag.valueOf(
+                                object.putFlag(objectV12.deviceId, TransferItem.Flag.valueOf(
                                         objectV12.flag.toString()));
                             } catch (Exception ignored) {
                             }
@@ -285,10 +285,10 @@ public class Migration
                     }
 
                     if (incomingObjects.size() > 0) {
-                        List<TransferObject> newIncomingInstances = new ArrayList<>();
+                        List<TransferItem> newIncomingInstances = new ArrayList<>();
 
                         for (TransferObjectV12 objectV12 : incomingObjects) {
-                            TransferObject newObject = new TransferObject();
+                            TransferItem newObject = new TransferItem();
                             newObject.reconstruct(db, kuick, objectV12.getValues());
                         }
 
@@ -297,7 +297,7 @@ public class Migration
                 }
 
                 {
-                    SQLValues.Table table = tables.getTable(TABLE_TRANSFERGROUP);
+                    SQLValues.Table table = tables.getTable(TABLE_TRANSFER);
                     SQLValues.Column column = table.getColumn(FIELD_TRANSFERGROUP_ISPAUSED);
 
                     // Added: IsPaused

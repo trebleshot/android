@@ -73,11 +73,11 @@ public class BackgroundService extends Service
             ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE", // FIXME: only the parent activity should listen to this
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
-            EXTRA_CONNECTION = "extraConnectionAdapterName",
+            EXTRA_DEVICE_ADDRESS = "extraConnectionAdapterName",
             EXTRA_DEVICE = "extraDevice",
             EXTRA_RECEIVE_KEY = "extraReceiveKey",
             EXTRA_SEND_KEY = "extraSendKey",
-            EXTRA_GROUP = "extraGroup",
+            EXTRA_TRANSFER = "extraGroup",
             EXTRA_IDENTITY = "extraIdentity",
             EXTRA_ACCEPTED = "extraAccepted",
             EXTRA_REQUEST_ID = "extraRequest",
@@ -143,23 +143,23 @@ public class BackgroundService extends Service
         if (intent != null && AppUtils.checkRunningConditions(this)) {
             if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
-                TransferGroup group = intent.getParcelableExtra(EXTRA_GROUP);
+                Transfer transfer = intent.getParcelableExtra(EXTRA_TRANSFER);
                 final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 final boolean isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
                 try {
-                    if (device == null || group == null)
+                    if (device == null || transfer == null)
                         throw new Exception("The device or group instance is broken");
 
-                    FileTransferTask task = FileTransferTask.createFrom(getKuick(), group, device,
-                            TransferObject.Type.INCOMING);
+                    FileTransferTask task = FileTransferTask.createFrom(getKuick(), transfer, device,
+                            TransferItem.Type.INCOMING);
 
                     new Thread(() -> {
                         try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.addressList,
                                 task.device, 0)) {
-                            bridge.requestNotifyTransferState(group.id, isAccepted);
+                            bridge.requestNotifyTransferState(transfer.id, isAccepted);
                         } catch (Exception ignored) {
                         }
                     }).start();
@@ -167,7 +167,7 @@ public class BackgroundService extends Service
                     if (isAccepted)
                         run(task);
                     else {
-                        getKuick().remove(getKuick().getWritableDatabase(), task.assignee, task.group, null);
+                        getKuick().remove(getKuick().getWritableDatabase(), task.member, task.transfer, null);
                         getKuick().broadcast();
                     }
                 } catch (Exception e) {
@@ -220,21 +220,21 @@ public class BackgroundService extends Service
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
                 stopSelf();
-            } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_GROUP)
+            } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
-                TransferGroup group = intent.getParcelableExtra(EXTRA_GROUP);
-                TransferObject.Type type = (TransferObject.Type) intent.getSerializableExtra(EXTRA_TRANSFER_TYPE);
+                Transfer transfer = intent.getParcelableExtra(EXTRA_TRANSFER);
+                TransferItem.Type type = (TransferItem.Type) intent.getSerializableExtra(EXTRA_TRANSFER_TYPE);
 
                 try {
-                    if (device == null || group == null || type == null)
+                    if (device == null || transfer == null || type == null)
                         throw new Exception();
 
-                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(group.id,
+                    FileTransferTask task = (FileTransferTask) findTaskBy(FileTransferTask.identifyWith(transfer.id,
                             device.uid, type));
 
                     if (task == null)
-                        run(FileTransferTask.createFrom(getKuick(), group, device, type));
+                        run(FileTransferTask.createFrom(getKuick(), transfer, device, type));
                     else
                         Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.object.name),
                                 Toast.LENGTH_SHORT).show();
@@ -286,7 +286,7 @@ public class BackgroundService extends Service
         {
             ContentValues values = new ContentValues();
             values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
-            getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+            getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
                     .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
                             String.valueOf(1)), values);
         }
@@ -445,9 +445,9 @@ public class BackgroundService extends Service
         return getSelfApplication() != null && getSelfApplication().getHotspotManager().isStarted();
     }
 
-    private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
+    private boolean isProcessRunning(long transferId, String deviceId, TransferItem.Type type)
     {
-        return findTaskBy(FileTransferTask.identifyWith(groupId, deviceId, type)) != null;
+        return findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null;
     }
 
     protected synchronized <T extends BackgroundTask> void registerWork(T task)
@@ -585,29 +585,27 @@ public class BackgroundService extends Service
 
                 switch (response.getString(Keyword.REQUEST)) {
                     case (Keyword.REQUEST_TRANSFER):
-                        if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_GROUP_ID)
+                        if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_ID)
                                 && !hasTaskOf(IndexTransferTask.class)) {
-                            long groupId = response.getLong(Keyword.TRANSFER_GROUP_ID);
+                            long transferId = response.getLong(Keyword.TRANSFER_ID);
                             String jsonIndex = response.getString(Keyword.INDEX);
 
-                            run(new IndexTransferTask(groupId, jsonIndex, device, hasPin));
+                            run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
                         }
                         break;
                     case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE):
-                        if (response.has(Keyword.TRANSFER_GROUP_ID)) {
-                            int groupId = response.getInt(Keyword.TRANSFER_GROUP_ID);
+                        if (response.has(Keyword.TRANSFER_ID)) {
+                            int transferId = response.getInt(Keyword.TRANSFER_ID);
                             boolean isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
-
-                            TransferGroup group = new TransferGroup(groupId);
-                            TransferAssignee assignee = new TransferAssignee(group, device,
-                                    TransferObject.Type.OUTGOING);
+                            Transfer transfer = new Transfer(transferId);
+                            TransferMember member = new TransferMember(transfer, device, TransferItem.Type.OUTGOING);
 
                             try {
-                                getKuick().reconstruct(group);
-                                getKuick().reconstruct(assignee);
+                                getKuick().reconstruct(transfer);
+                                getKuick().reconstruct(member);
 
                                 if (!isAccepted) {
-                                    getKuick().remove(assignee);
+                                    getKuick().remove(member);
                                     getKuick().broadcast();
                                 }
                             } catch (Exception ignored) {
@@ -627,45 +625,45 @@ public class BackgroundService extends Service
                     case (Keyword.REQUEST_ACQUAINTANCE):
                         sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
                                 .putExtra(EXTRA_DEVICE, device)
-                                .putExtra(EXTRA_CONNECTION, deviceAddress));
+                                .putExtra(EXTRA_DEVICE_ADDRESS, deviceAddress));
                         CommunicationBridge.sendResult(activeConnection, true);
                         break;
                     case (Keyword.REQUEST_TRANSFER_JOB):
-                        if (response.has(Keyword.TRANSFER_GROUP_ID)) {
-                            int groupId = response.getInt(Keyword.TRANSFER_GROUP_ID);
+                        if (response.has(Keyword.TRANSFER_ID)) {
+                            int transferId = response.getInt(Keyword.TRANSFER_ID);
                             String typeValue = response.getString(Keyword.TRANSFER_TYPE);
 
                             try {
-                                TransferObject.Type type = TransferObject.Type.valueOf(typeValue);
+                                TransferItem.Type type = TransferItem.Type.valueOf(typeValue);
 
                                 // The type is reversed to match our side
-                                if (TransferObject.Type.INCOMING.equals(type))
-                                    type = TransferObject.Type.OUTGOING;
-                                else if (TransferObject.Type.OUTGOING.equals(type))
-                                    type = TransferObject.Type.INCOMING;
+                                if (TransferItem.Type.INCOMING.equals(type))
+                                    type = TransferItem.Type.OUTGOING;
+                                else if (TransferItem.Type.OUTGOING.equals(type))
+                                    type = TransferItem.Type.INCOMING;
 
-                                TransferGroup group = new TransferGroup(groupId);
-                                getKuick().reconstruct(group);
+                                Transfer transfer = new Transfer(transferId);
+                                getKuick().reconstruct(transfer);
 
                                 Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
-                                        + "groupId=" + groupId + " typeValue=" + typeValue);
+                                        + "transferId=" + transferId + " typeValue=" + typeValue);
 
-                                if (!isProcessRunning(groupId, device.uid, type)) {
+                                if (!isProcessRunning(transferId, device.uid, type)) {
                                     FileTransferTask task = new FileTransferTask();
                                     task.activeConnection = activeConnection;
-                                    task.group = group;
+                                    task.transfer = transfer;
                                     task.device = device;
                                     task.type = type;
-                                    task.assignee = new TransferAssignee(group, device, type);
-                                    task.index = new IndexOfTransferGroup(group);
+                                    task.member = new TransferMember(transfer, device, type);
+                                    task.index = new IndexOfTransferGroup(transfer);
 
-                                    getKuick().reconstruct(task.assignee);
+                                    getKuick().reconstruct(task.member);
 
-                                    if (TransferObject.Type.OUTGOING.equals(type)) {
+                                    if (TransferItem.Type.OUTGOING.equals(type)) {
                                         Log.d(TAG, "onConnected: Informing before starting to send.");
 
                                         attach(task);
-                                    } else if (TransferObject.Type.INCOMING.equals(type)) {
+                                    } else if (TransferItem.Type.INCOMING.equals(type)) {
                                         JSONObject currentReply = new JSONObject();
                                         boolean result = device.isTrusted;
 

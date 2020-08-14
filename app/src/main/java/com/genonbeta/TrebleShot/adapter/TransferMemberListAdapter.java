@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.LoadedMember;
+import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -39,16 +39,16 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 12:46
  */
-public class TransferMemberListAdapter extends EditableListAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
+public class TransferMemberListAdapter extends EditableListAdapter<LoadedMember, RecyclerViewAdapter.ViewHolder>
 {
-    private final TransferGroup mGroup;
+    private final Transfer mTransfer;
     private final TextDrawable.IShapeBuilder mIconBuilder;
 
-    public TransferMemberListAdapter(IEditableListFragment<ShowingAssignee, ViewHolder> fragment, TransferGroup group)
+    public TransferMemberListAdapter(IEditableListFragment<LoadedMember, ViewHolder> fragment, Transfer transfer)
     {
         super(fragment);
         mIconBuilder = AppUtils.getDefaultIconBuilder(fragment.getContext());
-        mGroup = group;
+        mTransfer = transfer;
     }
 
     @NonNull
@@ -56,7 +56,7 @@ public class TransferMemberListAdapter extends EditableListAdapter<ShowingAssign
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         ViewHolder holder = new ViewHolder(getInflater().inflate(isHorizontalOrientation() || isGridLayoutRequested()
-                ? R.layout.list_assignee_grid : R.layout.list_assignee, parent, false));
+                ? R.layout.list_transfer_member_grid : R.layout.list_transfer_member, parent, false));
 
         getFragment().registerLayoutViewClicks(holder);
         holder.itemView.findViewById(R.id.menu)
@@ -67,21 +67,21 @@ public class TransferMemberListAdapter extends EditableListAdapter<ShowingAssign
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
     {
-        ShowingAssignee assignee = getList().get(position);
+        LoadedMember member = getList().get(position);
 
         ImageView image = holder.itemView.findViewById(R.id.image);
         TextView text1 = holder.itemView.findViewById(R.id.text1);
         TextView text2 = holder.itemView.findViewById(R.id.text2);
 
-        text1.setText(assignee.device.username);
+        text1.setText(member.device.username);
         // TODO: 8/11/20 Show a proper message
-        text2.setText(String.valueOf(assignee.device.lastUsageTime));
-        DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
+        text2.setText(String.valueOf(member.device.lastUsageTime));
+        DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder);
     }
 
     @Override
-    public List<ShowingAssignee> onLoad()
+    public List<LoadedMember> onLoad()
     {
-        return Transfers.loadAssigneeList(getContext(), mGroup.id, null);
+        return Transfers.loadMemberList(getContext(), mTransfer.id, null);
     }
 }

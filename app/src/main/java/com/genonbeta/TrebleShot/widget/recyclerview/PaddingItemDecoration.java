@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * created by: Veli
  * date: 10.11.2018 00:15
- * This header was missing and I copied from TransferGroupListFragment and accidentally the dates were nearly identical
+ * This header was missing and I copied from TransferListFragment and accidentally the dates were nearly identical
  */
 
 public class PaddingItemDecoration extends RecyclerView.ItemDecoration

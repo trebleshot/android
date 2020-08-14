@@ -46,14 +46,14 @@ import java.util.Map;
  * Date: 4/24/17 11:50 PM
  */
 
-public class TransferObject implements DatabaseObject<TransferGroup>, Editable
+public class TransferItem implements DatabaseObject<Transfer>, Editable
 {
     public String name;
     public String file;
     public String mimeType;
     public String directory;
     public long id;
-    public long groupId;
+    public long transferId;
     public long size = 0;
     public long lastChangeDate;
     public Type type = Type.INCOMING;
@@ -67,14 +67,14 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     private boolean mDeleteOnRemoval = false;
     private boolean mIsSelected = false;
 
-    public TransferObject()
+    public TransferItem()
     {
     }
 
-    public TransferObject(long id, long groupId, String name, String file, String mimeType, long size, Type type)
+    public TransferItem(long id, long transferId, String name, String file, String mimeType, long size, Type type)
     {
         this.id = id;
-        this.groupId = groupId;
+        this.transferId = transferId;
         this.name = name;
         this.file = file;
         this.mimeType = mimeType;
@@ -82,16 +82,16 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         this.type = type;
     }
 
-    public TransferObject(long groupId, long id, Type type)
+    public TransferItem(long transferId, long id, Type type)
     {
-        this.groupId = groupId;
+        this.transferId = transferId;
         this.id = id;
         this.type = type;
     }
 
-    public static TransferObject from(DocumentFile file, long groupId, String directory)
+    public static TransferItem from(DocumentFile file, long transferId, String directory)
     {
-        TransferObject object = new TransferObject(AppUtils.getUniqueNumber(), groupId, file.getName(),
+        TransferItem object = new TransferItem(AppUtils.getUniqueNumber(), transferId, file.getName(),
                 file.getUri().toString(), file.getType(), file.length(), Type.OUTGOING);
 
         if (directory != null)
@@ -100,9 +100,9 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         return object;
     }
 
-    public static TransferObject from(Shareable shareable, long groupId, String directory)
+    public static TransferItem from(Shareable shareable, long transferId, String directory)
     {
-        TransferObject object = new TransferObject(AppUtils.getUniqueNumber(), groupId, shareable.fileName,
+        TransferItem object = new TransferItem(AppUtils.getUniqueNumber(), transferId, shareable.fileName,
                 shareable.uri.toString(), shareable.mimeType, shareable.size, Type.OUTGOING);
 
         if (directory != null)
@@ -130,10 +130,10 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof TransferObject))
+        if (!(obj instanceof TransferItem))
             return super.equals(obj);
 
-        TransferObject otherObject = (TransferObject) obj;
+        TransferItem otherObject = (TransferItem) obj;
         return otherObject.id == id && type.equals(otherObject.type);
     }
 
@@ -201,9 +201,9 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         }
     }
 
-    public double getPercentage(ShowingAssignee[] assignees, @Nullable String deviceId)
+    public double getPercentage(LoadedMember[] members, @Nullable String deviceId)
     {
-        if (assignees.length == 0)
+        if (members.length == 0)
             return 0;
 
         if (Type.INCOMING.equals(type))
@@ -212,26 +212,25 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
             return Transfers.getPercentageByFlag(getFlag(deviceId), size);
 
         double percentageIndex = 0;
-        int senderAssignees = 0;
-        for (ShowingAssignee assignee : assignees) {
-            if (!Type.OUTGOING.equals(assignee.type))
+        int senderMembers = 0;
+        for (LoadedMember member : members) {
+            if (!Type.OUTGOING.equals(member.type))
                 continue;
 
-            senderAssignees++;
-            percentageIndex += Transfers.getPercentageByFlag(getFlag(
-                    assignee.deviceId), size);
+            senderMembers++;
+            percentageIndex += Transfers.getPercentageByFlag(getFlag(member.deviceId), size);
         }
 
-        return percentageIndex > 0 ? percentageIndex / senderAssignees : 0;
+        return percentageIndex > 0 ? percentageIndex / senderMembers : 0;
     }
 
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
-                String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFER_GROUPID,
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
+                String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFER_TRANSFERID,
                         Kuick.FIELD_TRANSFER_ID, Kuick.FIELD_TRANSFER_TYPE),
-                String.valueOf(groupId), String.valueOf(id), type.toString());
+                String.valueOf(transferId), String.valueOf(id), type.toString());
     }
 
     @Override
@@ -240,7 +239,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         ContentValues values = new ContentValues();
 
         values.put(Kuick.FIELD_TRANSFER_ID, id);
-        values.put(Kuick.FIELD_TRANSFER_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFER_TRANSFERID, transferId);
         values.put(Kuick.FIELD_TRANSFER_NAME, name);
         values.put(Kuick.FIELD_TRANSFER_SIZE, size);
         values.put(Kuick.FIELD_TRANSFER_MIME, mimeType);
@@ -277,7 +276,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         this.size = item.getAsLong(Kuick.FIELD_TRANSFER_SIZE);
         this.mimeType = item.getAsString(Kuick.FIELD_TRANSFER_MIME);
         this.id = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
-        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_GROUPID);
+        this.transferId = item.getAsLong(Kuick.FIELD_TRANSFER_TRANSFERID);
         this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_TYPE));
         this.directory = item.getAsString(Kuick.FIELD_TRANSFER_DIRECTORY);
 
@@ -335,19 +334,19 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
         // Normally we'd like to check every file, but it may take a while.
         if (!Type.INCOMING.equals(type) || (!Flag.INTERRUPTED.equals(getFlag())
@@ -356,8 +355,8 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
 
         try {
             if (parent == null) {
-                Log.d(TransferObject.class.getSimpleName(), "onRemoveObject: Had to recreate the group");
-                parent = new TransferGroup(groupId);
+                Log.d(TransferItem.class.getSimpleName(), "onRemoveObject: Had to recreate the group");
+                parent = new Transfer(transferId);
                 kuick.reconstruct(parent);
             }
 

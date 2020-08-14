@@ -34,36 +34,36 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
  * created by: veli
  * date: 8/3/19 1:35 PM
  */
-public class TransferAssignee implements DatabaseObject<TransferGroup>
+public class TransferMember implements DatabaseObject<Transfer>
 {
-    public long groupId;
+    public long transferId;
     public String deviceId;
-    public TransferObject.Type type;
+    public TransferItem.Type type;
 
-    public TransferAssignee()
+    public TransferMember()
     {
 
     }
 
-    public TransferAssignee(long groupId, String deviceId, TransferObject.Type type)
+    public TransferMember(long transferId, String deviceId, TransferItem.Type type)
     {
-        this.groupId = groupId;
+        this.transferId = transferId;
         this.deviceId = deviceId;
         this.type = type;
     }
 
-    public TransferAssignee(@NonNull TransferGroup group, @NonNull Device device, @NonNull TransferObject.Type type)
+    public TransferMember(@NonNull Transfer transfer, @NonNull Device device, @NonNull TransferItem.Type type)
     {
-        this(group.id, device.uid, type);
+        this(transfer.id, device.uid, type);
     }
 
     @Override
     public boolean equals(@Nullable Object obj)
     {
-        if (obj instanceof TransferAssignee) {
-            TransferAssignee otherAssignee = (TransferAssignee) obj;
-            return otherAssignee.groupId == groupId && deviceId.equals(otherAssignee.deviceId)
-                    && type.equals(otherAssignee.type);
+        if (obj instanceof TransferMember) {
+            TransferMember otherMember = (TransferMember) obj;
+            return otherMember.transferId == transferId && deviceId.equals(otherMember.deviceId)
+                    && type.equals(otherMember.type);
         }
 
         return super.equals(obj);
@@ -72,11 +72,11 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE).setWhere(
-                Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND "
-                        + Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
-                        + Kuick.FIELD_TRANSFERASSIGNEE_TYPE + "=?", deviceId,
-                String.valueOf(groupId), type.toString());
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER).setWhere(
+                Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=? AND "
+                        + Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=? AND "
+                        + Kuick.FIELD_TRANSFERMEMBER_TYPE + "=?", deviceId,
+                String.valueOf(transferId), type.toString());
     }
 
     @Override
@@ -84,9 +84,9 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-        values.put(Kuick.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
+        values.put(Kuick.FIELD_TRANSFERMEMBER_DEVICEID, deviceId);
+        values.put(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID, transferId);
+        values.put(Kuick.FIELD_TRANSFERMEMBER_TYPE, type.toString());
 
         return values;
     }
@@ -94,43 +94,43 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID);
-        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID);
+        this.deviceId = item.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID);
+        this.transferId = item.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID);
 
         // Added in DB version 13 and might be null and may throw an error since ContentValues doesn't like it when
         // when the requested column name doesn't exist or has type different than requested.
-        if (item.containsKey(Kuick.FIELD_TRANSFERASSIGNEE_TYPE))
-            this.type = TransferObject.Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERASSIGNEE_TYPE));
+        if (item.containsKey(Kuick.FIELD_TRANSFERMEMBER_TYPE))
+            this.type = TransferItem.Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERMEMBER_TYPE));
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
+    public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
+    public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, TransferGroup parent, Progress.Listener listener)
+    public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
-        if (!TransferObject.Type.INCOMING.equals(type))
+        if (!TransferItem.Type.INCOMING.equals(type))
             return;
 
         try {
             if (parent == null) {
-                parent = new TransferGroup(groupId);
+                parent = new Transfer(transferId);
                 kuick.reconstruct(db, parent);
             }
 
-            SQLQuery.Select selection = Transfers.createIncomingSelection(groupId, TransferObject.Flag.INTERRUPTED,
+            SQLQuery.Select selection = Transfers.createIncomingSelection(transferId, TransferItem.Flag.INTERRUPTED,
                     true);
 
-            kuick.removeAsObject(db, selection, TransferObject.class, parent, listener, null);
+            kuick.removeAsObject(db, selection, TransferItem.class, parent, listener, null);
         } catch (ReconstructionFailedException e) {
             e.printStackTrace();
         }

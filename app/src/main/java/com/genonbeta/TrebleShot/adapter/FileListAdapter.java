@@ -42,8 +42,8 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MimeIconUtils;
@@ -178,30 +178,30 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             }
 
             {
-                List<TransferObject> objects = AppUtils.getKuick(getContext())
-                        .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                List<TransferItem> objects = AppUtils.getKuick(getContext())
+                        .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
                                 String.format("%s = ?", Kuick.FIELD_TRANSFER_FLAG),
-                                TransferObject.Flag.DONE.toString()).setOrderBy(
+                                TransferItem.Flag.DONE.toString()).setOrderBy(
                                 String.format("%s DESC", Kuick.FIELD_TRANSFER_LASTCHANGETIME)),
-                                TransferObject.class);
+                                TransferItem.class);
 
                 List<DocumentFile> pickedRecentFiles = new ArrayList<>();
-                Map<Long, TransferGroup> groupMap = new ArrayMap<>();
+                Map<Long, Transfer> transferMap = new ArrayMap<>();
 
-                for (TransferGroup group : AppUtils.getKuick(getContext()).castQuery(
-                        new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP), TransferGroup.class))
-                    groupMap.put(group.id, group);
+                for (Transfer transfer : AppUtils.getKuick(getContext()).castQuery(
+                        new SQLQuery.Select(Kuick.TABLE_TRANSFER), Transfer.class))
+                    transferMap.put(transfer.id, transfer);
 
                 int errorLimit = 3;
 
-                for (TransferObject object : objects) {
-                    TransferGroup group = groupMap.get(object.groupId);
+                for (TransferItem object : objects) {
+                    Transfer transfer = transferMap.get(object.transferId);
 
-                    if (pickedRecentFiles.size() >= 20 || errorLimit == 0 || group == null)
+                    if (pickedRecentFiles.size() >= 20 || errorLimit == 0 || transfer == null)
                         break;
 
                     try {
-                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, group,
+                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, transfer,
                                 false);
 
                         if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
@@ -459,7 +459,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     {
         @Nullable
         public DocumentFile file;
-        public TransferObject transferObject = null;
+        public TransferItem transferItem = null;
         public int requestCode;
         protected Type type = null;
 
@@ -485,15 +485,15 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 type = Type.Pending;
                 try {
                     Kuick kuick = AppUtils.getKuick(context);
-                    ContentValues data = kuick.getFirstFromTable(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                    ContentValues data = kuick.getFirstFromTable(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             .setWhere(Kuick.FIELD_TRANSFER_FILE + "=?", file.getName()));
 
                     if (data != null) {
-                        transferObject = new TransferObject();
-                        transferObject.reconstruct(kuick.getWritableDatabase(), kuick, data);
+                        transferItem = new TransferItem();
+                        transferItem.reconstruct(kuick.getWritableDatabase(), kuick, data);
 
-                        mimeType = transferObject.mimeType;
-                        friendlyName = transferObject.name;
+                        mimeType = transferItem.mimeType;
+                        friendlyName = transferItem.name;
                     }
                 } catch (Exception ignored) {
                 }
@@ -524,7 +524,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                         return R.drawable.ic_folder_white_24dp;
                 }
             } else {
-                if (Type.Pending.equals(getType()) && transferObject == null)
+                if (Type.Pending.equals(getType()) && transferItem == null)
                     return R.drawable.ic_block_white_24dp;
 
                 return MimeIconUtils.loadMimeIcon(mimeType);
@@ -558,9 +558,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 case SaveLocation:
                     return context.getString(R.string.text_defaultFolder);
                 case Pending:
-                    return transferObject == null ? context.getString(R.string.mesg_notValidTransfer)
+                    return transferItem == null ? context.getString(R.string.mesg_notValidTransfer)
                             : String.format("%s / %s", FileUtils.sizeExpression(getComparableSize(), false),
-                            FileUtils.sizeExpression(transferObject.size, false));
+                            FileUtils.sizeExpression(transferItem.size, false));
                 case Recent:
                 case File:
                     return FileUtils.sizeExpression(getComparableSize(), false);

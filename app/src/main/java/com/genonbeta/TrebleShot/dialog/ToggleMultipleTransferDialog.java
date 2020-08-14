@@ -27,60 +27,60 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
-import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.LoadedMember;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.Transfers;
 
 public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 {
-    private ViewTransferActivity mActivity;
-    private ShowingAssignee[] mAssignees;
-    private LayoutInflater mInflater;
-    private TextDrawable.IShapeBuilder mIconBuilder;
+    private final TransferDetailActivity mActivity;
+    private final LoadedMember[] mMembers;
+    private final LayoutInflater mInflater;
+    private final TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity, final IndexOfTransferGroup index)
+    public ToggleMultipleTransferDialog(@NonNull final TransferDetailActivity activity, final IndexOfTransferGroup index)
     {
         super(activity);
 
         mActivity = activity;
         mInflater = LayoutInflater.from(activity);
         mIconBuilder = AppUtils.getDefaultIconBuilder(activity);
-        mAssignees = index.assignees;
+        mMembers = index.members;
 
-        if (mAssignees.length > 0)
-            setAdapter(new ActiveListAdapter(), (dialog, which) -> startTransfer(activity, index, mAssignees[which]));
+        if (mMembers.length > 0)
+            setAdapter(new ActiveListAdapter(), (dialog, which) -> startTransfer(activity, index, mMembers[which]));
 
         setNegativeButton(R.string.butn_close, null);
 
         if (index.hasOutgoing())
             setNeutralButton(R.string.butn_addDevices, (dialog, which) -> activity.startDeviceAddingActivity());
 
-        ShowingAssignee senderAssignee = null;
+        LoadedMember senderMember = null;
 
-        for (ShowingAssignee assignee : index.assignees)
-            if (TransferObject.Type.INCOMING.equals(assignee.type)) {
-                senderAssignee = assignee;
+        for (LoadedMember member : index.members)
+            if (TransferItem.Type.INCOMING.equals(member.type)) {
+                senderMember = member;
                 break;
             }
 
-        if (index.hasIncoming() && senderAssignee != null) {
-            ShowingAssignee finalSenderAssignee = senderAssignee;
+        if (index.hasIncoming() && senderMember != null) {
+            LoadedMember finalSenderMember = senderMember;
             setPositiveButton(R.string.butn_receive, (dialog, which) -> startTransfer(activity, index,
-                    finalSenderAssignee));
+                    finalSenderMember));
         }
     }
 
-    private void startTransfer(ViewTransferActivity activity, IndexOfTransferGroup index, ShowingAssignee assignee)
+    private void startTransfer(TransferDetailActivity activity, IndexOfTransferGroup index, LoadedMember member)
     {
-        if (mActivity.isDeviceRunning(assignee.deviceId))
-            Transfers.pauseTransfer(activity, assignee);
+        if (mActivity.isDeviceRunning(member.deviceId))
+            Transfers.pauseTransfer(activity, member);
         else
-            Transfers.startTransferWithTest(activity, index.group, assignee);
+            Transfers.startTransferWithTest(activity, index.transfer, member);
     }
 
     private class ActiveListAdapter extends BaseAdapter
@@ -88,13 +88,13 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
         @Override
         public int getCount()
         {
-            return mAssignees.length;
+            return mMembers.length;
         }
 
         @Override
         public Object getItem(int position)
         {
-            return mAssignees[position];
+            return mMembers[position];
         }
 
         @Override
@@ -109,16 +109,16 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.list_toggle_transfer, parent, false);
 
-            ShowingAssignee assignee = (ShowingAssignee) getItem(position);
+            LoadedMember member = (LoadedMember) getItem(position);
             ImageView image = convertView.findViewById(R.id.image);
             TextView text = convertView.findViewById(R.id.text);
             ImageView actionImage = convertView.findViewById(R.id.actionImage);
 
-            text.setText(assignee.device.username);
-            actionImage.setImageResource(mActivity.isDeviceRunning(assignee.deviceId) ? R.drawable.ic_pause_white_24dp
-                    : (TransferObject.Type.INCOMING.equals(assignee.type) ? R.drawable.ic_arrow_down_white_24dp
+            text.setText(member.device.username);
+            actionImage.setImageResource(mActivity.isDeviceRunning(member.deviceId) ? R.drawable.ic_pause_white_24dp
+                    : (TransferItem.Type.INCOMING.equals(member.type) ? R.drawable.ic_arrow_down_white_24dp
                     : R.drawable.ic_arrow_up_white_24dp));
-            DeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
+            DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder);
 
             return convertView;
         }

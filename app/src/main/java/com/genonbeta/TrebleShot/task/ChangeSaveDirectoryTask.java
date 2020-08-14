@@ -19,8 +19,8 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.net.Uri;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -32,13 +32,13 @@ import java.util.List;
 
 public class ChangeSaveDirectoryTask extends BackgroundTask
 {
-    private TransferGroup mGroup;
-    private Uri mNewSavePath;
+    private final Transfer mTransfer;
+    private final Uri mNewSavePath;
     private boolean mSkipMoving = false;
 
-    public ChangeSaveDirectoryTask(TransferGroup group, Uri newSavePath)
+    public ChangeSaveDirectoryTask(Transfer transfer, Uri newSavePath)
     {
-        mGroup = group;
+        mTransfer = transfer;
         mNewSavePath = newSavePath;
     }
 
@@ -46,13 +46,13 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
     protected void onRun()
     {
         // TODO: 31.03.2020 Should we stop the tasks or not allow this operation while there are ongoing tasks?
-        for (BackgroundTask task : getService().findTasksBy(FileTransferTask.identifyWith(mGroup.id,
-                TransferObject.Type.INCOMING)))
+        for (BackgroundTask task : getService().findTasksBy(FileTransferTask.identifyWith(mTransfer.id,
+                TransferItem.Type.INCOMING)))
             task.interrupt(true);
 
-        List<TransferObject> checkList = AppUtils.getKuick(getService()).castQuery(
-                Transfers.createIncomingSelection(mGroup.id), TransferObject.class);
-        TransferGroup pseudoGroup = new TransferGroup(mGroup.id);
+        List<TransferItem> checkList = AppUtils.getKuick(getService()).castQuery(
+                Transfers.createIncomingSelection(mTransfer.id), TransferItem.class);
+        Transfer pseudoGroup = new Transfer(mTransfer.id);
 
         try {
             if (!mSkipMoving) {
@@ -60,16 +60,16 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
                 kuick().reconstruct(pseudoGroup);
                 pseudoGroup.savePath = mNewSavePath.toString();
 
-                for (TransferObject transferObject : checkList) {
+                for (TransferItem transferItem : checkList) {
                     throwIfStopped();
 
-                    setOngoingContent(transferObject.name);
+                    setOngoingContent(transferItem.name);
                     publishStatus();
 
                     try {
-                        DocumentFile file = FileUtils.getIncomingPseudoFile(getService(), transferObject, mGroup,
+                        DocumentFile file = FileUtils.getIncomingPseudoFile(getService(), transferItem, mTransfer,
                                 false);
-                        DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferObject,
+                        DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferItem,
                                 pseudoGroup, true);
 
                         if (file != null && pseudoFile != null) {
@@ -84,8 +84,8 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
                 }
             }
 
-            mGroup.savePath = mNewSavePath.toString();
-            kuick().publish(mGroup);
+            mTransfer.savePath = mNewSavePath.toString();
+            kuick().publish(mTransfer);
             kuick().broadcast();
         } catch (Exception e) {
             e.printStackTrace();

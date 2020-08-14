@@ -34,7 +34,7 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 09:37
  */
-public final class TransferGroup implements DatabaseObject<Device>, Parcelable
+public final class Transfer implements DatabaseObject<Device>, Parcelable
 {
     public long id;
     public long dateCreated;
@@ -43,16 +43,16 @@ public final class TransferGroup implements DatabaseObject<Device>, Parcelable
     public boolean isServedOnWeb;
     public boolean deleteFilesOnRemoval;
 
-    public TransferGroup()
+    public Transfer()
     {
     }
 
-    public TransferGroup(long id)
+    public Transfer(long id)
     {
         this.id = id;
     }
 
-    protected TransferGroup(Parcel in)
+    protected Transfer(Parcel in)
     {
         id = in.readLong();
         dateCreated = in.readLong();
@@ -62,18 +62,18 @@ public final class TransferGroup implements DatabaseObject<Device>, Parcelable
         deleteFilesOnRemoval = in.readByte() != 0;
     }
 
-    public static final Creator<TransferGroup> CREATOR = new Creator<TransferGroup>()
+    public static final Creator<Transfer> CREATOR = new Creator<Transfer>()
     {
         @Override
-        public TransferGroup createFromParcel(Parcel in)
+        public Transfer createFromParcel(Parcel in)
         {
-            return new TransferGroup(in);
+            return new Transfer(in);
         }
 
         @Override
-        public TransferGroup[] newArray(int size)
+        public Transfer[] newArray(int size)
         {
-            return new TransferGroup[size];
+            return new Transfer[size];
         }
     };
 
@@ -86,7 +86,7 @@ public final class TransferGroup implements DatabaseObject<Device>, Parcelable
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof TransferGroup && ((TransferGroup) obj).id == id;
+        return obj instanceof Transfer && ((Transfer) obj).id == id;
     }
 
     @Override
@@ -106,7 +106,7 @@ public final class TransferGroup implements DatabaseObject<Device>, Parcelable
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFER)
                 .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(id));
     }
 
@@ -146,22 +146,22 @@ public final class TransferGroup implements DatabaseObject<Device>, Parcelable
     @Override
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
-        SQLQuery.Select objectSelection = new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
-                String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(id));
+        SQLQuery.Select objectSelection = new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
+                String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(id));
 
-        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE).setWhere(
-                String.format("%s = ?", Kuick.FIELD_TRANSFERASSIGNEE_GROUPID), String.valueOf(id)));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER).setWhere(
+                String.format("%s = ?", Kuick.FIELD_TRANSFERMEMBER_TRANSFERID), String.valueOf(id)));
 
         if (deleteFilesOnRemoval) {
-            List<TransferObject> objects = kuick.castQuery(db, objectSelection, TransferObject.class,
+            List<TransferItem> objects = kuick.castQuery(db, objectSelection, TransferItem.class,
                     null);
 
-            for (TransferObject object : objects)
+            for (TransferItem object : objects)
                 object.setDeleteOnRemoval(true);
 
             kuick.remove(db, objects, this, listener);
         } else
-            kuick.removeAsObject(db, objectSelection, TransferObject.class, this, listener,
+            kuick.removeAsObject(db, objectSelection, TransferItem.class, this, listener,
                     null);
     }
 }

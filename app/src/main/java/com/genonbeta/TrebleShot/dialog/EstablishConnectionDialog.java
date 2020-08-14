@@ -109,7 +109,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                         .setPositiveButton(R.string.butn_retry,
                                 (dialog, which) -> EstablishConnectionDialog.show(activity, device, listener));
             } else
-                listener.onConnectionSelection(availableList.get(0).connection);
+                listener.onConnectionSelection(availableList.get(0).address);
         }
     }
 }

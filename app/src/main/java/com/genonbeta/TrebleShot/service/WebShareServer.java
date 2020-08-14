@@ -230,30 +230,28 @@ public class WebShareServer extends NanoHTTPD
                     try {
                         Kuick kuick = AppUtils.getKuick(mContext);
 
-                        TransferGroup webShareGroup = new TransferGroup(AppConfig.ID_GROUP_WEB_SHARE);
-                        webShareGroup.dateCreated = System.currentTimeMillis();
+                        Transfer webTransfer = new Transfer(AppConfig.ID_GROUP_WEB_SHARE);
+                        webTransfer.dateCreated = System.currentTimeMillis();
 
                         try {
-                            kuick.reconstruct(webShareGroup);
+                            kuick.reconstruct(webTransfer);
                         } catch (ReconstructionFailedException e) {
-                            webShareGroup.savePath = savePath.getUri().toString();
+                            webTransfer.savePath = savePath.getUri().toString();
                         }
 
-                        TransferObject transferObject = new TransferObject(AppUtils.getUniqueNumber(),
-                                webShareGroup.id, destFile.getName(), destFile.getName(),
-                                destFile.getType(), destFile.length(), TransferObject.Type.INCOMING);
-                        transferObject.setFlag(TransferObject.Flag.DONE);
+                        TransferItem transferItem = new TransferItem(AppUtils.getUniqueNumber(), webTransfer.id,
+                                destFile.getName(), destFile.getName(), destFile.getType(), destFile.length(),
+                                TransferItem.Type.INCOMING);
+                        transferItem.setFlag(TransferItem.Flag.DONE);
 
-                        DeviceAddress connection = new DeviceAddress(device.uid, InetAddress.getByName(clientAddress),
+                        DeviceAddress address = new DeviceAddress(device.uid, InetAddress.getByName(clientAddress),
                                 System.currentTimeMillis());
+                        TransferMember member = new TransferMember(webTransfer, device, TransferItem.Type.INCOMING);
 
-                        TransferAssignee assignee = new TransferAssignee(webShareGroup,
-                                device, TransferObject.Type.INCOMING);
-
-                        kuick.publish(webShareGroup);
-                        kuick.publish(assignee);
-                        kuick.publish(connection);
-                        kuick.publish(transferObject);
+                        kuick.publish(webTransfer);
+                        kuick.publish(member);
+                        kuick.publish(address);
+                        kuick.publish(transferItem);
                         kuick.broadcast();
 
                         notification = mNotificationUtils.buildDynamicNotification(notificationId,
@@ -373,14 +371,14 @@ public class WebShareServer extends NanoHTTPD
                 if (args.length < 3)
                     throw new Exception("Expected 3 args, " + args.length + " given");
 
-                TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-                TransferObject object = new TransferObject(group.id, Long.parseLong(args[2]),
-                        TransferObject.Type.OUTGOING);
+                Transfer transfer = new Transfer(Long.parseLong(args[1]));
+                TransferItem object = new TransferItem(transfer.id, Long.parseLong(args[2]),
+                        TransferItem.Type.OUTGOING);
 
-                AppUtils.getKuick(mContext).reconstruct(group);
+                AppUtils.getKuick(mContext).reconstruct(transfer);
                 AppUtils.getKuick(mContext).reconstruct(object);
 
-                if (!group.isServedOnWeb)
+                if (!transfer.isServedOnWeb)
                     throw new Exception("The group is not checked as served on the Web");
 
                 StreamInfo streamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(
@@ -408,18 +406,18 @@ public class WebShareServer extends NanoHTTPD
                 if (args.length < 2)
                     throw new Exception("Expected 2 args, " + args.length + " given");
 
-                TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-                AppUtils.getKuick(mContext).reconstruct(group);
+                Transfer transfer = new Transfer(Long.parseLong(args[1]));
+                AppUtils.getKuick(mContext).reconstruct(transfer);
 
-                if (!group.isServedOnWeb)
+                if (!transfer.isServedOnWeb)
                     throw new Exception("The group is not checked as served on the Web");
 
-                List<TransferObject> transferList = AppUtils.getKuick(mContext)
-                        .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                                .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=? AND "
+                List<TransferItem> transferList = AppUtils.getKuick(mContext)
+                        .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                                .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND "
                                                 + Kuick.FIELD_TRANSFER_TYPE + "=?",
-                                        String.valueOf(group.id),
-                                        TransferObject.Type.OUTGOING.toString()), TransferObject.class);
+                                        String.valueOf(transfer.id),
+                                        TransferItem.Type.OUTGOING.toString()), TransferItem.class);
 
                 if (transferList.size() < 1)
                     throw new Exception("No files to send");
@@ -442,11 +440,11 @@ public class WebShareServer extends NanoHTTPD
         StringBuilder contentBuilder = new StringBuilder();
 
         List<IndexOfTransferGroup> groupList = AppUtils.getKuick(mContext).castQuery(
-                new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+                new SQLQuery.Select(Kuick.TABLE_TRANSFER)
                         .setOrderBy(Kuick.FIELD_TRANSFERGROUP_DATECREATED + " DESC"), IndexOfTransferGroup.class);
 
         for (IndexOfTransferGroup index : groupList) {
-            if (!index.group.isServedOnWeb)
+            if (!index.transfer.isServedOnWeb)
                 continue;
 
             Transfers.loadGroupInfo(mContext, index);
@@ -458,7 +456,7 @@ public class WebShareServer extends NanoHTTPD
                     R.string.mode_itemCountedDetailed, mContext.getResources().getQuantityString(
                             R.plurals.text_files, index.numberOfOutgoing, index.numberOfOutgoing),
                     FileUtils.sizeExpression(index.bytesOutgoing, false)),
-                    R.string.butn_show, "show", index.group.id));
+                    R.string.butn_show, "show", index.transfer.id));
         }
 
         if (contentBuilder.length() == 0)
@@ -474,30 +472,30 @@ public class WebShareServer extends NanoHTTPD
             if (args.length < 2)
                 throw new Exception("Expected 2 args, " + args.length + " given");
 
-            TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-            AppUtils.getKuick(mContext).reconstruct(group);
+            Transfer transfer = new Transfer(Long.parseLong(args[1]));
+            AppUtils.getKuick(mContext).reconstruct(transfer);
 
-            if (!group.isServedOnWeb)
+            if (!transfer.isServedOnWeb)
                 throw new Exception("The group is not checked as served on the Web");
 
             StringBuilder contentBuilder = new StringBuilder();
-            List<TransferObject> groupList = AppUtils.getKuick(mContext).castQuery(
-                    new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                            .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID),
-                                    String.valueOf(group.id))
+            List<TransferItem> groupList = AppUtils.getKuick(mContext).castQuery(
+                    new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                            .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID),
+                                    String.valueOf(transfer.id))
                             .setOrderBy(Kuick.FIELD_TRANSFER_NAME + " ASC"),
-                    TransferObject.class);
+                    TransferItem.class);
 
             if (groupList.size() > 0) {
                 contentBuilder.append(makeContent("list_transfer",
-                        mContext.getString(R.string.butn_downloadAllAsZip), R.string.butn_download, "download-zip", group.id,
+                        mContext.getString(R.string.butn_downloadAllAsZip), R.string.butn_download, "download-zip", transfer.id,
                         mContext.getResources().getQuantityString(R.plurals.text_files,
                                 groupList.size(), groupList.size()) + ".zip"));
 
-                for (TransferObject object : groupList)
+                for (TransferItem object : groupList)
                     contentBuilder.append(makeContent("list_transfer",
                             object.name + " " + FileUtils.sizeExpression(object.size,
-                                    false), R.string.butn_download, "download", object.groupId,
+                                    false), R.string.butn_download, "download", object.transferId,
                             object.id, object.name));
             }
 
@@ -717,7 +715,7 @@ public class WebShareServer extends NanoHTTPD
 
         }
 
-        private final List<TransferObject> mFiles;
+        private final List<TransferItem> mFiles;
 
         private IStatus mStatus;
 
@@ -733,7 +731,7 @@ public class WebShareServer extends NanoHTTPD
 
         private boolean mKeepAlive;
 
-        protected ZipBundleResponse(IStatus status, String mimeType, List<TransferObject> files)
+        protected ZipBundleResponse(IStatus status, String mimeType, List<TransferItem> files)
         {
             super(status, mimeType, new InputStream()
             {
@@ -853,7 +851,7 @@ public class WebShareServer extends NanoHTTPD
             zipOutputStream.setLevel(0);
             //zipOutputStream.setMethod(ZipEntry.STORED);
 
-            for (TransferObject object : mFiles) {
+            for (TransferItem object : mFiles) {
                 try {
                     StreamInfo streamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(object.file));
                     InputStream inputStream = streamInfo.openInputStream();

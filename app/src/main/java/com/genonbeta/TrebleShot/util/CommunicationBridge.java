@@ -148,11 +148,11 @@ public class CommunicationBridge implements Closeable
         getActiveConnection().reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
     }
 
-    public void requestNotifyTransferState(long groupId, boolean accepted) throws JSONException, IOException
+    public void requestNotifyTransferState(long transferId, boolean accepted) throws JSONException, IOException
     {
         getActiveConnection().reply(new JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_NOTIFY_TRANSFER_STATE)
-                .put(Keyword.TRANSFER_GROUP_ID, groupId)
+                .put(Keyword.TRANSFER_ID, transferId)
                 .put(Keyword.TRANSFER_IS_ACCEPTED, accepted));
     }
 

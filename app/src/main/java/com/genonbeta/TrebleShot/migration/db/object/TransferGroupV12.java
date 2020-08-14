@@ -78,7 +78,7 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(Kuick.TABLE_TRANSFERGROUP)
+        return new SQLQuery.Select(Kuick.TABLE_TRANSFER)
                 .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
     }
 
@@ -98,13 +98,13 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
         kuick.remove(db, new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER)
-                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
+                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(groupId)));
 
-        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERASSIGNEE)
-                .setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
+                .setWhere(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", String.valueOf(groupId)));
 
-        kuick.removeAsObject(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                        .setWhere(Kuick.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)),
+        kuick.removeAsObject(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                        .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=?", String.valueOf(groupId)),
                 TransferObjectV12.class, this, listener, null);
     }
 }

@@ -21,34 +21,31 @@ package com.genonbeta.TrebleShot.task;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.object.TransferAssignee;
+import com.genonbeta.TrebleShot.object.TransferMember;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class InitializeTransferTask extends BackgroundTask
 {
     private final Device mDevice;
-    private final DeviceAddress mConnection;
-    private final TransferAssignee mAssignee;
+    private final DeviceAddress mAddress;
+    private final TransferMember mMember;
 
-    public InitializeTransferTask(Device device, DeviceAddress connection, TransferAssignee assignee)
+    public InitializeTransferTask(Device device, DeviceAddress address, TransferMember member)
     {
         mDevice = device;
-        mConnection = connection;
-        mAssignee = assignee;
+        mAddress = address;
+        mMember = member;
     }
 
     @Override
     protected void onRun()
     {
-        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mConnection, mDevice, 0)) {
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mAddress, mDevice, 0)) {
             JSONObject jsonRequest = new JSONObject()
                     .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
-                    .put(Keyword.TRANSFER_GROUP_ID, mAssignee.groupId);
+                    .put(Keyword.TRANSFER_ID, mMember.transferId);
 
             bridge.getActiveConnection().reply(jsonRequest.toString());
 

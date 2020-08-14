@@ -22,5 +22,5 @@ import com.genonbeta.TrebleShot.object.DeviceAddress;
 
 public interface OnConnectionSelectionListener
 {
-    void onConnectionSelection(DeviceAddress connection);
+    void onConnectionSelection(DeviceAddress address);
 }

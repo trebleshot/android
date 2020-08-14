@@ -76,24 +76,24 @@ public class Kuick extends KuickDb
             FIELD_FILEBOOKMARK_TITLE = "title",
             FIELD_FILEBOOKMARK_PATH = "path";
 
-    public static final String TABLE_TRANSFERASSIGNEE = "transferAssignee",
-            FIELD_TRANSFERASSIGNEE_GROUPID = "groupId",
-            FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId",
-            FIELD_TRANSFERASSIGNEE_TYPE = "type";
+    public static final String TABLE_TRANSFERMEMBER = "transferAssignee",
+            FIELD_TRANSFERMEMBER_TRANSFERID = "groupId",
+            FIELD_TRANSFERMEMBER_DEVICEID = "deviceId",
+            FIELD_TRANSFERMEMBER_TYPE = "type";
 
-    public static final String TABLE_TRANSFER = "transfer",
+    public static final String TABLE_TRANSFERITEM = "transfer",
             FIELD_TRANSFER_ID = "id",
             FIELD_TRANSFER_NAME = "name",
             FIELD_TRANSFER_SIZE = "size",
             FIELD_TRANSFER_MIME = "mime",
             FIELD_TRANSFER_TYPE = "type",
-            FIELD_TRANSFER_GROUPID = "groupId",
+            FIELD_TRANSFER_TRANSFERID = "groupId",
             FIELD_TRANSFER_FILE = "file",
             FIELD_TRANSFER_DIRECTORY = "directory",
             FIELD_TRANSFER_LASTCHANGETIME = "lastAccessTime",
             FIELD_TRANSFER_FLAG = "flag";
 
-    public static final String TABLE_TRANSFERGROUP = "transferGroup",
+    public static final String TABLE_TRANSFER = "transferGroup",
             FIELD_TRANSFERGROUP_ID = "id",
             FIELD_TRANSFERGROUP_SAVEPATH = "savePath",
             FIELD_TRANSFERGROUP_DATECREATED = "dateCreated",
@@ -153,9 +153,9 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_FILEBOOKMARK_TITLE, SQLType.TEXT, false))
                 .define(new Column(FIELD_FILEBOOKMARK_PATH, SQLType.TEXT, false));
 
-        values.defineTable(TABLE_TRANSFER)
+        values.defineTable(TABLE_TRANSFERITEM)
                 .define(new Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
-                .define(new Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
+                .define(new Column(FIELD_TRANSFER_TRANSFERID, SQLType.LONG, false))
                 .define(new Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
                 .define(new Column(FIELD_TRANSFER_FILE, SQLType.TEXT, false))
                 .define(new Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
@@ -165,12 +165,12 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, false))
                 .define(new Column(FIELD_TRANSFER_LASTCHANGETIME, SQLType.LONG, false));
 
-        values.defineTable(TABLE_TRANSFERASSIGNEE)
-                .define(new Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
-                .define(new Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFERASSIGNEE_TYPE, SQLType.TEXT, false));
+        values.defineTable(TABLE_TRANSFERMEMBER)
+                .define(new Column(FIELD_TRANSFERMEMBER_TRANSFERID, SQLType.LONG, false))
+                .define(new Column(FIELD_TRANSFERMEMBER_DEVICEID, SQLType.TEXT, false))
+                .define(new Column(FIELD_TRANSFERMEMBER_TYPE, SQLType.TEXT, false));
 
-        values.defineTable(TABLE_TRANSFERGROUP)
+        values.defineTable(TABLE_TRANSFER)
                 .define(new Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
                 .define(new Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
                 .define(new Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))

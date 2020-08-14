@@ -59,12 +59,12 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
 
                 ConnectionResult connectionResult = results[i] = new ConnectionResult(knownConnectionList.get(i));
 
-                setOngoingContent(connectionResult.connection.getHostAddress());
+                setOngoingContent(connectionResult.address.getHostAddress());
                 progress().addToCurrent(1);
                 publishStatus();
                 long startTime = System.nanoTime();
 
-                try (CommunicationBridge client = CommunicationBridge.connect(kuick(), connectionResult.connection,
+                try (CommunicationBridge client = CommunicationBridge.connect(kuick(), connectionResult.address,
                         device, 0)) {
                     connectionResult.pingTime = System.nanoTime() - startTime;
                     connectionResult.successful = true;
@@ -117,14 +117,14 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
 
     public static class ConnectionResult
     {
-        public DeviceAddress connection;
+        public DeviceAddress address;
         public long pingTime = 0; // nanoseconds
 
         public boolean successful = false;
 
-        public ConnectionResult(DeviceAddress connection)
+        public ConnectionResult(DeviceAddress address)
         {
-            this.connection = connection;
+            this.address = address;
         }
     }
 }

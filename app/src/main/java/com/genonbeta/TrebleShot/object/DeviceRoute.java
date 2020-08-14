@@ -24,18 +24,18 @@ import android.os.Parcelable;
 public class DeviceRoute implements Parcelable
 {
     public Device device;
-    public DeviceAddress connection;
+    public DeviceAddress address;
 
-    public DeviceRoute(Device device, DeviceAddress connection)
+    public DeviceRoute(Device device, DeviceAddress address)
     {
         this.device = device;
-        this.connection = connection;
+        this.address = address;
     }
 
     protected DeviceRoute(Parcel in)
     {
         device = in.readParcelable(Device.class.getClassLoader());
-        connection = in.readParcelable(DeviceAddress.class.getClassLoader());
+        address = in.readParcelable(DeviceAddress.class.getClassLoader());
     }
 
     public static final Creator<DeviceRoute> CREATOR = new Creator<DeviceRoute>()
@@ -63,6 +63,6 @@ public class DeviceRoute implements Parcelable
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(device, flags);
-        dest.writeParcelable(connection, flags);
+        dest.writeParcelable(address, flags);
     }
 }

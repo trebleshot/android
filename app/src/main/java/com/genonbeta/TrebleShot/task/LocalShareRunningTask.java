@@ -27,15 +27,15 @@ import android.util.Log;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
-import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -70,8 +70,8 @@ public class LocalShareRunningTask extends BackgroundTask
 
         final Kuick kuick = AppUtils.getKuick(getService());
         final SQLiteDatabase db = kuick.getWritableDatabase();
-        final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
-        final List<TransferObject> list = new ArrayList<>();
+        final Transfer transfer = new Transfer(AppUtils.getUniqueNumber());
+        final List<TransferItem> list = new ArrayList<>();
 
         for (Shareable shareable : mList) {
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
@@ -80,15 +80,15 @@ public class LocalShareRunningTask extends BackgroundTask
 
             if (shareable instanceof FileListAdapter.FileHolder) {
                 DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;
-                Transfers.createFolderStructure(list, group.id, file, shareable.fileName, this,
+                Transfers.createFolderStructure(list, transfer.id, file, shareable.fileName, this,
                         null);
             } else
-                list.add(TransferObject.from(shareable, group.id, containable == null ? null : shareable.friendlyName));
+                list.add(TransferItem.from(shareable, transfer.id, containable == null ? null : shareable.friendlyName));
 
             if (containable != null)
                 for (Uri uri : containable.children)
                     try {
-                        list.add(TransferObject.from(FileUtils.fromUri(getService(), uri), group.id,
+                        list.add(TransferItem.from(FileUtils.fromUri(getService(), uri), transfer.id,
                                 shareable.friendlyName));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -101,24 +101,24 @@ public class LocalShareRunningTask extends BackgroundTask
             return;
         }
 
-        addCloser((userAction -> kuick.remove(db, group, null, null)));
-        kuick.insert(db, list, group, null);
+        addCloser((userAction -> kuick.remove(db, transfer, null, null)));
+        kuick.insert(db, list, transfer, null);
 
         if (mFlagWebShare) {
-            group.isServedOnWeb = true;
+            transfer.isServedOnWeb = true;
 
             new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getService(),
                     R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
         }
 
-        kuick.insert(db, group, null, null);
-        ViewTransferActivity.startInstance(getService(), group);
+        kuick.insert(db, transfer, null, null);
+        TransferDetailActivity.startInstance(getService(), transfer);
 
         if (mFlagWebShare)
             getService().startActivity(new Intent(getService(), WebShareActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK));
         else
-            AddDevicesToTransferActivity.startInstance(getService(), group, mFlagAddNewDevice);
+            AddDevicesToTransferActivity.startInstance(getService(), transfer, mFlagAddNewDevice);
 
         kuick.broadcast();
     }

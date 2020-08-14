@@ -45,7 +45,7 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     public static final String
             TAG = ManualConnectionActivity.class.getSimpleName(),
             EXTRA_DEVICE = "extraDevice",
-            EXTRA_CONNECTION = "extraConnection";
+            EXTRA_DEVICE_ADDRESS = "extraConnection";
 
     private final CheckHostnameListener hostnameListener = new CheckHostnameListener();
 
@@ -127,7 +127,7 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     {
         setResult(RESULT_OK, new Intent()
                 .putExtra(EXTRA_DEVICE, deviceRoute.device)
-                .putExtra(EXTRA_CONNECTION, deviceRoute.connection));
+                .putExtra(EXTRA_DEVICE_ADDRESS, deviceRoute.address));
         finish();
     }
 

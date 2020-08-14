@@ -55,7 +55,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
             ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT",
             EXTRA_FRAGMENT_ENUM = "extraFragmentEnum",
             EXTRA_DEVICE = "extraDevice",
-            EXTRA_CONNECTION = "extraConnection";
+            EXTRA_DEVICE_ADDRESS = "extraConnection";
 
     public static final int
             REQUEST_BARCODE_SCAN = 100,
@@ -84,17 +84,17 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 }
             } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE.equals(intent.getAction())
                     && intent.hasExtra(BackgroundService.EXTRA_DEVICE)
-                    && intent.hasExtra(BackgroundService.EXTRA_CONNECTION)) {
+                    && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)) {
                 Device device = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE);
-                DeviceAddress connection = intent.getParcelableExtra(BackgroundService.EXTRA_CONNECTION);
+                DeviceAddress address = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS);
 
-                if (device != null && connection != null)
-                    returnResult(AddDeviceActivity.this, device, connection);
+                if (device != null && address != null)
+                    returnResult(AddDeviceActivity.this, device, address);
 
             } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY.equals(intent.getAction())
-                    && intent.hasExtra(BackgroundService.EXTRA_GROUP)) {
-                ViewTransferActivity.startInstance(AddDeviceActivity.this,
-                        intent.getParcelableExtra(BackgroundService.EXTRA_GROUP));
+                    && intent.hasExtra(BackgroundService.EXTRA_TRANSFER)) {
+                TransferDetailActivity.startInstance(AddDeviceActivity.this,
+                        intent.getParcelableExtra(BackgroundService.EXTRA_TRANSFER));
                 finish();
             }
         }
@@ -158,16 +158,16 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         if (resultCode == RESULT_OK && data != null)
             if (requestCode == REQUEST_BARCODE_SCAN) {
                 Device device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE);
-                DeviceAddress connection = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_CONNECTION);
+                DeviceAddress address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS);
 
-                if (device != null && connection != null)
-                    returnResult(this, device, connection);
+                if (device != null && address != null)
+                    returnResult(this, device, address);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
                 Device device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE);
-                DeviceAddress connection = data.getParcelableExtra(ManualConnectionActivity.EXTRA_CONNECTION);
+                DeviceAddress address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS);
 
-                if (device != null && connection != null)
-                    returnResult(this, device, connection);
+                if (device != null && address != null)
+                    returnResult(this, device, address);
             }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -250,7 +250,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     {
         activity.setResult(RESULT_OK, new Intent()
                 .putExtra(EXTRA_DEVICE, device)
-                .putExtra(EXTRA_CONNECTION, connection));
+                .putExtra(EXTRA_DEVICE_ADDRESS, connection));
 
         activity.finish();
     }

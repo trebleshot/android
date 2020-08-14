@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -47,17 +47,17 @@ import java.text.NumberFormat;
 public class TransferInfoDialog extends AlertDialog.Builder
 {
     public TransferInfoDialog(@NonNull final Activity activity, final IndexOfTransferGroup loadedGroup,
-                              final TransferObject object, @Nullable String deviceId)
+                              final TransferItem object, @Nullable String deviceId)
     {
         super(activity);
 
         DocumentFile attemptedFile = null;
-        boolean isIncoming = TransferObject.Type.INCOMING.equals(object.type);
+        boolean isIncoming = TransferItem.Type.INCOMING.equals(object.type);
 
         try {
             // If it is incoming than get the received or cache file
             // If not then try to reach to the source file that is being send
-            attemptedFile = isIncoming ? FileUtils.getIncomingPseudoFile(getContext(), object, loadedGroup.group,
+            attemptedFile = isIncoming ? FileUtils.getIncomingPseudoFile(getContext(), object, loadedGroup.transfer,
                     false) : FileUtils.fromUri(getContext(), Uri.parse(object.file));
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,15 +102,15 @@ public class TransferInfoDialog extends AlertDialog.Builder
         if (isIncoming) {
             incomingDetailsLayout.setVisibility(View.VISIBLE);
 
-            if (TransferObject.Flag.INTERRUPTED.equals(object.getFlag())
-                    || TransferObject.Flag.IN_PROGRESS.equals(object.getFlag())) {
+            if (TransferItem.Flag.INTERRUPTED.equals(object.getFlag())
+                    || TransferItem.Flag.IN_PROGRESS.equals(object.getFlag())) {
                 setNeutralButton(R.string.butn_retry, (dialogInterface, i) -> {
-                    object.setFlag(TransferObject.Flag.PENDING);
+                    object.setFlag(TransferItem.Flag.PENDING);
                     AppUtils.getKuick(activity).publish(object);
                     AppUtils.getKuick(activity).broadcast();
                 });
             } else if (fileExists) {
-                if (TransferObject.Flag.REMOVED.equals(object.getFlag()) && pseudoFile.getParentFile() != null) {
+                if (TransferItem.Flag.REMOVED.equals(object.getFlag()) && pseudoFile.getParentFile() != null) {
                     setNeutralButton(R.string.butn_saveAnyway, (dialogInterface, i) -> {
                         AlertDialog.Builder saveAnyway = new AlertDialog.Builder(getContext());
 
@@ -122,7 +122,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
                                 DocumentFile savedFile = FileUtils.saveReceivedFile(
                                         pseudoFile.getParentFile(), pseudoFile, object);
                                 ;
-                                object.setFlag(TransferObject.Flag.DONE);
+                                object.setFlag(TransferItem.Flag.DONE);
 
                                 AppUtils.getKuick(activity).update(object);
                                 AppUtils.getKuick(activity).broadcast();
@@ -136,7 +136,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
 
                         saveAnyway.show();
                     });
-                } else if (TransferObject.Flag.DONE.equals(object.getFlag())) {
+                } else if (TransferItem.Flag.DONE.equals(object.getFlag())) {
                     setNeutralButton(R.string.butn_open, (dialog, which) -> {
                         try {
                             FileUtils.openUri(getContext(), pseudoFile);

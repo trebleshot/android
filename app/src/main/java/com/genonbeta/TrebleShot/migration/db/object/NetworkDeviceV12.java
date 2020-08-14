@@ -121,7 +121,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
                 .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
         List<TransferAssigneeV12> assignees = kuick.castQuery(db, new SQLQuery.Select(
-                Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?",
+                Kuick.TABLE_TRANSFERMEMBER).setWhere(Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=?",
                 deviceId), TransferAssigneeV12.class, null);
 
         // We are ensuring that the transfer group is still valid for other devices
@@ -133,7 +133,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
                 kuick.reconstruct(db, transferGroup);
 
                 List<TransferAssigneeV12> relatedAssignees = kuick.castQuery(new SQLQuery.Select(
-                        Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
+                        Kuick.TABLE_TRANSFERMEMBER).setWhere(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?",
                         String.valueOf(transferGroup.groupId)), TransferAssigneeV12.class);
 
                 if (relatedAssignees.size() == 0)

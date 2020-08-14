@@ -172,6 +172,6 @@ public class DeviceLoader
 
     public interface OnDeviceRegisteredListener extends AttachedTaskListener
     {
-        void onDeviceRegistered(Kuick kuick, Device device, DeviceAddress connection);
+        void onDeviceRegistered(Kuick kuick, Device device, DeviceAddress address);
     }
 }

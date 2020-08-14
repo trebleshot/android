@@ -22,10 +22,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
-import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
@@ -52,8 +52,8 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
     public void onRun() throws TaskStoppedException
     {
         final SQLiteDatabase db = kuick().getWritableDatabase();
-        final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
-        final List<TransferObject> list = new ArrayList<>();
+        final Transfer transfer = new Transfer(AppUtils.getUniqueNumber());
+        final List<TransferItem> list = new ArrayList<>();
 
         progress().addToTotal(mUriList.size());
         publishStatus();
@@ -69,22 +69,22 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
                 publishStatus();
 
                 if (file.isDirectory())
-                    Transfers.createFolderStructure(list, group.id, file, file.getName(), this, progressListener());
+                    Transfers.createFolderStructure(list, transfer.id, file, file.getName(), this, progressListener());
                 else
-                    list.add(TransferObject.from(file, group.id, null));
+                    list.add(TransferItem.from(file, transfer.id, null));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
         if (list.size() > 0) {
-            kuick().insert(db, list, group, progressListener());
-            kuick().insert(db, group, null, progressListener());
-            addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_GROUPID), String.valueOf(group.id))));
+            kuick().insert(db, list, transfer, progressListener());
+            kuick().insert(db, transfer, null, progressListener());
+            addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(transfer.id))));
 
-            ViewTransferActivity.startInstance(getService(), group);
-            AddDevicesToTransferActivity.startInstance(getService(), group, true);
+            TransferDetailActivity.startInstance(getService(), transfer);
+            AddDevicesToTransferActivity.startInstance(getService(), transfer, true);
             kuick().broadcast();
         }
     }

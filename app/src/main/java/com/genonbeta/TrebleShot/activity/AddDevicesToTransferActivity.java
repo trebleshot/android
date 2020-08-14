@@ -39,10 +39,10 @@ import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
+import com.genonbeta.TrebleShot.fragment.TransferMemberListFragment;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -66,7 +66,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
             REQUEST_CODE_CHOOSE_DEVICE = 0,
             FLAG_LAUNCH_DEVICE_CHOOSER = 1;
 
-    private TransferGroup mGroup = null;
+    private Transfer mTransfer = null;
     private ExtendedFloatingActionButton mActionButton;
     private ProgressBar mProgressBar;
     private ViewGroup mLayoutStatusContainer;
@@ -82,16 +82,16 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         {
             if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
-                if (Kuick.TABLE_TRANSFERGROUP.equals(data.tableName) && !checkGroupIntegrity())
+                if (Kuick.TABLE_TRANSFER.equals(data.tableName) && !checkGroupIntegrity())
                     finish();
             }
         }
     };
 
-    public static void startInstance(Context context, TransferGroup group, boolean addingNewDevice)
+    public static void startInstance(Context context, Transfer transfer, boolean addingNewDevice)
     {
         context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
-                .putExtra(EXTRA_GROUP, group)
+                .putExtra(EXTRA_GROUP, transfer)
                 .putExtra(EXTRA_FLAGS, addingNewDevice ? FLAG_LAUNCH_DEVICE_CHOOSER : 0)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
@@ -116,9 +116,9 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Bundle assigneeFragmentArgs = new Bundle();
-        assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.id);
-        assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, false);
+        Bundle memberFragmentArgs = new Bundle();
+        memberFragmentArgs.putLong(TransferMemberListFragment.ARG_TRANSFER_ID, mTransfer.id);
+        memberFragmentArgs.putBoolean(TransferMemberListFragment.ARG_USE_HORIZONTAL_VIEW, false);
 
         mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
         mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
@@ -128,17 +128,17 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         mActionButton = findViewById(R.id.content_fab);
         mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
 
-        TransferAssigneeListFragment assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.assigneeListFragment);
+        TransferMemberListFragment memberListFragment = (TransferMemberListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.membersListFragment);
 
-        if (assigneeListFragment == null) {
-            assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager().getFragmentFactory()
-                    .instantiate(this.getClassLoader(), TransferAssigneeListFragment.class.getName());
-            assigneeListFragment.setArguments(assigneeFragmentArgs);
+        if (memberListFragment == null) {
+            memberListFragment = (TransferMemberListFragment) getSupportFragmentManager().getFragmentFactory()
+                    .instantiate(this.getClassLoader(), TransferMemberListFragment.class.getName());
+            memberListFragment.setArguments(memberFragmentArgs);
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            transaction.add(R.id.assigneeListFragment, assigneeListFragment);
+            transaction.add(R.id.membersListFragment, memberListFragment);
             transaction.commit();
         }
     }
@@ -179,12 +179,12 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         if (resultCode == android.app.Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
-                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION)) {
+                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)) {
                 Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
-                DeviceAddress connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_CONNECTION);
+                DeviceAddress connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && connection != null)
-                    runUiTask(new AddDeviceTask(mGroup, device, connection));
+                    runUiTask(new AddDeviceTask(mTransfer, device, connection));
             }
         }
     }
@@ -255,14 +255,14 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
             if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP))
                 throw new Exception(getString(R.string.text_empty));
 
-            if (mGroup == null)
-                mGroup = getIntent().getParcelableExtra(EXTRA_GROUP);
+            if (mTransfer == null)
+                mTransfer = getIntent().getParcelableExtra(EXTRA_GROUP);
 
             try {
-                if (mGroup == null)
+                if (mTransfer == null)
                     throw new Exception();
 
-                getDatabase().reconstruct(mGroup);
+                getDatabase().reconstruct(mTransfer);
             } catch (Exception e) {
                 throw new Exception(getString(R.string.mesg_notValidTransfer));
             }

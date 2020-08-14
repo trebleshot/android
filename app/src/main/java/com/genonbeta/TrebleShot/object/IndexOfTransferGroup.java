@@ -23,7 +23,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
+import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.DatabaseObject;
@@ -52,35 +52,35 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     public long bytesIncomingCompleted;
     public boolean isRunning;
     public boolean hasIssues;
-    public TransferGroup group = new TransferGroup();
-    public ShowingAssignee[] assignees = new ShowingAssignee[0];
+    public Transfer transfer = new Transfer();
+    public LoadedMember[] members = new LoadedMember[0];
 
     private boolean mIsSelected = false;
 
     public IndexOfTransferGroup()
     {
-        group = new TransferGroup();
+        transfer = new Transfer();
     }
 
-    public IndexOfTransferGroup(TransferGroup group)
+    public IndexOfTransferGroup(Transfer transfer)
     {
-        this.group = group;
+        this.transfer = transfer;
     }
 
     public IndexOfTransferGroup(String representativeText)
     {
-        this.viewType = TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE;
+        this.viewType = TransferListAdapter.VIEW_TYPE_REPRESENTATIVE;
         this.representativeText = representativeText;
     }
 
     @Override
     public boolean applyFilter(String[] filteringKeywords)
     {
-        ShowingAssignee[] copyAssignees = assignees;
+        LoadedMember[] copyMembers = members;
 
         for (String keyword : filteringKeywords)
-            for (ShowingAssignee assignee : copyAssignees)
-                if (assignee.device.username.toLowerCase().contains(keyword.toLowerCase()))
+            for (LoadedMember member : copyMembers)
+                if (member.device.username.toLowerCase().contains(keyword.toLowerCase()))
                     return true;
 
         return false;
@@ -117,29 +117,29 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
         return numberOfOutgoing > 0;
     }
 
-    public String getAssigneesAsTitle()
+    public String getMemberAsTitle()
     {
-        ShowingAssignee[] copyAssignees = assignees;
+        LoadedMember[] copyMembers = members;
         StringBuilder title = new StringBuilder();
 
-        for (ShowingAssignee assignee : copyAssignees) {
+        for (LoadedMember member : copyMembers) {
             if (title.length() > 0)
                 title.append(", ");
-            title.append(assignee.device.username);
+            title.append(member.device.username);
         }
 
         return title.toString();
     }
 
-    public String getAssigneesAsTitle(Context context)
+    public String getMemberAsTitle(Context context)
     {
-        ShowingAssignee[] copyAssignees = assignees;
+        LoadedMember[] copyMembers = members;
 
-        if (copyAssignees.length == 1)
-            return copyAssignees[0].device.username;
+        if (copyMembers.length == 1)
+            return copyMembers[0].device.username;
 
         return context.getResources().getQuantityString(R.plurals.text_devices,
-                copyAssignees.length, copyAssignees.length);
+                copyMembers.length, copyMembers.length);
     }
 
     @Override
@@ -151,7 +151,7 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     @Override
     public long getComparableDate()
     {
-        return group.dateCreated;
+        return transfer.dateCreated;
     }
 
     @Override
@@ -163,19 +163,19 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     @Override
     public long getId()
     {
-        return group.id;
+        return transfer.id;
     }
 
     @Override
     public void setId(long id)
     {
-        group.id = id;
+        transfer.id = id;
     }
 
     @Override
     public String getSelectableTitle()
     {
-        String title = getAssigneesAsTitle();
+        String title = getMemberAsTitle();
         String size = FileUtils.sizeExpression(bytesOutgoing + bytesOutgoing, false);
 
         return title.length() > 0 ? String.format("%s (%s)", title, size) : size;
@@ -237,7 +237,7 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     @Override
     public void setDate(long date)
     {
-        group.dateCreated = date;
+        transfer.dateCreated = date;
     }
 
     @Override
@@ -258,36 +258,36 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     @Override
     public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
-        group.onCreateObject(db, kuick, parent, listener);
+        transfer.onCreateObject(db, kuick, parent, listener);
     }
 
     @Override
     public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
-        group.onUpdateObject(db, kuick, parent, listener);
+        transfer.onUpdateObject(db, kuick, parent, listener);
     }
 
     @Override
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
-        group.onRemoveObject(db, kuick, parent, listener);
+        transfer.onRemoveObject(db, kuick, parent, listener);
     }
 
     @Override
     public ContentValues getValues()
     {
-        return group.getValues();
+        return transfer.getValues();
     }
 
     @Override
     public SQLQuery.Select getWhere()
     {
-        return group.getWhere();
+        return transfer.getWhere();
     }
 
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        group.reconstruct(db, kuick, item);
+        transfer.reconstruct(db, kuick, item);
     }
 }

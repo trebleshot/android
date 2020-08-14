@@ -180,12 +180,12 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
                 .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", uid));
 
-        List<TransferAssignee> assignees = kuick.castQuery(db, new SQLQuery.Select(
-                Kuick.TABLE_TRANSFERASSIGNEE).setWhere(Kuick.FIELD_TRANSFERASSIGNEE_DEVICEID
-                + "=?", uid), TransferAssignee.class, null);
+        List<TransferMember> members = kuick.castQuery(db, new SQLQuery.Select(
+                Kuick.TABLE_TRANSFERMEMBER).setWhere(Kuick.FIELD_TRANSFERMEMBER_DEVICEID
+                + "=?", uid), TransferMember.class, null);
 
-        for (TransferAssignee assignee : assignees)
-            kuick.remove(db, assignee, null, listener);
+        for (TransferMember member : members)
+            kuick.remove(db, member, null, listener);
     }
 
     @Override

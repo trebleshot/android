@@ -43,7 +43,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
@@ -71,7 +71,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
 {
     public static final String EXTRA_DEVICE = "extraDevice";
 
-    public static final String EXTRA_CONNECTION = "extraConnectionAdapter";
+    public static final String EXTRA_DEVICE_ADDRESS = "extraConnectionAdapter";
 
     public static final int REQUEST_PERMISSION_CAMERA = 1;
 
@@ -248,7 +248,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
                 String bssid = data.has(Keyword.NETWORK_BSSID) ? data.getString(Keyword.NETWORK_BSSID) : null;
                 String password = data.has(Keyword.NETWORK_PASSWORD) ? data.getString(Keyword.NETWORK_PASSWORD) : null;
 
-                run(new NetworkDeviceListAdapter.NetworkDescription(ssid, bssid, password), pin);
+                run(new DeviceListAdapter.NetworkDescription(ssid, bssid, password), pin);
             } else if (data.has(Keyword.NETWORK_ADDRESS_IP)) {
                 try {
                     run(InetAddress.getByName(data.getString(Keyword.NETWORK_ADDRESS_IP)),
@@ -287,7 +287,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
         }
     }
 
-    private void run(NetworkDeviceListAdapter.NetworkDescription description, int pin)
+    private void run(DeviceListAdapter.NetworkDescription description, int pin)
     {
         run(new DeviceIntroductionTask(description, pin));
     }
@@ -401,7 +401,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     {
         setResult(android.app.Activity.RESULT_OK, new Intent()
                 .putExtra(BarcodeScannerActivity.EXTRA_DEVICE, deviceRoute.device)
-                .putExtra(BarcodeScannerActivity.EXTRA_CONNECTION, deviceRoute.connection));
+                .putExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS, deviceRoute.address));
         finish();
     }
 

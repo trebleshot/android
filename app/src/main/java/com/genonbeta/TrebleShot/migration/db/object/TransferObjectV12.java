@@ -107,7 +107,7 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
                 Kuick.FIELD_TRANSFER_TYPE, Migration.v12.FIELD_TRANSFER_DEVICEID);
 
         return isDivisionObject() ? new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER).setWhere(whereClause,
-                String.valueOf(requestId), type.toString()) : new SQLQuery.Select(Kuick.TABLE_TRANSFER).setWhere(
+                String.valueOf(requestId), type.toString()) : new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
                 whereClause, String.valueOf(requestId), type.toString(), deviceId);
     }
 
@@ -117,7 +117,7 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
         ContentValues values = new ContentValues();
 
         values.put(Kuick.FIELD_TRANSFER_ID, requestId);
-        values.put(Kuick.FIELD_TRANSFER_GROUPID, groupId);
+        values.put(Kuick.FIELD_TRANSFER_TRANSFERID, groupId);
         values.put(Migration.v12.FIELD_TRANSFER_DEVICEID, deviceId);
         values.put(Kuick.FIELD_TRANSFER_NAME, friendlyName);
         values.put(Kuick.FIELD_TRANSFER_SIZE, fileSize);
@@ -140,7 +140,7 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
         this.fileSize = item.getAsLong(Kuick.FIELD_TRANSFER_SIZE);
         this.fileMimeType = item.getAsString(Kuick.FIELD_TRANSFER_MIME);
         this.requestId = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
-        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_GROUPID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_TRANSFERID);
         this.deviceId = item.getAsString(Migration.v12.FIELD_TRANSFER_DEVICEID);
         this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_TYPE));
 

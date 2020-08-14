@@ -23,8 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.TransferItem;
 
 import java.net.NetworkInterface;
 import java.text.NumberFormat;
@@ -91,27 +90,27 @@ public class TextUtils
         return stringBuilder.toString().toUpperCase();
     }
 
-    public static String getTransactionFlagString(Context context, TransferObject object, NumberFormat percentFormat,
+    public static String getTransactionFlagString(Context context, TransferItem object, NumberFormat percentFormat,
                                                   @Nullable String deviceId)
     {
         // Because it takes more arguments when the 'object' is 'Type.OUTGOING', it will be
         // chosen by the appropriate value that it may contain.
-        TransferObject.Flag flag;
+        TransferItem.Flag flag;
 
-        if (TransferObject.Type.OUTGOING.equals(object.type)) {
-            TransferObject.Flag[] flags = object.getFlags();
+        if (TransferItem.Type.OUTGOING.equals(object.type)) {
+            TransferItem.Flag[] flags = object.getFlags();
 
             if (deviceId != null)
                 flag = object.getFlag(deviceId);
             else if (flags.length < 1)
-                flag = TransferObject.Flag.PENDING;
+                flag = TransferItem.Flag.PENDING;
             else if (flags.length == 1)
                 flag = flags[0];
             else {
-                flag = TransferObject.Flag.PENDING;
+                flag = TransferItem.Flag.PENDING;
                 int pos = 0;
 
-                for (TransferObject.Flag flagTesting : flags) {
+                for (TransferItem.Flag flagTesting : flags) {
                     int relativeOrdinal;
 
                     switch (flagTesting) {
@@ -152,7 +151,7 @@ public class TextUtils
         }
     }
 
-    public static int getTransactionFlagString(TransferObject.Flag flag)
+    public static int getTransactionFlagString(TransferItem.Flag flag)
     {
         switch (flag) {
             case PENDING:

@@ -51,7 +51,7 @@ public class HomeFragment extends Fragment implements SnackbarPlacementProvider,
         mViewPager = view.findViewById(R.id.layout_home_view_pager);
         mAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager());
 
-        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class,
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferListFragment.class,
                 null));
         mAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, ActiveConnectionListFragment.class,
                 null));
