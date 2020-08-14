@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -40,7 +41,7 @@ import java.util.List;
 
 public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
 {
-    private List<Uri> mUriList;
+    private final List<Uri> mUriList;
 
     public OrganizeSharingTask(List<Uri> fileUris)
     {
@@ -48,7 +49,7 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
     }
 
     @Override
-    public void onRun() throws InterruptedException
+    public void onRun() throws TaskStoppedException
     {
         final SQLiteDatabase db = kuick().getWritableDatabase();
         final TransferGroup group = new TransferGroup(AppUtils.getUniqueNumber());
@@ -58,8 +59,7 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
         publishStatus();
 
         for (Uri uri : mUriList) {
-            if (isInterrupted())
-                throw new InterruptedException();
+            throwIfStopped();
 
             progress().addToCurrent(1);
 
@@ -69,8 +69,7 @@ public class OrganizeSharingTask extends AttachableBgTask<AttachedTaskListener>
                 publishStatus();
 
                 if (file.isDirectory())
-                    Transfers.createFolderStructure(list, group.id, file, file.getName(), this,
-                            progressListener());
+                    Transfers.createFolderStructure(list, group.id, file, file.getName(), this, progressListener());
                 else
                     list.add(TransferObject.from(file, group.id, null));
             } catch (FileNotFoundException e) {

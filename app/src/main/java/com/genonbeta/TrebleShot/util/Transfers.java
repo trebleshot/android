@@ -15,6 +15,8 @@ import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.InitializeTransferTask;
 import com.genonbeta.android.database.KuickDb;
@@ -50,8 +52,8 @@ public class Transfers
     }
 
     public static void createFolderStructure(List<TransferObject> list, long groupId, DocumentFile file,
-                                             String directory, Stoppable stoppable, Progress.Listener progress)
-            throws InterruptedException
+                                             String directory, BackgroundTask task, Progress.Listener progress)
+            throws TaskStoppedException
     {
         DocumentFile[] files = file.listFiles();
 
@@ -63,12 +65,11 @@ public class Transfers
         for (DocumentFile thisFile : files) {
             Progress.addToCurrent(progress, 1);
 
-            if (stoppable.isInterrupted())
-                throw new InterruptedException();
+            task.throwIfStopped();
 
             if (thisFile.isDirectory()) {
                 createFolderStructure(list, groupId, thisFile, (directory == null ? null
-                        : directory + File.separator) + thisFile.getName(), stoppable, progress);
+                        : directory + File.separator) + thisFile.getName(), task, progress);
                 continue;
             }
 

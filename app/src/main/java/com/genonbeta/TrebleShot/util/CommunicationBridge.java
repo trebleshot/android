@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
-import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
+import com.genonbeta.TrebleShot.util.communication.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,12 +67,12 @@ public class CommunicationBridge implements Closeable
     @Override
     public void close() throws IOException
     {
-        activeConnection.close();
+        getActiveConnection().closeSafely();
     }
 
     public static CommunicationBridge connect(Kuick kuick, List<DeviceAddress> addressList, @Nullable Device device,
                                               int pin)
-            throws IOException, DifferentClientException, JSONException
+            throws IOException, CommunicationException, JSONException
     {
         for (DeviceAddress address : addressList) {
             try {
@@ -86,7 +86,7 @@ public class CommunicationBridge implements Closeable
     }
 
     public static CommunicationBridge connect(Kuick kuick, DeviceAddress deviceAddress, @Nullable Device device, int pin)
-            throws IOException, DifferentClientException, JSONException
+            throws IOException, JSONException, CommunicationException
     {
         ActiveConnection activeConnection = openConnection(deviceAddress.inetAddress);
         String remoteDeviceId = activeConnection.receive().getAsString();
@@ -110,11 +110,10 @@ public class CommunicationBridge implements Closeable
         try {
             DeviceLoader.loadFrom(kuick, activeConnection.receive().getAsJson(), device, false, true);
         } catch (DeviceInsecureException ignored) {
-            device.isBlocked = false;
-            kuick.publish(device);
         }
 
         DeviceLoader.processConnection(kuick, device, deviceAddress);
+        receiveResult(activeConnection, device);
 
         return new CommunicationBridge(kuick, activeConnection, device, deviceAddress);
     }
@@ -144,10 +143,15 @@ public class CommunicationBridge implements Closeable
         return kuick;
     }
 
-    public void notifyStateOfTransferRequest(long groupId, boolean accepted) throws JSONException, IOException
+    public void requestAcquaintance() throws JSONException, IOException
+    {
+        getActiveConnection().reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
+    }
+
+    public void requestNotifyTransferState(long groupId, boolean accepted) throws JSONException, IOException
     {
         getActiveConnection().reply(new JSONObject()
-                .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_STATE)
+                .put(Keyword.REQUEST, Keyword.REQUEST_NOTIFY_TRANSFER_STATE)
                 .put(Keyword.TRANSFER_GROUP_ID, groupId)
                 .put(Keyword.TRANSFER_IS_ACCEPTED, accepted));
     }
@@ -156,5 +160,55 @@ public class CommunicationBridge implements Closeable
     {
         return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
                 AppConfig.DEFAULT_SOCKET_TIMEOUT);
+    }
+
+    public boolean receiveResult() throws JSONException, IOException, CommunicationException
+    {
+        return receiveResult(getActiveConnection(), getDevice());
+    }
+
+    public static boolean receiveResult(ActiveConnection connection, Device targetDevice) throws IOException,
+            JSONException, CommunicationException
+    {
+        JSONObject jsonObject = connection.receive().getAsJson();
+        if (jsonObject.has(Keyword.ERROR)) {
+            final String errorCode = jsonObject.getString(Keyword.ERROR);
+            switch (errorCode) {
+                case Keyword.ERROR_NOT_ALLOWED:
+                    throw new NotAllowedException(targetDevice);
+                case Keyword.ERROR_NOT_TRUSTED:
+                    throw new NotTrustedException(targetDevice);
+                case Keyword.ERROR_NOT_ACCESSIBLE:
+                    throw new ContentException(ContentException.Error.NotAccessible);
+                case Keyword.ERROR_NOT_FOUND:
+                    throw new ContentException(ContentException.Error.NotFound);
+                case Keyword.ERROR_UNKNOWN:
+                    throw new CommunicationException();
+                default:
+                    throw new UnknownCommunicationErrorException(errorCode);
+            }
+        }
+
+        return jsonObject.getBoolean(Keyword.RESULT);
+    }
+
+    public void sendError(String errorCode) throws IOException, JSONException
+    {
+        sendError(getActiveConnection(), errorCode);
+    }
+
+    public static void sendError(ActiveConnection connection, String errorCode) throws IOException, JSONException
+    {
+        connection.reply(new JSONObject().put(Keyword.ERROR, errorCode));
+    }
+
+    public void sendResult(boolean result) throws IOException, JSONException
+    {
+        sendResult(getActiveConnection(), result);
+    }
+
+    public static void sendResult(ActiveConnection connection, boolean result) throws IOException, JSONException
+    {
+        connection.reply(new JSONObject().put(Keyword.RESULT, result));
     }
 }

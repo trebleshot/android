@@ -43,7 +43,7 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
     }
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun()
     {
         // TODO: 31.03.2020 Should we stop the tasks or not allow this operation while there are ongoing tasks?
         for (BackgroundTask task : getService().findTasksBy(FileTransferTask.identifyWith(mGroup.id,
@@ -61,7 +61,7 @@ public class ChangeSaveDirectoryTask extends BackgroundTask
                 pseudoGroup.savePath = mNewSavePath.toString();
 
                 for (TransferObject transferObject : checkList) {
-                    throwIfInterrupted();
+                    throwIfStopped();
 
                     setOngoingContent(transferObject.name);
                     publishStatus();

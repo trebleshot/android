@@ -29,10 +29,9 @@ public class Keyword
             RESULT = "result",
             REQUEST = "request",
             REQUEST_TRANSFER = "transfer",
-            REQUEST_TRANSFER_STATE = "transferState",
+            REQUEST_NOTIFY_TRANSFER_STATE = "transferState",
             REQUEST_ACQUAINTANCE = "acquaintance",
             REQUEST_CLIPBOARD = "text",
-            REQUEST_HANDSHAKE = "handshake",
             REQUEST_TRANSFER_JOB = "transferJob", // Introduced in 99
             TRANSFER_TYPE = "type", // Introduced in 99
             TRANSFER_REQUEST_ID = "requestId",

@@ -29,7 +29,7 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
+import com.genonbeta.TrebleShot.adapter.TransferMemberListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -45,7 +45,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee, RecyclerViewAdapter.ViewHolder,
-        TransferAssigneeListAdapter>
+        TransferMemberListAdapter>
 {
     public static final String ARG_GROUP_ID = "groupId";
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
@@ -68,7 +68,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     private TransferGroup mHeldGroup;
 
     public static <T extends Editable> void showPopupMenu(EditableListFragmentBase<T> fragment,
-                                                          TransferAssigneeListAdapter adapter, TransferGroup group,
+                                                          TransferMemberListAdapter adapter, TransferGroup group,
                                                           RecyclerViewAdapter.ViewHolder clazz, View v,
                                                           ShowingAssignee assignee)
     {
@@ -116,7 +116,7 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new TransferAssigneeListAdapter(this, getTransferGroup()));
+        setListAdapter(new TransferMemberListAdapter(this, getTransferGroup()));
         setEmptyListImage(R.drawable.ic_device_hub_white_24dp);
         setEmptyListText(getString(R.string.text_noDeviceForTransfer));
 

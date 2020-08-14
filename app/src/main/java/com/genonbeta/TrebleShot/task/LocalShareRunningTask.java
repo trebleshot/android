@@ -37,6 +37,7 @@ import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -51,8 +52,8 @@ public class LocalShareRunningTask extends BackgroundTask
     public static final String TAG = LocalShareRunningTask.class.getSimpleName();
 
     public List<? extends Shareable> mList;
-    private boolean mFlagAddNewDevice;
-    private boolean mFlagWebShare;
+    private final boolean mFlagAddNewDevice;
+    private final boolean mFlagWebShare;
 
     public LocalShareRunningTask(List<? extends Shareable> list, boolean addNewDevice, boolean webShare)
     {
@@ -62,7 +63,7 @@ public class LocalShareRunningTask extends BackgroundTask
     }
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun() throws TaskStoppedException
     {
         if (mList.size() <= 0)
             return;
@@ -75,8 +76,7 @@ public class LocalShareRunningTask extends BackgroundTask
         for (Shareable shareable : mList) {
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
 
-            if (isInterrupted())
-                throw new InterruptedException();
+            throwIfStopped();
 
             if (shareable instanceof FileListAdapter.FileHolder) {
                 DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;

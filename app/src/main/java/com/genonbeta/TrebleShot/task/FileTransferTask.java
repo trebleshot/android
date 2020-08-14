@@ -33,6 +33,7 @@ import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -80,7 +81,7 @@ public class FileTransferTask extends AttachableBgTask<AttachedTaskListener>
     private SQLiteDatabase mDatabase;
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun() throws TaskStoppedException
     {
         if (this.activeConnection == null)
             startTransferAsClient();

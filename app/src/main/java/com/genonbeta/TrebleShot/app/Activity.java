@@ -49,6 +49,8 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.Identifier;
 import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableBgTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -187,10 +189,16 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onStop();
         unregisterReceiver(mReceiver);
-        stopUiTasks();
-        detachTasks();
         if (AppUtils.checkRunningConditions(this))
             App.notifyActivityInForeground(this, false);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        stopUiTasks();
+        detachTasks();
     }
 
     protected void onAttachTasks(List<BaseAttachableBgTask> taskList)
@@ -511,8 +519,13 @@ public abstract class Activity extends AppCompatActivity
      * @param task to be stopped when user leaves
      */
     public void runUiTask(BackgroundTask task) {
-        run(task);
         attachUiTask(task);
+        run(task);
+    }
+
+    public <T extends AttachedTaskListener, V extends AttachableBgTask<T>> void runUiTask(V task, T anchor) {
+        task.setAnchor(anchor);
+        runUiTask(task);
     }
 
     public void setSkipPermissionRequest(boolean skip)

@@ -41,7 +41,7 @@ public class TextShareTask extends BackgroundTask
     }
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun()
     {
         try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mConnection, mDevice, 0)) {
             final JSONObject jsonRequest = new JSONObject()
@@ -53,10 +53,9 @@ public class TextShareTask extends BackgroundTask
 
             JSONObject response = activeConnection.receive().getAsJson();
 
-            if (response.has(Keyword.RESULT) && response.getBoolean(Keyword.RESULT)) {
+            if (bridge.receiveResult()) {
                 // TODO: 31.03.2020 implement
-            } else
-                ConnectionUtils.throwCommunicationError(response, mDevice);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

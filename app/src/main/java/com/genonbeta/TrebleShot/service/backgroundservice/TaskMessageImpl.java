@@ -21,11 +21,16 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +40,13 @@ public class TaskMessageImpl implements TaskMessage
     private String mTitle;
     private String mMessage;
     private Tone mTone = Tone.Neutral;
-    private final List<Action> mActions = new ArrayList<>();
+    private final List<Action> mActionList = new ArrayList<>();
 
     @Override
     public TaskMessage addAction(Action action)
     {
-        synchronized (mActions) {
-            mActions.add(action);
+        synchronized (mActionList) {
+            mActionList.add(action);
         }
         return this;
     }
@@ -77,19 +82,27 @@ public class TaskMessageImpl implements TaskMessage
     @Override
     public List<Action> getActionList()
     {
-        synchronized (mActions) {
-            return new ArrayList<>(mActions);
+        synchronized (mActionList) {
+            return new ArrayList<>(mActionList);
         }
     }
 
+    @Override
     public String getMessage()
     {
         return mMessage;
     }
 
+    @Override
     public String getTitle()
     {
         return mTitle;
+    }
+
+    @Override
+    public Tone getTone()
+    {
+        return mTone;
     }
 
     @DrawableRes
@@ -111,8 +124,8 @@ public class TaskMessageImpl implements TaskMessage
     @Override
     public TaskMessage removeAction(Action action)
     {
-        synchronized (mActions) {
-            mActions.remove(action);
+        synchronized (mActionList) {
+            mActionList.remove(action);
         }
         return this;
     }
@@ -151,6 +164,48 @@ public class TaskMessageImpl implements TaskMessage
     }
 
     @Override
+    public int sizeOfActions()
+    {
+        synchronized (mActionList) {
+            return mActionList.size();
+        }
+    }
+
+    @Override
+    public AlertDialog.Builder toDialogBuilder(Activity activity)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                .setTitle(getTitle())
+                .setMessage(getMessage());
+
+        synchronized (mActionList) {
+            boolean[] appliedTones = new boolean[Tone.values().length];
+            for (Action action : mActionList) {
+                if (appliedTones[action.tone.ordinal()])
+                    continue;
+
+                switch (action.tone) {
+                    case Positive:
+                        builder.setPositiveButton(action.name, (dialog, which) -> action.callback.call(activity));
+                        break;
+                    case Negative:
+                        builder.setNegativeButton(action.name, (dialog, which) -> action.callback.call(activity));
+                        break;
+                    case Neutral:
+                        builder.setNeutralButton(action.name, (dialog, which) -> action.callback.call(activity));
+                }
+
+                appliedTones[action.tone.ordinal()] = true;
+            }
+
+            if (appliedTones.length < 1 || !appliedTones[Tone.Negative.ordinal()])
+                builder.setNegativeButton(R.string.butn_close, null);
+        }
+
+        return builder;
+    }
+
+    @Override
     public DynamicNotification toNotification(BackgroundTask task)
     {
         Context context = task.getService().getApplicationContext();
@@ -163,10 +218,44 @@ public class TaskMessageImpl implements TaskMessage
                 .setContentTitle(mTitle)
                 .setContentText(mMessage);
 
-        for (Action action : mActions)
+        for (Action action : mActionList)
             notification.addAction(iconFor(action.tone), action.name, PendingIntent.getActivity(context,
                     0, new Intent(context, HomeActivity.class), 0));
 
         return notification;
+    }
+
+    @Override
+    public Snackbar toSnackbar(View view)
+    {
+        Snackbar snackbar = Snackbar.make(view, getMessage(), Snackbar.LENGTH_LONG);
+
+        if (sizeOfActions() > 0) {
+            synchronized (mActionList) {
+                Action action = mActionList.get(0);
+                snackbar.setAction(action.name, v -> action.callback.call(v.getContext()));
+            }
+        }
+
+        return snackbar;
+    }
+
+    @NonNull
+    @Override
+    public String toString()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Title=")
+                .append(getTitle())
+                .append(" Msg=")
+                .append(getMessage())
+                .append(" Tone=")
+                .append(getTone());
+
+        for (Action action : mActionList)
+            stringBuilder.append(action);
+
+        return stringBuilder.toString();
     }
 }

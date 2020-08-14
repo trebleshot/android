@@ -19,8 +19,13 @@
 package com.genonbeta.TrebleShot.service.backgroundservice;
 
 import android.content.Context;
-import com.genonbeta.TrebleShot.service.BackgroundService;
+import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -43,6 +48,12 @@ public interface TaskMessage
 
     List<Action> getActionList();
 
+    String getMessage();
+
+    String getTitle();
+
+    Tone getTone();
+
     TaskMessage removeAction(Action action);
 
     TaskMessage setMessage(Context context, int msgRes);
@@ -55,9 +66,16 @@ public interface TaskMessage
 
     TaskMessage setTone(Tone tone);
 
+    int sizeOfActions();
+
+    AlertDialog.Builder toDialogBuilder(Activity activity);
+
     DynamicNotification toNotification(BackgroundTask task);
 
-    enum Tone {
+    Snackbar toSnackbar(View view);
+
+    enum Tone
+    {
         Positive,
         Confused,
         Neutral,
@@ -69,10 +87,17 @@ public interface TaskMessage
         public Tone tone;
         public String name;
         public Callback callback;
+
+        @NonNull
+        @Override
+        public String toString()
+        {
+            return "Action [" + "\n\tName=" + name + "\n\tTone=" + tone + "\n]\n";
+        }
     }
 
     interface Callback
     {
-        void call(BackgroundService service, TaskMessage msg, Action action);
+        void call(@Nullable Context context);
     }
 }

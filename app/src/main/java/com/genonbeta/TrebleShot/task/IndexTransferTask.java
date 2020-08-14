@@ -36,24 +36,21 @@ import java.util.List;
 
 public class IndexTransferTask extends BackgroundTask
 {
-    private long mGroupId;
-    private boolean mNoPrompt;
-    private DeviceAddress mConnection;
-    private Device mDevice;
-    private String mJsonIndex;
+    private final long mGroupId;
+    private final boolean mNoPrompt;
+    private final Device mDevice;
+    private final String mJsonIndex;
 
-    public IndexTransferTask(final long groupId, final String jsonIndex, final Device device,
-                             final DeviceAddress connection, final boolean noPrompt)
+    public IndexTransferTask(final long groupId, final String jsonIndex, final Device device, final boolean noPrompt)
     {
         mGroupId = groupId;
         mJsonIndex = jsonIndex;
         mDevice = device;
-        mConnection = connection;
         mNoPrompt = noPrompt;
     }
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun()
     {
         final SQLiteDatabase db = kuick().getWritableDatabase();
         final JSONArray jsonArray;

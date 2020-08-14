@@ -22,9 +22,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -76,6 +76,7 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     {
         super.onResume();
         getEditText().requestFocus();
+        checkTasks();
     }
 
     @Override
@@ -104,6 +105,7 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
             }
 
         setShowProgress(hasDeviceIntroductionTask);
+        checkTasks();
     }
 
     @Override
@@ -115,7 +117,9 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     @Override
     public boolean onTaskMessage(TaskMessage message)
     {
-        return false;
+        Log.d(TAG, message.getMessage());
+        runOnUiThread(() -> getEditText().setError(message.getMessage()));
+        return true;
     }
 
     @Override
@@ -125,6 +129,13 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
                 .putExtra(EXTRA_DEVICE, deviceRoute.device)
                 .putExtra(EXTRA_CONNECTION, deviceRoute.connection));
         finish();
+    }
+
+    private void checkTasks()
+    {
+        boolean hasTask = hasTaskOf(DeviceIntroductionTask.class);
+        getButton().setClickable(!hasTask);
+        getButton().setEnabled(!hasTask);
     }
 
     private Button getButton()
@@ -155,8 +166,6 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
         @Override
         protected InetAddress doInBackground(String... address)
         {
-            listener.onStateChange(true);
-
             try {
                 if (address.length > 0)
                     return InetAddress.getByName(address[0]);
@@ -175,8 +184,6 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
                 listener.onHostnameError();
             else
                 listener.onConnect(address);
-
-            listener.onStateChange(false);
         }
     }
 
@@ -184,12 +191,8 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     {
         public void onConnect(InetAddress address)
         {
-            runUiTask(new DeviceIntroductionTask(address, 0));
-        }
-
-        void onStateChange(boolean started)
-        {
-            runOnUiThread(() -> getButton().setEnabled(!started));
+            runUiTask(new DeviceIntroductionTask(address, 0), ManualConnectionActivity.this);
+            checkTasks();
         }
 
         void onHostnameError()

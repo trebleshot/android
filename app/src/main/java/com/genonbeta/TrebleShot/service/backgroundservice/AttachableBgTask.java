@@ -21,9 +21,6 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class AttachableBgTask<T extends AttachedTaskListener> extends BaseAttachableBgTask
 {
     public static final int OVERRIDE_BY_ALL = 1;
@@ -32,17 +29,7 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
 
     private T mAnchor;
     private Handler mHandler;
-    private final List<Call<T>> mCallList = new ArrayList<>();
-    private Runnable mPostStatus = this::notifyAnchor;
-
-    protected boolean doesOverride(Call<T> call, Call<T> currentCall)
-    {
-        if ((call.overrideBy & OVERRIDE_BY_NONE) != 0)
-            return false;
-
-        return ((call.overrideBy & OVERRIDE_BY_SELF) != 0 && call.taskId.ordinal() == currentCall.taskId.ordinal())
-                || (call.overrideBy & OVERRIDE_BY_ALL) != 0;
-    }
+    private final Runnable mPostStatus = this::notifyAnchor;
 
     @Override
     public boolean hasAnchor()
@@ -50,8 +37,9 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
         return mAnchor != null;
     }
 
-    public T getAnchor()
+    public T getAnchor() throws TaskStoppedException
     {
+        throwIfStopped();
         return mAnchor;
     }
 
@@ -70,59 +58,18 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
             mAnchor.onTaskStateChanged(this);
     }
 
-    public void post(Call<T> currentCall)
+    @Override
+    public void post(TaskMessage message) throws TaskStoppedException
     {
-        postAll();
+        T anchor = getAnchor();
 
-        if (hasAnchor())
-            currentCall.now(mAnchor);
-        else {
-            synchronized (mCallList) {
-                List<Call<T>> newList = new ArrayList<>();
-                for (Call<T> call : mCallList)
-                    if (doesOverride(call, currentCall))
-                        newList.add(call);
-
-                mCallList.clear();
-                mCallList.addAll(newList);
-            }
-        }
+        if (anchor == null || !anchor.onTaskMessage(message))
+            super.post(message);
     }
 
     public void post(Runnable runnable)
     {
         getHandler().post(runnable);
-    }
-
-    private void postAll()
-    {
-        if (mCallList.size() <= 0)
-            return;
-
-        synchronized (mCallList) {
-            boolean doneAll = true;
-            for (Call<T> call : mCallList) {
-                if (hasAnchor()) {
-                    call.now(mAnchor);
-                    call.done = true;
-                } else {
-                    doneAll = false;
-                    break;
-                }
-            }
-
-            if (doneAll)
-                mCallList.clear();
-            else {
-                List<Call<T>> newList = new ArrayList<>();
-                for (Call<T> call : mCallList)
-                    if (!call.done)
-                        newList.add(call);
-
-                mCallList.clear();
-                mCallList.addAll(newList);
-            }
-        }
     }
 
     @Override
@@ -142,21 +89,5 @@ public abstract class AttachableBgTask<T extends AttachedTaskListener> extends B
     {
         mAnchor = anchor;
         publishStatus();
-        postAll();
-    }
-
-    public static abstract class Call<T extends AttachedTaskListener>
-    {
-        public int overrideBy;
-        public Enum<?> taskId;
-        boolean done;
-
-        public Call(Enum<?> taskId, int overrideBy)
-        {
-            this.taskId = taskId;
-            this.overrideBy = overrideBy;
-        }
-
-        public abstract void now(T anchor);
     }
 }

@@ -46,10 +46,8 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
-import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
-import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
-import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
-import com.genonbeta.TrebleShot.util.communicationbridge.UnknownCommunicationException;
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
+import com.genonbeta.TrebleShot.util.communication.CommunicationException;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
@@ -109,6 +107,34 @@ public class ConnectionUtils
     public boolean canReadWifiInfo()
     {
         return Build.VERSION.SDK_INT < 26 || (hasLocationPermission() && isLocationServiceEnabled());
+    }
+
+    public InetAddress connectToNetwork(Stoppable stoppable, NetworkDescription description)
+            throws DeviceIntroductionTask.SuggestNetworkException, ConnectionUtils.WifiInaccessibleException,
+            TimeoutException, InterruptedException
+    {
+        if (Build.VERSION.SDK_INT >= 29) {
+            int status = suggestNetwork(description);
+            switch (status) {
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
+                    throw new DeviceIntroductionTask.SuggestNetworkException(description,
+                            DeviceIntroductionTask.SuggestNetworkException.Type.ExceededLimit);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
+                    throw new DeviceIntroductionTask.SuggestNetworkException(description,
+                            DeviceIntroductionTask.SuggestNetworkException.Type.AppDisallowed);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
+                    throw new DeviceIntroductionTask.SuggestNetworkException(description,
+                            DeviceIntroductionTask.SuggestNetworkException.Type.ErrorInternal);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE:
+                    throw new DeviceIntroductionTask.SuggestNetworkException(description,
+                            DeviceIntroductionTask.SuggestNetworkException.Type.Duplicate);
+                case WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS:
+                default:
+                    Log.d(TAG, "Network suggestion successful!");
+            }
+        }
+
+        return establishHotspotConnection(stoppable, description);
     }
 
     public static WifiConfiguration createWifiConfig(ScanResult result, String password)
@@ -173,7 +199,6 @@ public class ConnectionUtils
     public InetAddress establishHotspotConnection(Stoppable stoppable, NetworkDescription description)
             throws WifiInaccessibleException, InterruptedException, TimeoutException
     {
-        int pingTimeout = 1000; // ms
         long startTime = System.nanoTime();
         boolean connectionToggled = Build.VERSION.SDK_INT >= 29;
 
@@ -385,18 +410,14 @@ public class ConnectionUtils
         Kuick kuick = AppUtils.getKuick(context);
         DeviceAddress deviceAddress = new DeviceAddress(inetAddress);
         CommunicationBridge bridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin);
-
-        bridge.getActiveConnection().reply(new JSONObject()
-                .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
-
         Device device = bridge.getDevice();
-        JSONObject receivedReply = bridge.getActiveConnection().receive().getAsJson();
 
-        if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT) && device.uid != null) {
+        bridge.requestAcquaintance();
+
+        if (bridge.receiveResult() && device.uid != null) {
             DeviceAddress connection = DeviceLoader.processConnection(kuick, device, inetAddress);
             return new DeviceRoute(device, connection);
-        } else
-            throwCommunicationError(receivedReply, device);
+        }
 
         throw new CommunicationException("Didn't have the result and the errors were unknown");
     }
@@ -466,19 +487,6 @@ public class ConnectionUtils
         final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
         suggestions.add(description.toNetworkSuggestion());
         return getWifiManager().addNetworkSuggestions(suggestions);
-    }
-
-    public static void throwCommunicationError(JSONObject clientResponse, Device device)
-            throws NotAllowedException, NotTrustedException, JSONException, UnknownCommunicationException
-    {
-        if (clientResponse.has(Keyword.ERROR)) {
-            String error = clientResponse.getString(Keyword.ERROR);
-            if (error.equals(Keyword.ERROR_NOT_ALLOWED))
-                throw new NotAllowedException(device);
-            else if (error.equals(Keyword.ERROR_NOT_TRUSTED))
-                throw new NotTrustedException(device);
-        } else
-            throw new UnknownCommunicationException();
     }
 
     /**

@@ -16,12 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.util.communicationbridge;
+package com.genonbeta.TrebleShot.util.communication;
 
-public class UnknownCommunicationException extends CommunicationException
+public class ContentException extends CommunicationException
 {
-    public UnknownCommunicationException()
+    public final Error error;
+
+    public ContentException(Error error)
     {
-        super();
+        this.error = error;
+    }
+
+    public enum Error
+    {
+        NotFound,
+        NotAccessible
     }
 }

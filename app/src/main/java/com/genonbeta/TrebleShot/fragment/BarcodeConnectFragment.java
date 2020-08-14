@@ -77,11 +77,10 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
 {
     public static final String TAG = "BarcodeConnectFragment";
 
-    public static final int REQUEST_PERMISSION_CAMERA = 1,
-            REQUEST_PERMISSION_LOCATION = 1 << 1,
-            REQUEST_TURN_WIFI_ON = 1 << 2;
+    public static final int REQUEST_PERMISSION_CAMERA = 1;
+    public static final int REQUEST_PERMISSION_LOCATION = 2;
 
-    private DialogInterface.OnDismissListener mDismissListener = dialog -> updateState();
+    private final DialogInterface.OnDismissListener mDismissListener = dialog -> updateState();
     private DecoratedBarcodeView mBarcodeView;
     private ConnectionUtils mConnectionUtils;
     private ViewGroup mConductContainer;
@@ -91,13 +90,13 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     private Button mConductButton;
     private Button mTaskInterruptButton;
     private View mTaskContainer;
-    private Stoppable mStoppable = new StoppableImpl();
-    private IntentFilter mIntentFilter = new IntentFilter();
+    private final Stoppable mStoppable = new StoppableImpl();
+    private final IntentFilter mIntentFilter = new IntentFilter();
     private boolean mPermissionRequestedCamera = false;
     private boolean mPermissionRequestedLocation = false;
     private boolean mShowAsText = false;
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
@@ -226,7 +225,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (permissions.length > 0)
+        if (permissions.length > 0) {
             for (int i = 0; i < permissions.length; i++) {
                 if (Manifest.permission.CAMERA.equals(permissions[i]) &&
                         grantResults[i] == PackageManager.PERMISSION_GRANTED) {
@@ -234,6 +233,7 @@ public class BarcodeConnectFragment extends Fragment implements TitleProvider, I
                     mPermissionRequestedCamera = false;
                 }
             }
+        }
     }
 
     protected void handleBarcode(final String code)

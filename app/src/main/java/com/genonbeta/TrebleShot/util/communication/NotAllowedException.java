@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,26 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.util.communication;
 
-import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
-import com.genonbeta.android.framework.util.Stoppable;
+import com.genonbeta.TrebleShot.object.Device;
 
-/**
- * created by: Veli
- * date: 11.02.2018 19:37
- */
-
-public abstract class StoppableJob
+public class NotAllowedException extends CommunicationException
 {
-    protected abstract void onRun() throws TaskStoppedException;
+    public Device device;
 
-    protected void run(Stoppable stoppable) throws TaskStoppedException
+    public NotAllowedException(Device device)
     {
-        try {
-            onRun();
-        } finally {
-            stoppable.removeClosers();
-        }
+        super();
+        this.device = device;
     }
 }

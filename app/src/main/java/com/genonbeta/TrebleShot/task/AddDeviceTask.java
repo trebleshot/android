@@ -28,23 +28,18 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommonErrorHelper;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.TrebleShot.util.communicationbridge.CommunicationException;
-import com.genonbeta.TrebleShot.util.communicationbridge.NotAllowedException;
-import com.genonbeta.TrebleShot.util.communicationbridge.NotTrustedException;
-import com.genonbeta.TrebleShot.util.communicationbridge.UnknownCommunicationException;
 import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.monora.coolsocket.core.response.Response;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -62,9 +57,8 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
     }
 
     @Override
-    public void onRun()
+    public void onRun() throws TaskStoppedException
     {
-        // TODO: 27.03.2020 Is nested transaction calls possible?
         Context context = getService().getApplicationContext();
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
@@ -95,8 +89,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 setOngoingContent(transferObject.name);
                 transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
 
-                if (isInterrupted())
-                    throw new InterruptedException("Interrupted by user");
+                throwIfStopped();
 
                 try {
                     JSONObject json = new JSONObject()
@@ -133,12 +126,7 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
 
             activeConnection.reply(jsonObject.toString());
 
-            Response response = activeConnection.receive();
-            activeConnection.getSocket().close();
-
-            JSONObject clientResponse = response.getAsJson();
-
-            if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+            if (bridge.receiveResult()) {
                 setOngoingContent(context.getString(R.string.mesg_organizingFiles));
 
                 if (update)
@@ -150,38 +138,17 @@ public class AddDeviceTask extends AttachableBgTask<AddDevicesToTransferActivity
                 kuick.update(db, objectList, mGroup, progressListener());
                 kuick.broadcast();
 
-                post(new Call<AddDevicesToTransferActivity>(TaskId.Finalize, OVERRIDE_BY_SELF)
-                {
-                    @Override
-                    public void now(AddDevicesToTransferActivity anchor)
-                    {
-                        anchor.setResult(RESULT_OK, new Intent()
-                                .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
-                                .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mGroup));
+                AddDevicesToTransferActivity anchor = getAnchor();
+                if (anchor != null) {
+                    anchor.setResult(RESULT_OK, new Intent()
+                            .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
+                            .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP, mGroup));
 
-                        anchor.finish();
-                    }
-                });
-            } else
-                ConnectionUtils.throwCommunicationError(clientResponse, mDevice);
-        } catch (UnknownCommunicationException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (NotTrustedException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NotAllowedException e) {
-            e.printStackTrace();
-        } catch (CommunicationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                    anchor.finish();
+                }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            post(CommonErrorHelper.messageOf(getService(), e));
         }
     }
 

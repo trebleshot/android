@@ -35,7 +35,7 @@ import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
-import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
+import com.genonbeta.TrebleShot.util.communication.DifferentClientException;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
@@ -55,7 +55,9 @@ public class DeviceLoader
         int receiveKey = object.getInt(Keyword.DEVICE_KEY);
 
         try {
-            kuick.reconstruct(device);
+            if (!asClient)
+                kuick.reconstruct(device);
+
             if (device.isBlocked)
                 throw new DeviceBlockedException("The device is blocked.", device);
             else if (receiveKey != device.receiveKey)
@@ -66,6 +68,7 @@ public class DeviceLoader
             if (hasPin || asClient || !(e instanceof DeviceInsecureException)) {
                 device.isTrusted = hasPin;
                 device.receiveKey = receiveKey;
+                device.isBlocked = false;
 
                 if (device.sendKey == 0)
                     device.sendKey = AppUtils.generateKey();
@@ -102,12 +105,7 @@ public class DeviceLoader
                 if (listener != null)
                     listener.onDeviceRegistered(kuick, communicationBridge.getDevice(),
                             communicationBridge.getDeviceAddress());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (DifferentClientException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
         }).start();
     }

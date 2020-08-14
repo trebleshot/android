@@ -23,14 +23,15 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.util.List;
 
 public class RenameMultipleFilesTask extends BackgroundTask
 {
-    private List<FileListAdapter.FileHolder> mList;
-    private String mNewName;
+    private final List<FileListAdapter.FileHolder> mList;
+    private final String mNewName;
 
     public RenameMultipleFilesTask(List<FileListAdapter.FileHolder> fileList, String renameTo)
     {
@@ -39,7 +40,7 @@ public class RenameMultipleFilesTask extends BackgroundTask
     }
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun() throws TaskStoppedException
     {
         if (mList.size() <= 0)
             return;
@@ -47,11 +48,15 @@ public class RenameMultipleFilesTask extends BackgroundTask
         progress().addToTotal(mList.size());
 
         for (int i = 0; i < mList.size(); i++) {
-            FileListAdapter.FileHolder fileHolder = mList.get(i);
+            throwIfStopped();
 
+            FileListAdapter.FileHolder fileHolder = mList.get(i);
             setOngoingContent(fileHolder.friendlyName);
             progress().addToCurrent(1);
             publishStatus();
+
+            if (fileHolder.file == null)
+                continue;
 
             String ext = FileUtils.getFileFormat(fileHolder.file.getName());
             ext = ext != null ? String.format(".%s", ext) : "";

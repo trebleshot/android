@@ -39,12 +39,12 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 12:46
  */
-public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
+public class TransferMemberListAdapter extends EditableListAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
 {
     private final TransferGroup mGroup;
     private final TextDrawable.IShapeBuilder mIconBuilder;
 
-    public TransferAssigneeListAdapter(IEditableListFragment<ShowingAssignee, ViewHolder> fragment, TransferGroup group)
+    public TransferMemberListAdapter(IEditableListFragment<ShowingAssignee, ViewHolder> fragment, TransferGroup group)
     {
         super(fragment);
         mIconBuilder = AppUtils.getDefaultIconBuilder(fragment.getContext());

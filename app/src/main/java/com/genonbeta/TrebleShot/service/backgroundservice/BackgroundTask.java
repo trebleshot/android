@@ -44,12 +44,12 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 {
     public static final String TASK_GROUP_DEFAULT = "TASK_GROUP_DEFAULT";
 
+    private final ProgressListener mProgressListener = new ProgressListener();
     private Kuick mKuick;
     private BackgroundService mService;
     private Stoppable mStoppable;
     private PendingIntent mActivityIntent;
     private DynamicNotification mCustomNotification; // The notification that is not part of the default notification.
-    private ProgressListener mProgressListener = new ProgressListener();
     private String mCurrentContent;
     private boolean mPublishRequested = false;
     private boolean mFinished = false;
@@ -57,7 +57,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
     private boolean mScheduleRerun = false;
     private int mHash = 0;
 
-    protected abstract void onRun() throws InterruptedException;
+    protected abstract void onRun() throws TaskStoppedException;
 
     protected void onProgressChange(Progress progress)
     {
@@ -81,7 +81,8 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
     public void forceQuit()
     {
-
+        if (!isInterrupted())
+            interrupt();
     }
 
     @Override
@@ -196,8 +197,10 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         return mKuick;
     }
 
-    public void post(TaskMessage message)
+    public void post(TaskMessage message) throws TaskStoppedException
     {
+        throwIfStopped();
+
         DynamicNotification notification = message.toNotification(this).show();
         setCustomNotification(notification);
     }
@@ -278,8 +281,7 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
 
         try {
             run(getStoppable());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (TaskStoppedException ignored) {
         } finally {
             setFinished(true);
             publishStatus();
@@ -331,10 +333,10 @@ public abstract class BackgroundTask extends StoppableJob implements Stoppable, 
         mStoppable = stoppable;
     }
 
-    public void throwIfInterrupted() throws InterruptedException
+    public void throwIfStopped() throws TaskStoppedException
     {
         if (isInterrupted())
-            throw new InterruptedException("This task been interrupted by user=" + isInterruptedByUser());
+            throw new TaskStoppedException("This task been interrupted", isInterruptedByUser());
     }
 
     private class ProgressListener extends Progress.SimpleListener

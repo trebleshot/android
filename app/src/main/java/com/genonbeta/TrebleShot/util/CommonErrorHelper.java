@@ -24,38 +24,70 @@ import android.provider.Settings;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
+import com.genonbeta.TrebleShot.util.communication.*;
+
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 
 public class CommonErrorHelper
 {
-    public static TaskMessage messageOf(Exception e)
+    public static TaskMessage messageOf(Context context, Exception exception)
     {
-        return TaskMessage.newInstance();
-    }
+        TaskMessage taskMessage = TaskMessage.newInstance()
+                .setTone(TaskMessage.Tone.Negative);
 
-    public static TaskMessage messageOf(DeviceIntroductionTask.SuggestNetworkException e, Context appContext)
-    {
-        TaskMessage message = TaskMessage.newInstance()
-                .setTitle(appContext, R.string.text_error);
+        try {
+            throw exception;
+        } catch (CommunicationException e) {
+            taskMessage.setTitle(context, R.string.text_communicationError);
 
-        switch (e.type) {
-            case ExceededLimit:
-                message.setMessage(appContext, R.string.text_errorExceededMaximumSuggestions)
-                        .addAction(appContext, R.string.butn_openSettings, TaskMessage.Tone.Positive,
-                                (context, msg, action) -> context.startActivity(new Intent(
-                                        Settings.ACTION_WIFI_SETTINGS)));
-                break;
-            case AppDisallowed:
-                message.setMessage(appContext, R.string.text_errorNetworkSuggestionsDisallowed)
-                        .addAction(appContext, R.string.butn_openSettings, TaskMessage.Tone.Positive,
-                                (context, msg, action) -> AppUtils.startApplicationDetails(context));
-                break;
-            case ErrorInternal:
-                message.setMessage(appContext, R.string.text_errorNetworkSuggestionInternal)
-                        .addAction(appContext, R.string.butn_feedbackContact, TaskMessage.Tone.Positive,
-                                (context, msg, action) -> AppUtils.startFeedbackActivity(context));
-                break;
+            if (e instanceof NotAllowedException)
+                taskMessage.setMessage(context, R.string.mesg_notAllowed);
+            else if (e instanceof DifferentClientException)
+                taskMessage.setMessage(context, R.string.mesg_errorDifferentDevice);
+            else if (e instanceof NotTrustedException)
+                taskMessage.setMessage(context, R.string.mesg_errorNotTrusted);
+            else if (e instanceof UnknownCommunicationErrorException)
+                taskMessage.setMessage(context.getString(R.string.mesg_unknownErrorOccurredWithCode,
+                        ((UnknownCommunicationErrorException) e).errorCode));
+            else
+                taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred);
+        } catch (DeviceIntroductionTask.SuggestNetworkException e) {
+            taskMessage.setTitle(context, R.string.text_networkSuggestionError);
+
+            switch (e.type) {
+                case ExceededLimit:
+                    taskMessage.setMessage(context, R.string.text_errorExceededMaximumSuggestions)
+                            .addAction(context, R.string.butn_openSettings, TaskMessage.Tone.Positive, (appContext) -> {
+                                if (appContext != null)
+                                    appContext.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            });
+                    break;
+                case AppDisallowed:
+                    taskMessage.setMessage(context, R.string.text_errorNetworkSuggestionsDisallowed)
+                            .addAction(context, R.string.butn_openSettings, TaskMessage.Tone.Positive, (appContext) -> {
+                                if (appContext != null)
+                                    AppUtils.startApplicationDetails(appContext);
+                            });
+                    break;
+                case ErrorInternal:
+                    taskMessage.setMessage(context, R.string.text_errorNetworkSuggestionInternal)
+                            .addAction(context, R.string.butn_feedbackContact, TaskMessage.Tone.Positive, (appContext) -> {
+                                if (appContext != null)
+                                    AppUtils.startFeedbackActivity(appContext);
+                            });
+                    break;
+            }
+        } catch (ConnectException e) {
+            taskMessage.setTitle(context, R.string.text_communicationError)
+                    .setMessage(context, R.string.mesg_socketConnectionError);
+        } catch (NoRouteToHostException e) {
+            taskMessage.setTitle(context, R.string.text_communicationError)
+                    .setMessage(context, R.string.mesg_noRouteToHostError);
+        } catch (Exception e) {
+            taskMessage.setTitle(context, R.string.mesg_somethingWentWrong)
+                    .setMessage(context, R.string.mesg_unknownErrorOccurred);
         }
-
-        return message;
+        return taskMessage;
     }
 }

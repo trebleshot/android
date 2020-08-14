@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableBgTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -43,7 +44,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
     }
 
     @Override
-    protected void onRun() throws InterruptedException
+    protected void onRun() throws TaskStoppedException
     {
         List<DeviceAddress> knownConnectionList = AppUtils.getKuick(getService()).castQuery(
                 Transfers.createAddressSelection(device.uid), DeviceAddress.class);
@@ -54,7 +55,7 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
 
         if (results.length > 0) {
             for (int i = 0; i < results.length; i++) {
-                throwIfInterrupted();
+                throwIfStopped();
 
                 ConnectionResult connectionResult = results[i] = new ConnectionResult(knownConnectionList.get(i));
 
@@ -83,8 +84,9 @@ public class AssessNetworkTask extends AttachableBgTask<AssessNetworkTask.Calcul
             Arrays.sort(results, connectionComparator);
         }
 
-        if (hasAnchor())
-            post(() -> getAnchor().onCalculationResult(results));
+        CalculationResultListener anchor = getAnchor();
+        if (anchor != null)
+            post(() -> anchor.onCalculationResult(results));
     }
 
     public static List<ConnectionResult> getAvailableList(ConnectionResult[] results)

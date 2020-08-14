@@ -38,20 +38,18 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.BackgroundTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
-import com.genonbeta.TrebleShot.util.communicationbridge.DifferentClientException;
 import com.genonbeta.android.database.SQLQuery;
 import fi.iki.elonen.NanoHTTPD;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.CoolSocket;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -161,13 +159,8 @@ public class BackgroundService extends Service
                     new Thread(() -> {
                         try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.addressList,
                                 task.device, 0)) {
-                            bridge.notifyStateOfTransferRequest(group.id, isAccepted);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (DifferentClientException e) {
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            bridge.requestNotifyTransferState(group.id, isAccepted);
+                        } catch (Exception ignored) {
                         }
                     }).start();
 
@@ -572,6 +565,7 @@ public class BackgroundService extends Service
                 } catch (DeviceVerificationException e) {
                     sendKey = AppUtils.generateKey();
                     getNotificationHelper().notifyKeyChanged(device, e.receiveKey, sendKey);
+                    throw e;
                 } finally {
                     if (sendKey == 0)
                         sendKey = device.sendKey;
@@ -581,11 +575,12 @@ public class BackgroundService extends Service
                     getKuick().broadcast();
                 }
 
+                CommunicationBridge.sendResult(activeConnection, true);
+
                 if (hasPin) // pin is known, should be changed. Warn the listeners.
                     sendBroadcast(new Intent(ACTION_PIN_USED));
 
                 getKuick().broadcast();
-
                 response = activeConnection.receive().getAsJson();
 
                 switch (response.getString(Keyword.REQUEST)) {
@@ -595,10 +590,10 @@ public class BackgroundService extends Service
                             long groupId = response.getLong(Keyword.TRANSFER_GROUP_ID);
                             String jsonIndex = response.getString(Keyword.INDEX);
 
-                            run(new IndexTransferTask(groupId, jsonIndex, device, deviceAddress, hasPin));
+                            run(new IndexTransferTask(groupId, jsonIndex, device, hasPin));
                         }
                         break;
-                    case (Keyword.REQUEST_TRANSFER_STATE):
+                    case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE):
                         if (response.has(Keyword.TRANSFER_GROUP_ID)) {
                             int groupId = response.getInt(Keyword.TRANSFER_GROUP_ID);
                             boolean isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
@@ -633,8 +628,7 @@ public class BackgroundService extends Service
                         sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
                                 .putExtra(EXTRA_DEVICE, device)
                                 .putExtra(EXTRA_CONNECTION, deviceAddress));
-                        break;
-                    case (Keyword.REQUEST_HANDSHAKE):
+                        CommunicationBridge.sendResult(activeConnection, true);
                         break;
                     case (Keyword.REQUEST_TRANSFER_JOB):
                         if (response.has(Keyword.TRANSFER_GROUP_ID)) {
@@ -693,6 +687,13 @@ public class BackgroundService extends Service
                             }
                         }
                         break;
+                    default:
+                        CommunicationBridge.sendResult(activeConnection, false);
+                }
+            } catch (DeviceBlockedException | DeviceVerificationException e) {
+                try {
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ALLOWED);
+                } catch (Exception ignored) {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
