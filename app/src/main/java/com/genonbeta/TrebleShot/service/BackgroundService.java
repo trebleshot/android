@@ -80,7 +80,7 @@ public class BackgroundService extends Service
     private final CommunicationServer mCommunicationServer = new CommunicationServer();
     private final LocalBinder mBinder = new LocalBinder();
     private WebShareServer mWebShareServer;
-    private NsdDiscovery mNsdDiscovery;
+    private NsdDaemon mNsdDaemon;
     private WifiManager.WifiLock mWifiLock;
     private App mApp;
 
@@ -105,12 +105,12 @@ public class BackgroundService extends Service
 
         WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
         mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
-        mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getKuick(), getDefaultPreferences());
+        mNsdDaemon = new NsdDaemon(getApplicationContext(), getKuick(), getDefaultPreferences());
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
 
-        mNsdDiscovery.registerService();
+        mNsdDaemon.registerService();
 
         if (mWifiLock != null)
             mWifiLock.acquire();
@@ -276,8 +276,8 @@ public class BackgroundService extends Service
         } catch (InterruptedException ignored) {
         }
 
-        if (mNsdDiscovery != null)
-            mNsdDiscovery.unregisterService();
+        if (mNsdDaemon != null)
+            mNsdDaemon.unregisterService();
 
         if (mWebShareServer != null)
             mWebShareServer.stop();

@@ -9,7 +9,7 @@ import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.dialog.FindConnectionDialog;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
@@ -351,7 +351,7 @@ public class Transfers
                     final FileTransferTask task = FileTransferTask.createFrom(AppUtils.getKuick(activity),
                             member.transferId, member.deviceId, member.type);
 
-                    EstablishConnectionDialog.show(activity, task.device, (device, address) -> {
+                    FindConnectionDialog.show(activity, task.device, (device, address) -> {
                         try {
                             App.run(activity, task);
                         } catch (Exception e) {

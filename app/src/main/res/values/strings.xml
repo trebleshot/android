@@ -569,7 +569,7 @@
     <string name="help_shareFilesNotice">Let\'s share those files</string>
     <string name="text_chooseDevice">Choose Device</string>
     <string name="butn_showAll">Show All</string>
-    <string name="text_availableDevices">Available Devices</string>
+    <string name="text_onlineDevices">Online Devices</string>
     <string name="text_addNewDevice">Add a New Device</string>
     <string name="butn_generateQrCode">Generate QR Code</string>
     <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
@@ -585,4 +585,5 @@
     <string name="text_communicationError">Communication Error</string>
     <string name="mesg_socketConnectionError">Failed to connect to the service!</string>
     <string name="mesg_noRouteToHostError">This address is unreachable!</string>
+    <string name="text_allDevices">All Devices</string>
 </resources>

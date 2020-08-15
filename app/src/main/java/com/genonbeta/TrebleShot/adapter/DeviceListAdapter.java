@@ -39,6 +39,7 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
+import com.genonbeta.TrebleShot.util.NsdDaemon;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -54,13 +55,15 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
     private final ConnectionUtils mConnectionUtils;
     private final TextDrawable.IShapeBuilder mIconBuilder;
     private final List<Device.Type> mHiddenDeviceTypes;
+    private final NsdDaemon mNsdDaemon;
 
     public DeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, ConnectionUtils utils,
-                             Device.Type[] hiddenDeviceTypes)
+                             NsdDaemon nsdDaemon, Device.Type[] hiddenDeviceTypes)
     {
         super(fragment);
         mConnectionUtils = utils;
         mIconBuilder = AppUtils.getDefaultIconBuilder(getContext());
+        mNsdDaemon = nsdDaemon;
         mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes) : new ArrayList<>();
     }
 
@@ -79,9 +82,15 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         }
 
         for (Device device : AppUtils.getKuick(getContext()).castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES)
-                .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device.class))
-            if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
+                .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device.class)) {
+            if (mNsdDaemon.isDeviceOnline(device))
+                device.type = Device.Type.NORMAL_ONLINE;
+            else if (Device.Type.NORMAL_ONLINE.equals(device.type))
+                device.type = Device.Type.NORMAL;
+
+            if ((!mHiddenDeviceTypes.contains(device.type)) && (!device.isLocal || devMode))
                 list.add(new InfoHolder(device));
+        }
 
         List<InfoHolder> filteredList = new ArrayList<>();
         for (InfoHolder infoHolder : list)
@@ -116,6 +125,7 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
 
         TextView text1 = parentView.findViewById(R.id.text1);
         TextView text2 = parentView.findViewById(R.id.text2);
+        TextView text3 = parentView.findViewById(R.id.text3);
         ImageView image = parentView.findViewById(R.id.image);
         ImageView statusImage = parentView.findViewById(R.id.imageStatus);
 
@@ -146,7 +156,8 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
 
     public static final class InfoHolder implements Editable
     {
-        private Object mObject;
+        private final Object mObject;
+
         private boolean mIsSelected = false;
 
         public InfoHolder(Device device)
@@ -217,6 +228,14 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         public String getSelectableTitle()
         {
             return name();
+        }
+
+        public boolean isOnline()
+        {
+            if (mObject instanceof Device)
+                return Device.Type.NORMAL_ONLINE.equals(((Device) mObject).type);
+
+            return false;
         }
 
         @Override

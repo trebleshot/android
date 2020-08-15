@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.service.backgroundservice;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
-import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.google.android.material.snackbar.Snackbar;

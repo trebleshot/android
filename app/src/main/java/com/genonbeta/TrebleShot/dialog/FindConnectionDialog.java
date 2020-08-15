@@ -29,32 +29,27 @@ import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.FindWorkingNetworkTask;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
-import com.genonbeta.android.framework.util.Stoppable;
-import com.genonbeta.android.framework.util.StoppableImpl;
 
-public class EstablishConnectionDialog extends ProgressDialog
+public class FindConnectionDialog extends ProgressDialog
 {
-    EstablishConnectionDialog(Activity activity)
+    FindConnectionDialog(Activity activity)
     {
         super(activity);
     }
 
     public static void show(Activity activity, Device device, @Nullable DeviceLoader.OnDeviceResolvedListener listener)
     {
-        Stoppable stoppable = new StoppableImpl();
-
-        EstablishConnectionDialog dialog = new EstablishConnectionDialog(activity);
+        FindConnectionDialog dialog = new FindConnectionDialog(activity);
         LocalTaskBinder binder = new LocalTaskBinder(activity, dialog, device, listener);
         FindWorkingNetworkTask task = new FindWorkingNetworkTask(device);
 
         task.setAnchor(binder);
-        task.setStoppable(stoppable);
+        task.addCloser(userAction -> task.removeAnchor());
 
         dialog.setTitle(R.string.text_automaticNetworkConnectionOngoing);
-        dialog.setOnDismissListener((dialog1 -> stoppable.interrupt()));
-        dialog.setOnCancelListener(dialog1 -> stoppable.interrupt());
+        dialog.setOnDismissListener(dialog1 -> task.interrupt());
+        dialog.setOnCancelListener(dialog1 -> task.interrupt());
         dialog.show();
 
         App.run(activity, task);
@@ -63,11 +58,11 @@ public class EstablishConnectionDialog extends ProgressDialog
     static class LocalTaskBinder implements FindWorkingNetworkTask.CalculationResultListener
     {
         Activity activity;
-        EstablishConnectionDialog dialog;
+        FindConnectionDialog dialog;
         Device device;
         DeviceLoader.OnDeviceResolvedListener listener;
 
-        LocalTaskBinder(Activity activity, EstablishConnectionDialog dialog, Device device,
+        LocalTaskBinder(Activity activity, FindConnectionDialog dialog, Device device,
                         DeviceLoader.OnDeviceResolvedListener listener)
         {
             this.activity = activity;
@@ -90,7 +85,8 @@ public class EstablishConnectionDialog extends ProgressDialog
         @Override
         public boolean onTaskMessage(TaskMessage message)
         {
-            return false;
+            activity.runOnUiThread(() -> message.toDialogBuilder(activity).show());
+            return true;
         }
 
         @Override
@@ -102,7 +98,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                         .setMessage(R.string.text_automaticNetworkConnectionFailed)
                         .setNeutralButton(R.string.butn_close, null)
                         .setPositiveButton(R.string.butn_retry,
-                                (dialog, which) -> EstablishConnectionDialog.show(activity, device, listener));
+                                (dialog, which) -> FindConnectionDialog.show(activity, device, listener));
             } else
                 listener.onDeviceResolved(device, address);
         }

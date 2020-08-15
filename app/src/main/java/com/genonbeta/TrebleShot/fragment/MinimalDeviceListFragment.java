@@ -35,7 +35,7 @@ public class MinimalDeviceListFragment extends DeviceListFragment
     public void onAttach(@NonNull Context context)
     {
         super.onAttach(context);
-        setHiddenDeviceTypes(new Device.Type[]{Device.Type.WEB});
+        setHiddenDeviceTypes(new Device.Type[]{Device.Type.WEB, Device.Type.NORMAL});
     }
 
     @Override

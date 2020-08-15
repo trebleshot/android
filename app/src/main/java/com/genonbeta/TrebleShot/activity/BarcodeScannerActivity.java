@@ -422,12 +422,12 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     @Override
     public boolean onTaskMessage(TaskMessage message)
     {
-        runOnUiThread(() -> {
-            if (message.sizeOfActions() > 1)
-                message.toDialogBuilder(this).show();
-            else if (message.sizeOfActions() <= 1)
-                message.toSnackbar(mTaskInterruptButton).show();
-        });
+        if (message.sizeOfActions() > 1)
+            runOnUiThread(() -> message.toDialogBuilder(this).show());
+        else if (message.sizeOfActions() <= 1)
+            runOnUiThread(() -> message.toSnackbar(mTaskInterruptButton).show());
+        else
+            return false;
 
         return true;
     }

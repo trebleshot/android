@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.dialog.FindConnectionDialog;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
@@ -47,7 +47,7 @@ import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
-import com.genonbeta.TrebleShot.util.NsdDiscovery;
+import com.genonbeta.TrebleShot.util.NsdDaemon;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
     public static final String ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList";
 
-    private NsdDiscovery mNsdDiscovery;
+    private NsdDaemon mNsdDaemon;
     private final IntentFilter mIntentFilter = new IntentFilter();
     private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private ConnectionUtils mConnectionUtils;
@@ -99,10 +99,11 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
         mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
+        mIntentFilter.addAction(NsdDaemon.ACTION_DEVICE_STATUS);
         mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-        mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getKuick(getContext()),
+        mNsdDaemon = new NsdDaemon(getContext(), AppUtils.getKuick(getContext()),
                 AppUtils.getDefaultPreferences(getContext()));
 
         if (getArguments() != null) {
@@ -128,7 +129,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new DeviceListAdapter(this, getConnectionUtils(), mHiddenDeviceTypes));
+        setListAdapter(new DeviceListAdapter(this, getConnectionUtils(), mNsdDaemon, mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
     }
@@ -145,7 +146,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onResume();
         requireActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-        mNsdDiscovery.startDiscovering();
+        mNsdDaemon.startDiscovering();
     }
 
     @Override
@@ -153,7 +154,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onPause();
         requireActivity().unregisterReceiver(mStatusReceiver);
-        mNsdDiscovery.stopDiscovering();
+        mNsdDaemon.stopDiscovering();
     }
 
     @Override
@@ -187,7 +188,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     @Override
     public CharSequence getDistinctiveTitle(Context context)
     {
-        return context.getString(R.string.text_useKnownDevice);
+        return context.getString(R.string.text_allDevices);
     }
 
     @Override
@@ -214,7 +215,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
                 if (BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
                     createSnackbar(R.string.mesg_versionNotSupported).show();
                 else
-                    EstablishConnectionDialog.show(getActivity(), device, this);
+                    FindConnectionDialog.show(getActivity(), device, this);
             } else
                 return false;
         } else
@@ -228,7 +229,8 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction()))
+            if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())
+                    || NsdDaemon.ACTION_DEVICE_STATUS.equals(intent.getAction()))
                 refreshList();
             else if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);

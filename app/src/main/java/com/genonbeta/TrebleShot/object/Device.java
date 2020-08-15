@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
@@ -93,10 +94,21 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         }
     };
 
-    private void checkSecureKey()
+    private void checkFields()
     {
         if (Type.NORMAL.equals(type) && (sendKey == 0 || receiveKey == 0))
             throw new RuntimeException("Keys for " + username + " cannot be invalid when the device is saved");
+
+        if (Type.NORMAL_ONLINE.equals(type))
+            throw new IllegalStateException("Online state should not be assigned even when the device is online.");
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof Device && uid != null)
+            return uid.equals(((Device) obj).uid);
+        return super.equals(obj);
     }
 
     public String generatePictureId()
@@ -113,6 +125,9 @@ public final class Device implements DatabaseObject<Void>, Parcelable
 
     public ContentValues getValues()
     {
+        if (Type.NORMAL_ONLINE.equals(type))
+            type = Type.NORMAL;
+
         ContentValues values = new ContentValues();
 
         values.put(Kuick.FIELD_DEVICES_ID, uid);
@@ -162,13 +177,13 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     @Override
     public void onCreateObject(SQLiteDatabase db, KuickDb kuick, Void parent, Progress.Listener listener)
     {
-        checkSecureKey();
+        checkFields();
     }
 
     @Override
     public void onUpdateObject(SQLiteDatabase db, KuickDb kuick, Void parent, Progress.Listener listener)
     {
-        checkSecureKey();
+        checkFields();
     }
 
     @Override
@@ -216,6 +231,7 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     public enum Type
     {
         NORMAL,
+        NORMAL_ONLINE,
         WEB
     }
 }

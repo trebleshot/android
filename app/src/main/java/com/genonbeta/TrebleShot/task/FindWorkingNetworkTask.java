@@ -63,6 +63,7 @@ public class FindWorkingNetworkTask extends AttachableAsyncTask<FindWorkingNetwo
                         CalculationResultListener anchor = getAnchor();
                         if (anchor != null)
                             post(() -> anchor.onCalculationResult(device, address));
+                        return;
                     }
                 } catch (Exception e) {
                     post(CommonErrorHelper.messageOf(getContext(), e));

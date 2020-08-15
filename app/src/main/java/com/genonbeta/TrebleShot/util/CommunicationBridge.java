@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -67,6 +68,7 @@ public class CommunicationBridge implements Closeable
     @Override
     public void close() throws IOException
     {
+        Log.d(CommunicationBridge.class.getSimpleName(), "closing safely yeah");
         getActiveConnection().closeSafely();
     }
 

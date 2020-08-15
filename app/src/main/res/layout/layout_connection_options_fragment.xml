@@ -54,11 +54,11 @@
                 android:layout_toLeftOf="@id/connection_option_devices"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
-                android:text="@string/text_availableDevices" />
+                android:text="@string/text_onlineDevices" />
 
         </RelativeLayout>
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/connection_option_device_list"
             android:name="com.genonbeta.TrebleShot.fragment.MinimalDeviceListFragment"
             android:layout_width="match_parent"
