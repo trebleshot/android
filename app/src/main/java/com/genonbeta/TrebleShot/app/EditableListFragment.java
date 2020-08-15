@@ -34,9 +34,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.collection.ArrayMap;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -73,9 +70,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 {
     public final static String
             ARG_SELECT_BY_CLICK = "argSelectByClick",
-            ARG_HAS_BOTTOM_SPACE = "argSelectByClick",
-            ARG_SELECTION_CLASSES = "argSelectionClasses",
-            ARG_SELECTION_OBJECTS = "argSelectionObjects";
+            ARG_HAS_BOTTOM_SPACE = "argSelectByClick";
 
     private final IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
     private final IPerformerEngine mPerformerEngine = new PerformerEngine();
@@ -139,33 +134,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         if (arguments != null) {
             mSelectByClick = arguments.getBoolean(ARG_SELECT_BY_CLICK, mSelectByClick);
             mHasBottomSpace = arguments.getBoolean(ARG_HAS_BOTTOM_SPACE, mHasBottomSpace);
-        }
-
-        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SELECTION_CLASSES)
-                && savedInstanceState.containsKey(ARG_SELECTION_OBJECTS)) {
-            Kryo kryo = new Kryo();
-            String[] classes = savedInstanceState.getStringArray(ARG_SELECTION_CLASSES);
-            byte[] objects = savedInstanceState.getByteArray(ARG_SELECTION_OBJECTS);
-
-            if (classes != null && objects != null) {
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(objects);
-                Input input = new Input(inputStream);
-                List<T> restoredList = new ArrayList<>();
-
-                for (String className : classes) {
-                    try {
-                        Class<T> clazz = (Class<T>) Class.forName(className);
-                        T object = kryo.readObject(input, clazz);
-
-                        restoredList.add(object);
-                    } catch (ClassCastException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        Log.e(TAG, "The class " + className + " not found and therefore cannot be loaded back" +
-                                "to restore previous state.");
-                    }
-                }
-            }
         }
 
         if (mPerformerMenu != null)
@@ -256,38 +224,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
     {
         getAdapter().syncAllAndNotify();
         ensureLocalSelection();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-
-        {
-            SelectableHost<T> host = getEngineConnection().getSelectableHost();
-            List<T> list = new ArrayList<>(host.getSelectableList());
-
-            if (host == this && list.size() > 0) {
-                Kryo kryo = new Kryo();
-                String[] classes = new String[list.size()];
-
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                Output output = new Output(outputStream);
-
-                for (int i = 0; i < list.size(); i++) {
-                    T obj = list.get(i);
-                    Class<? extends Editable> clazz = obj.getClass();
-                    classes[i] = clazz.getName();
-
-                    kryo.register(clazz);
-                    kryo.writeObject(output, obj);
-                    output.flush();
-                }
-
-                outState.putStringArray(ARG_SELECTION_CLASSES, classes);
-                outState.putByteArray(ARG_SELECTION_OBJECTS, outputStream.toByteArray());
-            }
-        }
     }
 
     @Override

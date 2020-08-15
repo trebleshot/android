@@ -125,12 +125,13 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
 
         TextView text1 = parentView.findViewById(R.id.text1);
         TextView text2 = parentView.findViewById(R.id.text2);
-        TextView text3 = parentView.findViewById(R.id.text3);
         ImageView image = parentView.findViewById(R.id.image);
         ImageView statusImage = parentView.findViewById(R.id.imageStatus);
+        View layoutOnline = parentView.findViewById(R.id.layout_online);
 
         text1.setText(infoHolder.name());
         text2.setText(infoHolder.description(getContext()));
+        layoutOnline.setVisibility(infoHolder.isOnline() ? View.VISIBLE : View.GONE);
         boolean isRestricted = false;
         boolean isTrusted = false;
 

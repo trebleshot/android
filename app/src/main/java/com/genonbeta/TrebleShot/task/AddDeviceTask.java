@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -32,11 +31,9 @@ import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommonErrorHelper;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.monora.coolsocket.core.session.ActiveConnection;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,14 +56,13 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
     @Override
     public void onRun() throws TaskStoppedException
     {
-        Context context = getContext().getApplicationContext();
+        Context context = getContext();
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
 
-        ConnectionUtils utils = new ConnectionUtils(getContext());
         boolean update = false;
 
-        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mAddress, mDevice, 0)) {
+        try {
             TransferMember member = new TransferMember(mTransfer, mDevice, TransferItem.Type.OUTGOING);
             List<TransferItem> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE
@@ -88,7 +84,6 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
             for (TransferItem transferItem : objectList) {
                 setOngoingContent(transferItem.name);
                 transferItem.putFlag(member.deviceId, TransferItem.Flag.PENDING);
-
                 throwIfStopped();
 
                 try {
@@ -108,27 +103,17 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
                 }
             }
 
-            // so that if the user rejects, it won't be removed from the sender
-            JSONObject jsonObject = new JSONObject()
-                    .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
-                    .put(Keyword.TRANSFER_ID, mTransfer.id)
-                    .put(Keyword.INDEX, filesArray.toString());
+            if (filesArray.length() < 1)
+                throw new IOException("There is no file in the JSON array.");
 
-            final ActiveConnection activeConnection = bridge.getActiveConnection();
+            boolean successful;
 
-            addCloser(userAction -> {
-                try {
-                    activeConnection.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mAddress, mDevice, 0)) {
+                bridge.requestFileTransfer(mTransfer.id, filesArray);
+                successful = bridge.receiveResult();
+            }
 
-            activeConnection.reply(jsonObject.toString());
-
-            if (bridge.receiveResult()) {
-                setOngoingContent(context.getString(R.string.mesg_organizingFiles));
-
+            if (successful) {
                 if (update)
                     kuick.update(db, member, mTransfer, progressListener());
                 else
@@ -139,6 +124,7 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
                 kuick.broadcast();
 
                 AddDevicesToTransferActivity anchor = getAnchor();
+
                 if (anchor != null) {
                     anchor.setResult(RESULT_OK, new Intent()
                             .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
@@ -146,8 +132,10 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
 
                     anchor.finish();
                 }
-            }
+            } else
+                throw new Exception("The remote returned false.");
         } catch (Exception e) {
+            e.printStackTrace();
             post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }
@@ -162,10 +150,5 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
     public String getTitle()
     {
         return null;
-    }
-
-    private enum TaskId
-    {
-        Finalize
     }
 }

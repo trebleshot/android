@@ -78,6 +78,7 @@
 
             <LinearLayout
                 android:id="@+id/layout_split_apk"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone">

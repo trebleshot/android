@@ -113,10 +113,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
         mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
@@ -181,7 +179,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
             finish();
         else {
             Bundle bundle = new Bundle();
-            bundle.putLong(TransferItemDetailExplorerFragment.ARG_GROUP_ID, mTransfer.id);
+            bundle.putLong(TransferItemDetailExplorerFragment.ARG_TRANSFER_ID, mTransfer.id);
             bundle.putString(TransferItemDetailExplorerFragment.ARG_PATH, mTransferItem == null
                     || mTransferItem.directory == null ? null : mTransferItem.directory);
 

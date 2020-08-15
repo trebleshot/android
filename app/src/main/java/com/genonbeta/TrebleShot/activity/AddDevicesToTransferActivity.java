@@ -62,9 +62,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
             EXTRA_TRANSFER = "extraTransfer",
             EXTRA_FLAGS = "extraFlags";
 
-    public static final int
-            REQUEST_CODE_CHOOSE_DEVICE = 0,
-            FLAG_LAUNCH_DEVICE_CHOOSER = 1;
+    public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
+    public static final int FLAG_LAUNCH_DEVICE_CHOOSER = 1;
 
     private Transfer mTransfer = null;
     private ExtendedFloatingActionButton mActionButton;
@@ -246,7 +245,14 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     @Override
     public boolean onTaskMessage(TaskMessage message)
     {
-        return false;
+        if (message.sizeOfActions() > 1)
+            runOnUiThread(() -> message.toDialogBuilder(this).show());
+        else if (message.sizeOfActions() <= 1)
+            runOnUiThread(() -> message.toSnackbar(findViewById(R.id.content_fab)).show());
+        else
+            return false;
+
+        return true;
     }
 
     public boolean checkGroupIntegrity()

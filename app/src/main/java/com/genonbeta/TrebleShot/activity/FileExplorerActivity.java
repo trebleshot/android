@@ -51,10 +51,8 @@ public class FileExplorerActivity extends Activity
         mFragmentFileExplorer = (FileExplorerFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.activity_file_explorer_fragment_files);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         checkRequestedPath(getIntent());
     }

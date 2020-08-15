@@ -71,7 +71,7 @@
         android:key="developer_mode" />
 
     <androidx.preference.CheckBoxPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="custom_fonts" />
 
     <androidx.preference.CheckBoxPreference

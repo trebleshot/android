@@ -79,7 +79,9 @@ public class TransferMemberListFragment extends EditableListFragment<LoadedMembe
         popupMenu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
 
-            if (id == R.id.popup_remove) {
+            if (id == R.id.popup_device_details)
+                new DeviceInfoDialog(fragment.getActivity(), member.device).show();
+            else if (id == R.id.popup_remove) {
                 AppUtils.getKuick(fragment.getContext()).removeAsynchronous(fragment.getActivity(), member, transfer);
             } else
                 return false;

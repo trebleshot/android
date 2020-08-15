@@ -83,13 +83,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
-            <TextView
-                android:id="@+id/text2"
-                style="@style/TextAppearance.Secondary"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/font_size_small" />
+                android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:id="@+id/layout_online"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
+
+                    <TextView
+                        style="@style/TextAppearance.Secondary"
+                        android:textColor="?colorSecondary"
+                        android:text="@string/text_online"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        style="@style/TextSeparatorMiddleDot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text2"
+                    style="@style/TextAppearance.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -200,6 +200,7 @@ public class ConnectionUtils
     {
         long startTime = System.nanoTime();
         boolean connectionToggled = Build.VERSION.SDK_INT >= 29;
+        boolean connectionReset = false;
 
         while (System.nanoTime() - startTime < AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE * 1e6) {
             DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
@@ -221,7 +222,11 @@ public class ConnectionUtils
                 getWifiManager().startScan();
                 ScanResult result = findFromScanResults(description);
 
-                if (result == null)
+                if (!connectionReset && isConnectedToAnyNetwork()) {
+                    disableCurrentNetwork();
+                    getWifiManager().setWifiEnabled(false);
+                    connectionReset = true;
+                } else if (result == null)
                     Log.e(TAG, "establishHotspotConnection: No network found with the name " + description.ssid);
                 else if (connectionToggled = toggleConnection(createWifiConfig(result, description.password)))
                     Log.d(TAG, "establishHotspotConnection: Successfully toggled network from scan results "

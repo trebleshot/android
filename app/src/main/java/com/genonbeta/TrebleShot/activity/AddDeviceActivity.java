@@ -36,7 +36,6 @@ import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.DeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment;
 import com.genonbeta.TrebleShot.object.Device;
@@ -73,7 +72,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
-    private ConnectionMode connectionMode = ConnectionMode.RequestAcquaintance;
+    private ConnectionMode mConnectionMode = ConnectionMode.Return;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -94,9 +93,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 Device device = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE);
                 DeviceAddress address = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS);
 
-                if (device != null && address != null)
-                    handleResult(AddDeviceActivity.this, device, address);
-
+                handleResult(device, address);
             } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY.equals(intent.getAction())
                     && intent.hasExtra(BackgroundService.EXTRA_TRANSFER)) {
                 TransferDetailActivity.startInstance(AddDeviceActivity.this,
@@ -112,7 +109,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         super.onCreate(savedInstanceState);
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_CONNECTION_MODE)) {
-            connectionMode = (ConnectionMode) getIntent().getSerializableExtra(EXTRA_CONNECTION_MODE);
+            mConnectionMode = (ConnectionMode) getIntent().getSerializableExtra(EXTRA_CONNECTION_MODE);
         }
 
         setResult(RESULT_CANCELED);
@@ -122,8 +119,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         hiddenDeviceTypes.add(Device.Type.WEB.toString());
 
         Bundle deviceListArgs = new Bundle();
-        deviceListArgs.putStringArrayList(DeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
-                hiddenDeviceTypes);
+        deviceListArgs.putStringArrayList(DeviceListFragment.ARG_HIDDEN_DEVICES_LIST, hiddenDeviceTypes);
 
         FragmentFactory factory = getSupportFragmentManager().getFragmentFactory();
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -165,22 +161,22 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == RESULT_OK && data != null)
             if (requestCode == REQUEST_BARCODE_SCAN) {
                 Device device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE);
                 DeviceAddress address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    handleResult(this, device, address);
+                    returnResult(this, device, address);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
                 Device device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE);
                 DeviceAddress address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    handleResult(this, device, address);
+                    returnResult(this, device, address);
             }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -239,9 +235,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
     {
         Fragment fragment = getShowingFragment();
 
-        if (fragment instanceof BarcodeConnectFragment)
-            return AvailableFragment.ScanQrCode;
-        else if (fragment instanceof NetworkManagerFragment)
+        if (fragment instanceof NetworkManagerFragment)
             return AvailableFragment.GenerateQrCode;
         else if (fragment instanceof DeviceListFragment)
             return AvailableFragment.AllDevices;
@@ -256,11 +250,19 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         return getSupportFragmentManager().findFragmentById(R.id.activity_connection_establishing_content_view);
     }
 
-    public static void handleResult(android.app.Activity activity, Device device, DeviceAddress connection)
+    private void handleResult(Device device, DeviceAddress address)
+    {
+        if (ConnectionMode.Return.equals(mConnectionMode))
+            returnResult(this, device, address);
+        else if (ConnectionMode.WaitForRequests.equals(mConnectionMode))
+            createSnackbar(R.string.mesg_completing).show();
+    }
+
+    public static void returnResult(android.app.Activity activity, Device device, DeviceAddress address)
     {
         activity.setResult(RESULT_OK, new Intent()
                 .putExtra(EXTRA_DEVICE, device)
-                .putExtra(EXTRA_DEVICE_ADDRESS, connection));
+                .putExtra(EXTRA_DEVICE_ADDRESS, address));
 
         activity.finish();
     }
@@ -368,9 +370,9 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         }
     }
 
-    public enum ConnectionMode {
-        RequestAcquaintance,
-        ReturnTheDeviceAndQuit,
-        JustQuit
+    public enum ConnectionMode
+    {
+        WaitForRequests,
+        Return
     }
 }

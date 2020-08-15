@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.LoadedMember;
 import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -74,8 +75,7 @@ public class TransferMemberListAdapter extends EditableListAdapter<LoadedMember,
         TextView text2 = holder.itemView.findViewById(R.id.text2);
 
         text1.setText(member.device.username);
-        // TODO: 8/11/20 Show a proper message
-        text2.setText(String.valueOf(member.device.lastUsageTime));
+        text2.setText(TransferItem.Type.INCOMING.equals(member.type) ? R.string.text_receiver : R.string.sender);
         DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder);
     }
 

@@ -354,6 +354,9 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
         boolean hasLocationPermission = Build.VERSION.SDK_INT < 23 || mConnectionUtils.canAccessLocation();
         boolean state = hasCameraPermission && (mShowAsText || (wifiEnabled && hasLocationPermission));
 
+        if (hasTaskOf(DeviceIntroductionTask.class))
+            return;
+
         if (!state) {
             mBarcodeView.pauseAndWait();
 

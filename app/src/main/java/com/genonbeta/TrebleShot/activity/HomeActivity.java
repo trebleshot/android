@@ -108,8 +108,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
         findViewById(R.id.sendLayoutButton).setOnClickListener(v -> startActivity(
                 new Intent(this, ContentSharingActivity.class)));
-        findViewById(R.id.receiveLayoutButton)
-                .setOnClickListener(v -> startActivity(new Intent(this, AddDeviceActivity.class)));
+        findViewById(R.id.receiveLayoutButton).setOnClickListener(v -> startActivity(
+                new Intent(this, AddDeviceActivity.class)
+                        .putExtra(AddDeviceActivity.EXTRA_CONNECTION_MODE,
+                                AddDeviceActivity.ConnectionMode.WaitForRequests)));
 
         checkAndShowCrashReport();
         checkAndShowChangelog();

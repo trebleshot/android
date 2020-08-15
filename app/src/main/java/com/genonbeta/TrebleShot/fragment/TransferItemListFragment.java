@@ -65,7 +65,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
     public static final String TAG = "TransferListFragment";
 
     public static final String ARG_DEVICE_ID = "argDeviceId";
-    public static final String ARG_GROUP_ID = "argGroupId";
+    public static final String ARG_TRANSFER_ID = "argGroupId";
     public static final String ARG_TYPE = "argType";
     public static final String ARG_PATH = "argPath";
 
@@ -108,8 +108,8 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
         setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp);
 
         Bundle args = getArguments();
-        if (args != null && args.containsKey(ARG_GROUP_ID)) {
-            goPath(args.getString(ARG_PATH), args.getLong(ARG_GROUP_ID), args.getString(ARG_DEVICE_ID),
+        if (args != null && args.containsKey(ARG_TRANSFER_ID)) {
+            goPath(args.getString(ARG_PATH), args.getLong(ARG_TRANSFER_ID), args.getString(ARG_DEVICE_ID),
                     args.getString(ARG_TYPE));
         }
     }
@@ -182,7 +182,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
 
             if (selectedPath == null) {
                 createSnackbar(R.string.mesg_somethingWentWrong).show();
-            } else if (selectedPath.toString().equals(getGroup().savePath)) {
+            } else if (selectedPath.toString().equals(getTransfer().savePath)) {
                 createSnackbar(R.string.mesg_pathSameError).show();
             } else {
                 ChangeSaveDirectoryTask task = new ChangeSaveDirectoryTask(mTransfer, selectedPath);
@@ -212,12 +212,12 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
         return context.getString(R.string.text_transfers);
     }
 
-    public Transfer getGroup()
+    public Transfer getTransfer()
     {
         if (mTransfer == null) {
             Bundle arguments = getArguments();
             if (arguments != null) {
-                mTransfer = new Transfer(arguments.getLong(ARG_GROUP_ID, -1));
+                mTransfer = new Transfer(arguments.getLong(ARG_TRANSFER_ID, -1));
                 try {
                     AppUtils.getKuick(getContext()).reconstruct(mTransfer);
                 } catch (Exception e) {
@@ -232,7 +232,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
     public IndexOfTransferGroup getIndex()
     {
         if (mIndex == null)
-            mIndex = new IndexOfTransferGroup(getGroup());
+            mIndex = new IndexOfTransferGroup(getTransfer());
         return mIndex;
     }
 
@@ -269,26 +269,28 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
                                              TransferItemListAdapter.GenericItem object)
     {
         if (object instanceof TransferItemListAdapter.DetailsTransferFolder) {
-            final List<LoadedMember> list = Transfers.loadMemberList(getContext(),
-                    getGroup().id, null);
+            final List<LoadedMember> list = Transfers.loadMemberList(getContext(), getTransfer().id, null);
 
-            DialogInterface.OnClickListener listClickListener = (dialog, which) -> {
-                getAdapter().setMember(list.get(which));
-                getAdapter().setPath(getAdapter().getPath());
-                refreshList();
-            };
+            if(list.size() > 0) {
+                DialogInterface.OnClickListener listClickListener = (dialog, which) -> {
+                    getAdapter().setMember(list.get(which));
+                    getAdapter().setPath(getAdapter().getPath());
+                    refreshList();
+                };
 
-            DialogInterface.OnClickListener noLimitListener = (dialog, which) -> {
-                getAdapter().setMember(null);
-                getAdapter().setPath(getAdapter().getPath());
-                refreshList();
-            };
+                DialogInterface.OnClickListener noLimitListener = (dialog, which) -> {
+                    getAdapter().setMember(null);
+                    getAdapter().setPath(getAdapter().getPath());
+                    refreshList();
+                };
 
-            ChooseMemberDialog dialog = new ChooseMemberDialog(requireActivity(), list, listClickListener);
+                ChooseMemberDialog dialog = new ChooseMemberDialog(requireActivity(), list, listClickListener);
 
-            dialog.setTitle(R.string.text_limitTo)
-                    .setNeutralButton(R.string.butn_none, noLimitListener)
-                    .show();
+                dialog.setTitle(R.string.text_limitTo)
+                        .setNeutralButton(R.string.butn_showAll, noLimitListener)
+                        .show();
+            } else
+                createSnackbar(R.string.text_noDeviceForTransfer).show();
         } else if (object instanceof StorageStatusItem) {
             final StorageStatusItem statusItem = (StorageStatusItem) object;
 
@@ -305,8 +307,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
             refreshList();
             AppUtils.showFolderSelectionHelp(this);
         } else
-            new TransferInfoDialog(requireActivity(), getIndex(), object,
-                    getAdapter().getDeviceId()).show();
+            new TransferInfoDialog(requireActivity(), getIndex(), object, getAdapter().getDeviceId()).show();
 
         return true;
     }

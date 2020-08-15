@@ -214,8 +214,8 @@ public class BackgroundService extends Service
                     e.printStackTrace();
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
-                Log.d(TAG, !intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false) + ":" + canStopService());
-                if (!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false) || canStopService())
+                boolean userValue = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
+                if (!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, userValue) || canStopService())
                     stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
@@ -438,8 +438,10 @@ public class BackgroundService extends Service
                             long transferId = response.getLong(Keyword.TRANSFER_ID);
                             String jsonIndex = response.getString(Keyword.INDEX);
 
+                            CommunicationBridge.sendResult(activeConnection, true);
                             mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
-                        }
+                        } else
+                            CommunicationBridge.sendResult(activeConnection, false);
                         break;
                     case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE):
                         if (response.has(Keyword.TRANSFER_ID)) {

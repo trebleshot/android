@@ -169,7 +169,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     @Override
     public void onDeviceResolved(Device device, DeviceAddress address)
     {
-        AddDeviceActivity.handleResult(requireActivity(), device, address);
+        AddDeviceActivity.returnResult(requireActivity(), device, address);
     }
 
     public ConnectionUtils getConnectionUtils()

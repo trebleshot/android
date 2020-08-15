@@ -29,6 +29,7 @@ import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.util.communication.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
@@ -148,6 +149,14 @@ public class CommunicationBridge implements Closeable
     public void requestAcquaintance() throws JSONException, IOException
     {
         getActiveConnection().reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
+    }
+
+    public void requestFileTransfer(long transferId, JSONArray files) throws JSONException, IOException
+    {
+        getActiveConnection().reply(new JSONObject()
+                .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
+                .put(Keyword.TRANSFER_ID, transferId)
+                .put(Keyword.INDEX, files));
     }
 
     public void requestNotifyTransferState(long transferId, boolean accepted) throws JSONException, IOException

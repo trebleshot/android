@@ -587,4 +587,8 @@
     <string name="mesg_noRouteToHostError">This address is unreachable!</string>
     <string name="text_allDevices">All Devices</string>
     <string name="text_noOnlineDevices">Online devices appear here</string>
+    <string name="text_online">Online</string>
+    <string name="text_receiver">Receiver</string>
+    <string name="sender">Sender</string>
+    <string name="butn_deviceDetails">Device details</string>
 </resources>

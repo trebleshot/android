@@ -70,7 +70,7 @@
 
         <TextView
             android:id="@+id/text2"
-            style="@style/TextAppearance.Secondary.Small.SingleLine"
+            style="@style/TextAppearance.Secondary.SingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="middle" />
@@ -83,6 +83,11 @@
             android:layout_gravity="center_horizontal"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_dots_horizontal_white_24dp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/layout_online" />
 
     </LinearLayout>
 </LinearLayout>
