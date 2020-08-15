@@ -219,8 +219,8 @@ public class BackgroundService extends Service
                     e.printStackTrace();
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
-                boolean userValue = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
-                if (!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, userValue) || canStopService())
+                boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
+                if (!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, !killOnExit) || canStopService())
                     stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
