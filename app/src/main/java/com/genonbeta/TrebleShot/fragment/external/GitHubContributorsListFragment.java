@@ -69,6 +69,7 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
         setEmptyListImage(R.drawable.ic_github_circle_white_24dp);
         setEmptyListText(getString(R.string.mesg_noInternetConnection));
         useEmptyListActionButton(getString(R.string.butn_refresh), v -> refreshList());
+        getListView().setNestedScrollingEnabled(true);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class GitHubContributorsListFragment extends DynamicRecyclerViewFragment<
 
     public static class ContributorListAdapter extends RecyclerViewAdapter<ContributorObject, RecyclerViewAdapter.ViewHolder>
     {
-        private List<ContributorObject> mList = new ArrayList<>();
+        private final List<ContributorObject> mList = new ArrayList<>();
 
         public ContributorListAdapter(Context context)
         {

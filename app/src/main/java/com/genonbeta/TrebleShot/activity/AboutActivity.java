@@ -80,12 +80,6 @@ public class AboutActivity extends Activity
 
         findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(
                 v -> startActivity(new Intent(AboutActivity.this, ThirdPartyLibrariesActivity.class)));
-
-        GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment)
-                getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
-
-        if (contributorsListFragment != null)
-            contributorsListFragment.getListView().setNestedScrollingEnabled(false);
     }
 
     @Override

@@ -35,7 +35,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/activity_text_stream_fragment"
         android:name="com.genonbeta.TrebleShot.fragment.TextStreamListFragment"
         android:layout_width="match_parent"

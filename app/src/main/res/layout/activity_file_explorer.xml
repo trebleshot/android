@@ -42,7 +42,7 @@
         tools:context=".activity.ContentSharingActivity"
         tools:showIn="@layout/activity_content_sharing">
 
-        <androidx.fragment.app.FragmentContainerView
+        <fragment
             android:id="@+id/activity_file_explorer_fragment_files"
             android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
             android:layout_width="match_parent"

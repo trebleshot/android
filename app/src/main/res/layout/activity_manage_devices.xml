@@ -23,7 +23,7 @@
     android:layout_above="@id/app_bar"
     android:layout_alignParentTop="true">
 
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/devicesFragment"
         android:name="com.genonbeta.TrebleShot.fragment.DeviceListFragment"
         android:layout_width="match_parent"

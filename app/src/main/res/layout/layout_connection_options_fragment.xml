@@ -58,7 +58,7 @@
 
         </RelativeLayout>
 
-        <androidx.fragment.app.FragmentContainerView
+        <fragment
             android:id="@+id/connection_option_device_list"
             android:name="com.genonbeta.TrebleShot.fragment.MinimalDeviceListFragment"
             android:layout_width="match_parent"

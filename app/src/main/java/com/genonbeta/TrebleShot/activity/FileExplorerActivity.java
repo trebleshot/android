@@ -87,10 +87,12 @@ public class FileExplorerActivity extends Activity
         if (intent.hasExtra(EXTRA_FILE_PATH)) {
             Uri directoryUri = intent.getParcelableExtra(EXTRA_FILE_PATH);
 
-            try {
-                openFolder(FileUtils.fromUri(getApplicationContext(), directoryUri));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            if (directoryUri != null) {
+                try {
+                    openFolder(FileUtils.fromUri(getApplicationContext(), directoryUri));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         } else
             openFolder(null);

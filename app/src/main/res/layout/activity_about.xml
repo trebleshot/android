@@ -289,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:minHeight="400dp">
 
-                        <androidx.fragment.app.FragmentContainerView
+                        <fragment
                             android:id="@+id/activity_about_contributors_fragment"
                             android:name="com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment"
                             android:layout_width="match_parent"
