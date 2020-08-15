@@ -15,7 +15,6 @@ import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
@@ -90,8 +89,8 @@ public class Transfers
     public static SQLQuery.Select createIncomingSelection(long transferId)
     {
         return new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
-                String.format("%s = ? AND %s = ?", Kuick.FIELD_TRANSFER_TRANSFERID,
-                        Kuick.FIELD_TRANSFER_TYPE), String.valueOf(transferId),
+                String.format("%s = ? AND %s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID,
+                        Kuick.FIELD_TRANSFERITEM_TYPE), String.valueOf(transferId),
                 TransferItem.Type.INCOMING.toString());
     }
 
@@ -99,16 +98,16 @@ public class Transfers
     {
         return new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
                 String.format("%s = ? AND %s = ? AND %s " + (equals ? "=" : "!=") + " ?",
-                        Kuick.FIELD_TRANSFER_TRANSFERID, Kuick.FIELD_TRANSFER_TYPE,
-                        Kuick.FIELD_TRANSFER_FLAG), String.valueOf(transferId),
+                        Kuick.FIELD_TRANSFERITEM_TRANSFERID, Kuick.FIELD_TRANSFERITEM_TYPE,
+                        Kuick.FIELD_TRANSFERITEM_FLAG), String.valueOf(transferId),
                 TransferItem.Type.INCOMING.toString(), flag.toString());
     }
 
     public static SQLQuery.Select createAddressSelection(String deviceId)
     {
-        return new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId)
-                .setOrderBy(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC");
+        return new SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId)
+                .setOrderBy(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE + " DESC");
     }
 
     public static double getPercentageByFlag(TransferItem.Flag flag, long size)
@@ -155,8 +154,8 @@ public class Transfers
         Kuick kuick = AppUtils.getKuick(context);
         ContentValues receiverInstance = kuick.getFirstFromTable(
                 createIncomingSelection(transferId, TransferItem.Flag.PENDING, true)
-                        .setOrderBy(String.format("`%s` ASC, `%s` ASC", Kuick.FIELD_TRANSFER_DIRECTORY,
-                                Kuick.FIELD_TRANSFER_NAME)));
+                        .setOrderBy(String.format("`%s` ASC, `%s` ASC", Kuick.FIELD_TRANSFERITEM_DIRECTORY,
+                                Kuick.FIELD_TRANSFERITEM_NAME)));
 
         if (receiverInstance == null)
             return null;
@@ -241,12 +240,12 @@ public class Transfers
         index.hasIssues = false;
 
         SQLQuery.Select selection = new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
-                Kuick.FIELD_TRANSFER_TRANSFERID + "=?", String.valueOf(transfer.id));
+                Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?", String.valueOf(transfer.id));
 
         if (type == null)
-            selection.setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=?", String.valueOf(transfer.id));
+            selection.setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?", String.valueOf(transfer.id));
         else
-            selection.setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?",
+            selection.setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                     String.valueOf(transfer.id), type.toString());
 
         List<LoadedMember> memberList = loadMemberList(context, transfer.id, type);
@@ -308,11 +307,11 @@ public class Transfers
     {
         Kuick kuick = AppUtils.getKuick(context);
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Kuick.FIELD_TRANSFER_FLAG, TransferItem.Flag.PENDING.toString());
+        contentValues.put(Kuick.FIELD_TRANSFERITEM_FLAG, TransferItem.Flag.PENDING.toString());
 
         kuick.update(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND  " + Kuick.FIELD_TRANSFER_FLAG + "=? AND "
-                                + Kuick.FIELD_TRANSFER_TYPE + "=?", String.valueOf(transferId),
+                .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND  " + Kuick.FIELD_TRANSFERITEM_FLAG + "=? AND "
+                                + Kuick.FIELD_TRANSFERITEM_TYPE + "=?", String.valueOf(transferId),
                         TransferItem.Flag.INTERRUPTED.toString(), TransferItem.Type.INCOMING.toString()), contentValues);
         kuick.broadcast();
     }

@@ -81,7 +81,7 @@ public class OrganizeSharingTask extends AttachableAsyncTask<AttachedTaskListene
             kuick().insert(db, list, transfer, progressListener());
             kuick().insert(db, transfer, null, progressListener());
             addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(transfer.id))));
+                    .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), String.valueOf(transfer.id))));
 
             TransferDetailActivity.startInstance(getContext(), transfer);
             AddDevicesToTransferActivity.startInstance(getContext(), transfer, true);

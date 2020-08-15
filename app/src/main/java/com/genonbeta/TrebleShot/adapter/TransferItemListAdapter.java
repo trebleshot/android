@@ -125,25 +125,25 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
         members.toArray(memberArray);
 
         SQLQuery.Select transferSelect = new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM);
-        StringBuilder transferWhere = new StringBuilder(Kuick.FIELD_TRANSFER_TRANSFERID + "=?");
+        StringBuilder transferWhere = new StringBuilder(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?");
         List<String> transferArgs = new ArrayList<>();
         transferArgs.add(String.valueOf(mTransfer.id));
 
         if (currentPath != null) {
-            transferWhere.append(" AND (" + Kuick.FIELD_TRANSFER_DIRECTORY + "=? OR "
-                    + Kuick.FIELD_TRANSFER_DIRECTORY + " LIKE ?)");
+            transferWhere.append(" AND (" + Kuick.FIELD_TRANSFERITEM_DIRECTORY + "=? OR "
+                    + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ?)");
 
             transferArgs.add(currentPath);
             transferArgs.add(currentPath + File.separator + "%");
         }
 
         if (member != null) {
-            transferWhere.append(" AND " + Kuick.FIELD_TRANSFER_TYPE + "=?");
+            transferWhere.append(" AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?");
             transferArgs.add(member.type.toString());
         }
 
         if (getSortingCriteria() == MODE_GROUP_BY_DATE) {
-            transferSelect.setOrderBy(Kuick.FIELD_TRANSFER_LASTCHANGETIME + " "
+            transferSelect.setOrderBy(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME + " "
                     + (getSortingOrder() == MODE_SORT_ORDER_ASCENDING ? "ASC" : "DESC"));
         }
 
@@ -880,9 +880,9 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
         public SQLQuery.Select getWhere()
         {
             return new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                    .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND ("
-                                    + Kuick.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
-                                    + Kuick.FIELD_TRANSFER_DIRECTORY + " = ?)",
+                    .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND ("
+                                    + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ? OR "
+                                    + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " = ?)",
                             String.valueOf(this.transferId), this.directory + File.separator + "%", this.directory);
         }
 

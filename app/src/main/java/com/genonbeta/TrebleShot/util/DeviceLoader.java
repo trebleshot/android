@@ -121,8 +121,8 @@ public class DeviceLoader
         deviceAddress.lastCheckedDate = System.currentTimeMillis();
         deviceAddress.deviceId = device.uid;
 
-        kuick.remove(new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_IPADDRESSTEXT + "=?", deviceAddress.getHostAddress()));
+        kuick.remove(new SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_IPADDRESSTEXT + "=?", deviceAddress.getHostAddress()));
         kuick.publish(deviceAddress);
     }
 

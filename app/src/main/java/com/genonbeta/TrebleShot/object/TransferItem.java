@@ -228,8 +228,8 @@ public class TransferItem implements DatabaseObject<Transfer>, Editable
     public SQLQuery.Select getWhere()
     {
         return new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
-                String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFER_TRANSFERID,
-                        Kuick.FIELD_TRANSFER_ID, Kuick.FIELD_TRANSFER_TYPE),
+                String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID,
+                        Kuick.FIELD_TRANSFERITEM_ID, Kuick.FIELD_TRANSFERITEM_TYPE),
                 String.valueOf(transferId), String.valueOf(id), type.toString());
     }
 
@@ -238,18 +238,18 @@ public class TransferItem implements DatabaseObject<Transfer>, Editable
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_TRANSFER_ID, id);
-        values.put(Kuick.FIELD_TRANSFER_TRANSFERID, transferId);
-        values.put(Kuick.FIELD_TRANSFER_NAME, name);
-        values.put(Kuick.FIELD_TRANSFER_SIZE, size);
-        values.put(Kuick.FIELD_TRANSFER_MIME, mimeType);
-        values.put(Kuick.FIELD_TRANSFER_TYPE, type.toString());
-        values.put(Kuick.FIELD_TRANSFER_FILE, file);
-        values.put(Kuick.FIELD_TRANSFER_DIRECTORY, directory);
-        values.put(Kuick.FIELD_TRANSFER_LASTCHANGETIME, lastChangeDate);
+        values.put(Kuick.FIELD_TRANSFERITEM_ID, id);
+        values.put(Kuick.FIELD_TRANSFERITEM_TRANSFERID, transferId);
+        values.put(Kuick.FIELD_TRANSFERITEM_NAME, name);
+        values.put(Kuick.FIELD_TRANSFERITEM_SIZE, size);
+        values.put(Kuick.FIELD_TRANSFERITEM_MIME, mimeType);
+        values.put(Kuick.FIELD_TRANSFERITEM_TYPE, type.toString());
+        values.put(Kuick.FIELD_TRANSFERITEM_FILE, file);
+        values.put(Kuick.FIELD_TRANSFERITEM_DIRECTORY, directory);
+        values.put(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME, lastChangeDate);
 
         if (Type.INCOMING.equals(type)) {
-            values.put(Kuick.FIELD_TRANSFER_FLAG, mReceiverFlag.toString());
+            values.put(Kuick.FIELD_TRANSFERITEM_FLAG, mReceiverFlag.toString());
         } else {
             JSONObject object = new JSONObject();
 
@@ -262,7 +262,7 @@ public class TransferItem implements DatabaseObject<Transfer>, Editable
                     }
             }
 
-            values.put(Kuick.FIELD_TRANSFER_FLAG, object.toString());
+            values.put(Kuick.FIELD_TRANSFERITEM_FLAG, object.toString());
         }
 
         return values;
@@ -271,20 +271,20 @@ public class TransferItem implements DatabaseObject<Transfer>, Editable
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.name = item.getAsString(Kuick.FIELD_TRANSFER_NAME);
-        this.file = item.getAsString(Kuick.FIELD_TRANSFER_FILE);
-        this.size = item.getAsLong(Kuick.FIELD_TRANSFER_SIZE);
-        this.mimeType = item.getAsString(Kuick.FIELD_TRANSFER_MIME);
-        this.id = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
-        this.transferId = item.getAsLong(Kuick.FIELD_TRANSFER_TRANSFERID);
-        this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_TYPE));
-        this.directory = item.getAsString(Kuick.FIELD_TRANSFER_DIRECTORY);
+        this.name = item.getAsString(Kuick.FIELD_TRANSFERITEM_NAME);
+        this.file = item.getAsString(Kuick.FIELD_TRANSFERITEM_FILE);
+        this.size = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE);
+        this.mimeType = item.getAsString(Kuick.FIELD_TRANSFERITEM_MIME);
+        this.id = item.getAsLong(Kuick.FIELD_TRANSFERITEM_ID);
+        this.transferId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_TRANSFERID);
+        this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERITEM_TYPE));
+        this.directory = item.getAsString(Kuick.FIELD_TRANSFERITEM_DIRECTORY);
 
         // Added with DB version 13
-        if (item.containsKey(Kuick.FIELD_TRANSFER_LASTCHANGETIME))
-            this.lastChangeDate = item.getAsLong(Kuick.FIELD_TRANSFER_LASTCHANGETIME);
+        if (item.containsKey(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME))
+            this.lastChangeDate = item.getAsLong(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME);
 
-        String flagString = item.getAsString(Kuick.FIELD_TRANSFER_FLAG);
+        String flagString = item.getAsString(Kuick.FIELD_TRANSFERITEM_FLAG);
 
         if (Type.INCOMING.equals(this.type)) {
             try {

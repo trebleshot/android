@@ -414,8 +414,8 @@ public class WebShareServer extends NanoHTTPD
 
                 List<TransferItem> transferList = AppUtils.getKuick(mContext)
                         .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                                .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND "
-                                                + Kuick.FIELD_TRANSFER_TYPE + "=?",
+                                .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND "
+                                                + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                         String.valueOf(transfer.id),
                                         TransferItem.Type.OUTGOING.toString()), TransferItem.class);
 
@@ -441,7 +441,7 @@ public class WebShareServer extends NanoHTTPD
 
         List<IndexOfTransferGroup> groupList = AppUtils.getKuick(mContext).castQuery(
                 new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                        .setOrderBy(Kuick.FIELD_TRANSFERGROUP_DATECREATED + " DESC"), IndexOfTransferGroup.class);
+                        .setOrderBy(Kuick.FIELD_TRANSFER_DATECREATED + " DESC"), IndexOfTransferGroup.class);
 
         for (IndexOfTransferGroup index : groupList) {
             if (!index.transfer.isServedOnWeb)
@@ -481,9 +481,9 @@ public class WebShareServer extends NanoHTTPD
             StringBuilder contentBuilder = new StringBuilder();
             List<TransferItem> groupList = AppUtils.getKuick(mContext).castQuery(
                     new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                            .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID),
+                            .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID),
                                     String.valueOf(transfer.id))
-                            .setOrderBy(Kuick.FIELD_TRANSFER_NAME + " ASC"),
+                            .setOrderBy(Kuick.FIELD_TRANSFERITEM_NAME + " ASC"),
                     TransferItem.class);
 
             if (groupList.size() > 0) {

@@ -176,8 +176,8 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     {
         kuick.getContext().deleteFile(generatePictureId());
 
-        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", uid));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", uid));
 
         List<TransferMember> members = kuick.castQuery(db, new SQLQuery.Select(
                 Kuick.TABLE_TRANSFERMEMBER).setWhere(Kuick.FIELD_TRANSFERMEMBER_DEVICEID

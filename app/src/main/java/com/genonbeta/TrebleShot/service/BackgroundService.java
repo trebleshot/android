@@ -283,9 +283,9 @@ public class BackgroundService extends Service
             mWebShareServer.stop();
 
         ContentValues values = new ContentValues();
-        values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
+        values.put(Kuick.FIELD_TRANSFER_ISSHAREDONWEB, 0);
         getKuick().update(new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
+                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_ISSHAREDONWEB),
                         String.valueOf(1)), values);
 
         if (mApp != null) {

@@ -102,9 +102,9 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     public SQLQuery.Select getWhere()
     {
         String whereClause = isDivisionObject()
-                ? String.format("%s = ? AND %s = ?", Kuick.FIELD_TRANSFER_ID, Kuick.FIELD_TRANSFER_TYPE)
-                : String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFER_ID,
-                Kuick.FIELD_TRANSFER_TYPE, Migration.v12.FIELD_TRANSFER_DEVICEID);
+                ? String.format("%s = ? AND %s = ?", Kuick.FIELD_TRANSFERITEM_ID, Kuick.FIELD_TRANSFERITEM_TYPE)
+                : String.format("%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFERITEM_ID,
+                Kuick.FIELD_TRANSFERITEM_TYPE, Migration.v12.FIELD_TRANSFER_DEVICEID);
 
         return isDivisionObject() ? new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER).setWhere(whereClause,
                 String.valueOf(requestId), type.toString()) : new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
@@ -116,18 +116,18 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_TRANSFER_ID, requestId);
-        values.put(Kuick.FIELD_TRANSFER_TRANSFERID, groupId);
+        values.put(Kuick.FIELD_TRANSFERITEM_ID, requestId);
+        values.put(Kuick.FIELD_TRANSFERITEM_TRANSFERID, groupId);
         values.put(Migration.v12.FIELD_TRANSFER_DEVICEID, deviceId);
-        values.put(Kuick.FIELD_TRANSFER_NAME, friendlyName);
-        values.put(Kuick.FIELD_TRANSFER_SIZE, fileSize);
-        values.put(Kuick.FIELD_TRANSFER_MIME, fileMimeType);
-        values.put(Kuick.FIELD_TRANSFER_FLAG, flag.toString());
-        values.put(Kuick.FIELD_TRANSFER_TYPE, type.toString());
-        values.put(Kuick.FIELD_TRANSFER_FILE, file);
+        values.put(Kuick.FIELD_TRANSFERITEM_NAME, friendlyName);
+        values.put(Kuick.FIELD_TRANSFERITEM_SIZE, fileSize);
+        values.put(Kuick.FIELD_TRANSFERITEM_MIME, fileMimeType);
+        values.put(Kuick.FIELD_TRANSFERITEM_FLAG, flag.toString());
+        values.put(Kuick.FIELD_TRANSFERITEM_TYPE, type.toString());
+        values.put(Kuick.FIELD_TRANSFERITEM_FILE, file);
         values.put(Migration.v12.FIELD_TRANSFER_ACCESSPORT, accessPort);
         values.put(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
-        values.put(Kuick.FIELD_TRANSFER_DIRECTORY, directory);
+        values.put(Kuick.FIELD_TRANSFERITEM_DIRECTORY, directory);
 
         return values;
     }
@@ -135,26 +135,26 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.friendlyName = item.getAsString(Kuick.FIELD_TRANSFER_NAME);
-        this.file = item.getAsString(Kuick.FIELD_TRANSFER_FILE);
-        this.fileSize = item.getAsLong(Kuick.FIELD_TRANSFER_SIZE);
-        this.fileMimeType = item.getAsString(Kuick.FIELD_TRANSFER_MIME);
-        this.requestId = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
-        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_TRANSFERID);
+        this.friendlyName = item.getAsString(Kuick.FIELD_TRANSFERITEM_NAME);
+        this.file = item.getAsString(Kuick.FIELD_TRANSFERITEM_FILE);
+        this.fileSize = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE);
+        this.fileMimeType = item.getAsString(Kuick.FIELD_TRANSFERITEM_MIME);
+        this.requestId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_ID);
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_TRANSFERID);
         this.deviceId = item.getAsString(Migration.v12.FIELD_TRANSFER_DEVICEID);
-        this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_TYPE));
+        this.type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERITEM_TYPE));
 
         // We may have put long in that field indicating that the file was / is in progress so generate
         try {
-            this.flag = Flag.valueOf(item.getAsString(Kuick.FIELD_TRANSFER_FLAG));
+            this.flag = Flag.valueOf(item.getAsString(Kuick.FIELD_TRANSFERITEM_FLAG));
         } catch (Exception e) {
             this.flag = Flag.IN_PROGRESS;
-            this.flag.setBytesValue(item.getAsLong(Kuick.FIELD_TRANSFER_FLAG));
+            this.flag.setBytesValue(item.getAsLong(Kuick.FIELD_TRANSFERITEM_FLAG));
         }
 
         this.accessPort = item.getAsInteger(Migration.v12.FIELD_TRANSFER_ACCESSPORT);
         this.skippedBytes = item.getAsLong(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES);
-        this.directory = item.getAsString(Kuick.FIELD_TRANSFER_DIRECTORY);
+        this.directory = item.getAsString(Kuick.FIELD_TRANSFERITEM_DIRECTORY);
     }
 
     @Override

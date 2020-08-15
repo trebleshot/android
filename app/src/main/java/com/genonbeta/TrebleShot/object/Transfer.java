@@ -94,11 +94,11 @@ public final class Transfer implements DatabaseObject<Device>, Parcelable
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_TRANSFERGROUP_ID, id);
-        values.put(Kuick.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
-        values.put(Kuick.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
-        values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
-        values.put(Kuick.FIELD_TRANSFERGROUP_ISPAUSED, isPaused ? 1 : 0);
+        values.put(Kuick.FIELD_TRANSFER_ID, id);
+        values.put(Kuick.FIELD_TRANSFER_SAVEPATH, savePath);
+        values.put(Kuick.FIELD_TRANSFER_DATECREATED, dateCreated);
+        values.put(Kuick.FIELD_TRANSFER_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
+        values.put(Kuick.FIELD_TRANSFER_ISPAUSED, isPaused ? 1 : 0);
 
         return values;
     }
@@ -107,17 +107,17 @@ public final class Transfer implements DatabaseObject<Device>, Parcelable
     public SQLQuery.Select getWhere()
     {
         return new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(id));
+                .setWhere(Kuick.FIELD_TRANSFER_ID + "=?", String.valueOf(id));
     }
 
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.id = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
-        this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);
-        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_DATECREATED);
-        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
-        this.isPaused = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISPAUSED) == 1;
+        this.id = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
+        this.savePath = item.getAsString(Kuick.FIELD_TRANSFER_SAVEPATH);
+        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFER_DATECREATED);
+        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFER_ISSHAREDONWEB) == 1;
+        this.isPaused = item.getAsInteger(Kuick.FIELD_TRANSFER_ISPAUSED) == 1;
     }
 
     @Override
@@ -147,7 +147,7 @@ public final class Transfer implements DatabaseObject<Device>, Parcelable
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Device parent, Progress.Listener listener)
     {
         SQLQuery.Select objectSelection = new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
-                String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(id));
+                String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), String.valueOf(id));
 
         kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER).setWhere(
                 String.format("%s = ?", Kuick.FIELD_TRANSFERMEMBER_TRANSFERID), String.valueOf(id)));

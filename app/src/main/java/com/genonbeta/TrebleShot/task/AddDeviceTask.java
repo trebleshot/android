@@ -69,7 +69,7 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
         try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, mAddress, mDevice, 0)) {
             TransferMember member = new TransferMember(mTransfer, mDevice, TransferItem.Type.OUTGOING);
             List<TransferItem> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                            .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFER_TYPE
+                            .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE
                                     + "=?", String.valueOf(mTransfer.id), TransferItem.Type.OUTGOING.toString()),
                     TransferItem.class, null);
 

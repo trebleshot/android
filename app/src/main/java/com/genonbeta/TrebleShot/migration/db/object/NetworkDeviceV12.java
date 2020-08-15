@@ -117,8 +117,8 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
     {
         kuick.getContext().deleteFile(generatePictureId());
 
-        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
+        kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId));
 
         List<TransferAssigneeV12> assignees = kuick.castQuery(db, new SQLQuery.Select(
                 Kuick.TABLE_TRANSFERMEMBER).setWhere(Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=?",

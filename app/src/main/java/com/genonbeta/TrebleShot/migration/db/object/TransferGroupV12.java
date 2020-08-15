@@ -56,10 +56,10 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     @Override
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
-        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_ID);
-        this.savePath = item.getAsString(Kuick.FIELD_TRANSFERGROUP_SAVEPATH);
-        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFERGROUP_DATECREATED);
-        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+        this.groupId = item.getAsLong(Kuick.FIELD_TRANSFER_ID);
+        this.savePath = item.getAsString(Kuick.FIELD_TRANSFER_SAVEPATH);
+        this.dateCreated = item.getAsLong(Kuick.FIELD_TRANSFER_DATECREATED);
+        this.isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFER_ISSHAREDONWEB) == 1;
     }
 
     @Override
@@ -67,10 +67,10 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_TRANSFERGROUP_ID, groupId);
-        values.put(Kuick.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
-        values.put(Kuick.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
-        values.put(Kuick.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
+        values.put(Kuick.FIELD_TRANSFER_ID, groupId);
+        values.put(Kuick.FIELD_TRANSFER_SAVEPATH, savePath);
+        values.put(Kuick.FIELD_TRANSFER_DATECREATED, dateCreated);
+        values.put(Kuick.FIELD_TRANSFER_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
 
         return values;
     }
@@ -79,7 +79,7 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     public SQLQuery.Select getWhere()
     {
         return new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                .setWhere(Kuick.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
+                .setWhere(Kuick.FIELD_TRANSFER_ID + "=?", String.valueOf(groupId));
     }
 
     @Override
@@ -98,13 +98,13 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, NetworkDeviceV12 parent, Progress.Listener listener)
     {
         kuick.remove(db, new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER)
-                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_TRANSFERID), String.valueOf(groupId)));
+                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), String.valueOf(groupId)));
 
         kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
                 .setWhere(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", String.valueOf(groupId)));
 
         kuick.removeAsObject(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                        .setWhere(Kuick.FIELD_TRANSFER_TRANSFERID + "=?", String.valueOf(groupId)),
+                        .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?", String.valueOf(groupId)),
                 TransferObjectV12.class, this, listener, null);
     }
 }

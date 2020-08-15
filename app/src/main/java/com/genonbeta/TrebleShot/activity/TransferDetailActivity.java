@@ -128,7 +128,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
                 Log.d(TAG, "Requested file is: " + streamInfo.friendlyName);
 
                 ContentValues fileData = getDatabase().getFirstFromTable(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                        .setWhere(Kuick.FIELD_TRANSFER_FILE + "=? AND " + Kuick.FIELD_TRANSFER_TYPE + "=?",
+                        .setWhere(Kuick.FIELD_TRANSFERITEM_FILE + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                 streamInfo.friendlyName, TransferItem.Type.INCOMING.toString()));
 
                 if (fileData == null)

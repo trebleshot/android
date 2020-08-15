@@ -87,8 +87,8 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(Kuick.TABLE_DEVICECONNECTION)
-                .setWhere(Kuick.FIELD_DEVICECONNECTION_IPADDRESSTEXT + "=?", getHostAddress());
+        return new SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_IPADDRESSTEXT + "=?", getHostAddress());
     }
 
     @Override
@@ -96,10 +96,10 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
     {
         ContentValues values = new ContentValues();
 
-        values.put(Kuick.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
-        values.put(Kuick.FIELD_DEVICECONNECTION_IPADDRESS, inetAddress.getAddress());
-        values.put(Kuick.FIELD_DEVICECONNECTION_IPADDRESSTEXT, inetAddress.getHostAddress());
-        values.put(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
+        values.put(Kuick.FIELD_DEVICEADDRESS_DEVICEID, deviceId);
+        values.put(Kuick.FIELD_DEVICEADDRESS_IPADDRESS, inetAddress.getAddress());
+        values.put(Kuick.FIELD_DEVICEADDRESS_IPADDRESSTEXT, inetAddress.getHostAddress());
+        values.put(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE, lastCheckedDate);
 
         return values;
     }
@@ -108,13 +108,13 @@ public final class DeviceAddress implements DatabaseObject<Device>, Parcelable
     public void reconstruct(SQLiteDatabase db, KuickDb kuick, ContentValues item)
     {
         try {
-            this.inetAddress = InetAddress.getByAddress(item.getAsByteArray(Kuick.FIELD_DEVICECONNECTION_IPADDRESS));
+            this.inetAddress = InetAddress.getByAddress(item.getAsByteArray(Kuick.FIELD_DEVICEADDRESS_IPADDRESS));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
-        this.deviceId = item.getAsString(Kuick.FIELD_DEVICECONNECTION_DEVICEID);
-        this.lastCheckedDate = item.getAsLong(Kuick.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
+        this.deviceId = item.getAsString(Kuick.FIELD_DEVICEADDRESS_DEVICEID);
+        this.lastCheckedDate = item.getAsLong(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE);
     }
 
     @Override

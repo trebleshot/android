@@ -66,18 +66,18 @@ public class Migration
             values.getTables().putAll(currentValues.getTables());
 
             values.defineTable(TABLE_TRANSFERITEM)
-                    .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_TRANSFERID, SQLType.LONG, false))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_ID, SQLType.LONG, false))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_TRANSFERID, SQLType.LONG, false))
                     .define(new SQLValues.Column(v12.FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_FILE, SQLType.TEXT, true))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_NAME, SQLType.TEXT, false))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_SIZE, SQLType.INTEGER, true))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_MIME, SQLType.TEXT, true))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_TYPE, SQLType.TEXT, false))
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_DIRECTORY, SQLType.TEXT, true))
                     .define(new SQLValues.Column(v12.FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
                     .define(new SQLValues.Column(v12.FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
-                    .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
+                    .define(new SQLValues.Column(FIELD_TRANSFERITEM_FLAG, SQLType.TEXT, true));
 
             // define the transfer division table based on the transfer table
             SQLValues.Table transferTable = values.getTables().get(TABLE_TRANSFERITEM);
@@ -201,8 +201,8 @@ public class Migration
                     // columns still.
                     for (TransferAssigneeV12 assigneeV12 : oldList) {
                         SQLQuery.Select selection = new SQLQuery.Select(TABLE_TRANSFERITEM);
-                        selection.setWhere(FIELD_TRANSFER_TYPE + "=? AND "
-                                + FIELD_TRANSFER_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                        selection.setWhere(FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                + FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                 + "=?", TransferObjectV12.Type.INCOMING.toString(), String.valueOf(
                                 assigneeV12.groupId), assigneeV12.deviceId);
 
@@ -213,8 +213,8 @@ public class Migration
                             newAssignees.add(incomingMember);
                         }
 
-                        selection.setWhere(FIELD_TRANSFER_TYPE + "=? AND "
-                                + FIELD_TRANSFER_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                        selection.setWhere(FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                + FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                 + "=?", TransferObjectV12.Type.OUTGOING.toString(), String.valueOf(
                                 assigneeV12.groupId), assigneeV12.deviceId);
 
@@ -238,11 +238,11 @@ public class Migration
                             v12.TABLE_DIVISTRANSFER), TransferObjectV12.class, null);
 
                     List<TransferObjectV12> outgoingMirrorObjects = kuick.castQuery(db, new SQLQuery.Select(
-                            TABLE_TRANSFERITEM).setWhere(FIELD_TRANSFER_TYPE + "=?",
+                            TABLE_TRANSFERITEM).setWhere(FIELD_TRANSFERITEM_TYPE + "=?",
                             TransferObjectV12.Type.OUTGOING.toString()), TransferObjectV12.class, null);
 
                     List<TransferObjectV12> incomingObjects = kuick.castQuery(db, new SQLQuery.Select(
-                            TABLE_TRANSFERITEM).setWhere(FIELD_TRANSFER_TYPE + "=?",
+                            TABLE_TRANSFERITEM).setWhere(FIELD_TRANSFERITEM_TYPE + "=?",
                             TransferObjectV12.Type.INCOMING.toString()), TransferObjectV12.class, null);
 
                     // Remove: Table `divisTransfer`
@@ -298,7 +298,7 @@ public class Migration
 
                 {
                     SQLValues.Table table = tables.getTable(TABLE_TRANSFER);
-                    SQLValues.Column column = table.getColumn(FIELD_TRANSFERGROUP_ISPAUSED);
+                    SQLValues.Column column = table.getColumn(FIELD_TRANSFER_ISPAUSED);
 
                     // Added: IsPaused
                     db.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()

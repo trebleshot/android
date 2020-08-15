@@ -180,9 +180,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
             {
                 List<TransferItem> objects = AppUtils.getKuick(getContext())
                         .castQuery(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
-                                String.format("%s = ?", Kuick.FIELD_TRANSFER_FLAG),
+                                String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_FLAG),
                                 TransferItem.Flag.DONE.toString()).setOrderBy(
-                                String.format("%s DESC", Kuick.FIELD_TRANSFER_LASTCHANGETIME)),
+                                String.format("%s DESC", Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)),
                                 TransferItem.class);
 
                 List<DocumentFile> pickedRecentFiles = new ArrayList<>();
@@ -486,7 +486,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                 try {
                     Kuick kuick = AppUtils.getKuick(context);
                     ContentValues data = kuick.getFirstFromTable(new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                            .setWhere(Kuick.FIELD_TRANSFER_FILE + "=?", file.getName()));
+                            .setWhere(Kuick.FIELD_TRANSFERITEM_FILE + "=?", file.getName()));
 
                     if (data != null) {
                         transferItem = new TransferItem();

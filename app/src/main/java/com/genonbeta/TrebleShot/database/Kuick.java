@@ -66,39 +66,39 @@ public class Kuick extends KuickDb
             FIELD_DEVICES_RECEIVEKEY = "receiveKey",
             FIELD_DEVICES_TYPE = "type";
 
-    public static final String TABLE_DEVICECONNECTION = "deviceConnection",
-            FIELD_DEVICECONNECTION_IPADDRESSTEXT = "ipAddressText",
-            FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress",
-            FIELD_DEVICECONNECTION_DEVICEID = "deviceId",
-            FIELD_DEVICECONNECTION_LASTCHECKEDDATE = "lastCheckedDate";
+    public static final String TABLE_DEVICEADDRESS = "deviceAddress",
+            FIELD_DEVICEADDRESS_IPADDRESSTEXT = "ipAddressText",
+            FIELD_DEVICEADDRESS_IPADDRESS = "ipAddress",
+            FIELD_DEVICEADDRESS_DEVICEID = "deviceId",
+            FIELD_DEVICEADDRESS_LASTCHECKEDDATE = "lastCheckedDate";
 
     public static final String TABLE_FILEBOOKMARK = "fileBookmark",
             FIELD_FILEBOOKMARK_TITLE = "title",
             FIELD_FILEBOOKMARK_PATH = "path";
 
-    public static final String TABLE_TRANSFERMEMBER = "transferAssignee",
-            FIELD_TRANSFERMEMBER_TRANSFERID = "groupId",
+    public static final String TABLE_TRANSFERMEMBER = "transferMember",
+            FIELD_TRANSFERMEMBER_TRANSFERID = "transferId",
             FIELD_TRANSFERMEMBER_DEVICEID = "deviceId",
             FIELD_TRANSFERMEMBER_TYPE = "type";
 
-    public static final String TABLE_TRANSFERITEM = "transfer",
-            FIELD_TRANSFER_ID = "id",
-            FIELD_TRANSFER_NAME = "name",
-            FIELD_TRANSFER_SIZE = "size",
-            FIELD_TRANSFER_MIME = "mime",
-            FIELD_TRANSFER_TYPE = "type",
-            FIELD_TRANSFER_TRANSFERID = "groupId",
-            FIELD_TRANSFER_FILE = "file",
-            FIELD_TRANSFER_DIRECTORY = "directory",
-            FIELD_TRANSFER_LASTCHANGETIME = "lastAccessTime",
-            FIELD_TRANSFER_FLAG = "flag";
+    public static final String TABLE_TRANSFERITEM = "transferItem",
+            FIELD_TRANSFERITEM_ID = "id",
+            FIELD_TRANSFERITEM_NAME = "name",
+            FIELD_TRANSFERITEM_SIZE = "size",
+            FIELD_TRANSFERITEM_MIME = "mime",
+            FIELD_TRANSFERITEM_TYPE = "type",
+            FIELD_TRANSFERITEM_TRANSFERID = "groupId",
+            FIELD_TRANSFERITEM_FILE = "file",
+            FIELD_TRANSFERITEM_DIRECTORY = "directory",
+            FIELD_TRANSFERITEM_LASTCHANGETIME = "lastChangeTime",
+            FIELD_TRANSFERITEM_FLAG = "flag";
 
-    public static final String TABLE_TRANSFER = "transferGroup",
-            FIELD_TRANSFERGROUP_ID = "id",
-            FIELD_TRANSFERGROUP_SAVEPATH = "savePath",
-            FIELD_TRANSFERGROUP_DATECREATED = "dateCreated",
-            FIELD_TRANSFERGROUP_ISSHAREDONWEB = "isSharedOnWeb",
-            FIELD_TRANSFERGROUP_ISPAUSED = "isPaused";
+    public static final String TABLE_TRANSFER = "transfer",
+            FIELD_TRANSFER_ID = "id",
+            FIELD_TRANSFER_SAVEPATH = "savePath",
+            FIELD_TRANSFER_DATECREATED = "dateCreated",
+            FIELD_TRANSFER_ISSHAREDONWEB = "isSharedOnWeb",
+            FIELD_TRANSFER_ISPAUSED = "isPaused";
 
     public Kuick(Context context)
     {
@@ -143,27 +143,27 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_DEVICES_RECEIVEKEY, SQLType.INTEGER, true))
                 .define(new Column(FIELD_DEVICES_TYPE, SQLType.TEXT, false));
 
-        values.defineTable(TABLE_DEVICECONNECTION)
-                .define(new Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.BLOB, false))
-                .define(new Column(FIELD_DEVICECONNECTION_IPADDRESSTEXT, SQLType.TEXT, false))
-                .define(new Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
-                .define(new Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
+        values.defineTable(TABLE_DEVICEADDRESS)
+                .define(new Column(FIELD_DEVICEADDRESS_IPADDRESS, SQLType.BLOB, false))
+                .define(new Column(FIELD_DEVICEADDRESS_IPADDRESSTEXT, SQLType.TEXT, false))
+                .define(new Column(FIELD_DEVICEADDRESS_DEVICEID, SQLType.TEXT, false))
+                .define(new Column(FIELD_DEVICEADDRESS_LASTCHECKEDDATE, SQLType.INTEGER, false));
 
         values.defineTable(TABLE_FILEBOOKMARK)
                 .define(new Column(FIELD_FILEBOOKMARK_TITLE, SQLType.TEXT, false))
                 .define(new Column(FIELD_FILEBOOKMARK_PATH, SQLType.TEXT, false));
 
         values.defineTable(TABLE_TRANSFERITEM)
-                .define(new Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
-                .define(new Column(FIELD_TRANSFER_TRANSFERID, SQLType.LONG, false))
-                .define(new Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
-                .define(new Column(FIELD_TRANSFER_FILE, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, false))
-                .define(new Column(FIELD_TRANSFER_MIME, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, false))
-                .define(new Column(FIELD_TRANSFER_LASTCHANGETIME, SQLType.LONG, false));
+                .define(new Column(FIELD_TRANSFERITEM_ID, SQLType.LONG, false))
+                .define(new Column(FIELD_TRANSFERITEM_TRANSFERID, SQLType.LONG, false))
+                .define(new Column(FIELD_TRANSFERITEM_DIRECTORY, SQLType.TEXT, true))
+                .define(new Column(FIELD_TRANSFERITEM_FILE, SQLType.TEXT, false))
+                .define(new Column(FIELD_TRANSFERITEM_NAME, SQLType.TEXT, false))
+                .define(new Column(FIELD_TRANSFERITEM_SIZE, SQLType.INTEGER, false))
+                .define(new Column(FIELD_TRANSFERITEM_MIME, SQLType.TEXT, false))
+                .define(new Column(FIELD_TRANSFERITEM_TYPE, SQLType.TEXT, false))
+                .define(new Column(FIELD_TRANSFERITEM_FLAG, SQLType.TEXT, false))
+                .define(new Column(FIELD_TRANSFERITEM_LASTCHANGETIME, SQLType.LONG, false));
 
         values.defineTable(TABLE_TRANSFERMEMBER)
                 .define(new Column(FIELD_TRANSFERMEMBER_TRANSFERID, SQLType.LONG, false))
@@ -171,11 +171,11 @@ public class Kuick extends KuickDb
                 .define(new Column(FIELD_TRANSFERMEMBER_TYPE, SQLType.TEXT, false));
 
         values.defineTable(TABLE_TRANSFER)
-                .define(new Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
-                .define(new Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
-                .define(new Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))
-                .define(new Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true))
-                .define(new Column(FIELD_TRANSFERGROUP_ISPAUSED, SQLType.INTEGER, false));
+                .define(new Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
+                .define(new Column(FIELD_TRANSFER_DATECREATED, SQLType.LONG, false))
+                .define(new Column(FIELD_TRANSFER_SAVEPATH, SQLType.TEXT, true))
+                .define(new Column(FIELD_TRANSFER_ISSHAREDONWEB, SQLType.INTEGER, true))
+                .define(new Column(FIELD_TRANSFER_ISPAUSED, SQLType.INTEGER, false));
 
         return values;
     }
