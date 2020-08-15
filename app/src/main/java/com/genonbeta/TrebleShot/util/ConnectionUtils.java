@@ -46,8 +46,8 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
+import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
-import com.genonbeta.TrebleShot.util.communication.CommunicationException;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
 import org.json.JSONException;
@@ -228,7 +228,7 @@ public class ConnectionUtils
                     connectionReset = true;
                 } else if (result == null)
                     Log.e(TAG, "establishHotspotConnection: No network found with the name " + description.ssid);
-                else if (connectionToggled = toggleConnection(createWifiConfig(result, description.password)))
+                else if (connectionToggled = startConnection(createWifiConfig(result, description.password)))
                     Log.d(TAG, "establishHotspotConnection: Successfully toggled network from scan results "
                             + description.ssid);
                 else
@@ -456,31 +456,29 @@ public class ConnectionUtils
     public boolean startConnection(WifiConfiguration config)
     {
         if (isConnectedToNetwork(config)) {
-            Log.d(TAG, "toggleConnection: Already connected to the network");
+            Log.d(TAG, "startConnection: Already connected to the network");
             return true;
         }
 
         if (isConnectedToAnyNetwork()) {
-            Log.d(TAG, "toggleConnection: Connected to some other network, will try to disable it.");
+            Log.d(TAG, "startConnection: Connected to some other network, will try to disable it.");
             disableCurrentNetwork();
         }
 
         try {
             WifiConfiguration existingConfig = findFromConfigurations(config);
-            getWifiManager().disconnect();
-
-            if (existingConfig != null) {
-                Log.d(TAG, "toggleConnection: Network already exists, will try to enable it.");
-                return enableNetwork(existingConfig.networkId);
-            } else {
-                Log.d(TAG, "toggleConnection: Network did not exist before, adding it.");
-                return enableNetwork(getWifiManager().addNetwork(config));
-            }
+            if (existingConfig != null && !getWifiManager().removeNetwork(existingConfig.networkId)) {
+                Log.d(TAG, "startConnection: The config exits but could not remove it.");
+            } else if (!enableNetwork(getWifiManager().addNetwork(config))) {
+                Log.d(TAG, "startConnection: Could not enable the network.");
+            } else if (!getWifiManager().reconnect()) {
+                Log.d(TAG, "startConnection: Could not reconnect the networks.");;
+            } else
+                return true;
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        disableCurrentNetwork();
 
         return false;
     }

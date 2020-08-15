@@ -396,7 +396,7 @@ public abstract class Activity extends AppCompatActivity
 
     public Identity getIdentity()
     {
-        return Identity.withORs(Identifier.from(AsyncTask.Id.HashCode, BackgroundService.hashIntent(getIntent())));
+        return Identity.withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(getIntent())));
     }
 
     public <T extends BaseAttachableAsyncTask> List<T> getTaskListOf(Class<T> clazz)

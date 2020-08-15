@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.util.communication;
+package com.genonbeta.TrebleShot.protocol.communication;
 
 import com.genonbeta.TrebleShot.object.Device;
 

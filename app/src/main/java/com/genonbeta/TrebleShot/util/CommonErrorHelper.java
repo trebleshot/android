@@ -24,7 +24,7 @@ import android.provider.Settings;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
-import com.genonbeta.TrebleShot.util.communication.*;
+import com.genonbeta.TrebleShot.protocol.communication.*;
 
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;

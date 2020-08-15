@@ -16,20 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.util.communication;
+package com.genonbeta.TrebleShot.protocol.communication;
 
-public class ContentException extends CommunicationException
+import com.genonbeta.TrebleShot.object.Device;
+
+public class NotAllowedException extends CommunicationException
 {
-    public final Error error;
+    public Device device;
 
-    public ContentException(Error error)
+    public NotAllowedException(Device device)
     {
-        this.error = error;
-    }
-
-    public enum Error
-    {
-        NotFound,
-        NotAccessible
+        super();
+        this.device = device;
     }
 }

@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
-import com.genonbeta.TrebleShot.util.communication.*;
+import com.genonbeta.TrebleShot.protocol.communication.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -146,6 +146,12 @@ public class CommunicationBridge implements Closeable
         return kuick;
     }
 
+    public static ActiveConnection openConnection(InetAddress inetAddress) throws IOException
+    {
+        return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
+                AppConfig.DEFAULT_SOCKET_TIMEOUT);
+    }
+
     public void requestAcquaintance() throws JSONException, IOException
     {
         getActiveConnection().reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE));
@@ -165,12 +171,6 @@ public class CommunicationBridge implements Closeable
                 .put(Keyword.REQUEST, Keyword.REQUEST_NOTIFY_TRANSFER_STATE)
                 .put(Keyword.TRANSFER_ID, transferId)
                 .put(Keyword.TRANSFER_IS_ACCEPTED, accepted));
-    }
-
-    public static ActiveConnection openConnection(InetAddress inetAddress) throws IOException
-    {
-        return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
-                AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
     public boolean receiveResult() throws JSONException, IOException, CommunicationException

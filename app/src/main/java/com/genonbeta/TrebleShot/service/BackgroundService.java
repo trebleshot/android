@@ -27,7 +27,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -37,16 +36,21 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
+import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
+import com.genonbeta.TrebleShot.protocol.communication.ContentException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import fi.iki.elonen.NanoHTTPD;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.CoolSocket;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 
 public class BackgroundService extends Service
@@ -155,6 +159,7 @@ public class BackgroundService extends Service
                         try (CommunicationBridge bridge = CommunicationBridge.connect(getKuick(), task.addressList,
                                 task.device, 0)) {
                             bridge.requestNotifyTransferState(transfer.id, isAccepted);
+                            bridge.receiveResult();
                         } catch (Exception ignored) {
                         }
                     }).start();
@@ -320,22 +325,6 @@ public class BackgroundService extends Service
         return mWifiLock;
     }
 
-    public static int hashIntent(@NonNull Intent intent)
-    {
-        StringBuilder builder = new StringBuilder()
-                .append(intent.getComponent())
-                .append(intent.getData())
-                .append(intent.getPackage())
-                .append(intent.getAction())
-                .append(intent.getFlags())
-                .append(intent.getType());
-
-        if (intent.getExtras() != null)
-            builder.append(intent.getExtras().toString());
-
-        return builder.toString().hashCode();
-    }
-
     public boolean isHotspotStarted()
     {
         return getSelfApplication() != null && getSelfApplication().getHotspotManager().isStarted();
@@ -431,120 +420,139 @@ public class BackgroundService extends Service
                 getKuick().broadcast();
                 response = activeConnection.receive().getAsJson();
 
-                switch (response.getString(Keyword.REQUEST)) {
-                    case (Keyword.REQUEST_TRANSFER):
-                        if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_ID)
-                                && !mApp.hasTaskOf(IndexTransferTask.class)) {
-                            long transferId = response.getLong(Keyword.TRANSFER_ID);
-                            String jsonIndex = response.getString(Keyword.INDEX);
-
-                            CommunicationBridge.sendResult(activeConnection, true);
-                            mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
-                        } else
-                            CommunicationBridge.sendResult(activeConnection, false);
-                        break;
-                    case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE):
-                        if (response.has(Keyword.TRANSFER_ID)) {
-                            int transferId = response.getInt(Keyword.TRANSFER_ID);
-                            boolean isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
-                            Transfer transfer = new Transfer(transferId);
-                            TransferMember member = new TransferMember(transfer, device, TransferItem.Type.OUTGOING);
-
-                            try {
-                                getKuick().reconstruct(transfer);
-                                getKuick().reconstruct(member);
-
-                                if (!isAccepted) {
-                                    getKuick().remove(member);
-                                    getKuick().broadcast();
-                                }
-                            } catch (Exception ignored) {
-                            }
-                        }
-                        break;
-                    case (Keyword.REQUEST_CLIPBOARD):
-                        if (response.has(Keyword.TRANSFER_TEXT)) {
-                            TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(),
-                                    response.getString(Keyword.TRANSFER_TEXT));
-
-                            getKuick().publish(textStreamObject);
-                            getKuick().broadcast();
-                            getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
-                        }
-                        break;
-                    case (Keyword.REQUEST_ACQUAINTANCE):
-                        sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
-                                .putExtra(EXTRA_DEVICE, device)
-                                .putExtra(EXTRA_DEVICE_ADDRESS, deviceAddress));
-                        CommunicationBridge.sendResult(activeConnection, true);
-                        break;
-                    case (Keyword.REQUEST_TRANSFER_JOB):
-                        if (response.has(Keyword.TRANSFER_ID)) {
-                            int transferId = response.getInt(Keyword.TRANSFER_ID);
-                            String typeValue = response.getString(Keyword.TRANSFER_TYPE);
-
-                            try {
-                                TransferItem.Type type = TransferItem.Type.valueOf(typeValue);
-
-                                // The type is reversed to match our side
-                                if (TransferItem.Type.INCOMING.equals(type))
-                                    type = TransferItem.Type.OUTGOING;
-                                else if (TransferItem.Type.OUTGOING.equals(type))
-                                    type = TransferItem.Type.INCOMING;
-
-                                Transfer transfer = new Transfer(transferId);
-                                getKuick().reconstruct(transfer);
-
-                                Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
-                                        + "transferId=" + transferId + " typeValue=" + typeValue);
-
-                                if (!isProcessRunning(transferId, device.uid, type)) {
-                                    FileTransferTask task = new FileTransferTask();
-                                    task.activeConnection = activeConnection;
-                                    task.transfer = transfer;
-                                    task.device = device;
-                                    task.type = type;
-                                    task.member = new TransferMember(transfer, device, type);
-                                    task.index = new IndexOfTransferGroup(transfer);
-
-                                    getKuick().reconstruct(task.member);
-
-                                    if (TransferItem.Type.OUTGOING.equals(type)) {
-                                        Log.d(TAG, "onConnected: Informing before starting to send.");
-
-                                        mApp.attach(task);
-                                    } else if (TransferItem.Type.INCOMING.equals(type)) {
-                                        JSONObject currentReply = new JSONObject();
-                                        boolean result = device.isTrusted;
-
-                                        if (!result)
-                                            currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_TRUSTED);
-
-                                        Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
-                                        Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
-
-                                        if (result)
-                                            mApp.attach(task);
-
-                                        Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
-                                    }
-                                } else
-                                    response.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
-                            } catch (Exception e) {
-                                response.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
-                            }
-                        }
-                        break;
-                    default:
-                        CommunicationBridge.sendResult(activeConnection, false);
-                }
+                handleRequest(activeConnection, device, deviceAddress, hasPin, response);
             } catch (DeviceBlockedException | DeviceVerificationException e) {
                 try {
                     CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ALLOWED);
                 } catch (Exception ignored) {
                 }
+            } catch (ReconstructionFailedException e) {
+                try {
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND);
+                } catch (Exception ignored) {
+                }
+            } catch (ContentException e) {
+                try {
+                    switch (e.error) {
+                        case NotFound:
+                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND);
+                            break;
+                        case NotAccessible:
+                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE);
+                            break;
+                        default:
+                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN);
+                    }
+
+                } catch (Exception ignored) {
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+
+        private void handleRequest(ActiveConnection activeConnection, Device device, DeviceAddress deviceAddress,
+                                   boolean hasPin, JSONObject response) throws JSONException, IOException,
+                ReconstructionFailedException, CommunicationException
+        {
+            switch (response.getString(Keyword.REQUEST)) {
+                case (Keyword.REQUEST_TRANSFER):
+                    if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_ID)
+                            && !mApp.hasTaskOf(IndexTransferTask.class)) {
+                        long transferId = response.getLong(Keyword.TRANSFER_ID);
+                        String jsonIndex = response.getString(Keyword.INDEX);
+
+                        CommunicationBridge.sendResult(activeConnection, true);
+                        mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
+                    } else
+                        CommunicationBridge.sendResult(activeConnection, false);
+                    return;
+                case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE): {
+                    int transferId = response.getInt(Keyword.TRANSFER_ID);
+                    boolean isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
+                    Transfer transfer = new Transfer(transferId);
+                    TransferMember member = new TransferMember(transfer, device, TransferItem.Type.OUTGOING);
+
+                    getKuick().reconstruct(transfer);
+                    getKuick().reconstruct(member);
+
+                    if (!isAccepted) {
+                        getKuick().remove(member);
+                        getKuick().broadcast();
+                    }
+
+                    CommunicationBridge.sendResult(activeConnection, true);
+                    return;
+                }
+                case (Keyword.REQUEST_CLIPBOARD):
+                    TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(),
+                            response.getString(Keyword.TRANSFER_TEXT));
+
+                    getKuick().publish(textStreamObject);
+                    getKuick().broadcast();
+                    getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
+
+                    CommunicationBridge.sendResult(activeConnection, true);
+                    return;
+                case (Keyword.REQUEST_ACQUAINTANCE):
+                    sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
+                            .putExtra(EXTRA_DEVICE, device)
+                            .putExtra(EXTRA_DEVICE_ADDRESS, deviceAddress));
+                    CommunicationBridge.sendResult(activeConnection, true);
+                    return;
+                case (Keyword.REQUEST_TRANSFER_JOB):
+                    int transferId = response.getInt(Keyword.TRANSFER_ID);
+                    String typeValue = response.getString(Keyword.TRANSFER_TYPE);
+
+                    TransferItem.Type type = TransferItem.Type.valueOf(typeValue);
+
+                    // The type is reversed to match our side
+                    if (TransferItem.Type.INCOMING.equals(type))
+                        type = TransferItem.Type.OUTGOING;
+                    else if (TransferItem.Type.OUTGOING.equals(type))
+                        type = TransferItem.Type.INCOMING;
+
+                    Transfer transfer = new Transfer(transferId);
+                    getKuick().reconstruct(transfer);
+
+                    Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
+                            + "transferId=" + transferId + " typeValue=" + typeValue);
+
+                    if (!isProcessRunning(transferId, device.uid, type)) {
+                        FileTransferTask task = new FileTransferTask();
+                        task.activeConnection = activeConnection;
+                        task.transfer = transfer;
+                        task.device = device;
+                        task.type = type;
+                        task.member = new TransferMember(transfer, device, type);
+                        task.index = new IndexOfTransferGroup(transfer);
+
+                        getKuick().reconstruct(task.member);
+
+                        if (TransferItem.Type.OUTGOING.equals(type)) {
+                            Log.d(TAG, "onConnected: Informing before starting to send.");
+
+                            mApp.attach(task);
+                        } else if (TransferItem.Type.INCOMING.equals(type)) {
+                            JSONObject currentReply = new JSONObject();
+                            boolean result = device.isTrusted;
+
+                            if (!result)
+                                currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_TRUSTED);
+
+                            Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
+                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
+
+                            if (result)
+                                mApp.attach(task);
+
+                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
+                        }
+                        return;
+                    } else
+                        throw new ContentException(ContentException.Error.NotAccessible);
+                default:
+                    CommunicationBridge.sendResult(activeConnection, false);
             }
         }
     }

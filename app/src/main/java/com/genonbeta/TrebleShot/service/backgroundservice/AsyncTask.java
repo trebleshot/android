@@ -22,6 +22,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -38,8 +39,6 @@ import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.framework.util.StoppableImpl;
 
 import java.util.List;
-
-import static com.genonbeta.TrebleShot.service.BackgroundService.hashIntent;
 
 public abstract class AsyncTask extends StoppableJob implements Stoppable, Identifiable
 {
@@ -162,6 +161,22 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     public int hashCode()
     {
         return mHash != 0 ? mHash : super.hashCode();
+    }
+
+    public static int hashIntent(@NonNull Intent intent)
+    {
+        StringBuilder builder = new StringBuilder()
+                .append(intent.getComponent())
+                .append(intent.getData())
+                .append(intent.getPackage())
+                .append(intent.getAction())
+                .append(intent.getFlags())
+                .append(intent.getType());
+
+        if (intent.getExtras() != null)
+            builder.append(intent.getExtras().toString());
+
+        return builder.toString().hashCode();
     }
 
     public boolean interrupt()
