@@ -24,17 +24,15 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
-import com.genonbeta.TrebleShot.callback.OnConnectionSelectionListener;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
-import com.genonbeta.TrebleShot.task.AssessNetworkTask;
-import com.genonbeta.TrebleShot.task.AssessNetworkTask.ConnectionResult;
+import com.genonbeta.TrebleShot.task.FindWorkingNetworkTask;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.framework.util.StoppableImpl;
-
-import java.util.List;
 
 public class EstablishConnectionDialog extends ProgressDialog
 {
@@ -43,13 +41,13 @@ public class EstablishConnectionDialog extends ProgressDialog
         super(activity);
     }
 
-    public static void show(Activity activity, Device device, @Nullable OnConnectionSelectionListener listener)
+    public static void show(Activity activity, Device device, @Nullable DeviceLoader.OnDeviceResolvedListener listener)
     {
         Stoppable stoppable = new StoppableImpl();
 
         EstablishConnectionDialog dialog = new EstablishConnectionDialog(activity);
         LocalTaskBinder binder = new LocalTaskBinder(activity, dialog, device, listener);
-        AssessNetworkTask task = new AssessNetworkTask(device);
+        FindWorkingNetworkTask task = new FindWorkingNetworkTask(device);
 
         task.setAnchor(binder);
         task.setStoppable(stoppable);
@@ -62,15 +60,15 @@ public class EstablishConnectionDialog extends ProgressDialog
         App.run(activity, task);
     }
 
-    static class LocalTaskBinder implements AssessNetworkTask.CalculationResultListener
+    static class LocalTaskBinder implements FindWorkingNetworkTask.CalculationResultListener
     {
         Activity activity;
         EstablishConnectionDialog dialog;
         Device device;
-        OnConnectionSelectionListener listener;
+        DeviceLoader.OnDeviceResolvedListener listener;
 
         LocalTaskBinder(Activity activity, EstablishConnectionDialog dialog, Device device,
-                        OnConnectionSelectionListener listener)
+                        DeviceLoader.OnDeviceResolvedListener listener)
         {
             this.activity = activity;
             this.dialog = dialog;
@@ -96,13 +94,9 @@ public class EstablishConnectionDialog extends ProgressDialog
         }
 
         @Override
-        public void onCalculationResult(ConnectionResult[] connectionResults)
+        public void onCalculationResult(Device device, @Nullable DeviceAddress address)
         {
-            if (connectionResults.length <= 0)
-                return;
-
-            List<ConnectionResult> availableList = AssessNetworkTask.getAvailableList(connectionResults);
-            if (availableList.size() <= 0) {
+            if (address == null) {
                 new AlertDialog.Builder(activity)
                         .setTitle(R.string.text_error)
                         .setMessage(R.string.text_automaticNetworkConnectionFailed)
@@ -110,7 +104,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                         .setPositiveButton(R.string.butn_retry,
                                 (dialog, which) -> EstablishConnectionDialog.show(activity, device, listener));
             } else
-                listener.onConnectionSelection(availableList.get(0).address);
+                listener.onDeviceResolved(device, address);
         }
     }
 }

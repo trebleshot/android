@@ -11,9 +11,6 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
-import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
-import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
-import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
@@ -351,24 +348,13 @@ public class Transfers
         if (activity != null && !activity.isFinishing())
             activity.runOnUiThread(() -> {
                 try {
-                    Device device = new Device(member.deviceId);
-                    Kuick kuick = AppUtils.getKuick(activity);
+                    final FileTransferTask task = FileTransferTask.createFrom(AppUtils.getKuick(activity),
+                            member.transferId, member.deviceId, member.type);
 
-                    kuick.reconstruct(device);
-
-                    EstablishConnectionDialog.show(activity, device, connection -> {
+                    EstablishConnectionDialog.show(activity, task.device, (device, address) -> {
                         try {
-                            FileTransferTask task = FileTransferTask.createFrom(kuick, member.transferId,
-                                    member.deviceId, member.type);
-
                             App.run(activity, task);
-                        } catch (TransferNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (DeviceNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (ConnectionNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (MemberNotFoundException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     });

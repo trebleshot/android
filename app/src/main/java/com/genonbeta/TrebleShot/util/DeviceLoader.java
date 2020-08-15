@@ -96,14 +96,13 @@ public class DeviceLoader
         }
     }
 
-    public static void load(Kuick kuick, InetAddress address, @Nullable OnDeviceRegisteredListener listener)
+    public static void load(Kuick kuick, InetAddress address, @Nullable OnDeviceResolvedListener listener)
     {
         new Thread(() -> {
-            try (CommunicationBridge communicationBridge = CommunicationBridge.connect(kuick,
-                    new DeviceAddress(address), null, 0)) {
+            try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, new DeviceAddress(address),
+                    null, 0)) {
                 if (listener != null)
-                    listener.onDeviceRegistered(kuick, communicationBridge.getDevice(),
-                            communicationBridge.getDeviceAddress());
+                    listener.onDeviceResolved(bridge.getDevice(), bridge.getDeviceAddress());
             } catch (Exception ignored) {
             }
         }).start();
@@ -169,8 +168,8 @@ public class DeviceLoader
         imageView.setImageDrawable(iconBuilder.buildRound(device.username));
     }
 
-    public interface OnDeviceRegisteredListener extends AttachedTaskListener
+    public interface OnDeviceResolvedListener
     {
-        void onDeviceRegistered(Kuick kuick, Device device, DeviceAddress address);
+        void onDeviceResolved(Device device, DeviceAddress address);
     }
 }

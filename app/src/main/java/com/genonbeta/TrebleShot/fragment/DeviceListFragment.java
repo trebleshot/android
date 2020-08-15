@@ -37,15 +37,16 @@ import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.InfoHolder;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -54,7 +55,7 @@ import java.util.List;
 import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
 public class DeviceListFragment extends EditableListFragment<InfoHolder, RecyclerViewAdapter.ViewHolder,
-        DeviceListAdapter> implements IconProvider
+        DeviceListAdapter> implements IconProvider, DeviceLoader.OnDeviceResolvedListener
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -164,6 +165,12 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
             getConnectionUtils().showConnectionOptions(getActivity(), this, REQUEST_LOCATION_PERMISSION);
     }
 
+    @Override
+    public void onDeviceResolved(Device device, DeviceAddress address)
+    {
+        AddDeviceActivity.handleResult(requireActivity(), device, address);
+    }
+
     public ConnectionUtils getConnectionUtils()
     {
         if (mConnectionUtils == null)
@@ -207,8 +214,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
                 if (BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
                     createSnackbar(R.string.mesg_versionNotSupported).show();
                 else
-                    EstablishConnectionDialog.show(getActivity(), device,
-                            (connection) -> AddDeviceActivity.handleResult(requireActivity(), device, connection));
+                    EstablishConnectionDialog.show(getActivity(), device, this);
             } else
                 return false;
         } else
