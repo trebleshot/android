@@ -321,7 +321,7 @@ public abstract class Activity extends AppCompatActivity
         for (BaseAttachableAsyncTask bgTask : attachableBgTaskList)
             if (!bgTask.hasAnchor())
                 throw new RuntimeException("The task " + bgTask.getClass().getSimpleName() + " owner "
-                        + getClass().getSimpleName() + "  did not provide the anchor.");
+                        + getClass().getSimpleName() + " did not provide the anchor.");
     }
 
     public void attachUiTask(AsyncTask task)

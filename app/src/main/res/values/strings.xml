@@ -591,4 +591,5 @@
     <string name="text_receiver">Receiver</string>
     <string name="sender">Sender</string>
     <string name="butn_deviceDetails">Device details</string>
+    <string name="text_errorNoFileSelected">No file selected</string>
 </resources>

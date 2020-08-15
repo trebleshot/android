@@ -33,7 +33,14 @@ import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter.StableItem;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
+import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.fragment.*;
+import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
+import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask;
+import com.genonbeta.TrebleShot.ui.callback.LocalSharingCallback;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.SelectionUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
@@ -43,11 +50,14 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
+
 /**
  * created by: veli
  * date: 13/04/18 19:45
  */
-public class ContentSharingActivity extends Activity implements PerformerEngineProvider
+public class ContentSharingActivity extends Activity implements PerformerEngineProvider, LocalSharingCallback,
+        AttachedTaskListener
 {
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
@@ -70,6 +80,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
         PerformerMenu performerMenu = new PerformerMenu(this, mMenuCallback);
 
+        mMenuCallback.setLocalSharingCallback(this);
         mMenuCallback.setCancellable(false);
         performerMenu.load(menuView.getMenu());
         performerMenu.setUp(mPerformerEngine);
@@ -148,11 +159,36 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         int id = item.getItemId();
 
         if (id == android.R.id.home)
-            finish();
+            onBackPressed();
         else
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    @Override
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
+    {
+        super.onAttachTasks(taskList);
+
+        boolean hasOngoing;
+        for (BaseAttachableAsyncTask task: taskList) {
+            if (task instanceof OrganizeLocalSharingTask) {
+                hasOngoing = true;
+                ((OrganizeLocalSharingTask) task).setAnchor(this);
+            }
+        }
+    }
+
+    @Override
+    public void onShareLocal(List<Shareable> shareableList)
+    {
+        new ChooseSharingMethodDialog(this, sharingMethod -> {
+            OrganizeLocalSharingTask task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(sharingMethod,
+                    shareableList);
+
+            runUiTask(task, this);
+        }).show();
     }
 
     @Override
@@ -181,5 +217,17 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     public IPerformerEngine getPerformerEngine()
     {
         return mPerformerEngine;
+    }
+
+    @Override
+    public void onTaskStateChanged(BaseAttachableAsyncTask task)
+    {
+
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
     }
 }

@@ -36,7 +36,9 @@ import com.genonbeta.TrebleShot.object.Container;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
-import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -47,15 +49,15 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalShareRunningTask extends AsyncTask
+public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskListener>
 {
-    public static final String TAG = LocalShareRunningTask.class.getSimpleName();
+    public static final String TAG = OrganizeLocalSharingTask.class.getSimpleName();
 
     public List<? extends Shareable> mList;
     private final boolean mFlagAddNewDevice;
     private final boolean mFlagWebShare;
 
-    public LocalShareRunningTask(List<? extends Shareable> list, boolean addNewDevice, boolean webShare)
+    public OrganizeLocalSharingTask(List<? extends Shareable> list, boolean addNewDevice, boolean webShare)
     {
         mList = list;
         mFlagAddNewDevice = addNewDevice;
@@ -74,14 +76,19 @@ public class LocalShareRunningTask extends AsyncTask
         final List<TransferItem> list = new ArrayList<>();
 
         for (Shareable shareable : mList) {
-            Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
-
             throwIfStopped();
+
+            Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
 
             if (shareable instanceof FileListAdapter.FileHolder) {
                 DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;
-                Transfers.createFolderStructure(list, transfer.id, file, shareable.fileName, this,
-                        null);
+                if (file != null) {
+                    if (file.isDirectory())
+                        Transfers.createFolderStructure(list, transfer.id, file, shareable.fileName, this,
+                                progressListener());
+                    else
+                        list.add(TransferItem.from(file, transfer.id, null));
+                }
             } else
                 list.add(TransferItem.from(shareable, transfer.id, containable == null ? null : shareable.friendlyName));
 
@@ -96,7 +103,9 @@ public class LocalShareRunningTask extends AsyncTask
         }
 
         if (list.size() <= 0) {
-            // TODO: 9.03.2020 Make this more sophisticated. User may not be able to understand that there is no content.
+            post(TaskMessage.newInstance()
+                    .setTitle(getContext(), R.string.text_error)
+                    .setMessage(getContext(), R.string.text_errorNoFileSelected));
             Log.d(TAG, "onRun: No content is located with uri data");
             return;
         }

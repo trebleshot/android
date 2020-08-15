@@ -73,10 +73,10 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
 
     private DocumentFile mLastKnownPath;
-    private IntentFilter mIntentFilter = new IntentFilter();
     private MediaScannerConnection mMediaScanner;
     private OnPathChangedListener mPathChangedListener;
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    private final IntentFilter mIntentFilter = new IntentFilter();
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         private Snackbar mUpdateSnackbar;
 
@@ -157,6 +157,41 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
             }).show();
         } else if (id == R.id.action_mode_file_copy_here) {
             //todo: implement file copying
+        /*} else if (id == R.id.action_mode_file_share_all_apps) {
+            Intent intent = new Intent(selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
+                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            if (selectedItemList.size() > 1) {
+                MIMEGrouper mimeGrouper = new MIMEGrouper();
+                ArrayList<Uri> uriList = new ArrayList<>();
+
+                for (FileHolder sharedItem : selectedItemList) {
+
+                    uriList.add();
+
+                    if (!mimeGrouper.isLocked())
+                        mimeGrouper.process(sharedItem.mimeType);
+                }
+
+                intent.setType(mimeGrouper.toString())
+                        .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
+            } else if (selectedItemList.size() == 1) {
+                Shareable sharedItem = selectedItemList.get(0);
+
+                intent.setType(sharedItem.mimeType)
+                        .putExtra(Intent.EXTRA_STREAM, sharedItem.uri);
+            }
+
+            try {
+                fragment.requireActivity().startActivity(Intent.createChooser(intent, fragment.getString(
+                        R.string.text_fileShareAppChoose)));
+                return true;
+            } catch (ActivityNotFoundException e) {
+                fragment.createSnackbar(R.string.mesg_noActivityFound, Toast.LENGTH_SHORT).show();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                fragment.createSnackbar(R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+            }*/
         } else
             return false;
 
@@ -404,6 +439,18 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
         }
     }
 
+    @Override
+    public boolean setItemSelected(GroupEditableListAdapter.GroupViewHolder holder)
+    {
+        switch (getAdapterImpl().getItem(holder.getAdapterPosition()).getType()) {
+            case SaveLocation:
+            case Folder:
+                return false;
+        }
+
+        return super.setItemSelected(holder);
+    }
+
     public void setOnPathChangedListener(OnPathChangedListener pathChangedListener)
     {
         mPathChangedListener = pathChangedListener;
@@ -416,7 +463,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
 
     private static class SelectionCallback extends SharingPerformerMenuCallback
     {
-        private FileListFragment mFragment;
+        private final FileListFragment mFragment;
 
         public SelectionCallback(FileListFragment fragment, PerformerEngineProvider provider)
         {
@@ -450,10 +497,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
             if (fileList.size() <= 0 || !handleEditingAction(item, mFragment, fileList))
                 return super.onPerformerMenuSelected(performerMenu, item);
 
-            // Currently, copy, rename, and delete is in-place which are all making changes and thus should end the
-            // selection session. If something that does not make changes needs to implemented, it should be considered
-            // if it makes more sense to define it instead of inside the 'handleEditionAction' method which is also
-            // invoked by the individual item using popup menus.
             return true;
         }
     }

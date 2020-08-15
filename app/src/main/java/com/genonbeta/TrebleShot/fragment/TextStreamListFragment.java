@@ -173,8 +173,9 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
             //inflater.inflate(R.menu.action_mode_share, targetMenu);
             inflater.inflate(R.menu.action_mode_text_stream, targetMenu);
 
+            // FIXME: 8/15/20 Using Editable Selection Callback which doesn't have the properties below
             mShareWithTrebleShot = targetMenu.findItem(R.id.action_mode_share_trebleshot);
-            mShareWithOthers = targetMenu.findItem(R.id.action_mode_share_all_apps);
+            //mShareWithOthers = targetMenu.findItem(R.id.action_mode_share_all_apps);
             updateShareMethods(getPerformerEngine());
 
             return true;
@@ -202,7 +203,9 @@ public class TextStreamListFragment extends GroupEditableListFragment<TextStream
                 kuick.remove(selectionList);
                 kuick.broadcast();
                 return true;
-            } else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
+                // FIXME: 8/15/20 Enable sharing with all apps
+                //} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
+            } else if (id == R.id.action_mode_share_trebleshot) {
                 if (selectionList.size() == 1) {
                     TextStreamObject streamObject = selectionList.get(0);
                     boolean shareLocally = id == R.id.action_mode_share_trebleshot;

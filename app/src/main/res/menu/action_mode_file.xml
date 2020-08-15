@@ -43,6 +43,11 @@
         android:title="@string/butn_removeShortcut"
         android:visible="false" />
 
+    <!--<item
+        android:id="@+id/action_mode_file_share_all_apps"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/butn_shareWithOtherApps" />-->
+
     <item
         android:id="@+id/action_mode_file_copy_here"
         android:title="@string/butn_copyHere"

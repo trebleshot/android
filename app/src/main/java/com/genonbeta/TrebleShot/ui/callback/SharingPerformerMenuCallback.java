@@ -19,19 +19,16 @@
 package com.genonbeta.TrebleShot.ui.callback;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.object.MappedSelectable;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.util.MIMEGrouper;
+import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask;
 import com.genonbeta.android.framework.ui.PerformerMenu;
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine;
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider;
@@ -41,6 +38,8 @@ import java.util.List;
 
 public class SharingPerformerMenuCallback extends EditableListFragment.SelectionCallback
 {
+    private LocalSharingCallback mLocalSharingCallback;
+
     public SharingPerformerMenuCallback(Activity activity, PerformerEngineProvider provider)
     {
         super(activity, provider);
@@ -66,44 +65,15 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
         List<Shareable> shareableList = compileShareableListFrom(MappedSelectable.compileFrom(performerEngine));
 
         if (id == R.id.action_mode_share_trebleshot) {
-            if (shareableList.size() > 0)
-                new ChooseSharingMethodDialog(getActivity(), shareableList).show();
-        } else if (id == R.id.action_mode_share_all_apps) {
-            if (shareableList.size() <= 0)
-                return false;
-
-            Intent intent = new Intent(shareableList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            if (shareableList.size() > 1) {
-                MIMEGrouper mimeGrouper = new MIMEGrouper();
-                ArrayList<Uri> uriList = new ArrayList<>();
-
-                for (Shareable sharedItem : shareableList) {
-                    uriList.add(sharedItem.uri);
-
-                    if (!mimeGrouper.isLocked())
-                        mimeGrouper.process(sharedItem.mimeType);
-                }
-
-                intent.setType(mimeGrouper.toString())
-                        .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-            } else if (shareableList.size() == 1) {
-                Shareable sharedItem = shareableList.get(0);
-
-                intent.setType(sharedItem.mimeType)
-                        .putExtra(Intent.EXTRA_STREAM, sharedItem.uri);
-            }
-
-            try {
-                getActivity().startActivity(Intent.createChooser(intent, getActivity().getString(
-                        R.string.text_fileShareAppChoose)));
-                return true;
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(getActivity(), R.string.mesg_noActivityFound, Toast.LENGTH_SHORT).show();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+            if (shareableList.size() > 0) {
+                if (mLocalSharingCallback != null)
+                    mLocalSharingCallback.onShareLocal(shareableList);
+                else
+                    new ChooseSharingMethodDialog(getActivity(), (method) -> {
+                        OrganizeLocalSharingTask task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(
+                                method, new ArrayList<>(shareableList));
+                        App.run(getActivity(), task);
+                    }).show();
             }
         } else
             return super.onPerformerMenuSelected(performerMenu, item);
@@ -113,7 +83,7 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
         return false;
     }
 
-    private List<Shareable> compileShareableListFrom(List<MappedSelectable<?>> mappedSelectableList)
+    private static List<Shareable> compileShareableListFrom(List<MappedSelectable<?>> mappedSelectableList)
     {
         List<Shareable> shareableList = new ArrayList<>();
 
@@ -122,5 +92,10 @@ public class SharingPerformerMenuCallback extends EditableListFragment.Selection
                 shareableList.add((Shareable) mappedSelectable.selectable);
 
         return shareableList;
+    }
+
+    public void setLocalSharingCallback(LocalSharingCallback callback)
+    {
+        mLocalSharingCallback = callback;
     }
 }

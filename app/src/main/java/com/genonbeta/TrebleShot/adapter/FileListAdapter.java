@@ -88,8 +88,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
     @Override
     protected void onLoad(GroupLister<FileHolder> lister)
     {
-        mShowThumbnails = AppUtils.getDefaultPreferences(getContext()).getBoolean("load_thumbnails",
-                true);
+        mShowThumbnails = AppUtils.getDefaultPreferences(getContext()).getBoolean("load_thumbnails", true);
 
         DocumentFile path = getPath();
 
@@ -660,9 +659,14 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
         @Override
         public boolean setSelectableSelected(boolean selected)
         {
-            if (Type.Dummy.equals(getType()) || Type.Mounted.equals(getType()) || Type.Public.equals(getType())
-                    || Type.Recent.equals(getType()))
-                return false;
+            switch (getType()) {
+                case Dummy:
+                case Public:
+                case Storage:
+                case Mounted:
+                case Bookmarked:
+                    return false;
+            }
 
             return super.setSelectableSelected(selected);
         }

@@ -59,7 +59,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-        mHadTask = savedInstanceState.getBoolean("had_task", mHadTask);
+        mHadTask = savedInstanceState != null && savedInstanceState.getBoolean("had_task", mHadTask);
         String action = getIntent() != null ? getIntent().getAction() : null;
 
         if (ACTION_SEND.equals(action) || ACTION_SEND_MULTIPLE.equals(action) || Intent.ACTION_SEND.equals(action)

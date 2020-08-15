@@ -28,49 +28,41 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.task.LocalShareRunningTask;
+import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChooseSharingMethodDialog extends AlertDialog.Builder
 {
-    private LayoutInflater mLayoutInflater;
-    private final ArrayList<SharingMethod> mSharingMethodList = new ArrayList<>();
+    private final LayoutInflater mLayoutInflater;
+    private final SharingMethod[] mSharingMethods = SharingMethod.values();
 
-    public ChooseSharingMethodDialog(Activity activity, final List<? extends Shareable> list)
+    public ChooseSharingMethodDialog(Activity activity, PickListener listener)
     {
         super(activity);
 
         mLayoutInflater = LayoutInflater.from(getContext());
 
-        mSharingMethodList.add(new SharingMethod(R.drawable.ic_web_white_24dp, R.string.butn_webShare, () ->
-                App.run(activity, new LocalShareRunningTask(list, false, true))));
-
-        mSharingMethodList.add(new SharingMethod(R.drawable.ic_compare_arrows_white_24dp,
-                R.string.text_devicesWithAppInstalled, () -> App.run(activity, new LocalShareRunningTask(list,
-                true, false))));
-
         setTitle(R.string.text_chooseSharingMethod);
-        setAdapter(new SharingMethodListAdapter(), (dialog, which) -> mSharingMethodList.get(which).call());
+        setAdapter(new SharingMethodListAdapter(), (dialog, which) -> listener.onShareMethod(mSharingMethods[which]));
         setNegativeButton(R.string.butn_cancel, null);
     }
 
-    private class SharingMethodListAdapter extends BaseAdapter
+    class SharingMethodListAdapter extends BaseAdapter
     {
+
         @Override
         public int getCount()
         {
-            return mSharingMethodList.size();
+            return mSharingMethods.length;
         }
 
         @Override
         public Object getItem(int position)
         {
-            return mSharingMethodList.get(position);
+            return mSharingMethods[position];
         }
 
         @Override
@@ -97,29 +89,37 @@ public class ChooseSharingMethodDialog extends AlertDialog.Builder
         }
     }
 
-    private static class SharingMethod
+    public static OrganizeLocalSharingTask createLocalShareOrganizingTask(SharingMethod method,
+                                                                          List<Shareable> shareableList)
     {
-        @DrawableRes
-        private int mIconRes;
-        @StringRes
-        private int mTitleRes;
-        private Listener mCallable;
-
-        private SharingMethod(@DrawableRes int iconRes, @StringRes int titleRes, Listener callable)
-        {
-            mIconRes = iconRes;
-            mTitleRes = titleRes;
-            mCallable = callable;
-        }
-
-        private void call()
-        {
-            mCallable.call();
+        switch (method) {
+            case WebShare:
+                return new OrganizeLocalSharingTask(shareableList, false, true);
+            case LocalShare:
+            default:
+                return new OrganizeLocalSharingTask(shareableList, true, false);
         }
     }
 
-    private interface Listener
+    public enum SharingMethod
     {
-        void call();
+        WebShare(R.drawable.ic_web_white_24dp, R.string.butn_webShare),
+        LocalShare(R.drawable.ic_compare_arrows_white_24dp, R.string.text_devicesWithAppInstalled);
+
+        @DrawableRes
+        private final int mIconRes;
+        @StringRes
+        private final int mTitleRes;
+
+        SharingMethod(@DrawableRes int iconRes, @StringRes int titleRes)
+        {
+            mIconRes = iconRes;
+            mTitleRes = titleRes;
+        }
+    }
+
+    public interface PickListener
+    {
+        void onShareMethod(SharingMethod sharingMethod);
     }
 }
