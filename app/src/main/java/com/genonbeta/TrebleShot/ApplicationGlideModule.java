@@ -52,67 +52,70 @@ public final class ApplicationGlideModule extends AppGlideModule
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry)
     {
         super.registerComponents(context, glide, registry);
-
-        registry.append(ApplicationInfo.class, ApplicationInfo.class,
-                new ModelLoaderFactory<ApplicationInfo, ApplicationInfo>()
-                {
-                    @NonNull
-                    @Override
-                    public ModelLoader<ApplicationInfo, ApplicationInfo> build(
-                            @NonNull MultiModelLoaderFactory multiFactory)
-                    {
-                        return new ApplicationIconModelLoader();
-                    }
-
-                    @Override
-                    public void teardown()
-                    {
-
-                    }
-                }).append(ApplicationInfo.class, Drawable.class, new ApplicationIconDecoder(context));
+        registry.prepend(ApplicationInfo.class, Drawable.class, new DrawableModelLoaderFactory(context));
     }
 
-    private static class ApplicationIconModelLoader implements ModelLoader<ApplicationInfo, ApplicationInfo>
+    static class DrawableDataFetcher implements DataFetcher<Drawable>
     {
+
+        private final ApplicationInfo mModel;
+        private final Context mContext;
+
+        DrawableDataFetcher(Context context, ApplicationInfo model)
+        {
+            mModel = model;
+            mContext = context;
+        }
+
+        @Override
+        public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super Drawable> callback)
+        {
+            final Drawable icon = mContext.getPackageManager().getApplicationIcon(mModel);
+            callback.onDataReady(icon);
+        }
+
+        @Override
+        public void cleanup()
+        {
+            // Empty Implementation
+        }
+
+        @Override
+        public void cancel()
+        {
+            // Empty Implementation
+        }
+
+        @NonNull
+        @Override
+        public Class<Drawable> getDataClass()
+        {
+            return Drawable.class;
+        }
+
+        @NonNull
+        @Override
+        public DataSource getDataSource()
+        {
+            return DataSource.LOCAL;
+        }
+    }
+
+    static class DrawableModelLoader implements ModelLoader<ApplicationInfo, Drawable>
+    {
+        private final Context mContext;
+
+        DrawableModelLoader(Context context)
+        {
+            mContext = context;
+        }
+
         @Nullable
         @Override
-        public LoadData<ApplicationInfo> buildLoadData(@NonNull final ApplicationInfo applicationInfo, int width,
-                                                       int height, @NonNull Options options)
+        public LoadData<Drawable> buildLoadData(@NonNull ApplicationInfo applicationInfo, int width, int height,
+                                                @NonNull Options options)
         {
-            return new LoadData<>(new ObjectKey(applicationInfo), new DataFetcher<ApplicationInfo>()
-            {
-                @Override
-                public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super ApplicationInfo> callback)
-                {
-                    callback.onDataReady(applicationInfo);
-                }
-
-                @Override
-                public void cleanup()
-                {
-
-                }
-
-                @Override
-                public void cancel()
-                {
-
-                }
-
-                @NonNull
-                @Override
-                public Class<ApplicationInfo> getDataClass()
-                {
-                    return ApplicationInfo.class;
-                }
-
-                @NonNull
-                @Override
-                public DataSource getDataSource()
-                {
-                    return DataSource.LOCAL;
-                }
-            });
+            return new LoadData<>(new ObjectKey(applicationInfo), new DrawableDataFetcher(mContext, applicationInfo));
         }
 
         @Override
@@ -122,50 +125,27 @@ public final class ApplicationGlideModule extends AppGlideModule
         }
     }
 
-    private static class ApplicationIconDecoder implements ResourceDecoder<ApplicationInfo, Drawable>
+    static class DrawableModelLoaderFactory implements ModelLoaderFactory<ApplicationInfo, Drawable>
     {
-        private final Context context;
 
-        public ApplicationIconDecoder(Context context)
+        private final Context mContext;
+
+        DrawableModelLoaderFactory(Context context)
         {
-            this.context = context;
+            mContext = context;
         }
 
-        @Nullable
+        @NonNull
         @Override
-        public Resource<Drawable> decode(@NonNull ApplicationInfo source, int width, int height,
-                                         @NonNull Options options)
+        public ModelLoader<ApplicationInfo, Drawable> build(@NonNull MultiModelLoaderFactory multiFactory)
         {
-            Drawable icon = source.loadIcon(context.getPackageManager());
-            return new DrawableResource<Drawable>(icon)
-            {
-                @NonNull
-                @Override
-                public Class<Drawable> getResourceClass()
-                {
-                    return Drawable.class;
-                }
-
-                @Override
-                public int getSize()
-                {
-                    if (drawable instanceof BitmapDrawable)
-                        return Util.getBitmapByteSize(((BitmapDrawable) drawable).getBitmap());
-
-                    return 1;
-                }
-
-                @Override
-                public void recycle()
-                {
-                }
-            };
+            return new DrawableModelLoader(mContext);
         }
 
         @Override
-        public boolean handles(@NonNull ApplicationInfo source, @NonNull Options options)
+        public void teardown()
         {
-            return true;
+            // Empty Implementation.
         }
     }
 }
