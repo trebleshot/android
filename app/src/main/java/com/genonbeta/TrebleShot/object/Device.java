@@ -149,9 +149,8 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         this.isLocal = item.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1;
         this.sendKey = item.getAsInteger(Kuick.FIELD_DEVICES_SENDKEY);
         this.receiveKey = item.getAsInteger(Kuick.FIELD_DEVICES_RECEIVEKEY);
-
-        if (item.containsKey(Kuick.FIELD_DEVICES_PROTOCOLVERSION))
-            this.protocolVersion = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSION);
+        this.protocolVersion = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSION);
+        this.protocolVersionMin = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN);
 
         try {
             this.type = Type.valueOf(item.getAsString(Kuick.FIELD_DEVICES_TYPE));

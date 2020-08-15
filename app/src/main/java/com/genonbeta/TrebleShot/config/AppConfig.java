@@ -27,7 +27,6 @@ public class AppConfig
             DEFAULT_SOCKET_TIMEOUT = 5000, // ms
             DEFAULT_SOCKET_TIMEOUT_LARGE = 20000, // ms
             DEFAULT_NOTIFICATION_DELAY = 2000, // ms
-            SUPPORTED_MIN_VERSION = 99, // 62
             NICKNAME_LENGTH_MAX = 32,
             BUFFER_LENGTH_DEFAULT = 8096,
             DELAY_CHECK_FOR_UPDATES = 21600,
@@ -47,8 +46,7 @@ public class AppConfig
             URI_TELEGRAM_CHANNEL = "https://t.me/trebleshot",
             PREFIX_ACCESS_POINT = "TS_",
             EXT_FILE_PART = "tshare",
-            NDS_COMM_SERVICE_NAME = "TSComm",
-            NDS_COMM_SERVICE_TYPE = "_tscomm._tcp.",
+            NSD_SERVICE_TYPE = "_tscomm._tcp.",
             KEY_GOOGLE_PUBLIC = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk1peq7MhNms9ynhnoRtwxnb"
                     + "izdEr3TKifUGlUPB3r33WkvPWjwowRvYeuY36+CkBmtjc46Xg/6/jrhPY+L0a+wd58lsNxLUMpo7"
                     + "tN2std0TGrsMmmlihb4Bsxcu/6ThsY4CIQx0bdze2v8Zle3e4EoHuXcqQnpwkb+3wMx2rR2E9ih+"

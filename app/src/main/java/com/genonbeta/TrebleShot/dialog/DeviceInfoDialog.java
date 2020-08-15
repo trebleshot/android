@@ -27,6 +27,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -68,7 +69,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
         final boolean isDeviceNormal = Device.Type.NORMAL.equals(device.type);
 
-        if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
+        if (BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
             notSupportedText.setVisibility(View.VISIBLE);
 
         DeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
