@@ -586,4 +586,5 @@
     <string name="mesg_socketConnectionError">Failed to connect to the service!</string>
     <string name="mesg_noRouteToHostError">This address is unreachable!</string>
     <string name="text_allDevices">All Devices</string>
+    <string name="text_noOnlineDevices">Online devices appear here</string>
 </resources>

@@ -60,7 +60,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/connection_option_device_list"
-            android:name="com.genonbeta.TrebleShot.fragment.MinimalDeviceListFragment"
+            android:name="com.genonbeta.TrebleShot.fragment.OnlineDeviceListFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

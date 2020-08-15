@@ -29,7 +29,7 @@ import com.genonbeta.TrebleShot.object.Device;
  * created by: veli
  * date: 3/11/19 7:43 PM
  */
-public class MinimalDeviceListFragment extends DeviceListFragment
+public class OnlineDeviceListFragment extends DeviceListFragment
 {
     @Override
     public void onAttach(@NonNull Context context)
@@ -63,6 +63,7 @@ public class MinimalDeviceListFragment extends DeviceListFragment
 
         getListView().setNestedScrollingEnabled(true);
         setDividerVisible(false);
+        setEmptyListText(getString(R.string.text_noOnlineDevices));
 
         if (getContext() != null) {
             float padding = getContext().getResources().getDimension(R.dimen.short_content_width_padding);
