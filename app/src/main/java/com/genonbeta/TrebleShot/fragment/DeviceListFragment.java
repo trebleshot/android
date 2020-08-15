@@ -31,6 +31,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.App;
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
@@ -52,8 +53,8 @@ import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
-public class DeviceListFragment extends EditableListFragment<InfoHolder,
-        RecyclerViewAdapter.ViewHolder, DeviceListAdapter> implements IconProvider
+public class DeviceListFragment extends EditableListFragment<InfoHolder, RecyclerViewAdapter.ViewHolder,
+        DeviceListAdapter> implements IconProvider
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -151,9 +152,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
     {
         super.onPause();
         requireActivity().unregisterReceiver(mStatusReceiver);
-
         mNsdDiscovery.stopDiscovering();
-
     }
 
     @Override
@@ -205,7 +204,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder,
                 App.run(requireActivity(), new DeviceIntroductionTask((NetworkDescription) specifier, -1));
             else if (specifier instanceof Device) {
                 Device device = (Device) specifier;
-                if (device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
+                if (BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
                     createSnackbar(R.string.mesg_versionNotSupported).show();
                 else
                     EstablishConnectionDialog.show(getActivity(), device,

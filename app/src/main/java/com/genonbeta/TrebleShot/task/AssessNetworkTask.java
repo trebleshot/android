@@ -55,6 +55,7 @@ public class AssessNetworkTask extends AttachableAsyncTask<AssessNetworkTask.Cal
 
         if (results.length > 0) {
             for (int i = 0; i < results.length; i++) {
+
                 throwIfStopped();
 
                 ConnectionResult connectionResult = results[i] = new ConnectionResult(knownConnectionList.get(i));

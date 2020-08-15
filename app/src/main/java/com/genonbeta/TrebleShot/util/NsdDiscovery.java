@@ -96,9 +96,7 @@ public class NsdDiscovery
                 {
                     Log.v(TAG, "NSD service is now found which is of " + serviceInfo.getServiceName());
 
-                    if (!serviceInfo.getServiceType().equals(AppConfig.NDS_COMM_SERVICE_TYPE)) {
-                        Log.d(TAG, "Unknown Service Type: " + serviceInfo.getServiceType());
-                    } else if (serviceInfo.getServiceName().startsWith(AppConfig.NDS_COMM_SERVICE_NAME)) {
+                    if (serviceInfo.getServiceType().equals(AppConfig.NSD_SERVICE_TYPE)) {
                         getNsdManager().resolveService(serviceInfo, new NsdManager.ResolveListener()
                         {
                             @Override
@@ -186,8 +184,8 @@ public class NsdDiscovery
         if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final NsdServiceInfo localServiceInfo = new NsdServiceInfo();
 
-            localServiceInfo.setServiceName(AppConfig.NDS_COMM_SERVICE_NAME);
-            localServiceInfo.setServiceType(AppConfig.NDS_COMM_SERVICE_TYPE);
+            localServiceInfo.setServiceName(AppUtils.getLocalDeviceName(getContext()));
+            localServiceInfo.setServiceType(AppConfig.NSD_SERVICE_TYPE);
             localServiceInfo.setPort(AppConfig.SERVER_PORT_COMMUNICATION);
 
             try {
@@ -203,7 +201,7 @@ public class NsdDiscovery
     {
         if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             try {
-                getNsdManager().discoverServices(AppConfig.NDS_COMM_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD,
+                getNsdManager().discoverServices(AppConfig.NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD,
                         getDiscoveryListener());
             } catch (Exception e) {
                 e.printStackTrace();
