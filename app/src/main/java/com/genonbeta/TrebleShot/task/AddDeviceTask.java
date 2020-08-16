@@ -139,15 +139,9 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
             post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }
-
+    
     @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
-    @Override
-    public String getTitle()
+    public String getName()
     {
         return null;
     }

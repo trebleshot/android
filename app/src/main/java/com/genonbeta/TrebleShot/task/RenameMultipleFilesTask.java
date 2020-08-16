@@ -71,13 +71,7 @@ public class RenameMultipleFilesTask extends AsyncTask
     }
 
     @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
-    @Override
-    public String getTitle()
+    public String getName()
     {
         return getContext().getString(R.string.text_renameMultipleItems);
     }

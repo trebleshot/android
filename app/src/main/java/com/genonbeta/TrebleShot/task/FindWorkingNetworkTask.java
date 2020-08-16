@@ -77,13 +77,7 @@ public class FindWorkingNetworkTask extends AttachableAsyncTask<FindWorkingNetwo
     }
 
     @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
-    @Override
-    public String getTitle()
+    public String getName()
     {
         return getContext().getString(R.string.text_connectionTest);
     }

@@ -26,7 +26,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -36,7 +37,8 @@
         <RelativeLayout
             android:id="@+id/layoutStatusContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/text1"
@@ -66,6 +68,8 @@
                 android:layout_toRightOf="@id/text1" />
 
         </RelativeLayout>
+
+        <View style="@style/DividerStyle.Raw" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

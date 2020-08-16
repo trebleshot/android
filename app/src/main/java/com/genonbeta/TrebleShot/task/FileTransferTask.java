@@ -202,12 +202,6 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         return object == null ? super.getCurrentContent() : object.name;
     }
 
-    @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
     private SQLiteDatabase getDatabase()
     {
         if (mDatabase == null)
@@ -222,7 +216,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     }
 
     @Override
-    public String getTitle()
+    public String getName()
     {
         return null;
     }

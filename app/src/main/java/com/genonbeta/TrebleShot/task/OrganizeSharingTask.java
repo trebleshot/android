@@ -90,13 +90,7 @@ public class OrganizeSharingTask extends AttachableAsyncTask<AttachedTaskListene
     }
 
     @Override
-    public String getDescription()
-    {
-        return getContext().getString(R.string.mesg_organizingFiles);
-    }
-
-    @Override
-    public String getTitle()
+    public String getName()
     {
         return getContext().getString(R.string.mesg_organizingFiles);
     }

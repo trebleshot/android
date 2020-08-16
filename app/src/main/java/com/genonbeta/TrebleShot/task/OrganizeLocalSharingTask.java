@@ -133,13 +133,7 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
     }
 
     @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
-    @Override
-    public String getTitle()
+    public String getName()
     {
         return null;
     }

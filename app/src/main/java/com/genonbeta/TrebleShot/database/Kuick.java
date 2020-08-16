@@ -182,25 +182,32 @@ public class Kuick extends KuickDb
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, V object, T parent)
     {
-        App.run(activity, new SingleRemovalTask<>(activity, getWritableDatabase(), object, parent));
+        removeAsynchronous(App.from(activity), object, parent);
+    }
+
+    public <T, V extends DatabaseObject<T>> void removeAsynchronous(App app, V object, T parent)
+    {
+        app.run(new SingleRemovalTask<>(app.getApplicationContext(), getWritableDatabase(), object, parent));
     }
 
     public <T, V extends DatabaseObject<T>> void removeAsynchronous(Activity activity, List<V> objects, T parent)
     {
+        removeAsynchronous(App.from(activity), objects, parent);
+    }
 
-        App.run(activity, new MultipleRemovalTask<>(activity, getWritableDatabase(), objects, parent));
+    public <T, V extends DatabaseObject<T>> void removeAsynchronous(App app, List<V> objects, T parent)
+    {
+        app.run(new MultipleRemovalTask<>(app.getApplicationContext(), getWritableDatabase(), objects, parent));
     }
 
     private static abstract class BgTaskImpl extends AsyncTask
     {
         private final SQLiteDatabase mDb;
         private final String mTitle;
-        private final String mDescription;
 
-        BgTaskImpl(Context context, int titleRes, int descriptionRes, SQLiteDatabase db)
+        BgTaskImpl(Context context, int titleRes, SQLiteDatabase db)
         {
             mTitle = context.getString(titleRes);
-            mDescription = context.getString(descriptionRes);
             mDb = db;
         }
 
@@ -218,13 +225,7 @@ public class Kuick extends KuickDb
         }
 
         @Override
-        public String getDescription()
-        {
-            return mDescription;
-        }
-
-        @Override
-        public String getTitle()
+        public String getName()
         {
             return mTitle;
         }
@@ -237,7 +238,7 @@ public class Kuick extends KuickDb
 
         SingleRemovalTask(Context context, SQLiteDatabase db, V object, T parent)
         {
-            super(context, R.string.mesg_removing, R.string.mesg_mayTakeLong, db);
+            super(context, R.string.mesg_removing, db);
             mObject = object;
             mParent = parent;
         }
@@ -259,7 +260,7 @@ public class Kuick extends KuickDb
 
         MultipleRemovalTask(Context context, SQLiteDatabase db, List<V> objectList, T parent)
         {
-            super(context, R.string.mesg_removing, R.string.mesg_mayTakeLong, db);
+            super(context, R.string.mesg_removing, db);
             mObjectList = objectList;
             mParent = parent;
         }

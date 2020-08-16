@@ -287,7 +287,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         synchronized (mTaskList) {
             for (AsyncTask task : mTaskList) {
                 task.interrupt(false);
-                Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getTitle());
+                Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getName());
             }
         }
     }

@@ -61,13 +61,7 @@ public class TextShareTask extends AsyncTask
     }
 
     @Override
-    public String getDescription()
-    {
-        return null;
-    }
-
-    @Override
-    public String getTitle()
+    public String getName()
     {
         return null;
     }

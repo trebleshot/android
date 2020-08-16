@@ -165,10 +165,8 @@ public class BackgroundService extends Service
 
                     if (isAccepted)
                         mApp.run(task);
-                    else {
-                        getKuick().remove(getKuick().getWritableDatabase(), task.member, task.transfer, null);
-                        getKuick().broadcast();
-                    }
+                    else
+                        getKuick().removeAsynchronous(mApp, task.transfer, task.device);
                 } catch (Exception e) {
                     e.printStackTrace();
 

@@ -106,8 +106,6 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         return mCustomNotification;
     }
 
-    public abstract String getDescription();
-
     @Override
     public Identity getIdentity()
     {
@@ -118,6 +116,8 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     {
         return getApp().getMediaScanner();
     }
+
+    public abstract String getName();
 
     protected NotificationHelper getNotificationHelper()
     {
@@ -136,8 +136,6 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     {
         return TASK_GROUP_DEFAULT;
     }
-
-    public abstract String getTitle();
 
     @Override
     public boolean hasCloser(Closer closer)

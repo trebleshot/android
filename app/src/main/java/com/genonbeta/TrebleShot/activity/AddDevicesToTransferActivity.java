@@ -47,6 +47,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.AddDeviceTask;
+import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -56,14 +57,13 @@ import java.util.List;
 
 public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
-    public static final String
-            TAG = AddDevicesToTransferActivity.class.getSimpleName(),
-            EXTRA_DEVICE = "extraDevice",
-            EXTRA_TRANSFER = "extraTransfer",
-            EXTRA_FLAGS = "extraFlags";
+    public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
+
+    public static final String EXTRA_DEVICE = "extraDevice";
+    public static final String EXTRA_TRANSFER = "extraTransfer";
+    public static final String EXTRA_ADDING_FIRST_DEVICE = "extraAddingFirstDevice";
 
     public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
-    public static final int FLAG_LAUNCH_DEVICE_CHOOSER = 1;
 
     private Transfer mTransfer = null;
     private ExtendedFloatingActionButton mActionButton;
@@ -71,6 +71,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     private ViewGroup mLayoutStatusContainer;
     private TextView mProgressTextCurrent;
     private TextView mProgressTextTotal;
+    private boolean mAddingFirstDevice;
     private int mColorActive;
     private int mColorNormal;
     private final IntentFilter mFilter = new IntentFilter(Kuick.ACTION_DATABASE_CHANGE);
@@ -81,17 +82,17 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         {
             if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
-                if (Kuick.TABLE_TRANSFER.equals(data.tableName) && !checkGroupIntegrity())
+                if (Kuick.TABLE_TRANSFER.equals(data.tableName) && !checkTransferIntegrity())
                     finish();
             }
         }
     };
 
-    public static void startInstance(Context context, Transfer transfer, boolean addingNewDevice)
+    public static void startInstance(Context context, Transfer transfer, boolean addingFirstDevice)
     {
         context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
                 .putExtra(EXTRA_TRANSFER, transfer)
-                .putExtra(EXTRA_FLAGS, addingNewDevice ? FLAG_LAUNCH_DEVICE_CHOOSER : 0)
+                .putExtra(EXTRA_ADDING_FIRST_DEVICE, addingFirstDevice)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
@@ -105,9 +106,9 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (checkGroupIntegrity()) {
-            int flags = getIntent().getIntExtra(EXTRA_FLAGS, 0);
-            if ((flags & FLAG_LAUNCH_DEVICE_CHOOSER) != 0)
+        if (checkTransferIntegrity()) {
+            mAddingFirstDevice = getIntent().getBooleanExtra(EXTRA_ADDING_FIRST_DEVICE, false);
+            if (mAddingFirstDevice)
                 startConnectionManagerActivity();
         } else
             return;
@@ -126,6 +127,13 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         mProgressTextTotal = findViewById(R.id.text2);
         mActionButton = findViewById(R.id.content_fab);
         mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
+
+        mActionButton.setOnClickListener(v -> {
+            if (hasTaskOf(OrganizeLocalSharingTask.class))
+                interruptAllTasks(true);
+            else
+                startConnectionManagerActivity();
+        });
 
         TransferMemberListFragment memberListFragment = (TransferMemberListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.membersListFragment);
@@ -175,8 +183,10 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == android.app.Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
+        if (requestCode == REQUEST_CODE_CHOOSE_DEVICE) {
+            if (resultCode == Activity.RESULT_CANCELED && mAddingFirstDevice) {
+                getDatabase().removeAsynchronous(this, mTransfer, null);
+            } else if (resultCode == android.app.Activity.RESULT_OK && data != null
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                     && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)) {
                 Device device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE);
@@ -193,15 +203,9 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     {
         super.onAttachTasks(taskList);
 
-        boolean hasOngoing = false;
         for (BaseAttachableAsyncTask task : taskList)
-            if (task instanceof AddDeviceTask) {
+            if (task instanceof AddDeviceTask)
                 ((AddDeviceTask) task).setAnchor(this);
-                hasOngoing = true;
-            }
-
-        if (!hasOngoing)
-            setNowAdding(false);
     }
 
     @Override
@@ -210,7 +214,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         super.onResume();
         registerReceiver(mReceiver, mFilter);
 
-        if (!checkGroupIntegrity())
+        if (!checkTransferIntegrity())
             finish();
     }
 
@@ -225,9 +229,14 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
         if (task instanceof AddDeviceTask) {
-            if (task.isFinished())
-                setNowAdding(false);
-            else {
+            boolean running = !task.isFinished();
+
+            mLayoutStatusContainer.setVisibility(running ? View.VISIBLE : View.GONE);
+            mActionButton.setIconResource(running ? R.drawable.ic_close_white_24dp : R.drawable.ic_add_white_24dp);
+            mActionButton.setText(running ? R.string.butn_cancel : R.string.butn_addMore);
+            mActionButton.setBackgroundTintList(ColorStateList.valueOf(running ? mColorActive : mColorNormal));
+
+            if (running) {
                 int progress = task.progress().getCurrent();
                 int total = task.progress().getTotal();
 
@@ -255,7 +264,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
         return true;
     }
 
-    public boolean checkGroupIntegrity()
+    public boolean checkTransferIntegrity()
     {
         try {
             if (getIntent() == null || !getIntent().hasExtra(EXTRA_TRANSFER))
@@ -285,20 +294,6 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public Snackbar createSnackbar(final int resId, final Object... objects)
     {
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
-    }
-
-    public void setNowAdding(boolean adding)
-    {
-        mLayoutStatusContainer.setVisibility(adding ? View.VISIBLE : View.GONE);
-        mActionButton.setIconResource(adding ? R.drawable.ic_close_white_24dp : R.drawable.ic_add_white_24dp);
-        mActionButton.setText(adding ? R.string.butn_cancel : R.string.butn_addMore);
-        mActionButton.setBackgroundTintList(ColorStateList.valueOf(adding ? mColorActive : mColorNormal));
-        mActionButton.setOnClickListener(v -> {
-            if (adding)
-                interruptAllTasks(true);
-            else
-                startConnectionManagerActivity();
-        });
     }
 
     private void startConnectionManagerActivity()
