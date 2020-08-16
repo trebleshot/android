@@ -19,22 +19,26 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
+import android.content.Intent;
+import android.media.MediaScannerConnection;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
+import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RenameMultipleFilesTask extends AsyncTask
 {
-    private final List<FileListAdapter.FileHolder> mList;
+    private final List<? extends FileListAdapter.FileHolder> mList;
     private final String mNewName;
 
-    public RenameMultipleFilesTask(List<FileListAdapter.FileHolder> fileList, String renameTo)
+    public RenameMultipleFilesTask(List<? extends FileListAdapter.FileHolder> fileList, String renameTo)
     {
         mList = fileList;
         mNewName = renameTo;
@@ -47,6 +51,8 @@ public class RenameMultipleFilesTask extends AsyncTask
             return;
 
         progress().addToTotal(mList.size());
+
+        List<DocumentFile> scannerList = new ArrayList<>();
 
         for (int i = 0; i < mList.size(); i++) {
             throwIfStopped();
@@ -62,13 +68,10 @@ public class RenameMultipleFilesTask extends AsyncTask
             String ext = FileUtils.getFileFormat(fileHolder.file.getName());
             ext = ext != null ? String.format(".%s", ext) : "";
 
-            // TODO: 1.04.2020 Use listener
-            renameFile(kuick(), fileHolder, String.format("%s%s", String.format(mNewName, i), ext), null);
+            renameFile(kuick(), fileHolder, String.format("%s%s", String.format(mNewName, i), ext), scannerList);
         }
 
-
-        //if (renameListener != null)
-        //    renameListener.onFileRenameCompleted(getService());
+        notifyFileChanges(getContext(), scannerList);
     }
 
     @Override
@@ -77,8 +80,26 @@ public class RenameMultipleFilesTask extends AsyncTask
         return getContext().getString(R.string.text_renameMultipleItems);
     }
 
-    public boolean renameFile(Kuick kuick, FileListAdapter.FileHolder holder, String renameTo,
-                              FileRenameDialog.OnFileRenameListener renameListener)
+    public static void notifyFileChanges(Context context, List<DocumentFile> scannerList)
+    {
+        if (scannerList.size() < 1)
+            return;
+
+        String[] paths = new String[scannerList.size()];
+        String[] mimeTypes = new String[scannerList.size()];
+
+        for (int i = 0; i < scannerList.size(); i++) {
+            DocumentFile file = scannerList.get(i);
+            paths[i] = file.getOriginalUri().toString();
+            mimeTypes[i] = file.getType();
+        }
+
+        MediaScannerConnection.scanFile(context, paths, mimeTypes, null);
+        context.sendBroadcast(new Intent(FileListFragment.ACTION_FILE_RENAME_COMPLETED));
+    }
+
+    public static boolean renameFile(Kuick kuick, FileListAdapter.FileHolder holder, String renameTo,
+                                     List<DocumentFile> scannerList)
     {
         try {
             if (FileListAdapter.FileHolder.Type.Bookmarked.equals(holder.getType())
@@ -87,10 +108,10 @@ public class RenameMultipleFilesTask extends AsyncTask
 
                 kuick.publish(holder);
                 kuick.broadcast();
-            } else if (holder.file.canWrite() && holder.file.renameTo(renameTo)) {
-                if (renameListener != null)
-                    renameListener.onFileRename(holder.file, renameTo);
 
+                return true;
+            } else if (holder.file != null && holder.file.canWrite() && holder.file.renameTo(renameTo)) {
+                scannerList.add(holder.file);
                 return true;
             }
         } catch (Exception e) {

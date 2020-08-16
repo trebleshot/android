@@ -319,7 +319,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         if (newlyInFg)
             ContextCompat.startForegroundService(getApplicationContext(), intent);
         else if (inBg) {
-            intent.setAction(BackgroundService.ACTION_END_SESSION)
+            intent.setAction(BackgroundService.ACTION_FOREGROUND_CHANGE)
                     .putExtra(BackgroundService.EXTRA_CHECK_FOR_TASKS, true);
             ContextCompat.startForegroundService(getApplicationContext(), intent);
         }

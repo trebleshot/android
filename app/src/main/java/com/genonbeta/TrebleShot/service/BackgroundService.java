@@ -62,6 +62,7 @@ public class BackgroundService extends Service
             ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
             ACTION_DEVICE_KEY_CHANGE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL",
             ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION",
+            ACTION_FOREGROUND_CHANGE = "com.genonbeta.TrebleShot.action.ACTION_FOREGROUND_CHANGE",
             ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
             ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL",
@@ -216,8 +217,11 @@ public class BackgroundService extends Service
                     e.printStackTrace();
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
+                stopSelf();
+            } else if (ACTION_FOREGROUND_CHANGE.equals(intent.getAction())) {
                 boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
-                if (!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, !killOnExit) || canStopService())
+                if ((!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false) || canStopService())
+                        && killOnExit)
                     stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
@@ -526,25 +530,12 @@ public class BackgroundService extends Service
 
                         getKuick().reconstruct(task.member);
 
-                        if (TransferItem.Type.OUTGOING.equals(type)) {
-                            Log.d(TAG, "onConnected: Informing before starting to send.");
+                        if (TransferItem.Type.INCOMING.equals(type) && !device.isTrusted)
+                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_TRUSTED);
+                        else
+                            CommunicationBridge.sendResult(activeConnection, true);
 
-                            mApp.attach(task);
-                        } else if (TransferItem.Type.INCOMING.equals(type)) {
-                            JSONObject currentReply = new JSONObject();
-                            boolean result = device.isTrusted;
-
-                            if (!result)
-                                currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_TRUSTED);
-
-                            Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
-                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
-
-                            if (result)
-                                mApp.attach(task);
-
-                            Log.d(TAG, "onConnected: " + activeConnection.receive().getAsString());
-                        }
+                        mApp.attach(task);
                         return;
                     } else
                         throw new ContentException(ContentException.Error.NotAccessible);

@@ -36,6 +36,7 @@ import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
+import com.genonbeta.TrebleShot.util.CommonErrorHelper;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -96,18 +97,6 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     private void broadcastTransferState(boolean isLast)
     {
         long time = System.currentTimeMillis();
-
-		/*if (isLast || time - mTimeTransactionSaved > AppConfig.DEFAULT_NOTIFICATION_DELAY) {
-			mTimeTransactionSaved = time;
-
-			if (getDbInstance().inTransaction()) {
-				getDbInstance().setTransactionSuccessful();
-				getDbInstance().endTransaction();
-			}
-
-			if (!isLast)
-				getDbInstance().beginTransaction();
-		}*/
         boolean delayReached = time - lastProcessingTime > AppConfig.DELAY_DEFAULT_NOTIFICATION;
 
         if (delayReached && !isLast) {
@@ -520,8 +509,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
                         JSONObject validityOfChange = activeConnection.receive().getAsJson();
 
-                        if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
-                                Keyword.RESULT)) {
+                        if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(Keyword.RESULT)) {
                             this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
                             kuick().update(getDatabase(), this.object, this.transfer, null);
                             continue;
@@ -531,31 +519,20 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                         Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
                     }
 
-                    this.activeConnection.receive();
                     this.object.putFlag(this.device.uid, TransferItem.Flag.IN_PROGRESS);
                     kuick().update(getDatabase(), this.object, this.transfer, null);
 
                     try {
                         boolean sizeExceeded = false;
                         int readLength;
-                        byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-                        OutputStream outputStream = this.activeConnection.getSocket()
-                                .getOutputStream();
+                        ActiveConnection.Description description = this.activeConnection.writeBegin(0, fileSize);
 
-                        while ((readLength = inputStream.read(buffer)) != -1
-                                && this.currentBytes < this.object.size
-                                && !this.activeConnection.getSocket().isOutputShutdown()) {
+                        while ((readLength = inputStream.read(description.buffer)) != -1) {
                             if (readLength > 0) {
-                                if (this.currentBytes + readLength > this.object.size) {
-                                    sizeExceeded = true;
-                                    break;
-                                }
-
                                 broadcastTransferState(false);
 
                                 this.currentBytes += readLength;
-                                outputStream.write(buffer, 0, readLength);
-                                outputStream.flush();
+                                this.activeConnection.write(description, 0, readLength);
                             }
 
                             if (isInterrupted()) {
@@ -563,6 +540,8 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                                 break;
                             }
                         }
+
+                        this.activeConnection.writeEnd(description);
 
                         if (this.currentBytes == this.object.size) {
                             this.completedBytes += this.currentBytes;
@@ -655,52 +634,24 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         return Identity.withANDs(from(Id.GroupId, transferId), from(Id.DeviceId, deviceId), from(Id.Type, type));
     }
 
-    public void startTransferAsClient()
+    public void startTransferAsClient() throws TaskStoppedException
     {
-        try {
-            CommunicationBridge bridge = CommunicationBridge.connect(kuick(), addressList, device, 0);
+        try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), addressList, device, 0)) {
+            bridge.requestFileTransferStart(this.transfer.id, this.type);
 
-            {
-                JSONObject reply = new JSONObject()
-                        .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
-                        .put(Keyword.TRANSFER_ID, this.transfer.id)
-                        .put(Keyword.TRANSFER_TYPE, this.type.toString());
+            if (bridge.receiveResult()) {
+                this.activeConnection = bridge.getActiveConnection();
+                this.attemptsLeft = 2;
 
-                this.activeConnection.reply(reply.toString());
-                Log.d(TAG, "startTransferAsClient(): reply: " + reply.toString());
-            }
-
-            {
-                Response response = this.activeConnection.receive();
-                JSONObject responseJSON = response.getAsJson();
-
-                Log.d(TAG, "startTransferAsClient(): " + this.type.toString() + "; About to start with "
-                        + response.getAsString());
-
-                if (responseJSON.getBoolean(Keyword.RESULT)) {
-                    this.attemptsLeft = 2;
-
-                    if (TransferItem.Type.INCOMING.equals(this.type)) {
-                        handleTransferAsReceiver();
-                    } else if (TransferItem.Type.OUTGOING.equals(this.type)) {
-                        handleTransferAsSender();
-                    }
-
-                    try {
-                        Response lastResponse = this.activeConnection.receive();
-                        Log.d(TAG, "startTransferAsClient(): Final response before exit: "
-                                + lastResponse.getAsString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    getNotificationHelper().notifyConnectionError(this, responseJSON.has(Keyword.ERROR)
-                            ? responseJSON.getString(Keyword.ERROR) : null);
+                if (TransferItem.Type.INCOMING.equals(this.type)) {
+                    handleTransferAsReceiver();
+                } else if (TransferItem.Type.OUTGOING.equals(this.type)) {
+                    handleTransferAsSender();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            getNotificationHelper().notifyConnectionError(this, null);
+            post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }
 

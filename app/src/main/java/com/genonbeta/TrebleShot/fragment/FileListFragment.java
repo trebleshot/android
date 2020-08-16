@@ -68,6 +68,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     public final static int REQUEST_WRITE_ACCESS = 264;
 
     public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
+    public final static String ACTION_FILE_RENAME_COMPLETED = "com.genonbeta.TrebleShot.action.FILE_RENAME_COMPLETED";
     public final static String EXTRA_FILE_PARENT = "extraPath";
     public final static String EXTRA_FILE_NAME = "extraFile";
     public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
@@ -111,7 +112,8 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
                 Kuick.BroadcastData data = Kuick.toData(intent);
                 if (Kuick.TABLE_FILEBOOKMARK.equals(data.tableName))
                     refreshList();
-            }
+            } else if (ACTION_FILE_RENAME_COMPLETED.equals(intent.getAction()))
+                refreshList();
         }
     };
 
@@ -139,22 +141,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
                 }
             }).show();
         } else if (id == R.id.action_mode_file_rename) {
-            new FileRenameDialog(fragment.getContext(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
-            {
-                @Override
-                public void onFileRename(DocumentFile file, String displayName)
-                {
-                    fragment.scanFile(file);
-                }
-
-                @Override
-                public void onFileRenameCompleted(Context context)
-                {
-                    context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null ? null
-                                    : adapter.getPath().getUri()));
-                }
-            }).show();
+            new FileRenameDialog(fragment.getActivity(), selectedItemList).show();
         } else if (id == R.id.action_mode_file_copy_here) {
             //todo: implement file copying
         /*} else if (id == R.id.action_mode_file_share_all_apps) {
@@ -243,6 +230,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
         mMediaScanner = new MediaScannerConnection(getActivity(), null);
 
         mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
+        mIntentFilter.addAction(ACTION_FILE_RENAME_COMPLETED);
         mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
     }
 

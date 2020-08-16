@@ -596,4 +596,5 @@
     <string name="text_nsdNotDiscovering">Discovery is not available</string>
     <string name="text_findAvailableNetwork">Find Available Networks</string>
     <string name="text_transfer">Transfer</string>
+    <string name="text_errorIncludePrintfPlaceholder">Please include the placeholder (%d) to rename multiple files</string>
 </resources>

@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.protocol.communication.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -163,6 +164,14 @@ public class CommunicationBridge implements Closeable
                 .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
                 .put(Keyword.TRANSFER_ID, transferId)
                 .put(Keyword.INDEX, files));
+    }
+
+    public void requestFileTransferStart(long transferId, TransferItem.Type type) throws JSONException, IOException
+    {
+        getActiveConnection().reply(new JSONObject()
+                .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
+                .put(Keyword.TRANSFER_ID, transferId)
+                .put(Keyword.TRANSFER_TYPE, type));
     }
 
     public void requestNotifyTransferState(long transferId, boolean accepted) throws JSONException, IOException
