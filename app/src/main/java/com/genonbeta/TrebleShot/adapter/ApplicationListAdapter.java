@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
@@ -104,30 +106,27 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
     @Override
     public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, final int position)
     {
-        try {
-            final View parentView = holder.itemView;
-            final PackageHolder object = getItem(position);
+        final View parentView = holder.itemView;
+        final PackageHolder object = getItem(position);
 
-            if (!holder.tryBinding(object)) {
-                ImageView image = parentView.findViewById(R.id.image);
-                TextView text1 = parentView.findViewById(R.id.text);
-                TextView text2 = parentView.findViewById(R.id.text2);
-                ViewGroup layoutSplitApk = parentView.findViewById(R.id.layout_split_apk);
-                boolean isSplitApk = Build.VERSION.SDK_INT >= 21 && object.appInfo.splitSourceDirs != null;
+        if (!holder.tryBinding(object)) {
+            ImageView image = parentView.findViewById(R.id.image);
+            TextView text1 = parentView.findViewById(R.id.text);
+            TextView text2 = parentView.findViewById(R.id.text2);
+            ViewGroup layoutSplitApk = parentView.findViewById(R.id.layout_split_apk);
+            boolean isSplitApk = Build.VERSION.SDK_INT >= 21 && object.appInfo.splitSourceDirs != null;
 
-                text1.setText(object.friendlyName);
-                text2.setText(object.version);
-                layoutSplitApk.setVisibility(isSplitApk ? View.VISIBLE : View.GONE);
+            text1.setText(object.friendlyName);
+            text2.setText(object.version);
+            layoutSplitApk.setVisibility(isSplitApk ? View.VISIBLE : View.GONE);
 
-                parentView.setSelected(object.isSelectableSelected());
+            parentView.setSelected(object.isSelectableSelected());
 
-                GlideApp.with(getContext())
-                        .load(object.appInfo)
-                        .override(160)
-                        .into(image);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            GlideApp.with(getContext())
+                    .load(object.appInfo)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .override(160)
+                    .into(image);
         }
     }
 

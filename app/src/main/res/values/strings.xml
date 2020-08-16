@@ -592,4 +592,6 @@
     <string name="sender">Sender</string>
     <string name="butn_deviceDetails">Device details</string>
     <string name="text_errorNoFileSelected">No file selected</string>
+    <string name="text_nsdDisabled">Enable discovery in the settings</string>
+    <string name="text_nsdNotDiscovering">Discovery is not available</string>
 </resources>

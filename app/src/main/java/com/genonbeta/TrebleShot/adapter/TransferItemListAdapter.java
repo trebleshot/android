@@ -1076,7 +1076,7 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
 
     public static class GroupEditableTransferObjectMerger extends ComparableMerger<GenericItem>
     {
-        private Type mType;
+        private final Type mType;
 
         GroupEditableTransferObjectMerger(GenericItem holder, TransferItemListAdapter adapter)
         {

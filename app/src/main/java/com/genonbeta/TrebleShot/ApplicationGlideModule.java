@@ -52,12 +52,11 @@ public final class ApplicationGlideModule extends AppGlideModule
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry)
     {
         super.registerComponents(context, glide, registry);
-        registry.prepend(ApplicationInfo.class, Drawable.class, new DrawableModelLoaderFactory(context));
+        registry.append( ApplicationInfo.class, Drawable.class, new DrawableModelLoaderFactory(context));
     }
 
     static class DrawableDataFetcher implements DataFetcher<Drawable>
     {
-
         private final ApplicationInfo mModel;
         private final Context mContext;
 
@@ -127,7 +126,6 @@ public final class ApplicationGlideModule extends AppGlideModule
 
     static class DrawableModelLoaderFactory implements ModelLoaderFactory<ApplicationInfo, Drawable>
     {
-
         private final Context mContext;
 
         DrawableModelLoaderFactory(Context context)
