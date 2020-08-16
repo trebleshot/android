@@ -64,8 +64,7 @@
                 android:layout_below="@id/task_progress_bar"
                 android:layout_marginTop="15dp"
                 android:gravity="center_horizontal"
-                android:text="@string/mesg_completing"
-                android:textColor="?colorSecondary" />
+                android:text="@string/mesg_completing" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/task_interrupter_button"

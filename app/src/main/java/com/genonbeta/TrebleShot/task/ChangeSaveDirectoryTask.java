@@ -18,7 +18,9 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.net.Uri;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
@@ -93,9 +95,9 @@ public class ChangeSaveDirectoryTask extends AsyncTask
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
-        return null;
+        return context.getString(R.string.butn_changeSavePath);
     }
 
     public ChangeSaveDirectoryTask setSkipMoving(boolean skip)

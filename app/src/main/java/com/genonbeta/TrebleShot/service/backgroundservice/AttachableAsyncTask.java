@@ -25,7 +25,6 @@ public abstract class AttachableAsyncTask<T extends AttachedTaskListener> extend
 {
     private T mAnchor;
     private Handler mHandler;
-    private final Runnable mPostStatus = this::notifyAnchor;
 
     @Override
     public boolean hasAnchor()
@@ -48,10 +47,10 @@ public abstract class AttachableAsyncTask<T extends AttachedTaskListener> extend
         return mHandler;
     }
 
-    private void notifyAnchor()
+    private void notifyAnchor(State state)
     {
         if (hasAnchor())
-            mAnchor.onTaskStateChanged(this);
+            mAnchor.onTaskStateChange(this, state);
     }
 
     @Override
@@ -73,7 +72,8 @@ public abstract class AttachableAsyncTask<T extends AttachedTaskListener> extend
     {
         if (!super.publishStatus(force))
             return false;
-        getHandler().post(mPostStatus);
+        final State state = getState();
+        getHandler().post(() -> notifyAnchor(state));
         return true;
     }
 

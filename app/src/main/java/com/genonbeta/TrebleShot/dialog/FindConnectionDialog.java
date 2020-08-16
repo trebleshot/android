@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.FindWorkingNetworkTask;
@@ -72,7 +73,7 @@ public class FindConnectionDialog extends ProgressDialog
         }
 
         @Override
-        public void onTaskStateChanged(BaseAttachableAsyncTask task)
+        public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
         {
             if (task.isFinished()) {
                 dialog.dismiss();

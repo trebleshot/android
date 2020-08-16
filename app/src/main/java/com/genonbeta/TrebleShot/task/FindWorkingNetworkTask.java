@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Device;
@@ -77,9 +78,9 @@ public class FindWorkingNetworkTask extends AttachableAsyncTask<FindWorkingNetwo
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
-        return getContext().getString(R.string.text_connectionTest);
+        return context.getString(R.string.text_findAvailableNetwork);
     }
 
     public interface CalculationResultListener extends AttachedTaskListener

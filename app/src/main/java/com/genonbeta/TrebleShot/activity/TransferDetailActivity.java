@@ -300,6 +300,21 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
             super.onBackPressed();
     }
 
+
+    @Override
+    public void onTaskStateChange(BaseAttachableAsyncTask task,
+                                  com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask.State state)
+    {
+        if (task instanceof FileTransferTask)
+            ((FileTransferTask) task).setAnchor(this);
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
+    }
+
     private void attachListeners(Fragment initiatedItem)
     {
         mBackPressedListener = initiatedItem instanceof OnBackPressedListener ? (OnBackPressedListener) initiatedItem
@@ -444,8 +459,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
     public void startDeviceAddingActivity()
     {
-        startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                .putExtra(AddDevicesToTransferActivity.EXTRA_TRANSFER, mTransfer), REQUEST_ADD_DEVICES);
+        startActivityForResult(new Intent(this, TransferMemberActivity.class)
+                .putExtra(TransferMemberActivity.EXTRA_TRANSFER, mTransfer), REQUEST_ADD_DEVICES);
     }
 
     public static void startInstance(Context context, Transfer transfer)
@@ -502,19 +517,6 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
             mDataCruncher.execute(this);
         }
-    }
-
-    @Override
-    public void onTaskStateChanged(BaseAttachableAsyncTask task)
-    {
-        if (task instanceof FileTransferTask)
-            ((FileTransferTask) task).setAnchor(this);
-    }
-
-    @Override
-    public boolean onTaskMessage(TaskMessage message)
-    {
-        return false;
     }
 
     public static class CrunchLatestDataTask extends AsyncTask<TransferDetailActivity, Void, Void>

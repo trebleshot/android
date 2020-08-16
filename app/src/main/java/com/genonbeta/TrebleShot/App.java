@@ -287,7 +287,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         synchronized (mTaskList) {
             for (AsyncTask task : mTaskList) {
                 task.interrupt(false);
-                Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getName());
+                Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getName(getApplicationContext()));
             }
         }
     }
@@ -329,7 +329,8 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
 
     public boolean publishTaskNotifications(boolean force)
     {
-        if (System.nanoTime() <= mTaskNotificationTime && !force)
+        long notified = System.nanoTime();
+        if (notified <= mTaskNotificationTime && !force)
             return false;
 
         if (!hasTasks()) {
@@ -343,7 +344,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             taskList = new ArrayList<>(mTaskList);
         }
 
-        mTaskNotificationTime = System.nanoTime();
+        mTaskNotificationTime = System.nanoTime() + (AppConfig.DELAY_DEFAULT_NOTIFICATION * (long) 1e6);
         mTasksNotification = mNotificationHelper.notifyTasksNotification(this, taskList, mTasksNotification);
         return true;
     }

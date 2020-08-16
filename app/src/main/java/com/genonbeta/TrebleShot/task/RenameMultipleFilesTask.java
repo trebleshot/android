@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -71,7 +72,7 @@ public class RenameMultipleFilesTask extends AsyncTask
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
         return getContext().getString(R.string.text_renameMultipleItems);
     }

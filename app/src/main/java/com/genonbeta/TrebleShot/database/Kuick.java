@@ -225,7 +225,7 @@ public class Kuick extends KuickDb
         }
 
         @Override
-        public String getName()
+        public String getName(Context context)
         {
             return mTitle;
         }

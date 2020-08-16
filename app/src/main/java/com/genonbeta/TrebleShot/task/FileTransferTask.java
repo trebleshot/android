@@ -18,10 +18,12 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -216,9 +218,9 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
-        return null;
+        return context.getString(R.string.text_transfer);
     }
 
     private void handleTransferAsReceiver()

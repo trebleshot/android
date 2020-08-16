@@ -79,7 +79,7 @@
         android:layout_height="match_parent"
         android:minHeight="220dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.AddDevicesToTransferActivity"
+        tools:context=".activity.TransferMemberActivity"
         tools:showIn="@layout/activity_add_devices_to_transfer" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

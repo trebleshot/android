@@ -22,7 +22,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
@@ -40,7 +42,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActivity>
+public class AddDeviceTask extends AttachableAsyncTask<TransferMemberActivity>
 {
     private final Transfer mTransfer;
     private final Device mDevice;
@@ -98,7 +100,7 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
 
                     filesArray.put(json);
                 } catch (Exception e) {
-                    Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: "
+                    Log.e(TransferMemberActivity.TAG, "Sender error on fileUri: "
                             + e.getClass().getName() + " : " + transferItem.name);
                 }
             }
@@ -123,14 +125,17 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
                 kuick.update(db, objectList, mTransfer, progressListener());
                 kuick.broadcast();
 
-                AddDevicesToTransferActivity anchor = getAnchor();
+                TransferMemberActivity anchor = getAnchor();
 
                 if (anchor != null) {
                     anchor.setResult(RESULT_OK, new Intent()
-                            .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE, mDevice)
-                            .putExtra(AddDevicesToTransferActivity.EXTRA_TRANSFER, mTransfer));
+                            .putExtra(TransferMemberActivity.EXTRA_DEVICE, mDevice)
+                            .putExtra(TransferMemberActivity.EXTRA_TRANSFER, mTransfer));
 
-                    anchor.finish();
+                    if (anchor.isAddingFirstDevice()) {
+                        TransferDetailActivity.startInstance(anchor, mTransfer);
+                        anchor.finish();
+                    }
                 }
             } else
                 throw new Exception("The remote returned false.");
@@ -139,10 +144,10 @@ public class AddDeviceTask extends AttachableAsyncTask<AddDevicesToTransferActiv
             post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }
-    
+
     @Override
-    public String getName()
+    public String getName(Context context)
     {
-        return null;
+        return context.getString(R.string.text_addDevices);
     }
 }

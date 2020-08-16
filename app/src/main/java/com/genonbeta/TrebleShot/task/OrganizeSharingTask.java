@@ -18,11 +18,11 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
-import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
+import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
@@ -83,14 +83,13 @@ public class OrganizeSharingTask extends AttachableAsyncTask<AttachedTaskListene
             addCloser((userAction) -> kuick().remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                     .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), String.valueOf(transfer.id))));
 
-            TransferDetailActivity.startInstance(getContext(), transfer);
-            AddDevicesToTransferActivity.startInstance(getContext(), transfer, true);
             kuick().broadcast();
+            TransferMemberActivity.startInstance(getContext(), transfer, true);
         }
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
         return getContext().getString(R.string.mesg_organizingFiles);
     }

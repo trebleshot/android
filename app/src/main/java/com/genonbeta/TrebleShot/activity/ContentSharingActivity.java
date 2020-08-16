@@ -21,12 +21,17 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
@@ -36,6 +41,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -66,12 +72,19 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     private final SharingPerformerMenuCallback mMenuCallback = new SharingPerformerMenuCallback(this,
             this);
 
+
+    private ProgressBar mProgressBar;
+    private CardView mCardView;
+    private ActionMenuView mActionMenuView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_sharing);
-        ActionMenuView menuView = findViewById(R.id.menu_view);
+        mActionMenuView = findViewById(R.id.menu_view);
+        mCardView = findViewById(R.id.activity_content_sharing_cardview);
+        mProgressBar = findViewById(R.id.activity_content_sharing_progress_bar);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -82,7 +95,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
         mMenuCallback.setLocalSharingCallback(this);
         mMenuCallback.setCancellable(false);
-        performerMenu.load(menuView.getMenu());
+        performerMenu.load(mActionMenuView.getMenu());
         performerMenu.setUp(mPerformerEngine);
 
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
@@ -171,13 +184,9 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     {
         super.onAttachTasks(taskList);
 
-        boolean hasOngoing;
-        for (BaseAttachableAsyncTask task : taskList) {
-            if (task instanceof OrganizeLocalSharingTask) {
-                hasOngoing = true;
+        for (BaseAttachableAsyncTask task : taskList)
+            if (task instanceof OrganizeLocalSharingTask)
                 ((OrganizeLocalSharingTask) task).setAnchor(this);
-            }
-        }
     }
 
     @Override
@@ -220,9 +229,21 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableAsyncTask task)
+    public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
     {
-
+        if (task instanceof OrganizeLocalSharingTask) {
+            switch (state) {
+                case Finished:
+                    mActionMenuView.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    TransitionManager.beginDelayedTransition(mCardView);
+                    break;
+                case Starting:
+                    mActionMenuView.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    TransitionManager.beginDelayedTransition(mCardView);
+            }
+        }
     }
 
     @Override

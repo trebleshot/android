@@ -24,9 +24,9 @@ import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -50,8 +50,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     private TextView mProgressTextCurrent;
     private TextView mProgressTextTotal;
     private TextView mTextMain;
-    private List<Uri> mFileUris;
-    private boolean mHadTask = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -59,7 +57,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-        mHadTask = savedInstanceState != null && savedInstanceState.getBoolean("had_task", mHadTask);
         String action = getIntent() != null ? getIntent().getAction() : null;
 
         if (ACTION_SEND.equals(action) || ACTION_SEND_MULTIPLE.equals(action) || Intent.ACTION_SEND.equals(action)
@@ -88,9 +85,10 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                     mProgressTextCurrent = findViewById(R.id.text1);
                     mProgressTextTotal = findViewById(R.id.text2);
                     mTextMain = findViewById(R.id.textMain);
-                    mFileUris = fileUris;
 
                     findViewById(R.id.cancelButton).setOnClickListener(v -> interruptAllTasks(true));
+
+                    runUiTask(new OrganizeSharingTask(fileUris));
                 }
             }
         } else {
@@ -100,32 +98,26 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("had_task", mHadTask);
-    }
-
-    @Override
-    public void onTaskStateChanged(BaseAttachableAsyncTask task)
+    public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
     {
         if (task instanceof OrganizeSharingTask) {
-            if (task.isFinished()) {
-                finish();
-                return;
+            switch (state) {
+                case Running:
+                    int progress = task.progress().getCurrent();
+                    int total = task.progress().getTotal();
+
+                    runOnUiThread(() -> {
+                        mTextMain.setText(task.getCurrentContent());
+                        mProgressTextCurrent.setText(String.valueOf(progress));
+                        mProgressTextTotal.setText(String.valueOf(total));
+                    });
+
+                    mProgressBar.setProgress(progress);
+                    mProgressBar.setMax(total);
+                    break;
+                case Finished:
+                    finish();
             }
-
-            int progress = task.progress().getCurrent();
-            int total = task.progress().getTotal();
-
-            runOnUiThread(() -> {
-                mTextMain.setText(task.getCurrentContent());
-                mProgressTextCurrent.setText(String.valueOf(progress));
-                mProgressTextTotal.setText(String.valueOf(total));
-            });
-
-            mProgressBar.setProgress(progress);
-            mProgressBar.setMax(total);
         }
     }
 
@@ -142,15 +134,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
         for (BaseAttachableAsyncTask task : taskList)
             if (task instanceof OrganizeSharingTask)
                 ((OrganizeSharingTask) task).setAnchor(this);
-
-        if (!hasTaskOf(OrganizeSharingTask.class)) {
-            if (mHadTask)
-                finish();
-            else {
-                getSelfApplication().run(new OrganizeSharingTask(mFileUris));
-                mHadTask = true;
-            }
-        }
     }
 
     public Snackbar createSnackbar(int resId, Object... objects)

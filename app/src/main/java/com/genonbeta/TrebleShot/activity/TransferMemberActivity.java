@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
@@ -43,6 +42,7 @@ import com.genonbeta.TrebleShot.fragment.TransferMemberListFragment;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -55,9 +55,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-public class AddDevicesToTransferActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
+public class TransferMemberActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
-    public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
+    public static final String TAG = TransferMemberActivity.class.getSimpleName();
 
     public static final String EXTRA_DEVICE = "extraDevice";
     public static final String EXTRA_TRANSFER = "extraTransfer";
@@ -90,7 +90,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
 
     public static void startInstance(Context context, Transfer transfer, boolean addingFirstDevice)
     {
-        context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
+        context.startActivity(new Intent(context, TransferMemberActivity.class)
                 .putExtra(EXTRA_TRANSFER, transfer)
                 .putExtra(EXTRA_ADDING_FIRST_DEVICE, addingFirstDevice)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -226,27 +226,24 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableAsyncTask task)
+    public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
     {
         if (task instanceof AddDeviceTask) {
-            boolean running = !task.isFinished();
+            switch (state) {
+                case Starting:
+                    setLoaderShowing(true);
+                case Running:
+                    int progress = task.progress().getCurrent();
+                    int total = task.progress().getTotal();
 
-            mLayoutStatusContainer.setVisibility(running ? View.VISIBLE : View.GONE);
-            mActionButton.setIconResource(running ? R.drawable.ic_close_white_24dp : R.drawable.ic_add_white_24dp);
-            mActionButton.setText(running ? R.string.butn_cancel : R.string.butn_addMore);
-            mActionButton.setBackgroundTintList(ColorStateList.valueOf(running ? mColorActive : mColorNormal));
-
-            if (running) {
-                int progress = task.progress().getCurrent();
-                int total = task.progress().getTotal();
-
-                runOnUiThread(() -> {
                     mProgressTextCurrent.setText(String.valueOf(progress));
                     mProgressTextTotal.setText(String.valueOf(total));
-                });
+                    mProgressBar.setProgress(progress);
+                    mProgressBar.setMax(total);
+                    break;
+                case Finished:
+                    setLoaderShowing(false);
 
-                mProgressBar.setProgress(progress);
-                mProgressBar.setMax(total);
             }
         }
     }
@@ -268,23 +265,18 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     {
         try {
             if (getIntent() == null || !getIntent().hasExtra(EXTRA_TRANSFER))
-                throw new Exception(getString(R.string.text_empty));
+                throw new Exception();
 
             if (mTransfer == null)
                 mTransfer = getIntent().getParcelableExtra(EXTRA_TRANSFER);
 
-            try {
-                if (mTransfer == null)
-                    throw new Exception();
+            if (mTransfer == null)
+                throw new Exception();
 
-                getDatabase().reconstruct(mTransfer);
-            } catch (Exception e) {
-                throw new Exception(getString(R.string.mesg_notValidTransfer));
-            }
+            getDatabase().reconstruct(mTransfer);
 
             return true;
         } catch (Exception e) {
-            Toast.makeText(AddDevicesToTransferActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -294,6 +286,19 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarPl
     public Snackbar createSnackbar(final int resId, final Object... objects)
     {
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
+    }
+
+    public boolean isAddingFirstDevice()
+    {
+        return mAddingFirstDevice;
+    }
+
+    private void setLoaderShowing(boolean showing)
+    {
+        mLayoutStatusContainer.setVisibility(showing ? View.VISIBLE : View.GONE);
+        mActionButton.setIconResource(showing ? R.drawable.ic_close_white_24dp : R.drawable.ic_add_white_24dp);
+        mActionButton.setText(showing ? R.string.butn_cancel : R.string.butn_addMore);
+        mActionButton.setBackgroundTintList(ColorStateList.valueOf(showing ? mColorActive : mColorNormal));
     }
 
     private void startConnectionManagerActivity()

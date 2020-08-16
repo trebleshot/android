@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -165,7 +166,7 @@ public class IndexTransferTask extends AsyncTask
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
         return null;
     }

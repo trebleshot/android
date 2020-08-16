@@ -26,7 +26,7 @@ public class AppConfig
             SERVER_PORT_UPDATE_CHANNEL = 58765,
             DEFAULT_SOCKET_TIMEOUT = 5000, // ms
             DEFAULT_SOCKET_TIMEOUT_LARGE = 20000, // ms
-            DELAY_DEFAULT_NOTIFICATION = 2000, // ms
+            DELAY_DEFAULT_NOTIFICATION = 1000, // ms
             NICKNAME_LENGTH_MAX = 32,
             BUFFER_LENGTH_DEFAULT = 8096,
             DELAY_CHECK_FOR_UPDATES = 21600,

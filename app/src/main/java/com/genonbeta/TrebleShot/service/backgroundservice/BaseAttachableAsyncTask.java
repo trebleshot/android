@@ -23,4 +23,6 @@ public abstract class BaseAttachableAsyncTask extends AsyncTask
     public abstract boolean hasAnchor();
 
     public abstract void removeAnchor();
+
+
 }

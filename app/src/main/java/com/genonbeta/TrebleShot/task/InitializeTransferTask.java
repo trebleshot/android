@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
@@ -106,7 +107,7 @@ public class InitializeTransferTask extends AsyncTask
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
         return null;
     }

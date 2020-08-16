@@ -18,6 +18,8 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
@@ -78,9 +80,9 @@ public class DeviceIntroductionTask extends AttachableAsyncTask<DeviceIntroducti
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
-        return null;
+        return context.getString(R.string.text_addNewDevice);
     }
 
     public interface ResultListener extends AttachedTaskListener

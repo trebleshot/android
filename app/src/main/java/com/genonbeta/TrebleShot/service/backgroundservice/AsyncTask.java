@@ -58,7 +58,7 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
 
     protected void onProgressChange(Progress progress)
     {
-
+        publishStatus();
     }
 
     @Override
@@ -117,11 +117,20 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         return getApp().getMediaScanner();
     }
 
-    public abstract String getName();
+    public abstract String getName(Context context);
 
     protected NotificationHelper getNotificationHelper()
     {
         return getApp().getNotificationHelper();
+    }
+
+    public State getState() {
+        if (!isStarted())
+            return State.Starting;
+        else if (!isFinished())
+            return State.Running;
+
+        return State.Finished;
     }
 
     private Stoppable getStoppable()
@@ -276,9 +285,9 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         if (isStarted() || isFinished() || isInterrupted())
             throw new IllegalStateException(getClass().getName() + " isStarted");
 
-        setStarted(true);
         setApp(app);
         publishStatus(true);
+        setStarted(true);
 
         try {
             run(getStoppable());
@@ -351,5 +360,11 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     public enum Id
     {
         HashCode
+    }
+
+    public enum State {
+        Starting,
+        Running,
+        Finished
     }
 }

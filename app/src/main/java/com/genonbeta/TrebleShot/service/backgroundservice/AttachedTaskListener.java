@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.service.backgroundservice;
 
 public interface AttachedTaskListener
 {
-    void onTaskStateChanged(BaseAttachableAsyncTask task);
+    void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state);
 
     /**
      * When {@link AttachableAsyncTask#post(TaskMessage)} is called, this will be invoked when available.

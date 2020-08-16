@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
@@ -43,15 +44,7 @@ public class TextShareTask extends AsyncTask
     protected void onRun()
     {
         try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), mAddress, mDevice, 0)) {
-            final JSONObject jsonRequest = new JSONObject()
-                    .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
-                    .put(Keyword.TRANSFER_TEXT, mText);
-
-            ActiveConnection activeConnection = bridge.getActiveConnection();
-            activeConnection.reply(jsonRequest.toString());
-
-            JSONObject response = activeConnection.receive().getAsJson();
-
+            bridge.requestTextTransfer(mText);
             if (bridge.receiveResult()) {
                 // TODO: 31.03.2020 implement
             }
@@ -61,7 +54,7 @@ public class TextShareTask extends AsyncTask
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
         return null;
     }

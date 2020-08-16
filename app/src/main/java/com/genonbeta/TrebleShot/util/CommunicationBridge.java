@@ -173,6 +173,13 @@ public class CommunicationBridge implements Closeable
                 .put(Keyword.TRANSFER_IS_ACCEPTED, accepted));
     }
 
+    public void requestTextTransfer(String text) throws JSONException, IOException
+    {
+        getActiveConnection().reply(new JSONObject()
+                .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
+                .put(Keyword.TRANSFER_TEXT, text));
+    }
+
     public boolean receiveResult() throws JSONException, IOException, CommunicationException
     {
         return receiveResult(getActiveConnection(), getDevice());

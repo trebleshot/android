@@ -101,7 +101,8 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableAsyncTask task)
+    public void onTaskStateChange(BaseAttachableAsyncTask task,
+                                  com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask.State state)
     {
         boolean running = task instanceof DeviceIntroductionTask && !task.isFinished();
         setShowProgress(running);

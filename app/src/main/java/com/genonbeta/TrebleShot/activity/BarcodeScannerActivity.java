@@ -48,6 +48,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
@@ -416,7 +417,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     }
 
     @Override
-    public void onTaskStateChanged(BaseAttachableAsyncTask task)
+    public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
     {
         if (task instanceof DeviceIntroductionTask)
             updateState(!task.isFinished());

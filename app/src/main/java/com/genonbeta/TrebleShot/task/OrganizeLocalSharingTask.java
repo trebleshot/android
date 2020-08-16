@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -26,8 +27,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
+import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -75,8 +76,12 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
         final Transfer transfer = new Transfer(AppUtils.getUniqueNumber());
         final List<TransferItem> list = new ArrayList<>();
 
+        progress().addToTotal(mList.size());
+
         for (Shareable shareable : mList) {
             throwIfStopped();
+            progress().addToCurrent(1);
+            publishStatus();
 
             Containable containable = shareable instanceof Container ? ((Container) shareable).expand() : null;
 
@@ -111,7 +116,7 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
         }
 
         addCloser((userAction -> kuick.remove(db, transfer, null, null)));
-        kuick.insert(db, list, transfer, null);
+        kuick.insert(db, list, transfer, progressListener());
 
         if (mFlagWebShare) {
             transfer.isServedOnWeb = true;
@@ -120,22 +125,22 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
                     R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
         }
 
-        kuick.insert(db, transfer, null, null);
+        kuick.insert(db, transfer, null, progressListener());
         TransferDetailActivity.startInstance(getContext(), transfer);
 
         if (mFlagWebShare)
             getContext().startActivity(new Intent(getContext(), WebShareActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK));
         else
-            AddDevicesToTransferActivity.startInstance(getContext(), transfer, mFlagAddNewDevice);
+            TransferMemberActivity.startInstance(getContext(), transfer, mFlagAddNewDevice);
 
         kuick.broadcast();
     }
 
     @Override
-    public String getName()
+    public String getName(Context context)
     {
-        return null;
+        return context.getString(R.string.mesg_organizingFiles);
     }
 
 }

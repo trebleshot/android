@@ -594,4 +594,6 @@
     <string name="text_errorNoFileSelected">No file selected</string>
     <string name="text_nsdDisabled">Enable discovery in the settings</string>
     <string name="text_nsdNotDiscovering">Discovery is not available</string>
+    <string name="text_findAvailableNetwork">Find Available Networks</string>
+    <string name="text_transfer">Transfer</string>
 </resources>

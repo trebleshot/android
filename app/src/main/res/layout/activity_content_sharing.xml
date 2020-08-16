@@ -64,10 +64,20 @@
                 android:layout_height="match_parent" />
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/activity_content_sharing_cardview"
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_width="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="60dp">
+
+                <ProgressBar
+                    android:id="@+id/activity_content_sharing_progress_bar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:indeterminate="false"
+                    android:visibility="gone"/>
 
                 <androidx.appcompat.widget.ActionMenuView
                     android:id="@+id/menu_view"

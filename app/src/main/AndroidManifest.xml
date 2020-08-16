@@ -77,7 +77,7 @@
         </activity>
 
         <activity
-            android:name=".activity.AddDevicesToTransferActivity"
+            android:name=".activity.TransferMemberActivity"
             android:label="@string/text_addDevicesToTransfer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
