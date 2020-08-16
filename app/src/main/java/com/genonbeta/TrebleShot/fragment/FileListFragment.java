@@ -124,22 +124,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
         final int id = item.getItemId();
 
         if (id == R.id.action_mode_file_delete) {
-            new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
-            {
-                @Override
-                public void onFileDeletion(AsyncTask runningTask, Context context, DocumentFile file)
-                {
-                    fragment.scanFile(file);
-                }
-
-                @Override
-                public void onCompleted(AsyncTask runningTask, Context context, int fileSize)
-                {
-                    context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null ? null
-                                    : adapter.getPath().getUri()));
-                }
-            }).show();
+            new FileDeletionDialog(fragment.getActivity(), selectedItemList).show();
         } else if (id == R.id.action_mode_file_rename) {
             new FileRenameDialog(fragment.getActivity(), selectedItemList).show();
         } else if (id == R.id.action_mode_file_copy_here) {

@@ -18,15 +18,13 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
-import android.content.Context;
-import android.net.Uri;
+import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
-import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.TrebleShot.task.FileDeletionTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,86 +34,14 @@ import java.util.List;
 
 public class FileDeletionDialog extends AlertDialog.Builder
 {
-    public FileDeletionDialog(final Context context, final List<FileListAdapter.FileHolder> items,
-                              final Listener listener)
+    public FileDeletionDialog(final Activity activity, final List<FileListAdapter.FileHolder> items)
     {
-        super(context);
-
-        final List<Uri> copiedItems = new ArrayList<>();
-
-        for (FileListAdapter.FileHolder item : items)
-            if (item.file != null)
-                copiedItems.add(item.file.getUri());
+        super(activity);
 
         setTitle(R.string.text_deleteConfirm);
-        setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, copiedItems.size(), copiedItems.size()));
+        setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, items.size(), items.size()));
 
         setNegativeButton(R.string.butn_cancel, null);
-        setPositiveButton(R.string.butn_delete, (dialog, p2) -> {
-                    // FIXME: 21.03.2020
-            /*
-            new BackgroundTask()
-            {
-                int mTotalDeletion = 0;
-
-                @Override
-                public void onRun()
-                {
-                    for (Uri currentUri : copiedItems) {
-                        try {
-                            DocumentFile file = FileUtils.fromUri(getService(), currentUri);
-
-                            delete(file);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (listener != null)
-                        listener.onCompleted(this, getService(), mTotalDeletion);
-                }
-
-                private void delete(DocumentFile file)
-                {
-                    if (isInterrupted())
-                        return;
-
-                    boolean isDirectory = file.isDirectory();
-                    boolean isFile = file.isFile();
-
-                    if (isDirectory)
-                        deleteDirectory(file);
-
-                    if (file.delete()) {
-                        if (isFile)
-                            mTotalDeletion++;
-
-                        listener.onFileDeletion(this, getContext(), file);
-                        publishStatusText(file.getName());
-                    }
-                }
-
-                private void deleteDirectory(DocumentFile folder)
-                {
-                    DocumentFile[] files = folder.listFiles();
-
-                    if (files != null)
-                        for (DocumentFile anotherFile : files)
-                            delete(anotherFile);
-                }
-            }.setTitle(getContext().getString(R.string.text_deletingFilesOngoing))
-                    .setIconRes(R.drawable.ic_folder_white_24dp_static)
-                    .run(context);
-
-             */
-                }
-        );
-    }
-
-    public interface Listener
-    {
-        void onFileDeletion(AsyncTask runningTask, Context context, DocumentFile file);
-
-        void onCompleted(AsyncTask runningTask, Context context, int fileSize);
+        setPositiveButton(R.string.butn_delete, (dialog, p2) -> App.from(activity).run(new FileDeletionTask(items)));
     }
 }
