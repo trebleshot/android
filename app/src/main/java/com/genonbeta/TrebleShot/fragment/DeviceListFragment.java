@@ -44,7 +44,6 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDaemon;
@@ -62,7 +61,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
     public static final String ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList";
 
-    private NsdDaemon mNsdDaemon;
     private final IntentFilter mIntentFilter = new IntentFilter();
     private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private ConnectionUtils mConnectionUtils;
@@ -103,9 +101,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-        mNsdDaemon = new NsdDaemon(getContext(), AppUtils.getKuick(getContext()),
-                AppUtils.getDefaultPreferences(getContext()));
-
         if (getArguments() != null) {
             Bundle args = getArguments();
 
@@ -129,7 +124,8 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new DeviceListAdapter(this, getConnectionUtils(), mNsdDaemon, mHiddenDeviceTypes));
+        setListAdapter(new DeviceListAdapter(this, getConnectionUtils(),
+                App.from(requireActivity()).getNsdDaemon(), mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
     }
@@ -146,7 +142,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onResume();
         requireActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-        mNsdDaemon.startDiscovering();
     }
 
     @Override
@@ -154,7 +149,6 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onPause();
         requireActivity().unregisterReceiver(mStatusReceiver);
-        mNsdDaemon.stopDiscovering();
     }
 
     @Override

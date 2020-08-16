@@ -22,8 +22,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.util.NsdDaemon;
 
 /**
  * created by: veli
@@ -61,9 +63,17 @@ public class OnlineDeviceListFragment extends DeviceListFragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+        NsdDaemon daemon = App.from(requireActivity()).getNsdDaemon();
+
         getListView().setNestedScrollingEnabled(true);
         setDividerVisible(false);
-        setEmptyListText(getString(R.string.text_noOnlineDevices));
+
+        if (!daemon.isServiceEnabled())
+            setEmptyListText(getString(R.string.text_nsdDisabled));
+        else if (!daemon.isDiscovering())
+            setEmptyListText(getString(R.string.text_nsdNotDiscovering));
+        else
+            setEmptyListText(getString(R.string.text_noOnlineDevices));
 
         if (getContext() != null) {
             float padding = getContext().getResources().getDimension(R.dimen.short_content_width_padding);
