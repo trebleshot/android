@@ -25,7 +25,6 @@ import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.util.Log;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -33,7 +32,6 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 /**
@@ -60,17 +58,6 @@ public class NsdDaemon
         mContext = context;
         mKuick = kuick;
         mPreferences = preferences;
-    }
-
-    public boolean isDeviceOnline(Device device)
-    {
-        synchronized (mOnlineDeviceList) {
-            for (DeviceRoute deviceRoute : mOnlineDeviceList.values())
-                if (deviceRoute.device.equals(device))
-                    return true;
-        }
-
-        return false;
     }
 
     public Context getContext()
@@ -110,6 +97,22 @@ public class NsdDaemon
         return mNsdRegistrationListener;
     }
 
+    public boolean isDeviceOnline(Device device)
+    {
+        synchronized (mOnlineDeviceList) {
+            for (DeviceRoute deviceRoute : mOnlineDeviceList.values())
+                if (deviceRoute.device.equals(device))
+                    return true;
+        }
+
+        return false;
+    }
+
+    public boolean isDiscovering()
+    {
+        return mNsdDiscoveryListener != null;
+    }
+
     public boolean isServiceEnabled()
     {
         return mPreferences.getBoolean("nsd_enabled", false);
@@ -145,8 +148,8 @@ public class NsdDaemon
     public void stopDiscovering()
     {
         try {
-            if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                getNsdManager().stopServiceDiscovery(getDiscoveryListener());
+            if (mNsdDiscoveryListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                getNsdManager().stopServiceDiscovery(mNsdDiscoveryListener);
         } catch (Exception ignored) {
         }
     }
@@ -154,19 +157,20 @@ public class NsdDaemon
     public void unregisterService()
     {
         try {
-            if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                getNsdManager().unregisterService(getRegistrationListener());
+            if (mNsdRegistrationListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                getNsdManager().unregisterService(mNsdRegistrationListener);
         } catch (Exception ignored) {
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private static class RegistrationListener implements NsdManager.RegistrationListener
+    private class RegistrationListener implements NsdManager.RegistrationListener
     {
         @Override
         public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode)
         {
             Log.e(TAG, "Failed to register self service with error code " + errorCode);
+            clear();
         }
 
         @Override
@@ -185,6 +189,12 @@ public class NsdDaemon
         public void onServiceUnregistered(NsdServiceInfo serviceInfo)
         {
             Log.i(TAG, "Self service is unregistered: " + serviceInfo.getServiceName());
+            clear();
+        }
+
+        void clear()
+        {
+            mNsdRegistrationListener = null;
         }
     }
 
@@ -195,6 +205,7 @@ public class NsdDaemon
         public void onStartDiscoveryFailed(String serviceType, int errorCode)
         {
             Log.e(TAG, "NSD discovery failed to start with error code " + errorCode);
+            clear();
         }
 
         @Override
@@ -213,6 +224,7 @@ public class NsdDaemon
         public void onDiscoveryStopped(String serviceType)
         {
             Log.v(TAG, "NSD discovery stopped");
+            clear();
         }
 
         @Override
@@ -231,6 +243,14 @@ public class NsdDaemon
             synchronized (mOnlineDeviceList) {
                 if (mOnlineDeviceList.remove(serviceInfo.getServiceName()) != null)
                     getContext().sendBroadcast(new Intent(ACTION_DEVICE_STATUS));
+            }
+        }
+
+        void clear()
+        {
+            mNsdDiscoveryListener = null;
+            synchronized (mOnlineDeviceList) {
+                mOnlineDeviceList.clear();
             }
         }
     }

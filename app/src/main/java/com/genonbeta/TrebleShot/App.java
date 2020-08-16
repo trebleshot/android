@@ -74,9 +74,11 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     private int mForegroundActivitiesCount = 0;
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private File mCrashLogFile;
+    private NsdDaemon mNsdDaemon;
     private HotspotManager mHotspotManager;
     private MediaScannerConnection mMediaScanner;
     private NotificationHelper mNotificationHelper;
+    private DynamicNotification mTasksNotification;
 
     @Override
     public void onCreate()
@@ -84,6 +86,12 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         super.onCreate();
 
         mCrashLogFile = getApplicationContext().getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
+
+        Thread.setDefaultUncaughtExceptionHandler(this);
+        initializeSettings();
+
+        mNsdDaemon = new NsdDaemon(getApplicationContext(), AppUtils.getKuick(this),
+                AppUtils.getDefaultPreferences(getApplicationContext()));
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         mHotspotManager = HotspotManager.newInstance(this);
         mMediaScanner = new MediaScannerConnection(this, null);
@@ -91,8 +99,6 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
                 AppUtils.getKuick(getApplicationContext()), AppUtils.getDefaultPreferences(getApplicationContext())));
 
         mMediaScanner.connect();
-        Thread.setDefaultUncaughtExceptionHandler(this);
-        initializeSettings();
 
         if (Build.VERSION.SDK_INT >= 26)
             mHotspotManager.setSecondaryCallback(new SecondaryHotspotCallback());
@@ -161,6 +167,11 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     public NotificationHelper getNotificationHelper()
     {
         return mNotificationHelper;
+    }
+
+    public NsdDaemon getNsdDaemon()
+    {
+        return mNsdDaemon;
     }
 
     private ExecutorService getSelfExecutor()
@@ -313,6 +324,11 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
 
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
+    }
+
+    public void publishTaskNotifications()
+    {
+
     }
 
     protected synchronized <T extends AsyncTask> void registerWork(T task)
