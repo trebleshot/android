@@ -29,7 +29,6 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Identifiable;
 import com.genonbeta.TrebleShot.object.Identifier;
 import com.genonbeta.TrebleShot.object.Identity;
-import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.NotificationHelper;
@@ -51,10 +50,8 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     private PendingIntent mActivityIntent;
     private DynamicNotification mCustomNotification; // The notification that is not part of the default notification.
     private String mCurrentContent;
-    private boolean mPublishRequested = false;
     private boolean mFinished = false;
     private boolean mStarted = false;
-    private boolean mScheduleRerun = false;
     private int mHash = 0;
 
     protected abstract void onRun() throws TaskStoppedException;
@@ -68,15 +65,6 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     public boolean addCloser(Closer closer)
     {
         return getStoppable().addCloser(closer);
-    }
-
-    public boolean consumeChanges()
-    {
-        if (mPublishRequested) {
-            mPublishRequested = false;
-            return true;
-        }
-        return false;
     }
 
     public void forceQuit()
@@ -241,23 +229,18 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
 
     public boolean publishStatus()
     {
-        mPublishRequested = true;
-        return false;
+        return publishStatus(false);
+    }
+
+    protected boolean publishStatus(boolean force)
+    {
+        return getApp() != null && getApp().publishTaskNotifications(force);
     }
 
     @Override
     public boolean removeCloser(Closer closer)
     {
         return getStoppable().removeCloser(closer);
-    }
-
-    public void rerun(App app)
-    {
-        if (!isStarted() || isFinished()) {
-            reset(true);
-            app.run(this);
-        } else
-            mScheduleRerun = true;
     }
 
     @Override
@@ -293,24 +276,20 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     public void run(App app)
     {
         if (isStarted() || isFinished() || isInterrupted())
-            throw new IllegalStateException(getClass().getName() + " is already in interrupted state. To run it "
-                    + "again with the same configuration you need to use rerun().");
+            throw new IllegalStateException(getClass().getName() + " isStarted");
 
         setStarted(true);
         setApp(app);
-        publishStatus();
+        publishStatus(true);
 
         try {
             run(getStoppable());
         } catch (TaskStoppedException ignored) {
         } finally {
             setFinished(true);
-            publishStatus();
+            publishStatus(true);
             setApp(null);
         }
-
-        if (mScheduleRerun)
-            rerun(app);
     }
 
     public void setContentIntent(PendingIntent intent)

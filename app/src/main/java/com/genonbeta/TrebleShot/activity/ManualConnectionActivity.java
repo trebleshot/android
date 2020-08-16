@@ -76,7 +76,6 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     {
         super.onResume();
         getEditText().requestFocus();
-        checkTasks();
     }
 
     @Override
@@ -96,22 +95,17 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
     protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
     {
         super.onAttachTasks(taskList);
-
-        boolean hasDeviceIntroductionTask = false;
         for (BaseAttachableAsyncTask task : taskList)
-            if (task instanceof DeviceIntroductionTask) {
-                hasDeviceIntroductionTask = true;
+            if (task instanceof DeviceIntroductionTask)
                 ((DeviceIntroductionTask) task).setAnchor(this);
-            }
-
-        setShowProgress(hasDeviceIntroductionTask);
-        checkTasks();
     }
 
     @Override
     public void onTaskStateChanged(BaseAttachableAsyncTask task)
     {
-        setShowProgress(task instanceof DeviceIntroductionTask && !task.isFinished());
+        boolean running = task instanceof DeviceIntroductionTask && !task.isFinished();
+        setShowProgress(running);
+        getButton().setEnabled(!running);
     }
 
     @Override
@@ -129,13 +123,6 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
                 .putExtra(EXTRA_DEVICE, deviceRoute.device)
                 .putExtra(EXTRA_DEVICE_ADDRESS, deviceRoute.address));
         finish();
-    }
-
-    private void checkTasks()
-    {
-        boolean hasTask = hasTaskOf(DeviceIntroductionTask.class);
-        getButton().setClickable(!hasTask);
-        getButton().setEnabled(!hasTask);
     }
 
     private Button getButton()
@@ -192,7 +179,6 @@ public class ManualConnectionActivity extends Activity implements DeviceIntroduc
         public void onConnect(InetAddress address)
         {
             runUiTask(new DeviceIntroductionTask(address, 0), ManualConnectionActivity.this);
-            checkTasks();
         }
 
         void onHostnameError()

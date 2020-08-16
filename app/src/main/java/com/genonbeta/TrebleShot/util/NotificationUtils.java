@@ -41,10 +41,10 @@ public class NotificationUtils
 
     public static final String EXTRA_NOTIFICATION_ID = "notificationId";
 
-    private Context mContext;
-    private NotificationManagerCompat mManager;
-    private Kuick mDatabase;
-    private SharedPreferences mPreferences;
+    private final Context mContext;
+    private final Kuick mDatabase;
+    private final NotificationManagerCompat mManager;
+    private final SharedPreferences mPreferences;
 
     public NotificationUtils(Context context, Kuick kuick, SharedPreferences preferences)
     {
@@ -54,19 +54,16 @@ public class NotificationUtils
         mPreferences = preferences;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(
-                    Context.NOTIFICATION_SERVICE);
 
             NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH,
                     mContext.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH);
-
             channelHigh.enableLights(mPreferences.getBoolean("notification_light", false));
             channelHigh.enableVibration(mPreferences.getBoolean("notification_vibrate", false));
-            notificationManager.createNotificationChannel(channelHigh);
+            mManager.createNotificationChannel(channelHigh);
 
             NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW,
                     mContext.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW);
-            notificationManager.createNotificationChannel(channelLow);
+            mManager.createNotificationChannel(channelLow);
         }
     }
 

@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
@@ -35,6 +36,7 @@ import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -49,7 +51,9 @@ public class NotificationHelper
 {
     public static final int ID_BG_SERVICE = 1;
 
-    private NotificationUtils mNotificationUtils;
+    public static final int ID_ONGOING_TASKS = 2;
+
+    private final NotificationUtils mNotificationUtils;
 
     public NotificationHelper(NotificationUtils notificationUtils)
     {
@@ -444,6 +448,24 @@ public class NotificationHelper
                 .setProgress(0, 0, true)
                 .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_killNow),
                         PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), killIntent, 0));
+
+        return notification.show();
+    }
+
+    public DynamicNotification notifyTasksNotification(App app, List<AsyncTask> taskList,
+                                                       @Nullable DynamicNotification notification)
+    {
+        if (notification == null) {
+            notification = getUtils().buildDynamicNotification(ID_ONGOING_TASKS,
+                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+
+            notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
+                    .setContentTitle(getContext().getString(R.string.text_taskOngoing))
+                    .setStyle(new NotificationCompat.BigPictureStyle());
+        }
+
+        notification.setContentText(getContext().getResources().getQuantityString(R.plurals.text_items,
+                taskList.size(), taskList.size()));
 
         return notification.show();
     }

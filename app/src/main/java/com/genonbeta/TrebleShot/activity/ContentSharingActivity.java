@@ -172,7 +172,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
         super.onAttachTasks(taskList);
 
         boolean hasOngoing;
-        for (BaseAttachableAsyncTask task: taskList) {
+        for (BaseAttachableAsyncTask task : taskList) {
             if (task instanceof OrganizeLocalSharingTask) {
                 hasOngoing = true;
                 ((OrganizeLocalSharingTask) task).setAnchor(this);

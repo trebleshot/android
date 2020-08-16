@@ -79,6 +79,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     private MediaScannerConnection mMediaScanner;
     private NotificationHelper mNotificationHelper;
     private DynamicNotification mTasksNotification;
+    private long mTaskNotificationTime;
 
     @Override
     public void onCreate()
@@ -326,9 +327,25 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
     }
 
-    public void publishTaskNotifications()
+    public boolean publishTaskNotifications(boolean force)
     {
+        if (System.nanoTime() <= mTaskNotificationTime && !force)
+            return false;
 
+        if (!hasTasks()) {
+            if (mTasksNotification != null)
+                mTasksNotification.cancel();
+            return false;
+        }
+
+        List<AsyncTask> taskList;
+        synchronized (mTaskList) {
+            taskList = new ArrayList<>(mTaskList);
+        }
+
+        mTaskNotificationTime = System.nanoTime();
+        mTasksNotification = mNotificationHelper.notifyTasksNotification(this, taskList, mTasksNotification);
+        return true;
     }
 
     protected synchronized <T extends AsyncTask> void registerWork(T task)
@@ -366,6 +383,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
 
         unregisterWork(runningTask);
+        publishTaskNotifications(true);
     }
 
     public void toggleHotspot()
@@ -436,7 +454,6 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     {
         synchronized (mTaskList) {
             mTaskList.remove(task);
-            // FIXME: 20.03.2020 Should we stop the service if there is no task left?
         }
 
         Log.d(TAG, "unregisterWork: " + task.getClass().getSimpleName());

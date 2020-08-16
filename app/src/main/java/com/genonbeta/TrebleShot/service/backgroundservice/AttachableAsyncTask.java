@@ -69,10 +69,12 @@ public abstract class AttachableAsyncTask<T extends AttachedTaskListener> extend
     }
 
     @Override
-    public boolean publishStatus()
+    protected boolean publishStatus(boolean force)
     {
+        if (!super.publishStatus(force))
+            return false;
         getHandler().post(mPostStatus);
-        return super.publishStatus();
+        return true;
     }
 
     @Override
@@ -84,6 +86,6 @@ public abstract class AttachableAsyncTask<T extends AttachedTaskListener> extend
     public void setAnchor(T anchor)
     {
         mAnchor = anchor;
-        publishStatus();
+        publishStatus(true);
     }
 }

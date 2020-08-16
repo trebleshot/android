@@ -202,7 +202,7 @@ public class WebShareServer extends NanoHTTPD
                             }
 
                             if (sourceFile.length() > 0 && totalRead > 0
-                                    && System.currentTimeMillis() - lastNotified > AppConfig.DEFAULT_NOTIFICATION_DELAY) {
+                                    && System.currentTimeMillis() - lastNotified > AppConfig.DELAY_DEFAULT_NOTIFICATION) {
                                 notification.updateProgress(100,
                                         (int) ((totalRead / sourceFile.length()) * 100), false);
                                 lastNotified = System.currentTimeMillis();

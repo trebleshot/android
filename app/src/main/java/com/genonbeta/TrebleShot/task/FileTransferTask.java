@@ -106,7 +106,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 			if (!isLast)
 				getDbInstance().beginTransaction();
 		}*/
-        boolean delayReached = time - lastProcessingTime > AppConfig.DEFAULT_NOTIFICATION_DELAY;
+        boolean delayReached = time - lastProcessingTime > AppConfig.DELAY_DEFAULT_NOTIFICATION;
 
         if (delayReached && !isLast) {
             this.lastProcessingTime = time;

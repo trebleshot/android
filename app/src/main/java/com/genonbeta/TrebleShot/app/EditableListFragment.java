@@ -767,8 +767,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
             return true;
         } catch (SelectableNotFoundException e) {
             e.printStackTrace();
-        } catch (CouldNotAlterException e) {
-            e.printStackTrace();
+        } catch (CouldNotAlterException ignored) {
         }
 
         return false;
@@ -864,8 +863,8 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 
     public static class SelectionCallback implements PerformerMenu.Callback, PerformerEngineProvider
     {
-        private android.app.Activity mActivity;
-        private PerformerEngineProvider mProvider;
+        private final android.app.Activity mActivity;
+        private final PerformerEngineProvider mProvider;
         private MenuItem mPreviewSelections;
         private IEngineConnection<?> mForegroundConnection = null;
         private boolean mCancellable = true;
