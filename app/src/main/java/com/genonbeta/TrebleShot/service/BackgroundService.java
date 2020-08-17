@@ -222,8 +222,8 @@ public class BackgroundService extends Service
                 boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
                 boolean goingBackground = intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false);
 
-               if (goingBackground && canStopService() && killOnExit)
-                   stopSelf();
+                if (goingBackground && canStopService() && killOnExit)
+                    stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
@@ -420,6 +420,7 @@ public class BackgroundService extends Service
                     sendBroadcast(new Intent(ACTION_PIN_USED));
 
                 getKuick().broadcast();
+                activeConnection.setInternalCacheLimit(1073741824);
                 response = activeConnection.receive().getAsJson();
 
                 handleRequest(activeConnection, device, deviceAddress, hasPin, response);
@@ -441,6 +442,9 @@ public class BackgroundService extends Service
                             break;
                         case NotAccessible:
                             CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE);
+                            break;
+                        case AlreadyExists:
+                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_ALREADY_EXISTS);
                             break;
                         default:
                             CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN);
@@ -464,8 +468,13 @@ public class BackgroundService extends Service
                         long transferId = response.getLong(Keyword.TRANSFER_ID);
                         String jsonIndex = response.getString(Keyword.INDEX);
 
-                        CommunicationBridge.sendResult(activeConnection, true);
-                        mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
+                        try {
+                            getKuick().reconstruct(new Transfer(transferId));
+                            throw new ContentException(ContentException.Error.AlreadyExists);
+                        } catch (ReconstructionFailedException e) {
+                            CommunicationBridge.sendResult(activeConnection, true);
+                            mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
+                        }
                     } else
                         CommunicationBridge.sendResult(activeConnection, false);
                     return;

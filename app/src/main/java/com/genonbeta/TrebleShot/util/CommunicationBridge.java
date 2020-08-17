@@ -207,6 +207,8 @@ public class CommunicationBridge implements Closeable
                     throw new NotTrustedException(targetDevice);
                 case Keyword.ERROR_NOT_ACCESSIBLE:
                     throw new ContentException(ContentException.Error.NotAccessible);
+                case Keyword.ERROR_ALREADY_EXISTS:
+                    throw new ContentException(ContentException.Error.AlreadyExists);
                 case Keyword.ERROR_NOT_FOUND:
                     throw new ContentException(ContentException.Error.NotFound);
                 case Keyword.ERROR_UNKNOWN:

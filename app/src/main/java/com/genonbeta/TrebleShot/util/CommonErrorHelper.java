@@ -22,9 +22,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.protocol.communication.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
-import com.genonbeta.TrebleShot.protocol.communication.*;
 
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -50,7 +50,21 @@ public class CommonErrorHelper
             else if (e instanceof UnknownCommunicationErrorException)
                 taskMessage.setMessage(context.getString(R.string.mesg_unknownErrorOccurredWithCode,
                         ((UnknownCommunicationErrorException) e).errorCode));
-            else
+            else if (e instanceof ContentException) {
+                switch (((ContentException) e).error) {
+                    case NotAccessible:
+                        taskMessage.setMessage(context, R.string.text_contentNotAccessible);
+                        break;
+                    case AlreadyExists:
+                        taskMessage.setMessage(context, R.string.text_contentAlreadyExists);
+                        break;
+                    case NotFound:
+                        taskMessage.setMessage(context, R.string.text_contentNotFound);
+                        break;
+                    default:
+                        taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred);
+                }
+            } else
                 taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred);
         } catch (DeviceIntroductionTask.SuggestNetworkException e) {
             taskMessage.setTitle(context, R.string.text_networkSuggestionError);
@@ -77,6 +91,8 @@ public class CommonErrorHelper
                                     AppUtils.startFeedbackActivity(appContext);
                             });
                     break;
+                default:
+                    taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred);
             }
         } catch (ConnectException e) {
             taskMessage.setTitle(context, R.string.text_communicationError)

@@ -30,6 +30,7 @@ public class ContentException extends CommunicationException
     public enum Error
     {
         NotFound,
-        NotAccessible
+        NotAccessible,
+        AlreadyExists
     }
 }

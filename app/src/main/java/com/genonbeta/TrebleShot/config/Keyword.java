@@ -65,6 +65,7 @@ public class Keyword
             ERROR_UNKNOWN = "unknown",
             ERROR_NOT_ACCESSIBLE = "notAccessible",
             ERROR_NOT_TRUSTED = "notTrusted",
+            ERROR_ALREADY_EXISTS = "alreadyExists",
             NETWORK_SSID = "nwName",
             NETWORK_PIN = "pin",
             NETWORK_PASSWORD = "nwPwd",
