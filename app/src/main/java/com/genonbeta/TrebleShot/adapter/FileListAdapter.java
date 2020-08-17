@@ -616,7 +616,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     .load(file.getUri())
                     .error(MimeIconUtils.loadMimeIcon(mimeType))
                     .override(160)
-                    .centerCrop()
+                    .circleCrop()
                     .into(imageView);
 
             return true;

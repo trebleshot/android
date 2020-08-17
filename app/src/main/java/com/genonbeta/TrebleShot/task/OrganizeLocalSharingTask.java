@@ -80,6 +80,7 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
 
         for (Shareable shareable : mList) {
             throwIfStopped();
+            setOngoingContent(shareable.fileName);
             progress().addToCurrent(1);
             publishStatus();
 
@@ -89,22 +90,25 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
                 DocumentFile file = ((FileListAdapter.FileHolder) shareable).file;
                 if (file != null) {
                     if (file.isDirectory())
-                        Transfers.createFolderStructure(list, transfer.id, file, shareable.fileName, this,
-                                progressListener());
+                        Transfers.createFolderStructure(list, transfer.id, file, shareable.fileName, this);
                     else
                         list.add(TransferItem.from(file, transfer.id, null));
                 }
             } else
                 list.add(TransferItem.from(shareable, transfer.id, containable == null ? null : shareable.friendlyName));
 
-            if (containable != null)
-                for (Uri uri : containable.children)
+            if (containable != null) {
+                progress().addToTotal(containable.children.length);
+                for (Uri uri : containable.children) {
+                    progress().addToCurrent(1);
                     try {
                         list.add(TransferItem.from(FileUtils.fromUri(getContext(), uri), transfer.id,
                                 shareable.friendlyName));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+                }
+            }
         }
 
         if (list.size() <= 0) {

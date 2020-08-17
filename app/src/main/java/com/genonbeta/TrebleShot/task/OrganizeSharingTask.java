@@ -69,7 +69,7 @@ public class OrganizeSharingTask extends AttachableAsyncTask<AttachedTaskListene
                 publishStatus();
 
                 if (file.isDirectory())
-                    Transfers.createFolderStructure(list, transfer.id, file, file.getName(), this, progressListener());
+                    Transfers.createFolderStructure(list, transfer.id, file, file.getName(), this);
                 else
                     list.add(TransferItem.from(file, transfer.id, null));
             } catch (FileNotFoundException e) {

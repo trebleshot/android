@@ -43,7 +43,6 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -322,7 +321,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     {
         super.onSaveInstanceState(outState);
 
-        if (getAdapter().getPath() != null)
+        if (getAdapter() != null && getAdapter().getPath() != null)
             outState.putString(EXTRA_FILE_LOCATION, getAdapter().getPath().getUri().toString());
     }
 

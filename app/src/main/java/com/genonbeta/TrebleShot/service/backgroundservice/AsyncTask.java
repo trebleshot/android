@@ -52,6 +52,7 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     private String mCurrentContent;
     private boolean mFinished = false;
     private boolean mStarted = false;
+    private long mStartTime;
     private int mHash = 0;
 
     protected abstract void onRun() throws TaskStoppedException;
@@ -131,6 +132,11 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
             return State.Running;
 
         return State.Finished;
+    }
+
+    public long getStartTime()
+    {
+        return mStartTime;
     }
 
     private Stoppable getStoppable()
@@ -284,6 +290,8 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     {
         if (isStarted() || isFinished() || isInterrupted())
             throw new IllegalStateException(getClass().getName() + " isStarted");
+
+        mStartTime = System.currentTimeMillis();
 
         setApp(app);
         publishStatus(true);

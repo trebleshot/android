@@ -17,7 +17,6 @@ import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.InitializeTransferTask;
 import com.genonbeta.android.database.KuickDb;
-import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
@@ -48,7 +47,7 @@ public class Transfers
     }
 
     public static void createFolderStructure(List<TransferItem> list, long transferId, DocumentFile file,
-                                             String directory, AsyncTask task, Progress.Listener progress)
+                                             String directory, AsyncTask task)
             throws TaskStoppedException
     {
         DocumentFile[] files = file.listFiles();
@@ -56,24 +55,20 @@ public class Transfers
         if (files == null || files.length <= 0)
             return;
 
-        Progress.addToTotal(progress, files.length);
+        task.progress().addToTotal(files.length);
 
         for (DocumentFile thisFile : files) {
-            Progress.addToCurrent(progress, 1);
-
             task.throwIfStopped();
+            task.setOngoingContent(thisFile.getName());
+            task.progress().addToCurrent(1);
 
             if (thisFile.isDirectory()) {
                 createFolderStructure(list, transferId, thisFile, (directory == null ? null
-                        : directory + File.separator) + thisFile.getName(), task, progress);
+                        : directory + File.separator) + thisFile.getName(), task);
                 continue;
             }
 
-            try {
-                list.add(TransferItem.from(thisFile, transferId, directory));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            list.add(TransferItem.from(thisFile, transferId, directory));
         }
     }
 

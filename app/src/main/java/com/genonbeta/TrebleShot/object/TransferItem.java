@@ -349,8 +349,14 @@ public class TransferItem implements DatabaseObject<Transfer>, Editable
     public void onRemoveObject(SQLiteDatabase db, KuickDb kuick, Transfer parent, Progress.Listener listener)
     {
         // Normally we'd like to check every file, but it may take a while.
+        if (mDeleteOnRemoval)
+            deleteFile(kuick, parent);
+    }
+
+    public void deleteFile(KuickDb kuick, Transfer parent)
+    {
         if (!Type.INCOMING.equals(type) || (!Flag.INTERRUPTED.equals(getFlag())
-                && (!Flag.DONE.equals(getFlag()) || !mDeleteOnRemoval)))
+                && (!Flag.DONE.equals(getFlag()))))
             return;
 
         try {

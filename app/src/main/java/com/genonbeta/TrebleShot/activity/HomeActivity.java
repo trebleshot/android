@@ -19,10 +19,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.Service;
-import android.content.ActivityNotFoundException;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Intent;
+import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -46,6 +43,8 @@ import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.google.android.material.navigation.NavigationView;
@@ -64,6 +63,38 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
     private long mExitPressTime;
     private int mChosenMenuItemId;
+
+    public static class DummyAsyncTask extends AsyncTask
+    {
+        private final int dummyId = (int) (100 * Math.random());
+
+        @Override
+        protected void onRun() throws TaskStoppedException
+        {
+            progress().setTotal(2000);
+
+            while (progress().getTotal() > progress().getCurrent()) {
+                throwIfStopped();
+
+                setOngoingContent(String.valueOf(System.currentTimeMillis()));
+                publishStatus();
+
+                progress().addToCurrent((int) (100 * Math.random()));
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public String getName(Context context)
+        {
+            return "Dummy " + dummyId;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -115,6 +146,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
         checkAndShowCrashReport();
         checkAndShowChangelog();
+
+        DummyAsyncTask[] dummyAsyncTasks = new DummyAsyncTask[3];
+
+        for (int i = 0; i < dummyAsyncTasks.length; i++) {
+            dummyAsyncTasks[i] = new DummyAsyncTask();
+            run(dummyAsyncTasks[i]);
+        }
     }
 
     @Override

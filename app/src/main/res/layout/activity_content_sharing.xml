@@ -70,7 +70,7 @@
                 app:cardCornerRadius="24dp"
                 app:cardElevation="2dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="60dp">
+                android:layout_marginBottom="110dp">
 
                 <ProgressBar
                     android:id="@+id/activity_content_sharing_progress_bar"

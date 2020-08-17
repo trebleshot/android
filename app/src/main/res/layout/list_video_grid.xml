@@ -20,19 +20,14 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorPassive"
-    android:layout_margin="4dp">
+    android:background="?colorPassive">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/text_image" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#4000" />
+        android:contentDescription="@string/text_image"
+        android:alpha="0.7"/>
 
     <View
         android:id="@+id/visitView"
@@ -45,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/background_gradient_top_dark"
         android:orientation="vertical"
         android:paddingLeft="8dp"
         android:paddingTop="3dp"
@@ -58,8 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text2"
@@ -68,7 +61,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:gravity="center"
-            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <View
@@ -83,7 +75,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/background_gradient_bottom_dark"
         android:padding="12dp">
 
         <include layout="@layout/generic_view_selection_rounded_guiding" />

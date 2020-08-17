@@ -10,11 +10,11 @@
                 android:right="1dp"
                 android:top="1dp" />
 
-            <solid android:color="@color/dark_colorPassive" />
+            <solid android:color="#33FFFFFF" />
 
             <stroke
-                android:color="@color/dark_colorSecondary"
-                android:width="2dp" />
+                android:color="#80FFFFFF"
+                android:width="1dp" />
         </shape>
     </item>
 </layer-list>

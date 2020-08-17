@@ -798,7 +798,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         listView.addOnItemTouchListener(new SwipeSelectionListener<>(this));
 
         if (mHasBottomSpace) {
-            int bottomSpace = (int) (getResources().getDimension(R.dimen.fab_margin) * 4);
+            int bottomSpace = (int) (getResources().getDimension(R.dimen.fab_margin) * 12);
             listView.setClipToPadding(false);
             listView.setPadding(0, 0, 0, bottomSpace);
         }

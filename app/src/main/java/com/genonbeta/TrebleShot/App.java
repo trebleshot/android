@@ -345,7 +345,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
 
         mTaskNotificationTime = System.nanoTime() + (AppConfig.DELAY_DEFAULT_NOTIFICATION * (long) 1e6);
-        mTasksNotification = mNotificationHelper.notifyTasksNotification(this, taskList, mTasksNotification);
+        mTasksNotification = mNotificationHelper.notifyTasksNotification(taskList, mTasksNotification);
         return true;
     }
 

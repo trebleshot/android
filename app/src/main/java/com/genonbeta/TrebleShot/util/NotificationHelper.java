@@ -21,10 +21,15 @@ package com.genonbeta.TrebleShot.util;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import com.genonbeta.TrebleShot.App;
+import androidx.core.app.Person;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
@@ -40,6 +45,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.android.framework.io.DocumentFile;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 /**
@@ -55,9 +61,17 @@ public class NotificationHelper
 
     private final NotificationUtils mNotificationUtils;
 
+    private final Person mMe;
+
+    private final NumberFormat mPercentFormat = NumberFormat.getPercentInstance();
+
     public NotificationHelper(NotificationUtils notificationUtils)
     {
         mNotificationUtils = notificationUtils;
+        mMe = new Person.Builder()
+                .setName(AppUtils.getLocalDeviceName(getContext()))
+                .setKey(AppUtils.getDeviceId(getContext()))
+                .build();
     }
 
     public DynamicNotification getForegroundNotification()
@@ -452,7 +466,7 @@ public class NotificationHelper
         return notification.show();
     }
 
-    public DynamicNotification notifyTasksNotification(App app, List<AsyncTask> taskList,
+    public DynamicNotification notifyTasksNotification(List<AsyncTask> taskList,
                                                        @Nullable DynamicNotification notification)
     {
         if (notification == null) {
@@ -461,11 +475,52 @@ public class NotificationHelper
 
             notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
                     .setContentTitle(getContext().getString(R.string.text_taskOngoing))
-                    .setStyle(new NotificationCompat.BigPictureStyle());
+                    .setOngoing(true);
         }
 
-        notification.setContentText(getContext().getResources().getQuantityString(R.plurals.text_items,
-                taskList.size(), taskList.size()));
+        SpannableStringBuilder msg = new SpannableStringBuilder();
+        for (AsyncTask task : taskList) {
+            String content = task.getCurrentContent();
+            String middleDot = " " + getContext().getString(R.string.mode_middleDot) + " ";
+            String taskName = task.getName(getContext());
+            int progressCurrent = task.progress().getCurrent();
+            int progressTotal = task.progress().getTotal();
+
+            if (msg.length() > 0)
+                msg.append("\n");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                msg.append(taskName, new StyleSpan(Typeface.BOLD), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            else
+                msg.append(taskName);
+
+            msg.append(middleDot);
+
+            if (progressCurrent > 0 && progressTotal > 0) {
+                String percentage = mPercentFormat.format((double) progressCurrent / progressTotal);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    msg.append(percentage, new StyleSpan(Typeface.ITALIC), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                else
+                    msg.append(percentage);
+            }
+
+            if (content != null && content.length() > 0)
+                msg.append(middleDot)
+                        .append(content);
+
+            if (msg.length() < 1)
+                msg.append(getContext().getString(R.string.text_empty));
+        }
+
+        String summary = getContext().getResources().getQuantityString(R.plurals.text_tasks, taskList.size(),
+                taskList.size());
+        NotificationCompat.BigTextStyle textStyle = new NotificationCompat.BigTextStyle()
+                .setBigContentTitle(getContext().getString(R.string.text_taskOngoing))
+                .setSummaryText(summary)
+                .bigText(msg);
+        notification.setContentText(summary)
+                .setStyle(textStyle);
 
         return notification.show();
     }

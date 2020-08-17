@@ -740,7 +740,7 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
                         .load(documentFile.getUri())
                         .error(getIconRes())
                         .override(160)
-                        .centerCrop()
+                        .circleCrop()
                         .into(imageView);
 
                 return true;

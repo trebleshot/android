@@ -220,9 +220,10 @@ public class BackgroundService extends Service
                 stopSelf();
             } else if (ACTION_FOREGROUND_CHANGE.equals(intent.getAction())) {
                 boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
-                if ((!intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false) || canStopService())
-                        && killOnExit)
-                    stopSelf();
+                boolean goingBackground = intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false);
+
+               if (goingBackground && canStopService() && killOnExit)
+                   stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
