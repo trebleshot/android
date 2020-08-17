@@ -30,14 +30,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.Identity;
+import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.*;
@@ -79,6 +84,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     private MediaScannerConnection mMediaScanner;
     private NotificationHelper mNotificationHelper;
     private DynamicNotification mTasksNotification;
+    private Activity mForegroundActivity;
     private long mTaskNotificationTime;
 
     @Override
@@ -301,14 +307,9 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         }
     }
 
-    public static void notifyActivityInForeground(Activity activity, boolean inForeground)
+    public synchronized void notifyActivityInForeground(Activity activity, boolean inForeground)
     {
-        ((App) activity.getApplication()).notifyActivityInForeground(inForeground);
-    }
-
-    public synchronized void notifyActivityInForeground(boolean inForeground)
-    {
-        if (mForegroundActivitiesCount == 0 && !inForeground)
+        if (!inForeground && mForegroundActivitiesCount == 0)
             return;
 
         mForegroundActivitiesCount += inForeground ? 1 : -1;
@@ -324,7 +325,50 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             ContextCompat.startForegroundService(getApplicationContext(), intent);
         }
 
+        mForegroundActivity = inBg ? null : (inForeground ? activity : mForegroundActivity);
+
         Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
+    }
+
+    public void notifyFileRequest(Device device, Transfer transfer, List<TransferItem> itemList)
+    {
+        // Don't show when in the Add Device activity
+        if (mForegroundActivity instanceof AddDeviceActivity)
+            return;
+
+        Activity activity = mForegroundActivity;
+        int numberOfFiles = itemList.size();
+
+        Intent acceptIntent = new Intent(this, BackgroundService.class)
+                .setAction(BackgroundService.ACTION_FILE_TRANSFER)
+                .putExtra(BackgroundService.EXTRA_DEVICE, device)
+                .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
+                .putExtra(BackgroundService.EXTRA_ACCEPTED, true);
+
+        Intent rejectIntent = ((Intent) acceptIntent.clone())
+                .putExtra(BackgroundService.EXTRA_ACCEPTED, false);
+
+        Intent transferDetail = new Intent(this, TransferDetailActivity.class)
+                .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
+                .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer);
+
+        String message = numberOfFiles > 1 ? getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles,
+                numberOfFiles, numberOfFiles) : itemList.get(0).name;
+
+        if (activity == null)
+            getNotificationHelper().notifyTransferRequest(device, transfer, acceptIntent, rejectIntent, transferDetail,
+                    message);
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                    .setTitle(getString(R.string.text_deviceFileTransferRequest, device.username))
+                    .setMessage(message)
+                    .setNeutralButton(R.string.butn_show, (dialog, which) -> activity.startActivity(transferDetail))
+                    .setNegativeButton(R.string.butn_reject, (dialog, which) -> ContextCompat.startForegroundService(
+                            activity, rejectIntent))
+                    .setPositiveButton(R.string.butn_accept, (dialog, which) -> ContextCompat.startForegroundService(
+                            activity, acceptIntent));
+            activity.runOnUiThread(builder::show);
+        }
     }
 
     public boolean publishTaskNotifications(boolean force)

@@ -23,8 +23,8 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
 import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
+import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
@@ -62,8 +62,6 @@ public class AddDeviceTask extends AttachableAsyncTask<TransferMemberActivity>
         Kuick kuick = AppUtils.getKuick(context);
         SQLiteDatabase db = kuick.getWritableDatabase();
 
-        boolean update = false;
-
         try {
             TransferMember member = new TransferMember(mTransfer, mDevice, TransferItem.Type.OUTGOING);
             List<TransferItem> objectList = kuick.castQuery(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
@@ -71,22 +69,18 @@ public class AddDeviceTask extends AttachableAsyncTask<TransferMemberActivity>
                                     + "=?", String.valueOf(mTransfer.id), TransferItem.Type.OUTGOING.toString()),
                     TransferItem.class, null);
 
-            try {
-                // Checks if the current member is already on the list, if so, update
-                kuick.reconstruct(db, member);
-                update = true;
-            } catch (Exception ignored) {
-            }
-
             if (objectList.size() == 0)
                 throw new Exception("Empty share holder id: " + mTransfer.id);
 
             JSONArray filesArray = new JSONArray();
+            progress().addToTotal(objectList.size());
 
             for (TransferItem transferItem : objectList) {
-                setOngoingContent(transferItem.name);
-                transferItem.putFlag(member.deviceId, TransferItem.Flag.PENDING);
                 throwIfStopped();
+                
+                progress().addToCurrent(1);
+                setOngoingContent(transferItem.name);
+                publishStatus();
 
                 try {
                     JSONObject json = new JSONObject()
@@ -100,8 +94,7 @@ public class AddDeviceTask extends AttachableAsyncTask<TransferMemberActivity>
 
                     filesArray.put(json);
                 } catch (Exception e) {
-                    Log.e(TransferMemberActivity.TAG, "Sender error on fileUri: "
-                            + e.getClass().getName() + " : " + transferItem.name);
+                    Log.e(TransferMemberActivity.TAG, "Sender error on fileUri on " + transferItem.name, e);
                 }
             }
 
@@ -116,17 +109,10 @@ public class AddDeviceTask extends AttachableAsyncTask<TransferMemberActivity>
             }
 
             if (successful) {
-                if (update)
-                    kuick.update(db, member, mTransfer, progressListener());
-                else
-                    kuick.insert(db, member, mTransfer, progressListener());
-
-                addCloser(userAction -> kuick.remove(member));
-                kuick.update(db, objectList, mTransfer, progressListener());
+                kuick.publish(member);
                 kuick.broadcast();
 
                 TransferMemberActivity anchor = getAnchor();
-
                 if (anchor != null) {
                     anchor.setResult(RESULT_OK, new Intent()
                             .putExtra(TransferMemberActivity.EXTRA_DEVICE, mDevice)

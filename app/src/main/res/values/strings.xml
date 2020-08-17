@@ -597,4 +597,8 @@
     <string name="text_findAvailableNetwork">Find Available Networks</string>
     <string name="text_transfer">Transfer</string>
     <string name="text_errorIncludePrintfPlaceholder">Please include the placeholder (%d) to rename multiple files</string>
+    <string name="text_contentNotAccessible">Content not accessible</string>
+    <string name="text_contentAlreadyExists">Content already exists</string>
+    <string name="text_contentNotFound">Content not found</string>
+    <string name="text_deviceFileTransferRequest">%s wants to send you files</string>
 </resources>

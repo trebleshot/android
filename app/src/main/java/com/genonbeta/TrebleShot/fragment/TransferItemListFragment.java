@@ -271,7 +271,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
         if (object instanceof TransferItemListAdapter.DetailsTransferFolder) {
             final List<LoadedMember> list = Transfers.loadMemberList(getContext(), getTransfer().id, null);
 
-            if(list.size() > 0) {
+            if (list.size() > 0) {
                 DialogInterface.OnClickListener listClickListener = (dialog, which) -> {
                     getAdapter().setMember(list.get(which));
                     getAdapter().setPath(getAdapter().getPath());
@@ -310,6 +310,14 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
             new TransferInfoDialog(requireActivity(), getIndex(), object, getAdapter().getDeviceId()).show();
 
         return true;
+    }
+
+    @Override
+    public boolean setItemSelected(GroupEditableListAdapter.GroupViewHolder holder)
+    {
+        if (getAdapterImpl().getItem(holder.getAdapterPosition()) instanceof TransferItemListAdapter.TransferFolder)
+            return false;
+        return super.setItemSelected(holder);
     }
 
     public void updateSavePath(String selectedPath)

@@ -138,25 +138,16 @@ public class NotificationHelper
         notification.show();
     }
 
-    public void notifyTransferRequest(Device device, Transfer transfer, TransferItem.Type type,
-                                      List<TransferItem> objectList)
+    public void notifyTransferRequest(Device device, Transfer transfer, Intent acceptIntent, Intent rejectIntent,
+                                      Intent transferDetail, String message)
     {
-        int numberOfFiles = objectList.size();
+
         DynamicNotification notification = getUtils().buildDynamicNotification(
-                Transfers.createUniqueTransferId(transfer.id, device.uid, type),
+                Transfers.createUniqueTransferId(transfer.id, device.uid, TransferItem.Type.INCOMING),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(
-                R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : objectList.get(0).name;
-        Intent acceptIntent = new Intent(getContext(), BackgroundService.class)
-                .setAction(BackgroundService.ACTION_FILE_TRANSFER)
-                .putExtra(BackgroundService.EXTRA_DEVICE, device)
-                .putExtra(BackgroundService.EXTRA_TRANSFER, transfer).putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID,
-                        notification.getNotificationId());
 
-        Intent rejectIntent = ((Intent) acceptIntent.clone());
-
-        acceptIntent.putExtra(BackgroundService.EXTRA_ACCEPTED, true);
-        rejectIntent.putExtra(BackgroundService.EXTRA_ACCEPTED, false);
+        acceptIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
+        rejectIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent,
                 0);
@@ -167,10 +158,8 @@ public class NotificationHelper
                 .setContentTitle(getContext().getString(R.string.ques_receiveFile))
                 .setContentText(message)
                 .setContentInfo(device.username)
-                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), TransferDetailActivity.class)
-                        .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer), 0))
+                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), transferDetail,
+                        0))
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
                 .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_receive), positiveIntent)

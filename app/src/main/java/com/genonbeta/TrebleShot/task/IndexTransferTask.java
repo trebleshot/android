@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.task;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
@@ -29,8 +30,7 @@ import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.object.TransferMember;
 import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
-import com.genonbeta.TrebleShot.util.DynamicNotification;
-import com.genonbeta.android.database.Progress;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,99 +54,58 @@ public class IndexTransferTask extends AsyncTask
     }
 
     @Override
-    protected void onRun()
+    protected void onRun() throws TaskStoppedException
     {
         final SQLiteDatabase db = kuick().getWritableDatabase();
         final JSONArray jsonArray;
         Transfer transfer = new Transfer(mTransferId);
         TransferMember member = new TransferMember(transfer, mDevice, TransferItem.Type.INCOMING);
-        final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(transfer, mDevice);
-
-        notification.setProgress(0, 0, true);
 
         try {
             jsonArray = new JSONArray(mJsonIndex);
         } catch (Exception e) {
-            notification.cancel();
-            e.printStackTrace();
             return;
         }
 
-        notification.setProgress(0, 0, false);
-        boolean usePublishing = false;
+        progress().addToTotal(jsonArray.length());
 
         try {
             kuick().reconstruct(transfer);
-            usePublishing = true;
-        } catch (Exception e) {
-            e.printStackTrace();
+            return;
+        } catch (Exception ignored) {
         }
 
         kuick().publish(transfer);
         kuick().publish(member);
 
         long uniqueId = System.currentTimeMillis(); // The uniqueIds
-        List<TransferItem> pendingRegistry = new ArrayList<>();
+        List<TransferItem> itemList = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            if (isInterrupted())
-                break;
+            throwIfStopped();
+            progress().addToCurrent(1);
 
             try {
-                if (!(jsonArray.get(i) instanceof JSONObject))
-                    continue;
-
                 JSONObject index = jsonArray.getJSONObject(i);
+                TransferItem transferItem = new TransferItem(index.getLong(Keyword.TRANSFER_REQUEST_ID), mTransferId,
+                        index.getString(Keyword.INDEX_FILE_NAME), "." + (uniqueId++) + "." + AppConfig.EXT_FILE_PART,
+                        index.getString(Keyword.INDEX_FILE_MIME), index.getLong(Keyword.INDEX_FILE_SIZE),
+                        TransferItem.Type.INCOMING);
 
-                if (index != null && index.has(Keyword.INDEX_FILE_NAME)
-                        && index.has(Keyword.INDEX_FILE_SIZE) && index.has(Keyword.INDEX_FILE_MIME)
-                        && index.has(Keyword.TRANSFER_REQUEST_ID)) {
+                setOngoingContent(transferItem.name);
 
-                    TransferItem transferItem = new TransferItem(index.getLong(Keyword.TRANSFER_REQUEST_ID),
-                            mTransferId, index.getString(Keyword.INDEX_FILE_NAME),
-                            "." + (uniqueId++) + "." + AppConfig.EXT_FILE_PART,
-                            index.getString(Keyword.INDEX_FILE_MIME), index.getLong(Keyword.INDEX_FILE_SIZE),
-                            TransferItem.Type.INCOMING);
+                if (index.has(Keyword.INDEX_DIRECTORY))
+                    transferItem.directory = index.getString(Keyword.INDEX_DIRECTORY);
 
-                    if (index.has(Keyword.INDEX_DIRECTORY))
-                        transferItem.directory = index.getString(Keyword.INDEX_DIRECTORY);
-
-                    pendingRegistry.add(transferItem);
-                }
+                itemList.add(transferItem);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-        // TODO: 25.03.2020 Use native progressListener
-        Progress.Listener progressUpdater = new Progress.SimpleListener()
-        {
-            long lastNotified = System.currentTimeMillis();
 
-            @Override
-            public boolean onProgressChange(Progress progress)
-            {
-                if ((System.currentTimeMillis() - lastNotified) > 1000) {
-                    lastNotified = System.currentTimeMillis();
-                    notification.updateProgress(progress.getTotal(), progress.getCurrent(), false);
-                }
-
-                return !isInterrupted();
-            }
-        };
-
-        if (pendingRegistry.size() > 0) {
-            if (usePublishing)
-                kuick().publish(db, pendingRegistry, transfer, progressUpdater);
-            else
-                kuick().insert(db, pendingRegistry, transfer, progressUpdater);
-        }
-
-        notification.cancel();
-
-        if (isInterrupted())
-            kuick().remove(transfer);
-        else if (pendingRegistry.size() > 0) {
+        if (itemList.size() > 0) {
+            kuick().insert(db, itemList, transfer, progressListener());
             getContext().sendBroadcast(new Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
                     .putExtra(BackgroundService.EXTRA_DEVICE, mDevice));
@@ -158,8 +117,7 @@ public class IndexTransferTask extends AsyncTask
                     e.printStackTrace();
                 }
             else
-                getNotificationHelper().notifyTransferRequest(mDevice, transfer, TransferItem.Type.INCOMING,
-                        pendingRegistry);
+                getApp().notifyFileRequest(mDevice, transfer, itemList);
         }
 
         kuick().broadcast();
@@ -168,6 +126,6 @@ public class IndexTransferTask extends AsyncTask
     @Override
     public String getName(Context context)
     {
-        return null;
+        return context.getString(R.string.text_preparingFiles);
     }
 }
