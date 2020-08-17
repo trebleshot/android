@@ -152,7 +152,6 @@ public final class Transfer implements DatabaseObject<Device>, Parcelable
         kuick.remove(db, new SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER).setWhere(
                 String.format("%s = ?", Kuick.FIELD_TRANSFERMEMBER_TRANSFERID), String.valueOf(id)));
 
-
         if (deleteFilesOnRemoval) {
             List<TransferItem> itemList = kuick.castQuery(db, objectSelection, TransferItem.class, null);
 

@@ -73,7 +73,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
 
     private DocumentFile mLastKnownPath;
-    private MediaScannerConnection mMediaScanner;
     private OnPathChangedListener mPathChangedListener;
     private final IntentFilter mIntentFilter = new IntentFilter();
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -127,7 +126,7 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
         } else if (id == R.id.action_mode_file_rename) {
             new FileRenameDialog(fragment.getActivity(), selectedItemList).show();
         } else if (id == R.id.action_mode_file_copy_here) {
-            //todo: implement file copying
+            // FIXME: 8/17/20 Sharing with third-party has problems. This should be fixed.
         /*} else if (id == R.id.action_mode_file_share_all_apps) {
             Intent intent = new Intent(selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
                     .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -210,8 +209,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-
-        mMediaScanner = new MediaScannerConnection(getActivity(), null);
 
         mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
         mIntentFilter.addAction(ACTION_FILE_RENAME_COMPLETED);
@@ -305,7 +302,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     {
         super.onResume();
         requireActivity().registerReceiver(mReceiver, mIntentFilter);
-        mMediaScanner.connect();
     }
 
     @Override
@@ -313,7 +309,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
     {
         super.onPause();
         requireActivity().unregisterReceiver(mReceiver);
-        mMediaScanner.disconnect();
     }
 
     @Override
@@ -399,16 +394,6 @@ public abstract class FileListFragment extends GroupEditableListFragment<FileHol
 
         startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
         Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
-    }
-
-
-    public void scanFile(DocumentFile file)
-    {
-        // FIXME: 9/11/18 There should be insert, remove, update
-        if (file instanceof LocalDocumentFile && mMediaScanner.isConnected()) {
-            String filePath = ((LocalDocumentFile) file).getFile().getAbsolutePath();
-            mMediaScanner.scanFile(filePath, file.isDirectory() ? file.getType() : null);
-        }
     }
 
     @Override

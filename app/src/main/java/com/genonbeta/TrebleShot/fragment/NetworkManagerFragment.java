@@ -403,7 +403,6 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            // FIXME: 25.03.2020 Doesn't get called when the hotspot state is changed
             if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
                     || BackgroundService.ACTION_PIN_USED.equals(intent.getAction())
                     || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())

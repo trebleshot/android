@@ -74,6 +74,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
     private Transfer mTransfer;
     private IndexOfTransferGroup mIndex;
     private String mLastKnownPath;
+    private final IntentFilter mIntentFilter = new IntentFilter();
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -84,6 +85,11 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
                 Kuick.BroadcastData data = Kuick.toData(intent);
                 if (Kuick.TABLE_TRANSFERITEM.equals(data.tableName) || Kuick.TABLE_TRANSFER.equals(data.tableName))
                     refreshList();
+            } else if (ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED.equals(intent.getAction())
+                    && intent.hasExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER)) {
+                Transfer transfer = intent.getParcelableExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER);
+                if (transfer != null && transfer.equals(mTransfer))
+                    createSnackbar(R.string.mesg_pathSaved).show();
             }
         }
     };
@@ -97,6 +103,9 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
         setDefaultOrderingCriteria(TransferItemListAdapter.MODE_SORT_ORDER_ASCENDING);
         setDefaultSortingCriteria(TransferItemListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(TransferItemListAdapter.MODE_GROUP_BY_DEFAULT);
+
+        mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
+        mIntentFilter.addAction(ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED);
     }
 
     @Override
@@ -125,7 +134,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
     public void onResume()
     {
         super.onResume();
-        requireContext().registerReceiver(mReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
+        requireContext().registerReceiver(mReceiver, mIntentFilter);
     }
 
     @Override
@@ -318,11 +327,6 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
         if (getAdapterImpl().getItem(holder.getAdapterPosition()) instanceof TransferItemListAdapter.TransferFolder)
             return false;
         return super.setItemSelected(holder);
-    }
-
-    public void updateSavePath(String selectedPath)
-    {
-        requireActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());
     }
 
     private static class SelectionCallback extends EditableListFragment.SelectionCallback

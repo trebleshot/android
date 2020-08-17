@@ -255,9 +255,6 @@ public class BackgroundService extends Service
                     if (task == null) {
                         getNotificationHelper().getUtils().cancel(notificationId);
                     } else {
-                        // FIXME: 16.03.2020 Should we use this notification?
-                        //task.notification = getNotificationHelper().notifyStuckThread(task);
-
                         if (task.isInterrupted())
                             task.forceQuit();
                         else

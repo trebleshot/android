@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Transfer;
@@ -34,6 +35,10 @@ import java.util.List;
 
 public class ChangeSaveDirectoryTask extends AsyncTask
 {
+    public static final String ACTION_SAVE_PATH_CHANGED = "org.monora.trebleshot.intent.action.SAVE_PATH_CHANGED";
+
+    public static final String EXTRA_TRANSFER = "extraTransfer";
+
     private final Transfer mTransfer;
     private final Uri mNewSavePath;
     private boolean mSkipMoving = false;
@@ -47,14 +52,12 @@ public class ChangeSaveDirectoryTask extends AsyncTask
     @Override
     protected void onRun()
     {
-        // TODO: 31.03.2020 Should we stop the tasks or not allow this operation while there are ongoing tasks?
-        for (AsyncTask task : getApp().findTasksBy(FileTransferTask.identifyWith(mTransfer.id,
-                TransferItem.Type.INCOMING)))
-            task.interrupt(true);
+        getApp().interruptTasksBy(FileTransferTask.identifyWith(mTransfer.id, TransferItem.Type.INCOMING), true);
 
         List<TransferItem> checkList = AppUtils.getKuick(getContext()).castQuery(
                 Transfers.createIncomingSelection(mTransfer.id), TransferItem.class);
         Transfer pseudoGroup = new Transfer(mTransfer.id);
+        progress().addToTotal(checkList.size());
 
         try {
             if (!mSkipMoving) {
@@ -65,6 +68,7 @@ public class ChangeSaveDirectoryTask extends AsyncTask
                 for (TransferItem transferItem : checkList) {
                     throwIfStopped();
 
+                    progress().addToCurrent(1);
                     setOngoingContent(transferItem.name);
                     publishStatus();
 
@@ -89,6 +93,9 @@ public class ChangeSaveDirectoryTask extends AsyncTask
             mTransfer.savePath = mNewSavePath.toString();
             kuick().publish(mTransfer);
             kuick().broadcast();
+
+            getContext().sendBroadcast(new Intent(ACTION_SAVE_PATH_CHANGED)
+                    .putExtra(EXTRA_TRANSFER, mTransfer));
         } catch (Exception e) {
             e.printStackTrace();
         }

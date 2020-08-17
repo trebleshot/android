@@ -244,9 +244,9 @@ public class ConnectionUtils
                     Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
                     return address;
                 } catch (UnknownHostException e) {
-                    Log.d(TAG, "establishHotspotConnection(): Host is unknown.");
+                    Log.d(TAG, "establishHotspotConnection(): Host is unknown.", e);
                 } catch (Exception e) {
-                    Log.d(TAG, "establishHotspotConnection(): Connection failed.");
+                    Log.d(TAG, "establishHotspotConnection(): Connection failed.", e);
                 }
             } else
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
@@ -574,9 +574,7 @@ public class ConnectionUtils
             new AlertDialog.Builder(activity)
                     .setMessage(R.string.mesg_locationPermissionRequiredSelfHotspot)
                     .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_ask, (dialog, which) -> {
-                        // No, I am not going to add an if statement since when it is not needed
-                        // the main method returns true.
+                    .setPositiveButton(R.string.butn_allow, (dialog, which) -> {
                         activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION}, permRequestId);
                     })

@@ -33,10 +33,8 @@ public class WebShareActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_share);
 
-        if (getSupportActionBar() != null) {
+        if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-        }
     }
 
     @Override

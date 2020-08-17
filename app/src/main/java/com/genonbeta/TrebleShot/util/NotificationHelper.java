@@ -399,62 +399,6 @@ public class NotificationHelper
         notification.show();
     }
 
-    public DynamicNotification notifyPrepareFiles(Transfer transfer, Device device)
-    {
-        DynamicNotification notification = getUtils().buildDynamicNotification(
-                Transfers.createUniqueTransferId(transfer.id, device.uid, TransferItem.Type.INCOMING),
-                NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-        // TODO: 15.03.2020 Fix the action matching the close action
-        Intent cancelIntent = new Intent(getContext(), BackgroundService.class)
-                .setAction(BackgroundService.ACTION_STOP_TASK)
-                .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
-                .putExtra(BackgroundService.EXTRA_TRANSFER, transfer);
-
-        PendingIntent negativeIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent,
-                0);
-
-        notification.setSmallIcon(android.R.drawable.stat_sys_download)
-                .setContentTitle(getContext().getString(R.string.text_preparingFiles))
-                .setContentText(getContext().getString(R.string.text_savingDetails))
-                .setAutoCancel(false)
-                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_cancel), negativeIntent)
-                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), TransferDetailActivity.class)
-                        .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer), 0));
-
-        return notification.show();
-    }
-
-    public DynamicNotification notifyStuckThread(FileTransferTask task)
-    {
-        return notifyStuckThread(task.transfer, task.device, task.type);
-    }
-
-    public DynamicNotification notifyStuckThread(Transfer transfer, Device device, TransferItem.Type type)
-    {
-        DynamicNotification notification = getUtils().buildDynamicNotification(Transfers.createUniqueTransferId(
-                transfer.id, device.uid, type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-        Intent killIntent = new Intent(getContext(), BackgroundService.class)
-                .setAction(BackgroundService.ACTION_STOP_TASK)
-                .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
-                .putExtra(BackgroundService.EXTRA_DEVICE, device)
-                .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, type)
-                .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
-
-        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-                .setOngoing(true)
-                .setContentTitle(getContext().getString(R.string.text_stopping))
-                .setContentText(getContext().getString(R.string.text_cancellingTransfer))
-                .setProgress(0, 0, true)
-                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_killNow),
-                        PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), killIntent, 0));
-
-        return notification.show();
-    }
-
     public DynamicNotification notifyTasksNotification(List<AsyncTask> taskList,
                                                        @Nullable DynamicNotification notification)
     {

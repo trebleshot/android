@@ -108,6 +108,7 @@ public class TransferListFragment extends GroupEditableListFragment<IndexOfTrans
         super.onActivityCreated(savedInstanceState);
 
         mFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
+        mFilter.addAction(App.ACTION_TASK_CHANGE);
     }
 
     @Nullable

@@ -90,8 +90,6 @@ public abstract class Activity extends AppCompatActivity
                 checkForThemeChange();
             else if (App.ACTION_TASK_CHANGE.equals(intent.getAction()))
                 attachTasks();
-
-            Log.d(TAG, "onReceive: " + intent.getAction());
         }
     };
 
@@ -291,7 +289,7 @@ public abstract class Activity extends AppCompatActivity
         boolean checkIfExists = attachableBgTaskList.size() > 0;
 
         // If this call is in between of onStart and onStop, it means there could be some tasks held in the
-        // attached task list. To avoid duplicates, we check for them using 'checkIfExists'.
+        // attached task list. To avoid duplicates, we check them using 'checkIfExists'.
         if (concurrentTaskList.size() > 0) {
             for (AsyncTask task : concurrentTaskList) {
                 if (task instanceof BaseAttachableAsyncTask) {

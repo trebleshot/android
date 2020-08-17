@@ -27,12 +27,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.transition.TransitionManager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -52,6 +54,7 @@ import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -78,6 +81,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     private Transfer mTransfer;
     private IndexOfTransferGroup mIndex;
     private TransferItem mTransferItem;
+    private Button mOpenWebShareButton;
+    private View mNoDevicesNoticeText;
     private LoadedMember mMember;
     private MenuItem mRetryMenu;
     private MenuItem mShowFilesMenu;
@@ -97,7 +102,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
                 if (Kuick.TABLE_TRANSFER.equals(data.tableName))
                     reconstructGroup();
-                else if (Kuick.TABLE_TRANSFERITEM.equals(data.tableName) && (data.inserted || data.removed))
+                else if (Kuick.TABLE_TRANSFERITEM.equals(data.tableName) && (data.inserted || data.removed)
+                        || Kuick.TABLE_TRANSFERMEMBER.equals(data.tableName) && (data.inserted || data.removed))
                     updateCalculations();
             }
         }
@@ -113,11 +119,17 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null)
+        mOpenWebShareButton = findViewById(R.id.activity_transfer_detail_open_web_share_button);
+        mNoDevicesNoticeText = findViewById(R.id.activity_transfer_detail_no_devices_warning);
+
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
         mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
+
+        mOpenWebShareButton.setOnClickListener(v -> startActivity(new Intent(this, WebShareActivity.class)));
 
         if (Intent.ACTION_VIEW.equals(getIntent().getAction()) && getIntent().getData() != null) {
             try {
@@ -219,6 +231,17 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     {
         super.onPause();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
+    {
+        super.onAttachTasks(taskList);
+
+        for (BaseAttachableAsyncTask attachableAsyncTask : taskList) {
+            if (attachableAsyncTask instanceof FileTransferTask)
+                ((FileTransferTask) attachableAsyncTask).setAnchor(this);
+        }
     }
 
     @Override
@@ -383,8 +406,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     {
         try {
             getDatabase().reconstruct(mTransfer);
+            showMenus();
         } catch (Exception e) {
-            e.printStackTrace();
             finish();
         }
     }
@@ -425,6 +448,10 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
             } else
                 toggleButton.setVisibility(View.GONE);
         }
+
+        mOpenWebShareButton.setVisibility(mTransfer.isServedOnWeb ? View.VISIBLE : View.GONE);
+        mNoDevicesNoticeText.setVisibility(mIndex.members.length > 0 || mTransfer.isServedOnWeb
+                ? View.GONE : View.VISIBLE);
 
         mToggleBrowserShare.setTitle(mTransfer.isServedOnWeb ? R.string.butn_hideOnBrowser : R.string.butn_shareOnBrowser);
         mToggleBrowserShare.setVisible(hasOutgoing || mTransfer.isServedOnWeb);
@@ -504,8 +531,6 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         if (mDataCruncher == null || !mDataCruncher.requestRestart()) {
             mDataCruncher = new CrunchLatestDataTask(() -> {
                 showMenus();
-                findViewById(R.id.activity_transaction_no_devices_warning).setVisibility(
-                        mIndex.members.length > 0 ? View.GONE : View.VISIBLE);
 
                 if (mIndex.members.length == 0)
                     if (mTransferItem != null) {
