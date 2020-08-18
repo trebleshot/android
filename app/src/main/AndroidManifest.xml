@@ -188,7 +188,8 @@
 
         <activity
             android:name=".activity.TransferHistoryActivity"
-            android:label="@string/transfer_history" />
+            android:label="@string/transfer_history"
+            android:launchMode="singleTask"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

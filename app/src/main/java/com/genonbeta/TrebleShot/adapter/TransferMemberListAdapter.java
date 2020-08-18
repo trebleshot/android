@@ -75,7 +75,7 @@ public class TransferMemberListAdapter extends EditableListAdapter<LoadedMember,
         TextView text2 = holder.itemView.findViewById(R.id.text2);
 
         text1.setText(member.device.username);
-        text2.setText(TransferItem.Type.INCOMING.equals(member.type) ? R.string.text_receiver : R.string.sender);
+        text2.setText(TransferItem.Type.INCOMING.equals(member.type) ? R.string.text_receiver : R.string.text_sender);
         DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder);
     }
 

@@ -64,10 +64,10 @@ public class BackgroundService extends Service
             ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION",
             ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
-            ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL",
             ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
             ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
-            ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
+            ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.STOP_TASK",
+            ACTION_STOP_ALL_TASKS = "com.genonbeta.TrebleShot.transaction.action.STOP_ALL_TASKS",
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
             EXTRA_DEVICE_ADDRESS = "extraDeviceAddress",
@@ -78,8 +78,7 @@ public class BackgroundService extends Service
             EXTRA_IDENTITY = "extraIdentity",
             EXTRA_ACCEPTED = "extraAccepted",
             EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId",
-            EXTRA_TRANSFER_TYPE = "extraTransferType",
-            EXTRA_CHECK_FOR_TASKS = "extraCheckForTasks";
+            EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     private final CommunicationServer mCommunicationServer = new CommunicationServer();
     private final LocalBinder mBinder = new LocalBinder();
@@ -255,6 +254,8 @@ public class BackgroundService extends Service
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else if (ACTION_STOP_ALL_TASKS.equals(intent.getAction())) {
+                mApp.interruptAllTasks();
             }
         }
 

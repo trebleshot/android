@@ -31,9 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.Person;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
-import com.genonbeta.TrebleShot.activity.TextEditorActivity;
-import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
+import com.genonbeta.TrebleShot.activity.*;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -79,15 +77,46 @@ public class NotificationHelper
         DynamicNotification notification = getUtils().buildDynamicNotification(ID_BG_SERVICE,
                 NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
+        String sendString = getContext().getString(R.string.butn_send);
+        String receiveString = getContext().getString(R.string.butn_receive);
+
+        PendingIntent sendIntent = PendingIntent.getActivity(getContext(), 0, new Intent(getContext(),
+                ContentSharingActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
+        PendingIntent receiveIntent = PendingIntent.getActivity(getContext(), 0, new Intent(getContext(),
+                AddDeviceActivity.class).putExtra(AddDeviceActivity.EXTRA_CONNECTION_MODE,
+                AddDeviceActivity.ConnectionMode.WaitForRequests).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
+
         notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_communicationServiceRunning))
-                .setContentText(getContext().getString(R.string.text_communicationServiceStop))
-                .setAutoCancel(true)
-                .setContentIntent(PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), BackgroundService.class)
-                        .setAction(BackgroundService.ACTION_END_SESSION), 0));
+                .setContentText(getContext().getString(R.string.text_notificationOpenHome))
+                .setContentIntent(generateHomePendingIntent())
+                .addAction(generateExitNotificationAction())
+                .addAction(R.drawable.ic_arrow_up_white_24dp_static, sendString, sendIntent)
+                .addAction(R.drawable.ic_arrow_down_white_24dp_static, receiveString, receiveIntent);
 
         return notification.show();
+    }
+
+    public PendingIntent generateHomePendingIntent()
+    {
+        return PendingIntent.getActivity(getContext(), 0, new Intent(getContext(),
+                HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+    }
+
+    public NotificationCompat.Action generateStopAllTasksAction()
+    {
+        return new NotificationCompat.Action(R.drawable.ic_close_white_24dp_static, getContext().getString(
+                R.string.butn_stopAll), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(),
+                new Intent(getContext(), BackgroundService.class)
+                        .setAction(BackgroundService.ACTION_STOP_ALL_TASKS), 0));
+    }
+
+    public NotificationCompat.Action generateExitNotificationAction()
+    {
+        return new NotificationCompat.Action(R.drawable.ic_close_white_24dp_static, getContext().getString(
+                R.string.butn_exit), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(),
+                new Intent(getContext(), BackgroundService.class)
+                        .setAction(BackgroundService.ACTION_END_SESSION), 0));
     }
 
     public Context getContext()
@@ -406,9 +435,17 @@ public class NotificationHelper
             notification = getUtils().buildDynamicNotification(ID_BG_SERVICE,
                     NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
+            String transfersString = getContext().getString(R.string.butn_transfers);
+            PendingIntent transfersIntent = PendingIntent.getActivity(getContext(), 0,
+                    new Intent(getContext(), TransferHistoryActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
+
             notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
                     .setContentTitle(getContext().getString(R.string.text_taskOngoing))
-                    .setOngoing(true);
+                    .setContentIntent(generateHomePendingIntent())
+                    .setOngoing(true)
+                    .addAction(generateStopAllTasksAction())
+                    .addAction(R.drawable.ic_swap_vert_white_24dp_static, transfersString, transfersIntent);
         }
 
         SpannableStringBuilder msg = new SpannableStringBuilder();
