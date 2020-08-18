@@ -42,7 +42,7 @@ import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
-import com.genonbeta.TrebleShot.fragment.TransferItemDetailExplorerFragment;
+import com.genonbeta.TrebleShot.fragment.TransferItemExplorerFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
@@ -190,15 +190,15 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
             finish();
         else {
             Bundle bundle = new Bundle();
-            bundle.putLong(TransferItemDetailExplorerFragment.ARG_TRANSFER_ID, mTransfer.id);
-            bundle.putString(TransferItemDetailExplorerFragment.ARG_PATH, transferItem == null
+            bundle.putLong(TransferItemExplorerFragment.ARG_TRANSFER_ID, mTransfer.id);
+            bundle.putString(TransferItemExplorerFragment.ARG_PATH, transferItem == null
                     || transferItem.directory == null ? null : transferItem.directory);
 
-            TransferItemDetailExplorerFragment fragment = getExplorerFragment();
+            TransferItemExplorerFragment fragment = getExplorerFragment();
 
             if (fragment == null) {
-                fragment = (TransferItemDetailExplorerFragment) getSupportFragmentManager().getFragmentFactory().instantiate(
-                        getClassLoader(), TransferItemDetailExplorerFragment.class.getName());
+                fragment = (TransferItemExplorerFragment) getSupportFragmentManager().getFragmentFactory()
+                        .instantiate(getClassLoader(), TransferItemExplorerFragment.class.getName());
                 fragment.setArguments(bundle);
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -244,6 +244,9 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
             if (attachableAsyncTask instanceof FileTransferTask)
                 ((FileTransferTask) attachableAsyncTask).setAnchor(this);
         }
+
+        if (!hasTaskOf(FileTransferTask.class))
+            showMenus();
     }
 
     @Override
@@ -306,7 +309,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_limit_to) {
             mMember = item.getOrder() < mIndex.members.length ? mIndex.members[item.getOrder()] : null;
 
-            TransferItemDetailExplorerFragment fragment = (TransferItemDetailExplorerFragment)
+            TransferItemExplorerFragment fragment = (TransferItemExplorerFragment)
                     getSupportFragmentManager()
                             .findFragmentById(R.id.activity_transaction_content_frame);
 
@@ -330,20 +333,19 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     public void onTaskStateChange(BaseAttachableAsyncTask task,
                                   com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask.State state)
     {
-        if (task instanceof FileTransferTask)
-            ((FileTransferTask) task).setAnchor(this);
+        if (task instanceof FileTransferTask) {
+            switch (state) {
+                case Finished:
+                case Starting:
+                    showMenus();
+            }
+        }
     }
 
     @Override
     public boolean onTaskMessage(TaskMessage message)
     {
-        if (message.sizeOfActions() > 1)
-            runOnUiThread(() -> message.toDialogBuilder(this).show());
-        else if (message.sizeOfActions() <= 1)
-            runOnUiThread(() -> message.toSnackbar(findViewById(R.id.content_fab)).show());
-        else
-            return false;
-
+        runOnUiThread(() -> message.toDialogBuilder(this).show());
         return true;
     }
 
@@ -356,7 +358,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     @Override
     public Snackbar createSnackbar(int resId, Object... objects)
     {
-        TransferItemDetailExplorerFragment explorerFragment = (TransferItemDetailExplorerFragment) getSupportFragmentManager()
+        TransferItemExplorerFragment explorerFragment = (TransferItemExplorerFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.activity_transaction_content_frame);
 
         if (explorerFragment != null && explorerFragment.isAdded())
@@ -387,9 +389,9 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         return mMember;
     }
 
-    public TransferItemDetailExplorerFragment getExplorerFragment()
+    public TransferItemExplorerFragment getExplorerFragment()
     {
-        return (TransferItemDetailExplorerFragment) getSupportFragmentManager().findFragmentById(
+        return (TransferItemExplorerFragment) getSupportFragmentManager().findFragmentById(
                 R.id.activity_transaction_content_frame);
     }
 
@@ -402,7 +404,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     @Nullable
     public ExtendedFloatingActionButton getToggleButton()
     {
-        TransferItemDetailExplorerFragment explorerFragment = getExplorerFragment();
+        TransferItemExplorerFragment explorerFragment = getExplorerFragment();
         return explorerFragment != null ? explorerFragment.getToggleButton() : null;
     }
 

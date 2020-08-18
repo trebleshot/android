@@ -25,12 +25,14 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChangeSaveDirectoryTask extends AsyncTask
@@ -64,6 +66,7 @@ public class ChangeSaveDirectoryTask extends AsyncTask
                 // Illustrate new change to build the structure accordingly
                 kuick().reconstruct(pseudoGroup);
                 pseudoGroup.savePath = mNewSavePath.toString();
+                List<TransferItem> erredFiles = new ArrayList<>();
 
                 for (TransferItem transferItem : checkList) {
                     throwIfStopped();
@@ -85,8 +88,20 @@ public class ChangeSaveDirectoryTask extends AsyncTask
                                 throw new IOException("Failed to access: " + file.getUri());
                         }
                     } catch (Exception e) {
-                        // TODO: 31.03.2020 Show the errors to the user
+                        erredFiles.add(transferItem);
                     }
+                }
+
+                if (erredFiles.size() > 0) {
+                    StringBuilder fileNames = new StringBuilder("\n");
+                    for (TransferItem item : erredFiles)
+                        fileNames.append("\n")
+                                .append(item.name);
+
+                    post(TaskMessage.newInstance()
+                            .setTitle(getName())
+                            .setMessage(getContext().getString(R.string.mesg_errorMoveFile, fileNames.toString())));
+
                 }
             }
 

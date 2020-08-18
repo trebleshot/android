@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.object;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -76,37 +77,29 @@ public class Identity implements Parcelable
     {
         if (obj instanceof Identity) {
             Identity identity = (Identity) obj;
-
-            if (!isAllTrue(identity)) {
-                synchronized (mValueListOR) {
-                    synchronized (identity.mValueListOR) {
-                        for (Identifier identifier : identity.mValueListOR)
-                            if (mValueListOR.contains(identifier))
-                                return true;
-                    }
-
-                    return false;
-                }
-            }
+            return isANDsTrue(identity) || isORsTrue(identity);
         }
         return super.equals(obj);
     }
 
     // AND
-    private boolean isAllTrue(Identity identity)
+    private synchronized boolean isANDsTrue(Identity identity)
     {
         if (mValueListAND.size() <= 0 || identity.mValueListAND.size() <= 0)
             return false;
 
-        synchronized (mValueListAND) {
-            synchronized (identity.mValueListAND) {
-                for (Identifier identifier : identity.mValueListAND)
-                    if (!mValueListAND.contains(identifier))
-                        return false;
-            }
-        }
-
+        for (Identifier identifier : mValueListAND)
+            if (!identity.mValueListAND.contains(identifier))
+                return false;
         return true;
+    }
+
+    private synchronized boolean isORsTrue(Identity identity)
+    {
+        for (Identifier identifier : mValueListOR)
+            if (identity.mValueListOR.contains(identifier))
+                return true;
+        return false;
     }
 
     public void putAND(Identifier identifier)

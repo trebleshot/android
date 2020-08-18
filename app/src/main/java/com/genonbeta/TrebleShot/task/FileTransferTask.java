@@ -616,22 +616,22 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
     public static Identity identifyWith(long transferId)
     {
-        return Identity.withANDs(from(Id.GroupId, transferId));
+        return Identity.withANDs(from(Id.TransferId, transferId));
     }
 
     public static Identity identifyWith(long transferId, TransferItem.Type type)
     {
-        return Identity.withANDs(from(Id.GroupId, transferId), from(Id.Type, type));
+        return Identity.withANDs(from(Id.TransferId, transferId), from(Id.Type, type));
     }
 
     public static Identity identifyWith(long transferId, String deviceId)
     {
-        return Identity.withANDs(from(Id.GroupId, transferId), from(Id.DeviceId, deviceId));
+        return Identity.withANDs(from(Id.TransferId, transferId), from(Id.DeviceId, deviceId));
     }
 
     public static Identity identifyWith(long transferId, String deviceId, TransferItem.Type type)
     {
-        return Identity.withANDs(from(Id.GroupId, transferId), from(Id.DeviceId, deviceId), from(Id.Type, type));
+        return Identity.withANDs(from(Id.TransferId, transferId), from(Id.DeviceId, deviceId), from(Id.Type, type));
     }
 
     public void startTransferAsClient() throws TaskStoppedException
@@ -657,7 +657,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
     public enum Id
     {
-        GroupId,
+        TransferId,
         DeviceId,
         Type
     }

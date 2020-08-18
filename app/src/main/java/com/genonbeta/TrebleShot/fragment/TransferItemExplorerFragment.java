@@ -36,7 +36,7 @@ import java.io.File;
  * created by: veli
  * date: 3/11/19 7:37 PM
  */
-public class TransferItemDetailExplorerFragment extends TransferItemListFragment
+public class TransferItemExplorerFragment extends TransferItemListFragment
 {
     private RecyclerView mPathView;
     private TransferPathResolverRecyclerAdapter mPathAdapter;

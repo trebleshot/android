@@ -118,6 +118,11 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         return getApp().getMediaScanner();
     }
 
+    protected String getName()
+    {
+        return getName(getContext());
+    }
+
     public abstract String getName(Context context);
 
     protected NotificationHelper getNotificationHelper()
@@ -125,7 +130,8 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         return getApp().getNotificationHelper();
     }
 
-    public State getState() {
+    public State getState()
+    {
         if (!isStarted())
             return State.Starting;
         else if (!isFinished())
@@ -370,7 +376,8 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         HashCode
     }
 
-    public enum State {
+    public enum State
+    {
         Starting,
         Running,
         Finished

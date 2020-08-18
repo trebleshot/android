@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -105,6 +106,14 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     public boolean comparisonSupported()
     {
         return true;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof IndexOfTransferGroup)
+            return transfer.equals(((IndexOfTransferGroup) obj).transfer);
+        return super.equals(obj);
     }
 
     public boolean hasIncoming()

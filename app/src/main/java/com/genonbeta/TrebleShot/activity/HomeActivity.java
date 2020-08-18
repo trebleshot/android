@@ -42,9 +42,10 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.object.Identifier;
+import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
-import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
+import com.genonbeta.TrebleShot.service.backgroundservice.*;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.google.android.material.navigation.NavigationView;
@@ -53,8 +54,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener,
+        AttachedTaskListener
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
@@ -64,7 +67,14 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
     private long mExitPressTime;
     private int mChosenMenuItemId;
 
-    public static class DummyAsyncTask extends AsyncTask
+    public enum DummyIdentity
+    {
+        One,
+        Two,
+        Three
+    }
+
+    public static class DummyAsyncTask extends AttachableAsyncTask<HomeActivity>
     {
         private final int dummyId = (int) (100 * Math.random());
 
@@ -90,10 +100,44 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         }
 
         @Override
+        public Identity getIdentity()
+        {
+            return Identity.withANDs(Identifier.from(DummyIdentity.One, 1), Identifier.from(DummyIdentity.Two, 2),
+                    Identifier.from(DummyIdentity.Three, 3));
+        }
+
+        @Override
         public String getName(Context context)
         {
             return "Dummy " + dummyId;
         }
+    }
+
+    @Override
+    public boolean onTaskMessage(TaskMessage message)
+    {
+        return false;
+    }
+
+    @Override
+    public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
+    {
+
+    }
+
+    @Override
+    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
+    {
+        super.onAttachTasks(taskList);
+        for (BaseAttachableAsyncTask attachableAsyncTask : taskList)
+            if (attachableAsyncTask instanceof DummyAsyncTask)
+                ((DummyAsyncTask) attachableAsyncTask).setAnchor(this);
+    }
+
+    @Override
+    public Identity getIdentity()
+    {
+        return Identity.withANDs(Identifier.from(DummyIdentity.One, 1), Identifier.from(DummyIdentity.Two, 2));
     }
 
     @Override
@@ -147,12 +191,14 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         checkAndShowCrashReport();
         checkAndShowChangelog();
 
-        DummyAsyncTask[] dummyAsyncTasks = new DummyAsyncTask[3];
+        // TODO: 8/18/20 Remove this test task
+        /**
+        DummyAsyncTask[] dummyAsyncTasks = new DummyAsyncTask[1];
 
         for (int i = 0; i < dummyAsyncTasks.length; i++) {
             dummyAsyncTasks[i] = new DummyAsyncTask();
             run(dummyAsyncTasks[i]);
-        }
+        }**/
     }
 
     @Override

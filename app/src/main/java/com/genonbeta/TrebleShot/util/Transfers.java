@@ -15,7 +15,6 @@ import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
-import com.genonbeta.TrebleShot.task.InitializeTransferTask;
 import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -286,13 +285,6 @@ public class Transfers
                                      TransferItem.Type type)
     {
         App.interruptTasksBy(activity, FileTransferTask.identifyWith(transferId, deviceId, type), true);
-    }
-
-    @Deprecated
-    public static void requestStartSending(Activity activity, TransferMember member, Device device,
-                                           DeviceAddress address)
-    {
-        App.run(activity, new InitializeTransferTask(device, address, member));
     }
 
     public static void recoverIncomingInterruptions(Context context, long transferId)

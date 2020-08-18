@@ -28,9 +28,6 @@
         GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public
         License
         along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.
-        \n\nThis program uses a modified version of Ubuntu Font Family under the terms of Ubuntu Font License.
-        For the license, see &lt;https://www.ubuntu.com/legal/font-licence&gt;.
-        For the modified version, visit &lt;https://github.com/velitasali/UbuntuFontForAndroid&gt;
     </string>
     <string name="text_developmentSurvey" translatable="false">DevSurvey</string>
     <string name="text_developmentSurveySummary" formatted="false" translatable="false">Tell us how

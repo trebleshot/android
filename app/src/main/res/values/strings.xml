@@ -601,4 +601,5 @@
     <string name="text_contentAlreadyExists">Content already exists</string>
     <string name="text_contentNotFound">Content not found</string>
     <string name="text_deviceFileTransferRequest">%s wants to send you files</string>
+    <string name="mesg_errorMoveFile">Something went wrong while moving: \'%s\'</string>
 </resources>

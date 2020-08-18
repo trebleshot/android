@@ -73,7 +73,7 @@ public class TransferListFragment extends GroupEditableListFragment<IndexOfTrans
                 if (data != null && (Kuick.TABLE_TRANSFER.equals(data.tableName)
                         || Kuick.TABLE_TRANSFERITEM.equals(data.tableName)))
                     refreshList();
-            } else if (App.ACTION_TASK_CHANGE.equals(intent.getAction())) // TODO: 8/14/20 This class should not be using a custom Tasks loader.
+            } else if (App.ACTION_TASK_CHANGE.equals(intent.getAction()))
                 updateTasks();
         }
     };

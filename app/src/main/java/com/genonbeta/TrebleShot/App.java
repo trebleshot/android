@@ -143,7 +143,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     {
         List<T> foundList = new ArrayList<>();
         for (T task : taskList)
-            if (task.getIdentity().equals(identity))
+            if (identity.equals(task.getIdentity()))
                 foundList.add(task);
         return foundList;
     }
@@ -231,7 +231,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     public static boolean hasTaskWith(List<? extends AsyncTask> taskList, Identity identity)
     {
         for (AsyncTask task : taskList)
-            if (task.getIdentity().equals(identity))
+            if (identity.equals(task.getIdentity()))
                 return true;
         return false;
     }
