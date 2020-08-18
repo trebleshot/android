@@ -68,9 +68,6 @@ public class TransferMemberActivity extends Activity implements SnackbarPlacemen
     private Transfer mTransfer = null;
     private ExtendedFloatingActionButton mActionButton;
     private ProgressBar mProgressBar;
-    private ViewGroup mLayoutStatusContainer;
-    private TextView mProgressTextCurrent;
-    private TextView mProgressTextTotal;
     private boolean mAddingFirstDevice;
     private int mColorActive;
     private int mColorNormal;
@@ -123,10 +120,7 @@ public class TransferMemberActivity extends Activity implements SnackbarPlacemen
         mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError));
         mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
         mProgressBar = findViewById(R.id.progressBar);
-        mProgressTextCurrent = findViewById(R.id.text1);
-        mProgressTextTotal = findViewById(R.id.text2);
         mActionButton = findViewById(R.id.content_fab);
-        mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
 
         mActionButton.setOnClickListener(v -> {
             if (hasTaskOf(OrganizeLocalSharingTask.class))
@@ -233,13 +227,6 @@ public class TransferMemberActivity extends Activity implements SnackbarPlacemen
                 case Starting:
                     setLoaderShowing(true);
                 case Running:
-                    int progress = task.progress().getCurrent();
-                    int total = task.progress().getTotal();
-
-                    mProgressTextCurrent.setText(String.valueOf(progress));
-                    mProgressTextTotal.setText(String.valueOf(total));
-                    mProgressBar.setProgress(progress);
-                    mProgressBar.setMax(total);
                     break;
                 case Finished:
                     setLoaderShowing(false);
@@ -295,7 +282,7 @@ public class TransferMemberActivity extends Activity implements SnackbarPlacemen
 
     private void setLoaderShowing(boolean showing)
     {
-        mLayoutStatusContainer.setVisibility(showing ? View.VISIBLE : View.GONE);
+        mProgressBar.setVisibility(showing ? View.VISIBLE : View.GONE);
         mActionButton.setIconResource(showing ? R.drawable.ic_close_white_24dp : R.drawable.ic_add_white_24dp);
         mActionButton.setText(showing ? R.string.butn_cancel : R.string.butn_addMore);
         mActionButton.setBackgroundTintList(ColorStateList.valueOf(showing ? mColorActive : mColorNormal));

@@ -337,7 +337,14 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     @Override
     public boolean onTaskMessage(TaskMessage message)
     {
-        return false;
+        if (message.sizeOfActions() > 1)
+            runOnUiThread(() -> message.toDialogBuilder(this).show());
+        else if (message.sizeOfActions() <= 1)
+            runOnUiThread(() -> message.toSnackbar(findViewById(R.id.content_fab)).show());
+        else
+            return false;
+
+        return true;
     }
 
     private void attachListeners(Fragment initiatedItem)

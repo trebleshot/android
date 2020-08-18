@@ -24,24 +24,9 @@
     <ProgressBar
         android:id="@+id/progress"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/progress_percent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/progress"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true" />
-
-    <TextView
-        android:id="@+id/progress_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/progress"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true" />
 
 </RelativeLayout>

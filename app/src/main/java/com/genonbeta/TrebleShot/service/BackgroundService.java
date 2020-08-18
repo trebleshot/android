@@ -417,7 +417,7 @@ public class BackgroundService extends Service
                     sendBroadcast(new Intent(ACTION_PIN_USED));
 
                 getKuick().broadcast();
-                activeConnection.setInternalCacheLimit(1073741824);
+                activeConnection.setInternalCacheLimit(1073741824); // 1MB
                 response = activeConnection.receive().getAsJson();
 
                 handleRequest(activeConnection, device, deviceAddress, hasPin, response);
@@ -526,7 +526,9 @@ public class BackgroundService extends Service
                     Log.d(BackgroundService.TAG, "CommunicationServer.onConnected(): "
                             + "transferId=" + transferId + " typeValue=" + typeValue);
 
-                    if (!isProcessRunning(transferId, device.uid, type)) {
+                    if (TransferItem.Type.INCOMING.equals(type) && !device.isTrusted)
+                        CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_TRUSTED);
+                    else if (!isProcessRunning(transferId, device.uid, type)) {
                         FileTransferTask task = new FileTransferTask();
                         task.activeConnection = activeConnection;
                         task.transfer = transfer;
@@ -536,10 +538,6 @@ public class BackgroundService extends Service
                         task.index = new IndexOfTransferGroup(transfer);
 
                         getKuick().reconstruct(task.member);
-
-                        if (TransferItem.Type.INCOMING.equals(type) && !device.isTrusted)
-                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_TRUSTED);
-                        else
                             CommunicationBridge.sendResult(activeConnection, true);
 
                         mApp.attach(task);

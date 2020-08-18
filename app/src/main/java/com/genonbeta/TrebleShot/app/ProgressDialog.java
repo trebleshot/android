@@ -21,19 +21,11 @@ package com.genonbeta.TrebleShot.app;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-
-import java.text.NumberFormat;
 
 public class ProgressDialog extends AlertDialog
 {
@@ -49,13 +41,8 @@ public class ProgressDialog extends AlertDialog
     public static final int STYLE_HORIZONTAL = 1;
 
     private ProgressBar mProgress;
-    private TextView mMessageView;
 
     private int mProgressStyle = STYLE_SPINNER;
-    private TextView mProgressNumber;
-    private String mProgressNumberFormat;
-    private TextView mProgressPercent;
-    private NumberFormat mProgressPercentFormat;
 
     private int mMax;
     private int mProgressVal;
@@ -64,11 +51,9 @@ public class ProgressDialog extends AlertDialog
     private int mIncrementSecondaryBy;
     private Drawable mProgressDrawable;
     private Drawable mIndeterminateDrawable;
-    private CharSequence mMessage;
     private boolean mIndeterminate;
 
     private boolean mHasStarted;
-    private Handler mViewUpdateHandler;
 
     /**
      * Creates a Progress dialog.
@@ -78,7 +63,6 @@ public class ProgressDialog extends AlertDialog
     public ProgressDialog(Context context)
     {
         super(context);
-        initFormats();
     }
 
     /**
@@ -92,7 +76,6 @@ public class ProgressDialog extends AlertDialog
     public ProgressDialog(Context context, int theme)
     {
         super(context, theme);
-        initFormats();
     }
 
     /**
@@ -171,13 +154,6 @@ public class ProgressDialog extends AlertDialog
         return dialog;
     }
 
-    private void initFormats()
-    {
-        mProgressNumberFormat = "%1d/%2d";
-        mProgressPercentFormat = NumberFormat.getPercentInstance();
-        mProgressPercentFormat.setMaximumFractionDigits(0);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -188,10 +164,7 @@ public class ProgressDialog extends AlertDialog
         /* Use a separate handler to update the text views as they
          * must be updated on the same thread that created them.
          */
-        mViewUpdateHandler = new ViewUpdateHandler();
         mProgress = view.findViewById(R.id.progress);
-        mProgressNumber = view.findViewById(R.id.progress_number);
-        mProgressPercent = view.findViewById(R.id.progress_percent);
         setView(view);
 
         if (mMax > 0)
@@ -214,9 +187,6 @@ public class ProgressDialog extends AlertDialog
 
         if (mIndeterminateDrawable != null)
             setIndeterminateDrawable(mIndeterminateDrawable);
-
-        if (mMessage != null)
-            setMessage(mMessage);
 
         setIndeterminate(mIndeterminate);
         onProgressChanged();
@@ -418,20 +388,6 @@ public class ProgressDialog extends AlertDialog
         }
     }
 
-    @Override
-    public void setMessage(CharSequence message)
-    {
-        if (mProgress != null) {
-            if (mProgressStyle == STYLE_HORIZONTAL) {
-                super.setMessage(message);
-            } else {
-                mMessageView.setText(message);
-            }
-        } else {
-            mMessage = message;
-        }
-    }
-
     /**
      * Sets the style of this ProgressDialog, either {@link #STYLE_SPINNER} or
      * {@link #STYLE_HORIZONTAL}. The default is {@link #STYLE_SPINNER}.
@@ -448,70 +404,10 @@ public class ProgressDialog extends AlertDialog
         mProgressStyle = style;
     }
 
-    /**
-     * Change the format of the small text showing current and maximum units
-     * of progress.  The default is "%1d/%2d".
-     * Should not be called during the number is progressing.
-     *
-     * @param format A string passed to {@link String#format String.format()};
-     *               use "%1d" for the current number and "%2d" for the maximum.  If null,
-     *               nothing will be shown.
-     */
-    public void setProgressNumberFormat(String format)
-    {
-        mProgressNumberFormat = format;
-        onProgressChanged();
-    }
-
-    /**
-     * Change the format of the small text showing the percentage of progress.
-     * The default is
-     * {@link NumberFormat#getPercentInstance() NumberFormat.getPercentageInstnace().}
-     * Should not be called during the number is progressing.
-     *
-     * @param format An instance of a {@link NumberFormat} to generate the
-     *               percentage text.  If null, nothing will be shown.
-     */
-    public void setProgressPercentFormat(NumberFormat format)
-    {
-        mProgressPercentFormat = format;
-        onProgressChanged();
-    }
-
     private void onProgressChanged()
     {
         if (mProgressStyle == STYLE_HORIZONTAL) {
-            if (mViewUpdateHandler != null && !mViewUpdateHandler.hasMessages(0)) {
-                mViewUpdateHandler.sendEmptyMessage(0);
-            }
-        }
-    }
 
-    private class ViewUpdateHandler extends Handler
-    {
-        @Override
-        public void handleMessage(Message msg)
-        {
-            super.handleMessage(msg);
-
-            /* Update the number and percent */
-            int progress = mProgress.getProgress();
-            int max = mProgress.getMax();
-            if (mProgressNumberFormat != null) {
-                String format = mProgressNumberFormat;
-                mProgressNumber.setText(String.format(format, progress, max));
-            } else {
-                mProgressNumber.setText("");
-            }
-            if (mProgressPercentFormat != null) {
-                double percent = (double) progress / (double) max;
-                SpannableString tmp = new SpannableString(mProgressPercentFormat.format(percent));
-                tmp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                        0, tmp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                mProgressPercent.setText(tmp);
-            } else {
-                mProgressPercent.setText("");
-            }
         }
     }
 }

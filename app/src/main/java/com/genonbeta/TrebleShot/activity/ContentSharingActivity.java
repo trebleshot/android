@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -171,9 +170,10 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     {
         int id = item.getItemId();
 
-        if (id == android.R.id.home)
-            onBackPressed();
-        else
+        if (id == android.R.id.home) {
+            if (canExit())
+                onBackPressed();
+        } else
             return super.onOptionsItemSelected(item);
 
         return true;
@@ -203,15 +203,8 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     @Override
     public void onBackPressed()
     {
-        if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
-            if (SelectionUtils.getTotalSize(mPerformerEngine) > 0) {
-                new AlertDialog.Builder(this)
-                        .setMessage(R.string.ques_cancelSelection)
-                        .setNegativeButton(R.string.butn_no, null)
-                        .setPositiveButton(R.string.butn_yes, (dialog, which) -> finish())
-                        .show();
-            } else
-                super.onBackPressed();
+        if ((mBackPressedListener == null || !mBackPressedListener.onBackPressed()) && canExit()) {
+            super.onBackPressed();
         }
     }
 
@@ -219,6 +212,20 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
     {
         mMenuCallback.setForegroundConnection(fragment.getEngineConnection());
         mBackPressedListener = fragment instanceof OnBackPressedListener ? (OnBackPressedListener) fragment : null;
+    }
+
+    private boolean canExit()
+    {
+        if (SelectionUtils.getTotalSize(mPerformerEngine) > 0) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.ques_cancelSelection)
+                    .setNegativeButton(R.string.butn_no, null)
+                    .setPositiveButton(R.string.butn_yes, (dialog, which) -> finish())
+                    .show();
+            return false;
+        }
+
+        return true;
     }
 
     @Nullable

@@ -34,40 +34,17 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
-        <RelativeLayout
-            android:id="@+id/layoutStatusContainer"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:padding="10dp" />
-
-            <TextView
-                android:id="@+id/text2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:padding="10dp" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/text2"
-                android:layout_toLeftOf="@id/text2"
-                android:layout_toEndOf="@id/text1"
-                android:layout_toRightOf="@id/text1" />
-
-        </RelativeLayout>
+            android:layout_marginTop="-7dp"
+            android:layout_marginBottom="-7dp"
+            android:layout_centerVertical="true"
+            android:indeterminate="true"
+            android:maxWidth="220dp"
+            android:visibility="gone" />
 
         <View style="@style/DividerStyle.Raw" />
 

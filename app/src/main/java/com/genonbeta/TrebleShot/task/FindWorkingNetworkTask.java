@@ -19,10 +19,12 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
@@ -30,7 +32,10 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommonErrorHelper;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.Transfers;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.List;
 
 public class FindWorkingNetworkTask extends AttachableAsyncTask<FindWorkingNetworkTask.CalculationResultListener>
@@ -45,36 +50,40 @@ public class FindWorkingNetworkTask extends AttachableAsyncTask<FindWorkingNetwo
     @Override
     protected void onRun() throws TaskStoppedException
     {
-        List<DeviceAddress> knownAddressList = AppUtils.getKuick(getContext()).castQuery(
-                Transfers.createAddressSelection(device.uid), DeviceAddress.class);
+        try {
+            List<DeviceAddress> knownAddressList = AppUtils.getKuick(getContext()).castQuery(
+                    Transfers.createAddressSelection(device.uid), DeviceAddress.class);
 
-        progress().addToTotal(knownAddressList.size());
-        publishStatus();
+            progress().addToTotal(knownAddressList.size());
+            publishStatus();
 
-        if (knownAddressList.size() > 0) {
-            for (DeviceAddress address : knownAddressList) {
-                throwIfStopped();
-                setOngoingContent(address.getHostAddress());
-                progress().addToCurrent(1);
-                publishStatus();
+            if (knownAddressList.size() > 0) {
+                for (DeviceAddress address : knownAddressList) {
+                    throwIfStopped();
+                    setOngoingContent(address.getHostAddress());
+                    progress().addToCurrent(1);
+                    publishStatus();
 
-                try (CommunicationBridge client = CommunicationBridge.connect(kuick(), address, device, 0)) {
-                    client.requestAcquaintance();
-                    if (client.receiveResult()) {
-                        CalculationResultListener anchor = getAnchor();
-                        if (anchor != null)
-                            post(() -> anchor.onCalculationResult(device, address));
-                        return;
+                    try (CommunicationBridge client = CommunicationBridge.connect(kuick(), address, device, 0)) {
+                        client.requestAcquaintance();
+                        if (client.receiveResult()) {
+                            CalculationResultListener anchor = getAnchor();
+                            if (anchor != null)
+                                post(() -> anchor.onCalculationResult(device, address));
+                            return;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    post(CommonErrorHelper.messageOf(getContext(), e));
                 }
             }
-        }
 
-        CalculationResultListener anchor = getAnchor();
-        if (anchor != null)
-            post(() -> anchor.onCalculationResult(device, null));
+            CalculationResultListener anchor = getAnchor();
+            if (anchor != null)
+                post(() -> anchor.onCalculationResult(device, null));
+        } catch(Exception e) {
+            post(CommonErrorHelper.messageOf(getContext(), e));
+        }
     }
 
     @Override

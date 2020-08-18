@@ -69,7 +69,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
         final boolean isDeviceNormal = Device.Type.NORMAL.equals(device.type);
 
-        if (BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
+        if (!Device.Type.WEB.equals(device.type) && BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
             notSupportedText.setVisibility(View.VISIBLE);
 
         DeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));

@@ -47,7 +47,7 @@
 
         <Button
             android:id="@+id/activity_transfer_detail_open_web_share_button"
-            style="@style/Widget.TrebleShot.ButtonStyle"
+            style="@style/Widget.TrebleShot.ButtonStyle.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

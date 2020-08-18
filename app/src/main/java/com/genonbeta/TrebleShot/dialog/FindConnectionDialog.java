@@ -19,6 +19,8 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.widget.CheckBox;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.App;
@@ -46,11 +48,18 @@ public class FindConnectionDialog extends ProgressDialog
         FindWorkingNetworkTask task = new FindWorkingNetworkTask(device);
 
         task.setAnchor(binder);
-        task.addCloser(userAction -> task.removeAnchor());
+
+        Runnable removeOnClose = () -> {
+            task.removeAnchor();
+            task.interrupt();
+        };
 
         dialog.setTitle(R.string.text_automaticNetworkConnectionOngoing);
-        dialog.setOnDismissListener(dialog1 -> task.interrupt());
-        dialog.setOnCancelListener(dialog1 -> task.interrupt());
+        dialog.setCancelable(false);
+        dialog.setOnDismissListener(dialog1 -> removeOnClose.run());
+        dialog.setOnCancelListener(dialog1 -> removeOnClose.run());
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.butn_cancel),
+                (dialog12, which) -> removeOnClose.run());
         dialog.show();
 
         App.run(activity, task);
@@ -75,11 +84,14 @@ public class FindConnectionDialog extends ProgressDialog
         @Override
         public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
         {
-            if (task.isFinished()) {
-                dialog.dismiss();
-            } else {
-                dialog.setMax(task.progress().getTotal());
-                dialog.setProgress(task.progress().getTotal());
+            if (dialog.isShowing()) {
+                if (task.isFinished()) {
+                    dialog.dismiss();
+                } else {
+                    dialog.setMessage(task.getCurrentContent());
+                    dialog.setMax(task.progress().getTotal());
+                    dialog.setProgress(task.progress().getCurrent());
+                }
             }
         }
 
@@ -99,7 +111,8 @@ public class FindConnectionDialog extends ProgressDialog
                         .setMessage(R.string.text_automaticNetworkConnectionFailed)
                         .setNeutralButton(R.string.butn_close, null)
                         .setPositiveButton(R.string.butn_retry,
-                                (dialog, which) -> FindConnectionDialog.show(activity, device, listener));
+                                (dialog, which) -> FindConnectionDialog.show(activity, device, listener))
+                        .show();
             } else
                 listener.onDeviceResolved(device, address);
         }

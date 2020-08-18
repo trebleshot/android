@@ -50,4 +50,10 @@ abstract public class GalleryGroupEditableListFragment<T extends GroupEditableLi
         options.put(getString(R.string.text_groupByDate), ImageListAdapter.MODE_GROUP_BY_DATE);
         options.put(getString(R.string.text_groupByAlbum), ImageListAdapter.MODE_GROUP_BY_ALBUM);
     }
+
+    @Override
+    public boolean isGridSupported()
+    {
+        return true;
+    }
 }

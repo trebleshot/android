@@ -138,7 +138,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0'
     implementation 'com.genonbeta.android:framework:1.0.4'
     implementation 'com.genonbeta.android:gdatabase:1.0.4'
-    implementation 'org.monora.coolsocket:core:2.0-rc02'
+    implementation 'org.monora.coolsocket:core:2.0-rc02-01'
     implementation 'com.google.zxing:core:3.3.0' // 3.3.2 requires minimum Android SDK 16
     implementation 'org.nanohttpd:nanohttpd:2.2.0'
     implementation 'com.velitasali.tools.android:zxing:3.6.3'

@@ -427,9 +427,9 @@ public class NotificationHelper
             else
                 msg.append(taskName);
 
-            msg.append(middleDot);
-
             if (progressCurrent > 0 && progressTotal > 0) {
+                msg.append(middleDot);
+
                 String percentage = mPercentFormat.format((double) progressCurrent / progressTotal);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
