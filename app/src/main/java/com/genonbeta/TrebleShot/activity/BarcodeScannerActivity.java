@@ -226,14 +226,11 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     {
         super.onAttachTasks(taskList);
 
-        boolean hasDeviceIntroductionTask = false;
         for (BaseAttachableAsyncTask task : taskList)
-            if (task instanceof DeviceIntroductionTask) {
-                hasDeviceIntroductionTask = true;
+            if (task instanceof DeviceIntroductionTask)
                 ((DeviceIntroductionTask) task).setAnchor(this);
-            }
 
-        updateState(hasDeviceIntroductionTask);
+        updateState(hasTaskOf(DeviceIntroductionTask.class));
     }
 
     @Override
@@ -419,8 +416,16 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     @Override
     public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
     {
-        if (task instanceof DeviceIntroductionTask)
-            updateState(!task.isFinished());
+        if (task instanceof DeviceIntroductionTask) {
+            switch (state) {
+                case Starting:
+                    updateState(true);
+                    break;
+                case Finished:
+                    updateState(false);
+            }
+        }
+        updateState(!task.isFinished());
     }
 
     @Override

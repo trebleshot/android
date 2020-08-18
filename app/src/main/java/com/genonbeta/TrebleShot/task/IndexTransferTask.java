@@ -103,7 +103,6 @@ public class IndexTransferTask extends AsyncTask
             }
         }
 
-
         if (itemList.size() > 0) {
             kuick().insert(db, itemList, transfer, progressListener());
             getContext().sendBroadcast(new Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)

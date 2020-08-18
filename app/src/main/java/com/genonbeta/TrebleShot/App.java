@@ -362,6 +362,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                     .setTitle(getString(R.string.text_deviceFileTransferRequest, device.username))
                     .setMessage(message)
+                    .setCancelable(false)
                     .setNeutralButton(R.string.butn_show, (dialog, which) -> activity.startActivity(transferDetail))
                     .setNegativeButton(R.string.butn_reject, (dialog, which) -> ContextCompat.startForegroundService(
                             activity, rejectIntent))
