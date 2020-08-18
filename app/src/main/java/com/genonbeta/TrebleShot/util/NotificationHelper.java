@@ -403,7 +403,7 @@ public class NotificationHelper
                                                        @Nullable DynamicNotification notification)
     {
         if (notification == null) {
-            notification = getUtils().buildDynamicNotification(ID_ONGOING_TASKS,
+            notification = getUtils().buildDynamicNotification(ID_BG_SERVICE,
                     NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
             notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)

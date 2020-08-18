@@ -62,7 +62,6 @@ public class BackgroundService extends Service
             ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
             ACTION_DEVICE_KEY_CHANGE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL",
             ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION",
-            ACTION_FOREGROUND_CHANGE = "com.genonbeta.TrebleShot.action.ACTION_FOREGROUND_CHANGE",
             ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
             ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL",
@@ -84,7 +83,7 @@ public class BackgroundService extends Service
 
     private final CommunicationServer mCommunicationServer = new CommunicationServer();
     private final LocalBinder mBinder = new LocalBinder();
-    private WebShareServer mWebShareServer;
+
     private WifiManager.WifiLock mWifiLock;
     private App mApp;
 
@@ -108,7 +107,6 @@ public class BackgroundService extends Service
         }
 
         WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
-        mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
 
         if (wifiManager != null)
             mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
@@ -218,12 +216,6 @@ public class BackgroundService extends Service
                 }
             } else if (ACTION_END_SESSION.equals(intent.getAction())) {
                 stopSelf();
-            } else if (ACTION_FOREGROUND_CHANGE.equals(intent.getAction())) {
-                boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
-                boolean goingBackground = intent.getBooleanExtra(EXTRA_CHECK_FOR_TASKS, false);
-
-                if (goingBackground && canStopService() && killOnExit)
-                    stopSelf();
             } else if (ACTION_START_TRANSFER.equals(intent.getAction()) && intent.hasExtra(EXTRA_TRANSFER)
                     && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 Device device = intent.getParcelableExtra(EXTRA_DEVICE);
@@ -283,8 +275,8 @@ public class BackgroundService extends Service
         mApp.getNsdDaemon().unregisterService();
         mApp.getNsdDaemon().stopDiscovering();
 
-        if (mWebShareServer != null)
-            mWebShareServer.stop();
+        if (mApp.getWebShareServer() != null)
+            mApp.getWebShareServer().stop();
 
         ContentValues values = new ContentValues();
         values.put(Kuick.FIELD_TRANSFER_ISSHAREDONWEB, 0);
@@ -307,11 +299,6 @@ public class BackgroundService extends Service
 
         AppUtils.generateNetworkPin(this);
         getKuick().broadcast();
-    }
-
-    public boolean canStopService()
-    {
-        return !mApp.hasTasks() && !isHotspotStarted() && !mWebShareServer.hadClients();
     }
 
     private NotificationHelper getNotificationHelper()
@@ -342,7 +329,7 @@ public class BackgroundService extends Service
     {
         Log.d(TAG, "tryStartingServices: Starting...");
 
-        if (mWebShareServer.isAlive() && mCommunicationServer.isListening())
+        if (mApp.getWebShareServer().isAlive() && mCommunicationServer.isListening())
             return true;
 
         if (!AppUtils.checkRunningConditions(this)) {
@@ -350,7 +337,6 @@ public class BackgroundService extends Service
                     "services.");
             return false;
         }
-
 
         if (!mCommunicationServer.isListening()) {
             try {
@@ -362,9 +348,9 @@ public class BackgroundService extends Service
         }
 
         try {
-            mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
+            mApp.getWebShareServer().setAsyncRunner(new WebShareServer.BoundRunner(
                     Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
-            mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+            mApp.getWebShareServer().start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         } catch (Throwable t) {
             Log.e(TAG, "Failed to start Web Share Server");
             return false;
@@ -538,7 +524,7 @@ public class BackgroundService extends Service
                         task.index = new IndexOfTransferGroup(transfer);
 
                         getKuick().reconstruct(task.member);
-                            CommunicationBridge.sendResult(activeConnection, true);
+                        CommunicationBridge.sendResult(activeConnection, true);
 
                         mApp.attach(task);
                         return;

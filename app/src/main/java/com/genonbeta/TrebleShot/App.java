@@ -44,6 +44,7 @@ import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.service.BackgroundService;
+import com.genonbeta.TrebleShot.service.WebShareServer;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
@@ -85,6 +86,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     private NotificationHelper mNotificationHelper;
     private DynamicNotification mTasksNotification;
     private Activity mForegroundActivity;
+    private WebShareServer mWebShareServer;
     private long mTaskNotificationTime;
 
     @Override
@@ -104,6 +106,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         mMediaScanner = new MediaScannerConnection(this, null);
         mNotificationHelper = new NotificationHelper(new NotificationUtils(getApplicationContext(),
                 AppUtils.getKuick(getApplicationContext()), AppUtils.getDefaultPreferences(getApplicationContext())));
+        mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
 
         mMediaScanner.connect();
 
@@ -122,6 +125,16 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
     public void attach(AsyncTask task)
     {
         runInternal(task);
+    }
+
+    public boolean canStopService()
+    {
+        return !hasTasks() && !getHotspotManager().isStarted() && !getWebShareServer().hadClients();
+    }
+
+    public SharedPreferences getDefaultPreferences()
+    {
+        return AppUtils.getDefaultPreferences(getApplicationContext());
     }
 
     @Nullable
@@ -206,6 +219,11 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             if (clazz.isInstance(task))
                 foundList.add((T) task);
         return foundList;
+    }
+
+    public WebShareServer getWebShareServer()
+    {
+        return mWebShareServer;
     }
 
     public boolean hasTaskOf(Class<? extends AsyncTask> clazz)
@@ -319,11 +337,8 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
 
         if (newlyInFg)
             ContextCompat.startForegroundService(getApplicationContext(), intent);
-        else if (inBg) {
-            intent.setAction(BackgroundService.ACTION_FOREGROUND_CHANGE)
-                    .putExtra(BackgroundService.EXTRA_CHECK_FOR_TASKS, true);
-            ContextCompat.startForegroundService(getApplicationContext(), intent);
-        }
+        else if (inBg)
+            tryStoppingBgService();
 
         mForegroundActivity = inBg ? null : (inForeground ? activity : mForegroundActivity);
 
@@ -379,8 +394,9 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             return false;
 
         if (!hasTasks()) {
-            if (mTasksNotification != null)
-                mTasksNotification.cancel();
+            if (mForegroundActivitiesCount > 0 || !tryStoppingBgService())
+                mNotificationHelper.getForegroundNotification().show();
+
             return false;
         }
 
@@ -391,6 +407,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
 
         mTaskNotificationTime = System.nanoTime() + (AppConfig.DELAY_DEFAULT_NOTIFICATION * (long) 1e6);
         mTasksNotification = mNotificationHelper.notifyTasksNotification(taskList, mTasksNotification);
+
         return true;
     }
 
@@ -430,6 +447,17 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
 
         unregisterWork(runningTask);
         publishTaskNotifications(true);
+    }
+
+    private boolean tryStoppingBgService()
+    {
+        boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
+
+        if (canStopService() && killOnExit) {
+            stopService(new Intent(this, BackgroundService.class));
+            return true;
+        }
+        return false;
     }
 
     public void toggleHotspot()
