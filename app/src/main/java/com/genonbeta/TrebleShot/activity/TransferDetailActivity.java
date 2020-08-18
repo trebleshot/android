@@ -29,12 +29,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.transition.TransitionManager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -54,7 +54,6 @@ import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -67,20 +66,21 @@ import java.util.List;
 
 public class TransferDetailActivity extends Activity implements SnackbarPlacementProvider, AttachedTaskListener
 {
-    public static final String
-            TAG = TransferDetailActivity.class.getSimpleName(),
-            ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS",
-            EXTRA_TRANSFER = "extraTransfer",
-            EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId",
-            EXTRA_DEVICE = "extraDevice",
-            EXTRA_TRANSFER_TYPE = "extraTransferType";
+    public static final String TAG = TransferDetailActivity.class.getSimpleName();
+
+    public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
+
+    public static final String EXTRA_TRANSFER = "extraTransfer";
+    public static final String EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId";
+    public static final String EXTRA_DEVICE = "extraDevice";
+    public static final String EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
+
 
     private OnBackPressedListener mBackPressedListener;
     private Transfer mTransfer;
     private IndexOfTransferGroup mIndex;
-    private TransferItem mTransferItem;
     private Button mOpenWebShareButton;
     private View mNoDevicesNoticeText;
     private LoadedMember mMember;
@@ -116,9 +116,11 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
         setContentView(R.layout.activity_view_transfer);
 
+        TransferItem transferItem = null;
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mTransfer = savedInstanceState != null ? savedInstanceState.getParcelable(EXTRA_TRANSFER) : null;
         mOpenWebShareButton = findViewById(R.id.activity_transfer_detail_open_web_share_button);
         mNoDevicesNoticeText = findViewById(R.id.activity_transfer_detail_no_devices_warning);
 
@@ -131,7 +133,10 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
         mOpenWebShareButton.setOnClickListener(v -> startActivity(new Intent(this, WebShareActivity.class)));
 
-        if (Intent.ACTION_VIEW.equals(getIntent().getAction()) && getIntent().getData() != null) {
+        if (mTransfer != null) {
+            Log.d(TAG, "onCreate: Created transfer instance from the bundle");
+            setTransfer(mTransfer);
+        } else if (Intent.ACTION_VIEW.equals(getIntent().getAction()) && getIntent().getData() != null) {
             try {
                 StreamInfo streamInfo = StreamInfo.getStreamInfo(this, getIntent().getData());
 
@@ -144,16 +149,15 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
                 if (fileData == null)
                     throw new Exception("File is not found in the database");
 
-                mTransferItem = new TransferItem();
-                mTransferItem.reconstruct(getDatabase().getWritableDatabase(), getDatabase(), fileData);
+                transferItem = new TransferItem();
+                transferItem.reconstruct(getDatabase().getWritableDatabase(), getDatabase(), fileData);
 
-                getDatabase().reconstruct(mTransfer);
+                Transfer transfer = new Transfer(transferItem.transferId);
+                getDatabase().reconstruct(transfer);
 
-                getIntent().setAction(ACTION_LIST_TRANSFERS)
-                        .putExtra(EXTRA_TRANSFER, mTransfer);
+                setTransfer(transfer);
 
-                new TransferInfoDialog(TransferDetailActivity.this, mIndex, mTransferItem,
-                        mMember == null ? null : mMember.deviceId).show();
+                new TransferInfoDialog(this, mIndex, transferItem, null).show();
 
                 Log.d(TAG, "Created instance from an file intent. Original has been cleaned " +
                         "and changed to open intent");
@@ -162,25 +166,20 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
                 Toast.makeText(this, R.string.mesg_notValidTransfer, Toast.LENGTH_SHORT).show();
             }
         } else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_TRANSFER)) {
-            try {
-                setTransfer(getIntent().getParcelableExtra(EXTRA_TRANSFER));
+            setTransfer(getIntent().getParcelableExtra(EXTRA_TRANSFER));
 
+            try {
                 if (getIntent().hasExtra(EXTRA_TRANSFER_ITEM_ID) && getIntent().hasExtra(EXTRA_DEVICE)
                         && getIntent().hasExtra(EXTRA_TRANSFER_TYPE)) {
                     long requestId = getIntent().getLongExtra(EXTRA_TRANSFER_ITEM_ID, -1);
                     Device device = getIntent().getParcelableExtra(EXTRA_DEVICE);
+                    TransferItem.Type type = (TransferItem.Type) getIntent().getSerializableExtra(EXTRA_TRANSFER_TYPE);
 
-                    try {
-                        TransferItem.Type type = TransferItem.Type.valueOf(getIntent().getStringExtra(
-                                EXTRA_TRANSFER_TYPE));
+                    transferItem = new TransferItem(mTransfer.id, requestId, type);
+                    getDatabase().reconstruct(transferItem);
 
-                        TransferItem object = new TransferItem(mTransfer.id, requestId, type);
-                        getDatabase().reconstruct(object);
-
-                        new TransferInfoDialog(TransferDetailActivity.this, mIndex, object, device.uid).show();
-                    } catch (Exception e) {
-                        // do nothing
-                    }
+                    if (device != null)
+                        new TransferInfoDialog(this, mIndex, transferItem, device.uid).show();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -192,8 +191,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         else {
             Bundle bundle = new Bundle();
             bundle.putLong(TransferItemDetailExplorerFragment.ARG_TRANSFER_ID, mTransfer.id);
-            bundle.putString(TransferItemDetailExplorerFragment.ARG_PATH, mTransferItem == null
-                    || mTransferItem.directory == null ? null : mTransferItem.directory);
+            bundle.putString(TransferItemDetailExplorerFragment.ARG_PATH, transferItem == null
+                    || transferItem.directory == null ? null : transferItem.directory);
 
             TransferItemDetailExplorerFragment fragment = getExplorerFragment();
 
@@ -217,11 +216,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     {
         super.onResume();
 
-        IntentFilter filter = new IntentFilter();
-
-        filter.addAction(Kuick.ACTION_DATABASE_CHANGE);
-
-        registerReceiver(mReceiver, filter);
+        registerReceiver(mReceiver, new IntentFilter(Kuick.ACTION_DATABASE_CHANGE));
         reconstructGroup();
         updateCalculations();
     }
@@ -231,6 +226,13 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     {
         super.onPause();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_TRANSFER, mTransfer);
     }
 
     @Override
@@ -529,17 +531,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     public synchronized void updateCalculations()
     {
         if (mDataCruncher == null || !mDataCruncher.requestRestart()) {
-            mDataCruncher = new CrunchLatestDataTask(() -> {
-                showMenus();
-
-                if (mIndex.members.length == 0)
-                    if (mTransferItem != null) {
-                        new TransferInfoDialog(TransferDetailActivity.this, mIndex,
-                                mTransferItem, mMember == null ? null : mMember.deviceId).show();
-                        mTransferItem = null;
-                    }
-            });
-
+            mDataCruncher = new CrunchLatestDataTask(this::showMenus);
             mDataCruncher.execute(this);
         }
     }
@@ -581,7 +573,8 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
         protected void onPostExecute(Void aVoid)
         {
             super.onPostExecute(aVoid);
-            mListener.onPostExecute();
+            if (!isCancelled())
+                mListener.onPostExecute();
         }
 
         /* Should we have used a generic type class for this?

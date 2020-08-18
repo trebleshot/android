@@ -380,8 +380,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
                 json.put(Keyword.NETWORK_PIN, AppUtils.generateNetworkPin(getContext()));
 
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
-                BitMatrix bitMatrix = formatWriter.encode(json.toString(), BarcodeFormat.QR_CODE, 400,
-                        400);
+                BitMatrix bitMatrix = formatWriter.encode(json.toString(), BarcodeFormat.QR_CODE, 400, 400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
 

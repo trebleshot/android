@@ -362,7 +362,7 @@ public class NotificationHelper
                         .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
                         .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer)
                         .putExtra(TransferDetailActivity.EXTRA_TRANSFER_ITEM_ID, transferItem.id)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER_TYPE, transferItem.type.toString())
+                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER_TYPE, transferItem.type)
                         .putExtra(TransferDetailActivity.EXTRA_DEVICE, device), 0));
 
         notification.show();
