@@ -36,9 +36,9 @@ import com.genonbeta.android.database.SQLQuery;
  * created by: veli
  * date: 7/24/19 6:08 PM
  */
-public final class IndexOfTransferGroup implements GroupEditableListAdapter.GroupEditable, DatabaseObject<Device>
+public final class TransferIndex implements GroupEditableListAdapter.GroupEditable, DatabaseObject<Device>
 {
-    public static final String TAG = IndexOfTransferGroup.class.getSimpleName();
+    public static final String TAG = TransferIndex.class.getSimpleName();
 
     public int viewType;
     public String representativeText;
@@ -58,17 +58,17 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
 
     private boolean mIsSelected = false;
 
-    public IndexOfTransferGroup()
+    public TransferIndex()
     {
         transfer = new Transfer();
     }
 
-    public IndexOfTransferGroup(Transfer transfer)
+    public TransferIndex(Transfer transfer)
     {
         this.transfer = transfer;
     }
 
-    public IndexOfTransferGroup(String representativeText)
+    public TransferIndex(String representativeText)
     {
         this.viewType = TransferListAdapter.VIEW_TYPE_REPRESENTATIVE;
         this.representativeText = representativeText;
@@ -111,8 +111,8 @@ public final class IndexOfTransferGroup implements GroupEditableListAdapter.Grou
     @Override
     public boolean equals(@Nullable Object obj)
     {
-        if (obj instanceof IndexOfTransferGroup)
-            return transfer.equals(((IndexOfTransferGroup) obj).transfer);
+        if (obj instanceof TransferIndex)
+            return transfer.equals(((TransferIndex) obj).transfer);
         return super.equals(obj);
     }
 

@@ -29,7 +29,6 @@ import android.text.style.StyleSpan;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.Person;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.*;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -55,21 +54,13 @@ public class NotificationHelper
 {
     public static final int ID_BG_SERVICE = 1;
 
-    public static final int ID_ONGOING_TASKS = 2;
-
     private final NotificationUtils mNotificationUtils;
-
-    private final Person mMe;
 
     private final NumberFormat mPercentFormat = NumberFormat.getPercentInstance();
 
     public NotificationHelper(NotificationUtils notificationUtils)
     {
         mNotificationUtils = notificationUtils;
-        mMe = new Person.Builder()
-                .setName(AppUtils.getLocalDeviceName(getContext()))
-                .setKey(AppUtils.getDeviceId(getContext()))
-                .build();
     }
 
     public DynamicNotification getForegroundNotification()
@@ -199,70 +190,6 @@ public class NotificationHelper
         notification.show();
     }
 
-    public void notifyFileTransfer(FileTransferTask task) throws Exception
-    {
-        DynamicNotification notification = task.getCustomNotification();
-
-        if (notification == null) {
-            boolean isIncoming = TransferItem.Type.INCOMING.equals(task.object.type);
-            notification = getUtils().buildDynamicNotification(Transfers.createUniqueTransferId(
-                    task.transfer.id, task.device.uid, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-            task.setCustomNotification(notification);
-
-            Intent cancelIntent = new Intent(getContext(), BackgroundService.class)
-                    .setAction(BackgroundService.ACTION_STOP_TASK)
-                    .putExtra(BackgroundService.EXTRA_TRANSFER_ITEM_ID, task.object.id)
-                    .putExtra(BackgroundService.EXTRA_TRANSFER, task.transfer)
-                    .putExtra(BackgroundService.EXTRA_DEVICE, task.device)
-                    .putExtra(BackgroundService.EXTRA_TRANSFER_TYPE, task.type)
-                    .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
-
-            notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download
-                    : android.R.drawable.stat_sys_upload)
-                    .setContentText(getContext().getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
-                    .setContentInfo(task.device.username)
-                    .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                            getContext(), TransferDetailActivity.class)
-                            .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                            .putExtra(TransferDetailActivity.EXTRA_TRANSFER, task.transfer), 0))
-                    .setOngoing(true)
-                    .setWhen(task.timeStarted)
-                    .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(isIncoming
-                            ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(),
-                            AppUtils.getUniqueNumber(), cancelIntent, 0));
-        }
-
-        notification.setContentTitle(task.object.name);
-        notification.setProgress(100, (int) (Math.max(0.01, task.completedBytes + task.currentBytes)
-                / Math.max(0.01, task.index.bytesPending()) * 100), false);
-
-        long bytesTransferred = task.completedBytes + task.currentBytes;
-
-        if (task.lastKnownBytes > 0 && bytesTransferred > 0) {
-            long change = bytesTransferred - task.lastKnownBytes;
-            StringBuilder text = new StringBuilder();
-
-            text.append(FileUtils.sizeExpression(change, false));
-            text.append("/s");
-
-            if (task.index.bytesPending() > 0 && change > 0) {
-                long timeNeeded = (task.index.bytesPending() - bytesTransferred) / change;
-
-                text.append(" (");
-                text.append(getContext().getString(R.string.text_remainingTime,
-                        TimeUtils.getDuration(timeNeeded, false)));
-                text.append(")");
-            }
-
-            notification.setSubText(text.toString());
-        }
-
-        task.lastKnownBytes = bytesTransferred;
-
-        notification.show();
-    }
-
     public void notifyClipboardRequest(Device device, TextStreamObject object)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(object.id,
@@ -326,7 +253,7 @@ public class NotificationHelper
                 .setContentText(getContext().getString(R.string.text_receivedTransfer,
                         FileUtils.sizeExpression(task.completedBytes, false),
                         TimeUtils.getFriendlyElapsedTime(getContext(), System.currentTimeMillis()
-                                - task.timeStarted)));
+                                - task.getStartTime())));
 
         if (task.completedCount != 1) {
             notification
@@ -338,7 +265,7 @@ public class NotificationHelper
                             .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
         } else {
             try {
-                Intent openIntent = FileUtils.getOpenIntent(getContext(), task.currentFile);
+                Intent openIntent = FileUtils.getOpenIntent(getContext(), task.file);
                 notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(),
                         openIntent, 0));
             } catch (Exception e) {
@@ -346,7 +273,7 @@ public class NotificationHelper
             }
 
             notification
-                    .setContentTitle(task.object.name)
+                    .setContentTitle(task.item.name)
                     .addAction(R.drawable.ic_folder_white_24dp_static, getContext().getString(R.string.butn_showFiles),
                             PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(),
                                     FileExplorerActivity.class)
@@ -359,7 +286,7 @@ public class NotificationHelper
     public void notifyReceiveError(FileTransferTask task)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(Transfers.createUniqueTransferId(
-                task.transfer.id, task.device.uid, task.object.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+                task.transfer.id, task.device.uid, task.item.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_error))
@@ -450,7 +377,9 @@ public class NotificationHelper
 
         SpannableStringBuilder msg = new SpannableStringBuilder();
         for (AsyncTask task : taskList) {
-            String content = task.getCurrentContent();
+            task.onPublishStatus();
+
+            String content = task.getOngoingContent();
             String middleDot = " " + getContext().getString(R.string.mode_middleDot) + " ";
             String taskName = task.getName(getContext());
             int progressCurrent = task.progress().getCurrent();

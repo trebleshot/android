@@ -29,7 +29,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.TransferIndex;
 import com.genonbeta.TrebleShot.object.LoadedMember;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -43,7 +43,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
     private final LayoutInflater mInflater;
     private final TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ToggleMultipleTransferDialog(@NonNull final TransferDetailActivity activity, final IndexOfTransferGroup index)
+    public ToggleMultipleTransferDialog(@NonNull final TransferDetailActivity activity, final TransferIndex index)
     {
         super(activity);
 
@@ -75,7 +75,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
         }
     }
 
-    private void startTransfer(TransferDetailActivity activity, IndexOfTransferGroup index, LoadedMember member)
+    private void startTransfer(TransferDetailActivity activity, TransferIndex index, LoadedMember member)
     {
         if (mActivity.isDeviceRunning(member.deviceId))
             Transfers.pauseTransfer(activity, member);

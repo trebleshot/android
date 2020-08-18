@@ -40,7 +40,7 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ChooseMemberDialog;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
-import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.TransferIndex;
 import com.genonbeta.TrebleShot.object.LoadedMember;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.object.TransferItem;
@@ -72,7 +72,7 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
     public static final int REQUEST_CHOOSE_FOLDER = 1;
 
     private Transfer mTransfer;
-    private IndexOfTransferGroup mIndex;
+    private TransferIndex mIndex;
     private String mLastKnownPath;
     private final IntentFilter mIntentFilter = new IntentFilter();
 
@@ -238,10 +238,10 @@ public class TransferItemListFragment extends GroupEditableListFragment<Transfer
         return mTransfer;
     }
 
-    public IndexOfTransferGroup getIndex()
+    public TransferIndex getIndex()
     {
         if (mIndex == null)
-            mIndex = new IndexOfTransferGroup(getTransfer());
+            mIndex = new TransferIndex(getTransfer());
         return mIndex;
     }
 

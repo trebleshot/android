@@ -439,15 +439,15 @@ public class WebShareServer extends NanoHTTPD
     {
         StringBuilder contentBuilder = new StringBuilder();
 
-        List<IndexOfTransferGroup> groupList = AppUtils.getKuick(mContext).castQuery(
+        List<TransferIndex> groupList = AppUtils.getKuick(mContext).castQuery(
                 new SQLQuery.Select(Kuick.TABLE_TRANSFER)
-                        .setOrderBy(Kuick.FIELD_TRANSFER_DATECREATED + " DESC"), IndexOfTransferGroup.class);
+                        .setOrderBy(Kuick.FIELD_TRANSFER_DATECREATED + " DESC"), TransferIndex.class);
 
-        for (IndexOfTransferGroup index : groupList) {
+        for (TransferIndex index : groupList) {
             if (!index.transfer.isServedOnWeb)
                 continue;
 
-            Transfers.loadGroupInfo(mContext, index);
+            Transfers.loadTransferInfo(mContext, index);
 
             if (!index.hasOutgoing())
                 continue;

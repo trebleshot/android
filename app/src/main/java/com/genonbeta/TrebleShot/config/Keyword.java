@@ -38,9 +38,6 @@ public class Keyword
             TRANSFER_ID = "transferId",
             TRANSFER_IS_ACCEPTED = "isAccepted",
             TRANSFER_TEXT = "text",
-            TRANSFER_JOB_DONE = "jobDone",
-            FLAG = "flag",
-            FLAG_GROUP_EXISTS = "flagGroupExists",
             INDEX = "index",
             INDEX_FILE_NAME = "name",
             INDEX_FILE_SIZE = "size",
@@ -58,7 +55,6 @@ public class Keyword
             DEVICE_PROTOCOL_VERSION = "protocolVersion", // Introduced in 99
             DEVICE_PROTOCOL_VERSION_MIN = "minimumProtocolVersion", // Introduced in 99
             SKIPPED_BYTES = "skippedBytes",
-            SIZE_CHANGED = "sizeChanged",
             ERROR = "error",
             ERROR_NOT_ALLOWED = "notAllowed",
             ERROR_NOT_FOUND = "notFound",

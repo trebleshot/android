@@ -33,9 +33,11 @@
         android:gravity="center"
         android:hint="@string/text_deviceName"
         android:maxLength="@integer/length_max_username"
-        android:minWidth="160dp"
+        android:minWidth="120dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:layout_marginLeft="?attr/dialogPreferredPadding"
+        android:layout_marginRight="?attr/dialogPreferredPadding"
         android:text="@string/text_unknown" />
 
 </LinearLayout>

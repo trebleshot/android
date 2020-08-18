@@ -35,7 +35,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.TransferIndex;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
@@ -52,7 +52,7 @@ import java.util.List;
  * date: 9.11.2017 23:39
  */
 
-public class TransferListAdapter extends GroupEditableListAdapter<IndexOfTransferGroup,
+public class TransferListAdapter extends GroupEditableListAdapter<TransferIndex,
         GroupEditableListAdapter.GroupViewHolder>
 {
     private final List<Long> mRunningTasks = new ArrayList<>();
@@ -63,7 +63,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<IndexOfTransfe
     private final int mColorDone;
     private final int mColorError;
 
-    public TransferListAdapter(IEditableListFragment<IndexOfTransferGroup, GroupViewHolder> fragment)
+    public TransferListAdapter(IEditableListFragment<TransferIndex, GroupViewHolder> fragment)
     {
         super(fragment, MODE_GROUP_BY_DATE);
 
@@ -75,13 +75,13 @@ public class TransferListAdapter extends GroupEditableListAdapter<IndexOfTransfe
     }
 
     @Override
-    protected void onLoad(GroupLister<IndexOfTransferGroup> lister)
+    protected void onLoad(GroupLister<TransferIndex> lister)
     {
         List<Long> activeList = new ArrayList<>(mRunningTasks);
 
-        for (IndexOfTransferGroup index : AppUtils.getKuick(getContext()).castQuery(
-                new SQLQuery.Select(Kuick.TABLE_TRANSFER), IndexOfTransferGroup.class)) {
-            Transfers.loadGroupInfo(getContext(), index);
+        for (TransferIndex index : AppUtils.getKuick(getContext()).castQuery(
+                new SQLQuery.Select(Kuick.TABLE_TRANSFER), TransferIndex.class)) {
+            Transfers.loadTransferInfo(getContext(), index);
             index.isRunning = activeList.contains(index.transfer.id);
 
             lister.offerObliged(this, index);
@@ -89,9 +89,9 @@ public class TransferListAdapter extends GroupEditableListAdapter<IndexOfTransfe
     }
 
     @Override
-    protected IndexOfTransferGroup onGenerateRepresentative(String text, Merger<IndexOfTransferGroup> merger)
+    protected TransferIndex onGenerateRepresentative(String text, Merger<TransferIndex> merger)
     {
-        return new IndexOfTransferGroup(text);
+        return new TransferIndex(text);
     }
 
     @NonNull
@@ -115,7 +115,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<IndexOfTransfe
     public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, int position)
     {
         try {
-            final IndexOfTransferGroup object = getItem(position);
+            final TransferIndex object = getItem(position);
 
             if (!holder.tryBinding(object)) {
                 final View parentView = holder.itemView;

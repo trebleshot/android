@@ -31,7 +31,7 @@ public class Transfers
 {
     public static final String TAG = Transfers.class.getSimpleName();
 
-    private static void appendOutgoingData(IndexOfTransferGroup group, TransferItem object, TransferItem.Flag flag)
+    private static void appendOutgoingData(TransferIndex group, TransferItem object, TransferItem.Flag flag)
     {
         group.bytesOutgoing += object.size;
         group.numberOfOutgoing++;
@@ -201,21 +201,21 @@ public class Transfers
                 (db, item, object) -> loadMemberInfo(db, object));
     }
 
-    public static void loadGroupInfo(Context context, IndexOfTransferGroup group, @Nullable TransferMember member)
+    public static void loadTransferInfo(Context context, TransferIndex transfer, @Nullable TransferMember member)
     {
         if (member == null)
-            loadGroupInfo(context, group);
+            loadTransferInfo(context, transfer);
         else
-            loadGroupInfo(context, group, member.deviceId, member.type);
+            loadTransferInfo(context, transfer, member.deviceId, member.type);
     }
 
-    public static void loadGroupInfo(Context context, IndexOfTransferGroup group)
+    public static void loadTransferInfo(Context context, TransferIndex index)
     {
-        loadGroupInfo(context, group, null, null);
+        loadTransferInfo(context, index, null, null);
     }
 
-    public static void loadGroupInfo(Context context, IndexOfTransferGroup index, @Nullable String deviceId,
-                                     @Nullable TransferItem.Type type)
+    public static void loadTransferInfo(Context context, TransferIndex index, @Nullable String deviceId,
+                                        @Nullable TransferItem.Type type)
     {
         Transfer transfer = index.transfer;
 

@@ -80,7 +80,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
     private OnBackPressedListener mBackPressedListener;
     private Transfer mTransfer;
-    private IndexOfTransferGroup mIndex;
+    private TransferIndex mIndex;
     private Button mOpenWebShareButton;
     private View mNoDevicesNoticeText;
     private LoadedMember mMember;
@@ -426,7 +426,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
     private void setTransfer(Transfer transfer)
     {
         mTransfer = transfer;
-        mIndex = new IndexOfTransferGroup(transfer);
+        mIndex = new TransferIndex(transfer);
     }
 
     public void showMenus()
@@ -564,7 +564,7 @@ public class TransferDetailActivity extends Activity implements SnackbarPlacemen
 
                 for (TransferDetailActivity activity : activities)
                     if (activity.mTransfer != null)
-                        Transfers.loadGroupInfo(activity, activity.mIndex, activity.getMember());
+                        Transfers.loadTransferInfo(activity, activity.mIndex, activity.getMember());
             } while (mRestartRequested && !isCancelled());
 
             return null;

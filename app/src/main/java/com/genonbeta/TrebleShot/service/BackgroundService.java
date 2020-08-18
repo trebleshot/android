@@ -38,7 +38,6 @@ import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
-import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
@@ -66,7 +65,6 @@ public class BackgroundService extends Service
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
             ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
             ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
-            ACTION_STOP_TASK = "com.genonbeta.TrebleShot.transaction.action.STOP_TASK",
             ACTION_STOP_ALL_TASKS = "com.genonbeta.TrebleShot.transaction.action.STOP_ALL_TASKS",
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_CLIPBOARD_ID = "extraTextId",
@@ -75,7 +73,6 @@ public class BackgroundService extends Service
             EXTRA_RECEIVE_KEY = "extraReceiveKey",
             EXTRA_SEND_KEY = "extraSendKey",
             EXTRA_TRANSFER = "extraTransfer",
-            EXTRA_IDENTITY = "extraIdentity",
             EXTRA_ACCEPTED = "extraAccepted",
             EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId",
             EXTRA_TRANSFER_TYPE = "extraTransferType";
@@ -231,26 +228,8 @@ public class BackgroundService extends Service
                     if (task == null)
                         mApp.run(FileTransferTask.createFrom(getKuick(), transfer, device, type));
                     else
-                        Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.object.name),
+                        Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, task.item.name),
                                 Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (ACTION_STOP_TASK.equals(intent.getAction()) && intent.hasExtra(EXTRA_IDENTITY)) {
-                int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-                Identity identity = intent.getParcelableExtra(EXTRA_IDENTITY);
-
-                try {
-                    AsyncTask task = mApp.findTaskBy(identity);
-
-                    if (task == null) {
-                        getNotificationHelper().getUtils().cancel(notificationId);
-                    } else {
-                        if (task.isInterrupted())
-                            task.forceQuit();
-                        else
-                            task.interrupt(true);
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -310,11 +289,6 @@ public class BackgroundService extends Service
     private WifiManager.WifiLock getWifiLock()
     {
         return mWifiLock;
-    }
-
-    public boolean isHotspotStarted()
-    {
-        return getSelfApplication() != null && getSelfApplication().getHotspotManager().isStarted();
     }
 
     private boolean isProcessRunning(long transferId, String deviceId, TransferItem.Type type)
@@ -522,7 +496,7 @@ public class BackgroundService extends Service
                         task.device = device;
                         task.type = type;
                         task.member = new TransferMember(transfer, device, type);
-                        task.index = new IndexOfTransferGroup(transfer);
+                        task.index = new TransferIndex(transfer);
 
                         getKuick().reconstruct(task.member);
                         CommunicationBridge.sendResult(activeConnection, true);

@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.TransferIndex;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -46,7 +46,7 @@ import java.text.NumberFormat;
 
 public class TransferInfoDialog extends AlertDialog.Builder
 {
-    public TransferInfoDialog(@NonNull final Activity activity, final IndexOfTransferGroup loadedGroup,
+    public TransferInfoDialog(@NonNull final Activity activity, final TransferIndex loadedGroup,
                               final TransferItem object, @Nullable String deviceId)
     {
         super(activity);

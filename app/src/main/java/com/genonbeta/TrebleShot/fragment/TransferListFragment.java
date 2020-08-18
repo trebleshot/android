@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
-import com.genonbeta.TrebleShot.object.IndexOfTransferGroup;
+import com.genonbeta.TrebleShot.object.TransferIndex;
 import com.genonbeta.TrebleShot.object.Transfer;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
@@ -59,7 +59,7 @@ import java.util.Map;
  * date: 10.11.2017 00:15
  */
 
-public class TransferListFragment extends GroupEditableListFragment<IndexOfTransferGroup,
+public class TransferListFragment extends GroupEditableListFragment<TransferIndex,
         GroupEditableListAdapter.GroupViewHolder, TransferListAdapter> implements IconProvider
 {
     private final IntentFilter mFilter = new IntentFilter();
@@ -161,7 +161,7 @@ public class TransferListFragment extends GroupEditableListFragment<IndexOfTrans
 
     @Override
     public boolean performDefaultLayoutClick(GroupEditableListAdapter.GroupViewHolder holder,
-                                             IndexOfTransferGroup object)
+                                             TransferIndex object)
     {
         TransferDetailActivity.startInstance(requireActivity(), object.transfer);
         return true;
@@ -210,20 +210,20 @@ public class TransferListFragment extends GroupEditableListFragment<IndexOfTrans
                 return false;
 
             List<Selectable> genericList = new ArrayList<>(engine.getSelectionList());
-            List<IndexOfTransferGroup> indexList = ListUtils.typedListOf(genericList, IndexOfTransferGroup.class);
+            List<TransferIndex> indexList = ListUtils.typedListOf(genericList, TransferIndex.class);
 
             if (id == R.id.action_mode_group_delete) {
                 List<Transfer> groupList = new ArrayList<>();
-                for (IndexOfTransferGroup index : indexList)
+                for (TransferIndex index : indexList)
                     groupList.add(index.transfer);
 
                 DialogUtils.showRemoveTransferGroupListDialog(getActivity(), groupList);
                 return true;
             } else if (id == R.id.action_mode_group_serve_on_web || id == R.id.action_mode_group_hide_on_web) {
                 boolean served = id == R.id.action_mode_group_serve_on_web;
-                List<IndexOfTransferGroup> changedList = new ArrayList<>();
+                List<TransferIndex> changedList = new ArrayList<>();
 
-                for (IndexOfTransferGroup index : indexList) {
+                for (TransferIndex index : indexList) {
                     if (!index.hasOutgoing() || index.transfer.isServedOnWeb == served)
                         continue;
 

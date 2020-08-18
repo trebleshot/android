@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.widget.CheckBox;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.App;
@@ -88,7 +87,7 @@ public class FindConnectionDialog extends ProgressDialog
                 if (task.isFinished()) {
                     dialog.dismiss();
                 } else {
-                    dialog.setMessage(task.getCurrentContent());
+                    dialog.setMessage(task.getOngoingContent());
                     dialog.setMax(task.progress().getTotal());
                     dialog.setProgress(task.progress().getCurrent());
                 }

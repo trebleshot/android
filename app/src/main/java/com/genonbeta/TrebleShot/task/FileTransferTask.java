@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
@@ -33,22 +32,22 @@ import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.protocol.communication.ContentException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
-import com.genonbeta.TrebleShot.util.CommonErrorHelper;
-import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.Transfers;
+import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
-import org.monora.coolsocket.core.response.Response;
 import org.monora.coolsocket.core.session.ActiveConnection;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.object.Identifier.from;
@@ -60,25 +59,19 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     // Static objects
     public ActiveConnection activeConnection;
     public Device device;
-    public IndexOfTransferGroup index;
+    public TransferIndex index;
     public Transfer transfer;
     public TransferMember member;
     public List<DeviceAddress> addressList;
     public TransferItem.Type type;
 
     // Changing objects
-    public TransferItem object;
-    public DocumentFile currentFile;
-    public long lastProcessingTime;
+    public TransferItem item;
+    public DocumentFile file;
+    public long lastMovedBytes;
     public long currentBytes; // moving
-    public long lastKnownBytes; // completedBytes of 2 secs ago
     public long completedBytes;
-    public long timeStarted; // TODO: 14.03.2020 Define this when the task begins
     public int completedCount;
-
-    // Informative objects
-    public boolean recoverInterruptions = false;
-    public int attemptsLeft = 2;
 
     private long mTimeTransactionSaved;
     private SQLiteDatabase mDatabase;
@@ -94,33 +87,57 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
             handleTransferAsReceiver();
     }
 
-    private void broadcastTransferState(boolean isLast)
+    @Override
+    public void onPublishStatus()
     {
-        long time = System.currentTimeMillis();
-        boolean delayReached = time - lastProcessingTime > AppConfig.DELAY_DEFAULT_NOTIFICATION;
+        super.onPublishStatus();
 
-        if (delayReached && !isLast) {
-            this.lastProcessingTime = time;
+        long bytesTransferred = completedBytes + currentBytes;
 
+        progress().setTotal(100);
+
+        if (bytesTransferred > 0 && index.bytesPending() > 0)
+            progress().setCurrent((int) (100 * (bytesTransferred / index.bytesTotal())));
+
+        if (lastMovedBytes > 0 && bytesTransferred > 0) {
+            long change = bytesTransferred - lastMovedBytes;
+            StringBuilder text = new StringBuilder();
+
+            text.append(FileUtils.sizeExpression(change, false).toLowerCase());
+            text.append("ps");
+
+            if (index.bytesPending() > 0 && change > 0) {
+                long timeNeeded = (index.bytesPending() - bytesTransferred) / change;
+
+                text.append(" (");
+                text.append(getContext().getString(R.string.text_remainingTime,
+                        TimeUtils.getDuration(timeNeeded, false)));
+                text.append(")");
+            }
+
+            setOngoingContent(text.toString());
+        }
+
+        lastMovedBytes = bytesTransferred;
+
+        if (item != null) {
             try {
-                getNotificationHelper().notifyFileTransfer(this);
-
                 TransferItem.Flag flag = TransferItem.Flag.IN_PROGRESS;
-                flag.setBytesValue(this.currentBytes);
+                flag.setBytesValue(currentBytes);
 
-                if (TransferItem.Type.INCOMING.equals(this.type))
-                    this.object.setFlag(flag);
+                if (TransferItem.Type.INCOMING.equals(type))
+                    item.setFlag(flag);
                 else if (TransferItem.Type.OUTGOING.equals(this.type))
-                    this.object.putFlag(this.device.uid, flag);
+                    item.putFlag(this.device.uid, flag);
 
-                kuick().update(getDatabase(), this.object, this.transfer, null);
+
+                kuick().update(getDatabase(), item, transfer, null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        if (delayReached || isLast)
-            kuick().broadcast();
+        kuick().broadcast();
     }
 
     public static FileTransferTask createFrom(Kuick kuick, long transferId, String deviceId, TransferItem.Type type)
@@ -169,7 +186,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         task.transfer = transfer;
         task.member = member;
         task.addressList = addressList;
-        task.index = new IndexOfTransferGroup(transfer);
+        task.index = new TransferIndex(transfer);
 
         return task;
     }
@@ -185,12 +202,6 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public String getCurrentContent()
-    {
-        return object == null ? super.getCurrentContent() : object.name;
     }
 
     private SQLiteDatabase getDatabase()
@@ -214,398 +225,174 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
     private void handleTransferAsReceiver()
     {
-        boolean retry = false;
-
         try {
-            Transfers.loadGroupInfo(getContext(), this.index, this.member);
+            Transfers.loadTransferInfo(getContext(), index, member);
 
-            while (this.activeConnection.getSocket().isConnected()) {
-                this.currentBytes = 0;
-                if (isInterrupted())
-                    break;
+            while (activeConnection.getSocket().isConnected()) {
+                throwIfStopped();
+                publishStatus();
+
+                currentBytes = 0;
+                item = Transfers.fetchFirstValidIncomingTransferItem(getContext(), transfer.id);
+
+                if (item == null)
+                    throw new ContentException(ContentException.Error.NotFound);
 
                 try {
-                    TransferItem object = Transfers.fetchFirstValidIncomingTransferItem(getContext(), this.transfer.id);
+                    file = FileUtils.getIncomingFile(getContext(), item, transfer);
+                    StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), file.getUri());
+                    currentBytes = file.length();
 
-                    if (object == null) {
-                        Log.d(TAG, "handleTransferAsReceiver(): Exiting because there is no pending file " +
-                                "instance left");
-                        break;
-                    } else
-                        Log.d(TAG, "handleTransferAsReceiver(): Starting to receive " + object);
+                    activeConnection.reply(new JSONObject()
+                            .put(Keyword.TRANSFER_REQUEST_ID, item.id)
+                            .put(Keyword.SKIPPED_BYTES, currentBytes));
 
-                    this.object = object;
-                    this.currentFile = FileUtils.getIncomingFile(getContext(), this.object, this.transfer);
-                    StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), this.currentFile.getUri());
-                    this.currentBytes = this.currentFile.length();
-                    broadcastTransferState(false);
+                    if (CommunicationBridge.receiveResult(activeConnection, device)) {
+                        try (OutputStream outputStream = streamInfo.openOutputStream()) {
+                            int readLength;
+                            ActiveConnection.Description description = activeConnection.readBegin();
 
-                    {
-                        JSONObject reply = new JSONObject()
-                                .put(Keyword.TRANSFER_REQUEST_ID, this.object.id)
-                                .put(Keyword.RESULT, true);
+                            while ((readLength = activeConnection.read(description)) != -1) {
+                                throwIfStopped();
+                                publishStatus();
 
-                        if (this.currentBytes > 0)
-                            reply.put(Keyword.SKIPPED_BYTES, this.currentBytes);
-
-                        Log.d(TAG, "handleTransferAsReceiver(): reply: " + reply.toString());
-                        this.activeConnection.reply(reply.toString());
-                    }
-
-                    {
-                        JSONObject response = this.activeConnection.receive().getAsJson();
-                        Log.d(TAG, "handleTransferAsReceiver(): receive: " + response.toString());
-
-                        if (!response.getBoolean(Keyword.RESULT)) {
-                            if (response.has(Keyword.TRANSFER_JOB_DONE)
-                                    && !response.getBoolean(Keyword.TRANSFER_JOB_DONE)) {
-                                interrupt(true);
-                                Log.d(TAG, "handleTransferAsReceiver(): Transfer should be closed, babe!");
-                                break;
-                            } else if (response.has(Keyword.FLAG)
-                                    && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
-                                if (response.has(Keyword.ERROR)
-                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
-                                    this.object.setFlag(TransferItem.Flag.REMOVED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says it does not have the " +
-                                            "file defined");
-                                } else if (response.has(Keyword.ERROR)
-                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
-                                    this.object.setFlag(TransferItem.Flag.INTERRUPTED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says it can't open the file");
-                                } else if (response.has(Keyword.ERROR)
-                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_UNKNOWN)) {
-                                    this.object.setFlag(TransferItem.Flag.INTERRUPTED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says an unknown error occurred");
-                                }
-                            }
-                        } else {
-                            long sizeChanged = response.has(Keyword.SIZE_CHANGED) ? response.getLong(
-                                    Keyword.SIZE_CHANGED) : 0;
-                            boolean sizeActuallyChanged = sizeChanged > 0 && this.object.size != sizeChanged;
-
-                            if (sizeActuallyChanged) {
-                                Log.d(TAG, "handleTransferAsReceiver(): Sender says the file has a new size");
-                                this.object.size = response.getLong(Keyword.SIZE_CHANGED);
-                                boolean canContinue = this.currentBytes < 1;
-
-                                this.activeConnection.reply(new JSONObject()
-                                        .put(Keyword.RESULT, canContinue)
-                                        .toString());
-
-                                if (!canContinue) {
-                                    Log.d(TAG, "handleTransferAsReceiver(): The change may broke the previous " +
-                                            "file which has a length. Cannot take the risk.");
-                                    this.object.setFlag(TransferItem.Flag.REMOVED);
-                                    continue;
-                                }
-
-                                Log.d(TAG, "handleTransferAsReceiver(): receive: " +
-                                        this.activeConnection.receive().getAsString());
+                                currentBytes += readLength;
+                                outputStream.write(description.buffer, 0, readLength);
                             }
 
-                            OutputStream outputStream = null;
-                            boolean completed = false;
+                            outputStream.flush();
+                            item.setFlag(TransferItem.Flag.DONE);
+                            completedBytes += currentBytes;
+                            completedCount++;
 
-                            try {
-                                outputStream = streamInfo.openOutputStream();
-                                int readLength;
-                                byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-                                ActiveConnection.Description description = activeConnection.readBegin();
+                            if (file.getParentFile() != null) {
+                                file = FileUtils.saveReceivedFile(file.getParentFile(), file, item);
 
-                                while ((readLength = activeConnection.read(description)) != -1) {
-                                    this.currentBytes += readLength;
-                                    outputStream.write(buffer, 0, readLength);
+                                Log.d(TAG, "handleTransferAsReceiver(): File is " + this.file.getUri().toString()
+                                        + " and name is " + this.item.file);
 
-                                    broadcastTransferState(false);
-
-                                    if (isInterrupted()) {
-                                        this.object.setFlag(TransferItem.Flag.INTERRUPTED);
-                                        break;
-                                    }
-                                }
-
-                                outputStream.flush();
-
-                                completed = this.currentBytes == this.object.size;
-                                this.object.setFlag(completed ? TransferItem.Flag.DONE
-                                        : TransferItem.Flag.INTERRUPTED);
-
-                                Log.d(TAG, "handleTransferAsSender(): File received " + this.object.name);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                interrupt(false);
-                                this.object.setFlag(TransferItem.Flag.INTERRUPTED);
-                            } finally {
-                                if (outputStream != null)
-                                    outputStream.close();
+                                getContext().sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                                        .putExtra(FileListFragment.EXTRA_FILE_PARENT, file.getParentFile().getUri())
+                                        .putExtra(FileListFragment.EXTRA_FILE_NAME, file.getName()));
                             }
 
-                            try {
-                                if (completed) {
-                                    this.completedBytes += this.currentBytes;
-                                    this.completedCount++;
+                            if (this.file instanceof LocalDocumentFile && getMediaScanner().isConnected())
+                                getMediaScanner().scanFile(((LocalDocumentFile) file).getFile().getAbsolutePath(),
+                                        item.mimeType);
 
-                                    if (this.currentFile.getParentFile() != null) {
-                                        this.currentFile = FileUtils.saveReceivedFile(this.currentFile.getParentFile(),
-                                                this.currentFile, this.object);
-
-                                        Log.d(TAG, "handleTransferAsReceiver(): The file is "
-                                                + this.currentFile.getUri().toString()
-                                                + " and the name is " + this.object.file);
-
-                                        getContext().sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-                                                .putExtra(FileListFragment.EXTRA_FILE_PARENT,
-                                                        this.currentFile.getParentFile().getUri())
-                                                .putExtra(FileListFragment.EXTRA_FILE_NAME,
-                                                        this.currentFile.getName()));
-                                    }
-
-                                    if (this.currentFile instanceof LocalDocumentFile
-                                            && getMediaScanner().isConnected())
-                                        getMediaScanner().scanFile(((LocalDocumentFile) this.currentFile)
-                                                .getFile().getAbsolutePath(), this.object.mimeType);
-                                }
-                            } catch (Exception ignored) {
-                                Log.e(TAG, "Error occurred during completion of the transfer");
-                            }
+                            Log.d(TAG, "handleTransferAsSender(): File received " + item.name);
+                        } catch (Exception e) {
+                            item.setFlag(TransferItem.Flag.INTERRUPTED);
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    retry = true;
-
-                    if (!this.recoverInterruptions) {
-                        Transfers.recoverIncomingInterruptions(getContext(), this.transfer.id);
-                        this.recoverInterruptions = true;
-                    }
-
-                    break;
                 } finally {
-                    if (this.object != null) {
-                        Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
-                                + this.object.getFlag().toString());
-                        kuick().update(getDatabase(), this.object, this.transfer, null);
-                    }
+                    kuick().update(getDatabase(), item, transfer, null);
+                    item = null;
                 }
             }
 
-            try {
-                DocumentFile savePath = FileUtils.getSavePath(getContext(), this.transfer);
-                boolean areFilesDone = kuick().getFirstFromTable(getDatabase(),
-                        Transfers.createIncomingSelection(this.transfer.id, TransferItem.Flag.DONE,
-                                false)) == null;
-                boolean jobDone = !isInterrupted() && areFilesDone;
+            boolean areFilesDone = kuick().getFirstFromTable(getDatabase(), Transfers.createIncomingSelection(
+                    transfer.id, TransferItem.Flag.DONE, false)) == null;
+            boolean jobDone = !isInterrupted() && areFilesDone;
 
-                this.activeConnection.reply(new JSONObject()
-                        .put(Keyword.RESULT, false)
-                        .put(Keyword.TRANSFER_JOB_DONE, jobDone)
-                        .toString());
-                Log.d(TAG, "handleTransferAsReceiver(): reply: done ?? " + jobDone);
+            Log.d(TAG, "handleTransferAsReceiver(): reply: done ?? " + jobDone);
 
-                if (!retry)
-                    if (isInterruptedByUser()) {
-                        Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
-                                "notified");
-                    } else if (isInterrupted()) {
-                        getNotificationHelper().notifyReceiveError(this);
-                        Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
-                    } else if (this.completedCount > 0) {
-                        getNotificationHelper().notifyFileReceived(this, savePath);
-                        Log.d(TAG, "handleTransferAsReceiver(): Notify user");
-                    }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (isInterruptedByUser()) {
+                Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
+                        "notified");
+            } else if (isInterrupted()) {
+                getNotificationHelper().notifyReceiveError(this);
+                Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
+            } else if (this.completedCount > 0) {
+                getNotificationHelper().notifyFileReceived(this,
+                        FileUtils.getSavePath(getContext(), this.transfer));
+                Log.d(TAG, "handleTransferAsReceiver(): Notify user");
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            broadcastTransferState(true);
-
-            Log.d(TAG, "We have exited");
-
-            if (retry && this.attemptsLeft > 0 && !isInterruptedByUser()) {
-                try {
-                    startTransferAsClient();
-                    this.attemptsLeft--;
-                } catch (Exception e) {
-                    Log.d(TAG, "handleTransferAsReceiver(): Restart is requested, but transfer" +
-                            " instance failed to reconstruct");
-                }
-            }
         }
     }
 
     private void handleTransferAsSender()
     {
         try {
-            Transfers.loadGroupInfo(getContext(), this.index, this.member);
+            Transfers.loadTransferInfo(getContext(), this.index, this.member);
 
-            while (this.activeConnection.getSocket().isConnected()) {
-                this.currentBytes = 0;
-                Response response = this.activeConnection.receive();
-                Log.d(TAG, "handleTransferAsSender(): receive: " + response.getAsString());
-                JSONObject request = response.getAsJson();
+            while (activeConnection.getSocket().isConnected()) {
+                throwIfStopped();
+                publishStatus();
 
-                if (request.has(Keyword.RESULT) && !request.getBoolean(Keyword.RESULT)) {
-                    if (request.has(Keyword.TRANSFER_JOB_DONE) && !request.getBoolean(Keyword.TRANSFER_JOB_DONE))
-                        interrupt(true);
-
-                    Log.d(TAG, "handleTransferAsSender(): Receiver notified that the transfer " +
-                            "has stopped with interruption=" + isInterrupted());
-                    return;
-                } else if (isInterrupted()) {
-                    this.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.TRANSFER_JOB_DONE, false)
-                            .toString());
-
-                    Log.d(TAG, "handleTransferAsSender(): Exiting because the interruption has been triggered");
-
-                    // Wait for the next response to ensure no error occurs.
-                    continue;
-                }
+                JSONObject request = activeConnection.receive().getAsJson();
 
                 try {
-                    Log.d(TAG, "handleTransferAsSender(): " + this.type.toString());
-
-                    this.object = new TransferItem(this.transfer.id, request.getInt(Keyword.TRANSFER_REQUEST_ID),
-                            this.type);
-
-                    kuick().reconstruct(getDatabase(), this.object);
-
-                    this.currentFile = FileUtils.fromUri(getContext(), Uri.parse(this.object.file));
-                    long fileSize = this.currentFile.length();
-                    InputStream inputStream = getContext().getContentResolver()
-                            .openInputStream(this.currentFile.getUri());
-
-                    if (inputStream == null)
-                        throw new FileNotFoundException("The input stream for the file has failed to open.");
-
-                    broadcastTransferState(false);
-
-                    if (request.has(Keyword.SKIPPED_BYTES)) {
-                        long skippedBytes = request.getLong(Keyword.SKIPPED_BYTES);
-                        long newPosition = inputStream.skip(skippedBytes);
-
-                        Log.d(TAG, "handleTransferAsSender(): Has skipped bytes: " + skippedBytes);
-
-                        if (skippedBytes > 0 && newPosition != skippedBytes) {
-                            inputStream.close();
-                            throw new IOException("Failed to skip bytes. The requested is " + skippedBytes
-                                    + " and the result is " + newPosition);
-                        }
-                    }
-
-                    JSONObject reply = new JSONObject()
-                            .put(Keyword.RESULT, true);
-
-                    if (fileSize != this.object.size) {
-                        this.object.size = fileSize;
-
-                        reply.put(Keyword.SIZE_CHANGED, fileSize);
-                        this.activeConnection.reply(reply.toString());
-                        Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
-
-                        JSONObject validityOfChange = activeConnection.receive().getAsJson();
-
-                        if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(Keyword.RESULT)) {
-                            this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
-                            kuick().update(getDatabase(), this.object, this.transfer, null);
-                            continue;
-                        }
-                    } else {
-                        this.activeConnection.reply(reply.toString());
-                        Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
-                    }
-
-                    this.object.putFlag(this.device.uid, TransferItem.Flag.IN_PROGRESS);
-                    kuick().update(getDatabase(), this.object, this.transfer, null);
+                    item = new TransferItem(transfer.id, request.getInt(Keyword.TRANSFER_REQUEST_ID), type);
+                    kuick().reconstruct(getDatabase(), item);
 
                     try {
-                        boolean sizeExceeded = false;
-                        int readLength;
-                        ActiveConnection.Description description = this.activeConnection.writeBegin(0, fileSize);
+                        file = FileUtils.fromUri(getContext(), Uri.parse(item.file));
+                        if (item.size != file.length())
+                            throw new FileNotFoundException("File size has changed. Probably it is a different file.");
 
-                        while ((readLength = inputStream.read(description.buffer)) != -1) {
-                            if (readLength > 0) {
-                                broadcastTransferState(false);
+                        currentBytes = request.getLong(Keyword.SKIPPED_BYTES);
+                        long length = item.size - currentBytes;
 
-                                this.currentBytes += readLength;
-                                this.activeConnection.write(description, 0, readLength);
+                        try (InputStream inputStream = getContext().getContentResolver().openInputStream(
+                                file.getUri())) {
+                            if (inputStream == null)
+                                throw new FileNotFoundException("The input stream for the file has failed to open.");
+
+                            if (currentBytes > 0 && inputStream.skip(currentBytes) != currentBytes)
+                                throw new IOException("Failed to skip " + currentBytes + "bytes");
+
+                            CommunicationBridge.sendResult(activeConnection, true);
+
+                            item.putFlag(device.uid, TransferItem.Flag.IN_PROGRESS);
+                            kuick().update(getDatabase(), item, transfer, null);
+
+                            ActiveConnection.Description description = activeConnection.writeBegin(0, length);
+                            int readLength;
+
+                            while ((readLength = inputStream.read(description.buffer)) != -1) {
+                                throwIfStopped();
+                                publishStatus();
+
+                                if (readLength > 0) {
+                                    currentBytes += readLength;
+                                    activeConnection.write(description, 0, readLength);
+                                }
                             }
 
-                            if (isInterrupted()) {
-                                this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
-                                break;
-                            }
+                            activeConnection.writeEnd(description);
+
+                            completedBytes += currentBytes;
+                            completedCount++;
+                            item.putFlag(device.uid, TransferItem.Flag.DONE);
+
+                            Log.d(TAG, "handleTransferAsSender(): File sent " + this.item.name);
                         }
-
-                        this.activeConnection.writeEnd(description);
-
-                        if (this.currentBytes == this.object.size) {
-                            this.completedBytes += this.currentBytes;
-                            this.completedCount++;
-                            this.object.putFlag(this.device.uid, TransferItem.Flag.DONE);
-                        } else if (sizeExceeded)
-                            this.object.putFlag(this.device.uid, TransferItem.Flag.REMOVED);
-                        else
-                            this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
-
-                        kuick().update(getDatabase(), this.object, this.transfer, null);
-
-                        Log.d(TAG, "handleTransferAsSender(): File sent " + this.object.name);
+                    } catch (FileNotFoundException e) {
+                        item.putFlag(device.uid, TransferItem.Flag.REMOVED);
+                        throw e;
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        interrupt(false);
-                        this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
-                        kuick().update(getDatabase(), this.object, this.transfer, null);
+                        item.putFlag(device.uid, TransferItem.Flag.INTERRUPTED);
+                        throw e;
                     } finally {
-                        inputStream.close();
+                        kuick().update(getDatabase(), item, transfer, null);
                     }
-                } catch (ReconstructionFailedException e) {
-                    Log.d(TAG, "handleTransferAsSender(): File not found");
-
-                    this.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND)
-                            .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
-                            .toString());
-
-                    this.object.putFlag(this.device.uid, TransferItem.Flag.REMOVED);
-                    kuick().update(getDatabase(), this.object, this.transfer, null);
-                } catch (FileNotFoundException | StreamCorruptedException e) {
-                    Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + this.object.name);
-
-                    this.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE)
-                            .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
-                            .toString());
-
-                    this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
-                    kuick().update(getDatabase(), this.object, this.transfer, null);
+                } catch (FileNotFoundException | ReconstructionFailedException e) {
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND);
+                } catch (IOException e) {
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE);
                 } catch (Exception e) {
-                    e.printStackTrace();
-
-                    this.activeConnection.reply(new JSONObject()
-                            .put(Keyword.RESULT, false)
-                            .put(Keyword.ERROR, Keyword.ERROR_UNKNOWN)
-                            .put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS)
-                            .toString());
-
-                    this.object.putFlag(this.device.uid, TransferItem.Flag.INTERRUPTED);
-                    kuick().update(getDatabase(), this.object, this.transfer, null);
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN);
+                } finally {
+                    item = null;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            interrupt();
-        } finally {
-            if (isInterrupted() && !isInterruptedByUser())
-                getNotificationHelper().notifyConnectionError(this, null);
-
-            broadcastTransferState(true);
         }
     }
 
@@ -637,15 +424,14 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     public void startTransferAsClient() throws TaskStoppedException
     {
         try (CommunicationBridge bridge = CommunicationBridge.connect(kuick(), addressList, device, 0)) {
-            bridge.requestFileTransferStart(this.transfer.id, this.type);
+            bridge.requestFileTransferStart(transfer.id, type);
 
             if (bridge.receiveResult()) {
-                this.activeConnection = bridge.getActiveConnection();
-                this.attemptsLeft = 2;
+                activeConnection = bridge.getActiveConnection();
 
-                if (TransferItem.Type.INCOMING.equals(this.type)) {
+                if (TransferItem.Type.INCOMING.equals(type)) {
                     handleTransferAsReceiver();
-                } else if (TransferItem.Type.OUTGOING.equals(this.type)) {
+                } else if (TransferItem.Type.OUTGOING.equals(type)) {
                     handleTransferAsSender();
                 }
             }

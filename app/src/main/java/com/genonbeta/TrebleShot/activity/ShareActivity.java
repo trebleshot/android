@@ -107,7 +107,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                     int total = task.progress().getTotal();
 
                     runOnUiThread(() -> {
-                        mTextMain.setText(task.getCurrentContent());
+                        mTextMain.setText(task.getOngoingContent());
                         mProgressTextCurrent.setText(String.valueOf(progress));
                         mProgressTextTotal.setText(String.valueOf(total));
                     });

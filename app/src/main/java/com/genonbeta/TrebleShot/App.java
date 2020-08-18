@@ -457,6 +457,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             stopService(new Intent(this, BackgroundService.class));
             return true;
         }
+
         return false;
     }
 

@@ -49,7 +49,7 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     private Stoppable mStoppable;
     private PendingIntent mActivityIntent;
     private DynamicNotification mCustomNotification; // The notification that is not part of the default notification.
-    private String mCurrentContent;
+    private String setOngoingContent;
     private boolean mFinished = false;
     private boolean mStarted = false;
     private long mStartTime;
@@ -60,6 +60,10 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
     protected void onProgressChange(Progress progress)
     {
         publishStatus();
+    }
+
+    public void onPublishStatus()
+    {
     }
 
     @Override
@@ -96,9 +100,9 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
         return mActivityIntent;
     }
 
-    public String getCurrentContent()
+    public String getOngoingContent()
     {
-        return mCurrentContent;
+        return setOngoingContent;
     }
 
     @Nullable
@@ -336,7 +340,7 @@ public abstract class AsyncTask extends StoppableJob implements Stoppable, Ident
 
     public void setOngoingContent(String content)
     {
-        mCurrentContent = content;
+        setOngoingContent = content;
     }
 
     private void setApp(@Nullable App service)
