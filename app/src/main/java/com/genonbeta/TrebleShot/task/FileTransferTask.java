@@ -43,6 +43,7 @@ import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
+import org.monora.coolsocket.core.session.CancelledException;
 import org.monora.coolsocket.core.session.DescriptionClosedException;
 
 import java.io.FileNotFoundException;
@@ -80,7 +81,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     @Override
     protected void onRun() throws TaskStoppedException
     {
-        if (this.activeConnection == null)
+        if (activeConnection == null)
             startTransferAsClient();
         else if (TransferItem.Type.OUTGOING.equals(type))
             handleTransferAsSender();
@@ -94,6 +95,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         super.onPublishStatus();
 
         long bytesTransferred = completedBytes + currentBytes;
+        StringBuilder text = new StringBuilder();
 
         progress().setTotal(100);
 
@@ -102,7 +104,6 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
         if (lastMovedBytes > 0 && bytesTransferred > 0) {
             long change = bytesTransferred - lastMovedBytes;
-            StringBuilder text = new StringBuilder();
 
             text.append(FileUtils.sizeExpression(change, false).toLowerCase());
             text.append("ps");
@@ -115,13 +116,15 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                         TimeUtils.getDuration(timeNeeded, false)));
                 text.append(")");
             }
-
-            setOngoingContent(text.toString());
         }
 
         lastMovedBytes = bytesTransferred;
 
         if (item != null) {
+            if (text.length() > 0)
+                text.append(" ").append(getContext().getString(R.string.mode_middleDot)).append(" ");
+            text.append(item.name);
+
             try {
                 TransferItem.Flag flag = TransferItem.Flag.IN_PROGRESS;
                 flag.setBytesValue(currentBytes);
@@ -138,6 +141,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
             }
         }
 
+        setOngoingContent(text.toString());
         kuick().broadcast();
     }
 
@@ -237,58 +241,58 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                 item = Transfers.fetchFirstValidIncomingTransferItem(getContext(), transfer.id);
 
                 if (item == null)
-                    throw new ContentException(ContentException.Error.NotFound);
+                    throw new ContentException(ContentException.Error.AlreadyExists);
 
-                try {
-                    file = FileUtils.getIncomingFile(getContext(), item, transfer);
-                    StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), file.getUri());
-                    currentBytes = file.length();
+                // We don't handle IO errors on the receiver side.
+                // An IO error for this side means there is a permission/storage issue.
+                file = FileUtils.getIncomingFile(getContext(), item, transfer);
+                currentBytes = file.length();
+                StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), file.getUri());
 
+                try (OutputStream outputStream = streamInfo.openOutputStream()) {
                     activeConnection.reply(new JSONObject()
                             .put(Keyword.TRANSFER_REQUEST_ID, item.id)
                             .put(Keyword.SKIPPED_BYTES, currentBytes));
 
                     if (CommunicationBridge.receiveResult(activeConnection, device)) {
-                        try (OutputStream outputStream = streamInfo.openOutputStream()) {
-                            int readLength;
-                            ActiveConnection.Description description = activeConnection.readBegin();
+                        int readLength;
+                        ActiveConnection.Description description = activeConnection.readBegin();
 
-                            try {
-                                while ((readLength = activeConnection.read(description)) != -1) {
-                                    throwIfStopped();
-                                    publishStatus();
+                        try {
+                            while ((readLength = activeConnection.read(description)) != -1) {
+                                throwIfStopped();
+                                publishStatus();
 
-                                    currentBytes += readLength;
-                                    outputStream.write(description.buffer, 0, readLength);
-                                }
-                            } catch (DescriptionClosedException ignored) {
+                                currentBytes += readLength;
+                                outputStream.write(description.buffer, 0, readLength);
                             }
-
-                            outputStream.flush();
-                            item.setFlag(TransferItem.Flag.DONE);
-                            completedBytes += currentBytes;
-                            completedCount++;
-
-                            if (file.getParentFile() != null) {
-                                file = FileUtils.saveReceivedFile(file.getParentFile(), file, item);
-
-                                Log.d(TAG, "handleTransferAsReceiver(): File is " + this.file.getUri().toString()
-                                        + " and name is " + this.item.file);
-
-                                getContext().sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-                                        .putExtra(FileListFragment.EXTRA_FILE_PARENT, file.getParentFile().getUri())
-                                        .putExtra(FileListFragment.EXTRA_FILE_NAME, file.getName()));
-                            }
-
-                            if (this.file instanceof LocalDocumentFile && getMediaScanner().isConnected())
-                                getMediaScanner().scanFile(((LocalDocumentFile) file).getFile().getAbsolutePath(),
-                                        item.mimeType);
-
-                            Log.d(TAG, "handleTransferAsSender(): File received " + item.name);
-                        } catch (Exception e) {
-                            item.setFlag(TransferItem.Flag.INTERRUPTED);
+                        } catch (DescriptionClosedException ignored) {
                         }
+
+                        outputStream.flush();
+                        item.setFlag(TransferItem.Flag.DONE);
+                        completedBytes += currentBytes;
+                        completedCount++;
+
+                        if (file.getParentFile() != null) {
+                            file = FileUtils.saveReceivedFile(file.getParentFile(), file, item);
+
+                            Log.d(TAG, "handleTransferAsReceiver(): File is " + this.file.getUri().toString()
+                                    + " and name is " + this.item.file);
+
+                            getContext().sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                                    .putExtra(FileListFragment.EXTRA_FILE_PARENT, file.getParentFile().getUri())
+                                    .putExtra(FileListFragment.EXTRA_FILE_NAME, file.getName()));
+                        }
+
+                        if (this.file instanceof LocalDocumentFile && getMediaScanner().isConnected())
+                            getMediaScanner().scanFile(((LocalDocumentFile) file).getFile().getAbsolutePath(),
+                                    item.mimeType);
+
+                        Log.d(TAG, "handleTransferAsSender(): File received " + item.name);
                     }
+                } catch (FileNotFoundException e) {
+                    throw e;
                 } catch (ContentException e) {
                     switch (e.error) {
                         case NotFound:
@@ -300,30 +304,24 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             item.setFlag(TransferItem.Flag.INTERRUPTED);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    item.setFlag(TransferItem.Flag.INTERRUPTED);
+                    throw e;
                 } finally {
                     kuick().update(getDatabase(), item, transfer, null);
                     item = null;
                 }
             }
 
-            boolean areFilesDone = kuick().getFirstFromTable(getDatabase(), Transfers.createIncomingSelection(
-                    transfer.id, TransferItem.Flag.DONE, false)) == null;
-            boolean jobDone = !isInterrupted() && areFilesDone;
-
-            Log.d(TAG, "handleTransferAsReceiver(): reply: done ?? " + jobDone);
-
-            if (isInterruptedByUser()) {
-                Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already notified");
-            } else if (isInterrupted()) {
-                getNotificationHelper().notifyReceiveError(this);
-                Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
-            } else if (this.completedCount > 0) {
+            if (completedCount > 0) {
                 getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
                 Log.d(TAG, "handleTransferAsReceiver(): Notify user");
             }
+        } catch (TaskStoppedException | CancelledException ignored) {
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                CommunicationBridge.sendError(activeConnection, e);
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -336,7 +334,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                 throwIfStopped();
                 publishStatus();
 
-                JSONObject request = activeConnection.receive().getAsJson();
+                JSONObject request = CommunicationBridge.receiveSecure(activeConnection, device);
 
                 try {
                     item = new TransferItem(transfer.id, request.getInt(Keyword.TRANSFER_REQUEST_ID), type);

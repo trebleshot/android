@@ -53,8 +53,6 @@ import com.genonbeta.android.framework.util.actionperformer.*;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -345,21 +343,20 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         int id = item.getItemId();
         int groupId = item.getGroupId();
 
-        if (id == R.id.actions_abs_editable_multi_select && mPerformerMenu != null && getActivity() != null) {
-            setLocalSelectionActivated(!mLocalSelectionActivated);
-        } else if (mPerformerMenu != null) {
-            if (mPerformerMenu.onMenuItemClick(item))
-                setLocalSelectionActivated(false);
-
-            return true;
-        } else if (groupId == R.id.actions_abs_editable_group_sorting)
+        if (groupId == R.id.actions_abs_editable_group_sorting)
             changeSortingCriteria(item.getOrder());
         else if (groupId == R.id.actions_abs_editable_group_sort_order)
             changeOrderingCriteria(item.getOrder());
         else if (groupId == R.id.actions_abs_editable_group_grid_size)
             changeGridViewSize(item.getOrder());
+        else if (id == R.id.actions_abs_editable_multi_select && mPerformerMenu != null && getActivity() != null)
+            setLocalSelectionActivated(!mLocalSelectionActivated);
+        else if (mPerformerMenu != null && mPerformerMenu.onMenuItemClick(item))
+            setLocalSelectionActivated(false);
+        else
+            super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     public void onSortingOptions(Map<String, Integer> options)

@@ -177,7 +177,7 @@ public class TransferListFragment extends GroupEditableListFragment<TransferInde
                     activeTaskList.add(task.transfer.id);
 
             getAdapter().updateActiveList(activeTaskList);
-            getAdapter().notifyDataSetChanged();
+            refreshList();
         } catch (IllegalStateException ignored) {
 
         }

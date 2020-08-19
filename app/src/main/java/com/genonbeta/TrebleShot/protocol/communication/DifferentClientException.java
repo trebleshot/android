@@ -20,15 +20,13 @@ package com.genonbeta.TrebleShot.protocol.communication;
 
 import com.genonbeta.TrebleShot.object.Device;
 
-public class DifferentClientException extends CommunicationException
+public class DifferentClientException extends NotAllowedException
 {
-    public Device expected;
     public String gotUid;
 
     public DifferentClientException(Device expected, String gotUid)
     {
-        super();
-        this.expected = expected;
+        super(expected);
         this.gotUid = gotUid;
     }
 }

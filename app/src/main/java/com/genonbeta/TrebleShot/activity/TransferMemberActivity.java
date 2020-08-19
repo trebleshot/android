@@ -230,7 +230,6 @@ public class TransferMemberActivity extends Activity implements SnackbarPlacemen
                     break;
                 case Finished:
                     setLoaderShowing(false);
-
             }
         }
     }

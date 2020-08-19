@@ -48,6 +48,7 @@ import com.genonbeta.TrebleShot.task.ChangeSaveDirectoryTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.PerformerMenu;
@@ -57,6 +58,7 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvi
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TransferItemListFragment extends GroupEditableListFragment<TransferItemListAdapter.GenericItem,
         GroupEditableListAdapter.GroupViewHolder, TransferItemListAdapter> implements TitleProvider,

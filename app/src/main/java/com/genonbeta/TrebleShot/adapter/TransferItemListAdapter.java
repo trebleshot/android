@@ -281,16 +281,6 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
     }
 
     @Override
-    public int compareItems(int sortingCriteria, int sortingOrder, GenericItem obj1,
-                            GenericItem obj2)
-    {
-        //if (sortingCriteria == MODE_SORT_BY_DEFAULT)
-        //    return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
-
-        return 1;
-    }
-
-    @Override
     public GroupLister<GenericItem> createLister(List<GenericItem> loadedList, int groupBy)
     {
         return super.createLister(loadedList, groupBy)
@@ -834,27 +824,22 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
         }
 
         @Override
+        public boolean equals(Object obj)
+        {
+            return obj instanceof TransferFolder && directory != null && directory.equals(
+                    ((TransferFolder) obj).directory);
+        }
+
+        @Override
+        public long getComparableSize()
+        {
+            return bytesTotal;
+        }
+
+        @Override
         public int getIconRes()
         {
             return R.drawable.ic_folder_white_24dp;
-        }
-
-        @Override
-        public void handleStatusIcon(ImageView imageView, Transfer transfer)
-        {
-            imageView.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void handleStatusIndicator(ImageView imageView)
-        {
-            imageView.setVisibility(View.GONE);
-        }
-
-        @Override
-        public boolean hasIssues(TransferItemListAdapter adapter)
-        {
-            return hasIssues;
         }
 
         @Override
@@ -887,10 +872,21 @@ public class TransferItemListAdapter extends GroupEditableListAdapter<TransferIt
         }
 
         @Override
-        public boolean equals(Object obj)
+        public void handleStatusIcon(ImageView imageView, Transfer transfer)
         {
-            return obj instanceof TransferFolder && directory != null && directory.equals(
-                    ((TransferFolder) obj).directory);
+            imageView.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void handleStatusIndicator(ImageView imageView)
+        {
+            imageView.setVisibility(View.GONE);
+        }
+
+        @Override
+        public boolean hasIssues(TransferItemListAdapter adapter)
+        {
+            return hasIssues;
         }
 
         @Override

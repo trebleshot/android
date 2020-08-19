@@ -254,7 +254,9 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
             holder.itemView.findViewById(R.id.menu).setOnClickListener(v -> {
                 FileHolder fileHolder = getList().get(holder.getAdapterPosition());
-                boolean isFile = FileHolder.Type.File.equals(fileHolder.getType());
+                boolean isFile = FileHolder.Type.File.equals(fileHolder.getType())
+                        || FileHolder.Type.Recent.equals(fileHolder.getType())
+                        || FileHolder.Type.Pending.equals(fileHolder.getType());
                 boolean isMounted = FileHolder.Type.Mounted.equals(fileHolder.getType());
                 boolean isBookmarked = FileHolder.Type.Bookmarked.equals(fileHolder.getType());
                 boolean canWrite = fileHolder.file != null && fileHolder.file.canWrite();
@@ -298,6 +300,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                         getFragment().performLayoutClickOpen(holder, fileHolder);
                     } else if (id == R.id.action_mode_file_show && fileHolder.file.getParentFile() != null) {
                         goPath(fileHolder.file.getParentFile());
+                        getFragment().refreshList();
                     } else if (id == R.id.action_mode_file_eject_directory) {
                         AppUtils.getKuick(getContext()).remove(fileHolder);
                         AppUtils.getKuick(getContext()).broadcast();

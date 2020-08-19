@@ -27,7 +27,9 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TransferItem;
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
+import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONArray;
@@ -194,7 +196,7 @@ public class CommunicationBridge implements Closeable
         return receiveResult(getActiveConnection(), getDevice());
     }
 
-    public static boolean receiveResult(ActiveConnection connection, Device targetDevice) throws IOException,
+    public static JSONObject receiveSecure(ActiveConnection connection, Device targetDevice) throws IOException,
             JSONException, CommunicationException
     {
         JSONObject jsonObject = connection.receive().getAsJson();
@@ -218,7 +220,47 @@ public class CommunicationBridge implements Closeable
             }
         }
 
-        return jsonObject.getBoolean(Keyword.RESULT);
+        return jsonObject;
+    }
+
+    public static boolean receiveResult(ActiveConnection connection, Device targetDevice) throws IOException,
+            JSONException, CommunicationException
+    {
+        return receiveSecure(connection, targetDevice).getBoolean(Keyword.RESULT);
+    }
+
+    public static void sendError(ActiveConnection connection, Exception exception) throws IOException, JSONException
+    {
+        try {
+            throw exception;
+        } catch (NotTrustedException e) {
+            CommunicationBridge.sendError(connection, Keyword.ERROR_NOT_TRUSTED);
+        } catch (DeviceBlockedException | DeviceVerificationException e) {
+            CommunicationBridge.sendError(connection, Keyword.ERROR_NOT_ALLOWED);
+        } catch (ReconstructionFailedException e) {
+            CommunicationBridge.sendError(connection, Keyword.ERROR_NOT_FOUND);
+        } catch (ContentException e) {
+            CommunicationBridge.sendError(connection, e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendError(ActiveConnection connection, ContentException e) throws IOException, JSONException
+    {
+        switch (e.error) {
+            case NotFound:
+                CommunicationBridge.sendError(connection, Keyword.ERROR_NOT_FOUND);
+                break;
+            case NotAccessible:
+                CommunicationBridge.sendError(connection, Keyword.ERROR_NOT_ACCESSIBLE);
+                break;
+            case AlreadyExists:
+                CommunicationBridge.sendError(connection, Keyword.ERROR_ALREADY_EXISTS);
+                break;
+            default:
+                CommunicationBridge.sendError(connection, Keyword.ERROR_UNKNOWN);
+        }
     }
 
     public void sendError(String errorCode) throws IOException, JSONException
@@ -238,6 +280,12 @@ public class CommunicationBridge implements Closeable
 
     public static void sendResult(ActiveConnection connection, boolean result) throws IOException, JSONException
     {
-        connection.reply(new JSONObject().put(Keyword.RESULT, result));
+        sendSecure(connection, result, new JSONObject());
+    }
+
+    public static void sendSecure(ActiveConnection connection, boolean result, JSONObject jsonObject)
+            throws JSONException, IOException
+    {
+        connection.reply(jsonObject.put(Keyword.RESULT, result));
     }
 }

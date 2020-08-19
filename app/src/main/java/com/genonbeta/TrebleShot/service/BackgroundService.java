@@ -38,6 +38,8 @@ import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
+import com.genonbeta.TrebleShot.protocol.communication.NotAllowedException;
+import com.genonbeta.TrebleShot.protocol.communication.NotTrustedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
@@ -382,36 +384,11 @@ public class BackgroundService extends Service
                 response = activeConnection.receive().getAsJson();
 
                 handleRequest(activeConnection, device, deviceAddress, hasPin, response);
-            } catch (DeviceBlockedException | DeviceVerificationException e) {
-                try {
-                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ALLOWED);
-                } catch (Exception ignored) {
-                }
-            } catch (ReconstructionFailedException e) {
-                try {
-                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND);
-                } catch (Exception ignored) {
-                }
-            } catch (ContentException e) {
-                try {
-                    switch (e.error) {
-                        case NotFound:
-                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND);
-                            break;
-                        case NotAccessible:
-                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE);
-                            break;
-                        case AlreadyExists:
-                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_ALREADY_EXISTS);
-                            break;
-                        default:
-                            CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN);
-                    }
-
-                } catch (Exception ignored) {
-                }
             } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    CommunicationBridge.sendError(activeConnection, e);
+                } catch (Exception ignored) {
+                }
             }
         }
 
@@ -421,8 +398,9 @@ public class BackgroundService extends Service
         {
             switch (response.getString(Keyword.REQUEST)) {
                 case (Keyword.REQUEST_TRANSFER):
-                    if (response.has(Keyword.INDEX) && response.has(Keyword.TRANSFER_ID)
-                            && !mApp.hasTaskOf(IndexTransferTask.class)) {
+                    if (mApp.hasTaskOf(IndexTransferTask.class))
+                        throw new NotAllowedException(device);
+                    else {
                         long transferId = response.getLong(Keyword.TRANSFER_ID);
                         String jsonIndex = response.getString(Keyword.INDEX);
 
@@ -433,8 +411,7 @@ public class BackgroundService extends Service
                             CommunicationBridge.sendResult(activeConnection, true);
                             mApp.run(new IndexTransferTask(transferId, jsonIndex, device, hasPin));
                         }
-                    } else
-                        CommunicationBridge.sendResult(activeConnection, false);
+                    }
                     return;
                 case (Keyword.REQUEST_NOTIFY_TRANSFER_STATE): {
                     int transferId = response.getInt(Keyword.TRANSFER_ID);
@@ -472,7 +449,6 @@ public class BackgroundService extends Service
                 case (Keyword.REQUEST_TRANSFER_JOB):
                     int transferId = response.getInt(Keyword.TRANSFER_ID);
                     String typeValue = response.getString(Keyword.TRANSFER_TYPE);
-
                     TransferItem.Type type = TransferItem.Type.valueOf(typeValue);
 
                     // The type is reversed to match our side

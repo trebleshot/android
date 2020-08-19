@@ -37,7 +37,7 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
         V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
         extends EditableListFragment<T, V, E>
 {
-    private Map<String, Integer> mGroupingOptions = new ArrayMap<>();
+    private final Map<String, Integer> mGroupingOptions = new ArrayMap<>();
     private int mDefaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING;
 
     @Override

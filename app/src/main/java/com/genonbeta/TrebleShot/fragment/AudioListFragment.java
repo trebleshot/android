@@ -67,7 +67,6 @@ public class AudioListFragment extends GroupEditableListFragment<AudioListAdapte
     public void onPause()
     {
         super.onPause();
-
         requireContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver());
     }
 
