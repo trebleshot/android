@@ -386,7 +386,8 @@ public class ConnectionUtils
 
     public boolean isLocationServiceEnabled()
     {
-        return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? mLocationManager.isLocationEnabled()
+                : mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     /**

@@ -47,8 +47,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
             EXTRA_DEVICE_ID = "extraDeviceId";
 
     private ProgressBar mProgressBar;
-    private TextView mProgressTextCurrent;
-    private TextView mProgressTextTotal;
     private TextView mTextMain;
 
     @Override
@@ -82,8 +80,6 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                     finish();
                 } else {
                     mProgressBar = findViewById(R.id.progressBar);
-                    mProgressTextCurrent = findViewById(R.id.text1);
-                    mProgressTextTotal = findViewById(R.id.text2);
                     mTextMain = findViewById(R.id.textMain);
 
                     findViewById(R.id.cancelButton).setOnClickListener(v -> interruptAllTasks(true));
@@ -106,12 +102,7 @@ public class ShareActivity extends Activity implements SnackbarPlacementProvider
                     int progress = task.progress().getCurrent();
                     int total = task.progress().getTotal();
 
-                    runOnUiThread(() -> {
-                        mTextMain.setText(task.getOngoingContent());
-                        mProgressTextCurrent.setText(String.valueOf(progress));
-                        mProgressTextTotal.setText(String.valueOf(total));
-                    });
-
+                    runOnUiThread(() -> mTextMain.setText(task.getOngoingContent()));
                     mProgressBar.setProgress(progress);
                     mProgressBar.setMax(total);
                     break;

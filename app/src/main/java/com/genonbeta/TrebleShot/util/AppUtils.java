@@ -81,8 +81,8 @@ public class AppUtils
     public static DocumentFile createLog(Context context)
     {
         DocumentFile saveDirectory = FileUtils.getApplicationDirectory(context);
-        String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
-        DocumentFile logFile = saveDirectory.createFile(null, fileName);
+        String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log", true);
+        DocumentFile logFile = saveDirectory.createFile("text/plain", fileName);
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Service.ACTIVITY_SERVICE);
 
         if (activityManager == null)

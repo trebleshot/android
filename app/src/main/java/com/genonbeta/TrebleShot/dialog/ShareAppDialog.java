@@ -51,38 +51,34 @@ public class ShareAppDialog extends AlertDialog.Builder
 
     private void shareAsApk(@NonNull final Context context)
     {
-        new Handler(Looper.getMainLooper()).post(() -> {
+        try {
+            Stoppable interrupter = new StoppableImpl();
+
+            PackageManager pm = context.getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(context.getApplicationInfo().packageName, 0);
+            String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName;
+
+            DocumentFile storageDirectory = FileUtils.getApplicationDirectory(context.getApplicationContext());
+            DocumentFile codeFile = DocumentFile.fromFile(new File(context.getApplicationInfo().sourceDir));
+            DocumentFile cloneFile = storageDirectory.createFile(codeFile.getType(), FileUtils.getUniqueFileName(
+                    storageDirectory, fileName, true));
+
+            FileUtils.copy(context, codeFile, cloneFile, interrupter);
+
             try {
-                Stoppable interrupter = new StoppableImpl();
+                Intent sendIntent = new Intent(Intent.ACTION_SEND)
+                        .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(context, cloneFile))
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .setType(cloneFile.getType());
 
-                PackageManager pm = context.getPackageManager();
-                PackageInfo packageInfo = pm.getPackageInfo(context.getApplicationInfo().packageName, 0);
-
-                String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
-
-                DocumentFile storageDirectory = FileUtils.getApplicationDirectory(context.getApplicationContext());
-                DocumentFile codeFile = DocumentFile.fromFile(new File(context.getApplicationInfo().sourceDir));
-                DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(
-                        storageDirectory, fileName, true));
-
-                FileUtils.copy(context, codeFile, cloneFile, interrupter);
-
-                try {
-                    Intent sendIntent = new Intent(Intent.ACTION_SEND)
-                            .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(context, cloneFile))
-                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            .setType(cloneFile.getType());
-
-                    context.startActivity(Intent.createChooser(sendIntent, context.getString(
-                            R.string.text_fileShareAppChoose)));
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(context, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                context.startActivity(Intent.createChooser(sendIntent, context.getString(
+                        R.string.text_fileShareAppChoose)));
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(context, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
             }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void shareAsLink(@NonNull final Context context)

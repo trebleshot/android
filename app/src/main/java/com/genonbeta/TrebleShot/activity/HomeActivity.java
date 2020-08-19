@@ -56,8 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener,
-        AttachedTaskListener
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
@@ -66,79 +65,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
     private long mExitPressTime;
     private int mChosenMenuItemId;
-
-    public enum DummyIdentity
-    {
-        One,
-        Two,
-        Three
-    }
-
-    public static class DummyAsyncTask extends AttachableAsyncTask<HomeActivity>
-    {
-        private final int dummyId = (int) (100 * Math.random());
-
-        @Override
-        protected void onRun() throws TaskStoppedException
-        {
-            progress().setTotal(2000);
-
-            while (progress().getTotal() > progress().getCurrent()) {
-                throwIfStopped();
-
-                setOngoingContent(String.valueOf(System.currentTimeMillis()));
-                publishStatus();
-
-                progress().addToCurrent((int) (100 * Math.random()));
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Override
-        public Identity getIdentity()
-        {
-            return Identity.withANDs(Identifier.from(DummyIdentity.One, 1), Identifier.from(DummyIdentity.Two, 2),
-                    Identifier.from(DummyIdentity.Three, 3));
-        }
-
-        @Override
-        public String getName(Context context)
-        {
-            return "Dummy " + dummyId;
-        }
-    }
-
-    @Override
-    public boolean onTaskMessage(TaskMessage message)
-    {
-        return false;
-    }
-
-    @Override
-    public void onTaskStateChange(BaseAttachableAsyncTask task, AsyncTask.State state)
-    {
-
-    }
-
-    @Override
-    protected void onAttachTasks(List<BaseAttachableAsyncTask> taskList)
-    {
-        super.onAttachTasks(taskList);
-        for (BaseAttachableAsyncTask attachableAsyncTask : taskList)
-            if (attachableAsyncTask instanceof DummyAsyncTask)
-                ((DummyAsyncTask) attachableAsyncTask).setAnchor(this);
-    }
-
-    @Override
-    public Identity getIdentity()
-    {
-        return Identity.withANDs(Identifier.from(DummyIdentity.One, 1), Identifier.from(DummyIdentity.Two, 2));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

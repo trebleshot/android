@@ -34,12 +34,10 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
 import com.genonbeta.TrebleShot.protocol.communication.NotAllowedException;
-import com.genonbeta.TrebleShot.protocol.communication.NotTrustedException;
 import com.genonbeta.TrebleShot.task.FileTransferTask;
 import com.genonbeta.TrebleShot.task.IndexTransferTask;
 import com.genonbeta.TrebleShot.util.*;
@@ -465,7 +463,9 @@ public class BackgroundService extends Service
 
                     if (TransferItem.Type.INCOMING.equals(type) && !device.isTrusted)
                         CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_TRUSTED);
-                    else if (!isProcessRunning(transferId, device.uid, type)) {
+                    else if (isProcessRunning(transferId, device.uid, type))
+                        throw new ContentException(ContentException.Error.NotAccessible);
+                    else {
                         FileTransferTask task = new FileTransferTask();
                         task.activeConnection = activeConnection;
                         task.transfer = transfer;
@@ -479,8 +479,7 @@ public class BackgroundService extends Service
 
                         mApp.attach(task);
                         return;
-                    } else
-                        throw new ContentException(ContentException.Error.NotAccessible);
+                    }
                 default:
                     CommunicationBridge.sendResult(activeConnection, false);
             }

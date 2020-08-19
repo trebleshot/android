@@ -605,4 +605,5 @@
     <string name="text_notificationOpenHome">Tap to launch</string>
     <string name="butn_stopAll">Stop all</string>
     <string name="butn_transfers">Transfers</string>
+    <string name="mesg_errorDuringTransfer">Transfer with %s stopped for some reason.</string>
 </resources>

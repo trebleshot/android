@@ -131,7 +131,7 @@
         <item name="tabIndicatorColor">?colorSecondary</item>
         <item name="tabIconTint">?selectionAccentColor</item>
         <item name="tabTextColor">?selectionAccentColor</item>
-    </style>
+    </style>z
 
     <style name="TextAppearance">
         <item name="android:letterSpacing" tools:targetApi="21">0.011</item>

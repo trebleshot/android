@@ -30,12 +30,9 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.Transfers;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.StreamInfo;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,19 +57,15 @@ public class OrganizeSharingTask extends AttachableAsyncTask<AttachedTaskListene
 
         for (Uri uri : mUriList) {
             throwIfStopped();
-
             progress().addToCurrent(1);
 
             try {
-                DocumentFile file = FileUtils.fromUri(getContext(), uri);
-                setOngoingContent(file.getName());
+                StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), uri);
+                setOngoingContent(streamInfo.friendlyName);
                 publishStatus();
 
-                if (file.isDirectory())
-                    Transfers.createFolderStructure(list, transfer.id, file, file.getName(), this);
-                else
-                    list.add(TransferItem.from(file, transfer.id, null));
-            } catch (FileNotFoundException e) {
+                list.add(TransferItem.from(streamInfo, transfer.id));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

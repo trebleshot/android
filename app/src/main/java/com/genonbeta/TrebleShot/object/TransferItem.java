@@ -34,9 +34,12 @@ import com.genonbeta.android.database.KuickDb;
 import com.genonbeta.android.database.Progress;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
+import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Map;
@@ -87,6 +90,12 @@ public class TransferItem implements DatabaseObject<Transfer>, Editable
         this.transferId = transferId;
         this.id = id;
         this.type = type;
+    }
+
+    public static TransferItem from(StreamInfo streamInfo, long transferId)
+    {
+        return new TransferItem(AppUtils.getUniqueNumber(), transferId, streamInfo.friendlyName,
+                streamInfo.uri.toString(), streamInfo.mimeType, streamInfo.size, Type.OUTGOING);
     }
 
     public static TransferItem from(DocumentFile file, long transferId, String directory)

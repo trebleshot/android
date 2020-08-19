@@ -19,64 +19,49 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="false">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:paddingLeft="@dimen/short_content_width_padding"
+        android:paddingRight="@dimen/short_content_width_padding">
+
+        <ProgressBar
+            android:layout_centerInParent="true"
+            android:id="@+id/progressBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
 
         <TextView
             android:id="@+id/textMain"
-            style="@style/TextAppearance.Primary.Big"
+            style="@style/TextAppearance.Secondary.Big"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="15dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/progressBar"
             android:gravity="center" />
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/organizingFilesText"
+            android:layout_marginTop="@dimen/short_content_width_padding"
+            style="@style/TextAppearance.Primary.Big"
+            android:text="@string/mesg_organizingFiles"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:padding="10dp" />
-
-            <TextView
-                android:id="@+id/text2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:padding="10dp" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/text2"
-                android:layout_toLeftOf="@id/text2"
-                android:layout_toEndOf="@id/text1"
-                android:layout_toRightOf="@id/text1" />
-
-        </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_below="@id/progressBar" />
 
         <Button
             android:id="@+id/cancelButton"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/organizingFilesText"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:text="@string/butn_cancel" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

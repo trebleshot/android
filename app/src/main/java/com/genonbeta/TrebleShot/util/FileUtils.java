@@ -74,7 +74,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
     public static File getDefaultApplicationDirectoryPath(Context context)
     {
         if (Build.VERSION.SDK_INT >= 29)
-            return context.getNoBackupFilesDir();
+            return context.getExternalCacheDir();
 
         File primaryDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 

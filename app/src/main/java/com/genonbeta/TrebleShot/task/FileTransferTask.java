@@ -33,8 +33,10 @@ import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.*;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
+import com.genonbeta.TrebleShot.protocol.communication.UnhandledCommunicationException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -100,7 +102,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         progress().setTotal(100);
 
         if (bytesTransferred > 0 && index.bytesPending() > 0)
-            progress().setCurrent((int) (100 * (bytesTransferred / index.bytesTotal())));
+            progress().setCurrent((int) (100 * ((double) bytesTransferred / index.bytesPending())));
 
         if (lastMovedBytes > 0 && bytesTransferred > 0) {
             long change = bytesTransferred - lastMovedBytes;
@@ -228,7 +230,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         return context.getString(R.string.text_transfer);
     }
 
-    private void handleTransferAsReceiver()
+    private void handleTransferAsReceiver() throws TaskStoppedException
     {
         try {
             Transfers.loadTransferInfo(getContext(), index, member);
@@ -311,24 +313,35 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                     item = null;
                 }
             }
+        } catch (TaskStoppedException | CancelledException e) {
+            if (e instanceof CancelledException)
+                throw new TaskStoppedException("Task cancelled by remote.", false);
 
-            if (completedCount > 0) {
-                getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
-                Log.d(TAG, "handleTransferAsReceiver(): Notify user");
-            }
-        } catch (TaskStoppedException | CancelledException ignored) {
+            throw (TaskStoppedException) e;
         } catch (Exception e) {
             try {
                 CommunicationBridge.sendError(activeConnection, e);
+            } catch (UnhandledCommunicationException e1) {
+                post(TaskMessage.newInstance()
+                        .setTone(TaskMessage.Tone.Negative)
+                        .setTitle(getContext(), R.string.text_communicationError)
+                        .setMessage(getContext().getString(R.string.mesg_errorDuringTransfer, device.username)));
+
+                throw new TaskStoppedException("Task stopped due to an error", false);
             } catch (Exception ignored) {
             }
+        }
+
+        if (completedCount > 0) {
+            getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
+            Log.d(TAG, "handleTransferAsReceiver(): Notify user");
         }
     }
 
     private void handleTransferAsSender()
     {
         try {
-            Transfers.loadTransferInfo(getContext(), this.index, this.member);
+            Transfers.loadTransferInfo(getContext(), index, member);
 
             while (activeConnection.getSocket().isConnected()) {
                 throwIfStopped();

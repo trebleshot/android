@@ -229,7 +229,8 @@ public class CommunicationBridge implements Closeable
         return receiveSecure(connection, targetDevice).getBoolean(Keyword.RESULT);
     }
 
-    public static void sendError(ActiveConnection connection, Exception exception) throws IOException, JSONException
+    public static void sendError(ActiveConnection connection, Exception exception) throws IOException, JSONException,
+            UnhandledCommunicationException
     {
         try {
             throw exception;
@@ -242,7 +243,7 @@ public class CommunicationBridge implements Closeable
         } catch (ContentException e) {
             CommunicationBridge.sendError(connection, e);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new UnhandledCommunicationException("An unknown error was thrown during the communication", e);
         }
     }
 
