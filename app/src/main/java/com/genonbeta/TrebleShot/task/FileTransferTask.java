@@ -43,6 +43,7 @@ import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
+import org.monora.coolsocket.core.session.DescriptionClosedException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -252,12 +253,15 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             int readLength;
                             ActiveConnection.Description description = activeConnection.readBegin();
 
-                            while ((readLength = activeConnection.read(description)) != -1) {
-                                throwIfStopped();
-                                publishStatus();
+                            try {
+                                while ((readLength = activeConnection.read(description)) != -1) {
+                                    throwIfStopped();
+                                    publishStatus();
 
-                                currentBytes += readLength;
-                                outputStream.write(description.buffer, 0, readLength);
+                                    currentBytes += readLength;
+                                    outputStream.write(description.buffer, 0, readLength);
+                                }
+                            } catch (DescriptionClosedException ignored) {
                             }
 
                             outputStream.flush();
@@ -285,6 +289,16 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             item.setFlag(TransferItem.Flag.INTERRUPTED);
                         }
                     }
+                } catch (ContentException e) {
+                    switch (e.error) {
+                        case NotFound:
+                            item.setFlag(TransferItem.Flag.REMOVED);
+                            break;
+                        case AlreadyExists:
+                        case NotAccessible:
+                        default:
+                            item.setFlag(TransferItem.Flag.INTERRUPTED);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -300,14 +314,12 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
             Log.d(TAG, "handleTransferAsReceiver(): reply: done ?? " + jobDone);
 
             if (isInterruptedByUser()) {
-                Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
-                        "notified");
+                Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already notified");
             } else if (isInterrupted()) {
                 getNotificationHelper().notifyReceiveError(this);
                 Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
             } else if (this.completedCount > 0) {
-                getNotificationHelper().notifyFileReceived(this,
-                        FileUtils.getSavePath(getContext(), this.transfer));
+                getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
                 Log.d(TAG, "handleTransferAsReceiver(): Notify user");
             }
         } catch (Exception e) {

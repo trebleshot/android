@@ -172,7 +172,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
         if (id == android.R.id.home) {
             if (canExit())
-                onBackPressed();
+                finish();
         } else
             return super.onOptionsItemSelected(item);
 
