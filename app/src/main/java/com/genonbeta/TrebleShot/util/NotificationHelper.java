@@ -302,59 +302,6 @@ public class NotificationHelper
         notification.show();
     }
 
-    public void notifyReceiveError(Device device, Transfer transfer, TransferItem transferItem)
-    {
-        DynamicNotification notification = getUtils().buildDynamicNotification(transferItem.getId(),
-                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-
-        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-                .setContentTitle(getContext().getString(R.string.text_error))
-                .setContentText(getContext().getString(R.string.mesg_fileReceiveError, transferItem.name))
-                .setAutoCancel(true)
-                .setDefaults(getUtils().getNotificationSettings())
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), TransferDetailActivity.class)
-                        .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER_ITEM_ID, transferItem.id)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER_TYPE, transferItem.type)
-                        .putExtra(TransferDetailActivity.EXTRA_DEVICE, device), 0));
-
-        notification.show();
-    }
-
-    public void notifyConnectionError(FileTransferTask task, @Nullable String errorKey)
-    {
-        DynamicNotification notification = getUtils().buildDynamicNotification(Transfers.createUniqueTransferId(
-                task.transfer.id, task.device.uid, task.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        // TODO: 8/11/20 The msg "hey" should be removed.
-        String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, task.device.username, "hey");
-
-        if (errorKey != null)
-            switch (errorKey) {
-                case Keyword.ERROR_NOT_ALLOWED:
-                case Keyword.ERROR_NOT_TRUSTED:
-                    errorMsg = getContext().getString(R.string.mesg_notAllowed);
-                    break;
-                case Keyword.ERROR_NOT_FOUND:
-                    errorMsg = getContext().getString(R.string.mesg_notValidTransfer);
-            }
-
-        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-                .setContentTitle(getContext().getString(R.string.text_error))
-                .setContentText(errorMsg)
-                .setAutoCancel(true)
-                .setDefaults(getUtils().getNotificationSettings())
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), TransferDetailActivity.class)
-                        .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, task.transfer), 0));
-
-        notification.show();
-    }
-
     public DynamicNotification notifyTasksNotification(List<AsyncTask> taskList,
                                                        @Nullable DynamicNotification notification)
     {

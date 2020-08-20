@@ -60,8 +60,10 @@ public class ShareAppDialog extends AlertDialog.Builder
 
             DocumentFile storageDirectory = FileUtils.getApplicationDirectory(context.getApplicationContext());
             DocumentFile codeFile = DocumentFile.fromFile(new File(context.getApplicationInfo().sourceDir));
-            DocumentFile cloneFile = storageDirectory.createFile(codeFile.getType(), FileUtils.getUniqueFileName(
-                    storageDirectory, fileName, true));
+            DocumentFile cloneFile = storageDirectory.createFile(codeFile.getType(), fileName);
+
+            if (cloneFile.exists())
+                cloneFile.delete();
 
             FileUtils.copy(context, codeFile, cloneFile, interrupter);
 

@@ -410,9 +410,9 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                     CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE);
                 } catch (Exception e) {
                     CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN);
-                } finally {
+                } /*finally {
                     item = null;
-                }
+                }*/
             }
         } catch (Exception e) {
             e.printStackTrace();

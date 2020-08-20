@@ -81,15 +81,16 @@ public class AppUtils
     public static DocumentFile createLog(Context context)
     {
         DocumentFile saveDirectory = FileUtils.getApplicationDirectory(context);
-        String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log", true);
-        DocumentFile logFile = saveDirectory.createFile("text/plain", fileName);
+        DocumentFile logFile = saveDirectory.createFile("text/plain", "trebleshot_log");
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Service.ACTIVITY_SERVICE);
+
+        if (logFile.exists())
+            logFile.delete();
 
         if (activityManager == null)
             return null;
 
         try {
-
             List<ActivityManager.RunningAppProcessInfo> processList = activityManager.getRunningAppProcesses();
 
             String command = "logcat -d -v threadtime *:*";
@@ -100,7 +101,7 @@ public class AppUtils
                     .openOutputStream(logFile.getUri(), "w");
 
             if (outputStream == null)
-                throw new IOException(String.format("Could not open %s", fileName));
+                throw new IOException("Could not open " + logFile.getName());
 
             String readLine;
 
