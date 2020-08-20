@@ -300,14 +300,12 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         @RequiresApi(29)
         public WifiNetworkSuggestion toNetworkSuggestion()
         {
-            // TODO: 1/1/20 Ensure using both wpa2 and wpa3 does not cause an issue
             WifiNetworkSuggestion.Builder builder = new WifiNetworkSuggestion.Builder()
                     .setSsid(ssid)
                     .setIsAppInteractionRequired(true);
 
             if (password != null)
-                builder.setWpa2Passphrase(password)
-                        .setWpa3Passphrase(password);
+                builder.setWpa2Passphrase(password);
 
             if (bssid != null)
                 builder.setBssid(MacAddress.fromString(bssid));

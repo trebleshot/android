@@ -41,10 +41,10 @@ public class CommonErrorHelper
         } catch (CommunicationException e) {
             taskMessage.setTitle(context, R.string.text_communicationError);
 
-            if (e instanceof NotAllowedException)
-                taskMessage.setMessage(context, R.string.mesg_notAllowed);
-            else if (e instanceof DifferentClientException)
+            if (e instanceof DifferentClientException)
                 taskMessage.setMessage(context, R.string.mesg_errorDifferentDevice);
+            else if (e instanceof NotAllowedException)
+                taskMessage.setMessage(context, R.string.mesg_notAllowed);
             else if (e instanceof NotTrustedException)
                 taskMessage.setMessage(context, R.string.mesg_errorNotTrusted);
             else if (e instanceof UnknownCommunicationErrorException)

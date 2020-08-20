@@ -46,7 +46,7 @@
             android:maxWidth="220dp"
             android:visibility="gone" />
 
-        <View style="@style/DividerStyle.Raw" />
+        <View style="@style/DividerStyle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

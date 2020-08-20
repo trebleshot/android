@@ -283,17 +283,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Some comments reference this as Ubuntu Font Family. -->
-    <!-- So, do not rename this using refactoring. Instead, find usages then change them. -->
     <style name="TextAppearance.Cantarell" />
 
     <style name="DividerStyle">
-        <item name="android:layout_height">3dp</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:background">?backgroundGradientBottom</item>
-    </style>
-
-    <style name="DividerStyle.Raw">
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:background">?colorDivider</item>

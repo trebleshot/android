@@ -33,7 +33,7 @@
     <color name="windowBackground">#ffffff</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
-    <color name="colorDivider">#eeeeee</color>
+    <color name="colorDivider">#1A808080</color>
     <color name="colorPassive">#20000000</color>
     <color name="colorSelection">#12000000</color>
     <color name="colorShadowBeginning">#00FFFFFF</color>
@@ -42,7 +42,7 @@
     <color name="contentShowingBackground">#cfcfcf</color>
 
 
-    <!-- SEPERATOR -->
+    <!-- SEPARATOR -->
 
 
     <color name="dark_colorControlNormal">#ffffff</color>
@@ -58,7 +58,7 @@
     <color name="dark_colorPrimaryDark23">@color/dark_colorPrimary</color>
     <!-- local coloring-->
     <color name="dark_colorDonation">#f44336</color>
-    <color name="dark_colorDivider">#2E2E2E</color>
+    <color name="dark_colorDivider">#1A808080</color>
     <color name="dark_colorPassive">#229e9e9e</color>
     <color name="dark_colorSelection">#229e9e9e</color>
     <color name="dark_colorShadowBeginning">#00000000</color>
@@ -67,7 +67,7 @@
     <color name="dark_contentShowingBackground">#616161</color>
 
 
-    <!-- SEPERATOR -->
+    <!-- SEPARATOR -->
 
 
     <color name="black_dominant">#000</color>

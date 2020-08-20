@@ -42,7 +42,7 @@
 
         <View
             android:id="@+id/layout_transfer_explorer_separator"
-            style="@style/DividerStyle.Raw"
+            style="@style/DividerStyle"
             android:layout_gravity="bottom" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

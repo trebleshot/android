@@ -42,7 +42,7 @@
             android:minHeight="?attr/actionBarSize"
             app:tabMode="scrollable" />
 
-        <View style="@style/DividerStyle.Raw" />
+        <View style="@style/DividerStyle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

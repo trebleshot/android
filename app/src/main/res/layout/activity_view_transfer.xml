@@ -54,7 +54,7 @@
             android:gravity="center"
             android:text="@string/text_transferSharedOnBrowser" />
 
-        <View style="@style/DividerStyle.Raw" />
+        <View style="@style/DividerStyle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

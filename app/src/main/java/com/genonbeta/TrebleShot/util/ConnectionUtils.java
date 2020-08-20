@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -113,7 +112,13 @@ public class ConnectionUtils
             TimeoutException, InterruptedException
     {
         if (Build.VERSION.SDK_INT >= 29) {
-            int status = suggestNetwork(description);
+            final List<WifiNetworkSuggestion> suggestionList = new ArrayList<>();
+            suggestionList.add(description.toNetworkSuggestion());
+
+            int status = getWifiManager().removeNetworkSuggestions(suggestionList);
+            if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
+                    || status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_REMOVE_INVALID)
+                status = getWifiManager().addNetworkSuggestions(suggestionList);
             switch (status) {
                 case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
                     throw new DeviceIntroductionTask.SuggestNetworkException(description,
@@ -473,7 +478,8 @@ public class ConnectionUtils
             } else if (!enableNetwork(getWifiManager().addNetwork(config))) {
                 Log.d(TAG, "startConnection: Could not enable the network.");
             } else if (!getWifiManager().reconnect()) {
-                Log.d(TAG, "startConnection: Could not reconnect the networks.");;
+                Log.d(TAG, "startConnection: Could not reconnect the networks.");
+                ;
             } else
                 return true;
             return false;
@@ -482,14 +488,6 @@ public class ConnectionUtils
         }
 
         return false;
-    }
-
-    @TargetApi(29)
-    public int suggestNetwork(NetworkDescription description)
-    {
-        final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
-        suggestions.add(description.toNetworkSuggestion());
-        return getWifiManager().addNetworkSuggestions(suggestions);
     }
 
     /**

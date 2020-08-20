@@ -75,6 +75,7 @@ public class DeviceIntroductionTask extends AttachableAsyncTask<DeviceIntroducti
             if (anchor != null)
                 post(() -> anchor.onDeviceReached(deviceRoute));
         } catch (Exception e) {
+            e.printStackTrace();
             post(CommonErrorHelper.messageOf(getContext(), e));
         }
     }

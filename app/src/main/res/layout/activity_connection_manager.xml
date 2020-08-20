@@ -36,7 +36,7 @@
             android:layout_height="?actionBarSize"
             app:layout_collapseMode="pin" />
 
-        <View style="@style/DividerStyle.Raw" />
+        <View style="@style/DividerStyle" />
 
         <ProgressBar
             android:id="@+id/activity_connection_establishing_progress_bar"

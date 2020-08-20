@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -152,8 +153,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         super.onViewCreated(view, savedInstanceState);
 
         mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
-        // We have to recreate the provider class because old one doesn't work when
-        // same instance is used.
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
     }
