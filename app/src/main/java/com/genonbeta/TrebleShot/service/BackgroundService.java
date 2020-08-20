@@ -34,6 +34,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
@@ -353,16 +354,15 @@ public class BackgroundService extends Service
                     DeviceLoader.loadAsServer(getKuick(), response, device, hasPin);
                     sendKey = device.sendKey;
                 } catch (DeviceVerificationException e) {
-                    sendKey = AppUtils.generateKey();
                     getNotificationHelper().notifyKeyChanged(device, e.receiveKey, sendKey);
                     throw e;
                 } finally {
-                    activeConnection.reply(AppUtils.getLocalDeviceAsJson(BackgroundService.this, sendKey, 0));
                     DeviceLoader.processConnection(getKuick(), device, deviceAddress);
                     getKuick().broadcast();
                 }
 
-                CommunicationBridge.sendResult(activeConnection, true);
+                CommunicationBridge.sendSecure(activeConnection, true, AppUtils.getLocalDeviceAsJson(
+                        BackgroundService.this, sendKey, 0));
 
                 if (hasPin) // pin is known, should be changed. Warn the listeners.
                     sendBroadcast(new Intent(ACTION_PIN_USED));

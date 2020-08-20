@@ -112,9 +112,8 @@ public class CommunicationBridge implements Closeable
 
         activeConnection.reply(AppUtils.getLocalDeviceAsJson(kuick.getContext(), device.sendKey, pin));
 
-        DeviceLoader.loadAsClient(kuick, activeConnection.receive().getAsJson(), device);
         DeviceLoader.processConnection(kuick, device, deviceAddress);
-        receiveResult(activeConnection, device);
+        DeviceLoader.loadAsClient(kuick, receiveSecure(activeConnection, device), device);
 
         return new CommunicationBridge(kuick, activeConnection, device, deviceAddress);
     }

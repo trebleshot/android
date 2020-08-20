@@ -69,7 +69,7 @@ public class DeviceLoader
                 if (!keyMatches)
                     throw new ReconstructionFailedException("Generate newer keys.");
             } else if (device.isBlocked)
-                throw new DeviceBlockedException("The device is blocked.", device);
+                throw new DeviceBlockedException("The device is blocked.", device, keyMatches);
             else if (!keyMatches) {
                 device.isBlocked = true;
                 throw new DeviceVerificationException("The device receive key is different.", device, receiveKey);

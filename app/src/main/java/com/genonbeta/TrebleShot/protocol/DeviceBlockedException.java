@@ -25,8 +25,11 @@ import com.genonbeta.TrebleShot.object.Device;
  */
 public class DeviceBlockedException extends DeviceInsecureException
 {
-    public DeviceBlockedException(String message, Device device)
+    public final boolean keyMatches;
+
+    public DeviceBlockedException(String message, Device device, boolean keyMatches)
     {
         super(message, device);
+        this.keyMatches = keyMatches;
     }
 }
