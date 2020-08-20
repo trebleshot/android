@@ -49,7 +49,7 @@ import com.genonbeta.TrebleShot.service.BackgroundService;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.Connections;
 import com.genonbeta.TrebleShot.util.HotspotManager;
 import com.genonbeta.TrebleShot.util.InetAddresses;
 import com.google.zxing.BarcodeFormat;
@@ -75,7 +75,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
 
     private final IntentFilter mIntentFilter = new IntentFilter();
     private final StatusReceiver mStatusReceiver = new StatusReceiver();
-    private ConnectionUtils mConnectionUtils;
+    private Connections mConnections;
 
     private View mContainerText1;
     private View mContainerText2;
@@ -101,7 +101,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
     {
         super.onCreate(savedInstanceState);
 
-        mConnectionUtils = new ConnectionUtils(requireContext());
+        mConnections = new Connections(requireContext());
         mManager = HotspotManager.newInstance(requireContext());
         mIntentFilter.addAction(App.ACTION_OREO_HOTSPOT_STARTED);
         mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED);
@@ -237,7 +237,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
 
     private void toggleHotspot()
     {
-        mConnectionUtils.toggleHotspot(requireActivity(), this, mManager, true,
+        mConnections.toggleHotspot(requireActivity(), this, mManager, true,
                 REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT);
     }
 
@@ -246,7 +246,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
         if (v.getId() == R.id.layout_network_manager_info_toggle_button) {
             switch (mActiveType) {
                 case LocationPermissionNeeded:
-                    mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION);
+                    mConnections.validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION);
                     break;
                 case WiFi:
                 case HotspotExternal:
@@ -296,7 +296,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
         String delimiter = ";";
         StringBuilder code = new StringBuilder();
         WifiConfiguration config = getWifiConfiguration();
-        WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
+        WifiInfo connectionInfo = mConnections.getWifiManager().getConnectionInfo();
 
         if (mManager.isEnabled()) {
             if (config != null) {
@@ -327,12 +327,12 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
 
             mToggleButton.setText(R.string.butn_stopHotspot);
             mSecondButton.setText(R.string.butn_wifiSettings);
-        } else if (!mConnectionUtils.canReadWifiInfo() && mConnectionUtils.getWifiManager().isWifiEnabled()) {
+        } else if (!mConnections.canReadWifiInfo() && mConnections.getWifiManager().isWifiEnabled()) {
             mActiveType = Type.LocationPermissionNeeded;
             mText1.setText(R.string.mesg_locationPermissionRequiredAny);
             mToggleButton.setText(R.string.butn_enable);
             mSecondButton.setText(R.string.text_startHotspot);
-        } else if (mConnectionUtils.isConnectedToAnyNetwork()) {
+        } else if (mConnections.isConnectedToAnyNetwork()) {
             mActiveType = Type.WiFi;
             String hostAddress;
             String ssid = connectionInfo.getSSID();
@@ -358,7 +358,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
             mImageView2.setImageResource(R.drawable.ic_wifi_white_24dp);
             mImageView3.setImageResource(R.drawable.ic_ip_white_24dp);
             mText1.setText(R.string.help_scanQRCode);
-            mText2.setText(ConnectionUtils.getCleanSsid(connectionInfo.getSSID()));
+            mText2.setText(Connections.getCleanSsid(connectionInfo.getSSID()));
             mText3.setText(hostAddress);
             mToggleButton.setText(R.string.butn_wifiSettings);
             mSecondButton.setText(R.string.text_startHotspot);

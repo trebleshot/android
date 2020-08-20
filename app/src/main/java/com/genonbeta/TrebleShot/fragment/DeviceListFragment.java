@@ -44,7 +44,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.Connections;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDaemon;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -63,10 +63,10 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
 
     private final IntentFilter mIntentFilter = new IntentFilter();
     private final StatusReceiver mStatusReceiver = new StatusReceiver();
-    private ConnectionUtils mConnectionUtils;
+    private Connections mConnections;
     private Device.Type[] mHiddenDeviceTypes;
 
-    public static void openInfo(Activity activity, ConnectionUtils utils, InfoHolder infoHolder)
+    public static void openInfo(Activity activity, Connections utils, InfoHolder infoHolder)
     {
         Object specifier = infoHolder.object();
         if (specifier instanceof WifiConfiguration) {
@@ -166,11 +166,11 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         AddDeviceActivity.returnResult(requireActivity(), device, address);
     }
 
-    public ConnectionUtils getConnectionUtils()
+    public Connections getConnectionUtils()
     {
-        if (mConnectionUtils == null)
-            mConnectionUtils = new ConnectionUtils(requireContext());
-        return mConnectionUtils;
+        if (mConnections == null)
+            mConnections = new Connections(requireContext());
+        return mConnections;
     }
 
     @Override

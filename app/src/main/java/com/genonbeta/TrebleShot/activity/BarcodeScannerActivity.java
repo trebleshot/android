@@ -28,7 +28,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,7 +53,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTas
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.Connections;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.ResultPoint;
@@ -79,7 +78,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
 
     private final DialogInterface.OnDismissListener mDismissListener = dialog -> updateState();
     private DecoratedBarcodeView mBarcodeView;
-    private ConnectionUtils mConnectionUtils;
+    private Connections mConnections;
     private ViewGroup mConductContainer;
     private TextView mConductText;
     private ImageView mConductImage;
@@ -115,7 +114,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
 
         setResult(RESULT_CANCELED);
 
-        mConnectionUtils = new ConnectionUtils(this);
+        mConnections = new Connections(this);
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
@@ -311,7 +310,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     private void run(InetAddress address, String bssid, int pin)
     {
         Runnable runnable = () -> run(new DeviceIntroductionTask(address, pin));
-        WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
+        WifiInfo wifiInfo = mConnections.getWifiManager().getConnectionInfo();
 
         if (wifiInfo != null && wifiInfo.getBSSID() != null && wifiInfo.getBSSID().equals(bssid)) {
             runnable.run();
@@ -356,11 +355,11 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
 
     public void updateState()
     {
-        boolean wifiEnabled = mConnectionUtils.getWifiManager().isWifiEnabled();
+        boolean wifiEnabled = mConnections.getWifiManager().isWifiEnabled();
         boolean hasCameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
         // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
-        boolean hasLocationPermission = Build.VERSION.SDK_INT < 23 || mConnectionUtils.canAccessLocation();
+        boolean hasLocationPermission = Build.VERSION.SDK_INT < 23 || mConnections.canAccessLocation();
         boolean state = hasCameraPermission && (mShowAsText || (wifiEnabled && hasLocationPermission));
 
         if (hasTaskOf(DeviceIntroductionTask.class))
@@ -387,7 +386,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
                 mConductText.setText(R.string.mesg_locationPermissionRequiredAny);
                 mConductButton.setText(R.string.butn_enable);
 
-                mConductButton.setOnClickListener(v -> mConnectionUtils.validateLocationPermission(this,
+                mConductButton.setOnClickListener(v -> mConnections.validateLocationPermission(this,
                         REQUEST_PERMISSION_LOCATION));
 
                 if (!mPermissionRequestedLocation)
@@ -399,7 +398,7 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
                 mConductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp);
                 mConductText.setText(R.string.text_scanQRWifiRequired);
                 mConductButton.setText(R.string.butn_enable);
-                mConductButton.setOnClickListener(v -> mConnectionUtils.turnOnWiFi(this, this));
+                mConductButton.setOnClickListener(v -> mConnections.turnOnWiFi(this, this));
             }
         } else {
             mBarcodeView.resume();

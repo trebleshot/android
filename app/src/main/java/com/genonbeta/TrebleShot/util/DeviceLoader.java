@@ -46,54 +46,66 @@ import java.net.InetAddress;
 
 public class DeviceLoader
 {
-    public static void loadFrom(Kuick kuick, JSONObject object, Device device, boolean hasPin, boolean asClient)
-            throws JSONException, DeviceInsecureException
+    public static void loadAsClient(Kuick kuick, JSONObject object, Device device) throws JSONException
+    {
+        device.isBlocked = false;
+        device.receiveKey = object.getInt(Keyword.DEVICE_KEY);
+        loadFrom(kuick, object, device, device.receiveKey);
+    }
+
+    public static void loadAsServer(Kuick kuick, JSONObject object, Device device, boolean hasPin) throws JSONException,
+            DeviceInsecureException
     {
         device.uid = object.getString(Keyword.DEVICE_UID);
         int receiveKey = object.getInt(Keyword.DEVICE_KEY);
 
         try {
-            if (!asClient)
-                kuick.reconstruct(device);
+            kuick.reconstruct(device);
+            boolean keyMatches = receiveKey == device.receiveKey;
 
-            if (device.isBlocked)
-                throw new DeviceBlockedException("The device is blocked.", device);
-            else if (receiveKey != device.receiveKey)
-                throw new DeviceVerificationException("The device receive key is different.", device, receiveKey);
-        } catch (ReconstructionFailedException e) {
-            device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
-
-            if (hasPin || asClient || !(e instanceof DeviceInsecureException)) {
-                device.receiveKey = receiveKey;
+            if (hasPin) {
                 device.isBlocked = false;
 
-                if (device.sendKey == 0)
-                    device.sendKey = AppUtils.generateKey();
-            } else {
-                if (e instanceof DeviceVerificationException)
-                    device.isBlocked = true;
-
-                throw (DeviceInsecureException) e;
+                if (!keyMatches)
+                    throw new ReconstructionFailedException("Generate newer keys.");
+            } else if (device.isBlocked)
+                throw new DeviceBlockedException("The device is blocked.", device);
+            else if (!keyMatches) {
+                device.isBlocked = true;
+                throw new DeviceVerificationException("The device receive key is different.", device, receiveKey);
             }
+        } catch (DeviceInsecureException e) {
+            throw e;
+        } catch (ReconstructionFailedException e) {
+            device.receiveKey = receiveKey;
+            device.sendKey = AppUtils.generateKey();
         } finally {
             if (hasPin)
                 device.isTrusted = true;
-            device.brand = object.getString(Keyword.DEVICE_BRAND);
-            device.model = object.getString(Keyword.DEVICE_MODEL);
-            device.username = object.getString(Keyword.DEVICE_USERNAME);
-            device.lastUsageTime = System.currentTimeMillis();
-            device.versionCode = object.getInt(Keyword.DEVICE_VERSION_CODE);
-            device.versionName = object.getString(Keyword.DEVICE_VERSION_NAME);
-            device.protocolVersion = object.getInt(Keyword.DEVICE_PROTOCOL_VERSION);
-            device.protocolVersionMin = object.getInt(Keyword.DEVICE_PROTOCOL_VERSION_MIN);
 
-            if (device.username.length() > AppConfig.NICKNAME_LENGTH_MAX)
-                device.username = device.username.substring(0, AppConfig.NICKNAME_LENGTH_MAX);
-
-            kuick.publish(device);
-
-            saveProfilePicture(kuick.getContext(), device, object);
+            loadFrom(kuick, object, device, receiveKey);
         }
+    }
+
+    private static void loadFrom(Kuick kuick, JSONObject object, Device device, int receiveKey) throws JSONException
+    {
+        device.receiveKey = receiveKey;
+        device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
+        device.brand = object.getString(Keyword.DEVICE_BRAND);
+        device.model = object.getString(Keyword.DEVICE_MODEL);
+        device.username = object.getString(Keyword.DEVICE_USERNAME);
+        device.lastUsageTime = System.currentTimeMillis();
+        device.versionCode = object.getInt(Keyword.DEVICE_VERSION_CODE);
+        device.versionName = object.getString(Keyword.DEVICE_VERSION_NAME);
+        device.protocolVersion = object.getInt(Keyword.DEVICE_PROTOCOL_VERSION);
+        device.protocolVersionMin = object.getInt(Keyword.DEVICE_PROTOCOL_VERSION_MIN);
+
+        if (device.username.length() > AppConfig.NICKNAME_LENGTH_MAX)
+            device.username = device.username.substring(0, AppConfig.NICKNAME_LENGTH_MAX);
+
+        kuick.publish(device);
+
+        saveProfilePicture(kuick.getContext(), device, object);
     }
 
     public static void load(Kuick kuick, InetAddress address, @Nullable OnDeviceResolvedListener listener)

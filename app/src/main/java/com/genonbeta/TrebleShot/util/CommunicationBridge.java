@@ -28,7 +28,6 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.TransferItem;
 import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
-import com.genonbeta.TrebleShot.protocol.DeviceInsecureException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.*;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -113,11 +112,7 @@ public class CommunicationBridge implements Closeable
 
         activeConnection.reply(AppUtils.getLocalDeviceAsJson(kuick.getContext(), device.sendKey, pin));
 
-        try {
-            DeviceLoader.loadFrom(kuick, activeConnection.receive().getAsJson(), device, false, true);
-        } catch (DeviceInsecureException ignored) {
-        }
-
+        DeviceLoader.loadAsClient(kuick, activeConnection.receive().getAsJson(), device);
         DeviceLoader.processConnection(kuick, device, deviceAddress);
         receiveResult(activeConnection, device);
 

@@ -46,6 +46,7 @@ import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.DeviceAddress;
 import com.genonbeta.TrebleShot.object.DeviceRoute;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider;
 import com.genonbeta.android.framework.util.Stoppable;
@@ -53,7 +54,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -64,9 +64,9 @@ import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescript
  * created by: veli
  * date: 15/04/18 18:37
  */
-public class ConnectionUtils
+public class Connections
 {
-    public static final String TAG = ConnectionUtils.class.getSimpleName();
+    public static final String TAG = Connections.class.getSimpleName();
 
 
     private final Context mContext;
@@ -75,7 +75,7 @@ public class ConnectionUtils
     private final ConnectivityManager mConnectivityManager;
     private boolean mWirelessEnableRequested = false;
 
-    public ConnectionUtils(Context context)
+    public Connections(Context context)
     {
         mContext = context;
         mWifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -107,9 +107,10 @@ public class ConnectionUtils
         return Build.VERSION.SDK_INT < 26 || (hasLocationPermission() && isLocationServiceEnabled());
     }
 
-    public InetAddress connectToNetwork(Stoppable stoppable, NetworkDescription description)
-            throws DeviceIntroductionTask.SuggestNetworkException, ConnectionUtils.WifiInaccessibleException,
-            TimeoutException, InterruptedException
+    public DeviceRoute connectToNetwork(Stoppable stoppable, NetworkDescription description, int pin)
+            throws DeviceIntroductionTask.SuggestNetworkException, Connections.WifiInaccessibleException,
+            TimeoutException, InterruptedException, IOException, CommunicationException, TaskStoppedException,
+            JSONException
     {
         if (Build.VERSION.SDK_INT >= 29) {
             final List<WifiNetworkSuggestion> suggestionList = new ArrayList<>();
@@ -138,7 +139,7 @@ public class ConnectionUtils
             }
         }
 
-        return establishHotspotConnection(stoppable, description);
+        return establishHotspotConnection(stoppable, description, pin);
     }
 
     public static WifiConfiguration createWifiConfig(ScanResult result, String password)
@@ -200,14 +201,16 @@ public class ConnectionUtils
     }
 
     @WorkerThread
-    public InetAddress establishHotspotConnection(Stoppable stoppable, NetworkDescription description)
-            throws WifiInaccessibleException, InterruptedException, TimeoutException
+    public DeviceRoute establishHotspotConnection(Stoppable stoppable, NetworkDescription description, int pin)
+            throws WifiInaccessibleException, TimeoutException, IOException, CommunicationException,
+            TaskStoppedException, InterruptedException, JSONException
     {
-        long startTime = System.nanoTime();
+        long timeout = (long) (System.nanoTime() + AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6);
         boolean connectionToggled = Build.VERSION.SDK_INT >= 29;
         boolean connectionReset = false;
 
-        while (System.nanoTime() - startTime < AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6) {
+        while (true) {
+            boolean timedOut = System.nanoTime() > timeout;
             DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
 
             Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
@@ -245,13 +248,14 @@ public class ConnectionUtils
                     InetAddress address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway));
                     DeviceAddress deviceAddress = new DeviceAddress(address);
 
-                    CommunicationBridge.connect(kuick, deviceAddress, null, 0);
-                    Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                    return address;
-                } catch (UnknownHostException e) {
-                    Log.d(TAG, "establishHotspotConnection(): Host is unknown.", e);
+                    try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)) {
+                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
+                        return new DeviceRoute(bridge.getDevice(), bridge.getDeviceAddress());
+                    }
                 } catch (Exception e) {
                     Log.d(TAG, "establishHotspotConnection(): Connection failed.", e);
+                    if (timedOut)
+                        throw e;
                 }
             } else
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
@@ -259,10 +263,10 @@ public class ConnectionUtils
             Thread.sleep(1000);
 
             if (stoppable.isInterrupted())
-                throw new InterruptedException("Task is interrupted.");
+                throw new TaskStoppedException("Task has been stopped.", stoppable.isInterruptedByUser());
+            else if (timedOut)
+                throw new TimeoutException("The process took longer than expected.");
         }
-
-        throw new TimeoutException("The process took longer than expected.");
     }
 
     /**

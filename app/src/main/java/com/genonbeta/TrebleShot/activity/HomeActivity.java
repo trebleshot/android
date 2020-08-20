@@ -114,9 +114,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
                         .putExtra(AddDeviceActivity.EXTRA_CONNECTION_MODE,
                                 AddDeviceActivity.ConnectionMode.WaitForRequests)));
 
-        checkAndShowCrashReport();
-        checkAndShowChangelog();
-
         // TODO: 8/18/20 Remove this test task
         /**
         DummyAsyncTask[] dummyAsyncTasks = new DummyAsyncTask[1];
@@ -132,6 +129,14 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
     {
         super.onStart();
         createHeaderView();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        checkAndShowCrashReport();
+        checkAndShowChangelog();
     }
 
     @Override

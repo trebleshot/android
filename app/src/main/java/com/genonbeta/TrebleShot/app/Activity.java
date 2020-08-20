@@ -182,8 +182,7 @@ public abstract class Activity extends AppCompatActivity
         super.onStart();
         attachTasks();
         registerReceiver(mReceiver, mFilter);
-        if (AppUtils.checkRunningConditions(this))
-            getSelfApplication().notifyActivityInForeground(this, true);
+        getSelfApplication().notifyActivityInForeground(this, true);
     }
 
     @Override
@@ -191,8 +190,7 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onStop();
         unregisterReceiver(mReceiver);
-        if (AppUtils.checkRunningConditions(this))
-            getSelfApplication().notifyActivityInForeground(this, false);
+        getSelfApplication().notifyActivityInForeground(this, false);
     }
 
     @Override

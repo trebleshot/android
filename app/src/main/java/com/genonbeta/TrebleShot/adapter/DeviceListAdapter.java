@@ -37,7 +37,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.Connections;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDaemon;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
@@ -52,16 +52,16 @@ import static com.genonbeta.TrebleShot.fragment.DeviceListFragment.openInfo;
 
 public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
 {
-    private final ConnectionUtils mConnectionUtils;
+    private final Connections mConnections;
     private final TextDrawable.IShapeBuilder mIconBuilder;
     private final List<Device.Type> mHiddenDeviceTypes;
     private final NsdDaemon mNsdDaemon;
 
-    public DeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, ConnectionUtils utils,
+    public DeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, Connections utils,
                              NsdDaemon nsdDaemon, Device.Type[] hiddenDeviceTypes)
     {
         super(fragment);
-        mConnectionUtils = utils;
+        mConnections = utils;
         mIconBuilder = AppUtils.getDefaultIconBuilder(getContext());
         mNsdDaemon = nsdDaemon;
         mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes) : new ArrayList<>();
@@ -73,10 +73,10 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         boolean devMode = AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false);
         List<InfoHolder> list = new ArrayList<>();
 
-        if (mConnectionUtils.canReadScanResults()) {
-            for (ScanResult result : mConnectionUtils.getWifiManager().getScanResults()) {
+        if (mConnections.canReadScanResults()) {
+            for (ScanResult result : mConnections.getWifiManager().getScanResults()) {
                 if ((result.capabilities == null || result.capabilities.contains("OPEN"))
-                        && ConnectionUtils.isClientNetwork(result.SSID))
+                        && Connections.isClientNetwork(result.SSID))
                     list.add(new InfoHolder(new NetworkDescription(result)));
             }
         }
@@ -110,7 +110,7 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
 
         getFragment().registerLayoutViewClicks(holder);
         holder.itemView.findViewById(R.id.menu)
-                .setOnClickListener(v -> openInfo(getFragment().getActivity(), mConnectionUtils,
+                .setOnClickListener(v -> openInfo(getFragment().getActivity(), mConnections,
                         getList().get(holder.getAdapterPosition())));
 
         return holder;

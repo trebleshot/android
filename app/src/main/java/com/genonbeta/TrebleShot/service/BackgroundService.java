@@ -113,8 +113,8 @@ public class BackgroundService extends Service
         if (mWifiLock != null)
             mWifiLock.acquire();
 
-        tryStartingServices();
         takeForeground(true);
+        tryStartingOrStopSelf();
     }
 
     private void takeForeground(boolean take)
@@ -173,7 +173,7 @@ public class BackgroundService extends Service
                 boolean accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false);
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
                 int receiveKey = intent.getIntExtra(EXTRA_RECEIVE_KEY, -1);
-                int sendKey = intent.getIntExtra(EXTRA_RECEIVE_KEY, -1);
+                int sendKey = intent.getIntExtra(EXTRA_SEND_KEY, -1);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
@@ -249,7 +249,7 @@ public class BackgroundService extends Service
 
         try {
             mCommunicationServer.stop();
-        } catch (InterruptedException ignored) {
+        } catch (Exception ignored) {
         }
 
         mApp.getNsdDaemon().unregisterService();
@@ -300,38 +300,30 @@ public class BackgroundService extends Service
      * Some services like file transfer server, web share portal server involve writing and reading data.
      * So, it is best to avoid starting them when the app doesn't have the right permissions.
      */
-    public boolean tryStartingServices()
+    public void tryStartingOrStopSelf()
     {
-        Log.d(TAG, "tryStartingServices: Starting...");
+        boolean webServerRunning = mApp.getWebShareServer().isAlive();
+        boolean commServerRunning = mCommunicationServer.isListening();
 
-        if (mApp.getWebShareServer().isAlive() && mCommunicationServer.isListening())
-            return true;
-
-        if (!AppUtils.checkRunningConditions(this)) {
-            Log.d(TAG, "tryStartingServices: The app doesn't have the satisfactory permissions to start " +
-                    "services.");
-            return false;
-        }
-
-        if (!mCommunicationServer.isListening()) {
-            try {
-                mCommunicationServer.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "tryStartingServices: Cannot start the service=" + mCommunicationServer.isListening());
-            }
-        }
+        if (webServerRunning && commServerRunning)
+            return;
 
         try {
-            mApp.getWebShareServer().setAsyncRunner(new WebShareServer.BoundRunner(
-                    Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
-            mApp.getWebShareServer().start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-        } catch (Throwable t) {
-            Log.e(TAG, "Failed to start Web Share Server");
-            return false;
-        }
+            if (!AppUtils.checkRunningConditions(this))
+                throw new Exception("The app doesn't have the satisfactory permissions to start the services.");
 
-        return true;
+            if (!commServerRunning)
+                mCommunicationServer.start();
+
+            if (!webServerRunning) {
+                mApp.getWebShareServer().setAsyncRunner(new WebShareServer.BoundRunner(
+                        Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
+                mApp.getWebShareServer().start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            stopSelf();
+        }
     }
 
     class CommunicationServer extends CoolSocket
@@ -358,17 +350,15 @@ public class BackgroundService extends Service
                 int sendKey = 0;
 
                 try {
-                    DeviceLoader.loadFrom(getKuick(), response, device, hasPin, false);
+                    DeviceLoader.loadAsServer(getKuick(), response, device, hasPin);
+                    sendKey = device.sendKey;
                 } catch (DeviceVerificationException e) {
                     sendKey = AppUtils.generateKey();
                     getNotificationHelper().notifyKeyChanged(device, e.receiveKey, sendKey);
                     throw e;
                 } finally {
-                    if (sendKey == 0)
-                        sendKey = device.sendKey;
-
-                    DeviceLoader.processConnection(getKuick(), device, deviceAddress);
                     activeConnection.reply(AppUtils.getLocalDeviceAsJson(BackgroundService.this, sendKey, 0));
+                    DeviceLoader.processConnection(getKuick(), device, deviceAddress);
                     getKuick().broadcast();
                 }
 

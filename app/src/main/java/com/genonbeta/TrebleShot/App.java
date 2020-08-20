@@ -335,10 +335,12 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         boolean newlyInFg = mForegroundActivitiesCount == 1;
         Intent intent = new Intent(this, BackgroundService.class);
 
-        if (newlyInFg)
-            ContextCompat.startForegroundService(getApplicationContext(), intent);
-        else if (inBg)
-            tryStoppingBgService();
+        if (AppUtils.checkRunningConditions(getApplicationContext())) {
+            if (newlyInFg)
+                ContextCompat.startForegroundService(getApplicationContext(), intent);
+            else if (inBg)
+                tryStoppingBgService();
+        }
 
         mForegroundActivity = inBg ? null : (inForeground ? activity : mForegroundActivity);
 

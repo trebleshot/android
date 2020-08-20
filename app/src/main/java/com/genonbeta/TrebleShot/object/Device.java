@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
@@ -97,7 +98,7 @@ public final class Device implements DatabaseObject<Void>, Parcelable
     private void checkFields()
     {
         if (Type.NORMAL.equals(type) && (sendKey == 0 || receiveKey == 0))
-            throw new RuntimeException("Keys for " + username + " cannot be invalid when the device is saved");
+            throw new IllegalStateException("Keys for " + username + " cannot be invalid when the device is saved");
 
         if (Type.NORMAL_ONLINE.equals(type))
             throw new IllegalStateException("Online state should not be assigned even when the device is online.");

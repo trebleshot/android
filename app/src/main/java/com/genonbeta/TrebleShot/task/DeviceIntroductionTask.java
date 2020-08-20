@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.CommonErrorHelper;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.Connections;
 
 import java.net.InetAddress;
 
@@ -65,12 +65,13 @@ public class DeviceIntroductionTask extends AttachableAsyncTask<DeviceIntroducti
     public void onRun() throws TaskStoppedException
     {
         try {
+            DeviceRoute deviceRoute;
             if (mAddress == null) {
-                ConnectionUtils connectionUtils = new ConnectionUtils(getContext());
-                mAddress = connectionUtils.connectToNetwork(this, mDescription);
-            }
+                Connections connections = new Connections(getContext());
+                deviceRoute = connections.connectToNetwork(this, mDescription, mPin);
+            } else
+                deviceRoute = Connections.setupConnection(getContext(), mAddress, mPin);
 
-            DeviceRoute deviceRoute = ConnectionUtils.setupConnection(getContext(), mAddress, mPin);
             DeviceIntroductionTask.ResultListener anchor = getAnchor();
             if (anchor != null)
                 post(() -> anchor.onDeviceReached(deviceRoute));
