@@ -84,12 +84,12 @@ public class ConnectionUtils
         mConnectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    public static String getCleanNetworkName(String networkName)
+    public static String getCleanSsid(String ssid)
     {
-        if (networkName == null)
+        if (ssid == null)
             return "";
 
-        return networkName.replace("\"", "");
+        return ssid.replace("\"", "");
     }
 
     public boolean canAccessLocation()
@@ -207,7 +207,7 @@ public class ConnectionUtils
         boolean connectionToggled = Build.VERSION.SDK_INT >= 29;
         boolean connectionReset = false;
 
-        while (System.nanoTime() - startTime < AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE * 1e6) {
+        while (System.nanoTime() - startTime < AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6) {
             DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
 
             Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
@@ -356,14 +356,12 @@ public class ConnectionUtils
     public boolean isConnectionToHotspotNetwork()
     {
         WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
-        return wifiInfo != null && getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
+        return wifiInfo != null && getCleanSsid(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
     }
 
     /**
      * @return True if connected to a Wi-Fi network.
-     * @deprecated Do not use this method with 10 and above.
      */
-    @Deprecated
     public boolean isConnectedToAnyNetwork()
     {
         NetworkInfo info = getConnectivityManager().getActiveNetworkInfo();
@@ -372,21 +370,23 @@ public class ConnectionUtils
 
     public boolean isConnectedToNetwork(NetworkDescription description)
     {
-        return isConnectedToNetwork(description.bssid);
+        return isConnectedToNetwork(description.ssid, description.bssid);
     }
 
     public boolean isConnectedToNetwork(WifiConfiguration configuration)
     {
-        return isConnectedToNetwork(configuration.BSSID);
+        return isConnectedToNetwork(configuration.SSID, configuration.BSSID);
     }
 
-    public boolean isConnectedToNetwork(String bssid)
+    public boolean isConnectedToNetwork(String ssid, String bssid)
     {
         if (!isConnectedToAnyNetwork())
             return false;
+        WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
+        String tgSsid = getCleanSsid(wifiInfo.getSSID());
 
-        Log.d(TAG, "isConnectedToNetwork: " + bssid + " othr: " + getWifiManager().getConnectionInfo().getBSSID());
-        return bssid != null && bssid.equalsIgnoreCase(getWifiManager().getConnectionInfo().getBSSID());
+        Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + ":" + bssid + "=" + wifiInfo.getBSSID());
+        return bssid == null ? ssid.equals(tgSsid) : bssid.equalsIgnoreCase(wifiInfo.getBSSID());
     }
 
     public boolean isLocationServiceEnabled()

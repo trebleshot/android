@@ -339,7 +339,7 @@ public class BackgroundService extends Service
         CommunicationServer()
         {
             super(AppConfig.SERVER_PORT_COMMUNICATION);
-            getConfigFactory().setReadTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            getConfigFactory().setReadTimeout(AppConfig.DEFAULT_TIMEOUT_SOCKET);
         }
 
         @Override

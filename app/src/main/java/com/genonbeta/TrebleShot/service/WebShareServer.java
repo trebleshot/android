@@ -208,7 +208,7 @@ public class WebShareServer extends NanoHTTPD
                                 lastNotified = System.currentTimeMillis();
                             }
 
-                            if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT
+                            if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_TIMEOUT_SOCKET
                                     || stoppable.isInterrupted())
                                 throw new Exception("Timed out or interrupted. Exiting!");
                         }

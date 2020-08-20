@@ -26,7 +26,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:padding="4dp">
+        android:padding="15dp">
 
         <include layout="@layout/include_layout_hotspot_status_image_container" />
 

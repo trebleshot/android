@@ -62,12 +62,9 @@ public class Keyword
             ERROR_NOT_ACCESSIBLE = "notAccessible",
             ERROR_NOT_TRUSTED = "notTrusted",
             ERROR_ALREADY_EXISTS = "alreadyExists",
-            NETWORK_SSID = "nwName",
-            NETWORK_PIN = "pin",
-            NETWORK_PASSWORD = "nwPwd",
-            NETWORK_KEYMGMT = "ntKeyMgmt",
-            NETWORK_BSSID = "bsid",
-            NETWORK_ADDRESS_IP = "ipAdr";
+            NETWORK_PIN = "networkPin",
+            QR_CODE_TYPE_HOTSPOT = "hs",
+            QR_CODE_TYPE_WIFI = "wf";
 
     public enum Flavor
     {

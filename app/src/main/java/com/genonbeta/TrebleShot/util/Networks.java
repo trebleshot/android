@@ -19,7 +19,10 @@
 package com.genonbeta.TrebleShot.util;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
+import com.genonbeta.TrebleShot.config.AppConfig;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;

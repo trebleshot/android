@@ -152,7 +152,7 @@ public class CommunicationBridge implements Closeable
     public static ActiveConnection openConnection(InetAddress inetAddress) throws IOException
     {
         return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
-                AppConfig.DEFAULT_SOCKET_TIMEOUT);
+                AppConfig.DEFAULT_TIMEOUT_SOCKET);
     }
 
     public void requestAcquaintance() throws JSONException, IOException

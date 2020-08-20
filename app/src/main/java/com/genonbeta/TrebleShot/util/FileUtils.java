@@ -41,7 +41,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
             throws Exception
     {
         copy(context, source, destination, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
-                AppConfig.DEFAULT_SOCKET_TIMEOUT);
+                AppConfig.DEFAULT_TIMEOUT_SOCKET);
     }
 
     public static DocumentFile getApplicationDirectory(Context context)
@@ -126,7 +126,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
                                Stoppable stoppable) throws Exception
     {
         return move(context, targetFile, destinationFile, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
-                AppConfig.DEFAULT_SOCKET_TIMEOUT);
+                AppConfig.DEFAULT_TIMEOUT_SOCKET);
     }
 
     public static DocumentFile getSavePath(Context context, Transfer transfer)

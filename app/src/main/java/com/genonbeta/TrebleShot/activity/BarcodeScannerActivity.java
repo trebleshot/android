@@ -28,6 +28,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,8 +61,6 @@ import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -243,29 +242,41 @@ public class BarcodeScannerActivity extends Activity implements DeviceIntroducti
     {
         try {
             if (mShowAsText)
-                throw new JSONException("Showing as text.");
+                throw new Exception("Showing as text.");
 
-            JSONObject data = new JSONObject(code);
-            int pin = data.has(Keyword.NETWORK_PIN) ? data.getInt(Keyword.NETWORK_PIN) : -1;
+            String[] values = code.split(";");
+            String type = values[0];
 
-            if (data.has(Keyword.NETWORK_SSID)) {
-                String ssid = data.getString(Keyword.NETWORK_SSID);
-                String bssid = data.has(Keyword.NETWORK_BSSID) ? data.getString(Keyword.NETWORK_BSSID) : null;
-                String password = data.has(Keyword.NETWORK_PASSWORD) ? data.getString(Keyword.NETWORK_PASSWORD) : null;
+            // empty-strings cause trouble and are harder to manage.
+            for (int i = 0; i < values.length; i++)
+                if (values[i].length() == 0)
+                    values[i] = null;
 
-                run(new DeviceListAdapter.NetworkDescription(ssid, bssid, password), pin);
-            } else if (data.has(Keyword.NETWORK_ADDRESS_IP)) {
-                try {
-                    run(InetAddress.getByName(data.getString(Keyword.NETWORK_ADDRESS_IP)),
-                            data.getString(Keyword.NETWORK_BSSID), pin);
-                } catch (UnknownHostException e) {
-                    showDialog(new AlertDialog.Builder(this)
-                            .setMessage(R.string.mesg_unknownHostError)
-                            .setNeutralButton(R.string.butn_close, null));
+            switch (type) {
+                case Keyword.QR_CODE_TYPE_HOTSPOT: {
+                    int pin = Integer.parseInt(values[1]);
+                    String ssid = values[2];
+                    String bssid = values[3];
+                    String password = values[4];
+                    run(new DeviceListAdapter.NetworkDescription(ssid, bssid, password), pin);
                 }
-            } else
-                throw new JSONException("Failed to attain known variables.");
-        } catch (JSONException e) {
+                break;
+                case Keyword.QR_CODE_TYPE_WIFI:
+                    int pin = Integer.parseInt(values[1]);
+                    String ssid = values[2];
+                    String bssid = values[3];
+                    String ip = values[4];
+                    run(InetAddress.getByName(ip), bssid, pin);
+                    break;
+                default:
+                    throw new Exception("Request is unknown");
+            }
+        } catch (UnknownHostException e) {
+            showDialog(new AlertDialog.Builder(this)
+                    .setMessage(R.string.mesg_unknownHostError)
+                    .setNeutralButton(R.string.butn_close, null));
+        } catch (Exception e) {
+            e.printStackTrace();
             showDialog(new AlertDialog.Builder(this)
                     .setTitle(R.string.text_unrecognizedQrCode)
                     .setMessage(code)

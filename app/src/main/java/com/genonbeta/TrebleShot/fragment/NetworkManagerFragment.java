@@ -57,7 +57,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -292,7 +291,10 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
     private void updateViews() throws JSONException
     {
         showMenu();
-        JSONObject json = new JSONObject();
+
+        int pin = AppUtils.generateNetworkPin(getContext());
+        String delimiter = ";";
+        StringBuilder code = new StringBuilder();
         WifiConfiguration config = getWifiConfiguration();
         WifiInfo connectionInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
@@ -303,9 +305,15 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
                 String bssid = config.BSSID;
                 String key = config.preSharedKey;
 
-                json.put(Keyword.NETWORK_SSID, ssid)
-                        .put(Keyword.NETWORK_BSSID, bssid)
-                        .put(Keyword.NETWORK_PASSWORD, key);
+                code.append(Keyword.QR_CODE_TYPE_HOTSPOT)
+                        .append(delimiter)
+                        .append(pin)
+                        .append(delimiter)
+                        .append(ssid)
+                        .append(delimiter)
+                        .append(bssid == null ? "" : bssid)
+                        .append(delimiter)
+                        .append(key == null ? "" : key);
 
                 mImageView2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp);
                 mImageView3.setImageResource(R.drawable.ic_vpn_key_white_24dp);
@@ -316,6 +324,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
                 mActiveType = Type.HotspotExternal;
                 mText1.setText(R.string.text_hotspotStartedExternallyNotice);
             }
+
             mToggleButton.setText(R.string.butn_stopHotspot);
             mSecondButton.setText(R.string.butn_wifiSettings);
         } else if (!mConnectionUtils.canReadWifiInfo() && mConnectionUtils.getWifiManager().isWifiEnabled()) {
@@ -326,6 +335,8 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
         } else if (mConnectionUtils.isConnectedToAnyNetwork()) {
             mActiveType = Type.WiFi;
             String hostAddress;
+            String ssid = connectionInfo.getSSID();
+            String bssid = connectionInfo.getBSSID();
 
             try {
                 hostAddress = InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.getIpAddress()))
@@ -334,13 +345,20 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
                 hostAddress = "0.0.0.0";
             }
 
-            json.put(Keyword.NETWORK_ADDRESS_IP, hostAddress)
-                    .put(Keyword.NETWORK_BSSID, connectionInfo.getBSSID());
+            code.append(Keyword.QR_CODE_TYPE_WIFI)
+                    .append(delimiter)
+                    .append(pin)
+                    .append(delimiter)
+                    .append(ssid == null ? "" : ssid)
+                    .append(delimiter)
+                    .append(bssid == null ? "" : bssid)
+                    .append(delimiter)
+                    .append(hostAddress);
 
             mImageView2.setImageResource(R.drawable.ic_wifi_white_24dp);
             mImageView3.setImageResource(R.drawable.ic_ip_white_24dp);
             mText1.setText(R.string.help_scanQRCode);
-            mText2.setText(ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID()));
+            mText2.setText(ConnectionUtils.getCleanSsid(connectionInfo.getSSID()));
             mText3.setText(hostAddress);
             mToggleButton.setText(R.string.butn_wifiSettings);
             mSecondButton.setText(R.string.text_startHotspot);
@@ -373,28 +391,29 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
         mContainerText2.setVisibility(mText2.length() > 0 ? View.VISIBLE : View.GONE);
         mContainerText3.setVisibility(mText3.length() > 0 ? View.VISIBLE : View.GONE);
 
-        boolean showQRCode = json.length() > 0 && getContext() != null;
+        boolean showQRCode = code.length() > 0 && getContext() != null;
 
-        try {
-            if (showQRCode) {
-                json.put(Keyword.NETWORK_PIN, AppUtils.generateNetworkPin(getContext()));
+        if (showQRCode) {
+            code.append(delimiter)
+                    .append("end");
 
+            try {
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
-                BitMatrix bitMatrix = formatWriter.encode(json.toString(), BarcodeFormat.QR_CODE, 400, 400);
+                BitMatrix bitMatrix = formatWriter.encode(code.toString(), BarcodeFormat.QR_CODE, 400, 400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
 
                 GlideApp.with(getContext())
                         .load(bitmap)
                         .into(mCodeView);
-            } else
-                mCodeView.setImageResource(R.drawable.ic_qrcode_white_128dp);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else
+            mCodeView.setImageResource(R.drawable.ic_qrcode_white_128dp);
 
-            mCodeText.setVisibility(showQRCode ? View.GONE : View.VISIBLE);
-            ImageViewCompat.setImageTintList(mCodeView, showQRCode ? null : mColorPassiveState);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mCodeText.setVisibility(showQRCode ? View.GONE : View.VISIBLE);
+        ImageViewCompat.setImageTintList(mCodeView, showQRCode ? null : mColorPassiveState);
     }
 
     private class StatusReceiver extends BroadcastReceiver

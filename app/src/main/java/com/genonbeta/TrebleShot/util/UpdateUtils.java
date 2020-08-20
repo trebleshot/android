@@ -101,7 +101,7 @@ public class UpdateUtils
                 lastRead = System.currentTimeMillis();
             }
 
-            if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT) {
+            if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_TIMEOUT_SOCKET) {
                 System.out.println("CoolTransfer: Timed out... Exiting.");
                 break;
             }
@@ -139,11 +139,11 @@ public class UpdateUtils
             if (readyListener != null)
                 readyListener.onConnectionReady(serverSocket);
 
-            serverSocket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            serverSocket.setSoTimeout(AppConfig.DEFAULT_TIMEOUT_SOCKET);
 
             socket = serverSocket.accept();
 
-            socket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            socket.setSoTimeout(AppConfig.DEFAULT_TIMEOUT_SOCKET);
 
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = context.getContentResolver().openOutputStream(updateFile.getUri());
@@ -165,7 +165,7 @@ public class UpdateUtils
                     lastRead = current;
                 }
 
-                if ((current - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT * 1e6 || stoppable.isInterrupted())
+                if ((current - lastRead) > AppConfig.DEFAULT_TIMEOUT_SOCKET * 1e6 || stoppable.isInterrupted())
                     throw new Exception("Timed out or interrupted. Exiting!");
             }
 

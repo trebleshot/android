@@ -24,8 +24,8 @@ public class AppConfig
             SERVER_PORT_COMMUNICATION = 1128,
             SERVER_PORT_WEBSHARE = 58732,
             SERVER_PORT_UPDATE_CHANNEL = 58765,
-            DEFAULT_SOCKET_TIMEOUT = 5000, // ms
-            DEFAULT_SOCKET_TIMEOUT_LARGE = 20000, // ms
+            DEFAULT_TIMEOUT_SOCKET = 5000, // ms
+            DEFAULT_TIMEOUT_HOTSPOT = 40000, // ms
             DELAY_DEFAULT_NOTIFICATION = 1000, // ms
             NICKNAME_LENGTH_MAX = 32,
             BUFFER_LENGTH_DEFAULT = 8096,
