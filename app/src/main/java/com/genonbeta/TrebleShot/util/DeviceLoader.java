@@ -50,7 +50,7 @@ public class DeviceLoader
     {
         device.isBlocked = false;
         device.receiveKey = object.getInt(Keyword.DEVICE_KEY);
-        loadFrom(kuick, object, device, device.receiveKey);
+        loadFrom(kuick, object, device);
     }
 
     public static void loadAsServer(Kuick kuick, JSONObject object, Device device, boolean hasPin) throws JSONException,
@@ -60,36 +60,31 @@ public class DeviceLoader
         int receiveKey = object.getInt(Keyword.DEVICE_KEY);
 
         try {
-            kuick.reconstruct(device);
-            boolean keyMatches = receiveKey == device.receiveKey;
+            try {
+                kuick.reconstruct(device);
+
+                if (hasPin && receiveKey != device.receiveKey)
+                    throw new ReconstructionFailedException("Generate new keys.");
+            } catch (ReconstructionFailedException e) {
+                device.receiveKey = receiveKey;
+                device.sendKey = AppUtils.generateKey();
+            }
 
             if (hasPin) {
                 device.isBlocked = false;
-
-                if (!keyMatches)
-                    throw new ReconstructionFailedException("Generate newer keys.");
             } else if (device.isBlocked)
-                throw new DeviceBlockedException("The device is blocked.", device, keyMatches);
-            else if (!keyMatches) {
+                throw new DeviceBlockedException("The device is blocked.", device);
+            else if (receiveKey != device.receiveKey) {
                 device.isBlocked = true;
                 throw new DeviceVerificationException("The device receive key is different.", device, receiveKey);
             }
-        } catch (DeviceInsecureException e) {
-            throw e;
-        } catch (ReconstructionFailedException e) {
-            device.receiveKey = receiveKey;
-            device.sendKey = AppUtils.generateKey();
         } finally {
-            if (hasPin)
-                device.isTrusted = true;
-
-            loadFrom(kuick, object, device, receiveKey);
+            loadFrom(kuick, object, device);
         }
     }
 
-    private static void loadFrom(Kuick kuick, JSONObject object, Device device, int receiveKey) throws JSONException
+    private static void loadFrom(Kuick kuick, JSONObject object, Device device) throws JSONException
     {
-        device.receiveKey = receiveKey;
         device.isLocal = AppUtils.getDeviceId(kuick.getContext()).equals(device.uid);
         device.brand = object.getString(Keyword.DEVICE_BRAND);
         device.model = object.getString(Keyword.DEVICE_MODEL);

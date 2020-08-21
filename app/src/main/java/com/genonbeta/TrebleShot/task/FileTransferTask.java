@@ -185,7 +185,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
         List<DeviceAddress> addressList = Transfers.getAddressListFor(kuick, device.uid);
 
-        Log.d(TAG, "createFrom: deviceId=" + device.uid + " transferId=" + transfer.id + " adapter=");
+        Log.d(TAG, "createFrom: deviceId=" + device.uid + " transferId=" + transfer.id);
 
         FileTransferTask task = new FileTransferTask();
         task.type = type;

@@ -19,8 +19,15 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -81,7 +88,6 @@ public class CommunicationBridge implements Closeable
     {
         for (DeviceAddress address : addressList) {
             try {
-                openConnection(address.inetAddress);
                 return connect(kuick, address, device, pin);
             } catch (IOException ignored) {
             }
@@ -93,7 +99,7 @@ public class CommunicationBridge implements Closeable
     public static CommunicationBridge connect(Kuick kuick, DeviceAddress deviceAddress, @Nullable Device device, int pin)
             throws IOException, JSONException, CommunicationException
     {
-        ActiveConnection activeConnection = openConnection(deviceAddress.inetAddress);
+        ActiveConnection activeConnection = openConnection(kuick.getContext(), deviceAddress.inetAddress);
         String remoteDeviceId = activeConnection.receive().getAsString();
 
         if (device != null && device.uid != null && !device.uid.equals(remoteDeviceId)) {
@@ -114,6 +120,7 @@ public class CommunicationBridge implements Closeable
 
         DeviceLoader.processConnection(kuick, device, deviceAddress);
         DeviceLoader.loadAsClient(kuick, receiveSecure(activeConnection, device), device);
+        CommunicationBridge.receiveResult(activeConnection, device);
 
         return new CommunicationBridge(kuick, activeConnection, device, deviceAddress);
     }
@@ -143,7 +150,28 @@ public class CommunicationBridge implements Closeable
         return kuick;
     }
 
-    public static ActiveConnection openConnection(InetAddress inetAddress) throws IOException
+    private static ActiveConnection openConnection(Context context, InetAddress inetAddress) throws IOException
+    {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            final ConnectivityManager manager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (manager != null) {
+                NetworkBinderCallback callback = new NetworkBinderCallback(manager, inetAddress);
+
+                NetworkRequest.Builder builder = new NetworkRequest.Builder();
+                builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+                manager.requestNetwork(builder.build(), callback);
+
+                return callback.waitForConnection();
+            } else
+                throw new IOException("Connectivity manager is empty.");
+        }
+
+        return openConnection(inetAddress);
+    }
+
+    private static ActiveConnection openConnection(InetAddress inetAddress) throws IOException
     {
         return ActiveConnection.connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
                 AppConfig.DEFAULT_TIMEOUT_SOCKET);
@@ -213,7 +241,6 @@ public class CommunicationBridge implements Closeable
                     throw new UnknownCommunicationErrorException(errorCode);
             }
         }
-
         return jsonObject;
     }
 
@@ -282,5 +309,76 @@ public class CommunicationBridge implements Closeable
             throws JSONException, IOException
     {
         connection.reply(jsonObject.put(Keyword.RESULT, result));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private static class NetworkBinderCallback extends ConnectivityManager.NetworkCallback
+    {
+        private final ConnectivityManager connectivityManager;
+
+        private final InetAddress inetAddress;
+
+        private final Object lock = new Object();
+
+        private IOException exception;
+
+        private ActiveConnection resultConnection;
+
+        public NetworkBinderCallback(ConnectivityManager connectivityManager, InetAddress inetAddress)
+        {
+            this.connectivityManager = connectivityManager;
+            this.inetAddress = inetAddress;
+        }
+
+        @Override
+        public void onAvailable(@NonNull Network network)
+        {
+            if (!bindNetwork(network)) {
+                Log.d(TAG, "onAvailable: Failed to bind network " + network);
+                return;
+            }
+
+            try {
+                resultConnection = openConnection(inetAddress);
+            } catch (IOException e) {
+                exception = e;
+            } catch (Exception e) {
+                e.printStackTrace();
+                exception = new IOException(e);
+            } finally {
+                synchronized (lock) {
+                    lock.notifyAll();
+                }
+                connectivityManager.unregisterNetworkCallback(this);
+                bindNetwork(null);
+            }
+        }
+
+        public boolean bindNetwork(@Nullable Network network)
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                return connectivityManager.bindProcessToNetwork(network);
+
+            return ConnectivityManager.setProcessDefaultNetwork(network);
+        }
+
+        public ActiveConnection waitForConnection() throws IOException
+        {
+            try {
+                synchronized (lock) {
+                    lock.wait(AppConfig.DEFAULT_TIMEOUT_SOCKET);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                exception = new IOException(e);
+            }
+
+            if (resultConnection == null)
+                throw new IOException("No connection is handed over after waiting.");
+            else if (exception != null)
+                throw exception;
+
+            return resultConnection;
+        }
     }
 }

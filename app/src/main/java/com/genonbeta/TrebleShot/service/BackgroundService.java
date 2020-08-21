@@ -34,7 +34,6 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
-import com.genonbeta.TrebleShot.protocol.DeviceBlockedException;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
@@ -348,21 +347,26 @@ public class BackgroundService extends Service
                         && activePin == response.getInt(Keyword.DEVICE_PIN);
                 final Device device = new Device();
                 final DeviceAddress deviceAddress = new DeviceAddress(activeConnection.getAddress());
-                int sendKey = 0;
+                boolean sendInfo = true;
 
                 try {
                     DeviceLoader.loadAsServer(getKuick(), response, device, hasPin);
-                    sendKey = device.sendKey;
                 } catch (DeviceVerificationException e) {
-                    getNotificationHelper().notifyKeyChanged(device, e.receiveKey, sendKey);
+                    getNotificationHelper().notifyKeyChanged(device, e.receiveKey, AppUtils.generateKey());
+                    throw e;
+                } catch (Exception e) {
+                    sendInfo = false;
                     throw e;
                 } finally {
                     DeviceLoader.processConnection(getKuick(), device, deviceAddress);
                     getKuick().broadcast();
+
+                    if (sendInfo)
+                        CommunicationBridge.sendSecure(activeConnection, true, AppUtils.getLocalDeviceAsJson(
+                                BackgroundService.this, device.sendKey, 0));
                 }
 
-                CommunicationBridge.sendSecure(activeConnection, true, AppUtils.getLocalDeviceAsJson(
-                        BackgroundService.this, sendKey, 0));
+                CommunicationBridge.sendResult(activeConnection, true);
 
                 if (hasPin) // pin is known, should be changed. Warn the listeners.
                     sendBroadcast(new Intent(ACTION_PIN_USED));
