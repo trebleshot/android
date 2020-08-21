@@ -58,6 +58,8 @@ public class DeviceLoader
     {
         device.uid = object.getString(Keyword.DEVICE_UID);
         int receiveKey = object.getInt(Keyword.DEVICE_KEY);
+        if (hasPin)
+            device.isTrusted = true;
 
         try {
             try {
