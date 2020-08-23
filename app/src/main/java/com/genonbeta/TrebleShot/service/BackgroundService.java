@@ -377,6 +377,7 @@ public class BackgroundService extends Service
 
                 handleRequest(activeConnection, device, deviceAddress, hasPin, response);
             } catch (Exception e) {
+                e.printStackTrace();
                 try {
                     CommunicationBridge.sendError(activeConnection, e);
                 } catch (Exception ignored) {

@@ -246,12 +246,7 @@ public class Connections
 
                 try {
                     InetAddress address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway));
-                    DeviceAddress deviceAddress = new DeviceAddress(address);
-
-                    try (CommunicationBridge bridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)) {
-                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                        return new DeviceRoute(bridge.getDevice(), bridge.getDeviceAddress());
-                    }
+                    return setupConnection(getContext(), address, pin);
                 } catch (Exception e) {
                     Log.d(TAG, "establishHotspotConnection(): Connection failed.", e);
                     if (timedOut)
@@ -429,6 +424,7 @@ public class Connections
         bridge.requestAcquaintance();
 
         if (bridge.receiveResult() && device.uid != null) {
+            Log.d(TAG, "setupConnection(): AP has been reached. Returning OK state.");
             DeviceLoader.processConnection(kuick, device, deviceAddress);
             return new DeviceRoute(device, deviceAddress);
         }

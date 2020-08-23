@@ -46,12 +46,13 @@ import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
 import org.monora.coolsocket.core.session.ActiveConnection;
 import org.monora.coolsocket.core.session.CancelledException;
-import org.monora.coolsocket.core.session.DescriptionClosedException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.object.Identifier.from;
@@ -259,16 +260,14 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                     if (CommunicationBridge.receiveResult(activeConnection, device)) {
                         int readLength;
                         ActiveConnection.Description description = activeConnection.readBegin();
+                        WritableByteChannel writableByteChannel = Channels.newChannel(outputStream);
 
-                        try {
-                            while ((readLength = activeConnection.read(description)) != -1) {
-                                throwIfStopped();
-                                publishStatus();
+                        while (description.hasAvailable() && (readLength = activeConnection.read(description)) != -1) {
+                            throwIfStopped();
+                            publishStatus();
 
-                                currentBytes += readLength;
-                                outputStream.write(description.buffer, 0, readLength);
-                            }
-                        } catch (DescriptionClosedException ignored) {
+                            currentBytes += readLength;
+                            writableByteChannel.write(description.byteBuffer);
                         }
 
                         outputStream.flush();
@@ -375,15 +374,16 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             kuick().update(getDatabase(), item, transfer, null);
 
                             ActiveConnection.Description description = activeConnection.writeBegin(0, length);
+                            byte[] bytes = new byte[8196];
                             int readLength;
 
-                            while ((readLength = inputStream.read(description.buffer)) != -1) {
+                            while ((readLength = inputStream.read(bytes)) != -1) {
                                 throwIfStopped();
                                 publishStatus();
 
                                 if (readLength > 0) {
                                     currentBytes += readLength;
-                                    activeConnection.write(description, 0, readLength);
+                                    activeConnection.write(description, bytes, 0, readLength);
                                 }
                             }
 

@@ -169,13 +169,13 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                 DeviceAddress address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    returnResult(this, device, address);
+                    handleResult(device, address);
             } else if (requestCode == REQUEST_IP_DISCOVERY) {
                 Device device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE);
                 DeviceAddress address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS);
 
                 if (device != null && address != null)
-                    returnResult(this, device, address);
+                    handleResult(device, address);
             }
     }
 
