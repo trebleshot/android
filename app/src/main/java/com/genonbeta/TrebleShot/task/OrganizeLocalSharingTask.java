@@ -130,7 +130,6 @@ public class OrganizeLocalSharingTask extends AttachableAsyncTask<AttachedTaskLi
         }
 
         kuick.insert(db, transfer, null, progressListener());
-        TransferDetailActivity.startInstance(getContext(), transfer);
 
         if (mFlagWebShare)
             getContext().startActivity(new Intent(getContext(), WebShareActivity.class).addFlags(

@@ -82,13 +82,16 @@ public class ChangeSaveDirectoryTask extends AsyncTask
                                 pseudoGroup, true);
 
                         if (file != null && pseudoFile != null) {
-                            if (file.canWrite())
-                                FileUtils.move(getContext(), file, pseudoFile, this);
-                            else
-                                throw new IOException("Failed to access: " + file.getUri());
+                            try {
+                                if (file.canWrite())
+                                    FileUtils.move(getContext(), file, pseudoFile, this);
+                                else
+                                    throw new IOException("Failed to access: " + file.getUri());
+                            } catch (Exception e) {
+                                erredFiles.add(transferItem);
+                            }
                         }
-                    } catch (Exception e) {
-                        erredFiles.add(transferItem);
+                    } catch (Exception ignored) {
                     }
                 }
 

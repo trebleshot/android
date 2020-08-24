@@ -67,7 +67,6 @@
                 android:id="@+id/activity_content_sharing_cardview"
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_width="wrap_content"
-                app:cardCornerRadius="24dp"
                 app:cardElevation="2dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="110dp">

@@ -500,9 +500,6 @@
     </string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
-    <string name="mesg_errorNotAnIpAddress">Not an IP Address
-        \n(like 192.168.1.2)
-    </string>
     <string name="ques_shareAsApkOrLink">Share as APK or link?</string>
     <string name="butn_asApk">As APK</string>
     <string name="butn_asLink">As a link</string>
@@ -562,9 +559,8 @@
     <string name="text_startTransferButtonHelp">Start transfer by clicking this button</string>
     <string name="butn_compose">Compose</string>
     <string name="butn_addMore">Add more</string>
-    <string name="mesg_mayTakeLong">May take long!</string>
     <string name="mesg_updateDownloadError">Could not download your update</string>
-    <string name="transfer_history">Transfer history</string>
+    <string name="transfer_history">Transfer History</string>
     <string name="text_appLogo">App logo</string>
     <string name="help_shareFilesNotice">Let\'s share those files</string>
     <string name="text_chooseDevice">Choose Device</string>
@@ -592,7 +588,7 @@
     <string name="text_sender">Sender</string>
     <string name="butn_deviceDetails">Device details</string>
     <string name="text_errorNoFileSelected">No file selected</string>
-    <string name="text_nsdDisabled">Enable discovery in the settings</string>
+    <string name="text_nsdDisabled">Enable discovery in Preferences</string>
     <string name="text_nsdNotDiscovering">Discovery is not available</string>
     <string name="text_findAvailableNetwork">Find Available Networks</string>
     <string name="text_transfer">Transfer</string>

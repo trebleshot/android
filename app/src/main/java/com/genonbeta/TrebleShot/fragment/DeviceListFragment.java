@@ -23,7 +23,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,16 +68,17 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     public static void openInfo(Activity activity, Connections utils, InfoHolder infoHolder)
     {
         Object specifier = infoHolder.object();
-        if (specifier instanceof WifiConfiguration) {
-            WifiConfiguration config = (WifiConfiguration) specifier;
+        if (specifier instanceof NetworkDescription) {
+            NetworkDescription description = (NetworkDescription) specifier;
             AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                     .setTitle(infoHolder.name())
                     .setMessage(R.string.text_trebleshotHotspotDescription)
                     .setNegativeButton(R.string.butn_close, null);
 
             if (Build.VERSION.SDK_INT < 29)
-                builder.setPositiveButton(utils.isConnectedToNetwork(config) ? R.string.butn_disconnect
-                        : R.string.butn_connect, (dialog, which) -> utils.toggleConnection(config));
+                builder.setPositiveButton(utils.isConnectedToNetwork(description) ? R.string.butn_disconnect
+                        : R.string.butn_connect, (dialog, which) -> App.from(activity).run(
+                                new DeviceIntroductionTask(description, 0)));
 
             builder.show();
         } else if (specifier instanceof Device)

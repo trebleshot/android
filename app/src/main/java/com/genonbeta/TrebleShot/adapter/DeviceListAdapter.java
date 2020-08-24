@@ -75,7 +75,7 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
 
         if (mConnections.canReadScanResults()) {
             for (ScanResult result : mConnections.getWifiManager().getScanResults()) {
-                if ((result.capabilities == null || result.capabilities.contains("OPEN"))
+                if ((result.capabilities == null || result.capabilities.equals("[ESS]"))
                         && Connections.isClientNetwork(result.SSID))
                     list.add(new InfoHolder(new NetworkDescription(result)));
             }

@@ -76,10 +76,12 @@ public class CommunicationBridge implements Closeable
     }
 
     @Override
-    public void close() throws IOException
+    public void close()
     {
-        Log.d(CommunicationBridge.class.getSimpleName(), "closing safely yeah");
-        getActiveConnection().closeSafely();
+        try {
+            getActiveConnection().closeSafely();
+        } catch (Exception ignored) {
+        }
     }
 
     public static CommunicationBridge connect(Kuick kuick, List<DeviceAddress> addressList, @Nullable Device device,
