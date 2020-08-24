@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.*;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.Device;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.Transfer;
@@ -255,7 +254,21 @@ public class NotificationHelper
                         TimeUtils.getFriendlyElapsedTime(getContext(), System.currentTimeMillis()
                                 - task.getStartTime())));
 
-        if (task.completedCount != 1) {
+        if (task.completedCount == 1) {
+            try {
+                Intent openIntent = FileUtils.getOpenIntent(getContext(), task.file);
+                notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(),
+                        openIntent, 0));
+            } catch (Exception ignored) {
+            }
+
+            notification
+                    .setContentTitle(task.lastItem.name)
+                    .addAction(R.drawable.ic_folder_white_24dp_static, getContext().getString(R.string.butn_showFiles),
+                            PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(),
+                                    FileExplorerActivity.class)
+                                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
+        } else {
             notification
                     .setContentTitle(getContext().getResources().getQuantityString(
                             R.plurals.text_fileReceiveCompletedSummary, task.completedCount,
@@ -263,41 +276,7 @@ public class NotificationHelper
                     .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
                             getContext(), FileExplorerActivity.class)
                             .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
-        } else {
-            try {
-                Intent openIntent = FileUtils.getOpenIntent(getContext(), task.file);
-                notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(),
-                        openIntent, 0));
-            } catch (Exception e) {
-                // do nothing
-            }
-
-            notification
-                    .setContentTitle(task.item.name)
-                    .addAction(R.drawable.ic_folder_white_24dp_static, getContext().getString(R.string.butn_showFiles),
-                            PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(),
-                                    FileExplorerActivity.class)
-                                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
         }
-
-        notification.show();
-    }
-
-    public void notifyReceiveError(FileTransferTask task)
-    {
-        DynamicNotification notification = getUtils().buildDynamicNotification(Transfers.createUniqueTransferId(
-                task.transfer.id, task.device.uid, task.item.type), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-
-        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-                .setContentTitle(getContext().getString(R.string.text_error))
-                .setContentText(getContext().getString(R.string.mesg_fileReceiveFilesLeftError))
-                .setAutoCancel(true)
-                .setDefaults(getUtils().getNotificationSettings())
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(
-                        getContext(), TransferDetailActivity.class)
-                        .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(TransferDetailActivity.EXTRA_TRANSFER, task.transfer), 0));
 
         notification.show();
     }

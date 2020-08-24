@@ -213,10 +213,15 @@ public class TaskMessageImpl implements TaskMessage
         DynamicNotification notification = utils.buildDynamicNotification(task.hashCode(),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
+        PendingIntent intent = PendingIntent.getActivity(context, 0, new Intent(context, HomeActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
+
         notification.setSmallIcon(iconFor(mTone))
                 .setGroup(task.getTaskGroup())
                 .setContentTitle(mTitle)
-                .setContentText(mMessage);
+                .setContentText(mMessage)
+                .setContentIntent(intent)
+                .setAutoCancel(true);
 
         for (Action action : mActionList)
             notification.addAction(iconFor(action.tone), action.name, PendingIntent.getActivity(context,

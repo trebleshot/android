@@ -72,6 +72,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
     // Changing objects
     public TransferItem item;
+    public TransferItem lastItem;
     public DocumentFile file;
     public long lastMovedBytes;
     public long currentBytes; // moving
@@ -97,8 +98,9 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
     {
         super.onPublishStatus();
 
-        if (isInterrupted()) {
-            setOngoingContent(getContext().getString(R.string.text_cancellingTransfer));
+        if (isInterrupted() || isFinished()) {
+            if (isInterrupted())
+                setOngoingContent(getContext().getString(R.string.text_cancellingTransfer));
             kuick().broadcast();
             return;
         }
@@ -249,6 +251,8 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
                 if (item == null)
                     throw new ContentException(ContentException.Error.AlreadyExists);
+                else
+                    lastItem = item;
 
                 // We don't handle IO errors on the receiver side.
                 // An IO error for this side means there is a permission/storage issue.
@@ -315,6 +319,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                     throw e;
                 } finally {
                     kuick().update(getDatabase(), item, transfer, null);
+                    item = null;
                 }
             }
         } catch (TaskStoppedException | CancelledException ignored) {
@@ -329,11 +334,13 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             .setTitle(getContext(), R.string.text_communicationError)
                             .setMessage(getContext().getString(R.string.mesg_errorDuringTransfer, device.username)));
                 } catch (TaskStoppedException ignored) {
-
                 }
             }
-        } finally {
-            item = null;
+        }
+
+        if (completedCount > 0) {
+            getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
+            Log.d(TAG, "handleTransferAsReceiver(): Notify user");
         }
     }
 
@@ -406,6 +413,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                         throw e;
                     } finally {
                         kuick().update(getDatabase(), item, transfer, null);
+                        item = null;
                     }
                 } catch (CancelledException e) {
                     throw e;
@@ -421,23 +429,14 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                CommunicationBridge.sendError(activeConnection, e);
-            } catch (Exception e1) {
-                try {
+                if (!(e instanceof ContentException)
+                        || !ContentException.Error.AlreadyExists.equals(((ContentException) e).error))
                     post(TaskMessage.newInstance()
                             .setTone(TaskMessage.Tone.Negative)
                             .setTitle(getContext(), R.string.text_communicationError)
                             .setMessage(getContext().getString(R.string.mesg_errorDuringTransfer, device.username)));
-                } catch (TaskStoppedException ignored) {
-                }
+            } catch (TaskStoppedException ignored) {
             }
-        } finally {
-            item = null;
-        }
-
-        if (completedCount > 0) {
-            getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
-            Log.d(TAG, "handleTransferAsReceiver(): Notify user");
         }
     }
 
