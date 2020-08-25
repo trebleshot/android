@@ -30,9 +30,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.TrebleShot.util.Updates;
 
 public class AboutActivity extends Activity
 {
@@ -74,7 +73,7 @@ public class AboutActivity extends Activity
                     e.printStackTrace();
                 }
             } else
-                UpdateUtils.checkForUpdates(AboutActivity.this, UpdateUtils.getDefaultUpdater(
+                Updates.checkForUpdates(AboutActivity.this, Updates.getDefaultUpdater(
                         AboutActivity.this), true, null);
         });
 
@@ -111,9 +110,9 @@ public class AboutActivity extends Activity
 
         // calling this in the onCreate sequence causes theming issues
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
-                && UpdateUtils.hasNewVersion(getApplicationContext()))
+                && Updates.hasNewVersion(getApplicationContext()))
             highlightUpdater(findViewById(R.id.activity_about_option_fourth_text),
-                    UpdateUtils.getAvailableVersion(getApplicationContext()));
+                    Updates.getAvailableVersion(getApplicationContext()));
     }
 
     private void highlightUpdater(TextView textView, String availableVersion)

@@ -114,11 +114,11 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
             mHotspotManager.setSecondaryCallback(new SecondaryHotspotCallback());
 
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
-                && !UpdateUtils.hasNewVersion(getApplicationContext())
-                && (System.currentTimeMillis() - UpdateUtils.getLastTimeCheckedForUpdates(
+                && !Updates.hasNewVersion(getApplicationContext())
+                && (System.currentTimeMillis() - Updates.getLastTimeCheckedForUpdates(
                 getApplicationContext())) >= AppConfig.DELAY_CHECK_FOR_UPDATES) {
-            GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
-            UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
+            GitHubUpdater updater = Updates.getDefaultUpdater(getApplicationContext());
+            Updates.checkForUpdates(getApplicationContext(), updater, false, null);
         }
     }
 

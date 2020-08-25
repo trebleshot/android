@@ -42,19 +42,15 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.Identifier;
-import com.genonbeta.TrebleShot.object.Identity;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.backgroundservice.*;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.TrebleShot.util.Updates;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -96,8 +92,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         mNavigationView.setNavigationItemSelectedListener(this);
         mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG);
 
-        if (UpdateUtils.hasNewVersion(this))
-            highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
+        if (Updates.hasNewVersion(this))
+            highlightUpdate();
 
         if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
             MenuItem donateItem = mNavigationView.getMenu()
@@ -113,15 +109,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
                 new Intent(this, AddDeviceActivity.class)
                         .putExtra(AddDeviceActivity.EXTRA_CONNECTION_MODE,
                                 AddDeviceActivity.ConnectionMode.WaitForRequests)));
-
-        // TODO: 8/18/20 Remove this test task
-        /**
-        DummyAsyncTask[] dummyAsyncTasks = new DummyAsyncTask[1];
-
-        for (int i = 0; i < dummyAsyncTasks.length; i++) {
-            dummyAsyncTasks[i] = new DummyAsyncTask();
-            run(dummyAsyncTasks[i]);
-        }**/
     }
 
     @Override
@@ -188,11 +175,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         createHeaderView();
     }
 
-    /***
-     * This method helps to reduce the glitch when the drawer option is chosen
-     * and loaded at the same time. To prevent the glitch we wait for the signal
-     * that the drawer is closed. We also hold the id of the menu item that has been clicked.
-     * After this is called, we also clean the chosen menu item id.
+    /**
+     * Do not load the chosen item immediately. Wait for the drawer to close.
      */
     private void applyAwaitingDrawerAction()
     {
@@ -338,7 +322,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         }
     }
 
-    private void highlightUpdater(String availableVersion)
+    private void highlightUpdate()
     {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_about);
         item.setTitle(R.string.text_newVersionAvailable);

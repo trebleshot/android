@@ -251,8 +251,6 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 
                 if (item == null)
                     throw new ContentException(ContentException.Error.AlreadyExists);
-                else
-                    lastItem = item;
 
                 // We don't handle IO errors on the receiver side.
                 // An IO error for this side means there is a permission/storage issue.
@@ -281,6 +279,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                         item.setFlag(TransferItem.Flag.DONE);
                         completedBytes += currentBytes;
                         completedCount++;
+                        lastItem = item;
 
                         if (file.getParentFile() != null) {
                             file = FileUtils.saveReceivedFile(file.getParentFile(), file, item);
