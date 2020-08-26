@@ -244,7 +244,7 @@
     <string name="mesg_fileSaved">文件已保存</string>
     <string name="butn_sortBy">排序方式</string>
     <string name="butn_sortOrder">顺序/倒序</string>
-    <string name="text_sortOrderAscending">"顺序排列  ↑"</string>
+    <string name="text_sortOrderAscending">"顺序排列   ↑"</string>
     <string name="text_sortOrderDescending">倒序排列 ↓</string>
     <string name="text_sortByName">文件名</string>
     <string name="text_sortByDate">日期</string>
