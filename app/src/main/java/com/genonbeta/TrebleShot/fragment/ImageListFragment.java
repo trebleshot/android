@@ -45,7 +45,7 @@ public class ImageListFragment extends GalleryGroupEditableListFragment<ImageLis
         setDefaultOrderingCriteria(ImageListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(ImageListAdapter.MODE_SORT_BY_DATE);
         setDefaultViewingGridSize(3, 5);
-        setUseDefaultPaddingDecoration(false);
+        setItemOffsetDecorationEnabled(true);
     }
 
     @Override

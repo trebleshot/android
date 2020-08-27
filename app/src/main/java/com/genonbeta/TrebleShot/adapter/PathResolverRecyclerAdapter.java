@@ -40,7 +40,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 {
     private final List<Index<T>> mList = new ArrayList<>();
     private OnClickListener<T> mClickListener;
-    private Context mContext;
+    private final Context mContext;
 
     public PathResolverRecyclerAdapter(Context context)
     {
@@ -58,7 +58,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
     @Override
     public Holder<T> onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new Holder<T>(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
+        return new Holder<>(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
     }
 
     @Override
@@ -67,6 +67,8 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
         holder.index = getList().get(position);
         holder.text.setText(holder.index.title);
         holder.image.setImageResource(holder.index.imgRes);
+        holder.image.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
+        holder.text.setEnabled(getItemCount() - 1 != position);
 
         if (mClickListener != null)
             holder.text.setOnClickListener(view -> mClickListener.onClick(holder));

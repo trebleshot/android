@@ -44,7 +44,7 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
         GroupEditableListAdapter.GroupViewHolder>
 {
     private final ContentResolver mResolver;
-    private int mSelectedInset;
+    private final int mSelectedInset;
 
     public ImageListAdapter(IEditableListFragment<ImageHolder, GroupViewHolder> fragment)
     {
@@ -90,19 +90,18 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        if (viewType == VIEW_TYPE_REPRESENTATIVE)
-            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false),
-                    R.id.layout_list_title_text);
+        GroupViewHolder holder = viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
+                isGridLayoutRequested() ? R.layout.list_image_grid : R.layout.list_image, parent, false))
+                : createDefaultViews(parent, viewType, true);
 
-        GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
-                ? R.layout.list_image_grid : R.layout.list_image, parent, false));
-
-        getFragment().registerLayoutViewClicks(holder);
-        View visitView = holder.itemView.findViewById(R.id.visitView);
-        visitView.setOnClickListener(v -> getFragment().performLayoutClickOpen(holder));
-        visitView.setOnLongClickListener(v -> getFragment().performLayoutLongClick(holder));
-        holder.itemView.findViewById(isGridLayoutRequested() ? R.id.selectorContainer : R.id.selector)
-                .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
+        if (!holder.isRepresentative()) {
+            getFragment().registerLayoutViewClicks(holder);
+            View visitView = holder.itemView.findViewById(R.id.visitView);
+            visitView.setOnClickListener(v -> getFragment().performLayoutClickOpen(holder));
+            visitView.setOnLongClickListener(v -> getFragment().performLayoutLongClick(holder));
+            holder.itemView.findViewById(isGridLayoutRequested() ? R.id.selectorContainer : R.id.selector)
+                    .setOnClickListener(v -> getFragment().setItemSelected(holder, true));
+        }
 
         return holder;
     }

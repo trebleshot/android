@@ -48,7 +48,7 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     public static final int VIEW_TYPE_TITLE = 1;
 
     private final ContentResolver mResolver;
-    private int mSelectedInset;
+    private final int mSelectedInset;
 
     public VideoListAdapter(IEditableListFragment<VideoHolder, GroupViewHolder> fragment)
     {
@@ -63,7 +63,7 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     {
         GroupViewHolder holder = viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
                 isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false))
-                : createDefaultViews(parent, viewType, false);
+                : createDefaultViews(parent, viewType, true);
 
         if (!holder.isRepresentative()) {
             getFragment().registerLayoutViewClicks(holder);

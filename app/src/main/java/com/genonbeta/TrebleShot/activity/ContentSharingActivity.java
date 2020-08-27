@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -73,7 +74,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
 
     private ProgressBar mProgressBar;
-    private CardView mCardView;
+    private ViewGroup mCardView;
     private ActionMenuView mActionMenuView;
 
     @Override
@@ -119,7 +120,7 @@ public class ContentSharingActivity extends Activity implements PerformerEngineP
 
         Bundle arguments = new Bundle();
         arguments.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
-        arguments.putBoolean(FileExplorerFragment.ARG_HAS_BOTTOM_SPACE, true);
+        arguments.putBoolean(FileExplorerFragment.ARG_HAS_BOTTOM_SPACE, false);
 
         pagerAdapter.add(new StableItem(0, ApplicationListFragment.class, arguments));
         pagerAdapter.add(new StableItem(1, FileExplorerFragment.class, arguments).setTitle(getString(

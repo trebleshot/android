@@ -53,7 +53,32 @@
         tools:context=".activity.ContentSharingActivity"
         tools:showIn="@layout/activity_content_sharing">
 
+        <FrameLayout
+            android:layout_alignParentBottom="true"
+            android:id="@+id/activity_content_sharing_cardview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <ProgressBar
+                android:id="@+id/activity_content_sharing_progress_bar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:indeterminate="false"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.ActionMenuView
+                android:id="@+id/menu_view"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_above="@id/activity_content_sharing_cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true">
@@ -62,28 +87,6 @@
                 android:id="@+id/activity_content_sharing_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/activity_content_sharing_cardview"
-                android:layout_gravity="center_horizontal|bottom"
-                android:layout_width="wrap_content"
-                app:cardElevation="2dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="110dp">
-
-                <ProgressBar
-                    android:id="@+id/activity_content_sharing_progress_bar"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:indeterminate="false"
-                    android:visibility="gone"/>
-
-                <androidx.appcompat.widget.ActionMenuView
-                    android:id="@+id/menu_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </androidx.cardview.widget.CardView>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>

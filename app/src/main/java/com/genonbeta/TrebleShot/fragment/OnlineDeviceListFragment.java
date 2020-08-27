@@ -47,8 +47,8 @@ public class OnlineDeviceListFragment extends DeviceListFragment
 
         setHasOptionsMenu(false);
         setFilteringSupported(false);
-        setUseDefaultPaddingDecoration(false);
-        setUseDefaultPaddingDecorationSpaceForEdges(false);
+        setItemOffsetDecorationEnabled(false);
+        setItemOffsetForEdgesEnabled(false);
 
         if (isScreenLarge())
             setDefaultViewingGridSize(4, 5);

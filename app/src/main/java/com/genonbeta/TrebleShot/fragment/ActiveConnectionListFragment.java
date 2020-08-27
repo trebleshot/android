@@ -79,9 +79,9 @@ public class ActiveConnectionListFragment extends EditableListFragment<
         setLayoutResId(R.layout.layout_active_connection);
         setSortingSupported(false);
         setFilteringSupported(true);
-        setUseDefaultPaddingDecoration(true);
-        setUseDefaultPaddingDecorationSpaceForEdges(true);
-        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
+        setItemOffsetDecorationEnabled(true);
+        setItemOffsetForEdgesEnabled(true);
+        setDefaultItemOffsetPadding(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
         mFilter.addAction(WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);

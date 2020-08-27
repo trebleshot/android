@@ -41,7 +41,7 @@ public class VideoListFragment extends GalleryGroupEditableListFragment<VideoLis
         setDefaultOrderingCriteria(VideoListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(VideoListAdapter.MODE_SORT_BY_DATE);
         setDefaultViewingGridSize(3, 5);
-        setUseDefaultPaddingDecoration(false);
+        setItemOffsetDecorationEnabled(true);
     }
 
     @Override

@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,7 +44,7 @@ import com.genonbeta.TrebleShot.util.SelectionUtils;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterBase;
-import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
+import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration;
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.object.Selectable;
@@ -69,7 +68,7 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 {
     public final static String
             ARG_SELECT_BY_CLICK = "argSelectByClick",
-            ARG_HAS_BOTTOM_SPACE = "argSelectByClick";
+            ARG_HAS_BOTTOM_SPACE = "argHasBottomSpace";
 
     private final IEngineConnection<T> mEngineConnection = new EngineConnection<>(this, this);
     private final IPerformerEngine mPerformerEngine = new PerformerEngine();
@@ -78,13 +77,13 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
     private boolean mRefreshRequested = false;
     private boolean mSortingSupported = true;
     private boolean mFilteringSupported = false;
-    private boolean mUseDefaultPaddingDecoration = false;
-    private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
+    private boolean mItemOffsetDecorationEnabled = false;
+    private boolean mItemOffsetForEdges = true;
     private boolean mTwoRowLayoutState = false;
     private boolean mSelectByClick = false;
     private boolean mHasBottomSpace = false;
     private boolean mLocalSelectionActivated = false;
-    private float mDefaultPaddingDecorationSize = -1;
+    private float mDefaultItemOffsetPadding = -1;
     private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
     private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
     private int mDefaultViewingGridSize = 1;
@@ -164,12 +163,13 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
 
         setHasOptionsMenu(true);
 
-        if (mUseDefaultPaddingDecoration) {
-            float padding = mDefaultPaddingDecorationSize > -1 ? mDefaultPaddingDecorationSize
+        if (mItemOffsetDecorationEnabled) {
+            float padding = mDefaultItemOffsetPadding > -1 ? mDefaultItemOffsetPadding
                     : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
-
-            getListView().addItemDecoration(new PaddingItemDecoration((int) padding,
-                    mUseDefaultPaddingDecorationSpaceForEdges, isHorizontalOrientation()));
+            ItemOffsetDecoration offsetDecoration = new ItemOffsetDecoration((int) padding, mItemOffsetForEdges,
+                    isHorizontalOrientation());
+            offsetDecoration.prepare(getListView());
+            getListView().addItemDecoration(offsetDecoration);
         }
     }
 
@@ -698,9 +698,9 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
         holder.itemView.setOnLongClickListener(v -> performLayoutLongClick(holder));
     }
 
-    public void setDefaultPaddingDecorationSize(float defaultPadding)
+    public void setDefaultItemOffsetPadding(float defaultPadding)
     {
-        mDefaultPaddingDecorationSize = defaultPadding;
+        mDefaultItemOffsetPadding = defaultPadding;
     }
 
     public void setDefaultOrderingCriteria(int criteria)
@@ -746,6 +746,16 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
     public void setHasBottomSpace(boolean has)
     {
         mHasBottomSpace = has;
+    }
+
+    public void setItemOffsetDecorationEnabled(boolean enabled)
+    {
+        mItemOffsetDecorationEnabled = enabled;
+    }
+
+    public void setItemOffsetForEdgesEnabled(boolean enabled)
+    {
+        mItemOffsetForEdges = enabled;
     }
 
     public boolean setItemSelected(V holder)
@@ -826,16 +836,6 @@ public abstract class EditableListFragment<T extends Editable, V extends Recycle
     public void setSortingSupported(boolean sortingSupported)
     {
         mSortingSupported = sortingSupported;
-    }
-
-    public void setUseDefaultPaddingDecoration(boolean use)
-    {
-        mUseDefaultPaddingDecoration = use;
-    }
-
-    public void setUseDefaultPaddingDecorationSpaceForEdges(boolean use)
-    {
-        mUseDefaultPaddingDecorationSpaceForEdges = use;
     }
 
     public void toggleTwoRowLayout()

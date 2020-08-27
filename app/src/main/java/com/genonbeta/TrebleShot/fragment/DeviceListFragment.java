@@ -92,9 +92,9 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
 
         setFilteringSupported(true);
         setSortingSupported(false);
-        setUseDefaultPaddingDecoration(true);
-        setUseDefaultPaddingDecorationSpaceForEdges(true);
-        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
+        setItemOffsetDecorationEnabled(true);
+        setItemOffsetForEdgesEnabled(true);
+        setDefaultItemOffsetPadding(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
         mIntentFilter.addAction(Kuick.ACTION_DATABASE_CHANGE);
         mIntentFilter.addAction(NsdDaemon.ACTION_DEVICE_STATUS);

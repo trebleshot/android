@@ -45,6 +45,7 @@ public class Updates
     public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog,
                                        final GitHubUpdater.OnInfoAvailableListener listener)
     {
+        /*
         updater.checkForUpdates(popupDialog, (newVersion, versionName, title, description, releaseDate) -> {
             SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
 
@@ -55,7 +56,7 @@ public class Updates
 
             if (listener != null)
                 listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
-        });
+        });*/
     }
 
     public static String getAvailableVersion(Context context)

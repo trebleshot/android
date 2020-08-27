@@ -87,9 +87,9 @@ public class TransferListFragment extends GroupEditableListFragment<TransferInde
         setDefaultOrderingCriteria(TransferListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TransferListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(TransferListAdapter.MODE_GROUP_BY_DATE);
-        setUseDefaultPaddingDecoration(true);
-        setUseDefaultPaddingDecorationSpaceForEdges(true);
-        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
+        setItemOffsetDecorationEnabled(true);
+        setItemOffsetForEdgesEnabled(true);
+        setDefaultItemOffsetPadding(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }
 
     @Override
