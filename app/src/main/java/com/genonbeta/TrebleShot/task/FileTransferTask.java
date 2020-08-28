@@ -296,7 +296,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             getMediaScanner().scanFile(((LocalDocumentFile) file).getFile().getAbsolutePath(),
                                     item.mimeType);
 
-                        Log.d(TAG, "handleTransferAsSender(): File received " + item.name);
+                        Log.d(TAG, "handleTransferAsReceiver(): File received " + item.name);
                     }
                 } catch (CancelledException e) {
                     item.setFlag(TransferItem.Flag.PENDING);
