@@ -96,11 +96,8 @@ public class BackgroundService extends Service
 
         if (getApplication() instanceof App)
             mApp = (App) getApplication();
-        else {
-            Log.d(TAG, "The service is not able to work with a different app class.");
-            stopSelf();
-            return;
-        }
+        else
+            throw new IllegalStateException("The service is not able to work with a different app class.");
 
         WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
 
@@ -113,16 +110,8 @@ public class BackgroundService extends Service
         if (mWifiLock != null)
             mWifiLock.acquire();
 
-        takeForeground(true);
+        startForeground(NotificationHelper.ID_BG_SERVICE, getNotificationHelper().getForegroundNotification().build());
         tryStartingOrStopSelf();
-    }
-
-    private void takeForeground(boolean take)
-    {
-        if (take)
-            startForeground(NotificationHelper.ID_BG_SERVICE, getNotificationHelper().getForegroundNotification().build());
-        else
-            stopForeground(true);
     }
 
     @Override
@@ -245,7 +234,7 @@ public class BackgroundService extends Service
     public void onDestroy()
     {
         super.onDestroy();
-        takeForeground(false);
+        stopForeground(true);
 
         try {
             mCommunicationServer.stop();

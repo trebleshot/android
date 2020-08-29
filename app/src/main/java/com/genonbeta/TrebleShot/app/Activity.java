@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.ImageView;
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;

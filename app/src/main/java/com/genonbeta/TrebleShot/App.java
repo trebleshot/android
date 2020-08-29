@@ -456,7 +456,9 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
         boolean killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true);
 
         if (canStopService() && killOnExit) {
-            stopService(new Intent(this, BackgroundService.class));
+            ContextCompat.startForegroundService(getApplicationContext(),
+                    new Intent(this, BackgroundService.class)
+                            .setAction(BackgroundService.ACTION_END_SESSION));
             return true;
         }
 
@@ -510,7 +512,7 @@ public class App extends MultiDexApplication implements Thread.UncaughtException
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(stringBuilder.toString().getBytes());
 
                 int len;
-                byte[] buffer = new byte[8196];
+                byte[] buffer = new byte[8096];
 
                 while ((len = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, len);

@@ -378,7 +378,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                             kuick().update(getDatabase(), item, transfer, null);
 
                             ActiveConnection.Description description = activeConnection.writeBegin(0, length);
-                            byte[] bytes = new byte[8196];
+                            byte[] bytes = new byte[8096];
                             int readLength;
 
                             try {

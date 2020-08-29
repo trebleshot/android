@@ -240,7 +240,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
             File logFile = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             int len;
-            byte[] buffer = new byte[8196];
+            byte[] buffer = new byte[8096];
             while ((len = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
                 outputStream.flush();
