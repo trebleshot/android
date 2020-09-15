@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
+  ~ Copyright (C) 2020 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
   ~ modify it under the terms of the GNU General Public License
@@ -16,24 +16,15 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
-    <font
-        app:font="@font/varelaround"
-        app:fontStyle="normal"
-        app:fontWeight="400" />
+<shape android:shape="rectangle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <font
-        app:font="@font/cantarell_bold"
-        app:fontStyle="normal"
-        app:fontWeight="500" />
+    <solid android:color="#BF000000" />
 
-    <font
-        app:font="@font/cantarell_bold"
-        app:fontStyle="normal"
-        app:fontWeight="700" />
+    <corners android:radius="8dp" />
 
-    <font
-        app:font="@font/cantarell_extrabold"
-        app:fontStyle="normal"
-        app:fontWeight="900" />
-</font-family>
+    <padding
+        android:left="4dp"
+        android:right="4dp"/>
+
+</shape>

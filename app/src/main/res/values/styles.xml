@@ -42,7 +42,7 @@
         <item name="colorPrimaryDark23">@color/black_dominant</item>
         <item name="colorSurface">@color/black_surface</item>
         <item name="android:windowBackground">@color/black_dominant</item>
-        <item name="colorDivider">@color/black_surface</item>
+        <item name="colorDivider">@color/black_colorDivider</item>
     </style>
 
     <!-- generalization end -->
@@ -110,7 +110,8 @@
     <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:background">?attr/colorPrimary</item>
-        <item name="itemTextColor">?attr/selectionAccentColor</item>
+        <!--<item name="itemTextColor">?attr/selectionAccentColor</item>-->
+        <item name="itemBackground">?rectSelector</item>
     </style>
 
     <style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView">
@@ -133,15 +134,10 @@
         <item name="tabTextColor">?selectionAccentColor</item>
     </style>z
 
-    <style name="TextAppearance">
-        <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="TextAppearance.Primary" parent="@style/TextAppearance">
+    <style name="TextAppearance.Primary" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
         <item name="android:textSize">@dimen/font_size_primary</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="TextAppearance.Primary.SingleLine">
@@ -176,10 +172,11 @@
         <item name="android:maxLines">1</item>
     </style>
 
-    <style name="TextAppearance.Secondary">
+    <style name="TextAppearance.Secondary" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textSize">@dimen/font_size_secondary</item>
         <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
     </style>
 
     <style name="TextAppearance.Secondary.SingleLine">
@@ -283,7 +280,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.Cantarell" />
+    <style name="Roundies" />
 
     <style name="DividerStyle">
         <item name="android:layout_height">1dp</item>

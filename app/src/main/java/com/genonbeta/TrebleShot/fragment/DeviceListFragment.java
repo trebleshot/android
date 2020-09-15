@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -34,7 +35,9 @@ import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter;
-import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.InfoHolder;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.DbVirtualDevice;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.DescriptionVirtualDevice;
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.VirtualDevice;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
@@ -46,13 +49,14 @@ import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.Connections;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDaemon;
+import com.genonbeta.TrebleShot.util.P2pDaemon;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription;
 
-public class DeviceListFragment extends EditableListFragment<InfoHolder, RecyclerViewAdapter.ViewHolder,
+public class DeviceListFragment extends EditableListFragment<VirtualDevice, RecyclerViewAdapter.ViewHolder,
         DeviceListAdapter> implements IconProvider, DeviceLoader.OnDeviceResolvedListener
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
@@ -64,25 +68,25 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     private final StatusReceiver mStatusReceiver = new StatusReceiver();
     private Connections mConnections;
     private Device.Type[] mHiddenDeviceTypes;
+    private P2pDaemon mP2pDaemon;
 
-    public static void openInfo(Activity activity, Connections utils, InfoHolder infoHolder)
+    public static void openInfo(Activity activity, Connections utils, VirtualDevice virtualDevice)
     {
-        Object specifier = infoHolder.object();
-        if (specifier instanceof NetworkDescription) {
-            NetworkDescription description = (NetworkDescription) specifier;
+        if (virtualDevice instanceof DescriptionVirtualDevice) {
+            NetworkDescription description = ((DescriptionVirtualDevice) virtualDevice).description;
             AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                    .setTitle(infoHolder.name())
+                    .setTitle(virtualDevice.name())
                     .setMessage(R.string.text_trebleshotHotspotDescription)
                     .setNegativeButton(R.string.butn_close, null);
 
             if (Build.VERSION.SDK_INT < 29)
                 builder.setPositiveButton(utils.isConnectedToNetwork(description) ? R.string.butn_disconnect
                         : R.string.butn_connect, (dialog, which) -> App.from(activity).run(
-                                new DeviceIntroductionTask(description, 0)));
+                        new DeviceIntroductionTask(description, 0)));
 
             builder.show();
-        } else if (specifier instanceof Device)
-            new DeviceInfoDialog(activity, (Device) specifier).show();
+        } else if (virtualDevice instanceof DbVirtualDevice)
+            new DeviceInfoDialog(activity, ((DbVirtualDevice) virtualDevice).device).show();
     }
 
     @Override
@@ -117,6 +121,9 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
                 }
             }
         }
+
+        if (Build.VERSION.SDK_INT >= 16)
+            mP2pDaemon = new P2pDaemon(getConnections());
     }
 
     @Override
@@ -124,7 +131,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new DeviceListAdapter(this, getConnectionUtils(),
+        setListAdapter(new DeviceListAdapter(this, getConnections(),
                 App.from(requireActivity()).getNsdDaemon(), mHiddenDeviceTypes));
         setEmptyListImage(R.drawable.ic_devices_white_24dp);
         setEmptyListText(getString(R.string.text_findDevicesHint));
@@ -142,6 +149,8 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onResume();
         requireActivity().registerReceiver(mStatusReceiver, mIntentFilter);
+        if (Build.VERSION.SDK_INT >= 16)
+            mP2pDaemon.start(requireContext());
     }
 
     @Override
@@ -149,6 +158,8 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     {
         super.onPause();
         requireActivity().unregisterReceiver(mStatusReceiver);
+        if (Build.VERSION.SDK_INT >= 16)
+            mP2pDaemon.stop(requireContext());
     }
 
     @Override
@@ -157,7 +168,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (REQUEST_LOCATION_PERMISSION == requestCode)
-            getConnectionUtils().showConnectionOptions(getActivity(), this, REQUEST_LOCATION_PERMISSION);
+            getConnections().showConnectionOptions(getActivity(), this, REQUEST_LOCATION_PERMISSION);
     }
 
     @Override
@@ -166,7 +177,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         AddDeviceActivity.returnResult(requireActivity(), device, address);
     }
 
-    public Connections getConnectionUtils()
+    public Connections getConnections()
     {
         if (mConnections == null)
             mConnections = new Connections(requireContext());
@@ -198,14 +209,14 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
     }
 
     @Override
-    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, InfoHolder object)
+    public boolean performDefaultLayoutClick(RecyclerViewAdapter.ViewHolder holder, VirtualDevice object)
     {
-        Object specifier = object.object();
         if (requireActivity() instanceof AddDeviceActivity) {
-            if (specifier instanceof NetworkDescription)
-                App.run(requireActivity(), new DeviceIntroductionTask((NetworkDescription) specifier, -1));
-            else if (specifier instanceof Device) {
-                Device device = (Device) specifier;
+            if (object instanceof DescriptionVirtualDevice)
+                App.run(requireActivity(), new DeviceIntroductionTask(((DescriptionVirtualDevice) object).description,
+                        0));
+            else if (object instanceof DbVirtualDevice) {
+                Device device = ((DbVirtualDevice) object).device;
                 if (BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin)
                     createSnackbar(R.string.mesg_versionNotSupported).show();
                 else
@@ -213,7 +224,7 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
             } else
                 return false;
         } else
-            openInfo(getActivity(), getConnectionUtils(), object);
+            openInfo(getActivity(), getConnections(), object);
 
         return true;
     }
@@ -224,7 +235,8 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
         public void onReceive(Context context, Intent intent)
         {
             if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())
-                    || NsdDaemon.ACTION_DEVICE_STATUS.equals(intent.getAction()))
+                    || NsdDaemon.ACTION_DEVICE_STATUS.equals(intent.getAction())
+                    || WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(intent.getAction()))
                 refreshList();
             else if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
@@ -233,4 +245,5 @@ public class DeviceListFragment extends EditableListFragment<InfoHolder, Recycle
             }
         }
     }
+
 }

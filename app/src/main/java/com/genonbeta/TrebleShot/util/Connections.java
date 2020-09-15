@@ -29,6 +29,7 @@ import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.*;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -68,9 +69,9 @@ public class Connections
 {
     public static final String TAG = Connections.class.getSimpleName();
 
-
     private final Context mContext;
     private final WifiManager mWifiManager;
+    private final WifiP2pManager mP2pManager;
     private final LocationManager mLocationManager;
     private final ConnectivityManager mConnectivityManager;
     private boolean mWirelessEnableRequested = false;
@@ -79,6 +80,7 @@ public class Connections
     {
         mContext = context;
         mWifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        mP2pManager = (WifiP2pManager) getContext().getApplicationContext().getSystemService(Context.WIFI_P2P_SERVICE);
         mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(
                 Context.LOCATION_SERVICE);
         mConnectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -86,10 +88,7 @@ public class Connections
 
     public static String getCleanSsid(String ssid)
     {
-        if (ssid == null)
-            return "";
-
-        return ssid.replace("\"", "");
+        return ssid == null ? "" : ssid.replace("\"", "");
     }
 
     public boolean canAccessLocation()
@@ -183,8 +182,8 @@ public class Connections
     public boolean disableCurrentNetwork()
     {
         // WONTFIX: Android 10 makes this obsolete.
-        // NOTTODO: Networks added by other applications will possibly reconnect even if we disconnect them
-        // This is because we are only allowed to manipulate the connections that we added.
+        // NOTTODO: Networks added by other applications will possibly reconnect even if we disconnect them.
+        // This is because we are only allowed to manipulate the networks that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
         return isConnectedToAnyNetwork() && getWifiManager().disconnect()
                 && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
@@ -242,8 +241,6 @@ public class Connections
                 else
                     Log.d(TAG, "establishHotspotConnection: Toggling network failed " + description.ssid);
             } else if (wifiDhcpInfo.gateway != 0) {
-                Kuick kuick = AppUtils.getKuick(getContext());
-
                 try {
                     InetAddress address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway));
                     return setupConnection(getContext(), address, pin);
@@ -339,6 +336,11 @@ public class Connections
     public LocationManager getLocationManager()
     {
         return mLocationManager;
+    }
+
+    public WifiP2pManager getP2pManager()
+    {
+        return mP2pManager;
     }
 
     public WifiManager getWifiManager()
@@ -479,7 +481,6 @@ public class Connections
                 Log.d(TAG, "startConnection: Could not enable the network.");
             } else if (!getWifiManager().reconnect()) {
                 Log.d(TAG, "startConnection: Could not reconnect the networks.");
-                ;
             } else
                 return true;
             return false;
@@ -573,10 +574,9 @@ public class Connections
             new AlertDialog.Builder(activity)
                     .setMessage(R.string.mesg_locationPermissionRequiredSelfHotspot)
                     .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_allow, (dialog, which) -> {
-                        activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION}, permRequestId);
-                    })
+                    .setPositiveButton(R.string.butn_allow, (dialog, which) -> activity.requestPermissions(
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION}, permRequestId))
                     .show();
         } else if (!isLocationServiceEnabled()) {
             new AlertDialog.Builder(getContext())

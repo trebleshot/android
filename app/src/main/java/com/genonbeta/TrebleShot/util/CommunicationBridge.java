@@ -249,7 +249,12 @@ public class CommunicationBridge implements Closeable
     public static boolean receiveResult(ActiveConnection connection, Device targetDevice) throws IOException,
             JSONException, CommunicationException
     {
-        return receiveSecure(connection, targetDevice).getBoolean(Keyword.RESULT);
+        return resultOf(receiveSecure(connection, targetDevice));
+    }
+
+    public static boolean resultOf(JSONObject jsonObject) throws JSONException
+    {
+        return jsonObject.getBoolean(Keyword.RESULT);
     }
 
     public static void sendError(ActiveConnection connection, Exception exception) throws IOException, JSONException,
@@ -335,6 +340,8 @@ public class CommunicationBridge implements Closeable
         @Override
         public void onAvailable(@NonNull Network network)
         {
+            super.onAvailable(network);
+
             if (!bindNetwork(network)) {
                 Log.d(TAG, "onAvailable: Failed to bind network " + network);
                 return;
@@ -353,6 +360,24 @@ public class CommunicationBridge implements Closeable
                 }
                 connectivityManager.unregisterNetworkCallback(this);
                 bindNetwork(null);
+            }
+        }
+
+        @Override
+        public void onUnavailable()
+        {
+            super.onUnavailable();
+            Log.d(TAG, "onUnavailable: No network was available for the requested network type. Opening by the " +
+                    "default network");
+
+            try {
+                resultConnection = openConnection(inetAddress);
+            } catch (IOException e) {
+                exception = e;
+            } finally {
+                synchronized (lock) {
+                    lock.notifyAll();
+                }
             }
         }
 

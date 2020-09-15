@@ -326,7 +326,6 @@ public class BackgroundService extends Service
         @Override
         public void onConnected(final ActiveConnection activeConnection)
         {
-            // check if the same address has other connections and limit that to 5
             try {
                 activeConnection.reply(AppUtils.getDeviceId(BackgroundService.this));
 

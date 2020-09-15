@@ -22,8 +22,8 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.KuickDb;
@@ -110,6 +110,12 @@ public final class Device implements DatabaseObject<Void>, Parcelable
         if (obj instanceof Device && uid != null)
             return uid.equals(((Device) obj).uid);
         return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return ObjectsCompat.hash(uid, type);
     }
 
     public String generatePictureId()

@@ -57,6 +57,7 @@
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top</item>
         <item name="backgroundPopupMenu">@drawable/background_popup_menu</item>
+        <item name="backgroundTextOverImage">@drawable/background_text_over_image</item>
         <item name="colorDonation">@color/colorDonation</item>
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorPassive">@color/colorPassive</item>
@@ -132,6 +133,7 @@
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_dark</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top_dark</item>
         <item name="backgroundPopupMenu">@drawable/background_popup_menu_dark</item>
+        <item name="backgroundTextOverImage">@drawable/background_text_over_image_dark</item>
         <item name="colorDonation">@color/dark_colorDonation</item>
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorPassive">@color/dark_colorPassive</item>

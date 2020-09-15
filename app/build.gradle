@@ -127,7 +127,7 @@ task copyHebrewResources(type: Copy) {
 preBuild.dependsOn copyHebrewResources
 
 dependencies {
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     testImplementation 'junit:junit:4.13'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -136,10 +136,10 @@ dependencies {
     implementation "androidx.collection:collection:1.1.0"
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.genonbeta.android:framework:1.0.4'
     implementation 'com.genonbeta.android:gdatabase:1.0.4'
-    implementation 'org.monora.coolsocket:core:2.0-rc06'
+    implementation 'org.monora.coolsocket:core:2.0-rc07'
     implementation 'com.google.zxing:core:3.3.0' // 3.3.2 requires minimum Android SDK 16
     implementation 'org.nanohttpd:nanohttpd:2.2.0'
     implementation 'com.velitasali.tools.android:zxing:3.6.3'

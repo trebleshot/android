@@ -55,8 +55,7 @@ public class DeviceChooserService extends ChooserTargetService
         // use default accent color for light theme
         TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext());
 
-        for (Device device : kuick.castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES),
-                Device.class)) {
+        for (Device device : kuick.castQuery(new SQLQuery.Select(Kuick.TABLE_DEVICES), Device.class)) {
             if (device.isLocal)
                 continue;
 
@@ -73,8 +72,7 @@ public class DeviceChooserService extends ChooserTargetService
             float result = (float) device.lastUsageTime / (float) System.currentTimeMillis();
 
             list.add(new ChooserTarget(device.username, Icon.createWithBitmap(bitmap), result, targetActivityName,
-                    bundle
-            ));
+                    bundle));
         }
 
         return list;

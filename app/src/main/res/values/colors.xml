@@ -72,4 +72,5 @@
 
     <color name="black_dominant">#000</color>
     <color name="black_surface">#1a1a1a</color>
+    <color name="black_colorDivider">#17808080</color>
 </resources>

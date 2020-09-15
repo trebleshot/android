@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.protocol.communication.ContentException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -70,7 +71,7 @@ public class AddDeviceTask extends AttachableAsyncTask<TransferMemberActivity>
                     TransferItem.class, null);
 
             if (objectList.size() == 0)
-                throw new Exception("Empty share holder id: " + mTransfer.id);
+                throw new ContentException(ContentException.Error.NotFound);
 
             JSONArray filesArray = new JSONArray();
             progress().addToTotal(objectList.size());

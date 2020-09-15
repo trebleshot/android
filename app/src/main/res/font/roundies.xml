@@ -16,8 +16,24 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<resources>
-    <style name="Roundies">
-        <item name="android:fontFamily">@font/roundies</item>
-    </style>
-</resources>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font
+        app:font="@font/varelaround"
+        app:fontStyle="normal"
+        app:fontWeight="400" />
+
+    <font
+        app:font="@font/nunito_bold"
+        app:fontStyle="normal"
+        app:fontWeight="500" />
+
+    <font
+        app:font="@font/nunito_bold"
+        app:fontStyle="normal"
+        app:fontWeight="700" />
+
+    <font
+        app:font="@font/nunito_extrabold"
+        app:fontStyle="normal"
+        app:fontWeight="900" />
+</font-family>

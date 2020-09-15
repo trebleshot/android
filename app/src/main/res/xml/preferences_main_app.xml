@@ -35,7 +35,7 @@
             android:title="@string/text_amoledOptimizedBlackTheme" />
 
         <androidx.preference.CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:icon="@drawable/ic_short_text_white_24dp"
             android:key="custom_fonts"
             android:summary="@string/const_text_useAppFontsSummary"

@@ -243,14 +243,8 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         try {
             Transfers.loadTransferInfo(getContext(), index, member);
 
-            while (activeConnection.getSocket().isConnected()) {
+            while ((item = Transfers.fetchFirstValidIncomingTransferItem(getContext(), transfer.id)) != null) {
                 publishStatus();
-
-                currentBytes = 0;
-                item = Transfers.fetchFirstValidIncomingTransferItem(getContext(), transfer.id);
-
-                if (item == null)
-                    throw new ContentException(ContentException.Error.AlreadyExists);
 
                 // We don't handle IO errors on the receiver side.
                 // An IO error for this side means there is a permission/storage issue.
@@ -259,7 +253,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                 StreamInfo streamInfo = StreamInfo.getStreamInfo(getContext(), file.getUri());
 
                 try (OutputStream outputStream = streamInfo.openOutputStream()) {
-                    activeConnection.reply(new JSONObject()
+                    CommunicationBridge.sendSecure(activeConnection, true, new JSONObject()
                             .put(Keyword.TRANSFER_REQUEST_ID, item.id)
                             .put(Keyword.SKIPPED_BYTES, currentBytes));
 
@@ -321,6 +315,13 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                     item = null;
                 }
             }
+
+            CommunicationBridge.sendResult(activeConnection, false);
+
+            if (completedCount > 0) {
+                getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
+                Log.d(TAG, "handleTransferAsReceiver(): Notify user");
+            }
         } catch (TaskStoppedException | CancelledException ignored) {
         } catch (Exception e) {
             e.printStackTrace();
@@ -336,11 +337,6 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                 }
             }
         }
-
-        if (completedCount > 0) {
-            getNotificationHelper().notifyFileReceived(this, FileUtils.getSavePath(getContext(), transfer));
-            Log.d(TAG, "handleTransferAsReceiver(): Notify user");
-        }
     }
 
     private void handleTransferAsSender()
@@ -352,8 +348,11 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                 publishStatus();
                 JSONObject request = CommunicationBridge.receiveSecure(activeConnection, device);
 
+                if (!CommunicationBridge.resultOf(request))
+                    break;
+
                 try {
-                    item = new TransferItem(transfer.id, request.getInt(Keyword.TRANSFER_REQUEST_ID), type);
+                    item = new TransferItem(transfer.id, request.getLong(Keyword.TRANSFER_REQUEST_ID), type);
                     kuick().reconstruct(getDatabase(), item);
 
                     try {
@@ -428,12 +427,10 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                if (!(e instanceof ContentException)
-                        || !ContentException.Error.AlreadyExists.equals(((ContentException) e).error))
-                    post(TaskMessage.newInstance()
-                            .setTone(TaskMessage.Tone.Negative)
-                            .setTitle(getContext(), R.string.text_communicationError)
-                            .setMessage(getContext().getString(R.string.mesg_errorDuringTransfer, device.username)));
+                post(TaskMessage.newInstance()
+                        .setTone(TaskMessage.Tone.Negative)
+                        .setTitle(getContext(), R.string.text_communicationError)
+                        .setMessage(getContext().getString(R.string.mesg_errorDuringTransfer, device.username)));
             } catch (TaskStoppedException ignored) {
             }
         }

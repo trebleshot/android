@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.ImageView;
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
@@ -155,7 +154,7 @@ public abstract class Activity extends AppCompatActivity
         // Apply the Preferred Font Family as a patch if enabled
         if (mCustomFontsEnabled) {
             Log.d(Activity.class.getSimpleName(), "Custom fonts have been applied");
-            getTheme().applyStyle(R.style.TextAppearance_Cantarell, true);
+            getTheme().applyStyle(R.style.Roundies, true);
         }
 
         super.onCreate(savedInstanceState);

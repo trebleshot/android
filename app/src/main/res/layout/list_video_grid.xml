@@ -18,22 +18,20 @@
 
 <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorPassive"
-    android:padding="1px">
+    android:background="?colorPassive">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageView
+            android:alpha="0.9"
             android:id="@+id/image"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:contentDescription="@string/text_image"
-            android:padding="1px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,25 +67,31 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text3">
+            app:layout_constraintTop_toBottomOf="@+id/text3_layout">
 
             <include layout="@layout/generic_view_selection_rounded_guiding" />
 
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/text3"
-            style="@style/TextAppearance.Primary.Small.SingleLine"
+        <FrameLayout
+            android:id="@+id/text3_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:gravity="center"
-            android:shadowColor="?colorPrimary"
-            android:shadowRadius="8"
-            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/selectorContainer"
             app:layout_constraintEnd_toEndOf="@+id/selectorContainer"
             app:layout_constraintStart_toStartOf="@+id/selectorContainer"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/text3"
+                style="@style/TextAppearance.Primary.Small.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?backgroundTextOverImage"
+                android:textStyle="bold"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/text2"

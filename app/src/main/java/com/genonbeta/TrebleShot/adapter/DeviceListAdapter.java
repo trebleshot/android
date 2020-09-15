@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.adapter;
 import android.content.Context;
 import android.net.MacAddress;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiNetworkSuggestion;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.util.ObjectsCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
@@ -47,17 +47,18 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static com.genonbeta.TrebleShot.fragment.DeviceListFragment.openInfo;
 
-public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.InfoHolder, RecyclerViewAdapter.ViewHolder>
+public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.VirtualDevice, RecyclerViewAdapter.ViewHolder>
 {
     private final Connections mConnections;
     private final TextDrawable.IShapeBuilder mIconBuilder;
     private final List<Device.Type> mHiddenDeviceTypes;
     private final NsdDaemon mNsdDaemon;
 
-    public DeviceListAdapter(IEditableListFragment<InfoHolder, ViewHolder> fragment, Connections utils,
+    public DeviceListAdapter(IEditableListFragment<VirtualDevice, ViewHolder> fragment, Connections utils,
                              NsdDaemon nsdDaemon, Device.Type[] hiddenDeviceTypes)
     {
         super(fragment);
@@ -68,16 +69,16 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
     }
 
     @Override
-    public List<InfoHolder> onLoad()
+    public List<VirtualDevice> onLoad()
     {
         boolean devMode = AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false);
-        List<InfoHolder> list = new ArrayList<>();
+        List<VirtualDevice> list = new ArrayList<>();
 
         if (mConnections.canReadScanResults()) {
             for (ScanResult result : mConnections.getWifiManager().getScanResults()) {
                 if ((result.capabilities == null || result.capabilities.equals("[ESS]"))
                         && Connections.isClientNetwork(result.SSID))
-                    list.add(new InfoHolder(new NetworkDescription(result)));
+                    list.add(new DescriptionVirtualDevice(new NetworkDescription(result)));
             }
         }
 
@@ -89,13 +90,13 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
                 device.type = Device.Type.NORMAL;
 
             if ((!mHiddenDeviceTypes.contains(device.type)) && (!device.isLocal || devMode))
-                list.add(new InfoHolder(device));
+                list.add(new DbVirtualDevice(device));
         }
 
-        List<InfoHolder> filteredList = new ArrayList<>();
-        for (InfoHolder infoHolder : list)
-            if (filterItem(infoHolder))
-                filteredList.add(infoHolder);
+        List<VirtualDevice> filteredList = new ArrayList<>();
+        for (VirtualDevice virtualDevice : list)
+            if (filterItem(virtualDevice))
+                filteredList.add(virtualDevice);
 
         return filteredList;
     }
@@ -119,8 +120,7 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
     {
-        InfoHolder infoHolder = getItem(position);
-        Object specifier = infoHolder.object();
+        VirtualDevice virtualDevice = getItem(position);
         View parentView = holder.itemView;
 
         TextView text1 = parentView.findViewById(R.id.text1);
@@ -129,20 +129,20 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         ImageView statusImage = parentView.findViewById(R.id.imageStatus);
         View layoutOnline = parentView.findViewById(R.id.layout_online);
 
-        text1.setText(infoHolder.name());
-        text2.setText(infoHolder.description(getContext()));
-        layoutOnline.setVisibility(infoHolder.isOnline() ? View.VISIBLE : View.GONE);
+        text1.setText(virtualDevice.name());
+        text2.setText(virtualDevice.description(getContext()));
+        layoutOnline.setVisibility(virtualDevice.isOnline() ? View.VISIBLE : View.GONE);
         boolean isRestricted = false;
         boolean isTrusted = false;
 
-        if (specifier instanceof Device) {
-            Device device = (Device) specifier;
+        if (virtualDevice instanceof DbVirtualDevice) {
+            Device device = ((DbVirtualDevice) virtualDevice).device;
             isRestricted = device.isBlocked;
             isTrusted = device.isTrusted;
 
             DeviceLoader.showPictureIntoView(device, image, mIconBuilder);
         } else
-            image.setImageDrawable(mIconBuilder.buildRound(infoHolder.name()));
+            image.setImageDrawable(mIconBuilder.buildRound(virtualDevice.name()));
 
         if (isRestricted) {
             statusImage.setVisibility(View.VISIBLE);
@@ -155,21 +155,9 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         }
     }
 
-    public static final class InfoHolder implements Editable
+    public abstract static class VirtualDevice implements Editable
     {
-        private final Object mObject;
-
-        private boolean mIsSelected = false;
-
-        public InfoHolder(Device device)
-        {
-            mObject = device;
-        }
-
-        public InfoHolder(NetworkDescription description)
-        {
-            mObject = description;
-        }
+        protected boolean mIsSelected = false;
 
         @Override
         public boolean applyFilter(String[] filteringKeywords)
@@ -180,21 +168,7 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
             return false;
         }
 
-        public String description(Context context)
-        {
-            if (mObject instanceof Device)
-                return ((Device) mObject).model;
-            else if (mObject instanceof NetworkDescription)
-                return context.getString(R.string.text_trebleshotHotspot);
-
-            return context.getString(R.string.text_unknown);
-        }
-
-        @Override
-        public boolean comparisonSupported()
-        {
-            return mObject instanceof Device;
-        }
+        public abstract String description(Context context);
 
         @Override
         public String getComparableName()
@@ -203,11 +177,53 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         }
 
         @Override
+        public String getSelectableTitle()
+        {
+            return name();
+        }
+
+        public abstract boolean isOnline();
+
+        @Override
+        public boolean isSelectableSelected()
+        {
+            return mIsSelected;
+        }
+
+        public abstract String name();
+
+        @Override
+        public void setId(long id)
+        {
+            throw new IllegalStateException("This object does not support ID attributing.");
+        }
+    }
+
+    public static class DbVirtualDevice extends VirtualDevice
+    {
+        public final Device device;
+
+        public DbVirtualDevice(Device device)
+        {
+            this.device = device;
+        }
+
+        @Override
+        public boolean comparisonSupported()
+        {
+            return true;
+        }
+
+        @Override
+        public String description(Context context)
+        {
+            return device.model;
+        }
+
+        @Override
         public long getComparableDate()
         {
-            if (mObject instanceof Device)
-                return ((Device) mObject).lastUsageTime;
-            return 0;
+            return device.lastUsageTime;
         }
 
         @Override
@@ -219,62 +235,83 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         @Override
         public long getId()
         {
-            if (mObject instanceof Device)
-                return ((Device) mObject).uid.hashCode();
-
-            return 0;
+            return device.hashCode();
         }
 
         @Override
-        public String getSelectableTitle()
-        {
-            return name();
-        }
-
         public boolean isOnline()
         {
-            if (mObject instanceof Device)
-                return Device.Type.NORMAL_ONLINE.equals(((Device) mObject).type);
-
-            return false;
+            return Device.Type.NORMAL_ONLINE.equals(device.type);
         }
 
         @Override
-        public boolean isSelectableSelected()
-        {
-            return mIsSelected;
-        }
-
         public String name()
         {
-            if (mObject instanceof Device)
-                return ((Device) mObject).username;
-            else if (mObject instanceof WifiConfiguration)
-                return AppUtils.getFriendlySSID(((WifiConfiguration) mObject).SSID);
-            else if (mObject instanceof NetworkDescription)
-                return AppUtils.getFriendlySSID(((NetworkDescription) mObject).ssid);
-
-            return mObject.toString();
-        }
-
-        public Object object()
-        {
-            return mObject;
-        }
-
-        @Override
-        public void setId(long id)
-        {
-            throw new IllegalStateException("This object does not support ID attributing.");
+            return device.username;
         }
 
         @Override
         public boolean setSelectableSelected(boolean selected)
         {
-            if (mObject instanceof Device) {
-                mIsSelected = selected;
-                return true;
-            }
+            mIsSelected = selected;
+            return true;
+        }
+    }
+
+    public static class DescriptionVirtualDevice extends VirtualDevice
+    {
+        public final NetworkDescription description;
+
+        public DescriptionVirtualDevice(NetworkDescription description)
+        {
+            this.description = description;
+        }
+
+        @Override
+        public boolean comparisonSupported()
+        {
+            return true;
+        }
+
+        @Override
+        public String description(Context context)
+        {
+            return context.getString(R.string.text_trebleshotHotspot);
+        }
+
+        @Override
+        public long getComparableDate()
+        {
+            return System.currentTimeMillis();
+        }
+
+        @Override
+        public long getComparableSize()
+        {
+            return 0;
+        }
+
+        @Override
+        public long getId()
+        {
+            return hashCode();
+        }
+
+        @Override
+        public boolean isOnline()
+        {
+            return true;
+        }
+
+        @Override
+        public String name()
+        {
+            return description.ssid;
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
             return false;
         }
     }
@@ -295,6 +332,12 @@ public class DeviceListAdapter extends EditableListAdapter<DeviceListAdapter.Inf
         public NetworkDescription(ScanResult result)
         {
             this(result.SSID, result.BSSID, null);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return ObjectsCompat.hash(ssid, bssid, password);
         }
 
         @RequiresApi(29)

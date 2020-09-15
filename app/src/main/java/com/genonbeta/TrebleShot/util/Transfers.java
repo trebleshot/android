@@ -47,8 +47,7 @@ public class Transfers
     }
 
     public static void createFolderStructure(List<TransferItem> list, long transferId, DocumentFile file,
-                                             String directory, AsyncTask task)
-            throws TaskStoppedException
+                                             String directory, AsyncTask task) throws TaskStoppedException
     {
         DocumentFile[] files = file.listFiles();
 
