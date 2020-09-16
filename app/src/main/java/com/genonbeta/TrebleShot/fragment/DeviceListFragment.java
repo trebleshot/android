@@ -235,8 +235,7 @@ public class DeviceListFragment extends EditableListFragment<VirtualDevice, Recy
         public void onReceive(Context context, Intent intent)
         {
             if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())
-                    || NsdDaemon.ACTION_DEVICE_STATUS.equals(intent.getAction())
-                    || WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(intent.getAction()))
+                    || NsdDaemon.ACTION_DEVICE_STATUS.equals(intent.getAction()))
                 refreshList();
             else if (Kuick.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
                 Kuick.BroadcastData data = Kuick.toData(intent);
@@ -245,5 +244,4 @@ public class DeviceListFragment extends EditableListFragment<VirtualDevice, Recy
             }
         }
     }
-
 }
