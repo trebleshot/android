@@ -144,7 +144,7 @@
     <string name="text_chooseFile">Dosya seçin</string>
     <string name="mesg_pathSameError">Seçeceğiniz klasör şu ankinden farklı olmalıdır</string>
     <string name="ques_checkOldFiles">Dosyaları taşı?</string>
-    <string name="text_checkOldFiles">"Alakalı tamamlanmış ve tamamlanacak dosyaları bu klasöre taşıyabilirsiniz ve bu işlem yeni konuma ve boyutlara göre zaman alabilir "</string>
+    <string name="text_checkOldFiles">Tamamlanan ve kısmen tamamlanan ilişkili dosyaları bu klasöre taşıyabilirsiniz ve bu, boyutlara bağlı olarak biraz zaman alabilir</string>
     <string name="mesg_newFilesReceived">Yeni dosyalar var</string>
     <string name="butn_show">Göster</string>
     <string name="text_preparingFiles">Dosyalar hazırlanıyor</string>
@@ -179,7 +179,7 @@
     <string name="text_permissionRequest">İzin isteği</string>
     <string name="text_requestPermissionStorage">Depolama izni</string>
     <string name="text_requestPermissionReadPhoneState">Telefon durumunu oku</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">"TrebleShot\'un diğer cihazlar tarafından tanınmanızı sağlayan cihazınızın seri numarasına erişmesi gerekiyor "</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">Diğer cihazların sizi tanımasına yardımcı olacak uzun vadeli bir kimlik numarası oluşturmak için TrebleShot\'ın cihazınızın seri numarasına erişmesi gerekiyor</string>
     <string name="text_mediaDirectory">Medya klasörü</string>
     <string name="text_emulatedMediaDirectory">Yansıma (%s)</string>
     <string name="mesg_notEnoughSpace">Yeterli alan yok</string>
@@ -425,7 +425,7 @@
     <string name="text_amoledOptimizedBlackTheme">AMOLED Ekranlar için iyileştir</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Daha karanlık renkler kullan</string>
     <string name="mesg_errorNotTrustZoneDevice">Bu cihaz, bu işlemi gerçekleştimek için alıcı cihaz üzerinde GüvenliBölge cihazı olarak işaretlenmelidir.</string>
-    <string name="butn_enterIpAddress">"IP Adresi girin "</string>
+    <string name="butn_enterIpAddress">IP Adresi girin</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Tarayıcı ile gönder</string>
     <string name="text_webShare">@string/butn_webShare</string>
