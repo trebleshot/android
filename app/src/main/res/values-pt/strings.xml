@@ -67,7 +67,7 @@
     <string name="mesg_scanCompleted">Procura concluída</string>
     <string name="text_autoStart">Início automático</string>
     <string name="text_autoStartSummary">Ativar comunicação quando uma conexão for detetada</string>
-    <string name="text_application">Aplicação</string>
+    <string name="text_application">App</string>
     <string name="text_image">Imagem</string>
     <string name="text_music">Música</string>
     <string name="text_video">Vídeo</string>
