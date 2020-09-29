@@ -28,7 +28,7 @@
     <string name="text_multipleFileReceiveCompleted">Ficheiros recebidos</string>
     <string name="text_deviceList">Dispositivos</string>
     <string name="text_fileOpenAppChoose">Abrir com</string>
-    <string name="text_fileShareAppChoose">Escolha uma aplicação para partilhar</string>
+    <string name="text_fileShareAppChoose">Escolha uma app para partilhar</string>
     <string name="ques_resetToDefault">Repor valores padrão\?</string>
     <string name="text_receivedFiles">Ficheiros recebidos</string>
     <string name="butn_edit">Editar</string>
@@ -82,7 +82,7 @@
     <string name="text_aboutSummary">Este programa é desenvolvido pela Genonbeta Libre Software Org</string>
     <string name="butn_appLaunch">Iniciar</string>
     <string name="ques_launchApplication">Quer iniciar esta aplicação\?</string>
-    <string name="mesg_launchApplicationError">Esta aplicação não pode ser iniciada</string>
+    <string name="mesg_launchApplicationError">Esta app não pode ser iniciada</string>
     <string name="text_enterText">Introduza o texto aqui…</string>
     <string name="mesg_textCopiedToClipboard">Texto copiado para a área de transferência</string>
     <string name="ques_copyToClipboard">Copiar para a área de transferência\?</string>
@@ -338,7 +338,7 @@
     <string name="text_noDeviceForTransfer">Nenhum dispositivo adicionado para esta transferência</string>
     <string name="text_thirdPartyLibraries">Bibliotecas de terceiros</string>
     <string name="text_killServiceAfterLeavingSummary">Parar a comunicação se não houver tarefas a decorrer</string>
-    <string name="text_killServiceAfterLeaving">Deixar a aplicação interromper o serviço</string>
+    <string name="text_killServiceAfterLeaving">Deixar a app interromper o serviço</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d de %2d</string>
     <string name="text_donate">Ajude os programadores</string>
