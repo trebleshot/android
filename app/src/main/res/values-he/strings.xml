@@ -251,7 +251,7 @@
     <string name="butn_selectNone">לא לבחור כלום</string>
     <string name="butn_previewSelections">תצוגה מקדימה של בחירות</string>
     <string name="mesg_deviceConnectionError">החיבור מול „%s” דרך „%s” נכשל</string>
-    <string name="mesg_retryReceivingNotice">"יתבצע ניסיון חוזר על ידי TrebleShot לקבלת העברות שנקטעו "</string>
+    <string name="mesg_retryReceivingNotice">יתבצע ניסיון חוזר על ידי TrebleShot לקבלת העברות שנקטעו</string>
     <string name="mesg_transferConnectionNotSetUpFix">נא לבחור תחילה את שיטת החיבור</string>
     <string name="butn_setUp">הגדרה</string>
     <string name="text_location">מיקום מדומה</string>
@@ -365,9 +365,9 @@
     <string name="butn_pause">השהיה</string>
     <string name="butn_retry">ניסיון חוזר</string>
     <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות. כדי להמשיך קבצים שנקטעו, יש להשתמש באפשרות ‚לנסות לקבל שוב’.</string>
-    <string name="mesg_notSavingToChosenLocation">"התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל. 
-\n  
-\n%s"</string>
+    <string name="mesg_notSavingToChosenLocation">התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל. 
+\n
+\n%s</string>
     <string name="butn_changelog">יומן שינויים</string>
     <string name="text_changelog">יומן שינויים</string>
     <string name="mesg_versionUpdatedChangelog">עדכנת את TrebleShot, מעניין אותך לראות מה חדש\?</string>
