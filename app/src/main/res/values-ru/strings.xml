@@ -171,7 +171,7 @@
     <string name="butn_uncheck">Снять флажок</string>
     <string name="mesg_versionNotSupported">Пожалуйста, обновитесь до поддерживаемой версии, затем повторите сканирование устройств.</string>
     <string name="mesg_ongoingUpdateDownload">Скачивание новой версии</string>
-    <string name="butn_gotIt">Хорошо</string>
+    <string name="butn_gotIt">Понятно</string>
     <string name="mesg_helpFolderSelection">Чтобы выбрать папку, нажмите на ее иконку</string>
     <string name="butn_selectAll">Выбрать все</string>
     <string name="butn_selectNone">Ничего не выбирать</string>
