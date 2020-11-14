@@ -248,7 +248,7 @@
     <string name="text_trebleshotHotspotDescription">Вы можете отправить файлы напрямую через открытую сеть, созданную устройством с TrebleShot поблизости.</string>
     <string name="butn_locationSettings">Местоположение</string>
     <string name="mesg_scanningDevicesSelfHotspot">Поиск устройств в сети TrebleShot</string>
-    <string name="text_findDevicesHint">Нет похожих устройств</string>
+    <string name="text_findDevicesHint">Нет известных устройств</string>
     <string name="text_receivedTextSummary">Полученный текст из буфера обмена</string>
     <string name="mesg_organizingFiles">Готовлю файлы</string>
     <string name="text_communicationService">Сервис отправки</string>
@@ -263,9 +263,9 @@
     <string name="text_flagResume">Возобновить</string>
     <string name="text_unknown">Неизвестно</string>
     <string name="butn_retryReceiving">Повторить получение</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot нужен доступ с серийному номерку устройства для создания долгосрочного идентификатора, который поможет другим устройствам распознать вас</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot нужен доступ с серийному номерку устройства для создания долгосрочного идентификатора, который поможет другим устройствам опознать вас</string>
     <string name="text_emulatedMediaDirectory">Эмулировать (%s)</string>
-    <string name="text_savePath">Сохранить в</string>
+    <string name="text_savePath">Сохранять в</string>
     <string name="text_transactionGroupDetails">Детали группы операции</string>
     <string name="butn_trustZoneDevice">Установить как устройство TrustZone</string>
     <string name="text_uncheckedItemsNotice">Снимите метки с предметов, чтобы удалить их</string>
@@ -441,7 +441,7 @@
     <string name="butn_asApk">Как APK</string>
     <string name="butn_asLink">Как ссылка</string>
     <string name="text_linkTrebleshot">Делитесь файлами с TrebleShot! Скачать здесь: %s</string>
-    <string name="text_autoScanDevicesSummary">Сканировать устройства, когда это необходимо</string>
+    <string name="text_autoScanDevicesSummary">Сканирует устройства по необходимости</string>
     <string name="mesg_stillScanning">Продолжать сканировать</string>
     <string name="text_connectionPermission">Разрешение на соединение</string>
     <string name="mesg_pathSameError">Вы не можете выбрать прошлую папку</string>
