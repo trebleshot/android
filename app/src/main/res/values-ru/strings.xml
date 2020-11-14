@@ -217,7 +217,7 @@
     <string name="text_navigationDrawerOpen">Открыть панель навигации</string>n
     <string name="text_navigationDrawerClose">Закрыть панель навигации</string>
     <string name="mesg_pathUnavailable">%s сейчас недоступно</string>
-    <string name="text_allowToConnect">Разрешить подключиться</string>
+    <string name="text_allowToConnect">Разрешить соединиться</string>
     <string name="mesg_notAllowed">Доступ запрещён</string>
     <string name="text_pendingTransfers">Активные операции</string>
     <string name="text_stopping">Остановка!</string>
@@ -287,7 +287,7 @@
     <string name="text_taskCompleted">Задание выполнено</string>
     <string name="text_deletingFilesOngoing">Удаление выбранных файлов</string>
     <string name="text_taskOngoing">Текущее задание</string>
-    <string name="text_networkServiceDiscoverySummary">Открытие сетевых служб улучшает обнаружение</string>
+    <string name="text_networkServiceDiscoverySummary">Сервис поиска сетевых ресурсов улучшает обнаружимость</string>
     <string name="text_receivedTransfer">Получено %s в %s</string>
     <string name="text_yearCountShort">%d г.</string>
     <string name="text_monthCountShort">%d мес.</string>
