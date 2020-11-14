@@ -83,7 +83,7 @@
     <string name="text_useLightSummary">Использовать подсветку</string>
     <string name="mesg_scanCompleted">Сканирование завершено</string>
     <string name="text_autoStart">Автозапуск</string>
-    <string name="text_showSystemApps">Показать системные приложения</string>
+    <string name="text_showSystemApps">Показывать системные приложения</string>
     <string name="text_showSystemAppsSummary">Показывать системные приложения в секции \"Поделиться\"</string>
     <string name="butn_showSystemApps">Показать системные приложения</string>
     <string name="mesg_connectionProblem">Проблема соединения</string>
@@ -187,7 +187,7 @@
     <string name="text_allowingToConnectNotice">Разрешить соединения от этого устройства</string>
     <string name="butn_resetToDefault">Сброс значений по умолчанию</string>
     <string name="text_networkServiceDiscovery">Включить сервис поиска сетевых ресурсов</string>
-    <string name="butn_exit">Выйти</string>
+    <string name="butn_exit">Выход</string>
     <string name="butn_queueCounted">Очередь (%d)</string>
     <string name="text_listEmptyFiles">Нет файлов</string>
     <string name="text_listEmptyImage">Нет фотографий</string>
@@ -196,10 +196,10 @@
     <string name="text_listEmptyTextStream">Сообщения будут появляться здесь</string>
     <string name="text_listEmptyMusic">Нет мелодий</string>
     <string name="text_internalStorage">Внутреннее хранилище</string>
-    <string name="text_hotspotStartsTrustZone">Точка доступа также включает TrustZone</string>
+    <string name="text_hotspotStartsTrustZone">Точка доступа включает TrustZone</string>
     <string name="text_qrCodeAvailableHelp">Сканируйте этот код, чтобы обмениваться файлами и соединяться с устройствами</string>
     <string name="butn_qrScanToSend">Сканируйте QR-код, чтобы отправить</string>
-    <string name="text_translateTrebleshot">Помогите нам перевести</string>
+    <string name="text_translateTrebleshot">Помочь перевести</string>
     <string name="text_contributors">Сделали возможным</string>
     <string name="butn_clearQueue">Очистить очередь</string>
     <string name="mesg_stopping">Остановка</string>
@@ -224,7 +224,7 @@
     <string name="text_cancellingTransfer">Отмена операции…</string>
     <string name="butn_killNow">Отменить сразу</string>
     <string name="mesg_groupOngoingNotice">Ожидание освобождения %s для передачи файла</string>
-    <string name="ques_removeQueue">Убрать из очереди\?</string>
+    <string name="ques_removeQueue">Удалить из очереди\?</string>
     <string name="text_removePendingTransferSummary">%s будет убрано из очереди</string>
     <string name="ques_removeAll">Удалить все\?</string>
     <string name="text_removeCertainPendingTransfersSummary">Будут отменены все перечисленные активные операции</string>
@@ -260,7 +260,7 @@
     <string name="text_flagPending">Ожидание</string>
     <string name="text_flagRunning">Запуск</string>
     <string name="text_flagInterrupted">Прервано</string>
-    <string name="text_flagResume">Возобновить</string>
+    <string name="text_flagResume">Возобновлено</string>
     <string name="text_unknown">Неизвестно</string>
     <string name="butn_retryReceiving">Повторить получение</string>
     <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot нужен доступ с серийному номерку устройства для создания долгосрочного идентификатора, который поможет другим устройствам опознать вас</string>
@@ -313,7 +313,7 @@
     <string name="text_rename">Переименовать</string>
     <string name="butn_rename">Переименовать</string>
     <string name="butn_copyHere">Скопируйте здесь</string>
-    <string name="text_qrAllowTrustZone">TrustZone для QR-кода</string>
+    <string name="text_qrAllowTrustZone">TrustZone по QR-коду</string>
     <string name="text_qrAllowTrustZoneSummary">Разрешить TrustZone подключение по QR-коду</string>
     <string name="butn_gridSize">Размер сетки</string>
     <string name="butn_singleRow">Один ряд</string>
@@ -344,12 +344,12 @@
     <string name="text_file">Файл</string>
     <string name="text_noDeviceForTransfer">Устройство не добавлено для этой передачи</string>
     <string name="text_thirdPartyLibraries">Сторонние библиотеки</string>
-    <string name="text_killServiceAfterLeavingSummary">Останавливать связь, если нет текущей задачи</string>
-    <string name="text_killServiceAfterLeaving">Выход из приложения останавливает сервис</string>
+    <string name="text_killServiceAfterLeavingSummary">Останавливать связь при выходе из приложения, если нет активной задачи</string>
+    <string name="text_killServiceAfterLeaving">Останавливать сервис при выходе</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d из %2d</string>
     <string name="text_donate">Помочь развитию</string>
-    <string name="mesg_donationSuccessful">Спасибо Вам!</string>
+    <string name="mesg_donationSuccessful">Спасибо!</string>
     <string name="butn_donate">Помочь развитию</string>
     <string name="butn_open">Открыть</string>
     <string name="butn_pause">Пауза</string>
@@ -417,10 +417,10 @@
     <string name="text_connectionTest">Проверка соединения - %s</string>
     <string name="text_textMillisecond">%d мс</string>
     <string name="butn_revokePin">Отозвать PIN-код</string>
-    <string name="const_text_useAppFonts">Применить рекомендуемый шрифт</string>
-    <string name="const_text_useAppFontsSummary">Использовать пользовательский шрифт</string>
+    <string name="const_text_useAppFonts">Встроенный шрифт</string>
+    <string name="const_text_useAppFontsSummary">Использовать рекомендуемый специальный шрифт</string>
     <string name="mesg_waiting">Ожидания</string>
-    <string name="text_amoledOptimizedBlackTheme">Оптимизация для AMOLED-экранов</string>
+    <string name="text_amoledOptimizedBlackTheme">Оптимизация для AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Использовать более тёмные цвета</string>
     <string name="mesg_errorNotTrustZoneDevice">Это устройство должно быть установлено как устройство TrustZone на приёмном устройстве для выполнения данной операции.</string>
     <string name="butn_enterIpAddress">Введите IP-адрес</string>
