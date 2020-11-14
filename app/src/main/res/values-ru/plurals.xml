@@ -25,7 +25,8 @@
     <plurals name="text_removeQueueSummary">
         <item quantity="one">Эта ожидающая передача будет удалена</item>
         <item quantity="few">%d ожидающие передачи будут удалены</item>
-        <item quantity="many">%d ожидающих передач будут удалены</item>
+        <item quantity="many">%d ожидающих передач будут удалено</item>
+        <item quantity="other">%d ожидающих передач будут удалено</item>
     </plurals>
     <plurals name="text_availableConnections">
         <item quantity="one">%d соединение</item>
@@ -48,9 +49,10 @@
         <item quantity="many">%d минут назад</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">%d файл удален</item>
+        <item quantity="one">%d файл удалён</item>
         <item quantity="few">%d файла удалено</item>
         <item quantity="many">%d файлов удалено</item>
+        <item quantity="other">%d файлов удалено</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">Один ряд</item>
