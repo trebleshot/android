@@ -162,7 +162,7 @@
     <string name="butn_connect">Соединиться</string>
     <string name="butn_disconnect">Разъединиться</string>
     <string name="mesg_connectingToSelfHotspot">Присоединение к точке доступа TrebleShot</string>
-    <string name="mesg_warningHotspotMobileActive">Присоединенные устройства могут использовать вашу передачу мобильных данных. Вы можете отключить её.</string>
+    <string name="mesg_warningHotspotMobileActive">Присоединённые устройства могут использовать вашу передачу мобильных данных. Вы можете отключить её.</string>
     <string name="mesg_suggestSelfHotspot">Вы можете включить Wi-Fi, чтобы найти точку доступа TrebleShot</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Разрешить TrebleShot искать и создавать точки доступа</string>
     <string name="mesg_stoppingSelfHotspot">Остановить точку доступа TrebleShot</string>
@@ -221,11 +221,11 @@
     <string name="mesg_notAllowed">Доступ запрещён</string>
     <string name="text_pendingTransfers">Активные операции</string>
     <string name="text_stopping">Остановка!</string>
-    <string name="text_cancellingTransfer">Отмена операции...</string>
+    <string name="text_cancellingTransfer">Отмена операции…</string>
     <string name="butn_killNow">Отменить сразу</string>
     <string name="mesg_groupOngoingNotice">Ожидание освобождения %s для передачи файла</string>
-    <string name="ques_removeQueue">"Убрать из очереди\? "</string>
-    <string name="text_removePendingTransferSummary">%s будет убран из очереди</string>
+    <string name="ques_removeQueue">Убрать из очереди\?</string>
+    <string name="text_removePendingTransferSummary">%s будет убрано из очереди</string>
     <string name="ques_removeAll">Удалить все\?</string>
     <string name="text_removeCertainPendingTransfersSummary">Будут отменены все перечисленные активные операции</string>
     <string name="text_availableNetworks">Выбрать сеть - %s</string>
@@ -367,8 +367,8 @@
     <string name="text_applyDarkThemeSummary">Использовать тёмную тему</string>
     <string name="butn_allow">Разрешить</string>
     <string name="butn_telegram_channel">Канал в Telegram</string>
-    <string name="text_listEmptyTransfer">Все трансферы появляются здесь</string>
-    <string name="text_transfers">Трансферы</string>
+    <string name="text_listEmptyTransfer">Все передачи появляются здесь</string>
+    <string name="text_transfers">Передачи</string>
     <string name="butn_connectionDetails">Детали соединения</string>
     <string name="butn_useKnownDevice">Используйте известные устройства</string>
     <string name="butn_scanQrCode">Сканировать QR-код</string>
@@ -392,7 +392,7 @@
     <string name="ques_connectionWizardIsThereQRCode">Вы видите QR-код (штрих-код) на своём экране\?</string>
     <string name="ques_connectionWizardUseHotspot">Хотите, чтобы другое устройство подключилось к этому устройству через точку доступа (модем)\? Если вы не знаете, что такое точка доступа, нажмите \"Да\".</string>
     <string name="ques_connectionWizardUseNetwork">Хотите использовать свой роутер или любую сеть Wi-Fi, к которой вы и ваш друг подключены\?</string>
-    <string name="ques_connectionWizardUseKnownDevices">Хотите получить доступ к ранее подключенным устройствам\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">Хотите получить доступ к ранее подключённым устройствам\?</string>
     <string name="butn_yes">Да</string>
     <string name="butn_no">Нет</string>
     <string name="text_loadThumbnails">Загружать миниатюры</string>
