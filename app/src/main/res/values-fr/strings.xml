@@ -450,7 +450,7 @@
     <string name="mesg_locationPermissionRequiredAny">Activez d’abord le service de localisation pour continuer</string>
     <string name="mesg_openFailure">Impossible d\'afficher \"%s\"</string>
     <string name="text_webShareNoContentNotice">Utilisez l\'option « Partager via le navigateur » pour voir les transferts ici !</string>
-    <string name="text_checkOldFiles">"Vous pouvez déplacer les fichiers associés complétés ainsi que ceux partiellement complétés vers ce dossier. Ceci peut prendre un certain temps,  en fonction des volumes"</string>
+    <string name="text_checkOldFiles">Vous pouvez déplacer les fichiers associés complétés ainsi que ceux partiellement complétés vers ce dossier. Ceci peut prendre un certain temps, en fonction des volumes</string>
     <string name="text_sortOrderAscending">Plus volumineux en premier ↑</string>
     <string name="text_sortOrderDescending">Moins volumineux en premier ↓</string>
     <string name="text_movedCacheFiles">Fichiers du cache déplacés</string>
