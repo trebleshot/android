@@ -31,7 +31,7 @@ import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.SQLQuery;
 

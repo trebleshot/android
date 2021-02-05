@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.dataobject.*;
 import com.genonbeta.TrebleShot.protocol.DeviceVerificationException;
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;

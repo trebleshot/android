@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.LoadedMember;
+import com.genonbeta.TrebleShot.dataobject.LoadedMember;
 
 import java.io.File;
 

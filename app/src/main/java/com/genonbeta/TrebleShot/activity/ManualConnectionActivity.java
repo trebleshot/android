@@ -31,7 +31,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.transition.TransitionManager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.object.DeviceRoute;
+import com.genonbeta.TrebleShot.dataobject.DeviceRoute;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask;

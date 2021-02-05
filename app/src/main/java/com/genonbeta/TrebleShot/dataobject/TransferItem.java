@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.object;
+package com.genonbeta.TrebleShot.dataobject;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -38,8 +38,6 @@ import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URI;
-import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Map;

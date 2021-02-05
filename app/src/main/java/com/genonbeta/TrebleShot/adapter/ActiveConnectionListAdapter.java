@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.dataobject.Editable;
 import com.genonbeta.TrebleShot.util.Networks;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;

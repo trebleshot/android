@@ -42,7 +42,7 @@ import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.DynamicViewPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

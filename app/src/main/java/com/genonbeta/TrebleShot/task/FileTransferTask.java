@@ -31,7 +31,7 @@ import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.MemberNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.dataobject.*;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
@@ -55,7 +55,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
-import static com.genonbeta.TrebleShot.object.Identifier.from;
+import static com.genonbeta.TrebleShot.dataobject.Identifier.from;
 
 public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
 {

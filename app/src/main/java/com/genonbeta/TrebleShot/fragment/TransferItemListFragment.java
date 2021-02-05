@@ -40,15 +40,14 @@ import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.ChooseMemberDialog;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
-import com.genonbeta.TrebleShot.object.TransferIndex;
-import com.genonbeta.TrebleShot.object.LoadedMember;
-import com.genonbeta.TrebleShot.object.Transfer;
-import com.genonbeta.TrebleShot.object.TransferItem;
+import com.genonbeta.TrebleShot.dataobject.TransferIndex;
+import com.genonbeta.TrebleShot.dataobject.LoadedMember;
+import com.genonbeta.TrebleShot.dataobject.Transfer;
+import com.genonbeta.TrebleShot.dataobject.TransferItem;
 import com.genonbeta.TrebleShot.task.ChangeSaveDirectoryTask;
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.Transfers;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.PerformerMenu;
@@ -58,7 +57,6 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvi
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class TransferItemListFragment extends GroupEditableListFragment<TransferItemListAdapter.GenericItem,
         GroupEditableListAdapter.GroupViewHolder, TransferItemListAdapter> implements TitleProvider,

@@ -20,8 +20,8 @@ package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.object.DeviceRoute;
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress;
+import com.genonbeta.TrebleShot.dataobject.DeviceRoute;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;

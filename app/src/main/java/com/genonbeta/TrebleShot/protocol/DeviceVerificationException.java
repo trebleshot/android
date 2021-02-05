@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.protocol;
 
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 
 /**
  * Thrown when a device becomes due to a change on the security field.

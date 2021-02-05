@@ -19,12 +19,10 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
-import com.genonbeta.TrebleShot.protocol.communication.CommunicationException;
+import com.genonbeta.TrebleShot.dataobject.Device;
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;
@@ -32,10 +30,8 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommonErrorHelper;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.Transfers;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.List;
 
 public class FindWorkingNetworkTask extends AttachableAsyncTask<FindWorkingNetworkTask.CalculationResultListener>

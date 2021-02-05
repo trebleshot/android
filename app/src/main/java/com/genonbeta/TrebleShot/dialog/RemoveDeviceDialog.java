@@ -22,7 +22,7 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class RemoveDeviceDialog extends AlertDialog.Builder

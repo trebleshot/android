@@ -27,8 +27,8 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Transfer;
-import com.genonbeta.TrebleShot.object.TransferItem;
+import com.genonbeta.TrebleShot.dataobject.Transfer;
+import com.genonbeta.TrebleShot.dataobject.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.util.ArrayList;

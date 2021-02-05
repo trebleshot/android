@@ -16,11 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.object;
+package com.genonbeta.TrebleShot.dataobject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import androidx.annotation.Nullable;
 
 public class Identifier implements Parcelable

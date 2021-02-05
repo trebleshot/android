@@ -19,21 +19,9 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.util.Stoppable;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * created by: Veli

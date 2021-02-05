@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.activity.TransferDetailActivity;
 import com.genonbeta.TrebleShot.activity.TransferMemberActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.dataobject.*;
 import com.genonbeta.TrebleShot.protocol.communication.ContentException;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException;

@@ -34,9 +34,9 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.object.LoadedMember;
-import com.genonbeta.TrebleShot.object.Transfer;
+import com.genonbeta.TrebleShot.dataobject.Editable;
+import com.genonbeta.TrebleShot.dataobject.LoadedMember;
+import com.genonbeta.TrebleShot.dataobject.Transfer;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 

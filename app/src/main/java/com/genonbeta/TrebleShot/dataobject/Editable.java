@@ -16,20 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.object;
+package com.genonbeta.TrebleShot.dataobject;
+
+import com.genonbeta.android.framework.object.Selectable;
 
 /**
  * created by: Veli
- * date: 18.01.2018 20:53
+ * date: 18.01.2018 20:57
  */
 
-public interface Comparable
+public interface Editable extends Comparable, Selectable
 {
-    boolean comparisonSupported();
+    boolean applyFilter(String[] filteringKeywords);
 
-    String getComparableName();
+    long getId();
 
-    long getComparableDate();
-
-    long getComparableSize();
+    void setId(long id);
 }

@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.dataobject.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.callback.IconProvider;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.SelectionUtils;

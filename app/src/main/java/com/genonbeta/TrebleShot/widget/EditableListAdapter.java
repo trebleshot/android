@@ -22,7 +22,7 @@ import android.text.format.DateUtils;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
-import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.dataobject.Editable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.util.MathUtils;

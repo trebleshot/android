@@ -35,7 +35,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.TransferIndex;
+import com.genonbeta.TrebleShot.dataobject.TransferIndex;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Transfers;

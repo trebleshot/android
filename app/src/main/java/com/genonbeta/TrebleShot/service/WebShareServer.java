@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.dataobject.*;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;

@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase;
-import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.dataobject.Editable;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder;
 
 /**

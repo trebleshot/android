@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
-import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.dataobject.Shareable;
 
 import java.util.List;
 

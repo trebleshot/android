@@ -43,7 +43,7 @@ import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.fragment.TransferItemExplorerFragment;
-import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.dataobject.*;
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener;
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask;
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage;
@@ -58,7 +58,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by: veli

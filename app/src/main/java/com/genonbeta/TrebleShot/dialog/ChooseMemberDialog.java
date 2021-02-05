@@ -30,8 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.LoadedMember;
-import com.genonbeta.TrebleShot.object.TransferItem;
+import com.genonbeta.TrebleShot.dataobject.LoadedMember;
+import com.genonbeta.TrebleShot.dataobject.TransferItem;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DeviceLoader;
 

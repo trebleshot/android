@@ -27,7 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.MappedSelectable;
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;

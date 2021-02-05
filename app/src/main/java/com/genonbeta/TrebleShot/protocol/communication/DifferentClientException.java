@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.protocol.communication;
 
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 
 public class DifferentClientException extends NotAllowedException
 {

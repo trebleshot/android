@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.IEditableListFragment;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.dataobject.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;

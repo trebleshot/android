@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 
 import java.util.HashMap;
 import java.util.Map;

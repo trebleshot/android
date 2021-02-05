@@ -29,8 +29,8 @@ import androidx.annotation.RequiresApi;
 import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Kuick;
-import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceRoute;
+import com.genonbeta.TrebleShot.dataobject.Device;
+import com.genonbeta.TrebleShot.dataobject.DeviceRoute;
 
 import java.util.Map;
 

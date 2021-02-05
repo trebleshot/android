@@ -18,7 +18,7 @@
 
 package com.genonbeta.TrebleShot.exception;
 
-import com.genonbeta.TrebleShot.object.Device;
+import com.genonbeta.TrebleShot.dataobject.Device;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 /**

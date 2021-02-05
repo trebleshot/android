@@ -19,13 +19,10 @@
 package com.genonbeta.TrebleShot.task;
 
 import android.content.Context;
-import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.object.Device;
-import com.genonbeta.TrebleShot.object.DeviceAddress;
+import com.genonbeta.TrebleShot.dataobject.Device;
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress;
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import org.json.JSONObject;
-import org.monora.coolsocket.core.session.ActiveConnection;
 
 public class TextShareTask extends AsyncTask
 {

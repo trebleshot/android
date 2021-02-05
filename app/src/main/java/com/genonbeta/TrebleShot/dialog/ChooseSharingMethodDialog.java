@@ -29,7 +29,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.dataobject.Shareable;
 import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask;
 
 import java.util.List;

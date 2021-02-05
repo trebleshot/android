@@ -16,30 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.object;
+package com.genonbeta.TrebleShot.dataobject;
 
-import android.content.Context;
-import android.net.Uri;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.framework.io.DocumentFile;
+import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.io.Containable;
 
-import java.io.FileNotFoundException;
-
-public class TransferDescriptor
+public interface Container
 {
-    public String directory;
-    public String title;
-    public DocumentFile file;
-
-    public TransferDescriptor(DocumentFile documentFile, String directory)
-    {
-        this.file = documentFile;
-        this.directory = directory;
-        this.title = file.getName();
-    }
-
-    public TransferDescriptor(Context context, Uri uri, String directory) throws FileNotFoundException
-    {
-        this(FileUtils.fromUri(context, uri), directory);
-    }
+    @Nullable
+    Containable expand();
 }
