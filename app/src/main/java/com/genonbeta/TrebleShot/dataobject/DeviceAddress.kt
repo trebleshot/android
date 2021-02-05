@@ -17,22 +17,16 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.android.database.DatabaseObject
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.database.SQLQuery
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -40,16 +34,17 @@ import java.net.UnknownHostException
  * created by: veli
  * date: 8/3/19 1:22 PM
  */
-class DeviceAddress : DatabaseObject<Device?>, Parcelable {
+class DeviceAddress() : DatabaseObject<Device?>, Parcelable {
     @JvmField
     var inetAddress: InetAddress? = null
+
     @JvmField
     var deviceId: String? = null
+
     @JvmField
     var lastCheckedDate: Long = 0
 
-    constructor() {}
-    constructor(inetAddress: InetAddress?) {
+    constructor(inetAddress: InetAddress?) : this() {
         this.inetAddress = inetAddress
     }
 
@@ -58,11 +53,11 @@ class DeviceAddress : DatabaseObject<Device?>, Parcelable {
         this.lastCheckedDate = lastCheckedDate
     }
 
-    protected constructor(`in`: Parcel) {
-        deviceId = `in`.readString()
-        inetAddress = `in`.readSerializable() as InetAddress?
-        lastCheckedDate = `in`.readLong()
-    }
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readSerializable() as InetAddress?,
+        parcel.readLong()
+    )
 
     val hostAddress: String
         get() = inetAddress!!.hostAddress

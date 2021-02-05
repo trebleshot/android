@@ -138,11 +138,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import android.view.View.OnLongClickListener
+import com.genonbeta.TrebleShot.dataobject.TransferMember
 import com.genonbeta.android.framework.util.actionperformer.SelectableNotFoundException
 import com.genonbeta.android.framework.util.actionperformer.CouldNotAlterException
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.TrebleShot.util.SelectionUtils
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.``object`
 

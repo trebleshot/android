@@ -144,6 +144,7 @@ import com.genonbeta.android.framework.util.actionperformer.CouldNotAlterExcepti
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.TrebleShot.util.SelectionUtils
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.``object`
 
