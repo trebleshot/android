@@ -181,7 +181,7 @@
 
         <activity
             android:name=".activity.ManualConnectionActivity"
-            android:label="@string/text_enterIpAddress"
+            android:label="@string/text_enterAddress"
             android:windowSoftInputMode="stateVisible" />
 
         <activity android:name=".activity.PickBestConnectionActivity" />

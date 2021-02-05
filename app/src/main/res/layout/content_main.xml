@@ -90,7 +90,7 @@
         <ImageView
             android:layout_width="200dip"
             android:layout_height="200dip"
-            app:srcCompat="@drawable/ic_trebleshot_original_white_128dp"
+            app:srcCompat="@drawable/ic_uprotocol"
             app:tint="?colorPassive"
             android:contentDescription="@string/text_appLogo" />
 

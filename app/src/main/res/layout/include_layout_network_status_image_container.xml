@@ -27,8 +27,15 @@
         android:id="@+id/layout_network_manager_qr_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:contentDescription="@string/help_scanQRCode"
-        app:srcCompat="@drawable/ic_qrcode_white_128dp" />
+        app:srcCompat="@drawable/ic_qrcode_white_128dp"
+        android:contentDescription="@string/help_scanQRCode" />
+
+    <TextView
+        style="@style/TextAppearance.Primary.Normal"
+        android:id="@+id/layout_network_manager_qr_help_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/help_qrCodePosition" />
 
 </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>

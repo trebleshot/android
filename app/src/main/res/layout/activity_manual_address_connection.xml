@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:hint="@string/text_enterIpAddress" />
+        android:hint="@string/text_hostAddress" />
 
     <Button
         android:focusable="false"

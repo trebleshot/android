@@ -106,9 +106,9 @@ public class FindConnectionDialog extends ProgressDialog
         {
             if (address == null) {
                 new AlertDialog.Builder(activity)
-                        .setTitle(R.string.text_error)
-                        .setMessage(R.string.text_automaticNetworkConnectionFailed)
-                        .setNeutralButton(R.string.butn_close, null)
+                        .setTitle(R.string.text_connectionError)
+                        .setMessage(R.string.text_connectionToRemoteFailed)
+                        .setNegativeButton(R.string.butn_close, null)
                         .setPositiveButton(R.string.butn_retry,
                                 (dialog, which) -> FindConnectionDialog.show(activity, device, listener))
                         .show();

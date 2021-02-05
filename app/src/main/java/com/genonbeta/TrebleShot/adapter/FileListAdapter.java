@@ -518,7 +518,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Fi
                     case Storage:
                         return R.drawable.ic_save_white_24dp;
                     case SaveLocation:
-                        return R.drawable.ic_trebleshot_white_24dp_static;
+                        return R.drawable.ic_uprotocol;
                     case Bookmarked:
                     case Mounted:
                         return R.drawable.ic_bookmark_white_24dp;

@@ -117,7 +117,7 @@ public class NetworkManagerFragment extends com.genonbeta.android.framework.app.
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        return getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
+        return getLayoutInflater().inflate(R.layout.layout_network_manager, container, false);
     }
 
     @Override

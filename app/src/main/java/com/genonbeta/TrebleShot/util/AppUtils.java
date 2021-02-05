@@ -159,6 +159,7 @@ public class AppUtils
         builder.beginConfig()
                 .firstLettersOnly(true)
                 .textMaxLength(1)
+                .bold()
                 .textColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal)))
                 .shapeColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorPassive)));
 

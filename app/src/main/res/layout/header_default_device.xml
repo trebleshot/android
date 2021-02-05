@@ -20,8 +20,7 @@
     android:id="@+id/header_default_device_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="60dp"
-    android:layout_marginBottom="15dp"
+    android:layout_marginTop="44dp"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -32,13 +31,15 @@
         style="@style/TextAppearance.Primary.Big.SingleLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginBottom="2dp"
+        android:textStyle="bold"
         android:text="@string/text_unknown" />
 
     <TextView
         android:id="@+id/header_default_device_version_text"
-        style="@style/TextAppearance.Secondary"
+        style="@style/TextAppearance.Secondary.Small.SingleLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

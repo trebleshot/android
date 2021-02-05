@@ -23,15 +23,15 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingTop="15dp"
+    android:paddingTop="8dp"
     android:paddingBottom="15dp">
 
     <LinearLayout
-        android:id="@+id/layout_network_manager_info_container_text1_container"
+        android:id="@+id/layout_netowrk_manager_info_container_text1_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingLeft="30dp"
         android:paddingTop="15dp"
         android:paddingRight="30dp"
@@ -44,83 +44,92 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:maxLines="5"
-            android:text="@string/text_qrCodeHotspotDisabledHelp" />
+            android:text="@string/text_help" />
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/layout_network_manager_info_toggle_button"
-        style="?borderlessButtonStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/butn_wifiSettings"
-        app:backgroundTint="?colorSurface" />
+        android:text="@string/butn_startHotspot"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/layout_network_manager_info_container_text2_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
-
-        <TextView
-            android:id="@+id/layout_network_manager_info_container_text2"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:maxLines="1"
-            android:text="@string/text_unknown" />
+        android:paddingLeft="30dp"
+        android:paddingTop="15dp"
+        android:paddingRight="30dp"
+        android:gravity="center_vertical">
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_toStartOf="@id/layout_network_manager_info_container_text2"
-            android:layout_toLeftOf="@id/layout_network_manager_info_container_text2">
+            android:layout_weight="1">
 
             <ImageView
+                android:layout_gravity="center"
                 android:id="@+id/layout_network_manager_info_container_text2_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_wifi_white_24dp" />
+                app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
 
         </FrameLayout>
-    </RelativeLayout>
 
-    <RelativeLayout
+        <TextView
+            android:id="@+id/layout_network_manager_info_container_text2"
+            style="@style/TextAppearance.Primary.Normal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="@string/text_unknown" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layout_network_manager_info_container_text3_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
-
-        <TextView
-            android:id="@+id/layout_network_manager_info_container_text3"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:maxLines="1"
-            android:text="@string/text_unknown" />
+        android:paddingLeft="30dp"
+        android:paddingTop="25dp"
+        android:paddingRight="30dp"
+        android:gravity="center_vertical">
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_toStartOf="@id/layout_network_manager_info_container_text3"
-            android:layout_toLeftOf="@id/layout_network_manager_info_container_text3">
+            android:layout_weight="1">
 
             <ImageView
+                android:layout_gravity="center"
                 android:id="@+id/layout_network_manager_info_container_text3_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_device_hub_white_24dp" />
+                app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
 
         </FrameLayout>
-    </RelativeLayout>
+
+        <TextView
+            android:id="@+id/layout_network_manager_info_container_text3"
+            style="@style/TextAppearance.Primary.Normal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="@string/text_unknown" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/layout_network_manager_info_second_toggle_button"
+        style="@style/Widget.TrebleShot.ButtonStyle.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/butn_wifiSettings"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp" />
 </LinearLayout>
+

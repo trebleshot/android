@@ -138,6 +138,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
         <item name="android:textSize">@dimen/font_size_primary</item>
+        <item name="fontFamily">@font/roundies</item>
     </style>
 
     <style name="TextAppearance.Primary.SingleLine">
@@ -173,7 +174,6 @@
     </style>
 
     <style name="TextAppearance.Secondary" parent="TextAppearance.MaterialComponents.Body2">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textSize">@dimen/font_size_secondary</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:letterSpacing" tools:targetApi="21">0.011</item>

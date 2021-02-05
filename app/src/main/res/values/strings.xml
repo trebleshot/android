@@ -25,7 +25,7 @@
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="text_appName" translatable="false">Eagle File Transfer</string>
+    <string name="text_appName" translatable="false">UDrop</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
     <string name="text_preferences">Preferences</string>
@@ -566,7 +566,7 @@
     <string name="text_chooseDevice">Choose Device</string>
     <string name="butn_showAll">Show All</string>
     <string name="text_onlineDevices">Online Devices</string>
-    <string name="text_addNewDevice">Add a New Device</string>
+    <string name="text_addNewDevice">Add New Device</string>
     <string name="butn_generateQrCode">Generate QR Code</string>
     <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
     <string name="help_qrCodePosition">QR Code will appear here!</string>
@@ -602,4 +602,9 @@
     <string name="butn_stopAll">Stop all</string>
     <string name="butn_transfers">Transfers</string>
     <string name="mesg_errorDuringTransfer">Transfer with %s stopped for some reason.</string>
+    <string name="butn_enterAddress">Enter Address</string>
+    <string name="text_enterAddress" translatable="false">@string/butn_enterAddress</string>
+    <string name="text_hostAddress">Host address</string>
+    <string name="text_connectionToRemoteFailed">Could not find the device on the network</string>
+    <string name="text_connectionError">Is it under a rock?</string>
 </resources>

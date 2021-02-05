@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -122,8 +121,9 @@ public class DeviceListFragment extends EditableListFragment<VirtualDevice, Recy
             }
         }
 
-        if (Build.VERSION.SDK_INT >= 16)
-            mP2pDaemon = new P2pDaemon(getConnections());
+        // TODO: 2/1/21 Wifi Direct daemon? Might not be supported by Android TV.
+        //if (Build.VERSION.SDK_INT >= 16)
+        //    mP2pDaemon = new P2pDaemon(getConnections());
     }
 
     @Override
@@ -149,8 +149,9 @@ public class DeviceListFragment extends EditableListFragment<VirtualDevice, Recy
     {
         super.onResume();
         requireActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-        if (Build.VERSION.SDK_INT >= 16)
-            mP2pDaemon.start(requireContext());
+        // TODO: 2/1/21 Fix regression issue of Wifi Direct.
+        //if (Build.VERSION.SDK_INT >= 16)
+        //    mP2pDaemon.start(requireContext());
     }
 
     @Override
@@ -158,8 +159,9 @@ public class DeviceListFragment extends EditableListFragment<VirtualDevice, Recy
     {
         super.onPause();
         requireActivity().unregisterReceiver(mStatusReceiver);
-        if (Build.VERSION.SDK_INT >= 16)
-            mP2pDaemon.stop(requireContext());
+        // TODO: 2/1/21 Enable stop implementation of the Wifi Direct daemon after fixing the regression issue.
+        //if (Build.VERSION.SDK_INT >= 16)
+        //    mP2pDaemon.stop(requireContext());
     }
 
     @Override

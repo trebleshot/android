@@ -274,8 +274,8 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         Fragment fragmentCandidate;
 
         switch (fragment) {
-            case EnterIpAddress:
-                startIpConnectivity();
+            case EnterAddress:
+                startManualConnectionActivity();
                 return;
             case ScanQrCode:
                 startCodeScanner();
@@ -314,7 +314,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         startActivityForResult(new Intent(this, BarcodeScannerActivity.class), REQUEST_BARCODE_SCAN);
     }
 
-    protected void startIpConnectivity()
+    protected void startManualConnectionActivity()
     {
         startActivityForResult(new Intent(this, ManualConnectionActivity.class), REQUEST_IP_DISCOVERY);
     }
@@ -326,7 +326,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
         AllDevices,
         ScanQrCode,
         CreateHotspot,
-        EnterIpAddress
+        EnterAddress
     }
 
     public static class OptionsFragment extends com.genonbeta.android.framework.app.Fragment
@@ -347,7 +347,7 @@ public class AddDeviceActivity extends Activity implements SnackbarPlacementProv
                         updateFragment(AvailableFragment.GenerateQrCode);
                         break;
                     case R.id.connection_option_manual_ip:
-                        updateFragment(AvailableFragment.EnterIpAddress);
+                        updateFragment(AvailableFragment.EnterAddress);
                         break;
                     case R.id.connection_option_scan:
                         updateFragment(AvailableFragment.ScanQrCode);

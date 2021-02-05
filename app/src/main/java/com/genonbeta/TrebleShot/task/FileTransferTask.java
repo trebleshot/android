@@ -43,7 +43,7 @@ import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import org.json.JSONObject;
-import org.monora.coolsocket.core.response.SizeLimitExceededException;
+import org.monora.coolsocket.core.response.SizeOverflowException;
 import org.monora.coolsocket.core.session.ActiveConnection;
 import org.monora.coolsocket.core.session.CancelledException;
 
@@ -391,7 +391,7 @@ public class FileTransferTask extends AttachableAsyncTask<AttachedTaskListener>
                                 }
 
                                 activeConnection.writeEnd(description);
-                            } catch (SizeLimitExceededException ignored) {
+                            } catch (SizeOverflowException ignored) {
                             }
 
                             completedBytes += currentBytes;
