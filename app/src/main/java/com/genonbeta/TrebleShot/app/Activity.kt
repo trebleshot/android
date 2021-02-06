@@ -166,20 +166,16 @@ abstract class Activity : AppCompatActivity() {
                     .centerCrop()
                     .override(200, 200)
                     .into(object : CustomTarget<Drawable?>() {
-                        override fun onResourceReady(
-                            resource: Drawable,
-                            transition: Transition<in Drawable>?
-                        ) {
+                        override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable?>?) {
                             try {
                                 val bitmap = Bitmap.createBitmap(
                                     AppConfig.PHOTO_SCALE_FACTOR,
-                                    AppConfig.PHOTO_SCALE_FACTOR, Bitmap.Config.ARGB_8888
+                                    AppConfig.PHOTO_SCALE_FACTOR,
+                                    Bitmap.Config.ARGB_8888
                                 )
                                 val canvas = Canvas(bitmap)
-                                val outputStream = openFileOutput(
-                                    "profilePicture",
-                                    MODE_PRIVATE
-                                )
+                                val outputStream = openFileOutput("profilePicture", MODE_PRIVATE)
+
                                 resource.setBounds(0, 0, canvas.width, canvas.height)
                                 resource.draw(canvas)
                                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
@@ -284,47 +280,43 @@ abstract class Activity : AppCompatActivity() {
 
     fun findTasksWith(identity: Identity): List<BaseAttachableAsyncTask> {
         synchronized(mAttachedTaskList) {
-            return App.Companion.findTasksBy<BaseAttachableAsyncTask>(
+            return App.findTasksBy(
                 mAttachedTaskList,
                 identity
             )
         }
     }
 
-    val database: Kuick?
+    val database: Kuick
         get() = AppUtils.getKuick(this)
-    protected val defaultPreferences: SharedPreferences?
-        protected get() = AppUtils.getDefaultPreferences(this)
+
+    protected val defaultPreferences: SharedPreferences
+        get() = AppUtils.getDefaultPreferences(this)
+
     open val identity: Identity
-        get() = withORs(
-            Identifier.from(
-                AsyncTask.Id.HashCode, AsyncTask.Companion.hashIntent(
-                    intent
-                )
-            )
-        )
+        get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
 
     fun <T : BaseAttachableAsyncTask?> getTaskListOf(clazz: Class<T>): List<T> {
-        synchronized(mAttachedTaskList) { return App.Companion.getTaskListOf(mAttachedTaskList, clazz) }
+        synchronized(mAttachedTaskList) { return App.getTaskListOf(mAttachedTaskList, clazz) }
     }
 
     fun hasIntroductionShown(): Boolean {
-        return defaultPreferences!!.getBoolean("introduction_shown", false)
+        return defaultPreferences.getBoolean("introduction_shown", false)
     }
 
     fun hasTaskOf(clazz: Class<out AsyncTask?>): Boolean {
-        synchronized(mAttachedTaskList) { return App.Companion.hasTaskOf(mAttachedTaskList, clazz) }
+        synchronized(mAttachedTaskList) { return App.hasTaskOf(mAttachedTaskList, clazz) }
     }
 
     fun hasTaskWith(identity: Identity): Boolean {
-        synchronized(mAttachedTaskList) { return App.Companion.hasTaskWith(mAttachedTaskList, identity) }
+        synchronized(mAttachedTaskList) { return App.hasTaskWith(mAttachedTaskList, identity) }
     }
 
     val isPowerSaveMode: Boolean
         get() {
             if (Build.VERSION.SDK_INT < 23) return false
             val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-            return powerManager != null && powerManager.isPowerSaveMode
+            return powerManager.isPowerSaveMode
         }
 
     fun interruptAllTasks(userAction: Boolean) {
@@ -333,16 +325,17 @@ abstract class Activity : AppCompatActivity() {
     }
 
     val isAmoledDarkThemeRequested: Boolean
-        get() = defaultPreferences!!.getBoolean("amoled_theme", false)
+        get() = defaultPreferences.getBoolean("amoled_theme", false)
+
     val isDarkThemeRequested: Boolean
         get() {
-            val value = defaultPreferences!!.getString("theme", "light")
+            val value = defaultPreferences.getString("theme", "light")
             val systemWideTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
             return ("dark" == value || "system" == value && systemWideTheme == Configuration.UI_MODE_NIGHT_YES
                     || "battery" == value && isPowerSaveMode)
         }
     val isUsingCustomFonts: Boolean
-        get() = defaultPreferences!!.getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16
+        get() = defaultPreferences.getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16
 
     fun loadProfilePictureInto(deviceName: String, imageView: ImageView) {
         try {

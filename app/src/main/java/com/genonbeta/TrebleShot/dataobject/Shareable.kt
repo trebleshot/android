@@ -17,44 +17,30 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
 import com.genonbeta.TrebleShot.util.TextUtils
-import com.genonbeta.android.framework.``object`
 
 /**
  * created by: Veli
  * date: 19.11.2017 16:50
  */
 abstract class Shareable : Editable {
-    @JvmField
+
     override var id: Long = 0
-    @JvmField
+
     var friendlyName: String? = null
-    @JvmField
+
     var fileName: String? = null
-    @JvmField
+
     var mimeType: String? = null
-    @JvmField
+
     var uri: Uri? = null
+
     override var comparableDate: Long = 0
+
     override var comparableSize: Long = 0
-    var isSelectableSelected = false
-        private set
+
+    override var selectableSelected = false
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         for (keyword in filteringKeywords) if (TextUtils.searchWord(friendlyName, keyword)) return true
@@ -66,7 +52,7 @@ abstract class Shareable : Editable {
     }
 
     protected fun initialize(
-        id: Long, friendlyName: String?, fileName: String?, mimeType: String?, date: Long, size: Long,
+        id: Long, friendlyName: String, fileName: String?, mimeType: String?, date: Long, size: Long,
         uri: Uri?
     ) {
         this.id = id
@@ -81,7 +67,7 @@ abstract class Shareable : Editable {
     override val comparableName: String?
         get() = selectableTitle
     val selectableTitle: String
-        get() = friendlyName!!
+        get() = friendlyName
 
     override fun equals(obj: Any?): Boolean {
         return if (obj is Shareable) obj.uri == uri else super.equals(obj)

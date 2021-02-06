@@ -18,7 +18,7 @@
 package com.genonbeta.TrebleShot.widgetimport
 
 import com.genonbeta.TrebleShot.dataobject.Editable
-import java.util.Comparator
+import java.util.*
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs

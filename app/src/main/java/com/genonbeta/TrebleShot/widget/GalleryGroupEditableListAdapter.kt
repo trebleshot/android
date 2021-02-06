@@ -18,6 +18,7 @@
 package com.genonbeta.TrebleShot.widgetimport
 
 import android.net.Uri
+import com.genonbeta.TrebleShot.app.IEditableListFragment
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs

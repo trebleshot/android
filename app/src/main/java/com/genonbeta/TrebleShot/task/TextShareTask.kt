@@ -21,7 +21,6 @@ import android.content.*
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.CommunicationBridge
-import java.lang.Exception
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs

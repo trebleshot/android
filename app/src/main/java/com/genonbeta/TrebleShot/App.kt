@@ -21,35 +21,36 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaScannerConnection
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiManager.*
 import android.os.*
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
-import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.config.Keyword
-import com.genonbeta.TrebleShot.configimport.Keyword
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.WebShareServer
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
-import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.HotspotManager
-import com.genonbeta.TrebleShot.util.NotificationHelper
-import com.genonbeta.TrebleShot.util.NotificationUtils
+import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.TrebleShot.utilimport.DynamicNotification
 import com.genonbeta.TrebleShot.utilimport.NsdDaemon
+import com.genonbeta.android.updatewithgithub.GitHubUpdater
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
@@ -57,45 +58,58 @@ import java.util.concurrent.Executors
  * date: 25.02.2018 01:23
  */
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
-    private val mExecutor = Executors.newFixedThreadPool(10)
-    private val mTaskList: MutableList<AsyncTask> = ArrayList()
-    private var mForegroundActivitiesCount = 0
-    private lateinit var mDefaultExceptionHandler: Thread.UncaughtExceptionHandler
-    private lateinit var mCrashLogFile: File
-    private var mNsdDaemon: NsdDaemon? = null
-    private var mHotspotManager: HotspotManager? = null
-    private var mMediaScanner: MediaScannerConnection? = null
-    private var mNotificationHelper: NotificationHelper? = null
-    private var mTasksNotification: DynamicNotification? = null
-    private var mForegroundActivity: Activity? = null
-    private var mWebShareServer: WebShareServer? = null
-    private var mTaskNotificationTime: Long = 0
+    private lateinit var crashLogFile: File
+
+    private var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
+
+    private val executor = Executors.newFixedThreadPool(10)
+
+    private var foregroundActivitiesCount = 0
+
+    private lateinit var hotspotManager: HotspotManager
+
+    private lateinit var mediaScanner: MediaScannerConnection
+
+    private lateinit var notificationHelper: NotificationHelper
+
+    private lateinit var nsdDaemon: NsdDaemon
+
+    private val taskList: MutableList<AsyncTask> = ArrayList()
+
+    private lateinit var taskNotification: DynamicNotification
+
+    private lateinit var webShareServer: WebShareServer
+
+    private var foregroundActivity: Activity? = null
+
+    private var taskNotificationTime: Long = 0
+
     override fun onCreate() {
         super.onCreate()
-        mCrashLogFile = applicationContext.getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+        crashLogFile = applicationContext.getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
-        mNsdDaemon = NsdDaemon(
+        nsdDaemon = NsdDaemon(
             applicationContext, AppUtils.getKuick(this),
             AppUtils.getDefaultPreferences(applicationContext)
         )
-        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-        mHotspotManager = HotspotManager.Companion.newInstance(this)
-        mMediaScanner = MediaScannerConnection(this, null)
-        mNotificationHelper = NotificationHelper(
+        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        hotspotManager = HotspotManager.Companion.newInstance(this)
+        mediaScanner = MediaScannerConnection(this, null)
+        notificationHelper = NotificationHelper(
             NotificationUtils(
                 getApplicationContext(),
                 AppUtils.getKuick(getApplicationContext()), AppUtils.getDefaultPreferences(getApplicationContext())
             )
         )
-        mWebShareServer = WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE)
-        mMediaScanner.connect()
-        if (Build.VERSION.SDK_INT >= 26) mHotspotManager.setSecondaryCallback(SecondaryHotspotCallback())
-        if (Flavor.googlePlay != AppUtils.getBuildFlavor()
-            && !Updates.hasNewVersion(getApplicationContext())
-            && System.currentTimeMillis() - Updates.getLastTimeCheckedForUpdates(
-                getApplicationContext()
-            ) >= AppConfig.DELAY_CHECK_FOR_UPDATES
+        webShareServer = WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE)
+        mediaScanner.connect()
+        if (Build.VERSION.SDK_INT >= 26)
+            hotspotManager.secondaryCallback = SecondaryHotspotCallback()
+
+        if (Keyword.Flavor.googlePlay != AppUtils.buildFlavor
+            && !Updates.hasNewVersion(applicationContext)
+            && System.currentTimeMillis() - Updates.getCheckTime(applicationContext) >= AppConfig.DELAY_UPDATE_CHECK
         ) {
             val updater: GitHubUpdater = Updates.getDefaultUpdater(getApplicationContext())
             Updates.checkForUpdates(getApplicationContext(), updater, false, null)
@@ -107,10 +121,10 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     }
 
     fun canStopService(): Boolean {
-        return !hasTasks() && !getHotspotManager().isStarted() && !getWebShareServer().hadClients()
+        return !hasTasks() && !hotspotManager.isStarted && !webShareServer.hadClients()
     }
 
-    fun getDefaultPreferences(): SharedPreferences? {
+    fun getDefaultPreferences(): SharedPreferences {
         return AppUtils.getDefaultPreferences(getApplicationContext())
     }
 
@@ -121,93 +135,73 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     @Synchronized
     fun findTasksBy(identity: Identity): List<AsyncTask> {
-        synchronized(mTaskList) { return findTasksBy(mTaskList, identity) }
+        synchronized(taskList) { return findTasksBy(taskList, identity) }
     }
 
-    fun getHotspotManager(): HotspotManager? {
-        return mHotspotManager
-    }
-
-    fun getHotspotConfig(): WifiConfiguration {
-        return getHotspotManager().getConfiguration()
-    }
-
-    fun getMediaScanner(): MediaScannerConnection? {
-        return mMediaScanner
-    }
-
-    fun getNotificationHelper(): NotificationHelper? {
-        return mNotificationHelper
-    }
-
-    fun getNsdDaemon(): NsdDaemon? {
-        return mNsdDaemon
-    }
-
-    private fun getSelfExecutor(): ExecutorService {
-        return mExecutor
-    }
-
-    protected fun getTaskList(): List<AsyncTask> {
-        return mTaskList
+    fun getHotspotConfig(): WifiConfiguration? {
+        return hotspotManager.configuration
     }
 
     fun <T : AsyncTask?> getTaskListOf(clazz: Class<T>): List<T> {
-        synchronized(mTaskList) { return getTaskListOf(mTaskList, clazz) }
-    }
-
-    fun getWebShareServer(): WebShareServer? {
-        return mWebShareServer
+        synchronized(taskList) { return getTaskListOf(taskList, clazz) }
     }
 
     fun hasTaskOf(clazz: Class<out AsyncTask?>): Boolean {
-        synchronized(mTaskList) { return hasTaskOf(mTaskList, clazz) }
+        synchronized(taskList) { return hasTaskOf(taskList, clazz) }
     }
 
     fun hasTasks(): Boolean {
-        return mTaskList.size > 0
+        return taskList.size > 0
     }
 
     private fun initializeSettings() {
         //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
         val defaultPreferences = AppUtils.getDefaultPreferences(this)
-        val localDevice = AppUtils.getLocalDevice(getApplicationContext())
-        val nsdDefined = defaultPreferences!!.contains("nsd_enabled")
+        val localDevice = AppUtils.getLocalDevice(applicationContext)
+        val nsdDefined = defaultPreferences.contains("nsd_enabled")
         val refVersion = defaultPreferences.contains("referral_version")
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false)
-        if (!refVersion) defaultPreferences.edit()
-            .putInt("referral_version", localDevice!!.versionCode)
-            .apply()
+
+        if (!refVersion)
+            defaultPreferences.edit()
+                .putInt("referral_version", localDevice.versionCode)
+                .apply()
 
         // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
         // So we will disable it for them and it will still remain as an option for the user.
-        if (!nsdDefined) defaultPreferences.edit()
-            .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
-            .apply()
+        if (!nsdDefined)
+            defaultPreferences.edit()
+                .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
+                .apply()
+
         if (defaultPreferences.contains("migrated_version")) {
-            val migratedVersion = defaultPreferences.getInt("migrated_version", localDevice!!.versionCode)
+            val migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionCode)
             if (migratedVersion < localDevice.versionCode) {
                 // migrating to a new version
-                if (migratedVersion <= 67) AppUtils.getViewingPreferences(getApplicationContext())!!.edit()
-                    .clear()
-                    .apply()
+                if (migratedVersion <= 67)
+                    AppUtils.getViewingPreferences(applicationContext).edit()
+                        .clear()
+                        .apply()
+
                 defaultPreferences.edit()
                     .putInt("migrated_version", localDevice.versionCode)
                     .putInt("previously_migrated_version", migratedVersion)
                     .apply()
             }
-        } else defaultPreferences.edit()
-            .putInt("migrated_version", localDevice!!.versionCode)
-            .apply()
+        } else
+            defaultPreferences.edit()
+                .putInt("migrated_version", localDevice.versionCode)
+                .apply()
     }
 
     fun interruptTasksBy(identity: Identity, userAction: Boolean) {
-        synchronized(mTaskList) { for (task in findTasksBy(identity)) task.interrupt(userAction) }
+        synchronized(taskList) { for (task in findTasksBy(identity)) task.interrupt(userAction) }
     }
 
     fun interruptAllTasks() {
-        synchronized(mTaskList) {
-            for (task in mTaskList) {
+        synchronized(taskList) {
+            for (task in taskList) {
                 task.interrupt(false)
                 Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getName(getApplicationContext()))
             }
@@ -216,25 +210,25 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     @Synchronized
     fun notifyActivityInForeground(activity: Activity?, inForeground: Boolean) {
-        if (!inForeground && mForegroundActivitiesCount == 0) return
-        mForegroundActivitiesCount += if (inForeground) 1 else -1
-        val inBg = mForegroundActivitiesCount == 0
-        val newlyInFg = mForegroundActivitiesCount == 1
+        if (!inForeground && foregroundActivitiesCount == 0) return
+        foregroundActivitiesCount += if (inForeground) 1 else -1
+        val inBg = foregroundActivitiesCount == 0
+        val newlyInFg = foregroundActivitiesCount == 1
         val intent = Intent(this, BackgroundService::class.java)
         if (AppUtils.checkRunningConditions(getApplicationContext())) {
-            if (newlyInFg) ContextCompat.startForegroundService(
-                getApplicationContext(),
-                intent
-            ) else if (inBg) tryStoppingBgService()
+            if (newlyInFg)
+                ContextCompat.startForegroundService(applicationContext, intent)
+            else if (inBg)
+                tryStoppingBgService()
         }
-        mForegroundActivity = if (inBg) null else if (inForeground) activity else mForegroundActivity
-        Log.d(TAG, "notifyActivityInForeground: Count: $mForegroundActivitiesCount")
+        foregroundActivity = if (inBg) null else if (inForeground) activity else foregroundActivity
+        Log.d(TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
     }
 
-    fun notifyFileRequest(device: Device, transfer: Transfer?, itemList: List<TransferItem>) {
+    fun notifyFileRequest(device: Device, transfer: Transfer, itemList: List<TransferItem>) {
         // Don't show when in the Add Device activity
-        if (mForegroundActivity is AddDeviceActivity) return
-        val activity = mForegroundActivity
+        if (foregroundActivity is AddDeviceActivity) return
+        val activity = foregroundActivity
         val numberOfFiles = itemList.size
         val acceptIntent: Intent = Intent(this, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_FILE_TRANSFER)
@@ -244,67 +238,59 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         val rejectIntent = (acceptIntent.clone() as Intent)
             .putExtra(BackgroundService.EXTRA_ACCEPTED, false)
         val transferDetail: Intent = Intent(this, TransferDetailActivity::class.java)
-            .setAction(TransferDetailActivity.Companion.ACTION_LIST_TRANSFERS)
-            .putExtra(TransferDetailActivity.Companion.EXTRA_TRANSFER, transfer)
+            .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
+            .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer)
         val message = if (numberOfFiles > 1) getResources().getQuantityString(
             R.plurals.ques_receiveMultipleFiles,
             numberOfFiles, numberOfFiles
-        ) else itemList[0].name!!
-        if (activity == null) getNotificationHelper().notifyTransferRequest(
-            device, transfer, acceptIntent, rejectIntent, transferDetail,
-            message
-        ) else {
+        ) else
+            itemList[0].name!!
+
+        if (activity == null)
+            notificationHelper.notifyTransferRequest(
+                device, transfer, acceptIntent, rejectIntent, transferDetail, message
+            ) else {
             val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
                 .setTitle(getString(R.string.text_deviceFileTransferRequest, device.username))
                 .setMessage(message)
                 .setCancelable(false)
-                .setNeutralButton(
-                    R.string.butn_show,
-                    DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                        activity.startActivity(transferDetail)
-                    })
-                .setNegativeButton(
-                    R.string.butn_reject,
-                    DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                        ContextCompat.startForegroundService(
-                            activity, rejectIntent
-                        )
-                    })
-                .setPositiveButton(
-                    R.string.butn_accept,
-                    DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                        ContextCompat.startForegroundService(
-                            activity, acceptIntent
-                        )
-                    })
+                .setNeutralButton(R.string.butn_show) { _: DialogInterface?, _: Int ->
+                    activity.startActivity(transferDetail)
+                }
+                .setNegativeButton(R.string.butn_reject) { _: DialogInterface?, _: Int ->
+                    ContextCompat.startForegroundService(activity, rejectIntent)
+                }
+                .setPositiveButton(R.string.butn_accept) { dialog: DialogInterface?, which: Int ->
+                    ContextCompat.startForegroundService(activity, acceptIntent)
+                }
             activity.runOnUiThread(Runnable { builder.show() })
         }
     }
 
     fun publishTaskNotifications(force: Boolean): Boolean {
         val notified = System.nanoTime()
-        if (notified <= mTaskNotificationTime && !force) return false
+        if (notified <= taskNotificationTime && !force) return false
         if (!hasTasks()) {
-            if (mForegroundActivitiesCount > 0 || !tryStoppingBgService()) mNotificationHelper.getForegroundNotification()
-                .show()
+            if (foregroundActivitiesCount > 0 || !tryStoppingBgService())
+                notificationHelper.foregroundNotification().show()
             return false
         }
         var taskList: List<AsyncTask>
-        synchronized(mTaskList) { taskList = ArrayList(mTaskList) }
-        mTaskNotificationTime = System.nanoTime() + AppConfig.DELAY_DEFAULT_NOTIFICATION * 1e6.toLong()
-        mTasksNotification = mNotificationHelper.notifyTasksNotification(taskList, mTasksNotification)
+        synchronized(this.taskList) { taskList = ArrayList(this.taskList) }
+        taskNotificationTime = System.nanoTime() + AppConfig.DELAY_DEFAULT_NOTIFICATION * 1e6.toLong()
+        taskNotification = notificationHelper.notifyTasksNotification(taskList, taskNotification)
         return true
     }
 
     @Synchronized
-    protected fun <T : AsyncTask?> registerWork(task: T) {
-        synchronized(mTaskList) { mTaskList.add(task) }
+    protected fun <T : AsyncTask> registerWork(task: T) {
+        synchronized(taskList) { taskList.add(task) }
         Log.d(TAG, "registerWork: " + task.javaClass.getSimpleName())
         sendBroadcast(Intent(ACTION_TASK_CHANGE))
     }
 
     fun run(runningTask: AsyncTask) {
-        getSelfExecutor().submit { attach(runningTask) }
+        executor.submit { attach(runningTask) }
     }
 
     private fun runInternal(runningTask: AsyncTask) {
@@ -319,12 +305,11 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     }
 
     private fun tryStoppingBgService(): Boolean {
-        val killOnExit = getDefaultPreferences()!!.getBoolean("kill_service_on_exit", true)
+        val killOnExit = getDefaultPreferences().getBoolean("kill_service_on_exit", true)
         if (canStopService() && killOnExit) {
             ContextCompat.startForegroundService(
-                getApplicationContext(),
-                Intent(this, BackgroundService::class.java)
-                    .setAction(BackgroundService.ACTION_END_SESSION)
+                applicationContext,
+                Intent(this, BackgroundService::class.java).setAction(BackgroundService.ACTION_END_SESSION)
             )
             return true
         }
@@ -332,20 +317,24 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     }
 
     fun toggleHotspot() {
-        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(this)) return
-        if (getHotspotManager().isEnabled()) getHotspotManager().disable() else Log.d(
-            TAG, "toggleHotspot: Enabling=" + getHotspotManager().enableConfigured(
-                AppUtils.getHotspotName(
-                    this
-                ), null
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(this))
+            return
+
+        if (hotspotManager.isEnabled)
+            hotspotManager.disable()
+        else
+            Log.d(
+                TAG, "toggleHotspot: Enabling=" + hotspotManager.enableConfigured(
+                    AppUtils.getHotspotName(this),
+                    null
+                )
             )
-        )
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         try {
-            if ((!mCrashLogFile!!.exists() || mCrashLogFile!!.delete()) && mCrashLogFile!!.createNewFile()
-                && mCrashLogFile!!.canWrite()
+            if ((!crashLogFile.exists() || crashLogFile.delete()) && crashLogFile.createNewFile()
+                && crashLogFile.canWrite()
             ) {
                 val stringBuilder = StringBuilder()
                 val stackTraceElements = e.stackTrace
@@ -373,7 +362,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
                         .append(element.lineNumber)
                         .append("\n")
                 }
-                val outputStream = FileOutputStream(mCrashLogFile)
+                val outputStream = FileOutputStream(crashLogFile)
                 val inputStream = ByteArrayInputStream(stringBuilder.toString().toByteArray())
                 var len: Int
                 val buffer = ByteArray(8096)
@@ -387,12 +376,12 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
-        mDefaultExceptionHandler!!.uncaughtException(t, e)
+        defaultExceptionHandler!!.uncaughtException(t, e)
     }
 
     @Synchronized
     protected fun unregisterWork(task: AsyncTask) {
-        synchronized(mTaskList) { mTaskList.remove(task) }
+        synchronized(taskList) { taskList.remove(task) }
         Log.d(TAG, "unregisterWork: " + task.javaClass.simpleName)
         sendBroadcast(Intent(ACTION_TASK_CHANGE))
     }
@@ -402,8 +391,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         override fun onStarted(reservation: LocalOnlyHotspotReservation) {
             super.onStarted(reservation)
             sendBroadcast(
-                Intent(ACTION_OREO_HOTSPOT_STARTED)
-                    .putExtra(EXTRA_HOTSPOT_CONFIG, reservation.getWifiConfiguration())
+                Intent(ACTION_OREO_HOTSPOT_STARTED).putExtra(EXTRA_HOTSPOT_CONFIG, reservation.wifiConfiguration)
             )
         }
     }
@@ -413,9 +401,12 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         const val ACTION_OREO_HOTSPOT_STARTED = "org.monora.trebleshot.intent.action.HOTSPOT_STARTED"
         const val ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE"
         const val EXTRA_HOTSPOT_CONFIG = "hotspotConfig"
-        fun <T : AsyncTask?> findTasksBy(taskList: List<T>, identity: Identity): List<T> {
+
+        fun <T : AsyncTask> findTasksBy(taskList: List<T>, identity: Identity): List<T> {
             val foundList: MutableList<T> = ArrayList()
-            for (task in taskList) if (identity.equals(task.getIdentity())) foundList.add(task)
+            for (task in taskList)
+                if (identity == task.identity)
+                    foundList.add(task)
             return foundList
         }
 
@@ -427,7 +418,9 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
         fun <T : AsyncTask?> getTaskListOf(taskList: List<AsyncTask>, clazz: Class<T>): List<T> {
             val foundList: MutableList<T> = ArrayList()
-            for (task in taskList) if (clazz.isInstance(task)) foundList.add(task as T)
+            for (task in taskList)
+                if (clazz.isInstance(task))
+                    foundList.add(task as T)
             return foundList
         }
 
@@ -437,7 +430,9 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         }
 
         fun hasTaskWith(taskList: List<AsyncTask>, identity: Identity): Boolean {
-            for (task in taskList) if (identity.equals(task.getIdentity())) return true
+            for (task in taskList)
+                if (identity == task.identity)
+                    return true
             return false
         }
 
@@ -449,7 +444,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             }
         }
 
-        fun <T : AsyncTask?> run(activity: android.app.Activity?, task: T) {
+        fun <T : AsyncTask> run(activity: android.app.Activity?, task: T) {
             try {
                 from(activity).run(task)
             } catch (e: IllegalStateException) {

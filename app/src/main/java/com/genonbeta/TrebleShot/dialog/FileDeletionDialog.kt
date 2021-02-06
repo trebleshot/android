@@ -18,7 +18,10 @@
 package com.genonbeta.TrebleShot.dialogimport
 
 import android.app.Activity
+import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
+import com.genonbeta.TrebleShot.App
+import com.genonbeta.TrebleShot.R
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs

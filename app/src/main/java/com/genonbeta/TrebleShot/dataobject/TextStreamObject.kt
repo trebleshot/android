@@ -32,22 +32,17 @@ import com.genonbeta.TrebleShot.dataobject.TransferMember
 import android.os.Parcelable.Creator
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.android.framework.`object`
 
 /**
  * created by: Veli
  * date: 30.12.2017 13:19
  */
-class TextStreamObject : GroupShareable, DatabaseObject<Any?> {
-    @JvmField
-    var text: String? = null
+class TextStreamObject(var text: String?) : GroupEditableListAdapter.GroupShareable, DatabaseObject<Any?> {
 
-    constructor() {}
-    constructor(representativeText: String?) : super(
-        GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE,
-        representativeText
-    ) {
-    }
+    constructor() : this(null) {}
+    constructor(representativeText: String?) : super(GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText) {}
 
     constructor(id: Long) {
         setId(id)
@@ -60,7 +55,9 @@ class TextStreamObject : GroupShareable, DatabaseObject<Any?> {
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         if (super.applyFilter(filteringKeywords)) return true
-        for (keyword in filteringKeywords) if (text!!.toLowerCase().contains(keyword.toLowerCase())) return true
+        for (keyword in filteringKeywords)
+            if (text.toLowerCase().contains(keyword.toLowerCase()))
+                return true
         return false
     }
 

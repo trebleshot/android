@@ -32,7 +32,7 @@ object AppConfig {
     // ms
     const val NICKNAME_LENGTH_MAX = 32
     const val BUFFER_LENGTH_DEFAULT = 8096
-    const val DELAY_CHECK_FOR_UPDATES = 21600
+    const val DELAY_UPDATE_CHECK = 21600
     const val PHOTO_SCALE_FACTOR = 100
     const val WEB_SHARE_CONNECTION_MAX = 20
     const val ID_GROUP_WEB_SHARE = 10

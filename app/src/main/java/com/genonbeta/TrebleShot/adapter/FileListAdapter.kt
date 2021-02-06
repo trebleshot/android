@@ -18,141 +18,46 @@
 package com.genonbeta.TrebleShot.adapter
 
 import android.content.*
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesPending
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.bytesValue
-import com.genonbeta.TrebleShot.dataobject.TransferItem.flag
-import com.genonbeta.TrebleShot.dataobject.TransferItem.putFlag
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress.hostAddress
-import com.genonbeta.TrebleShot.dataobject.Container.expand
-import com.genonbeta.TrebleShot.dataobject.Device.equals
-import com.genonbeta.TrebleShot.dataobject.TransferItem.flags
-import com.genonbeta.TrebleShot.dataobject.TransferItem.getFlag
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.toString
-import com.genonbeta.TrebleShot.dataobject.TransferItem.reconstruct
-import com.genonbeta.TrebleShot.dataobject.Device.generatePictureId
-import com.genonbeta.TrebleShot.dataobject.TransferItem.setDeleteOnRemoval
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.selectableTitle
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.hasOutgoing
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.hasIncoming
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparisonSupported
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparableDate
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparableSize
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparableName
-import com.genonbeta.TrebleShot.dataobject.Editable.applyFilter
-import com.genonbeta.TrebleShot.dataobject.Editable.id
-import com.genonbeta.TrebleShot.dataobject.Shareable.setSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.Shareable.initialize
-import com.genonbeta.TrebleShot.dataobject.Shareable.isSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.Shareable.comparisonSupported
-import com.genonbeta.TrebleShot.dataobject.Shareable.comparableSize
-import com.genonbeta.TrebleShot.dataobject.Shareable.applyFilter
-import com.genonbeta.TrebleShot.dataobject.Device.hashCode
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.percentage
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.getMemberAsTitle
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.isSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.numberOfCompleted
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.numberOfTotal
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesTotal
-import com.genonbeta.TrebleShot.dataobject.TransferItem.isSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.TransferItem.setSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.TransferItem.senderFlagList
-import com.genonbeta.TrebleShot.dataobject.TransferItem.getPercentage
-import com.genonbeta.TrebleShot.dataobject.TransferItem.setId
-import com.genonbeta.TrebleShot.dataobject.TransferItem.comparableDate
-import com.genonbeta.TrebleShot.dataobject.Identity.equals
-import com.genonbeta.TrebleShot.dataobject.Transfer.equals
-import com.genonbeta.TrebleShot.dataobject.TransferMember.reconstruct
-import com.genonbeta.TrebleShot.io.Containable
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity.AvailableFragment
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity
-import androidx.annotation.DrawableRes
-import com.genonbeta.TrebleShot.dataobject.Shareable
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.TrebleShot.ui.callback.LocalSharingCallback
-import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.PickListener
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.SharingMethod
-import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
-import com.genonbeta.TrebleShot.App
-import com.genonbeta.TrebleShot.util.NotificationUtils
-import com.genonbeta.TrebleShot.database.Kuick
-import com.genonbeta.TrebleShot.util.AppUtils
-import androidx.appcompat.app.AppCompatActivity
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
-import androidx.annotation.StyleRes
-import android.content.pm.PackageManager
-import com.genonbeta.TrebleShot.activity.WelcomeActivity
-import com.genonbeta.TrebleShot.GlideApp
-import com.bumptech.glide.request.target.CustomTarget
-import android.graphics.drawable.Drawable
-import android.graphics.Bitmap
-import com.genonbeta.TrebleShot.config.AppConfig
-import kotlin.jvm.Synchronized
-import com.genonbeta.TrebleShot.service.BackgroundService
-import android.graphics.BitmapFactory
-import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
-import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog
-import android.widget.ProgressBar
-import kotlin.jvm.JvmOverloads
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
-import com.genonbeta.TrebleShot.app.IEditableListFragment
-import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
-import com.genonbeta.android.framework.util.actionperformer.EngineConnection
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
-import com.genonbeta.TrebleShot.app.EditableListFragment.FilteringDelegate
-import android.database.ContentObserver
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.*
-import com.genonbeta.TrebleShot.app.EditableListFragment.LayoutClickListener
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase
-import com.genonbeta.TrebleShot.app.EditableListFragment
-import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider
-import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
-import com.genonbeta.TrebleShot.widget.EditableListAdapterBase
 import android.view.*
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
-import android.view.View.OnLongClickListener
 import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.collection.ArrayMap
+import com.genonbeta.TrebleShot.GlideApp
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.*
+import com.genonbeta.TrebleShot.app.IEditableListFragment
+import com.genonbeta.TrebleShot.config.AppConfig
+import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
-import com.genonbeta.android.framework.util.actionperformer.SelectableNotFoundException
-import com.genonbeta.android.framework.util.actionperformer.CouldNotAlterException
-import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
-import com.genonbeta.TrebleShot.util.SelectionUtils
-import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
+import com.genonbeta.TrebleShot.fragment.FileListFragment
+import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.FileUtils
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.TrebleShot.util.MimeIconUtils
+import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.*
+import com.genonbeta.android.database.DatabaseObject
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.Progress
+import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.MathUtils
+import com.genonbeta.android.framework.util.listing.ComparableMerger
 import com.genonbeta.android.framework.util.listing.Merger
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.util.*
 
-class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHolder?>?) :
+class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolder>) :
     GroupEditableListAdapter<FileHolder?, GroupViewHolder?>(fragment, MODE_GROUP_BY_DEFAULT),
     CustomGroupLister<FileHolder?> {
     private var mShowDirectories = true
@@ -160,8 +65,9 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
     private var mShowThumbnails = true
     private var mSearchWord: String? = null
     private var mPath: DocumentFile? = null
+
     protected override fun onLoad(lister: GroupLister<FileHolder>) {
-        mShowThumbnails = AppUtils.getDefaultPreferences(getContext())!!.getBoolean("load_thumbnails", true)
+        mShowThumbnails = AppUtils.getDefaultPreferences(getContext()).getBoolean("load_thumbnails", true)
         val path = getPath()
         if (path != null) {
             val fileIndex = path.listFiles()
@@ -224,7 +130,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
             }
             if (Build.VERSION.SDK_INT >= 21) {
                 val mountButtonRep = FileHolder(
-                    GroupEditableListAdapter.Companion.VIEW_TYPE_ACTION_BUTTON,
+                    GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
                     getContext().getString(R.string.butn_mountDirectory)
                 )
                 mountButtonRep.requestCode = REQUEST_CODE_MOUNT_FOLDER
@@ -271,7 +177,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
     }
 
     protected override fun onGenerateRepresentative(text: String, merger: Merger<FileHolder>?): FileHolder {
-        return FileHolder(GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE, text)
+        return FileHolder(GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE, text)
     }
 
     override fun onCustomGroupListing(lister: GroupLister<FileHolder>, mode: Int, `object`: FileHolder): Boolean {
@@ -287,7 +193,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
                 R.layout.list_file, parent, false
             )
         ) else createDefaultViews(parent, viewType, false)
-        if (viewType == GroupEditableListAdapter.Companion.VIEW_TYPE_ACTION_BUTTON) getFragment().registerLayoutViewClicks(
+        if (viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON) getFragment().registerLayoutViewClicks(
             holder
         ) else if (!holder.isRepresentative()) {
             getFragment().registerLayoutViewClicks(holder)
@@ -338,13 +244,14 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
                         AppUtils.getKuick(getContext()).remove(fileHolder)
                         AppUtils.getKuick(getContext()).broadcast()
                     } else if (id == R.id.action_mode_file_toggle_shortcut) {
-                        FileListFragment.Companion.shortcutItem<FileHolder>(getFragment(), fileHolder)
+                        FileListFragment.shortcutItem<FileHolder>(getFragment(), fileHolder)
                     } else if (id == R.id.action_mode_file_change_save_path) {
-                        getContext().startActivity(Intent(getContext(), ChangeStoragePathActivity::class.java))
-                    } else if (getFragment() is FileListFragment) return@setOnMenuItemClickListener !FileListFragment.Companion.handleEditingAction(
-                        item, getFragment() as FileListFragment?,
-                        generateSelectionList
-                    )
+                        getContext().startActivity(Intent(context, ChangeStoragePathActivity::class.java))
+                    } else if (getFragment() is FileListFragment)
+                        return@setOnMenuItemClickListener !FileListFragment.handleEditingAction(
+                            item, getFragment() as FileListFragment?,
+                            generateSelectionList
+                        )
                     true
                 }
                 popupMenu.show()
@@ -354,32 +261,32 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
-        val `object`: FileHolder = getItem(position)
-        if (!holder.tryBinding(`object`)) {
+        val objectHolder: FileHolder = getItem(position)
+        if (!holder.tryBinding(objectHolder)) {
             val parentView: View = holder.itemView
             val lookAltered = !mShowFiles || !mShowDirectories
             val thumbnail = parentView.findViewById<ImageView>(R.id.thumbnail)
             val image = parentView.findViewById<ImageView>(R.id.image)
-            val text1: TextView = parentView.findViewById<TextView>(R.id.text)
-            val text2: TextView = parentView.findViewById<TextView>(R.id.text2)
-            holder.setSelected(`object`.isSelectableSelected)
-            text1.setText(`object`.friendlyName)
-            text2.setText(`object`.getInfo(getContext()))
+            val text1: TextView = parentView.findViewById(R.id.text)
+            val text2: TextView = parentView.findViewById(R.id.text2)
+            holder.setSelected(objectHolder.isSelectableSelected)
+            text1.setText(objectHolder.friendlyName)
+            text2.setText(objectHolder.getInfo(getContext()))
             if (lookAltered) {
-                val enabled = (`object`.file == null || mShowFiles && `object`.file!!.isFile
-                        || mShowDirectories && `object`.file!!.isDirectory)
+                val enabled = (objectHolder.file == null || mShowFiles && objectHolder.file!!.isFile
+                        || mShowDirectories && objectHolder.file!!.isDirectory)
                 text1.setEnabled(enabled)
                 text2.setEnabled(enabled)
                 image.alpha = if (enabled) 1f else 0.5f
                 thumbnail.alpha = if (enabled) 1f else 0.5f
             }
-            if (!mShowThumbnails || !`object`.loadThumbnail(getContext(), thumbnail)) {
-                image.setImageResource(`object`.getIconRes())
+            if (!mShowThumbnails || !objectHolder.loadThumbnail(getContext(), thumbnail)) {
+                image.setImageResource(objectHolder.getIconRes())
                 thumbnail.setImageDrawable(null)
             } else image.setImageDrawable(null)
-        } else if (holder.getItemViewType() == GroupEditableListAdapter.Companion.VIEW_TYPE_ACTION_BUTTON) (holder.itemView.findViewById<View>(
+        } else if (holder.getItemViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON) (holder.itemView.findViewById<View>(
             R.id.icon
-        ) as ImageView).setImageResource(`object`.getIconRes())
+        ) as ImageView).setImageResource(objectHolder.getIconRes())
     }
 
     fun buildPath(splitPath: Array<String>, count: Int): String {
@@ -403,18 +310,22 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
 
     override fun getSortingCriteria(objectOne: FileHolder, objectTwo: FileHolder): Int {
         // Checking whether the path is null helps to increase the speed.
-        return if (getPath() == null && FileHolder.Type.Recent == objectOne.getType() && FileHolder.Type.Recent == objectTwo.getType()) EditableListAdapter.Companion.MODE_SORT_BY_DATE else super.getSortingCriteria(
-            objectOne,
-            objectTwo
+        return if (getPath() == null && FileHolder.Type.Recent == objectOne.getType()
+            && FileHolder.Type.Recent == objectTwo.getType()
         )
+            MODE_SORT_BY_DATE
+        else
+            super.getSortingCriteria(objectOne, objectTwo)
     }
 
     override fun getSortingOrder(objectOne: FileHolder, objectTwo: FileHolder): Int {
         // Checking whether the path is null helps to increase the speed.
-        return if (getPath() == null && FileHolder.Type.Recent == objectOne.getType() && FileHolder.Type.Recent == objectTwo.getType()) EditableListAdapter.Companion.MODE_SORT_ORDER_DESCENDING else super.getSortingOrder(
-            objectOne,
-            objectTwo
+        return if (getPath() == null && FileHolder.Type.Recent == objectOne.getType()
+            && FileHolder.Type.Recent == objectTwo.getType()
         )
+            MODE_SORT_ORDER_DESCENDING
+        else
+            super.getSortingOrder(objectOne, objectTwo)
     }
 
     fun getPath(): DocumentFile? {
@@ -427,7 +338,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
 
     override fun getRepresentativeText(merger: Merger<out FileHolder>): String {
         return if (merger is FileHolderMerger) {
-            when ((merger as FileHolderMerger).type) {
+            when (merger.type) {
                 FileHolderMerger.Type.Storage -> getContext().getString(R.string.text_storage)
                 FileHolderMerger.Type.PublicFolder -> getContext().getString(R.string.text_shortcuts)
                 FileHolderMerger.Type.Folder -> getContext().getString(R.string.text_folder)
@@ -484,7 +395,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
         }
 
         override fun comparisonSupported(): Boolean {
-            return getViewType() != GroupEditableListAdapter.Companion.VIEW_TYPE_ACTION_BUTTON && super.comparisonSupported()
+            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON && super.comparisonSupported()
         }
 
         @DrawableRes
@@ -497,17 +408,11 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
                     else -> R.drawable.ic_folder_white_24dp
                 }
             } else {
-                if (Type.Pending == getType() && transferItem == null) R.drawable.ic_block_white_24dp else MimeIconUtils.loadMimeIcon(
-                    mimeType
-                )
+                if (Type.Pending == getType() && transferItem == null)
+                    R.drawable.ic_block_white_24dp
+                else
+                    MimeIconUtils.loadMimeIcon(mimeType)
             }
-        }
-
-        override fun getId(): Long {
-            if (super.id == 0L && file != null) setId(
-                String.format("%s_%s", file!!.uri.toString(), getType()).hashCode().toLong()
-            )
-            return super.id
         }
 
         fun getInfo(context: Context): String {
@@ -542,25 +447,18 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
 
         override fun getValues(): ContentValues {
             val contentValues = ContentValues()
-            contentValues.put(Kuick.Companion.FIELD_FILEBOOKMARK_TITLE, friendlyName)
-            contentValues.put(Kuick.Companion.FIELD_FILEBOOKMARK_PATH, uri.toString())
+            contentValues.put(Kuick.FIELD_FILEBOOKMARK_TITLE, friendlyName)
+            contentValues.put(Kuick.FIELD_FILEBOOKMARK_PATH, uri.toString())
             return contentValues
         }
 
         override fun getWhere(): SQLQuery.Select {
-            return SQLQuery.Select(Kuick.Companion.TABLE_FILEBOOKMARK).setWhere(
-                String.format(
-                    "%s = ?",
-                    Kuick.Companion.FIELD_FILEBOOKMARK_PATH
-                ), uri.toString()
-            )
+            return SQLQuery.Select(Kuick.TABLE_FILEBOOKMARK)
+                .setWhere(String.format("%s = ?", Kuick.FIELD_FILEBOOKMARK_PATH), uri.toString())
         }
 
         protected fun initialize(file: DocumentFile?) {
-            initialize(
-                0, file!!.name, file.name, file.type, file.lastModified(), file.length(),
-                file.uri
-            )
+            initialize(0, file!!.name, file.name, file.type, file.lastModified(), file.length(), file.uri)
             this.file = file
         }
 
@@ -606,16 +504,16 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
     }
 
     private class FileHolderMerger(holder: FileHolder) : ComparableMerger<FileHolder?>() {
-        var type: Type? = null
-        override fun equals(obj: Any?): Boolean {
-            return obj is FileHolderMerger && obj.type == type
+        lateinit var type: Type
+
+        override fun equals(other: Any?): Boolean {
+            return other is FileHolderMerger && other.type == type
         }
 
-        override operator fun compareTo(o: ComparableMerger<FileHolder?>): Int {
-            return if (o is FileHolderMerger) MathUtils.compare(
-                (o as FileHolderMerger).type!!.ordinal.toLong(),
-                type!!.ordinal.toLong()
-            ) else 0
+        override operator fun compareTo(other: ComparableMerger<FileHolder?>): Int {
+            return if (other is FileHolderMerger)
+                MathUtils.compare(other.type.ordinal.toLong(), type.ordinal.toLong())
+            else 0
         }
 
         enum class Type {
@@ -631,14 +529,13 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder?, GroupViewHold
                 FileHolder.Type.Folder, FileHolder.Type.SaveLocation -> Type.Folder
                 FileHolder.Type.File -> Type.File
                 FileHolder.Type.Dummy -> Type.Dummy
-                else -> Type.Dummy
             }
         }
     }
 
     companion object {
-        val MODE_GROUP_BY_DEFAULT: Int = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING + 1
-        val MODE_GROUP_FOR_INBOX: Int = GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+        val MODE_GROUP_BY_DEFAULT: Int = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING + 1
+        val MODE_GROUP_FOR_INBOX: Int = GroupEditableListAdapter.MODE_GROUP_BY_DATE
         const val REQUEST_CODE_MOUNT_FOLDER = 1
     }
 }

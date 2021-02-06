@@ -17,6 +17,8 @@
  */
 package com.genonbeta.TrebleShot.ui.callbackimport
 
+import com.genonbeta.TrebleShot.dataobject.Shareable
+
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
 import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from

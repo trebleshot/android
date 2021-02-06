@@ -17,15 +17,15 @@
  */
 package com.genonbeta.TrebleShot.service
 
-import androidx.annotation.RequiresApi
-import android.service.quicksettings.TileService
-import android.content.Intent
-import com.genonbeta.TrebleShot.service.BackgroundService
-import androidx.core.content.ContextCompat
 import android.app.ActivityManager
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.service.quicksettings.Tile
+import android.service.quicksettings.TileService
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import com.genonbeta.TrebleShot.service.BackgroundService
 
 /**
  * created by: Veli

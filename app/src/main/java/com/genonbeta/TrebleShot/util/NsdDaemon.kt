@@ -21,8 +21,10 @@ import android.content.*
 import android.os.*
 import android.util.Log
 import androidx.collection.ArrayMap
+import com.genonbeta.TrebleShot.config.AppConfig
+import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
-import java.lang.Exception
+import com.genonbeta.TrebleShot.util.AppUtils
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs

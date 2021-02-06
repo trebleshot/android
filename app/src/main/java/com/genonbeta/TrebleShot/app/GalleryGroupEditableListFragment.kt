@@ -17,6 +17,9 @@
  */
 package com.genonbeta.TrebleShot.appimport
 
+import android.os.Bundle
+import com.genonbeta.TrebleShot.R
+
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
 import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from

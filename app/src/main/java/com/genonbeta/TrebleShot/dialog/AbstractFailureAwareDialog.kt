@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.dialogimport
 
-import android.content.*
+import android.content.Context
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 

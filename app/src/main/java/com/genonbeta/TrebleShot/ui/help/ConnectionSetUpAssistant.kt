@@ -18,8 +18,12 @@
 package com.genonbeta.TrebleShot.ui.helpimport
 
 import android.app.Activity
-import android.content.*
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AlertDialog
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity.AvailableFragment
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
@@ -213,8 +217,8 @@ class ConnectionSetUpAssistant(activity: Activity) {
 
     fun updateFragment(fragment: AvailableFragment) {
         context.sendBroadcast(
-            Intent(AddDeviceActivity.Companion.ACTION_CHANGE_FRAGMENT)
-                .putExtra(AddDeviceActivity.Companion.EXTRA_FRAGMENT_ENUM, fragment.toString())
+            Intent(AddDeviceActivity.ACTION_CHANGE_FRAGMENT)
+                .putExtra(AddDeviceActivity.EXTRA_FRAGMENT_ENUM, fragment)
         )
     }
 

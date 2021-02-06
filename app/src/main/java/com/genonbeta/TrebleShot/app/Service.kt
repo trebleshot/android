@@ -18,6 +18,11 @@
 package com.genonbeta.TrebleShot.appimport
 
 import android.app.Service
+import android.content.SharedPreferences
+import com.genonbeta.TrebleShot.App
+import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.NotificationUtils
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs

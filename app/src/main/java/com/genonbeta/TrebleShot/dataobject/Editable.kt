@@ -24,6 +24,7 @@ import com.genonbeta.android.framework.`object`.Selectable
  * date: 18.01.2018 20:57
  */
 interface Editable : Comparable, Selectable {
-    fun applyFilter(filteringKeywords: Array<String>): Boolean
     var id: Long
+
+    fun applyFilter(filteringKeywords: Array<String>): Boolean
 }

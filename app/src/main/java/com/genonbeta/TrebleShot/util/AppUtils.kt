@@ -20,15 +20,21 @@ package com.genonbeta.TrebleShot.util
 import android.Manifest
 import android.app.ActivityManager
 import android.app.Service
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.*
+import android.os.Build
 import android.provider.Settings
 import android.util.Base64
 import android.util.Log
+import android.util.TypedValue
+import androidx.annotation.AnyRes
+import androidx.annotation.AttrRes
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.genonbeta.TrebleShot.BuildConfig
@@ -41,6 +47,7 @@ import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.io.DocumentFile
 import org.json.JSONException
 import org.json.JSONObject
@@ -56,12 +63,11 @@ object AppUtils {
     private var mKuick: Kuick? = null
     private var mDefaultPreferences: SharedPreferences? = null
     private var mViewingPreferences: SharedPreferences? = null
-    fun checkRunningConditions(context: Context?): Boolean {
-        for (request in getRequiredPermissions(context)) if (ActivityCompat.checkSelfPermission(
-                context,
-                request.permission
-            ) != PackageManager.PERMISSION_GRANTED
-        ) return false
+
+    fun checkRunningConditions(context: Context): Boolean {
+        for (request in getRequiredPermissions(context))
+            if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
+                return false
         return true
     }
 
@@ -81,16 +87,12 @@ object AppUtils {
             val outputStream = context.contentResolver
                 .openOutputStream(logFile.uri, "w") ?: throw IOException("Could not open " + logFile.name)
             var readLine: String
-            while (reader.readLine()
-                    .also { readLine = it } != null
-            ) for (processInfo in processList) if (readLine.contains(processInfo.pid.toString())) {
-                outputStream.write(
-                    """$readLine
-""".toByteArray()
-                )
-                outputStream.flush()
-                break
-            }
+            while (reader.readLine().also { readLine = it } != null)
+                for (processInfo in processList) if (readLine.contains(processInfo.pid.toString())) {
+                    outputStream.write(readLine.toByteArray())
+                    outputStream.flush()
+                    break
+                }
             outputStream.close()
             reader.close()
             return logFile
@@ -106,7 +108,7 @@ object AppUtils {
 
     fun generateNetworkPin(context: Context?): Int {
         val networkPin = generateKey()
-        getDefaultPreferences(context)!!.edit()
+        getDefaultPreferences(context).edit()
             .putInt(Keyword.NETWORK_PIN, networkPin)
             .apply()
         return networkPin
@@ -137,7 +139,7 @@ object AppUtils {
     fun getDefaultPreferences(context: Context?): SharedPreferences {
         if (mDefaultPreferences == null)
             mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        return mDefaultPreferences
+        return mDefaultPreferences as SharedPreferences
     }
 
     fun getDeviceId(context: Context): String {
@@ -161,7 +163,7 @@ object AppUtils {
     fun getKuick(context: Context?): Kuick {
         if (mKuick == null)
             mKuick = Kuick(context)
-        return mKuick
+        return mKuick as Kuick
     }
 
     @Throws(JSONException::class)
@@ -244,7 +246,7 @@ object AppUtils {
     }
 
     fun getLocalDeviceName(context: Context?): String {
-        val deviceName = getDefaultPreferences(context)!!.getString("device_name", null)
+        val deviceName = getDefaultPreferences(context).getString("device_name", null)
         return if (deviceName == null || deviceName.length == 0) Build.MODEL.toUpperCase() else deviceName
     }
 
@@ -253,7 +255,8 @@ object AppUtils {
         var publishNeeded = false
         try {
             getKuick(context).reconstruct(device)
-            if (device.sendKey != device.receiveKey || device.sendKey == 0) throw ReconstructionFailedException("The keys need a reset.")
+            if (device.sendKey != device.receiveKey || device.sendKey == 0)
+                throw ReconstructionFailedException("The keys need a reset.")
         } catch (e: ReconstructionFailedException) {
             device.sendKey = generateKey()
             device.receiveKey = device.sendKey
@@ -275,14 +278,13 @@ object AppUtils {
     fun getReference(context: Context, @AttrRes refId: Int): Int {
         val typedValue = TypedValue()
         if (!context.theme.resolveAttribute(refId, typedValue, true)) {
-            val values: TypedArray =
-                context.theme.obtainStyledAttributes(context.applicationInfo.theme, intArrayOf(refId))
+            val values = context.theme.obtainStyledAttributes(context.applicationInfo.theme, intArrayOf(refId))
             return if (values.length() > 0) values.getResourceId(0, 0) else 0
         }
         return typedValue.resourceId
     }
 
-    fun getRequiredPermissions(context: Context?): List<RationalePermissionRequest.PermissionRequest> {
+    fun getRequiredPermissions(context: Context): List<RationalePermissionRequest.PermissionRequest> {
         val permissionRequests: MutableList<RationalePermissionRequest.PermissionRequest> = ArrayList()
         if (Build.VERSION.SDK_INT >= 16) {
             permissionRequests.add(
@@ -307,23 +309,24 @@ object AppUtils {
     val uniqueNumber: Int
         get() = (System.currentTimeMillis() / 1000).toInt() + ++mUniqueNumber
 
-    fun getViewingPreferences(context: Context): SharedPreferences? {
+    fun getViewingPreferences(context: Context): SharedPreferences {
         if (mViewingPreferences == null) mViewingPreferences =
             context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE)
-        return mViewingPreferences
+        return mViewingPreferences as SharedPreferences
     }
 
-    fun isLatestChangeLogSeen(context: Context?): Boolean {
+    fun isLatestChangeLogSeen(context: Context): Boolean {
         val preferences = getDefaultPreferences(context)
         val device = getLocalDevice(context)
-        val lastSeenChangelog = preferences!!.getInt("changelog_seen_version", -1)
+        val lastSeenChangelog = preferences.getInt("changelog_seen_version", -1)
         val dialogAllowed = preferences.getBoolean("show_changelog_dialog", true)
-        return !preferences.contains("previously_migrated_version") || device.versionCode == lastSeenChangelog || !dialogAllowed
+        return !preferences.contains("previously_migrated_version") || device.versionCode == lastSeenChangelog
+                || !dialogAllowed
     }
 
-    fun publishLatestChangelogSeen(context: Context?) {
+    fun publishLatestChangelogSeen(context: Context) {
         val device = getLocalDevice(context)
-        getDefaultPreferences(context)!!.edit()
+        getDefaultPreferences(context).edit()
             .putInt("changelog_seen_version", device.versionCode)
             .apply()
     }

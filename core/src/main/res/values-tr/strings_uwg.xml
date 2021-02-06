@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2020 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<resources>
+    <string name="genfw_uwg_check_for_updates">Güncellemeleri Denetle</string>
+    <string name="genfw_uwg_check_for_updates_ongoing">Güncellemeler denetleniyor</string>
+    <string name="genfw_uwg_update_available">Güncelleme var</string>
+    <string name="genfw_uwg_later">Daha Sonra</string>
+    <string name="genfw_uwg_visit_page">Ziyaret Et</string>
+    <string name="genfw_uwg_up_to_date">Harika, son sürümdesin!</string>
+    <string name="genfw_uwg_update_body" formatted="false">Şu anki sürüm: %s\nKullanılabilir sürüm: %s\nYayınlanma tarihi: %s\n\n%s</string>
+    <string name="genfw_uwg_version_check_error">Güncellemeler denetlenemedi</string>
+    <string name="genfw_uwg_no_update">Yeni güncelleme yok</string>
+</resources>

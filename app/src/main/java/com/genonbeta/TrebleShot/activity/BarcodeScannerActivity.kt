@@ -106,7 +106,6 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog
-import android.widget.ProgressBar
 import kotlin.jvm.JvmOverloads
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
@@ -117,6 +116,9 @@ import com.genonbeta.android.framework.util.actionperformer.EngineConnection
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
 import com.genonbeta.TrebleShot.app.EditableListFragment.FilteringDelegate
 import android.database.ContentObserver
+import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.wifi.WifiManager
 import android.os.*
 import com.genonbeta.TrebleShot.app.EditableListFragment.LayoutClickListener
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
@@ -129,43 +131,55 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import android.view.View.OnLongClickListener
-import android.widget.Button
-import android.widget.ImageView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.config.Keyword
+import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.android.framework.util.actionperformer.SelectableNotFoundException
 import com.genonbeta.android.framework.util.actionperformer.CouldNotAlterException
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.TrebleShot.util.SelectionUtils
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.ResultListener
 import com.genonbeta.TrebleShot.util.Connections
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.ResultPoint
+import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import java.lang.Exception
 import java.net.InetAddress
 import java.net.UnknownHostException
 
 class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProvider {
     private val mDismissListener = DialogInterface.OnDismissListener { dialog: DialogInterface? -> updateState() }
-    private var mBarcodeView: DecoratedBarcodeView? = null
-    private var mConnections: Connections? = null
-    private var mConductContainer: ViewGroup? = null
-    private var mConductText: TextView? = null
-    private var mConductImage: ImageView? = null
-    private var mTextModeIndicator: ImageView? = null
-    private var mConductButton: Button? = null
-    private var mTaskInterruptButton: Button? = null
-    private var mTaskContainer: View? = null
+    private lateinit var mBarcodeView: DecoratedBarcodeView
+    private lateinit var mConnections: Connections
+    private lateinit var mConductContainer: ViewGroup
+    private lateinit var mConductText: TextView
+    private lateinit var mConductImage: ImageView
+    private lateinit var mTextModeIndicator: ImageView
+    private lateinit var mConductButton: Button
+    private lateinit var mTaskInterruptButton: Button
+    private lateinit var mTaskContainer: View
     private val mIntentFilter = IntentFilter()
     private var mPermissionRequestedCamera = false
     private var mPermissionRequestedLocation = false
     private var mShowAsText = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action || ConnectivityManager.CONNECTIVITY_ACTION == intent.action || LocationManager.PROVIDERS_CHANGED_ACTION == intent.action) updateState()
+            if (WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
+                || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
+                || LocationManager.PROVIDERS_CHANGED_ACTION == intent.action)
+                    updateState()
         }
     }
 
@@ -189,7 +203,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         mTaskInterruptButton = findViewById(R.id.task_interrupter_button)
         mBarcodeView.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult) {
-                handleBarcode(result.getResult().getText())
+                handleBarcode(result.result.text)
             }
 
             override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
@@ -272,7 +286,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     val ssid = values[2]
                     val bssid = values[3]
                     val password = values[4]
-                    run(NetworkDescription(ssid, bssid, password), pin)
+                    run(DeviceListAdapter.NetworkDescription(ssid, bssid, password), pin)
                 }
                 Keyword.QR_CODE_TYPE_WIFI -> {
                     val pin = values[1]!!.toInt()
@@ -297,7 +311,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
                     .setPositiveButton(R.string.butn_show) { dialog: DialogInterface?, which: Int ->
-                        val textObject = TextStreamObject(AppUtils.getUniqueNumber(), code)
+                        val textObject = TextStreamObject(AppUtils.uniqueNumber, code)
                         database.publish<Any, TextStreamObject>(textObject)
                         database.broadcast()
                         Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()

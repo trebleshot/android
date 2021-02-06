@@ -17,7 +17,9 @@
  */
 package com.genonbeta.TrebleShot.activityimport
 
+import android.os.Bundle
 import android.view.MenuItem
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 
 com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
