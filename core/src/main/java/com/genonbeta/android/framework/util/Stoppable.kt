@@ -17,27 +17,6 @@
  */
 package com.genonbeta.android.framework.util
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
-
 /**
  * created by: Veli
  * date: 20.11.2017 00:15
@@ -51,10 +30,10 @@ interface Stoppable {
     /**
      * Add an object to be invoked when the task is cancelled.
      *
-     * @param closer to be called when the [.interrupt] is called
+     * @param closer to be called when the [interrupt] is called
      * @return true when adding to the list is successful
      */
-    open fun addCloser(closer: Closer?): Boolean
+    fun addCloser(closer: Closer): Boolean
 
     /**
      * Check if the callback was previously added to the list.
@@ -62,35 +41,35 @@ interface Stoppable {
      * @param closer to be checked
      * @return true if it was already added
      */
-    open fun hasCloser(closer: Closer?): Boolean
+    fun hasCloser(closer: Closer): Boolean
 
     /**
      * Objects pending to be called when the task is called.
      *
      * @return pending list of objects
      */
-    open fun getClosers(): MutableList<Closer?>?
+    fun getClosers(): MutableList<Closer>
 
     /**
      * Ensure if the task has been cancelled.
      *
      * @return true if it was
      */
-    open fun isInterrupted(): Boolean
+    fun isInterrupted(): Boolean
 
     /**
-     * Was the task called with [.interrupt] with userAction boolean set to true?
+     * Whether the [interrupt] invocation was made by user.
      *
      * @return true if the was cancelled with userAction boolean was true
      */
-    open fun isInterruptedByUser(): Boolean
+    fun isInterruptedByUser(): Boolean
 
     /**
      * Cancel the task with 'userAction' is set to true.
      *
      * @see .interrupt
      */
-    open fun interrupt(): Boolean
+    fun interrupt(): Boolean
 
     /**
      * Cancel the task and call the [Closer] objects if it was not cancelled previously.
@@ -98,7 +77,7 @@ interface Stoppable {
      * @param userAction true if it is performed by user
      * @return true if it was not cancelled before
      */
-    open fun interrupt(userAction: Boolean): Boolean
+    fun interrupt(userAction: Boolean): Boolean
 
     /**
      * Remove a previously added @link Closer} object from the list.
@@ -106,35 +85,34 @@ interface Stoppable {
      * @param closer to be removed
      * @return true if it has been removed
      */
-    open fun removeCloser(closer: Closer?): Boolean
+    fun removeCloser(closer: Closer): Boolean
 
     /**
-     * @see .reset
+     * @see reset
      */
-    open fun reset()
+    fun reset()
 
     /**
      * Reset the interrupted flags and remove [Closer] objects if needed.
      *
      * @param resetClosers true if you want to remove the [Closer] objects
      */
-    open fun reset(resetClosers: Boolean)
+    fun reset(resetClosers: Boolean)
 
     /**
      * Remove all closers.
      */
-    open fun removeClosers()
+    fun removeClosers()
 
     /**
      * When interrupted, invoke this. This will not be called a second time.
      */
     interface Closer {
         /**
-         * [Stoppable.interrupt] will invoke this when an instance is provided using
-         * [Stoppable.addCloser].
+         * [Stoppable.interrupt] will invoke this when an instance is provided using [Stoppable.addCloser].
          *
          * @param userAction true the [Stoppable.interrupt] is invoked with userAction = true
          */
-        open fun onClose(userAction: Boolean)
+        fun onClose(userAction: Boolean)
     }
 }

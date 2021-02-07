@@ -22,7 +22,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.FileListAdapter
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
-import com.genonbeta.TrebleShot.util.FileUtils
+import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.android.framework.io.DocumentFile
 import java.util.*
 
@@ -41,7 +41,7 @@ class RenameMultipleFilesTask(fileList: List<FileHolder>, renameTo: String) : As
             progress().addToCurrent(1)
             publishStatus()
             if (fileHolder.file == null) continue
-            var ext = FileUtils.getFileFormat(fileHolder.file.getName())
+            var ext = Files.getFileFormat(fileHolder.file.getName())
             ext = if (ext != null) String.format(".%s", ext) else ""
             renameFile(kuick(), fileHolder, String.format("%s%s", String.format(mNewName, i), ext), scannerList)
         }

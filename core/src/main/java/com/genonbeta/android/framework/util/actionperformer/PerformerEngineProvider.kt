@@ -25,5 +25,5 @@ interface PerformerEngineProvider {
     /**
      * @return the engine
      */
-    open fun getPerformerEngine(): IPerformerEngine?
+    fun getPerformerEngine(): IPerformerEngine
 }

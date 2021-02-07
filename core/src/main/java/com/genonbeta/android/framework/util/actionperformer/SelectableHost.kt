@@ -17,6 +17,8 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
+import com.genonbeta.android.framework.`object`.Selectable
+
 /**
  * The idea here is that, by separating the selected items' holder from the [IEngineConnection] class, we can
  * store and restore list in the case of the items being deleted.
@@ -27,5 +29,5 @@ interface SelectableHost<T : Selectable?> {
     /**
      * @return the items marked as selected
      */
-    open fun getSelectableList(): MutableList<T?>?
+    fun getSelectableList(): MutableList<T>
 }

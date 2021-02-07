@@ -17,37 +17,20 @@
  */
 package com.genonbeta.android.framework.util
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
-
 /**
  * created by: Veli
  * date: 9.12.2017 00:36
  */
 object MathUtils {
     fun calculatePercentage(max: Long, current: Long): Int {
-        return (100 as Float / max * current) as Int
+        return (100.toFloat() / max * current).toInt()
     }
 
     fun compare(x: Long, y: Long): Int {
+        return if (x < y) -1 else if (x == y) 0 else 1
+    }
+
+    fun compare(x: Int, y: Int): Int {
         return if (x < y) -1 else if (x == y) 0 else 1
     }
 }

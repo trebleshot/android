@@ -17,35 +17,16 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
-import java.util.ArrayList
+import com.genonbeta.android.framework.`object`.Selectable
+import java.util.*
 
 class PerformerEngine : IPerformerEngine {
-    private val mConnectionList: MutableList<IBaseEngineConnection?>? = ArrayList()
-    private val mPerformerCallbackList: MutableList<PerformerCallback?>? = ArrayList()
-    private val mPerformerListenerList: MutableList<PerformerListener?>? = ArrayList()
-    override fun <T : Selectable?> check(
-        engineConnection: IEngineConnection<T?>?, selectable: T?, isSelected: Boolean,
-        position: Int
+    private val mConnectionList: MutableList<IBaseEngineConnection> = ArrayList()
+    private val mPerformerCallbackList: MutableList<PerformerCallback> = ArrayList()
+    private val mPerformerListenerList: MutableList<PerformerListener> = ArrayList()
+
+    override fun <T : Selectable> check(
+        engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
     ): Boolean {
         synchronized(mPerformerCallbackList) {
             for (callback in mPerformerCallbackList) if (!callback.onSelection(
@@ -60,9 +41,9 @@ class PerformerEngine : IPerformerEngine {
         return true
     }
 
-    override fun <T : Selectable?> check(
-        engineConnection: IEngineConnection<T?>?, selectableList: MutableList<T?>?,
-        isSelected: Boolean, positions: IntArray?
+    override fun <T : Selectable> check(
+        engineConnection: IEngineConnection<T>, selectableList: MutableList<T>,
+        isSelected: Boolean, positions: IntArray,
     ): Boolean {
         synchronized(mPerformerCallbackList) {
             for (callback in mPerformerCallbackList) if (!callback.onSelection(
@@ -77,17 +58,16 @@ class PerformerEngine : IPerformerEngine {
         return true
     }
 
-    override fun getSelectionList(): MutableList<out Selectable?>? {
-        val selectableList: MutableList<Selectable?> = ArrayList<Selectable?>()
+    override fun getSelectionList(): MutableList<out Selectable> {
+        val selectableList: MutableList<Selectable> = ArrayList<Selectable>()
         synchronized(mConnectionList) {
-            for (baseEngineConnection in mConnectionList) selectableList.addAll(
-                baseEngineConnection.getGenericSelectedItemList()
-            )
+            for (baseEngineConnection in mConnectionList)
+                selectableList.addAll(baseEngineConnection.getGenericSelectedItemList())
         }
         return selectableList
     }
 
-    override fun getConnectionList(): MutableList<IBaseEngineConnection?>? {
+    override fun getConnectionList(): MutableList<IBaseEngineConnection> {
         return ArrayList(mConnectionList)
     }
 
@@ -95,7 +75,7 @@ class PerformerEngine : IPerformerEngine {
         return mConnectionList.size > 0
     }
 
-    override fun ensureSlot(provider: PerformerEngineProvider?, selectionConnection: IBaseEngineConnection?): Boolean {
+    override fun ensureSlot(provider: PerformerEngineProvider, selectionConnection: IBaseEngineConnection): Boolean {
         synchronized(mConnectionList) {
             if (mConnectionList.contains(selectionConnection) || mConnectionList.add(selectionConnection)) {
                 if (selectionConnection.getEngineProvider() !== provider) selectionConnection.setEngineProvider(provider)
@@ -105,9 +85,9 @@ class PerformerEngine : IPerformerEngine {
         return false
     }
 
-    override fun <T : Selectable?> informListeners(
-        engineConnection: IEngineConnection<T?>?, selectable: T?,
-        isSelected: Boolean, position: Int
+    override fun <T : Selectable> informListeners(
+        engineConnection: IEngineConnection<T>, selectable: T,
+        isSelected: Boolean, position: Int,
     ) {
         synchronized(mPerformerListenerList) {
             for (listener in mPerformerListenerList) listener.onSelected(
@@ -120,9 +100,9 @@ class PerformerEngine : IPerformerEngine {
         }
     }
 
-    override fun <T : Selectable?> informListeners(
-        engineConnection: IEngineConnection<T?>?, selectableList: MutableList<T?>?,
-        isSelected: Boolean, positions: IntArray?
+    override fun <T : Selectable> informListeners(
+        engineConnection: IEngineConnection<T>, selectableList: MutableList<T>,
+        isSelected: Boolean, positions: IntArray,
     ) {
         synchronized(mPerformerListenerList) {
             for (listener in mPerformerListenerList) listener.onSelected(
@@ -135,7 +115,7 @@ class PerformerEngine : IPerformerEngine {
         }
     }
 
-    override fun removeSlot(selectionConnection: IBaseEngineConnection?): Boolean {
+    override fun removeSlot(selectionConnection: IBaseEngineConnection): Boolean {
         synchronized(mConnectionList) { return mConnectionList.remove(selectionConnection) }
     }
 
@@ -143,27 +123,23 @@ class PerformerEngine : IPerformerEngine {
         synchronized(mConnectionList) { mConnectionList.clear() }
     }
 
-    override fun addPerformerCallback(callback: PerformerCallback?): Boolean {
+    override fun addPerformerCallback(callback: PerformerCallback): Boolean {
         synchronized(mPerformerCallbackList) {
-            return mPerformerCallbackList.contains(callback) || mPerformerCallbackList.add(
-                callback
-            )
+            return mPerformerCallbackList.contains(callback) || mPerformerCallbackList.add(callback)
         }
     }
 
-    override fun addPerformerListener(listener: PerformerListener?): Boolean {
+    override fun addPerformerListener(listener: PerformerListener): Boolean {
         synchronized(mPerformerListenerList) {
-            return mPerformerListenerList.contains(listener) || mPerformerListenerList.add(
-                listener
-            )
+            return mPerformerListenerList.contains(listener) || mPerformerListenerList.add(listener)
         }
     }
 
-    override fun removePerformerCallback(listener: PerformerCallback?): Boolean {
-        synchronized(mPerformerCallbackList) { return mPerformerCallbackList.remove(listener) }
+    override fun removePerformerCallback(callback: PerformerCallback): Boolean {
+        synchronized(mPerformerCallbackList) { return mPerformerCallbackList.remove(callback) }
     }
 
-    override fun removePerformerListener(listener: PerformerListener?): Boolean {
+    override fun removePerformerListener(listener: PerformerListener): Boolean {
         synchronized(mPerformerListenerList) { return mPerformerListenerList.remove(listener) }
     }
 }

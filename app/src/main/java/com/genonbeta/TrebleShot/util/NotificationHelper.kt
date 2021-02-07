@@ -24,9 +24,8 @@ import com.genonbeta.TrebleShot.activity.AddDeviceActivity
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
-import com.genonbeta.TrebleShot.util.NotificationUtils
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import java.text.NumberFormat
 
 /**
@@ -256,7 +255,7 @@ class NotificationHelper(val utils: NotificationUtils) {
             .setContentText(
                 context!!.getString(
                     R.string.text_receivedTransfer,
-                    FileUtils.sizeExpression(task.completedBytes, false),
+                    Files.sizeExpression(task.completedBytes, false),
                     TimeUtils.getFriendlyElapsedTime(
                         context, System.currentTimeMillis()
                                 - task.getStartTime()
@@ -265,7 +264,7 @@ class NotificationHelper(val utils: NotificationUtils) {
             )
         if (task.completedCount == 1) {
             try {
-                val openIntent = FileUtils.getOpenIntent(context, task.file)
+                val openIntent = Files.getOpenIntent(context, task.file)
                 notification!!.setContentIntent(
                     PendingIntent.getActivity(
                         context, AppUtils.getUniqueNumber(),

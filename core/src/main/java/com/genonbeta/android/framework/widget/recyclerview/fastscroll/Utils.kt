@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import android.provider.DocumentsContract
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.webkit.MimeTypeMap
 import com.google.android.material.snackbar.Snackbar
@@ -27,20 +28,20 @@ import com.genonbeta.android.framework.``object`
  * Created by mklimczak on 31/07/15.
  */
 object Utils {
-    fun getViewRawY(view: View?): Float {
+    fun getViewRawY(view: View): Int {
         val location = IntArray(2)
         location[0] = 0
-        location[1] = view.getY() as Int
+        location[1] = view.y.toInt()
         (view.getParent() as View).getLocationInWindow(location)
         return location[1]
     }
 
-    fun getViewRawX(view: View?): Float {
+    fun getViewRawX(view: View): Float {
         val location = IntArray(2)
-        location[0] = view.getX() as Int
+        location[0] = view.x.toInt()
         location[1] = 0
-        (view.getParent() as View).getLocationInWindow(location)
-        return location[0]
+        (view.parent as View).getLocationInWindow(location)
+        return location[0].toFloat()
     }
 
     fun getValueInRange(min: Float, max: Float, value: Float): Float {
@@ -48,9 +49,9 @@ object Utils {
         return Math.min(minimum, max)
     }
 
-    fun setBackground(view: View?, drawable: Drawable?) {
+    fun setBackground(view: View, drawable: Drawable?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            view.setBackground(drawable)
+            view.background = drawable
         } else {
             view.setBackgroundDrawable(drawable)
         }

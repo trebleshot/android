@@ -22,7 +22,7 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.util.TextUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapterBase
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.MathUtils
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import java.text.Collator
@@ -131,7 +131,7 @@ abstract class EditableListAdapter<T : Editable?, V : RecyclerViewAdapter.ViewHo
                 `object`!!.comparableName
             )
             MODE_SORT_BY_DATE -> return getSectionNameDate(`object`!!.comparableDate)
-            MODE_SORT_BY_SIZE -> return FileUtils.sizeExpression(
+            MODE_SORT_BY_SIZE -> return Files.sizeExpression(
                 `object`!!.comparableSize, false
             )
         }

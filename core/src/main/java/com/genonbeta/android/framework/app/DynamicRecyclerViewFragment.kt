@@ -17,42 +17,24 @@
  */
 package com.genonbeta.android.framework.app
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 
 /**
  * created by: Veli
  * date: 28.03.2018 09:42
  */
-abstract class DynamicRecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder?, Z : RecyclerViewAdapter<T?, V?>?> :
-    RecyclerViewFragment<T?, V?, Z?>() {
-    fun generateGridLayoutManager(): GridLayoutManager? {
+abstract class DynamicRecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, Z : RecyclerViewAdapter<T, V>> :
+    RecyclerViewFragment<T, V, Z>() {
+    fun generateGridLayoutManager(): GridLayoutManager {
         return GridLayoutManager(
-            context, if (isScreenLarge && !isHorizontalOrientation()) 2 else 1,
+            context, if (isScreenLarge() && !isHorizontalOrientation()) 2 else 1,
             if (isHorizontalOrientation()) RecyclerView.HORIZONTAL else RecyclerView.VERTICAL, false
         )
     }
 
-    override fun getLayoutManager(): RecyclerView.LayoutManager? {
+    override fun getLayoutManager(): RecyclerView.LayoutManager {
         return generateGridLayoutManager()
     }
 
@@ -61,7 +43,7 @@ abstract class DynamicRecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder
     }
 
     override fun setListAdapter(adapter: Z?, hadAdapter: Boolean) {
-        adapter.setUseHorizontalOrientation(isHorizontalOrientation())
+        adapter?.horizontalOrientation = isHorizontalOrientation()
         super.setListAdapter(adapter, hadAdapter)
     }
 }

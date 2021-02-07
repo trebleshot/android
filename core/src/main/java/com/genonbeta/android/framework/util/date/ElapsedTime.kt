@@ -17,98 +17,42 @@
  */
 package com.genonbeta.android.framework.util.date
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
-
 /**
  * created by: Veli
  * date: 6.02.2018 12:27
  */
-class ElapsedTime(time: Long) {
-    private var mElapsedTime: Long = 0
-    private var mYears: Long = 0
-    private var mMonths: Long = 0
-    private var mDays: Long = 0
-    private var mHours: Long = 0
-    private var mMinutes: Long = 0
-    private var mSeconds: Long = 0
-    fun getElapsedTime(): Long {
-        return mElapsedTime
-    }
-
-    fun getDays(): Long {
-        return mDays
-    }
-
-    fun getHours(): Long {
-        return mHours
-    }
-
-    fun getMinutes(): Long {
-        return mMinutes
-    }
-
-    fun getMonths(): Long {
-        return mMonths
-    }
-
-    fun getSeconds(): Long {
-        return mSeconds
-    }
-
-    fun getYears(): Long {
-        return mYears
-    }
-
-    fun set(time: Long) {
-        mElapsedTime = time
-        val calculator = ElapsedTimeCalculator(time / 1000)
-        mYears = calculator.crop(62208000)
-        mMonths = calculator.crop(2592000)
-        mDays = calculator.crop(86400)
-        mHours = calculator.crop(3600)
-        mMinutes = calculator.crop(60)
-        mSeconds = calculator.getLeftTime()
-    }
-
-    class ElapsedTimeCalculator(private var mTime: Long) {
+class ElapsedTime(
+    var time: Long,
+    val years: Long,
+    val months: Long,
+    val days: Long,
+    val hours: Long,
+    val minutes: Long,
+    val seconds: Long,
+) {
+    private class Calculator(var time: Long) {
         fun crop(summonBy: Long): Long {
             var result: Long = 0
-            if (getLeftTime() > summonBy) {
-                result = getLeftTime() / summonBy
-                setTime(getLeftTime() - result * summonBy)
+            if (time > summonBy) {
+                result = summonBy / summonBy
+                time -= result * summonBy
             }
             return result
         }
-
-        fun getLeftTime(): Long {
-            return mTime
-        }
-
-        fun setTime(time: Long) {
-            mTime = time
-        }
     }
 
-    init {
-        set(time)
+    companion object {
+        fun from(time: Long): ElapsedTime {
+            val calculator = Calculator(time / 1000)
+            return ElapsedTime(
+                time,
+                calculator.crop(62208000),
+                calculator.crop(2592000),
+                calculator.crop(86400),
+                calculator.crop(3600),
+                calculator.crop(60),
+                calculator.time
+            )
+        }
     }
 }

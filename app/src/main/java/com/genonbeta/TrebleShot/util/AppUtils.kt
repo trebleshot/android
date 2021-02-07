@@ -72,7 +72,7 @@ object AppUtils {
     }
 
     fun createLog(context: Context): DocumentFile? {
-        val saveDirectory = FileUtils.getApplicationDirectory(context)
+        val saveDirectory = Files.getApplicationDirectory(context)
         val logFile = saveDirectory.createFile("text/plain", "trebleshot_log")
         val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
 
@@ -224,7 +224,7 @@ object AppUtils {
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     .putExtra(
                         Intent.EXTRA_STREAM,
-                        com.genonbeta.android.framework.util.FileUtils.getSecureUri(context, logFile)
+                        com.genonbeta.android.framework.util.Files.getSecureUri(context, logFile)
                     )
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -31,7 +31,7 @@ import com.genonbeta.TrebleShot.dataobject.Container
 import com.genonbeta.TrebleShot.io.Containable
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 import java.io.File
 import java.util.*
@@ -130,7 +130,7 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder?, Gro
 
         companion object {
             const val FORMAT = ".apk"
-            val MIME_TYPE = FileUtils.getFileContentType(FORMAT)
+            val MIME_TYPE = Files.getFileContentType(FORMAT)
         }
     }
 

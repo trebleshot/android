@@ -128,12 +128,12 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 )
             } else {
                 val tmpFile = File(filePath)
-                val savePath = FileUtils.getApplicationDirectory(mContext)
+                val savePath = Files.getApplicationDirectory(mContext)
                 val stoppable: Stoppable = StoppableImpl()
                 val sourceFile = DocumentFile.fromFile(tmpFile)
                 val destFile = savePath!!.createFile(
                     null,
-                    com.genonbeta.android.framework.util.FileUtils.getUniqueFileName(savePath, fileName, true)
+                    com.genonbeta.android.framework.util.Files.getUniqueFileName(savePath, fileName, true)
                 )
                 run {
                     notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
@@ -158,10 +158,10 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                                 lastRead = System.currentTimeMillis()
                                 totalRead += len.toLong()
                             }
-                            if (sourceFile.length() > 0 && totalRead > 0 && System.currentTimeMillis() - lastNotified > AppConfig.DELAY_DEFAULT_NOTIFICATION) {
+                            if (sourceFile.getLength() > 0 && totalRead > 0 && System.currentTimeMillis() - lastNotified > AppConfig.DELAY_DEFAULT_NOTIFICATION) {
                                 notification.updateProgress(
                                     100,
-                                    (totalRead / sourceFile.length() * 100).toInt(), false
+                                    (totalRead / sourceFile.getLength() * 100).toInt(), false
                                 )
                                 lastNotified = System.currentTimeMillis()
                             }
@@ -180,7 +180,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                if (destFile.length() == tmpFile.length() || tmpFile.length() == 0L) try {
+                if (destFile.getLength() == tmpFile.length() || tmpFile.length() == 0L) try {
                     val kuick = AppUtils.getKuick(mContext)
                     val webTransfer: Transfer = Transfer(AppConfig.ID_GROUP_WEB_SHARE)
                     webTransfer.dateCreated = System.currentTimeMillis()
@@ -191,7 +191,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     }
                     val transferItem = TransferItem(
                         AppUtils.getUniqueNumber(), webTransfer.id,
-                        destFile.name, destFile.name, destFile.type, destFile.length(),
+                        destFile.name, destFile.name, destFile.type, destFile.getLength(),
                         TransferItem.Type.INCOMING
                     )
                     transferItem.flag = TransferItem.Flag.DONE
@@ -219,7 +219,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                         .setContentText(
                             mContext.getString(
                                 R.string.text_receivedTransfer,
-                                com.genonbeta.android.framework.util.FileUtils.sizeExpression(destFile.length(), false),
+                                com.genonbeta.android.framework.util.Files.sizeExpression(destFile.getLength(), false),
                                 TimeUtils.getFriendlyElapsedTime(mContext, receiveTimeElapsed)
                             )
                         )
@@ -233,7 +233,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                         )
                     try {
                         val openIntent =
-                            com.genonbeta.android.framework.util.FileUtils.getOpenIntent(mContext, destFile)
+                            com.genonbeta.android.framework.util.Files.getOpenIntent(mContext, destFile)
                         notification.setContentIntent(
                             PendingIntent.getActivity(
                                 mContext,
@@ -416,7 +416,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                         R.string.mode_itemCountedDetailed, mContext.resources.getQuantityString(
                             R.plurals.text_files, index.numberOfOutgoing, index.numberOfOutgoing
                         ),
-                        com.genonbeta.android.framework.util.FileUtils.sizeExpression(index.bytesOutgoing, false)
+                        com.genonbeta.android.framework.util.Files.sizeExpression(index.bytesOutgoing, false)
                     ),
                     R.string.butn_show, "show", index.transfer.id
                 )
@@ -464,7 +464,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 for (`object` in groupList) contentBuilder.append(
                     makeContent(
                         "list_transfer",
-                        `object`.name + " " + com.genonbeta.android.framework.util.FileUtils.sizeExpression(
+                        `object`.name + " " + com.genonbeta.android.framework.util.Files.sizeExpression(
                             `object`.comparableSize,
                             false
                         ), R.string.butn_download, "download", `object`.transferId,

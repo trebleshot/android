@@ -24,5 +24,5 @@ import com.google.android.material.snackbar.Snackbar
  * date: 15/04/18 18:45
  */
 interface SnackbarPlacementProvider {
-    open fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar?
+    fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar?
 }

@@ -17,57 +17,47 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.util.Log
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
-import java.util.ArrayList
+import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.android.framework.`object`.Selectable
+import java.util.*
 
-class EngineConnection<T : Selectable?>(provider: PerformerEngineProvider, host: SelectableHost<T?>) :
-    IEngineConnection<T?> {
-    private var mEngineProvider: PerformerEngineProvider? = null
-    private var mSelectableProvider: SelectableProvider<T?>? = null
-    private var mSelectableHost: SelectableHost<T?>? = null
+class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: SelectableHost<T>) :
+    IEngineConnection<T> {
+    private var mEngineProvider: PerformerEngineProvider? = provider
+
+    private var mSelectableProvider: SelectableProvider<T>? = null
+
+    private var mSelectableHost: SelectableHost<T>? = host
+
     private var mDefinitiveTitle: CharSequence? = null
-    private val mSelectionListenerList: MutableList<IEngineConnection.SelectionListener<T?>?>? = ArrayList()
-    override fun addSelectionListener(listener: IEngineConnection.SelectionListener<T?>?): Boolean {
+
+    private val mSelectionListenerList: MutableList<IEngineConnection.SelectionListener<T>> = ArrayList()
+
+    override fun addSelectionListener(listener: IEngineConnection.SelectionListener<T>): Boolean {
         synchronized(mSelectionListenerList) {
-            return mSelectionListenerList.contains(listener) || mSelectionListenerList.add(
-                listener
-            )
+            return mSelectionListenerList.contains(listener) || mSelectionListenerList.add(listener)
         }
     }
 
-    protected fun changeSelectionState(selectable: T?, selected: Boolean, position: Int): Boolean {
+    protected fun changeSelectionState(selectable: T, selected: Boolean, position: Int): Boolean {
         if (selected != selectable.isSelectableSelected() && selectable.setSelectableSelected(selected)) {
-            val engine = engineProvider.getPerformerEngine()
-            val host = selectableHost
-            if (selected) host.getSelectableList().add(selectable) else host.getSelectableList().remove(selectable)
+            val engine = getEngineProvider()?.getPerformerEngine()
+            val host = getSelectableHost()
+
+            host?.getSelectableList()?.let {
+                if (selected) it.add(selectable) else it.remove(selectable)
+            }
+
             if (engine != null) {
-                for (listener in mSelectionListenerList) listener.onSelected(
-                    engine,
-                    this,
-                    selectable,
-                    selected,
-                    position
-                )
+                for (listener in mSelectionListenerList)
+                    listener.onSelected(
+                        engine,
+                        this,
+                        selectable,
+                        selected,
+                        position
+                    )
                 engine.informListeners(this, selectable, selected, position)
             } else Log.d(TAG, "changeSelectionState: Engine is empty. Skipping the call for listeners!")
             return true
@@ -75,21 +65,21 @@ class EngineConnection<T : Selectable?>(provider: PerformerEngineProvider, host:
         return false
     }
 
-    protected fun changeSelectionState(selectableList: MutableList<T?>?, selected: Boolean, positions: IntArray?) {
-        val engine = engineProvider.getPerformerEngine()
+    protected fun changeSelectionState(selectableList: MutableList<T>, selected: Boolean, positions: IntArray) {
+        val engine = getEngineProvider()?.getPerformerEngine()
         for (selectable in selectableList) {
-            if (selected != selectable.isSelectableSelected() && selectable.setSelectableSelected(selected)) if (selected) selectedItemList.add(
-                selectable
-            ) else selectedItemList.remove(selectable)
+            if (selected != selectable.isSelectableSelected() && selectable.setSelectableSelected(selected))
+                if (selected) getSelectedItemList()?.add(selectable) else getSelectedItemList()?.remove(selectable)
         }
         if (engine != null) {
-            for (listener in mSelectionListenerList) listener.onSelected(
-                engine,
-                this,
-                selectableList,
-                selected,
-                positions
-            )
+            for (listener in mSelectionListenerList)
+                listener.onSelected(
+                    engine,
+                    this,
+                    selectableList,
+                    selected,
+                    positions
+                )
             engine.informListeners(this, selectableList, selected, positions)
         } else Log.d(TAG, "changeSelectionState: Engine is empty. Skipping the call for listeners!")
     }
@@ -102,35 +92,35 @@ class EngineConnection<T : Selectable?>(provider: PerformerEngineProvider, host:
         return mEngineProvider
     }
 
-    override fun getGenericSelectedItemList(): MutableList<out Selectable?>? {
+    override fun getGenericSelectedItemList(): MutableList<out Selectable>? {
         return getSelectedItemList()
     }
 
-    override fun getGenericAvailableList(): MutableList<out Selectable?>? {
+    override fun getGenericAvailableList(): MutableList<out Selectable>? {
         return getAvailableList()
     }
 
-    override fun getSelectedItemList(): MutableList<T?>? {
-        return selectableHost.getSelectableList()
+    override fun getSelectedItemList(): MutableList<T>? {
+        return getSelectableHost()?.getSelectableList()
     }
 
-    override fun getAvailableList(): MutableList<T?>? {
-        return selectableProvider.getSelectableList()
+    override fun getAvailableList(): MutableList<T>? {
+        return getSelectableProvider()?.getSelectableList()
     }
 
-    override fun getSelectableHost(): SelectableHost<T?>? {
+    override fun getSelectableHost(): SelectableHost<T>? {
         return mSelectableHost
     }
 
-    override fun getSelectableProvider(): SelectableProvider<T?>? {
+    override fun getSelectableProvider(): SelectableProvider<T>? {
         return mSelectableProvider
     }
 
-    override fun isSelectedOnHost(selectable: T?): Boolean {
-        return selectedItemList.contains(selectable)
+    override fun isSelectedOnHost(selectable: T): Boolean {
+        return getSelectedItemList()?.contains(selectable) == true
     }
 
-    override fun removeSelectionListener(listener: IEngineConnection.SelectionListener<T?>?): Boolean {
+    override fun removeSelectionListener(listener: IEngineConnection.SelectionListener<T>): Boolean {
         synchronized(mSelectionListenerList) { return mSelectionListenerList.remove(listener) }
     }
 
@@ -142,42 +132,41 @@ class EngineConnection<T : Selectable?>(provider: PerformerEngineProvider, host:
         mEngineProvider = engineProvider
     }
 
-    override fun setSelectableHost(host: SelectableHost<T?>?) {
+    override fun setSelectableHost(host: SelectableHost<T>?) {
         mSelectableHost = host
     }
 
-    override fun setSelectableProvider(provider: SelectableProvider<T?>?) {
+    override fun setSelectableProvider(provider: SelectableProvider<T>?) {
         mSelectableProvider = provider
     }
 
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
-    override fun setSelected(holder: RecyclerView.ViewHolder?): Boolean {
+    override fun setSelected(holder: RecyclerView.ViewHolder): Boolean {
         return setSelected(holder.getAdapterPosition())
     }
 
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
     override fun setSelected(position: Int): Boolean {
         return try {
-            setSelected(mSelectableProvider.getSelectableList()[position], position)
+            getSelectableProvider()?.let {
+                setSelected(it.getSelectableList()[position], position)
+            } ?: false
         } catch (e: ArrayIndexOutOfBoundsException) {
-            throw SelectableNotFoundException(
-                "The selectable at the given position " + position + " could not " +
-                        "be found. "
-            )
+            throw SelectableNotFoundException("The selectable at the given position $position could not be found. ")
         }
     }
 
     @Throws(CouldNotAlterException::class)
-    override fun setSelected(selectable: T?): Boolean {
+    override fun setSelected(selectable: T): Boolean {
         return setSelected(selectable, RecyclerView.NO_POSITION)
     }
 
-    override fun setSelected(selectable: T?, selected: Boolean): Boolean {
+    override fun setSelected(selectable: T, selected: Boolean): Boolean {
         return setSelected(selectable, RecyclerView.NO_POSITION, selected)
     }
 
     @Throws(CouldNotAlterException::class)
-    override fun setSelected(selectable: T?, position: Int): Boolean {
+    override fun setSelected(selectable: T, position: Int): Boolean {
         val newState = !isSelectedOnHost(selectable)
         if (!setSelected(selectable, position, newState, true)) throw CouldNotAlterException(
             "The selectable " + selectable + " state couldn't be altered. The " +
@@ -186,12 +175,12 @@ class EngineConnection<T : Selectable?>(provider: PerformerEngineProvider, host:
         return newState
     }
 
-    override fun setSelected(selectable: T?, position: Int, selected: Boolean): Boolean {
+    override fun setSelected(selectable: T, position: Int, selected: Boolean): Boolean {
         return setSelected(selectable, position, selected, false)
     }
 
-    override fun setSelected(selectableList: MutableList<T?>?, positions: IntArray?, selected: Boolean): Boolean {
-        val engine = engineProvider.getPerformerEngine()
+    override fun setSelected(selectableList: MutableList<T>, positions: IntArray, selected: Boolean): Boolean {
+        val engine = getEngineProvider()?.getPerformerEngine()
         if (engine != null && engine.check(this, selectableList, selected, positions)) {
             changeSelectionState(selectableList, selected, positions)
             return true
@@ -199,27 +188,22 @@ class EngineConnection<T : Selectable?>(provider: PerformerEngineProvider, host:
         return false
     }
 
-    private fun setSelected(selectable: T?, position: Int, selected: Boolean, checked: Boolean): Boolean {
+    private fun setSelected(selectable: T, position: Int, selected: Boolean, checked: Boolean): Boolean {
         // if it is already the same
         if (!checked && selected == isSelectedOnHost(selectable)) {
             if (selectable.isSelectableSelected() != selected && !selectable.setSelectableSelected(selected)) {
                 // Selectable was known as selected, but not selected and failed to change the state
-                selectedItemList.remove(selectable)
+                getSelectedItemList()?.remove(selectable)
                 return false
             }
             return selected
         }
-        val performerEngine = engineProvider.getPerformerEngine()
+        val performerEngine = getEngineProvider()?.getPerformerEngine()
         return (performerEngine != null && performerEngine.check(this, selectable, selected, position)
                 && changeSelectionState(selectable, selected, position))
     }
 
     companion object {
-        val TAG: String? = EngineConnection::class.java.simpleName
-    }
-
-    init {
-        engineProvider = provider
-        selectableHost = host
+        val TAG: String = EngineConnection::class.java.simpleName
     }
 }

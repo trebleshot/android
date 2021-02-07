@@ -44,7 +44,7 @@ import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.`object`.Selectable
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
 import com.google.android.material.snackbar.Snackbar
 import java.io.FileNotFoundException
@@ -62,7 +62,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
                     if (parentUri == null && adapter.getPath() == null) {
                         refreshList()
                     } else if (parentUri != null) {
-                        val parentFile = FileUtils.fromUri(getContext(), parentUri as Uri?)
+                        val parentFile = Files.fromUri(getContext(), parentUri as Uri?)
                         if (getAdapter().getPath() != null && parentFile.uri == getAdapter().getPath().getUri())
                             refreshList()
                         else if (intent.hasExtra(EXTRA_FILE_NAME)) {
@@ -196,7 +196,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_FILE_LOCATION)) {
             try {
-                goPath(FileUtils.fromUri(getContext(), Uri.parse(savedInstanceState.getString(EXTRA_FILE_LOCATION))))
+                goPath(Files.fromUri(getContext(), Uri.parse(savedInstanceState.getString(EXTRA_FILE_LOCATION))))
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             }
@@ -237,7 +237,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
     }
 
     override fun performLayoutClickOpen(holder: GroupViewHolder, `object`: FileHolder): Boolean {
-        return com.genonbeta.TrebleShot.util.FileUtils.openUriForeground(
+        return com.genonbeta.TrebleShot.util.Files.openUriForeground(
             getActivity(),
             `object`.file
         ) || super.performLayoutClickOpen(holder, `object`)

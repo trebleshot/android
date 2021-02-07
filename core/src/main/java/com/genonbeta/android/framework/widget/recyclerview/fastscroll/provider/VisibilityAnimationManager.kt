@@ -1,27 +1,12 @@
 package com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider
 
 import android.animation.Animator
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
+import android.animation.AnimatorInflater
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
 import android.view.View
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import androidx.annotation.AnimatorRes
+import com.genonbeta.android.framework.R
 
 /**
  * Created by Michal on 05/08/16.
@@ -29,61 +14,64 @@ import com.genonbeta.android.framework.``object`
  * The decision when to show/hide the element should be implemented via [ViewBehavior].
  */
 class VisibilityAnimationManager protected constructor(
-    protected val mView: View?,
+    private val view: View,
     @AnimatorRes showAnimator: Int,
     @AnimatorRes hideAnimator: Int,
-    private val mPivotXRelative: Float,
-    private val mPivotYRelative: Float,
+    private val pivotXRelative: Float,
+    private val pivotYRelative: Float,
     hideDelay: Int
 ) {
-    protected var mHideAnimator: AnimatorSet?
-    protected var mShowAnimator: AnimatorSet?
+    protected var hideAnimator: Animator = AnimatorInflater.loadAnimator(view.context, hideAnimator)
+
+    protected var showAnimator: Animator = AnimatorInflater.loadAnimator(view.context, showAnimator)
+
     fun show() {
-        mHideAnimator.cancel()
-        if (mView.getVisibility() == View.INVISIBLE) {
-            mView.setVisibility(View.VISIBLE)
+        hideAnimator.cancel()
+
+        if (view.visibility == View.INVISIBLE) {
+            view.visibility = View.VISIBLE
             updatePivot()
-            mShowAnimator.start()
+            showAnimator.start()
         }
     }
 
     fun hide() {
         updatePivot()
-        mHideAnimator.start()
+        hideAnimator.start()
     }
 
     protected fun updatePivot() {
-        mView.setPivotX(mPivotXRelative * mView.getMeasuredWidth())
-        mView.setPivotY(mPivotYRelative * mView.getMeasuredHeight())
+        view.pivotX = pivotXRelative * view.getMeasuredWidth()
+        view.pivotY = pivotYRelative * view.getMeasuredHeight()
     }
 
-    abstract class AbsBuilder<T : VisibilityAnimationManager?>(protected val mView: View?) {
+    abstract class AbsBuilder<T : VisibilityAnimationManager?>(protected val view: View) {
         protected var mShowAnimatorResource: Int = R.animator.genfw_fastscroll_default_show
         protected var mHideAnimatorResource: Int = R.animator.genfw_fastscroll_default_hide
         protected var mHideDelay = 1000
         protected var mPivotX = 0.5f
         protected var mPivotY = 0.5f
-        fun withShowAnimator(@AnimatorRes showAnimatorResource: Int): AbsBuilder<T?>? {
+        fun withShowAnimator(@AnimatorRes showAnimatorResource: Int): AbsBuilder<T> {
             mShowAnimatorResource = showAnimatorResource
             return this
         }
 
-        fun withHideAnimator(@AnimatorRes hideAnimatorResource: Int): AbsBuilder<T?>? {
+        fun withHideAnimator(@AnimatorRes hideAnimatorResource: Int): AbsBuilder<T> {
             mHideAnimatorResource = hideAnimatorResource
             return this
         }
 
-        fun withHideDelay(hideDelay: Int): AbsBuilder<T?>? {
+        fun withHideDelay(hideDelay: Int): AbsBuilder<T> {
             mHideDelay = hideDelay
             return this
         }
 
-        fun withPivotX(pivotX: Float): AbsBuilder<T?>? {
+        fun withPivotX(pivotX: Float): AbsBuilder<T> {
             mPivotX = pivotX
             return this
         }
 
-        fun withPivotY(pivotY: Float): AbsBuilder<T?>? {
+        fun withPivotY(pivotY: Float): AbsBuilder<T> {
             mPivotY = pivotY
             return this
         }
@@ -91,10 +79,10 @@ class VisibilityAnimationManager protected constructor(
         abstract fun build(): T?
     }
 
-    class Builder(view: View?) : AbsBuilder<VisibilityAnimationManager?>(view) {
-        override fun build(): VisibilityAnimationManager? {
+    class Builder(view: View) : AbsBuilder<VisibilityAnimationManager>(view) {
+        override fun build(): VisibilityAnimationManager {
             return VisibilityAnimationManager(
-                mView,
+                view,
                 mShowAnimatorResource,
                 mHideAnimatorResource,
                 mPivotX,
@@ -105,17 +93,15 @@ class VisibilityAnimationManager protected constructor(
     }
 
     init {
-        mHideAnimator = AnimatorInflater.loadAnimator(mView.getContext(), hideAnimator) as AnimatorSet
-        mHideAnimator.setStartDelay(hideDelay.toLong())
-        mHideAnimator.setTarget(mView)
-        mShowAnimator = AnimatorInflater.loadAnimator(mView.getContext(), showAnimator) as AnimatorSet
-        mShowAnimator.setTarget(mView)
-        mHideAnimator.addListener(object : AnimatorListenerAdapter() {
+        this.hideAnimator.startDelay = hideDelay.toLong()
+        this.hideAnimator.setTarget(view)
+        this.showAnimator.setTarget(view)
+        this.hideAnimator.addListener(object : AnimatorListenerAdapter() {
             //because onAnimationEnd() goes off even for canceled animations
             var mWasCanceled = false
             override fun onAnimationEnd(animation: Animator?) {
                 super.onAnimationEnd(animation)
-                if (!mWasCanceled) mView.setVisibility(View.INVISIBLE)
+                if (!mWasCanceled) view.setVisibility(View.INVISIBLE)
                 mWasCanceled = false
             }
 

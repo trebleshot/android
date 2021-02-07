@@ -17,50 +17,33 @@
  */
 package com.genonbeta.android.framework.util
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
-import java.util.ArrayList
+import java.util.*
 
 class StoppableImpl : Stoppable {
-    private var mInterrupted = false
-    private var mInterruptedByUser = false
-    private val mClosers: MutableList<Stoppable.Closer?>? = ArrayList()
-    override fun addCloser(closer: Stoppable.Closer?): Boolean {
+    private var interrupted = false
+
+    private var interruptedByUser = false
+
+    private val closers: MutableList<Stoppable.Closer> = ArrayList()
+
+    override fun addCloser(closer: Stoppable.Closer): Boolean {
         synchronized(closers) { return closers.add(closer) }
     }
 
-    override fun hasCloser(closer: Stoppable.Closer?): Boolean {
+    override fun hasCloser(closer: Stoppable.Closer): Boolean {
         synchronized(closers) { return closers.contains(closer) }
     }
 
-    override fun getClosers(): MutableList<Stoppable.Closer?>? {
-        return mClosers
+    override fun getClosers(): MutableList<Stoppable.Closer> {
+        return closers
     }
 
     override fun isInterrupted(): Boolean {
-        return mInterrupted
+        return interrupted
     }
 
     override fun isInterruptedByUser(): Boolean {
-        return mInterruptedByUser
+        return interruptedByUser
     }
 
     override fun interrupt(): Boolean {
@@ -68,14 +51,18 @@ class StoppableImpl : Stoppable {
     }
 
     override fun interrupt(userAction: Boolean): Boolean {
-        if (userAction) mInterruptedByUser = true
-        if (isInterrupted) return false
-        mInterrupted = true
+        if (userAction)
+            interruptedByUser = true
+
+        if (isInterrupted())
+            return false
+
+        interrupted = true
         synchronized(closers) { for (closer in closers) closer.onClose(userAction) }
         return true
     }
 
-    override fun removeCloser(closer: Stoppable.Closer?): Boolean {
+    override fun removeCloser(closer: Stoppable.Closer): Boolean {
         synchronized(closers) { return closers.remove(closer) }
     }
 
@@ -84,8 +71,8 @@ class StoppableImpl : Stoppable {
     }
 
     override fun reset(resetClosers: Boolean) {
-        mInterrupted = false
-        mInterruptedByUser = false
+        interrupted = false
+        interruptedByUser = false
         if (resetClosers) removeClosers()
     }
 

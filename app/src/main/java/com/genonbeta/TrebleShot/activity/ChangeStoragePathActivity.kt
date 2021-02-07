@@ -22,7 +22,7 @@ import android.os.Parcelable
 import android.widget.Toast
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
-import com.genonbeta.TrebleShot.util.FileUtils
+import com.genonbeta.TrebleShot.util.Files
 
 /**
  * Created by: veli
@@ -31,7 +31,7 @@ import com.genonbeta.TrebleShot.util.FileUtils
 class ChangeStoragePathActivity : Activity() {
     override fun onStart() {
         super.onStart()
-        val currentSavePath = FileUtils.getApplicationDirectory(applicationContext)
+        val currentSavePath = Files.getApplicationDirectory(applicationContext)
         startActivityForResult(
             Intent(this, FilePickerActivity::class.java)
                 .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)

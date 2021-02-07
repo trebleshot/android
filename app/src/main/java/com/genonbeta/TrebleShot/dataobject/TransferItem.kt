@@ -17,26 +17,17 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
 import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.TrebleShot.database.Kuick
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
 import android.util.Log
 import androidx.collection.ArrayMap
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.TrebleShot.util.FileUtils
+import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.util.Transfers
-import com.genonbeta.android.framework.``object`
 import com.genonbeta.android.framework.io.DocumentFile
 import org.json.JSONException
 import org.json.JSONObject
@@ -283,7 +274,7 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
                 parent = Transfer(transferId)
                 kuick.reconstruct<Device, Transfer>(parent)
             }
-            val file = FileUtils.getIncomingPseudoFile(
+            val file = Files.getIncomingPseudoFile(
                 kuick.context, this, parent,
                 false
             )
@@ -333,7 +324,7 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
         fun from(file: DocumentFile, transferId: Long, directory: String?): TransferItem {
             val `object` = TransferItem(
                 AppUtils.getUniqueNumber(), transferId, file.name,
-                file.uri.toString(), file.type, file.length(), Type.OUTGOING
+                file.uri.toString(), file.type, file.getLength(), Type.OUTGOING
             )
             if (directory != null) `object`.directory = directory
             return `object`

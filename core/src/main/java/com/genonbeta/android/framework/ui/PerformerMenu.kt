@@ -17,29 +17,17 @@
  */
 package com.genonbeta.android.framework.ui
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
 import android.content.Context
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.view.Menu
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
 import android.view.MenuInflater
 import android.view.MenuItem
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
+import androidx.appcompat.view.SupportMenuInflater
+import com.genonbeta.android.framework.`object`.Selectable
+import com.genonbeta.android.framework.ui.PerformerMenu.Callback
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
+import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
+import com.genonbeta.android.framework.util.actionperformer.PerformerListener
 
 /**
  * The idea here is that this class bridges one or more menus with a [IEngineConnection] to perform a specific
@@ -53,27 +41,12 @@ import com.genonbeta.android.framework.``object`
  * Because [Selectable] is referred to as the base class, the [Callback] methods shouldn't be used to
  * identify the derivatives. Instead, you should use the engine connection to identify the objects.
  */
-class PerformerMenu(private val mContext: Context?, callback: Callback) : PerformerCallback, PerformerListener,
+class PerformerMenu(val context: Context, val callback: Callback) : PerformerCallback, PerformerListener,
     MenuItem.OnMenuItemClickListener {
-    private val mMenuInflater: MenuInflater?
-    private val mCallback: Callback?
+    val menuInflater = SupportMenuInflater(context)
 
-    /**
-     * @return the application context
-     */
-    fun getContext(): Context? {
-        return mContext
-    }
-
-    /**
-     * @return the inflate the menu resources
-     */
-    fun getMenuInflater(): MenuInflater? {
-        return mMenuInflater
-    }
-
-    fun invokeMenuItemSelected(menuItem: MenuItem?): Boolean {
-        return mCallback.onPerformerMenuSelected(this, menuItem)
+    fun invokeMenuItemSelected(menuItem: MenuItem): Boolean {
+        return callback.onPerformerMenuSelected(this, menuItem)
     }
 
     /**
@@ -82,9 +55,13 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
      * @param targetMenu to populate
      * @return true when the given menu is populated
      */
-    fun load(targetMenu: Menu?): Boolean {
-        if (!populateMenu(targetMenu)) return false
-        for (i in 0 until targetMenu.size()) targetMenu.getItem(i).setOnMenuItemClickListener(this)
+    fun load(targetMenu: Menu): Boolean {
+        if (!populateMenu(targetMenu))
+            return false
+
+        for (i in 0 until targetMenu.size())
+            targetMenu.getItem(i).setOnMenuItemClickListener(this)
+
         return true
     }
 
@@ -105,8 +82,8 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
      *
      * @param targetMenu to be populated.
      */
-    fun populateMenu(targetMenu: Menu?): Boolean {
-        return mCallback.onPerformerMenuList(this, getMenuInflater(), targetMenu)
+    fun populateMenu(targetMenu: Menu): Boolean {
+        return callback.onPerformerMenuList(this, menuInflater, targetMenu)
     }
 
     /**
@@ -114,7 +91,7 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
      *
      * @param engine that we are going to be informed about
      */
-    fun setUp(engine: IPerformerEngine?) {
+    fun setUp(engine: IPerformerEngine) {
         engine.addPerformerListener(this)
         engine.addPerformerCallback(this)
     }
@@ -124,47 +101,43 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
      *
      * @param engine that we are no longer to be informed about
      */
-    fun dismantle(engine: IPerformerEngine?) {
+    fun dismantle(engine: IPerformerEngine) {
         engine.removePerformerCallback(this)
         engine.removePerformerListener(this)
     }
 
     override fun onSelection(
-        engine: IPerformerEngine?, owner: IBaseEngineConnection?, selectable: Selectable?,
-        isSelected: Boolean, position: Int
+        engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable,
+        isSelected: Boolean, position: Int,
     ): Boolean {
-        return mCallback.onPerformerMenuItemSelection(
-            this, engine, owner, selectable, isSelected,
-            position
-        )
+        return callback.onPerformerMenuItemSelection(this, engine, owner, selectable, isSelected, position)
     }
 
     override fun onSelection(
-        engine: IPerformerEngine?, owner: IBaseEngineConnection?,
-        selectableList: MutableList<out Selectable?>?, isSelected: Boolean, positions: IntArray?
+        engine: IPerformerEngine, owner: IBaseEngineConnection,
+        selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
     ): Boolean {
-        return mCallback.onPerformerMenuItemSelection(
-            this, engine, owner, selectableList, isSelected,
-            positions
+        return callback.onPerformerMenuItemSelection(
+            this, engine, owner, selectableList, isSelected, positions
         )
     }
 
     override fun onSelected(
-        engine: IPerformerEngine?, owner: IBaseEngineConnection?, selectable: Selectable?,
-        isSelected: Boolean, position: Int
+        engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable,
+        isSelected: Boolean, position: Int,
     ) {
-        mCallback.onPerformerMenuItemSelected(this, engine, owner, selectable, isSelected, position)
+        callback.onPerformerMenuItemSelected(this, engine, owner, selectable, isSelected, position)
     }
 
     override fun onSelected(
-        engine: IPerformerEngine?, owner: IBaseEngineConnection?,
-        selectableList: MutableList<out Selectable?>?, isSelected: Boolean, positions: IntArray?
+        engine: IPerformerEngine, owner: IBaseEngineConnection,
+        selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
     ) {
-        mCallback.onPerformerMenuItemSelected(this, engine, owner, selectableList, isSelected, positions)
+        callback.onPerformerMenuItemSelected(this, engine, owner, selectableList, isSelected, positions)
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        return mCallback.onPerformerMenuSelected(this, item)
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        return callback.onPerformerMenuSelected(this, item)
     }
 
     /**
@@ -179,7 +152,7 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
          * @param targetMenu    to populate
          * @return true when there was not problem populating the menu
          */
-        open fun onPerformerMenuList(performerMenu: PerformerMenu?, inflater: MenuInflater?, targetMenu: Menu?): Boolean
+        fun onPerformerMenuList(performerMenu: PerformerMenu, inflater: MenuInflater, targetMenu: Menu): Boolean
 
         /**
          * Called when a menu item on a populated menu (with callbacks registered) was clicked.
@@ -188,7 +161,7 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
          * @param item          that was clicked.
          * @return true when the input is known and the descendant is not needed the perform any other action
          */
-        open fun onPerformerMenuSelected(performerMenu: PerformerMenu?, item: MenuItem?): Boolean
+        fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean
 
         /**
          * Called when a [Selectable] is being altered. This is called during the process which is not still
@@ -205,7 +178,7 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
         open fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu?, engine: IPerformerEngine?,
             owner: IBaseEngineConnection?, selectable: Selectable?, isSelected: Boolean,
-            position: Int
+            position: Int,
         ): Boolean
 
         /**
@@ -223,7 +196,7 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
         open fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu?, engine: IPerformerEngine?,
             owner: IBaseEngineConnection?, selectableList: MutableList<out Selectable?>?,
-            isSelected: Boolean, positions: IntArray?
+            isSelected: Boolean, positions: IntArray?,
         ): Boolean
 
         /**
@@ -236,10 +209,9 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
          * @param isSelected    is true when the new state is selected or false if otherwise
          * @param position      where the selectable is at on [SelectableProvider]
          */
-        open fun onPerformerMenuItemSelected(
-            performerMenu: PerformerMenu?, engine: IPerformerEngine?,
-            owner: IBaseEngineConnection?, selectable: Selectable?, isSelected: Boolean,
-            position: Int
+        fun onPerformerMenuItemSelected(
+            performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
+            selectable: Selectable, isSelected: Boolean, position: Int,
         )
 
         /**
@@ -252,21 +224,10 @@ class PerformerMenu(private val mContext: Context?, callback: Callback) : Perfor
          * @param isSelected     is true when the new state is selected or false if otherwise
          * @param positions      where the selectables are at on [SelectableProvider]
          */
-        open fun onPerformerMenuItemSelected(
-            performerMenu: PerformerMenu?, engine: IPerformerEngine?,
-            owner: IBaseEngineConnection?, selectableList: MutableList<out Selectable?>?,
-            isSelected: Boolean, positions: IntArray?
+        fun onPerformerMenuItemSelected(
+            performerMenu: PerformerMenu, engine: IPerformerEngine,
+            owner: IBaseEngineConnection, selectableList: MutableList<out Selectable>,
+            isSelected: Boolean, positions: IntArray,
         )
-    }
-
-    /**
-     * Create an instance of PerformerMenu that to handle menus and listeners together.
-     *
-     * @param context  to access resources
-     * @param callback to inform about and get input for selections, and menu item clicks
-     */
-    init {
-        mMenuInflater = SupportMenuInflater(getContext())
-        mCallback = callback
     }
 }

@@ -304,7 +304,7 @@ object Transfers {
                     }
                     .show()
             }
-        } else if (TransferItem.Type.INCOMING == member.type && FileUtils.getSavePath(activity, transfer)
+        } else if (TransferItem.Type.INCOMING == member.type && Files.getSavePath(activity, transfer)
                 .uri.toString() != transfer!!.savePath
         ) {
             activity.runOnUiThread {
@@ -312,7 +312,7 @@ object Transfers {
                     .setMessage(
                         context.getString(
                             R.string.mesg_notSavingToChosenLocation,
-                            FileUtils.getReadableUri(transfer.savePath)
+                            Files.getReadableUri(transfer.savePath)
                         )
                     )
                     .setNegativeButton(R.string.butn_close, null)

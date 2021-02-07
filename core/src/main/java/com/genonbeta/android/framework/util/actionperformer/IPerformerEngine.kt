@@ -17,26 +17,7 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.`object`.Selectable
 
 /**
  * A UI-related class that handles [IEngineConnection] and [PerformerCallback] to help them communicate with
@@ -50,7 +31,7 @@ interface IPerformerEngine {
      *
      * @return true when there is at least one
      */
-    open fun hasActiveSlots(): Boolean
+    fun hasActiveSlots(): Boolean
 
     /**
      * Ensure that the related connection is known and has an active slot in the list of connections.
@@ -58,7 +39,7 @@ interface IPerformerEngine {
      * @param selectionConnection is the connection that should have an active connection
      * @return true if there is already a connection or added a new one.
      */
-    open fun ensureSlot(provider: PerformerEngineProvider?, selectionConnection: IBaseEngineConnection?): Boolean
+    fun ensureSlot(provider: PerformerEngineProvider, selectionConnection: IBaseEngineConnection): Boolean
 
     /**
      * Inform all the [PerformerListener] objects after the [.check] call. Unlike that method, this doesn't have any ability to manipulate the task.
@@ -70,9 +51,8 @@ interface IPerformerEngine {
      * [RecyclerView.NO_POSITION] if it is not known
      * @param <T>              type of selectable expected to be received and used over [IEngineConnection]
     </T> */
-    open fun <T : Selectable?> informListeners(
-        engineConnection: IEngineConnection<T?>?, selectable: T?,
-        isSelected: Boolean, position: Int
+    fun <T : Selectable> informListeners(
+        engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int
     )
 
     /**
@@ -81,13 +61,15 @@ interface IPerformerEngine {
      * @param engineConnection that is making the call
      * @param selectableList   item list that is being updated
      * @param isSelected       true when [Selectable] is being marked as selected
-     * @param positions        the position array of the [Selectable] list which can be
-     * [RecyclerView.NO_POSITION] individually
+     * @param positions        the position array of the [Selectable] list which can be [RecyclerView.NO_POSITION]
+     * individually
      * @param <T>              type of selectable expected to be received and used over [IEngineConnection]
     </T> */
-    open fun <T : Selectable?> informListeners(
-        engineConnection: IEngineConnection<T?>?, selectableList: MutableList<T?>?,
-        isSelected: Boolean, positions: IntArray?
+    fun <T : Selectable> informListeners(
+        engineConnection: IEngineConnection<T>,
+        selectableList: MutableList<T>,
+        isSelected: Boolean,
+        positions: IntArray,
     )
 
     /**
@@ -96,12 +78,12 @@ interface IPerformerEngine {
      * @param selectionConnection is the connection to be removed
      * @return true when the connection exists and removed
      */
-    open fun removeSlot(selectionConnection: IBaseEngineConnection?): Boolean
+    fun removeSlot(selectionConnection: IBaseEngineConnection): Boolean
 
     /**
      * Remove all the connection instances from the known connections list.
      */
-    open fun removeSlots()
+    fun removeSlots()
 
     /**
      * This is a call that is usually made by [IEngineConnection.setSelected] to notify the
@@ -114,9 +96,8 @@ interface IPerformerEngine {
      * [RecyclerView.NO_POSITION] if it is not known.
      * @param <T>              type of selectable expected to be received and used over [IEngineConnection]
     </T> */
-    open fun <T : Selectable?> check(
-        engineConnection: IEngineConnection<T?>?, selectable: T?, isSelected: Boolean,
-        position: Int
+    fun <T : Selectable> check(
+        engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
     ): Boolean
 
     /**
@@ -131,9 +112,11 @@ interface IPerformerEngine {
      * @param <T>              type of selectable expected to be received and used over [IEngineConnection]
      * @return
     </T> */
-    open fun <T : Selectable?> check(
-        engineConnection: IEngineConnection<T?>?, selectableList: MutableList<T?>?,
-        isSelected: Boolean, positions: IntArray?
+    fun <T : Selectable> check(
+        engineConnection: IEngineConnection<T>,
+        selectableList: MutableList<T>,
+        isSelected: Boolean,
+        positions: IntArray,
     ): Boolean
 
     /**
@@ -144,7 +127,7 @@ interface IPerformerEngine {
      *
      * @return the compiled list
      */
-    open fun getSelectionList(): MutableList<out Selectable?>?
+    fun getSelectionList(): MutableList<out Selectable>
 
     /**
      * If you need to individually refer to the list elements without losing their identity in the process, you can
@@ -152,7 +135,7 @@ interface IPerformerEngine {
      *
      * @return a compiled list of connections
      */
-    open fun getConnectionList(): MutableList<IBaseEngineConnection?>?
+    fun getConnectionList(): MutableList<IBaseEngineConnection>
 
     /**
      * Add a listener to be called when something changes on the selection and manipulate it before completing the
@@ -160,27 +143,27 @@ interface IPerformerEngine {
      *
      * @param callback to be called during the process
      * @return true when the callback already exists or added
-     * @see .removePerformerCallback
+     * @see removePerformerCallback
      */
-    open fun addPerformerCallback(callback: PerformerCallback?): Boolean
+    fun addPerformerCallback(callback: PerformerCallback): Boolean
 
     /**
      * Add a listener to be called after something changes on the selection list.
      *
      * @param listener to be called.
      * @return true when the listener is added or on the list
-     * @see .removePerformerListener
+     * @see removePerformerListener
      */
-    open fun addPerformerListener(listener: PerformerListener?): Boolean
+    fun addPerformerListener(listener: PerformerListener): Boolean
 
     /**
      * Remove the previously added callback.
      *
      * @param callback to be removed
      * @return true when the callback was in the list and removed
-     * @see .addPerformerCallback
+     * @see addPerformerCallback
      */
-    open fun removePerformerCallback(callback: PerformerCallback?): Boolean
+    fun removePerformerCallback(callback: PerformerCallback): Boolean
 
     /**
      * Remove a previously added listener from the list of listeners that are called when a selectable state changes.
@@ -189,5 +172,5 @@ interface IPerformerEngine {
      * @return true when the listener was on the list and removed
      * @see .addPerformerListener
      */
-    open fun removePerformerListener(listener: PerformerListener?): Boolean
+    fun removePerformerListener(listener: PerformerListener): Boolean
 }

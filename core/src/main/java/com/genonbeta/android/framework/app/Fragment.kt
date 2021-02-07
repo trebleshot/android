@@ -17,43 +17,23 @@
  */
 package com.genonbeta.android.framework.app
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.R
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * created by: veli
  * date: 7/31/18 11:54 AM
  */
 open class Fragment : Fragment(), FragmentBase {
-    private var mSnackbarContainer: View? = null
-    private var mSnackbarLength = Snackbar.LENGTH_LONG
+    var snackbarContainer: View? = null
+
+    var snackbarLength = Snackbar.LENGTH_LONG
+
     override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar? {
-        val drawOverView = if (mSnackbarContainer == null) view else mSnackbarContainer
-        return if (drawOverView != null) Snackbar.make(
-            drawOverView,
-            getString(resId, *objects),
-            mSnackbarLength
-        ) else null
+        val target = if (snackbarContainer == null) view else snackbarContainer
+        return if (target != null) Snackbar.make(target, getString(resId, *objects), snackbarLength) else null
     }
 
     fun isScreenLandscape(): Boolean {
@@ -74,13 +54,5 @@ open class Fragment : Fragment(), FragmentBase {
 
     fun isXScreenLarge(): Boolean {
         return resources.getBoolean(R.bool.genfw_screen_isXLarge)
-    }
-
-    fun setSnackbarLength(length: Int) {
-        mSnackbarLength = length
-    }
-
-    fun setSnackbarContainer(view: View?) {
-        mSnackbarContainer = view
     }
 }

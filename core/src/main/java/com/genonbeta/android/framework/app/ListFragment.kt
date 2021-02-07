@@ -17,49 +17,49 @@
  */
 package com.genonbeta.android.framework.app
 
-import android.R
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.AsyncTaskLoader
 import androidx.loader.content.Loader
 import androidx.transition.TransitionManager
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.R
+import com.genonbeta.android.framework.widget.ListAdapterBase
 
 /**
  * Created by: veli
  * Date: 12/3/16 9:57 AM
  */
-abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragment(), ListFragmentBase<T?> {
-    private var mAdapter: E? = null
-    private var mListView: Z? = null
-    private var mEmptyListContainerView: ViewGroup? = null
-    private var mEmptyListTextView: TextView? = null
-    private var mEmptyListImageView: ImageView? = null
-    private var mProgressBar: ProgressBar? = null
-    private var mEmptyListActionButton: Button? = null
-    private val mRefreshLoaderCallback: RefreshLoaderCallback? = RefreshLoaderCallback()
+abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment(), ListFragmentBase<T> {
+    var adapter: E? = null
+        private set
+
+    var listView: Z? = null
+        get() {
+            ensureList()
+            return getListViewInternal()
+        }
+        private set
+
+    private var emptyListContainerView: ViewGroup? = null
+
+    private var emptyListTextView: TextView? = null
+
+    private var emptyListImageView: ImageView? = null
+
+    private var progressBar: ProgressBar? = null
+
+    private var emptyListActionButton: Button? = null
+
+    private val refreshLoaderCallback = RefreshLoaderCallback()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         findViewDefaultsFromMainView()
@@ -67,80 +67,75 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        LoaderManager.getInstance(this).initLoader(TASK_ID_REFRESH, null, mRefreshLoaderCallback)
+        LoaderManager.getInstance(this).initLoader(TASK_ID_REFRESH, null, refreshLoaderCallback)
     }
 
-    protected fun onPrepareRefreshingList() {}
+    protected open fun onPrepareRefreshingList() {}
+
     protected open fun onListRefreshed() {}
-    fun createLoader(): AsyncTaskLoader<MutableList<T?>?>? {
-        return ListLoader<T?>(mAdapter)
+
+    fun createLoader(): AsyncTaskLoader<MutableList<T>> {
+        return ListLoader(adapter)
     }
 
     protected abstract fun ensureList()
+
     protected fun findViewDefaultsFrom(view: View?) {
-        if (view == null) return
-        setListView(view.findViewById<View?>(R.id.genfw_customListFragment_listView) as Z)
-        setEmptyListContainerView(view.findViewById<View?>(R.id.genfw_customListFragment_emptyView) as ViewGroup)
-        setEmptyListTextView(view.findViewById<View?>(R.id.genfw_customListFragment_emptyTextView) as TextView)
-        setEmptyListImageView(view.findViewById<View?>(R.id.genfw_customListFragment_emptyImageView) as ImageView)
-        setEmptyListActionButton(view.findViewById<View?>(R.id.genfw_customListFragment_emptyActionButton) as Button)
-        setProgressBar(view.findViewById<View?>(R.id.genfw_customListFragment_progressBar) as ProgressBar)
+        view?.let {
+            setListView(it.findViewById<View?>(R.id.genfw_customListFragment_listView) as Z)
+            setEmptyListContainerView(it.findViewById<View?>(R.id.genfw_customListFragment_emptyView) as ViewGroup)
+            setEmptyListTextView(it.findViewById<View?>(R.id.genfw_customListFragment_emptyTextView) as TextView)
+            setEmptyListImageView(it.findViewById<View?>(R.id.genfw_customListFragment_emptyImageView) as ImageView)
+            setEmptyListActionButton(it.findViewById<View?>(R.id.genfw_customListFragment_emptyActionButton) as Button)
+            setProgressBar(it.findViewById<View?>(R.id.genfw_customListFragment_progressBar) as ProgressBar)
+        }
     }
 
     protected fun findViewDefaultsFromMainView() {
         findViewDefaultsFrom(view)
     }
 
-    fun getAdapter(): E? {
-        return mAdapter
-    }
-
     protected abstract fun generateDefaultView(
-        inflater: LayoutInflater?,
+        inflater: LayoutInflater,
         container: ViewGroup?,
         savedState: Bundle?
     ): View?
 
     fun getEmptyListContainerView(): ViewGroup? {
         ensureList()
-        return mEmptyListContainerView
+        return emptyListContainerView
     }
 
     fun getEmptyListImageView(): ImageView? {
         ensureList()
-        return mEmptyListImageView
+        return emptyListImageView
     }
 
     fun getEmptyListTextView(): TextView? {
         ensureList()
-        return mEmptyListTextView
+        return emptyListTextView
     }
 
-    fun getEmptyListActionButton(): Button? {
+    fun getEmptyListActionButton(): Button {
         ensureList()
-        return mEmptyListActionButton
+        return emptyListActionButton
     }
 
     fun getListAdapter(): E? {
-        return mAdapter
+        return adapter
     }
 
     protected fun getListViewInternal(): Z? {
-        return mListView
-    }
-
-    fun getListView(): Z? {
-        ensureList()
-        return getListViewInternal()
+        return listView
     }
 
     fun getLoaderCallbackRefresh(): RefreshLoaderCallback? {
-        return mRefreshLoaderCallback
+        return refreshLoaderCallback
     }
 
     fun getProgressBar(): ProgressBar? {
         ensureList()
-        return mProgressBar
+        return progressBar
     }
 
     override fun refreshList() {
@@ -148,11 +143,11 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
     }
 
     protected fun setEmptyListContainerView(container: ViewGroup?) {
-        mEmptyListContainerView = container
+        emptyListContainerView = container
     }
 
     protected fun setEmptyListActionButton(button: Button?) {
-        mEmptyListActionButton = button
+        emptyListActionButton = button
     }
 
     protected fun setEmptyListImage(resId: Int) {
@@ -160,7 +155,7 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
     }
 
     protected fun setEmptyListImageView(view: ImageView?) {
-        mEmptyListImageView = view
+        emptyListImageView = view
     }
 
     protected fun setEmptyListText(text: CharSequence?) {
@@ -168,30 +163,37 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
     }
 
     protected fun setEmptyListTextView(view: TextView?) {
-        mEmptyListTextView = view
+        emptyListTextView = view
     }
 
     protected fun setListAdapter(adapter: E?) {
-        val hadAdapter = mAdapter != null
-        mAdapter = adapter
+        val hadAdapter = this.adapter != null
+        this.adapter = adapter
         setListAdapter(adapter, hadAdapter)
     }
 
     protected abstract fun setListAdapter(adapter: E?, hadAdapter: Boolean)
+
     fun setListLoading(loading: Boolean) {
         setListLoading(loading, true)
     }
 
-    fun setListLoading(loading: Boolean, animate: Boolean) {
+    private fun setListLoading(loading: Boolean, animate: Boolean) {
         ensureList()
         val progressBar: ProgressBar? = getProgressBar()
         val emptyListContainer: ViewGroup? = getEmptyListContainerView()
 
         // progress is shown == loading
         // container is not shown == progress cannot be shown
-        if (progressBar == null || progressBar.getVisibility() == View.VISIBLE == loading || emptyListContainer == null || emptyListContainer.getVisibility() != View.VISIBLE) return
-        progressBar.setVisibility(if (loading) View.VISIBLE else View.GONE)
-        if (animate) TransitionManager.beginDelayedTransition(emptyListContainer)
+        if (progressBar == null || progressBar.visibility == View.VISIBLE == loading || emptyListContainer == null
+            || emptyListContainer.visibility != View.VISIBLE
+        )
+            return
+
+        progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+
+        if (animate)
+            TransitionManager.beginDelayedTransition(emptyListContainer)
     }
 
     protected fun setListShown(shown: Boolean) {
@@ -201,26 +203,29 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
     protected fun setListShown(shown: Boolean, animate: Boolean) {
         val listView = getListView()
         val emptyListContainer: ViewGroup? = getEmptyListContainerView()
-        if (listView != null && listView.getVisibility() == View.VISIBLE != shown) {
-            listView.setVisibility(if (shown) View.VISIBLE else View.GONE)
-            if (animate) listView.startAnimation(
-                AnimationUtils.loadAnimation(
-                    context,
-                    if (shown) R.anim.fade_in else R.anim.fade_out
+
+        if (listView != null && listView.visibility == View.VISIBLE != shown) {
+            listView.visibility = if (shown) View.VISIBLE else View.GONE
+
+            if (animate)
+                listView.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        context,
+                        if (shown) android.R.anim.fade_in else android.R.anim.fade_out
+                    )
                 )
-            )
         }
-        if (emptyListContainer != null && emptyListContainer.getVisibility() == View.VISIBLE == shown) emptyListContainer.setVisibility(
-            if (shown) View.GONE else View.VISIBLE
-        )
+
+        if (emptyListContainer != null && emptyListContainer.visibility == View.VISIBLE == shown)
+            emptyListContainer.setVisibility(if (shown) View.GONE else View.VISIBLE)
     }
 
     protected open fun setListView(listView: Z?) {
-        mListView = listView
+        this.listView = listView
     }
 
     protected fun setProgressBar(progressBar: ProgressBar?) {
-        mProgressBar = progressBar
+        this.progressBar = progressBar
     }
 
     fun showEmptyListActionButton(show: Boolean) {
@@ -235,12 +240,17 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
     }
 
     private inner class RefreshLoaderCallback : LoaderManager.LoaderCallbacks<MutableList<T?>?> {
-        private var mRunning = false
-        private var mReloadRequested = false
-        override fun onCreateLoader(id: Int, args: Bundle?): Loader<MutableList<T?>?> {
-            mReloadRequested = false
-            mRunning = true
-            if (getAdapter().getCount() == 0) setListShown(false)
+        var running = false
+            private set
+
+        var reloadRequested = false
+            private set
+
+        override fun onCreateLoader(id: Int, args: Bundle?): Loader<MutableList<T>> {
+            reloadRequested = false
+            running = true
+
+            setListShown(adapter?.let { it.getCount() == 0 } ?: false)
             setListLoading(true)
             return createLoader()
         }
@@ -248,54 +258,50 @@ abstract class ListFragment<Z : ViewGroup?, T, E : ListAdapterBase<T?>?> : Fragm
         override fun onLoadFinished(loader: Loader<MutableList<T?>?>, data: MutableList<T?>?) {
             if (isResumed) {
                 onPrepareRefreshingList()
-                getAdapter().onUpdate(data)
-                getAdapter().onDataSetChanged()
+                adapter?.onUpdate(data)
+                adapter?.onDataSetChanged()
                 setListLoading(false)
                 onListRefreshed()
             }
-            if (isReloadRequested()) refresh()
-            mRunning = false
+
+            if (reloadRequested)
+                refresh()
+            running = false
         }
 
         override fun onLoaderReset(loader: Loader<MutableList<T?>?>) {}
-        fun isRunning(): Boolean {
-            return mRunning
-        }
-
-        fun isReloadRequested(): Boolean {
-            return mReloadRequested
-        }
 
         fun refresh() {
             LoaderManager.getInstance(this@ListFragment)
-                .restartLoader(TASK_ID_REFRESH, null, mRefreshLoaderCallback)
+                .restartLoader(TASK_ID_REFRESH, null, refreshLoaderCallback)
         }
 
         fun requestRefresh(): Boolean {
-            if (isRunning() && isReloadRequested()) return false
-            if (!isRunning()) refresh() else mReloadRequested = true
+            if (running && reloadRequested)
+                return false
+
+            if (!running)
+                refresh()
+            else
+                reloadRequested = true
+
             return true
         }
     }
 
-    class ListLoader<G>(adapter: ListAdapterBase<G?>?) : AsyncTaskLoader<MutableList<G?>?>(adapter.getContext()) {
-        private val mAdapter: ListAdapterBase<G?>?
+    class ListLoader<G>(val adapter: ListAdapterBase<G>?) : AsyncTaskLoader<MutableList<G>>(adapter.context) {
         override fun onStartLoading() {
             super.onStartLoading()
             forceLoad()
         }
 
-        override fun loadInBackground(): MutableList<G?>? {
-            return mAdapter.onLoad()
-        }
-
-        init {
-            mAdapter = adapter
+        override fun loadInBackground(): MutableList<G> {
+            return adapter?.onLoad() ?: ArrayList<G>()
         }
     }
 
     companion object {
-        val TAG: String? = ListFragment::class.java.simpleName
+        val TAG = ListFragment::class.java.simpleName
         val LAYOUT_DEFAULT_EMPTY_LIST_VIEW: Int = R.layout.genfw_layout_listfragment_emptyview
         const val TASK_ID_REFRESH = 0
     }

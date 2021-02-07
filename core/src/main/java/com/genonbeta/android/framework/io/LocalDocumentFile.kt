@@ -17,46 +17,22 @@
  */
 package com.genonbeta.android.framework.io
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 /**
  * created by: Veli
  * date: 17.02.2018 23:39
  */
-class LocalDocumentFile(parent: DocumentFile?, private var mFile: File?) : DocumentFile(
-    parent, Uri.fromFile(
-        mFile
-    )
-) {
-    override fun createFile(mimeType: String?, displayName: String?): DocumentFile? {
-        var displayName = displayName
+class LocalDocumentFile(parent: DocumentFile?, val file: File) : DocumentFile(parent, Uri.fromFile(file)) {
+    override fun createFile(mimeType: String, displayName: String): DocumentFile? {
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
-        if (extension != null) displayName += ".$extension"
-        val target = File(mFile, displayName)
+        val target = File(file, extension?.let { "$displayName.$it" } ?: displayName)
+
         try {
             target.createNewFile()
             return LocalDocumentFile(this, target)
@@ -66,114 +42,116 @@ class LocalDocumentFile(parent: DocumentFile?, private var mFile: File?) : Docum
         return null
     }
 
-    override fun createDirectory(displayName: String?): DocumentFile? {
-        val target = File(mFile, displayName)
-        return if (target.isDirectory || target.mkdir()) LocalDocumentFile(this, target) else null
+    override fun createDirectory(displayName: String): DocumentFile? {
+        val target = File(file, displayName)
+
+        if (target.isDirectory || (!target.exists() && target.mkdirs()))
+            return LocalDocumentFile(this, target)
+
+        return null
     }
 
-    fun getFile(): File? {
-        return mFile
+    override fun getUri(): Uri {
+        return Uri.fromFile(file)
     }
 
-    override fun getUri(): Uri? {
-        return Uri.fromFile(mFile)
-    }
-
-    override fun getName(): String? {
-        return mFile.getName()
+    override fun getName(): String {
+        return file.name
     }
 
     override fun getParentFile(): DocumentFile? {
-        val parentFile = mFile.getParentFile()
-        return if (parentFile == null || File.separator == parentFile.absolutePath // hide root
-        ) null else LocalDocumentFile(null, parentFile)
+        val parentFile = file.parentFile
+        return if (parentFile == null || File.separator == parentFile.absolutePath) null
+        else LocalDocumentFile(null, parentFile)
     }
 
-    override fun getType(): String? {
-        return if (mFile.isDirectory()) "*/*" else getTypeForName(mFile.getName())
+    override fun getType(): String {
+        return if (file.isDirectory) "*/*" else getTypeForName(file.name)
     }
 
     override fun isDirectory(): Boolean {
-        return mFile.isDirectory()
+        return file.isDirectory
     }
 
     override fun isFile(): Boolean {
-        return mFile.isFile()
+        return file.isFile
     }
 
     override fun isVirtual(): Boolean {
         return false
     }
 
-    override fun lastModified(): Long {
-        return mFile.lastModified()
+    override fun getLastModified(): Long {
+        return file.lastModified()
     }
 
-    override fun length(): Long {
-        return mFile.length()
+    override fun getLength(): Long {
+        return file.length()
     }
 
     override fun canRead(): Boolean {
-        return mFile.canRead()
+        return file.canRead()
     }
 
     override fun canWrite(): Boolean {
-        return mFile.canWrite()
+        return file.canWrite()
     }
 
     override fun delete(): Boolean {
-        deleteContents(mFile)
-        return mFile.delete()
+        deleteContents(file)
+        return file.delete()
     }
 
     override fun exists(): Boolean {
-        return mFile.exists()
+        return file.exists()
     }
 
-    override fun findFile(displayName: String?): DocumentFile? {
-        val file = File(mFile, displayName)
+    override fun findFile(displayName: String): DocumentFile? {
+        val file = File(file, displayName)
         return if (file.exists()) LocalDocumentFile(this, file) else null
     }
 
-    override fun listFiles(): Array<DocumentFile?>? {
-        val results: MutableList<DocumentFile?> = ArrayList()
-        val files = mFile.listFiles()
+    override fun listFiles(): Array<DocumentFile> {
+        val results: MutableList<DocumentFile> = ArrayList()
+        val files = file.listFiles()
         if (files != null) for (file in files) results.add(LocalDocumentFile(this, file))
         return results.toTypedArray()
     }
 
-    override fun renameTo(displayName: String?): Boolean {
-        val target = File(mFile.getParentFile(), displayName)
-        if (mFile.renameTo(target)) {
-            mFile = target
-            return true
-        }
-        return false
+    override fun renameTo(displayName: String): DocumentFile? {
+        val target = File(file.parentFile, displayName)
+
+        if (file.renameTo(target))
+            return fromFile(target)
+
+        return null
     }
 
     override fun sync() {}
 
     companion object {
-        private fun getTypeForName(name: String?): String? {
+        private fun getTypeForName(name: String): String {
             val lastDot = name.lastIndexOf('.')
             if (lastDot >= 0) {
-                val extension = name.substring(lastDot + 1).toLowerCase()
-                val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-                if (mime != null) return mime
+                val extension = name.substring(lastDot + 1).toLowerCase(Locale.getDefault())
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)?.let {
+                    return it
+                }
             }
             return "application/octet-stream"
         }
 
-        private fun deleteContents(dir: File?): Boolean {
+        private fun deleteContents(dir: File): Boolean {
             val files = dir.listFiles()
             var success = true
+
             if (files != null) {
                 for (file in files) {
                     if (file.isDirectory) {
                         success = success and deleteContents(file)
                     }
                     if (!file.delete()) {
-                        Log.w(DocumentFile.Companion.TAG, "Failed to delete $file")
+                        Log.w(TAG, "Failed to delete $file")
                         success = false
                     }
                 }

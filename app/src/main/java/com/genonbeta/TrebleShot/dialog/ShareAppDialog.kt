@@ -22,7 +22,7 @@ import android.os.*
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.AppConfig
-import com.genonbeta.TrebleShot.util.FileUtils
+import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.android.framework.io.DocumentFile
 import java.io.File
 
@@ -33,16 +33,16 @@ class ShareAppDialog(context: Context) : AlertDialog.Builder(context) {
             val pm = context.packageManager
             val packageInfo: PackageInfo = pm.getPackageInfo(context.applicationInfo.packageName, 0)
             val fileName: String = packageInfo.applicationInfo.loadLabel(pm).toString() + "_" + packageInfo.versionName
-            val storageDirectory = FileUtils.getApplicationDirectory(context.applicationContext)
+            val storageDirectory = Files.getApplicationDirectory(context.applicationContext)
             val codeFile = DocumentFile.fromFile(File(context.applicationInfo.sourceDir))
             val cloneFile = storageDirectory!!.createFile(codeFile.type, fileName)
             if (cloneFile.exists()) cloneFile.delete()
-            FileUtils.copy(context, codeFile, cloneFile, interrupter)
+            Files.copy(context, codeFile, cloneFile, interrupter)
             try {
                 val sendIntent = Intent(Intent.ACTION_SEND)
                     .putExtra(
                         Intent.EXTRA_STREAM,
-                        com.genonbeta.android.framework.util.FileUtils.getSecureUri(context, cloneFile)
+                        com.genonbeta.android.framework.util.Files.getSecureUri(context, cloneFile)
                     )
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     .setType(cloneFile.type)

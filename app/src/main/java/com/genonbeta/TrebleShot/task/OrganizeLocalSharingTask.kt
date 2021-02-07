@@ -25,11 +25,10 @@ import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
-import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Transfers
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import java.io.FileNotFoundException
 import java.util.*
 
@@ -73,7 +72,7 @@ class OrganizeLocalSharingTask(
                     try {
                         list.add(
                             from(
-                                FileUtils.fromUri(
+                                Files.fromUri(
                                     context, uri
                                 ), transfer.id,
                                 shareable.friendlyName

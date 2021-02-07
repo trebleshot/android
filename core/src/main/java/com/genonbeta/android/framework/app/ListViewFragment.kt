@@ -64,6 +64,7 @@ abstract class ListViewFragment<T, E : ListViewAdapter<T?>?> : ListFragment<List
     }
 
     fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {}
+
     override fun ensureList() {
         listViewInternal.setEmptyView(emptyListContainerView)
         mHandler.post(mRequestFocus)

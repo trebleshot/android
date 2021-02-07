@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.fragment.FileListFragment
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.FileUtils
+import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.util.MimeIconUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
@@ -79,7 +79,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
             }
         } else {
             run {
-                val saveDir = FileHolder(getContext(), FileUtils.getApplicationDirectory(getContext()))
+                val saveDir = FileHolder(getContext(), Files.getApplicationDirectory(getContext()))
                 saveDir.type = FileHolder.Type.SaveLocation
                 lister.offerObliged(this, saveDir)
             }
@@ -156,7 +156,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                     val transfer = transferMap[`object`.transferId]
                     if (pickedRecentFiles.size >= 20 || errorLimit == 0 || transfer == null) break
                     try {
-                        val documentFile = FileUtils.getIncomingPseudoFile(
+                        val documentFile = Files.getIncomingPseudoFile(
                             getContext(), `object`, transfer,
                             false
                         )
@@ -224,7 +224,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                 menuItself.findItem(R.id.action_mode_file_show).isVisible = FileHolder.Type.Recent ==
                         fileHolder.getType()
                 menuItself.findItem(R.id.action_mode_file_change_save_path).isVisible =
-                    FileHolder.Type.SaveLocation == fileHolder.getType() || fileHolder.file != null && (FileUtils.getApplicationDirectory(
+                    FileHolder.Type.SaveLocation == fileHolder.getType() || fileHolder.file != null && (Files.getApplicationDirectory(
                         getContext()
                     )
                             == fileHolder.file)
@@ -305,7 +305,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     }
 
     override fun getGroupBy(): Int {
-        return if (mPath != null && mPath == FileUtils.getApplicationDirectory(getContext())) MODE_GROUP_FOR_INBOX else super.getGroupBy()
+        return if (mPath != null && mPath == Files.getApplicationDirectory(getContext())) MODE_GROUP_FOR_INBOX else super.getGroupBy()
     }
 
     override fun getSortingCriteria(objectOne: FileHolder, objectTwo: FileHolder): Int {
@@ -375,7 +375,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
         }
 
         protected fun calculate(context: Context?) {
-            if (file != null && AppConfig.EXT_FILE_PART == FileUtils.getFileFormat(file!!.name)) {
+            if (file != null && AppConfig.EXT_FILE_PART == Files.getFileFormat(file!!.name)) {
                 type = Type.Pending
                 try {
                     val kuick = AppUtils.getKuick(context)
@@ -425,10 +425,10 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                 } else context.getString(R.string.text_unknown)
                 Type.SaveLocation -> context.getString(R.string.text_defaultFolder)
                 Type.Pending -> if (transferItem == null) context.getString(R.string.mesg_notValidTransfer) else String.format(
-                    "%s / %s", com.genonbeta.android.framework.util.FileUtils.sizeExpression(comparableSize, false),
-                    com.genonbeta.android.framework.util.FileUtils.sizeExpression(transferItem!!.comparableSize, false)
+                    "%s / %s", com.genonbeta.android.framework.util.Files.sizeExpression(comparableSize, false),
+                    com.genonbeta.android.framework.util.Files.sizeExpression(transferItem!!.comparableSize, false)
                 )
-                Type.Recent, Type.File -> com.genonbeta.android.framework.util.FileUtils.sizeExpression(
+                Type.Recent, Type.File -> com.genonbeta.android.framework.util.Files.sizeExpression(
                     comparableSize,
                     false
                 )
@@ -458,7 +458,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
         }
 
         protected fun initialize(file: DocumentFile?) {
-            initialize(0, file!!.name, file.name, file.type, file.lastModified(), file.length(), file.uri)
+            initialize(0, file!!.name, file.name, file.type, file.getLastModified(), file.getLength(), file.uri)
             this.file = file
         }
 
@@ -480,7 +480,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
             uri = Uri.parse(item.getAsString(Kuick.Companion.FIELD_FILEBOOKMARK_PATH))
             type = if (uri.toString().startsWith("file")) Type.Bookmarked else Type.Mounted
             try {
-                initialize(com.genonbeta.android.framework.util.FileUtils.fromUri(kuick.getContext(), uri))
+                initialize(com.genonbeta.android.framework.util.Files.fromUri(kuick.getContext(), uri))
                 calculate(kuick.getContext())
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()

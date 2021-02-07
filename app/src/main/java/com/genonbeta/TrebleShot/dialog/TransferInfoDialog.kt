@@ -43,10 +43,10 @@ class TransferInfoDialog(
         try {
             // If it is incoming than get the received or cache file
             // If not then try to reach to the source file that is being send
-            attemptedFile = if (isIncoming) FileUtils.getIncomingPseudoFile(
+            attemptedFile = if (isIncoming) Files.getIncomingPseudoFile(
                 context, `object`, loadedGroup.transfer,
                 false
-            ) else com.genonbeta.android.framework.util.FileUtils.fromUri(context, Uri.parse(`object`.file))
+            ) else com.genonbeta.android.framework.util.Files.fromUri(context, Uri.parse(`object`.file))
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -64,15 +64,15 @@ class TransferInfoDialog(
         setTitle(R.string.text_transactionDetails)
         setView(rootView)
         nameText.setText(`object`.name)
-        sizeText.setText(com.genonbeta.android.framework.util.FileUtils.sizeExpression(`object`.comparableSize, false))
+        sizeText.setText(com.genonbeta.android.framework.util.Files.sizeExpression(`object`.comparableSize, false))
         typeText.setText(`object`.mimeType)
         receivedSizeText.setText(
-            if (fileExists) com.genonbeta.android.framework.util.FileUtils.sizeExpression(
-                pseudoFile!!.length(),
+            if (fileExists) com.genonbeta.android.framework.util.Files.sizeExpression(
+                pseudoFile!!.getLength(),
                 false
             ) else context.getString(R.string.text_unknown)
         )
-        locationText.setText(if (fileExists) FileUtils.getReadableUri(pseudoFile!!.uri) else context.getString(R.string.text_unknown))
+        locationText.setText(if (fileExists) Files.getReadableUri(pseudoFile!!.uri) else context.getString(R.string.text_unknown))
         flagText.setText(
             TextUtils.getTransactionFlagString(
                 context, `object`,
@@ -102,7 +102,7 @@ class TransferInfoDialog(
                         saveAnyway.setNegativeButton(R.string.butn_cancel, null)
                         saveAnyway.setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
                             try {
-                                val savedFile = FileUtils.saveReceivedFile(
+                                val savedFile = Files.saveReceivedFile(
                                     pseudoFile.parentFile, pseudoFile, `object`
                                 )
                                 `object`.flag = TransferItem.Flag.DONE
@@ -119,7 +119,7 @@ class TransferInfoDialog(
                 } else if (TransferItem.Flag.DONE == `object`.flag) {
                     setNeutralButton(R.string.butn_open) { dialog: DialogInterface?, which: Int ->
                         try {
-                            com.genonbeta.android.framework.util.FileUtils.openUri(context, pseudoFile)
+                            com.genonbeta.android.framework.util.Files.openUri(context, pseudoFile)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -127,7 +127,7 @@ class TransferInfoDialog(
                 }
             }
         } else if (fileExists) try {
-            val startIntent = com.genonbeta.android.framework.util.FileUtils.getOpenIntent(context, attemptedFile)
+            val startIntent = com.genonbeta.android.framework.util.Files.getOpenIntent(context, attemptedFile)
             setNeutralButton(R.string.butn_open) { dialog: DialogInterface?, which: Int ->
                 try {
                     context.startActivity(startIntent)

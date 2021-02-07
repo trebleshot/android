@@ -17,31 +17,15 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
-import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.TrebleShot.util.FileUtils
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.android.framework.io.DocumentFile
 
 class TransferDescriptor(var file: DocumentFile, var directory: String?) {
     var title: String
 
-    constructor(context: Context?, uri: Uri?, directory: String?) : this(FileUtils.fromUri(context, uri), directory) {}
+    constructor(context: Context?, uri: Uri?, directory: String?) : this(Files.fromUri(context, uri), directory) {}
 
     init {
         title = file.name

@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 import java.text.NumberFormat
 import java.util.*
@@ -110,7 +110,7 @@ class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupV
                 }
                 statusLayoutWeb.visibility =
                     if (`object`.hasOutgoing() && `object`.transfer.isServedOnWeb) View.VISIBLE else View.GONE
-                text1.setText(FileUtils.sizeExpression(`object`.bytesTotal(), false))
+                text1.setText(Files.sizeExpression(`object`.bytesTotal(), false))
                 text2.setText(
                     if (membersText.length > 0) membersText else getContext().getString(
                         if (`object`.transfer.isServedOnWeb) R.string.text_transferSharedOnBrowser else R.string.text_emptySymbol

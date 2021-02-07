@@ -31,9 +31,9 @@ interface ListAdapterBase<T> {
 
     fun onDataSetChanged()
 
-    fun onLoad(): MutableList<T?>?
+    fun onLoad(): MutableList<T>
 
-    fun onUpdate(passedItem: MutableList<T?>?)
+    fun onUpdate(passedItem: MutableList<T>)
 
     fun getCount(): Int
 

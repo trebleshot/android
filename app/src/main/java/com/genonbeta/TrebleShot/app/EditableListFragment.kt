@@ -29,7 +29,6 @@ import androidx.collection.ArrayMap
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.appimport.IEditableListFragment
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
@@ -42,7 +41,7 @@ import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.*
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller
@@ -483,7 +482,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
     }
 
     override fun openUri(uri: Uri?): Boolean {
-        return FileUtils.openUri(requireContext(), uri)
+        return Files.openUri(requireContext(), uri)
     }
 
     override fun performLayoutClickOpen(holder: V): Boolean {

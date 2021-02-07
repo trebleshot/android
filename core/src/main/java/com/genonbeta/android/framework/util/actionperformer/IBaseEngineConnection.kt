@@ -17,26 +17,8 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.android.framework.`object`.Selectable
 
 /**
  * The base class for engine connection. This is free of generics for most compatibility.
@@ -47,40 +29,40 @@ interface IBaseEngineConnection {
      *
      * @return the list that is available with [SelectableProvider]
      */
-    open fun getGenericAvailableList(): MutableList<out Selectable?>?
+    fun getGenericAvailableList(): MutableList<out Selectable>?
 
     /**
      * Compile the list of selected items.
      *
      * @return the list that is available with [SelectableHost]
      */
-    open fun getGenericSelectedItemList(): MutableList<out Selectable?>?
+    fun getGenericSelectedItemList(): MutableList<out Selectable>?
 
     /**
      * Titles are only for helping the end-user know the connection in a UX manner.
      *
      * @return the representing title
      */
-    open fun getDefinitiveTitle(): CharSequence?
+    fun getDefinitiveTitle(): CharSequence?
 
     /**
      * Set the engine provider usually an [android.app.Activity] implementing it.
      *
      * @param engineProvider the provider
      */
-    open fun setEngineProvider(engineProvider: PerformerEngineProvider?)
+    fun setEngineProvider(engineProvider: PerformerEngineProvider?)
 
     /**
      * @return the provider that will supply us with [IPerformerEngine] that we will operate on.
      */
-    open fun getEngineProvider(): PerformerEngineProvider?
+    fun getEngineProvider(): PerformerEngineProvider?
 
     /**
      * Set the title that may be used by UI elements that need to identify this connection for user.
      *
      * @param title use to identify this connection
      */
-    open fun setDefinitiveTitle(title: CharSequence?)
+    fun setDefinitiveTitle(title: CharSequence?)
 
     /**
      * Find the selectable using [RecyclerView.ViewHolder.getAdapterPosition] and toggle its selection state.
@@ -90,7 +72,7 @@ interface IBaseEngineConnection {
      * @throws SelectableNotFoundException when the given position with the holder doesn't point to a selectable
      */
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
-    open fun setSelected(holder: RecyclerView.ViewHolder?): Boolean
+    fun setSelected(holder: RecyclerView.ViewHolder): Boolean
 
     /**
      * Find the selectable in the list that is made available by [SelectableProvider]
@@ -99,5 +81,5 @@ interface IBaseEngineConnection {
      * @throws CouldNotAlterException      when the call fails to complete for some reason (see error msg for details)
      */
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
-    open fun setSelected(position: Int): Boolean
+    fun setSelected(position: Int): Boolean
 }

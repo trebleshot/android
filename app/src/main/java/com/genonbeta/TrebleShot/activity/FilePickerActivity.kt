@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment.LayoutClickListener
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -99,7 +99,7 @@ class FilePickerActivity : Activity() {
             if (!isFinishing) if (intent.hasExtra(EXTRA_START_PATH)) {
                 try {
                     fileExplorerFragment.goPath(
-                        FileUtils.fromUri(
+                        Files.fromUri(
                             this,
                             Uri.parse(intent.getStringExtra(EXTRA_START_PATH))
                         )

@@ -27,12 +27,12 @@ import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.Stoppable
 import java.io.File
 import java.io.IOException
 
-object FileUtils : FileUtils() {
+object Files : Files() {
     @Throws(Exception::class)
     fun copy(context: Context?, source: DocumentFile?, destination: DocumentFile?, stoppable: Stoppable?) {
         copy(

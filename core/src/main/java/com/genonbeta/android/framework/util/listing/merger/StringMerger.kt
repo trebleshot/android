@@ -17,42 +17,20 @@
  */
 package com.genonbeta.android.framework.util.listing.merger
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.util.listing.ComparableMerger
 
 /**
  * created by: Veli
  * date: 29.03.2018 01:44
  */
-class StringMerger<T>(private val mString: String?) : ComparableMerger<T?>() {
-    override fun equals(obj: Any?): Boolean {
-        return obj == mString
+class StringMerger<T>(val text: String) : ComparableMerger<T>() {
+    override operator fun compareTo(other: ComparableMerger<T?>?): Int {
+        return if (other is StringMerger<*>) text.compareTo(other.text, ignoreCase = true) else -1
     }
 
-    fun getString(): String? {
-        return mString
+    override fun equals(other: Any?): Boolean {
+        return other == text
     }
 
-    override operator fun compareTo(o: ComparableMerger<T?>): Int {
-        return if (o !is StringMerger<*>) -1 else (o as StringMerger<*>).getString()
-            .compareTo(getString(), ignoreCase = true)
-    }
+    override fun hashCode(): Int = text.hashCode()
 }

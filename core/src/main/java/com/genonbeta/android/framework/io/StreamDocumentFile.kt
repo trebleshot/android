@@ -17,60 +17,36 @@
  */
 package com.genonbeta.android.framework.io
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
 import java.io.File
 
 /**
  * created by: Veli
  * date: 18.02.2018 00:24
  */
-class StreamDocumentFile(private val mStream: StreamInfo?, original: Uri?) : DocumentFile(null, original) {
-    override fun createFile(mimeType: String?, displayName: String?): DocumentFile? {
-        return null
+class StreamDocumentFile(val stream: StreamInfo, uri: Uri) : DocumentFile(null, uri) {
+    override fun createFile(mimeType: String, displayName: String): DocumentFile? {
+        throw UnsupportedOperationException()
     }
 
-    override fun createDirectory(displayName: String?): DocumentFile? {
-        return null
+    override fun createDirectory(displayName: String): DocumentFile {
+        throw UnsupportedOperationException()
     }
 
-    override fun getUri(): Uri? {
-        return mStream.uri
+    override fun getUri(): Uri {
+        return stream.uri
     }
 
     fun getFile(): File? {
-        return mStream.file
+        return stream.file
     }
 
-    override fun getName(): String? {
-        return mStream.friendlyName
+    override fun getName(): String {
+        return stream.friendlyName
     }
 
-    fun getStream(): StreamInfo? {
-        return mStream
-    }
-
-    override fun getType(): String? {
-        return mStream.mimeType
+    override fun getType(): String {
+        return stream.mimeType
     }
 
     override fun isDirectory(): Boolean {
@@ -85,12 +61,12 @@ class StreamDocumentFile(private val mStream: StreamInfo?, original: Uri?) : Doc
         return false
     }
 
-    override fun lastModified(): Long {
+    override fun getLastModified(): Long {
         return 0
     }
 
-    override fun length(): Long {
-        return mStream.size
+    override fun getLength(): Long {
+        return stream.size
     }
 
     override fun canRead(): Boolean {
@@ -109,12 +85,12 @@ class StreamDocumentFile(private val mStream: StreamInfo?, original: Uri?) : Doc
         return true
     }
 
-    override fun listFiles(): Array<DocumentFile?>? {
-        return arrayOfNulls<DocumentFile?>(0)
+    override fun listFiles(): Array<DocumentFile> {
+        return emptyArray()
     }
 
-    override fun renameTo(displayName: String?): Boolean {
-        return false
+    override fun renameTo(displayName: String): DocumentFile? {
+        return null
     }
 
     override fun sync() {}

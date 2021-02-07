@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TimeUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 
 /**
@@ -71,7 +71,7 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
                 val text3: TextView = parentView.findViewById<TextView>(R.id.text3)
                 text1.setText(`object`.friendlyName)
                 text2.setText(`object`.duration)
-                text3.setText(FileUtils.sizeExpression(`object`.comparableSize, false))
+                text3.setText(Files.sizeExpression(`object`.comparableSize, false))
                 parentView.isSelected = `object`.isSelectableSelected
                 GlideApp.with(getContext())
                     .load(`object`.uri)

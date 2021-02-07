@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.io.TreeDocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.MathUtils
 import com.genonbeta.android.framework.util.listing.Merger
 import java.io.File
@@ -134,11 +134,11 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
                         val format = `object`.mimeType!!.split(File.separator.toRegex()).toTypedArray()
                         if (format.size > 0 && ("image" == format[0] || "video" == format[0])) {
                             var documentFile: DocumentFile? = null
-                            if (isOutgoing) documentFile = FileUtils.fromUri(
+                            if (isOutgoing) documentFile = Files.fromUri(
                                 getContext(),
                                 Uri.parse(`object`.file)
                             ) else if (TransferItem.Flag.DONE == `object`.flag) documentFile =
-                                com.genonbeta.TrebleShot.util.FileUtils.getIncomingPseudoFile(
+                                com.genonbeta.TrebleShot.util.Files.getIncomingPseudoFile(
                                     getContext(), `object`, mTransfer,
                                     false
                                 )
@@ -174,7 +174,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         if (currentPath == null && hasIncoming) try {
             val transfer = Transfer(mTransfer.id)
             AppUtils.getKuick(getContext()).reconstruct(transfer)
-            val savePath = com.genonbeta.TrebleShot.util.FileUtils.getSavePath(getContext(), transfer)
+            val savePath = com.genonbeta.TrebleShot.util.Files.getSavePath(getContext(), transfer)
             val storageItem = StorageStatusItem()
             storageItem.directory = savePath!!.uri.toString()
             storageItem.name = savePath.name
@@ -520,7 +520,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun getFirstText(adapter: TransferItemListAdapter): String? {
-            return FileUtils.sizeExpression(comparableSize, false)
+            return Files.sizeExpression(comparableSize, false)
         }
 
         override fun getSecondText(adapter: TransferItemListAdapter): String {
@@ -605,7 +605,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun getFirstText(adapter: TransferItemListAdapter): String? {
-            return FileUtils.sizeExpression(bytesTotal, false)
+            return Files.sizeExpression(bytesTotal, false)
         }
 
         override fun getSecondText(adapter: TransferItemListAdapter): String {
@@ -748,7 +748,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
         override fun getFirstText(adapter: TransferItemListAdapter): String? {
             return if (bytesFree == -1L) adapter.getContext()
-                .getString(R.string.text_unknown) else FileUtils.sizeExpression(bytesFree, false)
+                .getString(R.string.text_unknown) else Files.sizeExpression(bytesFree, false)
         }
 
         override fun getSecondText(adapter: TransferItemListAdapter): String {

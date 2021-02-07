@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import java.io.FileNotFoundException
 
 class FileExplorerActivity : Activity() {
@@ -65,7 +65,7 @@ class FileExplorerActivity : Activity() {
             val directoryUri = intent.getParcelableExtra<Uri>(EXTRA_FILE_PATH)
             if (directoryUri != null) {
                 try {
-                    openFolder(FileUtils.fromUri(applicationContext, directoryUri))
+                    openFolder(Files.fromUri(applicationContext, directoryUri))
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()
                 }

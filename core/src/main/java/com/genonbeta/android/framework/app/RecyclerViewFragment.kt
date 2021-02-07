@@ -17,38 +17,24 @@
  */
 package com.genonbeta.android.framework.app
 
-import androidx.test.runner.AndroidJUnit4
-import android.content.ContentResolver
-import kotlin.Throws
-import com.genonbeta.android.framework.io.StreamInfo.FolderStateException
-import android.provider.OpenableColumns
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import androidx.annotation.RequiresApi
-import android.provider.DocumentsContract
-import android.content.Intent
-import android.content.pm.PackageManager
+import android.os.Bundle
 import android.os.Handler
-import android.webkit.MimeTypeMap
-import com.google.android.material.snackbar.Snackbar
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
-import android.view.MenuInflater
+import android.view.LayoutInflater
 import android.view.View
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.android.framework.R
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 
 /**
  * created by: veli
  * date: 26.03.2018 11:45
  */
-abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder?, E : RecyclerViewAdapter<T?, V?>?> :
-    ListFragment<RecyclerView?, T?, E?>() {
-    private val mHandler: Handler? = Handler()
-    private val mRequestFocus: Runnable? = Runnable {
+abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : RecyclerViewAdapter<T, V>> :
+    ListFragment<RecyclerView, T, E>() {
+    private val handler: Handler = Handler()
+    private val requestFocus: Runnable = Runnable {
         listViewInternal.focusableViewAvailable(
             listViewInternal
         )
@@ -60,7 +46,7 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder?, E : 
     }
 
     override fun ensureList() {
-        mHandler.post(mRequestFocus)
+        handler.post(requestFocus)
     }
 
     open fun getLayoutManager(): RecyclerView.LayoutManager? {

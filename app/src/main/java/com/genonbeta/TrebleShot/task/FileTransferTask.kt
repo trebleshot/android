@@ -31,7 +31,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.FileUtils
+import com.genonbeta.android.framework.util.Files
 import org.json.JSONObject
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -78,7 +78,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
             (100 * (bytesTransferred.toDouble() / index.bytesPending())) as Int
         if (lastMovedBytes > 0 && bytesTransferred > 0) {
             val change = bytesTransferred - lastMovedBytes
-            text.append(FileUtils.sizeExpression(change, false))
+            text.append(Files.sizeExpression(change, false))
             if (index.bytesPending() > 0 && change > 0) {
                 val timeNeeded: Long = (index.bytesPending() - bytesTransferred) / change
                 text.append(" (")
@@ -142,8 +142,8 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
 
                 // We don't handle IO errors on the receiver side.
                 // An IO error for this side means there is a permission/storage issue.
-                file = com.genonbeta.TrebleShot.util.FileUtils.getIncomingFile(context, item, transfer)
-                currentBytes = file!!.length()
+                file = com.genonbeta.TrebleShot.util.Files.getIncomingFile(context, item, transfer)
+                currentBytes = file!!.getLength()
                 val streamInfo: StreamInfo = StreamInfo.getStreamInfo(context, file!!.uri)
                 try {
                     streamInfo.openOutputStream().use { outputStream ->
@@ -169,7 +169,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
                             completedCount++
                             lastItem = item
                             if (file!!.parentFile != null) {
-                                file = com.genonbeta.TrebleShot.util.FileUtils.saveReceivedFile(
+                                file = com.genonbeta.TrebleShot.util.Files.saveReceivedFile(
                                     file!!.parentFile,
                                     file,
                                     item
@@ -217,7 +217,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
             if (completedCount > 0) {
                 notificationHelper.notifyFileReceived(
                     this,
-                    com.genonbeta.TrebleShot.util.FileUtils.getSavePath(context, transfer)
+                    com.genonbeta.TrebleShot.util.Files.getSavePath(context, transfer)
                 )
                 Log.d(TAG, "handleTransferAsReceiver(): Notify user")
             }
@@ -254,12 +254,12 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
                         database, item
                     )
                     try {
-                        file = FileUtils.fromUri(
+                        file = Files.fromUri(
                             context, Uri.parse(
                                 item!!.file
                             )
                         )
-                        if (item!!.comparableSize != file.length()) throw FileNotFoundException("File size has changed. Probably it is a different file.")
+                        if (item!!.comparableSize != file.getLength()) throw FileNotFoundException("File size has changed. Probably it is a different file.")
                         currentBytes = request.getLong(Keyword.SKIPPED_BYTES)
                         val length = item!!.comparableSize - currentBytes
                         context.contentResolver.openInputStream(

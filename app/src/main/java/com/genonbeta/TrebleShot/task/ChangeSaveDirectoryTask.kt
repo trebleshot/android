@@ -48,17 +48,17 @@ class ChangeSaveDirectoryTask(private val mTransfer: Transfer, private val mNewS
                     ongoingContent = transferItem.name
                     publishStatus()
                     try {
-                        val file = FileUtils.getIncomingPseudoFile(
+                        val file = Files.getIncomingPseudoFile(
                             context, transferItem, mTransfer,
                             false
                         )
-                        val pseudoFile = FileUtils.getIncomingPseudoFile(
+                        val pseudoFile = Files.getIncomingPseudoFile(
                             context, transferItem,
                             pseudoGroup, true
                         )
                         if (file != null && pseudoFile != null) {
                             try {
-                                if (file.canWrite()) FileUtils.move(
+                                if (file.canWrite()) Files.move(
                                     context,
                                     file,
                                     pseudoFile,
