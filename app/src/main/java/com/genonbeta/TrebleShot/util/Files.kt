@@ -27,21 +27,23 @@ import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.DocumentFile.Companion.fromUri
 import com.genonbeta.android.framework.util.Files
+import com.genonbeta.android.framework.util.Files.fetchFile
 import com.genonbeta.android.framework.util.Stoppable
 import java.io.File
 import java.io.IOException
 
-object Files : Files() {
+object Files : Files {
     @Throws(Exception::class)
-    fun copy(context: Context?, source: DocumentFile?, destination: DocumentFile?, stoppable: Stoppable?) {
+    fun copy(context: Context, source: DocumentFile, destination: DocumentFile, stoppable: Stoppable) {
         copy(
             context, source, destination, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
             AppConfig.DEFAULT_TIMEOUT_SOCKET
         )
     }
 
-    fun getApplicationDirectory(context: Context?): DocumentFile {
+    fun getApplicationDirectory(context: Context): DocumentFile {
         val defaultPath = getDefaultApplicationDirectoryPath(context)
         val defaultPreferences = AppUtils.getDefaultPreferences(context)
         if (defaultPreferences.contains("storage_path")) {
@@ -64,8 +66,10 @@ object Files : Files() {
         return DocumentFile.fromFile(defaultPath)
     }
 
-    fun getDefaultApplicationDirectoryPath(context: Context?): File? {
-        if (Build.VERSION.SDK_INT >= 29) return context!!.externalCacheDir
+    fun getDefaultApplicationDirectoryPath(context: Context): File? {
+        if (Build.VERSION.SDK_INT >= 29)
+            return context.externalCacheDir
+
         var primaryDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         if (!primaryDir.isDirectory && !primaryDir.mkdirs() || !primaryDir.canWrite()) primaryDir =
             Environment.getExternalStorageDirectory()
@@ -79,14 +83,13 @@ object Files : Files() {
 
     @Throws(IOException::class)
     fun getIncomingPseudoFile(
-        context: Context?, transferItem: TransferItem?,
-        transfer: Transfer?, createIfNotExists: Boolean
+        context: Context, item: TransferItem, transfer: Transfer, createIfNeeded: Boolean,
     ): DocumentFile {
-        return fetchFile(getSavePath(context, transfer), transferItem!!.directory, transferItem.file, createIfNotExists)
+        return fetchFile(getSavePath(context, transfer), item.directory, item.file, createIfNeeded)
     }
 
     @Throws(IOException::class)
-    fun getIncomingFile(context: Context?, transferItem: TransferItem?, transfer: Transfer?): DocumentFile {
+    fun getIncomingFile(context: Context, transferItem: TransferItem, transfer: Transfer): DocumentFile {
         val pseudoFile = getIncomingPseudoFile(context, transferItem, transfer, true)
         if (!pseudoFile.canWrite()) throw IOException("File cannot be created or you don't have permission write on it")
         return pseudoFile
@@ -107,7 +110,7 @@ object Files : Files() {
     @Throws(Exception::class)
     fun move(
         context: Context?, targetFile: DocumentFile?, destinationFile: DocumentFile?,
-        stoppable: Stoppable?
+        stoppable: Stoppable?,
     ): Boolean {
         return move(
             context, targetFile, destinationFile, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
@@ -157,7 +160,7 @@ object Files : Files() {
     fun saveReceivedFile(
         savePath: DocumentFile,
         currentFile: DocumentFile?,
-        transferItem: TransferItem?
+        transferItem: TransferItem?,
     ): DocumentFile {
         val uniqueName = getUniqueFileName(savePath, transferItem!!.name, true)
 

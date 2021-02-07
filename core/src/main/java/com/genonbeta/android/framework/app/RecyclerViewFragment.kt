@@ -35,14 +35,14 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
     ListFragment<RecyclerView, T, E>() {
     private val handler: Handler = Handler()
     private val requestFocus: Runnable = Runnable {
-        listViewInternal.focusableViewAvailable(
-            listViewInternal
-        )
+        getListViewInternal()?.let {
+            it.focusableViewAvailable(it)
+        }
     }
 
     override fun onListRefreshed() {
         super.onListRefreshed()
-        setListShown(adapter.getCount() > 0)
+        setListShown(adapter?.let { it.getCount() > 0 } ?: false)
     }
 
     override fun ensureList() {
@@ -58,11 +58,11 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
     }
 
     override fun setListAdapter(adapter: E?, hadAdapter: Boolean) {
-        listView.setAdapter(adapter)
+        listView?.adapter = adapter
     }
 
     override fun setListView(listView: RecyclerView?) {
         super.setListView(listView)
-        listView.setLayoutManager(getLayoutManager())
+        listView?.layoutManager = getLayoutManager()
     }
 }

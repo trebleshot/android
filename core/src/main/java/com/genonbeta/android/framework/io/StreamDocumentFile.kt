@@ -25,13 +25,30 @@ import java.io.File
  * date: 18.02.2018 00:24
  */
 class StreamDocumentFile(val stream: StreamInfo, uri: Uri) : DocumentFile(null, uri) {
-    override fun createFile(mimeType: String, displayName: String): DocumentFile? {
-        throw UnsupportedOperationException()
+    override fun canRead(): Boolean {
+        return true
     }
 
-    override fun createDirectory(displayName: String): DocumentFile {
-        throw UnsupportedOperationException()
+    override fun canWrite(): Boolean {
+        return true
     }
+
+    override fun createFile(mimeType: String, displayName: String): DocumentFile? {
+        return null
+    }
+
+    override fun createDirectory(displayName: String): DocumentFile? {
+        return null
+    }
+
+    override fun delete(): Boolean {
+        return false
+    }
+
+    override fun exists(): Boolean {
+        return true
+    }
+
 
     override fun getUri(): Uri {
         return stream.uri
@@ -39,6 +56,14 @@ class StreamDocumentFile(val stream: StreamInfo, uri: Uri) : DocumentFile(null, 
 
     fun getFile(): File? {
         return stream.file
+    }
+
+    override fun getLastModified(): Long {
+        return 0
+    }
+
+    override fun getLength(): Long {
+        return stream.size
     }
 
     override fun getName(): String {
@@ -59,30 +84,6 @@ class StreamDocumentFile(val stream: StreamInfo, uri: Uri) : DocumentFile(null, 
 
     override fun isVirtual(): Boolean {
         return false
-    }
-
-    override fun getLastModified(): Long {
-        return 0
-    }
-
-    override fun getLength(): Long {
-        return stream.size
-    }
-
-    override fun canRead(): Boolean {
-        return true
-    }
-
-    override fun canWrite(): Boolean {
-        return true
-    }
-
-    override fun delete(): Boolean {
-        return false
-    }
-
-    override fun exists(): Boolean {
-        return true
     }
 
     override fun listFiles(): Array<DocumentFile> {

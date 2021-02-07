@@ -45,10 +45,8 @@ class StreamInfo private constructor(
         return if (file == null) context.contentResolver.openInputStream(uri) else FileInputStream(file)
     }
 
-    class FolderStateException : Exception()
-
     companion object {
-        @Throws(FolderStateException::class, FileNotFoundException::class)
+        @Throws(IOException::class, FileNotFoundException::class)
         fun from(context: Context, uri: Uri): StreamInfo {
             val uriAsString = uri.toString()
             if (uriAsString.startsWith("content")) {

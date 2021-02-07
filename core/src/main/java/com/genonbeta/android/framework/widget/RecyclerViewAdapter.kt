@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
  * date: 26.03.2018 11:46
  */
 abstract class RecyclerViewAdapter<T, V : RecyclerViewAdapter.ViewHolder>(final override val context: Context) :
-    RecyclerView.Adapter<V?>(), ListAdapterBase<T?> {
+    RecyclerView.Adapter<V>(), ListAdapterBase<T> {
 
     override val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 

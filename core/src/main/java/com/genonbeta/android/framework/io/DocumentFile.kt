@@ -110,17 +110,6 @@ abstract class DocumentFile(private val parent: DocumentFile?, val originalUri: 
             throw FileNotFoundException("Failed to encapsulate the given Uri $uri")
         }
 
-        fun closeQuietly(closeable: Closeable?) {
-            if (closeable != null) {
-                try {
-                    closeable.close()
-                } catch (rethrown: RuntimeException) {
-                    throw rethrown
-                } catch (ignored: Exception) {
-                }
-            }
-        }
-
         @RequiresApi(21)
         protected fun prepareUri(treeUri: Uri): Uri {
             return DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
