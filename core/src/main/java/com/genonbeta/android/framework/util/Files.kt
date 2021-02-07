@@ -28,6 +28,7 @@ object Files {
         context: Context, source: DocumentFile, destination: DocumentFile, stoppable: Stoppable?,
         bufferLength: Int, socketTimeout: Int,
     ) {
+        // TODO: 2/8/21 DocumentContract has copyDocument feature but it doesn't show the progress
         val resolver = context.contentResolver
         val inputStream = resolver.openInputStream(source.getUri())
         val outputStream = resolver.openOutputStream(destination.getUri())

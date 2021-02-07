@@ -120,6 +120,7 @@ class TreeDocumentFile private constructor(
     }
 
     override fun renameTo(displayName: String): TreeDocumentFile? {
+        // TODO: 2/8/21 Use [DocumentsContract.Document.FLAG_SUPPORTS_RENAME]
         try {
             DocumentsContract.renameDocument(context.contentResolver, uri, displayName)?.also {
                 return from(parent, context, it, it)
