@@ -42,18 +42,18 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
     var adapter: E? = null
         private set
 
-    lateinit var listView: Z
-        private set
+    open lateinit var listView: Z
+        protected set
 
-    private lateinit var emptyListContainerView: ViewGroup
+    lateinit var emptyListActionButton: Button
 
-    private lateinit var emptyListTextView: TextView
+    lateinit var emptyListContainerView: ViewGroup
 
-    private lateinit var emptyListImageView: ImageView
+    lateinit var emptyListImageView: ImageView
 
-    private lateinit var progressBar: ProgressBar
+    lateinit var emptyListTextView: TextView
 
-    private lateinit var emptyListActionButton: Button
+    lateinit var progressBar: ProgressBar
 
     private val refreshLoaderCallback = RefreshLoaderCallback()
 
@@ -100,10 +100,6 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
 
     fun getListAdapter(): E? {
         return adapter
-    }
-
-    protected fun getListViewInternal(): Z? {
-        return listView
     }
 
     override fun refreshList() {

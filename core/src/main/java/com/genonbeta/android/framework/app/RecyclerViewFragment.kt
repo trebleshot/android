@@ -34,11 +34,16 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : RecyclerViewAdapter<T, V>> :
     ListFragment<RecyclerView, T, E>() {
     private val handler: Handler = Handler()
+
     private val requestFocus: Runnable = Runnable {
-        getListViewInternal()?.let {
-            it.focusableViewAvailable(it)
-        }
+        listView.focusableViewAvailable(listView)
     }
+
+    override var listView: RecyclerView
+        get() = super.listView
+        set(value) {
+            value.layoutManager = getLayoutManager()
+        }
 
     override fun onListRefreshed() {
         super.onListRefreshed()
@@ -58,11 +63,6 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
     }
 
     override fun setListAdapter(adapter: E?, hadAdapter: Boolean) {
-        listView?.adapter = adapter
-    }
-
-    override fun setListView(listView: RecyclerView?) {
-        super.setListView(listView)
-        listView?.layoutManager = getLayoutManager()
+        listView.adapter = adapter
     }
 }
