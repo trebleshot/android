@@ -20,20 +20,25 @@ package com.genonbeta.TrebleShot.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.DefaultBubbleBehavior
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ScrollViewProvider
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ViewBehavior
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.VisibilityAnimationManager
 
 /**
  * created by: veli
  * date: 10.04.2018 19:52
  */
-class LongTextBubbleFastScrollViewProvider : ScrollerViewProvider() {
+class LongTextBubbleFastScrollViewProvider : ScrollViewProvider() {
     private var mBubble: View? = null
     private var mHandle: View? = null
     override fun provideHandleView(container: ViewGroup): View {
-        mHandle = View(getContext())
-        val verticalInset = if (getScroller().isVertical()) 0 else getContext().getResources()
-            .getDimensionPixelSize(com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_inset)
+        mHandle = View(context)
+        val verticalInset =
+            if (scroller.isVertical()) 0 else context.resources.getDimensionPixelSize(com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_inset)
         val horizontalInset = if (!getScroller().isVertical()) 0 else getContext().getResources()
             .getDimensionPixelSize(com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_inset)
         val handleBg = InsetDrawable(
@@ -53,18 +58,20 @@ class LongTextBubbleFastScrollViewProvider : ScrollerViewProvider() {
     }
 
     override fun provideBubbleView(container: ViewGroup): View {
-        mBubble = LayoutInflater.from(getContext())
+        val view = LayoutInflater.from(context)
             .inflate(R.layout.abstract_layout_fast_scroll_long_text_bubble_text_view, container, false)
-        return mBubble
+        mBubble = view
+        return view
     }
 
     override fun provideBubbleTextView(): TextView {
         return mBubble as TextView
     }
 
-    val bubbleOffset: Int
-        get() = (if (getScroller().isVertical()) mHandle!!.height.toFloat() / 2f - mBubble!!.height
+    override fun getBubbleOffset(): Int =
+        (if (scroller.isVertical()) mHandle!!.height.toFloat() / 2f - mBubble!!.height
             .toFloat() / 2f else mHandle!!.width.toFloat() / 2f - mBubble!!.width.toFloat() / 2).toInt()
+
 
     protected override fun provideHandleBehavior(): ViewBehavior? {
         return null

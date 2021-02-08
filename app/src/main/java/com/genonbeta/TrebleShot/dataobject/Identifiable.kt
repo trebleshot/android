@@ -18,5 +18,5 @@
 package com.genonbeta.TrebleShot.dataobject
 
 interface Identifiable {
-    val identity: Identity?
+    val identity: Identity
 }

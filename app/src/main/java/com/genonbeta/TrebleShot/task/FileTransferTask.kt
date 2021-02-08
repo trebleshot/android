@@ -18,6 +18,7 @@
 package com.genonbeta.TrebleShot.task
 
 import android.content.*
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Log
 import com.genonbeta.TrebleShot.R
@@ -29,16 +30,18 @@ import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
+import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import org.json.JSONObject
+import org.monora.coolsocket.core.session.ActiveConnection
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.WritableByteChannel
 
-class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
+class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
     // Static objects
     var activeConnection: ActiveConnection? = null
     var device: Device? = null
@@ -59,9 +62,15 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener?>() {
     var completedCount = 0
     private val mTimeTransactionSaved: Long = 0
     private var mDatabase: SQLiteDatabase? = null
+
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        if (activeConnection == null) startTransferAsClient() else if (TransferItem.Type.OUTGOING == type) handleTransferAsSender() else if (TransferItem.Type.INCOMING == type) handleTransferAsReceiver()
+        if (activeConnection == null)
+            startTransferAsClient()
+        else if (TransferItem.Type.OUTGOING == type)
+            handleTransferAsSender()
+        else if (TransferItem.Type.INCOMING == type)
+            handleTransferAsReceiver()
     }
 
     override fun onPublishStatus() {

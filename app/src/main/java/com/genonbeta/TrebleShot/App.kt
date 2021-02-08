@@ -22,7 +22,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaScannerConnection
 import android.net.wifi.WifiConfiguration
-import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.*
 import android.os.*
 import android.provider.Settings
@@ -43,7 +42,6 @@ import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.WebShareServer
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.*
-import com.genonbeta.TrebleShot.utilimport.DynamicNotification
 import com.genonbeta.TrebleShot.utilimport.NsdDaemon
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
 import java.io.ByteArrayInputStream
@@ -66,19 +64,19 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     private var foregroundActivitiesCount = 0
 
-    private lateinit var hotspotManager: HotspotManager
+    lateinit var hotspotManager: HotspotManager
 
-    private lateinit var mediaScanner: MediaScannerConnection
+    lateinit var mediaScanner: MediaScannerConnection
 
-    private lateinit var notificationHelper: NotificationHelper
+    lateinit var notificationHelper: NotificationHelper
 
-    private lateinit var nsdDaemon: NsdDaemon
+    lateinit var nsdDaemon: NsdDaemon
 
-    private val taskList: MutableList<AsyncTask> = ArrayList()
+    val taskList: MutableList<AsyncTask> = ArrayList()
 
-    private lateinit var taskNotification: DynamicNotification
+    lateinit var taskNotification: DynamicNotification
 
-    private lateinit var webShareServer: WebShareServer
+    lateinit var webShareServer: WebShareServer
 
     private var foregroundActivity: Activity? = null
 
@@ -94,25 +92,26 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             AppUtils.getDefaultPreferences(applicationContext)
         )
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-        hotspotManager = HotspotManager.Companion.newInstance(this)
+        hotspotManager = HotspotManager.newInstance(this)
         mediaScanner = MediaScannerConnection(this, null)
         notificationHelper = NotificationHelper(
             NotificationUtils(
-                getApplicationContext(),
-                AppUtils.getKuick(getApplicationContext()), AppUtils.getDefaultPreferences(getApplicationContext())
+                applicationContext,
+                AppUtils.getKuick(applicationContext), AppUtils.getDefaultPreferences(applicationContext)
             )
         )
         webShareServer = WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE)
+
         mediaScanner.connect()
+
         if (Build.VERSION.SDK_INT >= 26)
             hotspotManager.secondaryCallback = SecondaryHotspotCallback()
 
-        if (Keyword.Flavor.googlePlay != AppUtils.buildFlavor
-            && !Updates.hasNewVersion(applicationContext)
+        if (Keyword.Flavor.googlePlay != AppUtils.buildFlavor && !Updates.hasNewVersion(applicationContext)
             && System.currentTimeMillis() - Updates.getCheckTime(applicationContext) >= AppConfig.DELAY_UPDATE_CHECK
         ) {
-            val updater: GitHubUpdater = Updates.getDefaultUpdater(getApplicationContext())
-            Updates.checkForUpdates(getApplicationContext(), updater, false, null)
+            val updater: GitHubUpdater = Updates.getDefaultUpdater(applicationContext)
+            Updates.checkForUpdates(applicationContext, updater, false, null)
         }
     }
 
@@ -272,7 +271,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         if (notified <= taskNotificationTime && !force) return false
         if (!hasTasks()) {
             if (foregroundActivitiesCount > 0 || !tryStoppingBgService())
-                notificationHelper.foregroundNotification().show()
+                notificationHelper.foregroundNotification.show()
             return false
         }
         var taskList: List<AsyncTask>
@@ -354,7 +353,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
                     )
                     .append("\n\n")
                     .append("--STACKTRACE--\n\n")
-                if (stackTraceElements.size > 0) for (element in stackTraceElements) {
+                if (stackTraceElements.isNotEmpty()) for (element in stackTraceElements) {
                     stringBuilder.append(element.className)
                         .append(".")
                         .append(element.methodName)

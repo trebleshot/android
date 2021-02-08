@@ -19,13 +19,17 @@ package com.genonbeta.TrebleShot.adapter
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.*
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.dataobject.Editable
+import com.genonbeta.TrebleShot.util.Networks
 import com.genonbeta.TrebleShot.util.TextUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import java.net.NetworkInterface
 import java.util.*
 
@@ -34,8 +38,8 @@ import java.util.*
  * date: 4/7/19 10:35 PM
  */
 class ActiveConnectionListAdapter(fragment: IEditableListFragment<EditableNetworkInterface, ViewHolder>) :
-    EditableListAdapter<EditableNetworkInterface?, RecyclerViewAdapter.ViewHolder?>(fragment) {
-    override fun onLoad(): List<EditableNetworkInterface> {
+    EditableListAdapter<EditableNetworkInterface, ViewHolder>(fragment) {
+    override fun onLoad(): MutableList<EditableNetworkInterface> {
         val resultList: MutableList<EditableNetworkInterface> = ArrayList()
         val interfaceList: List<NetworkInterface> = Networks.getInterfaces(
             true,
@@ -53,12 +57,12 @@ class ActiveConnectionListAdapter(fragment: IEditableListFragment<EditableNetwor
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(
-            inflater.inflate(
+            layoutInflater.inflate(
                 R.layout.list_active_connection, parent,
                 false
             )
         )
-        fragment!!.registerLayoutViewClicks(holder)
+        getFragment()?.registerLayoutViewClicks(holder)
         holder.itemView.findViewById<View>(R.id.visitView)
             .setOnClickListener { v: View? -> fragment!!.performLayoutClickOpen(holder) }
         holder.itemView.findViewById<View>(R.id.selector)
@@ -67,11 +71,11 @@ class ActiveConnectionListAdapter(fragment: IEditableListFragment<EditableNetwor
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val `object`: EditableNetworkInterface? = getItem(position)
-        val text1: TextView = holder.itemView.findViewById<TextView>(R.id.text)
-        val text2: TextView = holder.itemView.findViewById<TextView>(R.id.text2)
-        text1.setText(`object`!!.getSelectableTitle())
-        text2.setText(TextUtils.makeWebShareLink(context, Networks.getFirstInet4Address(`object`).getHostAddress()))
+        val `object`: EditableNetworkInterface = getItem(position)
+        val text1: TextView = holder.itemView.findViewById(R.id.text)
+        val text2: TextView = holder.itemView.findViewById(R.id.text2)
+        text1.text = `object`.getSelectableTitle()
+        text2.text = TextUtils.makeWebShareLink(context, Networks.getFirstInet4Address(`object`).hostAddress)
     }
 
     class EditableNetworkInterface(private val mInterface: NetworkInterface, private val mName: String?) : Editable {

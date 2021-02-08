@@ -18,146 +18,35 @@
 package com.genonbeta.TrebleShot.activity
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.*
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesPending
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.bytesValue
-import com.genonbeta.TrebleShot.dataobject.TransferItem.flag
-import com.genonbeta.TrebleShot.dataobject.TransferItem.putFlag
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress.hostAddress
-import com.genonbeta.TrebleShot.dataobject.Container.expand
-import com.genonbeta.TrebleShot.dataobject.Device.equals
-import com.genonbeta.TrebleShot.dataobject.TransferItem.flags
-import com.genonbeta.TrebleShot.dataobject.TransferItem.getFlag
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.toString
-import com.genonbeta.TrebleShot.dataobject.TransferItem.reconstruct
-import com.genonbeta.TrebleShot.dataobject.Device.generatePictureId
-import com.genonbeta.TrebleShot.dataobject.TransferItem.setDeleteOnRemoval
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.selectableTitle
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.hasOutgoing
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.hasIncoming
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparisonSupported
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparableDate
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparableSize
-import com.genonbeta.TrebleShot.dataobject.Comparable.comparableName
-import com.genonbeta.TrebleShot.dataobject.Editable.applyFilter
-import com.genonbeta.TrebleShot.dataobject.Editable.id
-import com.genonbeta.TrebleShot.dataobject.Shareable.setSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.Shareable.initialize
-import com.genonbeta.TrebleShot.dataobject.Shareable.isSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.Shareable.comparisonSupported
-import com.genonbeta.TrebleShot.dataobject.Shareable.comparableSize
-import com.genonbeta.TrebleShot.dataobject.Shareable.applyFilter
-import com.genonbeta.TrebleShot.dataobject.Device.hashCode
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.percentage
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.getMemberAsTitle
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.isSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.numberOfCompleted
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.numberOfTotal
-import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesTotal
-import com.genonbeta.TrebleShot.dataobject.TransferItem.isSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.TransferItem.setSelectableSelected
-import com.genonbeta.TrebleShot.dataobject.TransferItem.senderFlagList
-import com.genonbeta.TrebleShot.dataobject.TransferItem.getPercentage
-import com.genonbeta.TrebleShot.dataobject.TransferItem.setId
-import com.genonbeta.TrebleShot.dataobject.TransferItem.comparableDate
-import com.genonbeta.TrebleShot.dataobject.Identity.equals
-import com.genonbeta.TrebleShot.dataobject.Transfer.equals
-import com.genonbeta.TrebleShot.dataobject.TransferMember.reconstruct
-import com.genonbeta.TrebleShot.io.Containable
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity.AvailableFragment
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity
-import androidx.annotation.DrawableRes
-import com.genonbeta.TrebleShot.dataobject.Shareable
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.TrebleShot.ui.callback.LocalSharingCallback
-import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.PickListener
-import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.SharingMethod
-import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
-import com.genonbeta.TrebleShot.App
-import com.genonbeta.TrebleShot.util.NotificationUtils
-import com.genonbeta.TrebleShot.database.Kuick
-import com.genonbeta.TrebleShot.util.AppUtils
-import androidx.appcompat.app.AppCompatActivity
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
-import androidx.annotation.StyleRes
 import android.content.pm.PackageManager
-import com.genonbeta.TrebleShot.activity.WelcomeActivity
-import com.genonbeta.TrebleShot.GlideApp
-import com.bumptech.glide.request.target.CustomTarget
-import android.graphics.drawable.Drawable
-import android.graphics.Bitmap
-import com.genonbeta.TrebleShot.config.AppConfig
-import kotlin.jvm.Synchronized
-import com.genonbeta.TrebleShot.service.BackgroundService
-import android.graphics.BitmapFactory
-import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
-import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog
-import kotlin.jvm.JvmOverloads
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
-import com.genonbeta.TrebleShot.app.IEditableListFragment
-import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
-import com.genonbeta.android.framework.util.actionperformer.EngineConnection
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
-import com.genonbeta.TrebleShot.app.EditableListFragment.FilteringDelegate
-import android.database.ContentObserver
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
-import android.os.*
-import com.genonbeta.TrebleShot.app.EditableListFragment.LayoutClickListener
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase
-import com.genonbeta.TrebleShot.app.EditableListFragment
-import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider
-import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
-import com.genonbeta.TrebleShot.widget.EditableListAdapterBase
-import android.view.*
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
-import android.view.View.OnLongClickListener
-import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.config.Keyword
-import com.genonbeta.TrebleShot.dataobject.TextStreamObject
-import com.genonbeta.android.framework.util.actionperformer.SelectableNotFoundException
-import com.genonbeta.android.framework.util.actionperformer.CouldNotAlterException
-import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
-import com.genonbeta.TrebleShot.util.SelectionUtils
-import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
-import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask
-import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.ResultListener
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.*
 import com.genonbeta.TrebleShot.util.Connections
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import java.lang.Exception
-import java.net.InetAddress
-import java.net.UnknownHostException
 
 class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProvider {
     private val mDismissListener = DialogInterface.OnDismissListener { dialog: DialogInterface? -> updateState() }
@@ -178,8 +67,9 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         override fun onReceive(context: Context, intent: Intent) {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
                 || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
-                || LocationManager.PROVIDERS_CHANGED_ACTION == intent.action)
-                    updateState()
+                || LocationManager.PROVIDERS_CHANGED_ACTION == intent.action
+            )
+                updateState()
         }
     }
 
@@ -196,8 +86,8 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         mConductContainer = findViewById(R.id.layout_barcode_connect_conduct_container)
         mTextModeIndicator = findViewById(R.id.layout_barcode_connect_mode_text_indicator)
         mConductButton = findViewById(R.id.layout_barcode_connect_conduct_button)
-        mBarcodeView = findViewById<DecoratedBarcodeView>(R.id.layout_barcode_connect_barcode_view)
-        mConductText = findViewById<TextView>(R.id.layout_barcode_connect_conduct_text)
+        mBarcodeView = findViewById(R.id.layout_barcode_connect_barcode_view)
+        mConductText = findViewById(R.id.layout_barcode_connect_conduct_text)
         mConductImage = findViewById(R.id.layout_barcode_connect_conduct_image)
         mTaskContainer = findViewById(R.id.container_task)
         mTaskInterruptButton = findViewById(R.id.task_interrupter_button)
@@ -208,7 +98,8 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
             override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
         })
-        if (supportActionBar != null) supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onResume() {
@@ -230,7 +121,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (permissions.size > 0) {
+        if (permissions.isNotEmpty()) {
             for (i in permissions.indices) {
                 if (Manifest.permission.CAMERA == permissions[i] &&
                     grantResults[i] == PackageManager.PERMISSION_GRANTED
@@ -249,22 +140,30 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == android.R.id.home) onBackPressed() else if (id == R.id.show_help) AlertDialog.Builder(this)
-            .setMessage(R.string.help_scanQRCode)
-            .setPositiveButton(android.R.string.ok, null)
-            .show() else if (id == R.id.change_mode) {
-            mShowAsText = !mShowAsText
-            mTextModeIndicator!!.visibility = if (mShowAsText) View.VISIBLE else View.GONE
-            item.setIcon(if (mShowAsText) R.drawable.ic_qrcode_white_24dp else R.drawable.ic_short_text_white_24dp)
-            createSnackbar(if (mShowAsText) R.string.mesg_qrScannerTextMode else R.string.mesg_qrScannerDefaultMode).show()
-            updateState()
-        } else return super.onOptionsItemSelected(item)
+        when (id) {
+            android.R.id.home -> onBackPressed()
+            R.id.show_help -> AlertDialog.Builder(this)
+                .setMessage(R.string.help_scanQRCode)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            R.id.change_mode -> {
+                mShowAsText = !mShowAsText
+                mTextModeIndicator!!.visibility = if (mShowAsText) View.VISIBLE else View.GONE
+                item.setIcon(if (mShowAsText) R.drawable.ic_qrcode_white_24dp else R.drawable.ic_short_text_white_24dp)
+                createSnackbar(if (mShowAsText) R.string.mesg_qrScannerTextMode else R.string.mesg_qrScannerDefaultMode).show()
+                updateState()
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
         return true
     }
 
     override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
         super.onAttachTasks(taskList)
-        for (task in taskList) if (task is DeviceIntroductionTask) (task as DeviceIntroductionTask).setAnchor(this)
+        for (task in taskList)
+            if (task is DeviceIntroductionTask)
+                task.setAnchor(this)
+
         updateState(hasTaskOf(DeviceIntroductionTask::class.java))
     }
 
@@ -274,12 +173,16 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     protected fun handleBarcode(code: String) {
         try {
-            if (mShowAsText) throw Exception("Showing as text.")
+            if (mShowAsText)
+                throw Exception("Showing as text.")
+
             val values: Array<String?> = code.split(";".toRegex()).toTypedArray()
             val type = values[0]
 
             // empty-strings cause trouble and are harder to manage.
-            for (i in values.indices) if (values[i]!!.length == 0) values[i] = null
+            for (i in values.indices)
+                if (values[i]!!.isEmpty())
+                    values[i] = null
             when (type) {
                 Keyword.QR_CODE_TYPE_HOTSPOT -> {
                     val pin = values[1]!!.toInt()

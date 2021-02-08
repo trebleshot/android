@@ -39,6 +39,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.EditableListAdapterBase
 import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
+import com.genonbeta.android.framework.`object`.Selectable
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files
@@ -51,7 +52,7 @@ import java.util.*
  * created by: Veli
  * date: 21.11.2017 10:12
  */
-abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewHolder?, E : EditableListAdapter<T, V>?> :
+abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHolder, E : EditableListAdapter<T, V>> :
     DynamicRecyclerViewFragment<T, V, E>(), IEditableListFragment<T, V> {
     private val mEngineConnection: IEngineConnection<T> = EngineConnection(this, this)
     private val mPerformerEngine: IPerformerEngine = PerformerEngine()
@@ -87,9 +88,8 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
             return true
         }
 
-        override fun getFilteringKeyword(listFragment: EditableListFragmentBase<T>?): Array<String?>? {
-            return if (mSearchText != null && mSearchText.length > 0) mSearchText!!.split(" ".toRegex())
-                .toTypedArray() else null
+        override fun getFilteringKeyword(listFragment: EditableListFragmentBase<T>): Array<String>? {
+            return mSearchText?.split(" ".toRegex())?.toTypedArray()
         }
     }
 
@@ -100,17 +100,18 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mTwoRowLayoutState = isTwoRowLayout
-        val arguments = arguments
-        if (arguments != null) {
-            mSelectByClick = arguments.getBoolean(ARG_SELECT_BY_CLICK, mSelectByClick)
-            mHasBottomSpace = arguments.getBoolean(ARG_HAS_BOTTOM_SPACE, mHasBottomSpace)
+
+        arguments?.let{
+            mSelectByClick = it.getBoolean(ARG_SELECT_BY_CLICK, mSelectByClick)
+            mHasBottomSpace = it.getBoolean(ARG_HAS_BOTTOM_SPACE, mHasBottomSpace)
         }
-        if (mPerformerMenu != null) mPerformerMenu!!.setUp(mPerformerEngine)
+
+        mPerformerMenu?.setUp(mPerformerEngine)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(mLayoutResId, container, false)
     }
@@ -148,17 +149,17 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
         mPerformerMenu = onCreatePerformerMenu(context)
         mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(context))
         mEngineConnection.addSelectionListener(this)
-        if (performerEngine != null) performerEngine!!.ensureSlot(this, engineConnection)
+        getPerformerEngine()?.ensureSlot(this, engineConnection)
     }
 
     override fun onDetach() {
         super.onDetach()
-        if (performerEngine != null) performerEngine!!.removeSlot(engineConnection)
+        getPerformerEngine()?.removeSlot(engineConnection)
     }
 
     override fun onSelected(
         engine: IPerformerEngine, owner: IEngineConnection<T>, selectable: T, isSelected: Boolean,
-        position: Int
+        position: Int,
     ) {
         if (position >= 0) adapter!!.syncAndNotify(position) else adapter!!.syncAllAndNotify()
         ensureLocalSelection()
@@ -166,7 +167,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
 
     override fun onSelected(
         engine: IPerformerEngine, owner: IEngineConnection<T>, selectableList: List<T>,
-        isSelected: Boolean, positions: IntArray
+        isSelected: Boolean, positions: IntArray,
     ) {
         adapter!!.syncAllAndNotify()
         ensureLocalSelection()
@@ -645,9 +646,10 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
         fun onLayoutClick(listFragment: EditableListFragmentBase<*>?, holder: V, longClick: Boolean): Boolean
     }
 
-    interface FilteringDelegate<T : Editable?> {
+    interface FilteringDelegate<T : Editable> {
         fun changeFilteringKeyword(keyword: String?): Boolean
-        fun getFilteringKeyword(listFragment: EditableListFragmentBase<T>?): Array<String?>?
+
+        fun getFilteringKeyword(listFragment: EditableListFragmentBase<T>): Array<String>?
     }
 
     open class SelectionCallback(val activity: Activity?, private val mProvider: PerformerEngineProvider) :
@@ -658,7 +660,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
         override fun onPerformerMenuList(
             performerMenu: PerformerMenu,
             inflater: MenuInflater,
-            targetMenu: Menu
+            targetMenu: Menu,
         ): Boolean {
             inflater.inflate(R.menu.action_mode_abs_editable, targetMenu)
             if (!mCancellable) targetMenu.findItem(R.id.action_mode_abs_editable_cancel_selection).isVisible = false
@@ -688,7 +690,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
         override fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
             owner: IBaseEngineConnection, selectable: Selectable,
-            isSelected: Boolean, position: Int
+            isSelected: Boolean, position: Int,
         ): Boolean {
             return true
         }
@@ -697,7 +699,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
             performerMenu: PerformerMenu, engine: IPerformerEngine,
             owner: IBaseEngineConnection,
             selectableList: List<Selectable>, isSelected: Boolean,
-            positions: IntArray
+            positions: IntArray,
         ): Boolean {
             return true
         }
@@ -705,7 +707,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
             owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
-            position: Int
+            position: Int,
         ) {
             updateTitle(SelectionUtils.getTotalSize(engine))
         }
@@ -713,13 +715,13 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
             owner: IBaseEngineConnection, selectableList: List<Selectable>,
-            isSelected: Boolean, positions: IntArray
+            isSelected: Boolean, positions: IntArray,
         ) {
             updateTitle(SelectionUtils.getTotalSize(engine))
         }
 
         fun setSelectionState(newState: Boolean, tryForeground: Boolean) {
-            val engine = mProvider.performerEngine
+            val engine = mProvider.getPerformerEngine()
             if (mForegroundConnection != null && tryForeground) setSelectionState(
                 mForegroundConnection!!,
                 newState
@@ -731,7 +733,7 @@ abstract class EditableListFragment<T : Editable?, V : RecyclerViewAdapter.ViewH
             }
         }
 
-        private fun <T : Selectable?> setSelectionState(connection: IEngineConnection<T>, newState: Boolean) {
+        private fun <T : Selectable> setSelectionState(connection: IEngineConnection<T>, newState: Boolean) {
             val availableList = connection.getAvailableList()
             if (availableList.size > 0) {
                 val positions = IntArray(availableList.size)

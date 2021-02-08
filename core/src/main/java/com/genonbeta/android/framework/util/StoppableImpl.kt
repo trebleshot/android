@@ -24,25 +24,21 @@ class StoppableImpl : Stoppable {
 
     private var interruptedByUser = false
 
-    private val closers: MutableList<Stoppable.Closer> = ArrayList()
-
     override fun addCloser(closer: Stoppable.Closer): Boolean {
         synchronized(closers) { return closers.add(closer) }
     }
+
+    override val closers: MutableList<Stoppable.Closer> = ArrayList()
 
     override fun hasCloser(closer: Stoppable.Closer): Boolean {
         synchronized(closers) { return closers.contains(closer) }
     }
 
-    override fun getClosers(): MutableList<Stoppable.Closer> {
-        return closers
-    }
-
-    override fun isInterrupted(): Boolean {
+    override fun interrupted(): Boolean {
         return interrupted
     }
 
-    override fun isInterruptedByUser(): Boolean {
+    override fun interruptedByUser(): Boolean {
         return interruptedByUser
     }
 
@@ -54,7 +50,7 @@ class StoppableImpl : Stoppable {
         if (userAction)
             interruptedByUser = true
 
-        if (isInterrupted())
+        if (interrupted())
             return false
 
         interrupted = true

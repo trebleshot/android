@@ -22,180 +22,172 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.android.framework.R
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.RecyclerViewScrollListener
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTitleProvider
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils
-import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ScrollerViewProvider
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.DefaultScrollViewProvider
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ScrollViewProvider
 
-class FastScroller constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
-    LinearLayout(context, attrs, defStyle) {
-    private val mScrollListener: RecyclerViewScrollListener = RecyclerViewScrollListener(this)
-    private var mRecyclerView: RecyclerView? = null
-    private var mBubble: View? = null
-    private var mHandle: View? = null
-    private var mBubbleTextView: TextView? = null
-    private var mBubbleOffset = 0
-    private var mHandleColor = 0
-    private var mBubbleColor = 0
-    private var mBubbleTextAppearance = 0
-    private var mScrollerOrientation = 0
-    private var mMaxVisibility: Int
-    private var mManuallyChangingPosition = false
-    private var mViewProvider: ScrollerViewProvider? = null
-    private var mTitleProvider: SectionTitleProvider? = null
+class FastScroller(
+    context: Context, attrs: AttributeSet? = null, defStyle: Int = 0,
+) : LinearLayout(context, attrs, defStyle) {
+    var bubbleColor = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
 
-    /**
-     * Attach the [FastScroller] to [RecyclerView]. Should mHandle.setMinimumHeight((int) computedExtent);
-     * be used after the adapter is set to the [RecyclerView]. If the adapter implements SectionTitleProvider,
-     * the FastScroller will show a bubble with title.
-     *
-     * @param recyclerView A [RecyclerView] to attach the [FastScroller] to.
-     */
-    fun setRecyclerView(recyclerView: RecyclerView) {
-        mRecyclerView = recyclerView
-        if (recyclerView.adapter is SectionTitleProvider)
-            mTitleProvider = recyclerView.adapter
-        recyclerView.addOnScrollListener(mScrollListener)
-        invalidateVisibility()
-        recyclerView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
-            override fun onChildViewAdded(parent: View?, child: View?) {
+    var bubbleOffset = 0
+
+    var bubbleTextAppearance = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    var handleColor = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    var horizontalLayout = false
+
+    var manuallyChangingPosition = false
+
+    var maxVisibility: Int
+
+    var recyclerView: RecyclerView? = null
+        set(value) {
+            field = value
+
+            value?.let {
+                val adapter = it.adapter
+
+                if (adapter is SectionTitleProvider)
+                    titleProvider = adapter
+
+                it.addOnScrollListener(scrollListener)
                 invalidateVisibility()
+                it.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
+                    override fun onChildViewAdded(parent: View?, child: View?) {
+                        invalidateVisibility()
+                    }
+
+                    override fun onChildViewRemoved(parent: View?, child: View?) {
+                        invalidateVisibility()
+                    }
+                })
             }
+        }
 
-            override fun onChildViewRemoved(parent: View?, child: View?) {
-                invalidateVisibility()
+    val scrollListener: RecyclerViewScrollListener = RecyclerViewScrollListener(this)
+
+    var titleProvider: SectionTitleProvider? = null
+
+    var viewProvider: ScrollViewProvider? = null
+        set(value) {
+            removeAllViews()
+            field = value
+
+            value?.let {
+                it.scroller = this
+                it.recreateViews(this)
+
+                addView(it.bubbleView)
+                addView(it.handleView)
             }
-        })
-    }
+        }
 
-    /**
-     * Set the orientation of the [FastScroller]. The orientation of the [FastScroller]
-     * should generally match the orientation of connected  [RecyclerView] for good UX but it's not enforced.
-     * Note: This method is overridden from [LinearLayout.setOrientation] but for [FastScroller]
-     * it has a totally different meaning.
-     *
-     * @param orientation of the [FastScroller]. [.VERTICAL] or [.HORIZONTAL]
-     */
-    override fun setOrientation(orientation: Int) {
-        mScrollerOrientation = orientation
-        //switching orientation, because orientation in linear layout
-        //is something different than orientation of fast scroller
-        super.setOrientation(if (orientation == HORIZONTAL) VERTICAL else HORIZONTAL)
-    }
-
-    /**
-     * Set the background color of the bubble.
-     *
-     * @param color Color in hex notation with alpha channel, e.g. 0xFFFFFFFF
-     */
-    fun setBubbleColor(color: Int) {
-        mBubbleColor = color
-        invalidate()
-    }
-
-    /**
-     * Set the background color of the handle.
-     *
-     * @param color Color in hex notation with alpha channel, e.g. 0xFFFFFFFF
-     */
-    fun setHandleColor(color: Int) {
-        mHandleColor = color
-        invalidate()
-    }
-
-    /**
-     * Sets the text appearance of the bubble.
-     *
-     * @param textAppearanceResourceId The id of the resource to be used as text appearance of the bubble.
-     */
-    fun setBubbleTextAppearance(textAppearanceResourceId: Int) {
-        mBubbleTextAppearance = textAppearanceResourceId
-        invalidate()
-    }
-
-    /**
-     * Add a [RecyclerViewScrollListener.ScrollerListener]
-     * to be notified of user scrolling
-     *
-     * @param listener
-     */
     fun addScrollerListener(listener: RecyclerViewScrollListener.ScrollerListener) {
-        mScrollListener.addScrollerListener(listener)
+        scrollListener.addScrollerListener(listener)
     }
 
-    protected override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         super.onLayout(changed, l, t, r, b)
-        initHandleMovement()
-        mBubbleOffset = mViewProvider.getBubbleOffset()
-        applyStyling() //TODO this doesn't belong here, even if it works
-        if (!isInEditMode) {
-            //sometimes recycler starts with a defined scroll (e.g. when coming from saved state)
 
-            // Disabled since this was triggering another change
-            // on layout every time it was scrolled (esp. manual handle change).
-            //mScrollListener.updateHandlePosition(mRecyclerView);
+        viewProvider?.let {
+            bubbleOffset = it.getBubbleOffset()
+
+            initHandleMovement(it)
+            applyStyling(it)
         }
     }
 
-    private fun applyStyling() {
-        if (mBubbleColor != STYLE_NONE)
-            setBackgroundTint(mBubbleTextView, mBubbleColor)
+    private fun applyStyling(viewProvider: ScrollViewProvider) {
+        if (bubbleColor != STYLE_NONE)
+            setBackgroundTint(viewProvider.bubbleTextView, bubbleColor)
 
-        if (mHandleColor != STYLE_NONE)
-            setBackgroundTint(mHandle, mHandleColor)
+        if (handleColor != STYLE_NONE)
+            setBackgroundTint(viewProvider.handleView, handleColor)
 
-        if (mBubbleTextAppearance != STYLE_NONE)
-            TextViewCompat.setTextAppearance(mBubbleTextView, mBubbleTextAppearance)
+        if (bubbleTextAppearance != STYLE_NONE)
+            TextViewCompat.setTextAppearance(viewProvider.bubbleTextView, bubbleTextAppearance)
     }
 
-    private fun setBackgroundTint(view: View?, color: Int) {
-        val background = DrawableCompat.wrap(view.getBackground())
+    private fun setBackgroundTint(view: View, color: Int) {
+        val background = DrawableCompat.wrap(view.background)
+
         DrawableCompat.setTint(background.mutate(), color)
         Utils.setBackground(view, background)
     }
 
-    private fun initHandleMovement() {
-      mHandle.setOnTouchListener { v, event ->
-          requestDisallowInterceptTouchEvent(true)
-          if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
-              if (mTitleProvider != null && event.getAction() == MotionEvent.ACTION_DOWN) mViewProvider.onHandleGrabbed()
-              mManuallyChangingPosition = true
-              val relativePos = getRelativeTouchPosition(event)
-              setScrollerPosition(relativePos)
-              setRecyclerViewPosition(relativePos)
-              return true
-          } else if (event.getAction() == MotionEvent.ACTION_UP) {
-              mManuallyChangingPosition = false
-              mRecyclerView.scrollBy(0, 0)
-              if (mTitleProvider != null) mViewProvider.onHandleReleased()
-              return true
-          }
-          return false
-      }
+    private fun initHandleMovement(viewProvider: ScrollViewProvider) {
+        viewProvider.handleView.setOnTouchListener { v, event ->
+            requestDisallowInterceptTouchEvent(true)
+
+            if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
+                if (titleProvider != null && event.action == MotionEvent.ACTION_DOWN)
+                    viewProvider.onHandleGrabbed()
+
+                manuallyChangingPosition = true
+
+                getRelativeTouchPosition(event).also {
+                    setScrollerPosition(it)
+                    setRecyclerViewPosition(it)
+                }
+            } else if (event.action == MotionEvent.ACTION_UP) {
+                manuallyChangingPosition = false
+
+                recyclerView?.scrollBy(0, 0)
+                if (titleProvider != null)
+                    viewProvider.onHandleReleased()
+            } else {
+                // TODO: 2/8/21 I don't like having this here.
+                v.performClick()
+                return@setOnTouchListener false
+            }
+
+            return@setOnTouchListener true
+        }
     }
 
-    private fun getRelativeTouchPosition(event: MotionEvent?): Float {
-        if (isVertical()) {
-            val yInParent: Float = event.getRawY() - Utils.getViewRawY(mHandle)
-            return yInParent / (getHeight() - mHandle.getHeight())
+    private fun getRelativeTouchPosition(event: MotionEvent): Float {
+        viewProvider?.let {
+            if (horizontalLayout) {
+                val xInParent: Float = event.rawX - Utils.getViewRawX(it.handleView)
+                return xInParent / (width - it.handleView.width)
+            }
+
+            val yInParent: Float = event.rawY - Utils.getViewRawY(it.handleView)
+            return yInParent / (height - it.handleView.height)
         }
-        val xInParent: Float = event.getRawX() - Utils.getViewRawX(mHandle)
-        return xInParent / (getWidth() - mHandle.getWidth())
+
+        return 0f
     }
 
     override fun setVisibility(visibility: Int) {
-        mMaxVisibility = visibility
+        maxVisibility = visibility
         invalidateVisibility()
     }
 
-    private fun invalidateVisibility() {
-        if (mRecyclerView.getAdapter() == null || mRecyclerView.getAdapter()
-                .getItemCount() == 0 || mRecyclerView.getChildAt(0) == null ||
-            isRecyclerViewNotScrollable() || mMaxVisibility != View.VISIBLE
+    private fun invalidateVisibility() = recyclerView?.let {
+        if (it.adapter == null || it.adapter?.itemCount == 0 || it.getChildAt(0) == null
+            || isRecyclerViewInvalid() || maxVisibility != View.VISIBLE
         ) {
             super.setVisibility(View.INVISIBLE)
         } else {
@@ -203,123 +195,99 @@ class FastScroller constructor(context: Context, attrs: AttributeSet? = null, de
         }
     }
 
-    private fun isRecyclerViewNotScrollable(): Boolean {
-        return if (isVertical()) mRecyclerView.getChildAt(0).getHeight() * mRecyclerView.getAdapter()
-            .getItemCount() <= mRecyclerView.getHeight() else mRecyclerView.getChildAt(0)
-            .getWidth() * mRecyclerView.getAdapter().getItemCount() <= mRecyclerView.getWidth()
-    }
+    private fun isRecyclerViewInvalid(): Boolean = recyclerView?.let {
+        return it.adapter?.let { adapter ->
+            if (horizontalLayout)
+                it.getChildAt(0).width * adapter.itemCount <= it.width
+            else
+                it.getChildAt(0).height * adapter.itemCount <= it.height
+        } ?: true
+    } ?: true
 
-    private fun setRecyclerViewPosition(relativePos: Float) {
-        if (mRecyclerView == null || mRecyclerView.getAdapter() == null) return
+    private fun setRecyclerViewPosition(relativePos: Float) = recyclerView?.let {
+        val provider = viewProvider
+        val adapter = it.adapter
+
+        if (adapter == null || provider == null)
+            return Unit
+
         val offset: Int
         val extent: Int
         val range: Int
-        if (isVertical()) {
-            offset = mRecyclerView.computeVerticalScrollOffset()
-            extent = mRecyclerView.computeVerticalScrollExtent()
-            range = mRecyclerView.computeVerticalScrollRange()
+
+        if (horizontalLayout) {
+            offset = it.computeHorizontalScrollOffset()
+            extent = it.computeHorizontalScrollExtent()
+            range = it.computeHorizontalScrollRange()
         } else {
-            offset = mRecyclerView.computeHorizontalScrollOffset()
-            extent = mRecyclerView.computeHorizontalScrollExtent()
-            range = mRecyclerView.computeHorizontalScrollRange()
-        }
-        run {
-            val viewUnder: View = if (isVertical()) mRecyclerView.findChildViewUnder(
-                0f,
-                mHandle.getY()
-            ) else mRecyclerView.findChildViewUnder(mHandle.getX(), 0f)
-            val viewHolder: RecyclerView.ViewHolder? =
-                if (viewUnder == null) null else mRecyclerView.findContainingViewHolder(viewUnder)
-            val itemCount: Int = mRecyclerView.getAdapter().getItemCount()
-            var targetPos = if (viewHolder == null) -1 else viewHolder.getAdapterPosition()
-            if (targetPos < 0 || targetPos >= itemCount) // This is an old fallback method.
-            // The problem is it assumes each child has the same length.
-            // Let's hope that the method above always locates what is under.
-                targetPos = Utils.getValueInRange(
-                    0f,
-                    (itemCount - 1).toFloat(),
-                    (relativePos * itemCount as Float) as Int.toFloat
-                    ()
-                ) as Int
-            if (mTitleProvider != null && mBubbleTextView != null) mBubbleTextView.setText(
-                mTitleProvider.getSectionTitle(
-                    targetPos
-                )
-            )
+            offset = it.computeVerticalScrollOffset()
+            extent = it.computeVerticalScrollExtent()
+            range = it.computeVerticalScrollRange()
         }
 
-        //float computedExtent = (float) extent * (offset / (float) (range - extent));
-        //float currentOffset = offset + computedExtent;
-        //  For: Change-a
+        val viewUnder: View? = if (horizontalLayout)
+            it.findChildViewUnder(provider.handleView.x, 0f)
+        else
+            it.findChildViewUnder(0f, provider.handleView.y)
+
+        val viewHolder: RecyclerView.ViewHolder? = if (viewUnder == null)
+            null
+        else
+            it.findContainingViewHolder(viewUnder)
+
+        val itemCount = adapter.itemCount
+        var targetPos = viewHolder?.adapterPosition ?: -1
+
+        // The problem is it assumes each child has the same length.
+        // Let's hope that the method above always locates what is under.
+        if (targetPos < 0 || targetPos >= itemCount)
+            targetPos = Utils.getValueInRange(
+                0f,
+                (itemCount - 1).toFloat(),
+                relativePos * itemCount.toFloat()
+            ).toInt()
+
+        titleProvider?.let {
+            provider.bubbleTextView.text = it.getSectionTitle(targetPos)
+        }
+
         val expectedPosition = range * relativePos
 
-        // Change-a
-        // We don't want to scroll the view when it still covers all the content that is requested.
-        if (expectedPosition <= extent && offset == 0) return
-        val difference = (expectedPosition - (offset + extent)) as Int
-        if (isVertical()) mRecyclerView.scrollBy(0, difference) else mRecyclerView.scrollBy(difference, 0)
+        if (expectedPosition <= extent && offset == 0)
+            return Unit
+
+        val difference = (expectedPosition - (offset + extent)).toInt()
+
+        if (horizontalLayout)
+            it.scrollBy(difference, 0)
+        else
+            it.scrollBy(0, difference)
     }
 
-    fun setScrollerPosition(relativePos: Float) {
-        if (isVertical()) {
-            mBubble.setY(
-                Utils.getValueInRange(
-                    0f, (
-                            getHeight() - mBubble.getHeight()).toFloat(),
-                    relativePos * (getHeight() - mHandle.getHeight()) + mBubbleOffset
-                )
+    fun setScrollerPosition(relativePos: Float) = viewProvider?.let {
+        if (horizontalLayout) {
+            it.bubbleView.x = Utils.getValueInRange(
+                0f, (width - it.bubbleView.width).toFloat(),
+                relativePos * (width - it.handleView.width) + bubbleOffset
             )
-            mHandle.setY(
-                Utils.getValueInRange(
-                    0f, (
-                            getHeight() - mHandle.getHeight()).toFloat(),
-                    relativePos * (getHeight() - mHandle.getHeight())
-                )
+            it.handleView.x = Utils.getValueInRange(
+                0f, (width - it.handleView.width).toFloat(),
+                relativePos * (width - it.handleView.width)
             )
         } else {
-            mBubble.setX(
-                Utils.getValueInRange(
-                    0f, (
-                            getWidth() - mBubble.getWidth()).toFloat(),
-                    relativePos * (getWidth() - mHandle.getWidth()) + mBubbleOffset
-                )
+            it.bubbleView.y = Utils.getValueInRange(
+                0f, (height - it.bubbleView.height).toFloat(),
+                relativePos * (height - it.handleView.height) + bubbleOffset
             )
-            mHandle.setX(
-                Utils.getValueInRange(
-                    0f, (
-                            getWidth() - mHandle.getWidth()).toFloat(),
-                    relativePos * (getWidth() - mHandle.getWidth())
-                )
+            it.handleView.y = Utils.getValueInRange(
+                0f, (height - it.handleView.height).toFloat(),
+                relativePos * (height - it.handleView.height)
             )
         }
-    }
-
-    fun isVertical(): Boolean {
-        return mScrollerOrientation == VERTICAL
     }
 
     fun shouldUpdateHandlePosition(): Boolean {
-        return mHandle != null && !mManuallyChangingPosition && mRecyclerView.getChildCount() > 0
-    }
-
-    fun getViewProvider(): ScrollerViewProvider {
-        return mViewProvider
-    }
-
-    /**
-     * Enables custom layout for [FastScroller].
-     *
-     * @param viewProvider A [ScrollerViewProvider] for the [FastScroller] to use when building layout.
-     */
-    fun setViewProvider(viewProvider: ScrollerViewProvider?) {
-        removeAllViews()
-        mViewProvider = viewProvider
-        viewProvider.setFastScroller(this)
-        mBubble = viewProvider.provideBubbleView(this)
-        mHandle = viewProvider.provideHandleView(this)
-        mBubbleTextView = viewProvider.provideBubbleTextView()
-        addView(mBubble)
-        addView(mHandle)
+        return viewProvider != null && !manuallyChangingPosition && recyclerView?.let { it.childCount > 0 } ?: false
     }
 
     companion object {
@@ -327,21 +295,23 @@ class FastScroller constructor(context: Context, attrs: AttributeSet? = null, de
     }
 
     init {
-        setClipChildren(false)
-        val style: TypedArray? = context.obtainStyledAttributes(
+        clipChildren = false
+
+        val style = context.obtainStyledAttributes(
             attrs, R.styleable.GenfwFastScroller,
             R.attr.genfw_fastScrollStyle, 0
         )
         try {
-            mBubbleColor = style.getColor(R.styleable.GenfwFastScroller_genfw_fastScrollBubbleColor, STYLE_NONE)
-            mHandleColor = style.getColor(R.styleable.GenfwFastScroller_genfw_fastScrollHandleColor, STYLE_NONE)
-            mBubbleTextAppearance = style.getResourceId(
+            bubbleColor = style.getColor(R.styleable.GenfwFastScroller_genfw_fastScrollBubbleColor, STYLE_NONE)
+            handleColor = style.getColor(R.styleable.GenfwFastScroller_genfw_fastScrollHandleColor, STYLE_NONE)
+            bubbleTextAppearance = style.getResourceId(
                 R.styleable.GenfwFastScroller_genfw_fastScrollBubbleTextAppearance, STYLE_NONE
             )
         } finally {
             style.recycle()
         }
-        mMaxVisibility = getVisibility()
-        setViewProvider(DefaultScrollerViewProvider())
+
+        maxVisibility = visibility
+        viewProvider = DefaultScrollViewProvider()
     }
 }

@@ -19,9 +19,9 @@ class RecyclerViewScrollListener(private val scroller: FastScroller) : RecyclerV
     override fun onScrollStateChanged(recyclerView: RecyclerView, newScrollState: Int) {
         super.onScrollStateChanged(recyclerView, newScrollState)
         if (newScrollState == RecyclerView.SCROLL_STATE_IDLE && oldScrollState != RecyclerView.SCROLL_STATE_IDLE)
-            scroller.getViewProvider().onScrollFinished()
+            scroller.viewProvider?.onScrollFinished()
         else if (newScrollState != RecyclerView.SCROLL_STATE_IDLE && oldScrollState == RecyclerView.SCROLL_STATE_IDLE)
-            scroller.getViewProvider().onScrollStarted()
+            scroller.viewProvider?.onScrollStarted()
         oldScrollState = newScrollState
     }
 
@@ -34,14 +34,15 @@ class RecyclerViewScrollListener(private val scroller: FastScroller) : RecyclerV
         val offset: Int
         val extent: Int
         val range: Int
-        if (scroller.isVertical()) {
-            offset = rv.computeVerticalScrollOffset()
-            extent = rv.computeVerticalScrollExtent()
-            range = rv.computeVerticalScrollRange()
-        } else {
+
+        if (scroller.horizontalLayout) {
             offset = rv.computeHorizontalScrollOffset()
             extent = rv.computeHorizontalScrollExtent()
             range = rv.computeHorizontalScrollRange()
+        } else {
+            offset = rv.computeVerticalScrollOffset()
+            extent = rv.computeVerticalScrollExtent()
+            range = rv.computeVerticalScrollRange()
         }
 
         //float relativePos = offset / (float) (range - extent);

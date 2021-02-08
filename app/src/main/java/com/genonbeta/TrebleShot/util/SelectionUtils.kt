@@ -15,16 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package com.genonbeta.TrebleShot.utilimport
+package com.genonbeta.TrebleShot.util
 
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 
 object SelectionUtils {
     fun getTotalSize(engine: IPerformerEngine): Int {
         var selectedTotal = 0
-        for (connection in engine.connectionList) selectedTotal += connection.genericSelectedItemList.size
+        for (connection in engine.getConnectionList())
+            selectedTotal += connection.getGenericAvailableList()?.size ?: 0
         return selectedTotal
     }
 }

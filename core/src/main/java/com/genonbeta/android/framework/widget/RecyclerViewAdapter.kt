@@ -37,10 +37,6 @@ abstract class RecyclerViewAdapter<T, V : RecyclerViewAdapter.ViewHolder>(final 
         notifyDataSetChanged()
     }
 
-    override fun getCount(): Int {
-        return itemCount
-    }
-
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun isSelected() = itemView.isSelected
 

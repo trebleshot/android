@@ -19,12 +19,14 @@ package com.genonbeta.TrebleShot.app
 
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.viewimport.EditableListFragmentViewBase
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 
-interface IEditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHolder>
-    : EditableListFragmentBase<T>, EditableListFragmentViewBase<V> {
+interface IEditableListFragment<T : Editable, V : ViewHolder> : EditableListFragmentBase<T>, EditableListFragmentViewBase<V> {
     fun performLayoutClickOpen(holder: V): Boolean
+
     fun performLayoutClickOpen(holder: V, `object`: T): Boolean
+
     fun performDefaultLayoutClick(holder: V, `object`: T): Boolean
+
     fun performDefaultLayoutLongClick(holder: V, `object`: T): Boolean
 }

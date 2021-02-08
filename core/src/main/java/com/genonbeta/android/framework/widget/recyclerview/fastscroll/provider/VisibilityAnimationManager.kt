@@ -3,17 +3,11 @@ package com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider
 import android.animation.Animator
 import android.animation.AnimatorInflater
 import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
 import android.view.View
 import androidx.annotation.AnimatorRes
 import com.genonbeta.android.framework.R
 
-/**
- * Created by Michal on 05/08/16.
- * Animates showing and hiding elements of the [FastScroller] (handle and bubble).
- * The decision when to show/hide the element should be implemented via [ViewBehavior].
- */
-class VisibilityAnimationManager protected constructor(
+class VisibilityAnimationManager private constructor(
     private val view: View,
     @AnimatorRes showAnimator: Int,
     @AnimatorRes hideAnimator: Int,
@@ -21,9 +15,9 @@ class VisibilityAnimationManager protected constructor(
     private val pivotYRelative: Float,
     hideDelay: Int
 ) {
-    protected var hideAnimator: Animator = AnimatorInflater.loadAnimator(view.context, hideAnimator)
+    private var hideAnimator: Animator = AnimatorInflater.loadAnimator(view.context, hideAnimator)
 
-    protected var showAnimator: Animator = AnimatorInflater.loadAnimator(view.context, showAnimator)
+    private var showAnimator: Animator = AnimatorInflater.loadAnimator(view.context, showAnimator)
 
     fun show() {
         hideAnimator.cancel()
@@ -40,9 +34,9 @@ class VisibilityAnimationManager protected constructor(
         hideAnimator.start()
     }
 
-    protected fun updatePivot() {
-        view.pivotX = pivotXRelative * view.getMeasuredWidth()
-        view.pivotY = pivotYRelative * view.getMeasuredHeight()
+    private fun updatePivot() {
+        view.pivotX = pivotXRelative * view.measuredWidth
+        view.pivotY = pivotYRelative * view.measuredHeight
     }
 
     abstract class AbsBuilder<T : VisibilityAnimationManager?>(protected val view: View) {
@@ -76,7 +70,7 @@ class VisibilityAnimationManager protected constructor(
             return this
         }
 
-        abstract fun build(): T?
+        abstract fun build(): T
     }
 
     class Builder(view: View) : AbsBuilder<VisibilityAnimationManager>(view) {
@@ -97,19 +91,22 @@ class VisibilityAnimationManager protected constructor(
         this.hideAnimator.setTarget(view)
         this.showAnimator.setTarget(view)
         this.hideAnimator.addListener(object : AnimatorListenerAdapter() {
-            //because onAnimationEnd() goes off even for canceled animations
-            var mWasCanceled = false
+            var wasCanceled = false
+
             override fun onAnimationEnd(animation: Animator?) {
                 super.onAnimationEnd(animation)
-                if (!mWasCanceled) view.setVisibility(View.INVISIBLE)
-                mWasCanceled = false
+                if (!wasCanceled)
+                    view.visibility = View.INVISIBLE
+
+                wasCanceled = false
             }
 
             override fun onAnimationCancel(animation: Animator?) {
                 super.onAnimationCancel(animation)
-                mWasCanceled = true
+                wasCanceled = true
             }
         })
+
         updatePivot()
     }
 }

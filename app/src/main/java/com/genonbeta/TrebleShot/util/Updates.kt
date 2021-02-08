@@ -29,17 +29,17 @@ import com.genonbeta.android.updatewithgithub.GitHubUpdater
 object Updates {
     // TODO: 2/6/21 Check for updates method  is commented out
     fun checkForUpdates(
-        context: Context?, updater: GitHubUpdater?, popupDialog: Boolean,
-        listener: GitHubUpdater.OnInfoAvailableListener?
+        context: Context, updater: GitHubUpdater, popupDialog: Boolean,
+        listener: GitHubUpdater.OnInfoAvailableListener?,
     ) {
         /*
         updater.checkForUpdates(popupDialog, (newVersion, versionName, title, description, releaseDate) -> {
-            SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
+            SharedPreferences sharedPreferences = AppUtils . getDefaultPreferences (context);
 
             sharedPreferences.edit()
-                    .putString("availableVersion", versionName)
-                    .putLong("checkedForUpdatesTime", System.currentTimeMillis())
-                    .apply();
+                .putString("availableVersion", versionName)
+                .putLong("checkedForUpdatesTime", System.currentTimeMillis())
+                .apply();
 
             if (listener != null)
                 listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);

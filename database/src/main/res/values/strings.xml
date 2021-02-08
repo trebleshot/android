@@ -1,0 +1,4 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:ignore="ResourceName">
+    <string name="library_name">GDatabase</string>
+</resources>

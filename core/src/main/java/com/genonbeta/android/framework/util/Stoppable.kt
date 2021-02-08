@@ -48,21 +48,21 @@ interface Stoppable {
      *
      * @return pending list of objects
      */
-    fun getClosers(): MutableList<Closer>
+    val closers: MutableList<Closer>
 
     /**
      * Ensure if the task has been cancelled.
      *
      * @return true if it was
      */
-    fun isInterrupted(): Boolean
+    fun interrupted(): Boolean
 
     /**
      * Whether the [interrupt] invocation was made by user.
      *
      * @return true if the was cancelled with userAction boolean was true
      */
-    fun isInterruptedByUser(): Boolean
+    fun interruptedByUser(): Boolean
 
     /**
      * Cancel the task with 'userAction' is set to true.

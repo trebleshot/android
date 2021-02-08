@@ -35,7 +35,7 @@ interface ListAdapterBase<T> {
 
     fun onUpdate(passedItem: MutableList<T>)
 
-    fun getCount(): Int
+    fun getItemCount(): Int
 
     fun getList(): MutableList<T>
 }

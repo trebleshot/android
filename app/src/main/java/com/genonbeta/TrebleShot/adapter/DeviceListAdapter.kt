@@ -27,8 +27,11 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.dataobject.Editable
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.*
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Connections
+import com.genonbeta.TrebleShot.utilimport.NsdDaemon
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import java.util.*
@@ -36,7 +39,7 @@ import java.util.*
 class DeviceListAdapter(
     fragment: IEditableListFragment<VirtualDevice, ViewHolder>, private val mConnections: Connections,
     nsdDaemon: NsdDaemon, hiddenDeviceTypes: Array<Device.Type?>?
-) : EditableListAdapter<VirtualDevice?, RecyclerViewAdapter.ViewHolder?>(fragment) {
+) : EditableListAdapter<DeviceListAdapter.VirtualDevice, RecyclerViewAdapter.ViewHolder>(fragment) {
     private val mIconBuilder: IShapeBuilder?
     private val mHiddenDeviceTypes: List<Device.Type>
     private val mNsdDaemon: NsdDaemon
@@ -47,22 +50,20 @@ class DeviceListAdapter(
         if (mConnections.canReadScanResults()) {
             for (result in mConnections.wifiManager.scanResults) {
                 if ((result.capabilities == null || result.capabilities == "[ESS]")
-                    && Connections.Companion.isClientNetwork(result.SSID)
+                    && Connections.isClientNetwork(result.SSID)
                 ) list.add(DescriptionVirtualDevice(NetworkDescription(result)))
             }
         }
         for (device in AppUtils.getKuick(context).castQuery(
-            SQLQuery.Select(Kuick.Companion.TABLE_DEVICES)
-                .setOrderBy(Kuick.Companion.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device::class.java
+            SQLQuery.Select(Kuick.TABLE_DEVICES)
+                .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device::class.java
         )) {
-            if (mNsdDaemon.isDeviceOnline(device)) device.type =
-                Device.Type.NORMAL_ONLINE else if (Device.Type.NORMAL_ONLINE == device.type) device.type =
-                Device.Type.NORMAL
-            if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode)) list.add(
-                DbVirtualDevice(
-                    device
-                )
-            )
+            if (mNsdDaemon.isDeviceOnline(device))
+                device.type = Device.Type.NORMAL_ONLINE
+            else if (Device.Type.NORMAL_ONLINE == device.type)
+                device.type = Device.Type.NORMAL
+            if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
+                list.add(DbVirtualDevice(device))
         }
         val filteredList: MutableList<VirtualDevice> = ArrayList()
         for (virtualDevice in list) if (filterItem(virtualDevice)) filteredList.add(virtualDevice)

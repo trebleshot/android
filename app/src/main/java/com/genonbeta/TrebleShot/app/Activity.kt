@@ -193,9 +193,10 @@ abstract class Activity : AppCompatActivity() {
     }
 
     open fun onUserProfileUpdated() {}
+
     fun attachTask(task: BaseAttachableAsyncTask) {
         synchronized(mAttachedTaskList) { if (!mAttachedTaskList.add(task)) return }
-        if (task.contentIntent == null) task.setContentIntent(this, intent)
+        if (task.acti == null) task.setContentIntent(this, intent)
     }
 
     @Synchronized

@@ -62,7 +62,7 @@ class PerformerEngine : IPerformerEngine {
         val selectableList: MutableList<Selectable> = ArrayList<Selectable>()
         synchronized(mConnectionList) {
             for (baseEngineConnection in mConnectionList)
-                selectableList.addAll(baseEngineConnection.getGenericSelectedItemList())
+                baseEngineConnection.getGenericSelectedItemList()?.let { selectableList.addAll(it) }
         }
         return selectableList
     }

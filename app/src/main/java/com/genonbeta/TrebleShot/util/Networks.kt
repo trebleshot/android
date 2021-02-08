@@ -37,7 +37,7 @@ object Networks {
         return null
     }
 
-    fun getInterfaces(ipV4only: Boolean, avoidedInterfaces: Array<String?>?): List<NetworkInterface> {
+    fun getInterfaces(ipV4only: Boolean, avoidedInterfaces: Array<String>?): List<NetworkInterface> {
         val filteredInterfaceList: MutableList<NetworkInterface> = ArrayList()
         try {
             val networkInterfaces = NetworkInterface.getNetworkInterfaces()

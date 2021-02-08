@@ -17,13 +17,20 @@
  */
 package com.genonbeta.TrebleShot.util
 
+import android.app.PendingIntent
 import android.content.*
 import android.os.*
+import androidx.core.app.NotificationCompat
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity
+import com.genonbeta.TrebleShot.activity.ContentSharingActivity
+import com.genonbeta.TrebleShot.activity.HomeActivity
+import com.genonbeta.TrebleShot.activity.TextEditorActivity
 import com.genonbeta.TrebleShot.dataobject.*
+import com.genonbeta.TrebleShot.receiver.DialogEventReceiver
 import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.task.FileTransferTask
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import java.text.NumberFormat
@@ -37,27 +44,24 @@ class NotificationHelper(val utils: NotificationUtils) {
     val foregroundNotification: DynamicNotification
         get() {
             val notification = utils.buildDynamicNotification(
-                ID_BG_SERVICE.toLong(),
-                NotificationUtils.Companion.NOTIFICATION_CHANNEL_LOW
+                ID_BG_SERVICE.toLong(), NotificationUtils.NOTIFICATION_CHANNEL_LOW
             )
             val sendString = context!!.getString(R.string.butn_send)
             val receiveString = context!!.getString(R.string.butn_receive)
             val sendIntent: PendingIntent = PendingIntent.getActivity(
-                context, 0, Intent(
-                    context,
-                    ContentSharingActivity::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0
+                context,
+                0,
+                Intent(context, ContentSharingActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                0
             )
             val receiveIntent: PendingIntent = PendingIntent.getActivity(
-                context, 0, Intent(
-                    context,
-                    AddDeviceActivity::class.java
-                ).putExtra(
-                    AddDeviceActivity.Companion.EXTRA_CONNECTION_MODE,
-                    ConnectionMode.WaitForRequests
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0
+                context, 0,
+                Intent(context, AddDeviceActivity::class.java)
+                    .putExtra(AddDeviceActivity.EXTRA_CONNECTION_MODE, AddDeviceActivity.ConnectionMode.WaitForRequests)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                0
             )
-            notification!!.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
+            notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
                 .setContentTitle(context!!.getString(R.string.text_communicationServiceRunning))
                 .setContentText(context!!.getString(R.string.text_notificationOpenHome))
                 .setContentIntent(generateHomePendingIntent())
@@ -68,11 +72,8 @@ class NotificationHelper(val utils: NotificationUtils) {
         }
 
     fun generateHomePendingIntent(): PendingIntent {
-        return PendingIntent.getActivity(
-            context, 0, Intent(
-                context,
-                HomeActivity::class.java
-            ).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
+        return PendingIntent.getActivity(context, 0, Intent(context, HomeActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
         )
     }
 
@@ -81,7 +82,7 @@ class NotificationHelper(val utils: NotificationUtils) {
             R.drawable.ic_close_white_24dp_static, context!!.getString(
                 R.string.butn_stopAll
             ), PendingIntent.getService(
-                context, AppUtils.getUniqueNumber(),
+                context, AppUtils.uniqueNumber,
                 Intent(context, BackgroundService::class.java)
                     .setAction(BackgroundService.ACTION_STOP_ALL_TASKS), 0
             )
@@ -93,82 +94,82 @@ class NotificationHelper(val utils: NotificationUtils) {
             R.drawable.ic_close_white_24dp_static, context!!.getString(
                 R.string.butn_exit
             ), PendingIntent.getService(
-                context, AppUtils.getUniqueNumber(),
+                context, AppUtils.uniqueNumber,
                 Intent(context, BackgroundService::class.java)
                     .setAction(BackgroundService.ACTION_END_SESSION), 0
             )
         )
     }
 
-    val context: Context?
+    val context: Context
         get() = utils.context
 
     fun notifyKeyChanged(device: Device, receiveKey: Int, sendKey: Int) {
         val notification = utils.buildDynamicNotification(
-            AppUtils.getUniqueNumber().toLong(),
-            NotificationUtils.Companion.NOTIFICATION_CHANNEL_HIGH
+            AppUtils.uniqueNumber.toLong(),
+            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
         )
         val acceptIntent = Intent(context, BackgroundService::class.java)
         val dialogIntent = Intent(context, DialogEventReceiver::class.java)
         acceptIntent.setAction(BackgroundService.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
             .putExtra(BackgroundService.EXTRA_DEVICE, device)
-            .putExtra(NotificationUtils.Companion.EXTRA_NOTIFICATION_ID, notification!!.notificationId)
+            .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
             .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
             .putExtra(BackgroundService.EXTRA_RECEIVE_KEY, receiveKey)
             .putExtra(BackgroundService.EXTRA_SEND_KEY, sendKey)
         val rejectIntent = (acceptIntent.clone() as Intent)
             .putExtra(BackgroundService.EXTRA_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getService(
-            context, AppUtils.getUniqueNumber(), acceptIntent,
+            context, AppUtils.uniqueNumber, acceptIntent,
             0
         )
         val negativeIntent: PendingIntent = PendingIntent.getService(
-            context, AppUtils.getUniqueNumber(), rejectIntent,
+            context, AppUtils.uniqueNumber, rejectIntent,
             0
         )
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-            .setContentTitle(context!!.getString(R.string.text_deviceKeyChanged))
-            .setContentText(context!!.getString(R.string.ques_acceptNewDeviceKey, device.username))
+            .setContentTitle(context.getString(R.string.text_deviceKeyChanged))
+            .setContentText(context.getString(R.string.ques_acceptNewDeviceKey, device.username))
             .setContentInfo(device.username)
             .setContentIntent(
                 PendingIntent.getBroadcast(
-                    context, AppUtils.getUniqueNumber(), dialogIntent,
+                    context, AppUtils.uniqueNumber, dialogIntent,
                     0
                 )
             )
             .setDefaults(utils.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(R.drawable.ic_check_white_24dp_static, context!!.getString(R.string.butn_accept), positiveIntent)
-            .addAction(R.drawable.ic_close_white_24dp_static, context!!.getString(R.string.butn_reject), negativeIntent)
-            .setTicker(context!!.getString(R.string.text_connectionPermission))
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_accept), positiveIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_reject), negativeIntent)
+            .setTicker(context.getString(R.string.text_connectionPermission))
         notification.show()
     }
 
     fun notifyTransferRequest(
         device: Device, transfer: Transfer, acceptIntent: Intent, rejectIntent: Intent,
-        transferDetail: Intent?, message: String?
+        transferDetail: Intent?, message: String?,
     ) {
         val notification = utils.buildDynamicNotification(
             Transfers.createUniqueTransferId(transfer.id, device.uid, TransferItem.Type.INCOMING),
-            NotificationUtils.Companion.NOTIFICATION_CHANNEL_HIGH
+            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
         )
-        acceptIntent.putExtra(NotificationUtils.Companion.EXTRA_NOTIFICATION_ID, notification!!.notificationId)
-        rejectIntent.putExtra(NotificationUtils.Companion.EXTRA_NOTIFICATION_ID, notification.notificationId)
+        acceptIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
+        rejectIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val positiveIntent: PendingIntent = PendingIntent.getService(
-            context, AppUtils.getUniqueNumber(), acceptIntent,
+            context, AppUtils.uniqueNumber, acceptIntent,
             0
         )
         val negativeIntent: PendingIntent = PendingIntent.getService(
-            context, AppUtils.getUniqueNumber(), rejectIntent,
+            context, AppUtils.uniqueNumber, rejectIntent,
             0
         )
         notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle(context!!.getString(R.string.ques_receiveFile))
+            .setContentTitle(context.getString(R.string.ques_receiveFile))
             .setContentText(message)
             .setContentInfo(device.username)
             .setContentIntent(
                 PendingIntent.getActivity(
-                    context, AppUtils.getUniqueNumber(), transferDetail,
+                    context, AppUtils.uniqueNumber, transferDetail,
                     0
                 )
             )
@@ -176,11 +177,11 @@ class NotificationHelper(val utils: NotificationUtils) {
             .setDeleteIntent(negativeIntent)
             .addAction(
                 R.drawable.ic_check_white_24dp_static,
-                context!!.getString(R.string.butn_receive),
+                context.getString(R.string.butn_receive),
                 positiveIntent
             )
-            .addAction(R.drawable.ic_close_white_24dp_static, context!!.getString(R.string.butn_reject), negativeIntent)
-            .setTicker(context!!.getString(R.string.ques_receiveFile)).priority = NotificationCompat.PRIORITY_HIGH
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_reject), negativeIntent)
+            .setTicker(context.getString(R.string.ques_receiveFile)).priority = NotificationCompat.PRIORITY_HIGH
         notification.show()
     }
 
@@ -192,17 +193,17 @@ class NotificationHelper(val utils: NotificationUtils) {
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_CLIPBOARD)
             .putExtra(BackgroundService.EXTRA_CLIPBOARD_ID, `object`.id)
-            .putExtra(NotificationUtils.Companion.EXTRA_NOTIFICATION_ID, notification!!.notificationId)
+            .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val activityIntent = Intent(context, TextEditorActivity::class.java)
         val rejectIntent = acceptIntent.clone() as Intent
         acceptIntent.putExtra(BackgroundService.EXTRA_CLIPBOARD_ACCEPTED, true)
         rejectIntent.putExtra(BackgroundService.EXTRA_CLIPBOARD_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getService(
-            context, AppUtils.getUniqueNumber(), acceptIntent,
+            context, AppUtils.uniqueNumber, acceptIntent,
             0
         )
         val negativeIntent: PendingIntent = PendingIntent.getService(
-            context, AppUtils.getUniqueNumber(), rejectIntent,
+            context, AppUtils.uniqueNumber, rejectIntent,
             0
         )
         activityIntent
@@ -211,31 +212,31 @@ class NotificationHelper(val utils: NotificationUtils) {
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle(context!!.getString(R.string.ques_copyToClipboard))
-            .setContentText(context!!.getString(R.string.text_textReceived))
+            .setContentTitle(context.getString(R.string.ques_copyToClipboard))
+            .setContentText(context.getString(R.string.text_textReceived))
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(`object`.text)
-                    .setBigContentTitle(context!!.getString(R.string.ques_copyToClipboard))
+                    .setBigContentTitle(context.getString(R.string.ques_copyToClipboard))
             )
             .setContentInfo(device.username)
             .setContentIntent(
                 PendingIntent.getActivity(
-                    context, AppUtils.getUniqueNumber(), activityIntent,
+                    context, AppUtils.uniqueNumber, activityIntent,
                     0
                 )
             )
             .setDefaults(utils.notificationSettings)
             .setDeleteIntent(negativeIntent)
             .addAction(
-                R.drawable.ic_check_white_24dp_static, context!!.getString(android.R.string.copy),
+                R.drawable.ic_check_white_24dp_static, context.getString(android.R.string.copy),
                 positiveIntent
             )
             .addAction(
-                R.drawable.ic_close_white_24dp_static, context!!.getString(android.R.string.no),
+                R.drawable.ic_close_white_24dp_static, context.getString(android.R.string.no),
                 negativeIntent
             )
-            .setTicker(context!!.getString(R.string.text_receivedTextSummary)).priority =
+            .setTicker(context.getString(R.string.text_receivedTextSummary)).priority =
             NotificationCompat.PRIORITY_HIGH
         notification.show()
     }
@@ -244,7 +245,7 @@ class NotificationHelper(val utils: NotificationUtils) {
         val notification = utils.buildDynamicNotification(
             Transfers.createUniqueTransferId(
                 task.transfer.id, task.device.uid, task.type
-            ), NotificationUtils.Companion.NOTIFICATION_CHANNEL_HIGH
+            ), NotificationUtils.NOTIFICATION_CHANNEL_HIGH
         )
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -307,7 +308,7 @@ class NotificationHelper(val utils: NotificationUtils) {
 
     fun notifyTasksNotification(
         taskList: List<AsyncTask>,
-        notification: DynamicNotification?
+        notification: DynamicNotification?,
     ): DynamicNotification {
         var notification = notification
         if (notification == null) {

@@ -49,7 +49,7 @@ object Files {
                 lastRead = time
             }
 
-            if (time - lastRead > socketTimeout || stoppable?.isInterrupted() == true)
+            if (time - lastRead > socketTimeout || stoppable?.interrupted() == true)
                 throw Exception("Timed out or interrupted. Exiting!")
         }
 

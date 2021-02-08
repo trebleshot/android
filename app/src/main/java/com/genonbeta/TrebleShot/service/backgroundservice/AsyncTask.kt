@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
 import com.genonbeta.TrebleShot.dataobject.Identity
 import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
 import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.DynamicNotification
 import com.genonbeta.TrebleShot.util.NotificationHelper
 import com.genonbeta.TrebleShot.util.StoppableJob
@@ -35,18 +36,17 @@ import com.genonbeta.android.framework.util.Stoppable
 import com.genonbeta.android.framework.util.StoppableImpl
 
 abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
-    private var activityIntent: PendingIntent? = null
-
-    protected var app: App? = null
+    var activityIntent: PendingIntent? = null
         private set
 
-    val closers: List<Any>
-        get() = stoppable.closers
+    protected lateinit var app: App
+        private set
 
     protected var customNotification // The notification that is not part of the default notification.
             : DynamicNotification? = null
 
-    private var kuick: Kuick? = null
+    val kuick: Kuick
+        get() = AppUtils.getKuick(context)
 
     private val progressListener: ProgressListener = ProgressListener()
         get() {
@@ -69,7 +69,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
 
     var ongoingContent: String? = null
 
-    private var mHash = 0
+    private var customHashCode = 0
 
     protected open fun onProgressChange(progress: Progress) {
         publishStatus()
@@ -87,22 +87,28 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     val context: Context
-        get() = app.getApplicationContext()
+        get() = app.applicationContext
 
-
-    val identity: Identity
+    override val identity: Identity
         get() = withORs(from(Id.HashCode, hashCode()))
-    protected val mediaScanner: MediaScannerConnection?
-        protected get() = app.mediaScanner
-    protected val name: String?
-        protected get() = getName(context)
 
-    abstract fun getName(context: Context?): String?
+    val mediaScanner: MediaScannerConnection
+        get() = app.mediaScanner
+
+    val name: String?
+        get() = getName(context)
+
+    abstract fun getName(context: Context): String?
+
     val notificationHelper: NotificationHelper
         get() = app.notificationHelper
+
     val state: State
         get() {
-            if (!isStarted) return State.Starting else if (!isFinished) return State.Running
+            if (!isStarted)
+                return State.Starting
+            else if (!isFinished)
+                return State.Running
             return State.Finished
         }
 
@@ -111,7 +117,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     override fun hashCode(): Int {
-        return if (mHash != 0) mHash else super.hashCode()
+        return if (customHashCode != 0) customHashCode else super.hashCode()
     }
 
     override fun interrupt(): Boolean {
@@ -123,10 +129,10 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     val isInterrupted: Boolean
-        get() = stoppable.isInterrupted
+        get() = stoppable.interrupted()
 
     val isInterruptedByUser: Boolean
-        get() = stoppable.isInterruptedByUser
+        get() = stoppable.interruptedByUser()
 
 
     @Throws(TaskStoppedException::class)
@@ -145,7 +151,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     protected open fun publishStatus(force: Boolean): Boolean {
-        return app != null && app!!.publishTaskNotifications(force)
+        return isStarted && !isFinished && app.publishTaskNotifications(force)
     }
 
     override fun removeCloser(closer: Stoppable.Closer): Boolean {
@@ -173,26 +179,28 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         stoppable.removeClosers()
     }
 
-    fun run(app: App?) {
+    fun run(application: App) {
         check(!(isStarted || isFinished || isInterrupted)) { javaClass.name + " isStarted" }
+
         startTime = System.currentTimeMillis()
-        this.app,
-        = app
+        app = application
+
         publishStatus(true)
         isStarted = true
+
         try {
             run(stoppable)
         } catch (ignored: TaskStoppedException) {
         } finally {
             isFinished = true
             publishStatus(true)
-            this.app = null
+            app = null
         }
     }
 
     fun setContentIntent(context: Context?, intent: Intent) {
-        mHash = hashIntent(intent)
-        contentIntent = PendingIntent.getActivity(context, 0, intent, 0)
+        customHashCode = hashIntent(intent)
+        activityIntent = PendingIntent.getActivity(context, 0, intent, 0)
     }
 
     @Throws(TaskStoppedException::class)
@@ -200,7 +208,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         if (isInterrupted) throw TaskStoppedException("This task been interrupted", isInterruptedByUser)
     }
 
-    private inner class ProgressListener : SimpleListener() {
+    private inner class ProgressListener : Progress.SimpleListener() {
         override fun onProgressChange(progress: Progress): Boolean {
             this@AsyncTask.onProgressChange(progress)
             publishStatus()
@@ -217,8 +225,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     companion object {
-        val taskGroup = "TASK_GROUP_DEFAULT"
-            get() = Companion.field
+        const val TASK_GROUP_DEFAULT = "TASK_GROUP_DEFAULT"
 
         fun hashIntent(intent: Intent): Int {
             val builder = StringBuilder()
@@ -228,7 +235,10 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
                 .append(intent.action)
                 .append(intent.flags)
                 .append(intent.type)
-            if (intent.extras != null) builder.append(intent.extras.toString())
+
+            if (intent.extras != null)
+                builder.append(intent.extras.toString())
+
             return builder.toString().hashCode()
         }
     }
