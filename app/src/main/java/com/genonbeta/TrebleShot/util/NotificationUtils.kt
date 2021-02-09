@@ -17,8 +17,12 @@
  */
 package com.genonbeta.TrebleShot.util
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.*
 import android.os.*
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.database.Kuick
 
@@ -26,11 +30,10 @@ import com.genonbeta.TrebleShot.database.Kuick
  * Created by: veli
  * Date: 4/28/17 2:00 AM
  */
-class NotificationUtils(val context: Context, kuick: Kuick?, preferences: SharedPreferences?) {
-    val database: Kuick?
-    private val mManager: NotificationManagerCompat
-    val preferences: SharedPreferences?
-    fun buildDynamicNotification(notificationId: Long, channelId: String?): DynamicNotification {
+class NotificationUtils(val context: Context, val database: Kuick, val preferences: SharedPreferences) {
+    val manager = NotificationManagerCompat.from(context)
+
+    fun buildDynamicNotification(notificationId: Long, channelId: String): DynamicNotification {
         // Let's hope it will turn out to be less painful
         return DynamicNotification(
             context, manager, channelId,
@@ -39,19 +42,17 @@ class NotificationUtils(val context: Context, kuick: Kuick?, preferences: Shared
     }
 
     fun cancel(notificationId: Int) {
-        mManager.cancel(notificationId)
+        manager.cancel(notificationId)
     }
 
-    val manager: NotificationManagerCompat
-        get() = mManager
     val notificationSettings: Int
         get() {
-            val makeSound =
-                if (preferences!!.getBoolean("notification_sound", true)) NotificationCompat.DEFAULT_SOUND else 0
-            val vibrate =
-                if (preferences.getBoolean("notification_vibrate", true)) NotificationCompat.DEFAULT_VIBRATE else 0
-            val light =
-                if (preferences.getBoolean("notification_light", false)) NotificationCompat.DEFAULT_LIGHTS else 0
+            val makeSound = if (preferences.getBoolean("notification_sound", true))
+                NotificationCompat.DEFAULT_SOUND else 0
+            val vibrate = if (preferences.getBoolean("notification_vibrate", true))
+                NotificationCompat.DEFAULT_VIBRATE else 0
+            val light = if (preferences.getBoolean("notification_light", false))
+                NotificationCompat.DEFAULT_LIGHTS else 0
             return makeSound or vibrate or light
         }
 
@@ -63,22 +64,19 @@ class NotificationUtils(val context: Context, kuick: Kuick?, preferences: Shared
     }
 
     init {
-        mManager = NotificationManagerCompat.from(context)
-        database = kuick
-        this.preferences = preferences
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelHigh = NotificationChannel(
                 NOTIFICATION_CHANNEL_HIGH,
                 context.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH
             )
-            channelHigh.enableLights(preferences!!.getBoolean("notification_light", false))
+            channelHigh.enableLights(preferences.getBoolean("notification_light", false))
             channelHigh.enableVibration(preferences.getBoolean("notification_vibrate", false))
-            mManager.createNotificationChannel(channelHigh)
+            manager.createNotificationChannel(channelHigh)
             val channelLow = NotificationChannel(
                 NOTIFICATION_CHANNEL_LOW,
                 context.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW
             )
-            mManager.createNotificationChannel(channelLow)
+            manager.createNotificationChannel(channelLow)
         }
     }
 }

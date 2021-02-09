@@ -107,7 +107,7 @@ object Migration {
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
                                 .toString() + (if (typeColumn.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
 
                         // Added: ClientVersion
@@ -235,7 +235,7 @@ object Migration {
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                     }
                     run {
@@ -312,7 +312,7 @@ object Migration {
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
                                 .toString() + (if (typeColumn.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
@@ -425,7 +425,7 @@ object Migration {
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                     }
                     run {
@@ -468,7 +468,7 @@ object Migration {
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
                                 .toString() + (if (typeColumn.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
@@ -581,7 +581,7 @@ object Migration {
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                     }
                     run {
@@ -622,7 +622,7 @@ object Migration {
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
                                 .toString() + (if (typeColumn.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
@@ -735,7 +735,7 @@ object Migration {
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
-                                    + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                    + " NULL DEFAULT " + Device.Type.Normal.toString()
                         )
                     }
                     run {
@@ -765,7 +765,7 @@ object Migration {
                     db.execSQL(
                         "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                 + " " + typeColumn.getType().toString() + (if (typeColumn.isNullable()) " NOT" else "")
-                                + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                + " NULL DEFAULT " + Device.Type.Normal.toString()
                     )
                     db.execSQL(
                         "ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
@@ -877,7 +877,7 @@ object Migration {
                     db.execSQL(
                         "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                 + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
-                                + " NULL DEFAULT " + Device.Type.NORMAL.toString()
+                                + " NULL DEFAULT " + Device.Type.Normal.toString()
                     )
                 }
                 run {

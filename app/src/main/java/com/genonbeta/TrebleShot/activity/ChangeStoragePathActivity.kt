@@ -35,7 +35,7 @@ class ChangeStoragePathActivity : Activity() {
         startActivityForResult(
             Intent(this, FilePickerActivity::class.java)
                 .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
-                .putExtra(FilePickerActivity.EXTRA_START_PATH, currentSavePath.uri.toString())
+                .putExtra(FilePickerActivity.EXTRA_START_PATH, currentSavePath.getUri().toString())
                 .putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.text_storagePath)),
             REQUEST_CHOOSE_FOLDER
         )

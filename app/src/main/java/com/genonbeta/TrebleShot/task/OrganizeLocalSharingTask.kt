@@ -18,13 +18,16 @@
 package com.genonbeta.TrebleShot.task
 
 import android.content.*
+import android.database.sqlite.SQLiteDatabase
 import android.os.*
 import android.util.Log
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.FileListAdapter
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
+import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Transfers
 import com.genonbeta.android.framework.io.DocumentFile
@@ -39,34 +42,37 @@ class OrganizeLocalSharingTask(
 ) : AttachableAsyncTask<AttachedTaskListener?>() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        if (mList.size <= 0) return
-        val kuick = AppUtils.getKuick(context)
+        if (mList.isEmpty())
+            return
+
         val db: SQLiteDatabase = kuick.writableDatabase
-        val transfer: Transfer = Transfer(AppUtils.getUniqueNumber())
+        val transfer = Transfer(AppUtils.uniqueNumber.toLong())
         val list: MutableList<TransferItem> = ArrayList()
-        progress().addToTotal(mList.size)
+
+        progress.addToTotal(mList.size)
+
         for (shareable in mList) {
             throwIfStopped()
             ongoingContent = shareable.fileName
-            progress().addToCurrent(1)
+            progress.addToCurrent(1)
             publishStatus()
+
             val containable = if (shareable is Container) (shareable as Container).expand() else null
-            if (shareable is FileHolder) {
-                val file: DocumentFile = (shareable as FileHolder).file
-                if (file != null) {
-                    if (file.isDirectory) Transfers.createFolderStructure(
+
+            if (shareable is FileListAdapter.FileHolder) {
+                    if (shareable.isDirectory) Transfers.createFolderStructure(
                         list,
                         transfer.id,
                         file,
                         shareable.fileName,
                         this
-                    ) else list.add(
-                        from(file, transfer.id, null)
-                    )
-                }
-            } else list.add(from(shareable, transfer.id, if (containable == null) null else shareable.friendlyName))
+                    ) else list
+                        .add(from(file, transfer.id, null))
+            } else
+                list.add(from(shareable, transfer.id, if (containable == null) null else shareable.friendlyName))
             if (containable != null) {
-                progress().addToTotal(containable.children!!.size)
+                progress.addToTotal(containable.children!!.size)
+
                 for (uri in containable.children!!) {
                     progress().addToCurrent(1)
                     try {

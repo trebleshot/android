@@ -22,8 +22,11 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Shareable
@@ -32,16 +35,16 @@ import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
 class ChooseSharingMethodDialog(activity: Activity?, listener: PickListener) : AlertDialog.Builder(
     activity!!
 ) {
-    private val mLayoutInflater: LayoutInflater
-    private val mSharingMethods = SharingMethod.values()
+    private val layoutInflater = LayoutInflater.from(context)
+    private val sharingMethods = SharingMethod.values()
 
     internal inner class SharingMethodListAdapter : BaseAdapter() {
         override fun getCount(): Int {
-            return mSharingMethods.size
+            return sharingMethods.size
         }
 
         override fun getItem(position: Int): Any {
-            return mSharingMethods[position]
+            return sharingMethods[position]
         }
 
         override fun getItemId(position: Int): Long {
@@ -49,26 +52,22 @@ class ChooseSharingMethodDialog(activity: Activity?, listener: PickListener) : A
             return position.toLong()
         }
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            var convertView = convertView
-            if (convertView == null) convertView = mLayoutInflater.inflate(R.layout.list_sharing_method, parent, false)
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView ?: layoutInflater.inflate(R.layout.list_sharing_method, parent, false)
             val sharingMethod = getItem(position) as SharingMethod
-            val image = convertView.findViewById<ImageView>(R.id.image)
-            val text1: TextView = convertView.findViewById<TextView>(R.id.text1)
-            image.setImageResource(sharingMethod.mIconRes)
-            text1.setText(context.getString(sharingMethod.mTitleRes))
-            return convertView
+            val image = view.findViewById<ImageView>(R.id.image)
+            val text1: TextView = view.findViewById(R.id.text1)
+            image.setImageResource(sharingMethod.iconRes)
+            text1.text = context.getString(sharingMethod.titleRes)
+            return view
         }
     }
 
     enum class SharingMethod(
-        @field:DrawableRes @param:DrawableRes val mIconRes: Int,
-        @field:StringRes @param:StringRes val mTitleRes: Int
+        @field:DrawableRes @param:DrawableRes val iconRes: Int,
+        @field:StringRes @param:StringRes val titleRes: Int,
     ) {
-        WebShare(
-            R.drawable.ic_web_white_24dp,
-            R.string.butn_webShare
-        ),
+        WebShare(R.drawable.ic_web_white_24dp, R.string.butn_webShare),
         LocalShare(R.drawable.ic_compare_arrows_white_24dp, R.string.text_devicesWithAppInstalled);
     }
 
@@ -79,7 +78,7 @@ class ChooseSharingMethodDialog(activity: Activity?, listener: PickListener) : A
     companion object {
         fun createLocalShareOrganizingTask(
             method: SharingMethod?,
-            shareableList: List<Shareable>
+            shareableList: List<Shareable>,
         ): OrganizeLocalSharingTask {
             return when (method) {
                 SharingMethod.WebShare -> OrganizeLocalSharingTask(shareableList, false, true)
@@ -90,11 +89,10 @@ class ChooseSharingMethodDialog(activity: Activity?, listener: PickListener) : A
     }
 
     init {
-        mLayoutInflater = LayoutInflater.from(context)
         setTitle(R.string.text_chooseSharingMethod)
         setAdapter(SharingMethodListAdapter(), DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
             listener.onShareMethod(
-                mSharingMethods[which]
+                sharingMethods[which]
             )
         })
         setNegativeButton(R.string.butn_cancel, null)

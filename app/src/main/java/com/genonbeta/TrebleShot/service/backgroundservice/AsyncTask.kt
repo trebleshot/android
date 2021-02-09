@@ -42,6 +42,9 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     protected lateinit var app: App
         private set
 
+    override val closers: MutableList<Stoppable.Closer>
+        get() = stoppable.closers
+
     protected var customNotification // The notification that is not part of the default notification.
             : DynamicNotification? = null
 
@@ -49,12 +52,6 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         get() = AppUtils.getKuick(context)
 
     private val progressListener: ProgressListener = ProgressListener()
-        get() {
-            // This ensures when Progress.Listener.getProgress() is called, it doesn't return a null object.
-            // Of course, if the user needs the progress itself, then, he or she should use #progress() method.
-            progress()
-            return this
-        }
 
     private var stoppable = StoppableImpl()
 
@@ -82,7 +79,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     open fun forceQuit() {
-        if (!isInterrupted)
+        if (!interrupted())
             interrupt()
     }
 
@@ -112,6 +109,8 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
             return State.Finished
         }
 
+    open val taskGroup = TASK_GROUP_DEFAULT
+
     override fun hasCloser(closer: Stoppable.Closer): Boolean {
         return stoppable.hasCloser(closer)
     }
@@ -128,12 +127,9 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         return stoppable.interrupt(userAction)
     }
 
-    val isInterrupted: Boolean
-        get() = stoppable.interrupted()
+    override fun interrupted(): Boolean = stoppable.interrupted()
 
-    val isInterruptedByUser: Boolean
-        get() = stoppable.interruptedByUser()
-
+    override fun interruptedByUser(): Boolean = stoppable.interruptedByUser()
 
     @Throws(TaskStoppedException::class)
     open fun post(message: TaskMessage) {
@@ -142,9 +138,10 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         customNotification = notification
     }
 
-    fun progress(): Progress {
-        return Progress.dissect(progressListener)
-    }
+    val progress: Progress
+        get() {
+            return Progress.dissect(progressListener)
+        }
 
     fun publishStatus(): Boolean {
         return publishStatus(false)
@@ -172,7 +169,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         check(!(isStarted && !isFinished)) { "Can't reset when the task is running" }
         isStarted = false
         isFinished = false
-        progressListener().progress = null
+        progressListener.progress = null
     }
 
     override fun removeClosers() {
@@ -180,7 +177,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     fun run(application: App) {
-        check(!(isStarted || isFinished || isInterrupted)) { javaClass.name + " isStarted" }
+        check(!(isStarted || isFinished || interrupted())) { javaClass.name + " isStarted" }
 
         startTime = System.currentTimeMillis()
         app = application
@@ -194,7 +191,6 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         } finally {
             isFinished = true
             publishStatus(true)
-            app = null
         }
     }
 
@@ -205,14 +201,15 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
 
     @Throws(TaskStoppedException::class)
     fun throwIfStopped() {
-        if (isInterrupted) throw TaskStoppedException("This task been interrupted", isInterruptedByUser)
+        if (interrupted())
+            throw TaskStoppedException("This task been interrupted", interrupted())
     }
 
     private inner class ProgressListener : Progress.SimpleListener() {
         override fun onProgressChange(progress: Progress): Boolean {
             this@AsyncTask.onProgressChange(progress)
             publishStatus()
-            return !isInterrupted
+            return !interrupted()
         }
     }
 

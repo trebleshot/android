@@ -27,7 +27,6 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.dataobject.Editable
-import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.*
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Connections
@@ -59,9 +58,9 @@ class DeviceListAdapter(
                 .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device::class.java
         )) {
             if (mNsdDaemon.isDeviceOnline(device))
-                device.type = Device.Type.NORMAL_ONLINE
-            else if (Device.Type.NORMAL_ONLINE == device.type)
-                device.type = Device.Type.NORMAL
+                device.type = Device.Type.NormalOnline
+            else if (Device.Type.NormalOnline == device.type)
+                device.type = Device.Type.Normal
             if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
                 list.add(DbVirtualDevice(device))
         }
@@ -168,7 +167,7 @@ class DeviceListAdapter(
         }
 
         override fun isOnline(): Boolean {
-            return Device.Type.NORMAL_ONLINE == device.type
+            return Device.Type.NormalOnline == device.type
         }
 
         override fun name(): String? {

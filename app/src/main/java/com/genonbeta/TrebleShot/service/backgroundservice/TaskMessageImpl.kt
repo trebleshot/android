@@ -18,145 +18,113 @@
 package com.genonbeta.TrebleShot.service.backgroundservice
 
 import android.app.Activity
-import android.content.*
+import android.app.PendingIntent
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.HomeActivity
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage.Tone
+import com.genonbeta.TrebleShot.util.DynamicNotification
 import com.genonbeta.TrebleShot.util.NotificationUtils
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
-class TaskMessageImpl : TaskMessage {
-    private var mTitle: String? = null
-    private var mMessage: String? = null
-    private var mTone: Tone = Tone.Neutral
-    private val mActionList: MutableList<TaskMessage.Action> = ArrayList()
-    override fun addAction(action: TaskMessage.Action): TaskMessage {
-        synchronized(mActionList) { mActionList.add(action) }
-        return this
+class TaskMessageImpl(
+    override var title: String,
+    override var message: String,
+    override var tone: Tone = Tone.Neutral,
+) : TaskMessage {
+    private val actionList: MutableList<TaskMessage.Action> = ArrayList()
+
+    override fun addAction(action: TaskMessage.Action) {
+        synchronized(actionList) { actionList.add(action) }
     }
 
-    override fun addAction(context: Context, nameRes: Int, callback: TaskMessage.Callback?): TaskMessage {
-        return addAction(context.getString(nameRes), callback)
+    override fun addAction(context: Context, nameRes: Int, callback: TaskMessage.Callback?) {
+        addAction(context.getString(nameRes), callback)
     }
 
-    override fun addAction(name: String?, callback: TaskMessage.Callback?): TaskMessage {
-        return addAction(name, Tone.Neutral, callback)
+    override fun addAction(name: String, callback: TaskMessage.Callback?) {
+        addAction(name, Tone.Neutral, callback)
     }
 
-    override fun addAction(context: Context, nameRes: Int, tone: Tone?, callback: TaskMessage.Callback?): TaskMessage {
-        return addAction(context.getString(nameRes), tone, callback)
+    override fun addAction(context: Context, nameRes: Int, tone: Tone, callback: TaskMessage.Callback?) {
+        addAction(context.getString(nameRes), tone, callback)
     }
 
-    override fun addAction(name: String?, tone: Tone?, callback: TaskMessage.Callback?): TaskMessage {
-        val action = TaskMessage.Action()
-        action.name = name
-        action.tone = tone
-        action.callback = callback
-        return addAction(action)
+    override fun addAction(name: String, tone: Tone, callback: TaskMessage.Callback?) {
+        addAction(TaskMessage.Action(name, tone, callback))
     }
 
     override fun getActionList(): List<TaskMessage.Action> {
-        synchronized(mActionList) { return ArrayList(mActionList) }
+        synchronized(actionList) { return ArrayList(actionList) }
     }
 
-    override fun getMessage(): String? {
-        return mMessage
+    override fun removeAction(action: TaskMessage.Action) {
+        synchronized(actionList) { actionList.remove(action) }
     }
 
-    override fun getTitle(): String? {
-        return mTitle
+    override fun setMessage(context: Context, msgRes: Int) {
+        message = context.getString(msgRes)
     }
 
-    override fun getTone(): Tone {
-        return mTone
-    }
-
-    override fun removeAction(action: TaskMessage.Action): TaskMessage {
-        synchronized(mActionList) { mActionList.remove(action) }
-        return this
-    }
-
-    override fun setMessage(context: Context, msgRes: Int): TaskMessage {
-        return setMessage(context.getString(msgRes))
-    }
-
-    override fun setMessage(msg: String?): TaskMessage {
-        mMessage = msg
-        return this
-    }
-
-    override fun setTitle(context: Context, titleRes: Int): TaskMessage {
-        return setTitle(context.getString(titleRes))
-    }
-
-    override fun setTitle(title: String?): TaskMessage {
-        mTitle = title
-        return this
-    }
-
-    override fun setTone(tone: Tone): TaskMessage {
-        mTone = tone
-        return this
+    override fun setTitle(context: Context, titleRes: Int) {
+        title = context.getString(titleRes)
     }
 
     override fun sizeOfActions(): Int {
-        synchronized(mActionList) { return mActionList.size }
+        synchronized(actionList) { return actionList.size }
     }
 
-    override fun toDialogBuilder(activity: Activity?): AlertDialog.Builder {
-        val builder = AlertDialog.Builder(activity!!)
+    override fun toDialogBuilder(activity: Activity): AlertDialog.Builder {
+        val builder = AlertDialog.Builder(activity)
             .setTitle(title)
             .setMessage(message)
-        synchronized(mActionList) {
-            val appliedTones = BooleanArray(TaskMessage.Tone.values().size)
-            for (action in mActionList) {
+        synchronized(actionList) {
+            val appliedTones = BooleanArray(Tone.values().size)
+            for (action in actionList) {
                 if (appliedTones[action.tone.ordinal]) continue
                 when (action.tone) {
                     Tone.Positive -> builder.setPositiveButton(action.name) { dialog: DialogInterface?, which: Int ->
-                        action.callback.call(
-                            activity
-                        )
+                        action.callback?.call(activity)
                     }
                     Tone.Negative -> builder.setNegativeButton(action.name) { dialog: DialogInterface?, which: Int ->
-                        action.callback.call(
-                            activity
-                        )
+                        action.callback?.call(activity)
                     }
-                    Tone.Neutral -> builder.setNeutralButton(action.name) { dialog: DialogInterface?, which: Int ->
-                        action.callback.call(
-                            activity
-                        )
+                    else -> builder.setNeutralButton(action.name) { dialog: DialogInterface?, which: Int ->
+                        action.callback?.call(activity)
                     }
                 }
                 appliedTones[action.tone.ordinal] = true
             }
-            if (appliedTones.size < 1 || !appliedTones[Tone.Negative.ordinal]) builder.setNegativeButton(
-                R.string.butn_close,
-                null
-            )
+            if (appliedTones.isEmpty() || !appliedTones[Tone.Negative.ordinal])
+                builder.setNegativeButton(R.string.butn_close, null)
         }
         return builder
     }
 
-    override fun toNotification(task: AsyncTask): DynamicNotification? {
+    override fun toNotification(task: AsyncTask): DynamicNotification {
         val context = task.context.applicationContext
         val utils = task.notificationHelper.utils
-        val notification: DynamicNotification? = utils.buildDynamicNotification(
+        val notification = utils.buildDynamicNotification(
             task.hashCode().toLong(),
-            NotificationUtils.Companion.NOTIFICATION_CHANNEL_HIGH
+            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
         )
         val intent: PendingIntent = PendingIntent.getActivity(
             context, 0, Intent(context, HomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0
         )
-        notification.setSmallIcon(iconFor(mTone))
+        notification.setSmallIcon(iconFor(tone))
             .setGroup(task.taskGroup)
-            .setContentTitle(mTitle)
-            .setContentText(mMessage)
+            .setContentTitle(title)
+            .setContentText(message)
             .setContentIntent(intent)
             .setAutoCancel(true)
-        for (action in mActionList) notification.addAction(
+        for (action in actionList) notification.addAction(
             iconFor(action.tone), action.name, PendingIntent.getActivity(
                 context,
                 0, Intent(context, HomeActivity::class.java), 0
@@ -165,12 +133,12 @@ class TaskMessageImpl : TaskMessage {
         return notification
     }
 
-    override fun toSnackbar(view: View?): Snackbar {
+    override fun toSnackbar(view: View): Snackbar {
         val snackbar: Snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
         if (sizeOfActions() > 0) {
-            synchronized(mActionList) {
-                val action = mActionList[0]
-                snackbar.setAction(action.name, View.OnClickListener { v: View -> action.callback.call(v.context) })
+            synchronized(actionList) {
+                val action = actionList[0]
+                snackbar.setAction(action.name) { v: View -> action.callback?.call(v.context) }
             }
         }
         return snackbar
@@ -184,7 +152,7 @@ class TaskMessageImpl : TaskMessage {
             .append(message)
             .append(" Tone=")
             .append(tone)
-        for (action in mActionList) stringBuilder.append(action)
+        for (action in actionList) stringBuilder.append(action)
         return stringBuilder.toString()
     }
 

@@ -18,18 +18,25 @@
 package com.genonbeta.TrebleShot.util
 
 import android.content.*
+import android.net.ConnectivityManager
+import android.net.Network
 import android.os.*
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
+import com.genonbeta.TrebleShot.protocol.communication.DifferentClientException
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.monora.coolsocket.core.session.ActiveConnection
 import java.io.Closeable
 import java.io.IOException
 import java.net.InetAddress
@@ -122,13 +129,12 @@ class CommunicationBridge(
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private class NetworkBinderCallback(connectivityManager: ConnectivityManager?, inetAddress: InetAddress) :
-        NetworkCallback() {
-        private val connectivityManager: ConnectivityManager?
-        private val inetAddress: InetAddress
+    private class NetworkBinderCallback(val connectivityManager: ConnectivityManager, val inetAddress: InetAddress) :
+        ConnectivityManager.NetworkCallback() {
         private val lock = Any()
         private var exception: IOException? = null
         private var resultConnection: ActiveConnection? = null
+
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
             if (!bindNetwork(network)) {
@@ -183,20 +189,12 @@ class CommunicationBridge(
             if (resultConnection == null) throw IOException("No connection is handed over after waiting.") else if (exception != null) throw exception
             return resultConnection
         }
-
-        init {
-            this.connectivityManager = connectivityManager
-            this.inetAddress = inetAddress
-        }
     }
 
     companion object {
         val TAG = CommunicationBridge::class.java.simpleName
         @Throws(IOException::class, CommunicationException::class, JSONException::class)
-        fun connect(
-            kuick: Kuick?, addressList: List<DeviceAddress?>, device: Device?,
-            pin: Int
-        ): CommunicationBridge {
+        fun connect(kuick: Kuick, addressList: List<DeviceAddress>, device: Device?, pin: Int): CommunicationBridge {
             for (address in addressList) {
                 try {
                     return connect(kuick, address, device, pin)
@@ -211,7 +209,7 @@ class CommunicationBridge(
             var device = device
             val activeConnection: ActiveConnection = openConnection(kuick.context, deviceAddress.inetAddress)
             val remoteDeviceId: String = activeConnection.receive().getAsString()
-            if (device != null && device.uid != null && device.uid != remoteDeviceId) {
+            if (device?.uid != null && device.uid != remoteDeviceId) {
                 activeConnection.closeSafely()
                 throw DifferentClientException(device, remoteDeviceId)
             }

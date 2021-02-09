@@ -21,45 +21,39 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.utilimport.DynamicNotification
+import com.genonbeta.TrebleShot.util.DynamicNotification
 import com.google.android.material.snackbar.Snackbar
 
 interface TaskMessage {
-    fun addAction(action: Action): TaskMessage
+    var title: String
 
-    fun addAction(context: Context, nameRes: Int, callback: Callback?): TaskMessage
+    var message: String
 
-    fun addAction(name: String?, callback: Callback?): TaskMessage
+    var tone: Tone
 
-    fun addAction(context: Context, nameRes: Int, tone: Tone?, callback: Callback?): TaskMessage
+    fun addAction(action: Action)
 
-    fun addAction(name: String?, tone: Tone?, callback: Callback?): TaskMessage
+    fun addAction(context: Context, nameRes: Int, callback: Callback?)
+
+    fun addAction(name: String, callback: Callback?)
+
+    fun addAction(context: Context, nameRes: Int, tone: Tone, callback: Callback?)
+
+    fun addAction(name: String, tone: Tone, callback: Callback?)
 
     fun getActionList(): List<Action>
 
-    fun getMessage(): String?
+    fun removeAction(action: Action)
 
-    fun getTitle(): String?
+    fun setMessage(context: Context, msgRes: Int)
 
-    fun getTone(): Tone
-
-    fun removeAction(action: Action): TaskMessage
-
-    fun setMessage(context: Context, msgRes: Int): TaskMessage
-
-    fun setMessage(msg: String?): TaskMessage
-
-    fun setTitle(context: Context, titleRes: Int): TaskMessage
-
-    fun setTitle(title: String?): TaskMessage
-
-    fun setTone(tone: Tone): TaskMessage
+    fun setTitle(context: Context, titleRes: Int)
 
     fun sizeOfActions(): Int
 
     fun toDialogBuilder(activity: Activity): AlertDialog.Builder
 
-    fun toNotification(task: AsyncTask): DynamicNotification?
+    fun toNotification(task: AsyncTask): DynamicNotification
 
     fun toSnackbar(view: View): Snackbar
 
@@ -67,21 +61,18 @@ interface TaskMessage {
         Positive, Confused, Neutral, Negative
     }
 
-    class Action {
-        var tone: Tone? = null
-        var name: String? = null
-        var callback: Callback? = null
+    class Action(val name: String, val tone: Tone = Tone.Neutral, val callback: Callback? = null) {
         override fun toString(): String {
             return "Action [\n\tName=$name\n\tTone=$tone\n]\n"
         }
     }
 
     interface Callback {
-        fun call(context: Context?)
+        fun call(context: Context)
     }
 
     companion object {
-        fun newInstance(): TaskMessage? {
+        fun newInstance(): TaskMessage {
             return TaskMessageImpl()
         }
     }

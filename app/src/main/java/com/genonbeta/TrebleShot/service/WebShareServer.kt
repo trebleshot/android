@@ -71,7 +71,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             device.versionCode = mThisDevice!!.versionCode
             device.versionName = mThisDevice.versionName
             device.username = clientAddress
-            device.type = Device.Type.WEB
+            device.type = Device.Type.Web
         }
         device.lastUsageTime = System.currentTimeMillis()
         AppUtils.getKuick(mContext).publish(device)

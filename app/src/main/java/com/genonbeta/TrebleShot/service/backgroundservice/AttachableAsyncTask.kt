@@ -22,35 +22,30 @@ import android.os.Looper
 import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 
 abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsyncTask() {
-    private var mAnchor: T? = null
-    private var mHandler: Handler? = null
+    private var handler = Handler(Looper.myLooper() ?: Looper.getMainLooper())
+
     override fun hasAnchor(): Boolean {
-        return mAnchor != null
+        return anchor != null
     }
 
     @get:Throws(TaskStoppedException::class)
-    var anchor: T?
+    var anchor: T? = null
         get() {
             throwIfStopped()
-            return mAnchor
+            return field
         }
-    private val handler: Handler
-        private get() {
-            if (mHandler == null) {
-                val myLooper = Looper.myLooper()
-                mHandler = Handler(myLooper ?: Looper.getMainLooper())
-            }
-            return mHandler!!
+        set(value) {
+            field = value
+            publishStatus(true)
         }
 
     private fun notifyAnchor(state: State) {
-        if (hasAnchor()) mAnchor!!.onTaskStateChange(this, state)
+        anchor?.onTaskStateChange(this, state)
     }
 
     @Throws(TaskStoppedException::class)
     override fun post(message: TaskMessage) {
-        val anchor = anchor
-        if (anchor == null || !anchor.onTaskMessage(message))
+        if (anchor?.onTaskMessage(message) == false)
             super.post(message)
     }
 
@@ -67,11 +62,6 @@ abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsy
     }
 
     override fun removeAnchor() {
-        mAnchor = null
-    }
-
-    fun setAnchor(anchor: T) {
-        mAnchor = anchor
-        publishStatus(true)
+        anchor = null
     }
 }

@@ -97,7 +97,8 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         notificationHelper = NotificationHelper(
             NotificationUtils(
                 applicationContext,
-                AppUtils.getKuick(applicationContext), AppUtils.getDefaultPreferences(applicationContext)
+                AppUtils.getKuick(applicationContext),
+                AppUtils.getDefaultPreferences(applicationContext)
             )
         )
         webShareServer = WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE)

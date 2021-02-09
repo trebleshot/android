@@ -19,10 +19,9 @@ import java.util.*
  * Date: 1/31/17 4:51 PM
  */
 abstract class KuickDb(
-    private val context: Context, name: String, factory: CursorFactory?,
-    version: Int,
+    val context: Context, name: String, factory: CursorFactory?, version: Int,
 ) : SQLiteOpenHelper(context, name, factory, version) {
-    private val mBroadcastOverhead: MutableList<BroadcastData> = ArrayList()
+    private val broadcastOverhead: MutableList<BroadcastData> = ArrayList()
 
     fun bindContentValue(statement: SQLiteStatement, iteratorPosition: Int, binding: Any?) {
         binding?.let {
@@ -82,8 +81,8 @@ abstract class KuickDb(
             return
         }
 
-        val data = mBroadcastOverhead.firstOrNull { tableName == it.tableName } ?: run {
-            BroadcastData(tableName).also { mBroadcastOverhead.add(it) }
+        val data = broadcastOverhead.firstOrNull { tableName == it.tableName } ?: run {
+            BroadcastData(tableName).also { broadcastOverhead.add(it) }
         }
 
         when (changeType) {
@@ -96,10 +95,10 @@ abstract class KuickDb(
 
     @Synchronized
     fun broadcast() {
-        synchronized(mBroadcastOverhead) {
-            for (data in mBroadcastOverhead)
+        synchronized(broadcastOverhead) {
+            for (data in broadcastOverhead)
                 context.sendBroadcast(Intent(ACTION_DATABASE_CHANGE).putExtra(EXTRA_BROADCAST_DATA, data))
-            mBroadcastOverhead.clear()
+            broadcastOverhead.clear()
         }
     }
 
@@ -123,7 +122,7 @@ abstract class KuickDb(
 
     fun getFirstFromTable(db: SQLiteDatabase, select: SQLQuery.Select): ContentValues? {
         val list = getTable(db, select.setLimit(1))
-        return if (list.size > 0) list.get(0) else null
+        return if (list.size > 0) list[0] else null
     }
 
     fun getTable(select: SQLQuery.Select): MutableList<ContentValues> {
@@ -193,9 +192,10 @@ abstract class KuickDb(
     ): Boolean {
         db.beginTransaction()
         try {
-            Progress.Companion.addToTotal(listener, objects.size)
+            Progress.addToTotal(listener, objects.size)
             for (`object` in objects) {
-                if (!Progress.Companion.call(listener, 1)) break
+                if (!Progress.call(listener, 1))
+                    break
                 insert(db, `object`, parent, listener)
             }
             db.setTransactionSuccessful()
@@ -346,8 +346,7 @@ abstract class KuickDb(
     }
 
     fun <T, V : DatabaseObject<T>> update(
-        db: SQLiteDatabase, `object`: V, parent: T?,
-        listener: Progress.Listener?,
+        db: SQLiteDatabase, `object`: V, parent: T?, listener: Progress.Listener?,
     ): Int {
         `object`.onUpdateObject(db, this, parent, listener)
         return update(db, `object`.getWhere(), `object`.getValues())

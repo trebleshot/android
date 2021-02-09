@@ -18,7 +18,7 @@
 package com.genonbeta.TrebleShot.service.backgroundservice
 
 interface AttachedTaskListener {
-    fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State?)
+    fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State)
 
     /**
      * When [AttachableAsyncTask.post] is called, this will be invoked when available.
@@ -26,5 +26,5 @@ interface AttachedTaskListener {
      * @param message to be handled
      * @return false if you didn't process the message
      */
-    fun onTaskMessage(message: TaskMessage): Boolean
+    fun onTaskMessage(taskMessage: TaskMessage): Boolean
 }

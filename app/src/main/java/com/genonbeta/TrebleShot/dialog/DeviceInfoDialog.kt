@@ -53,8 +53,8 @@ class DeviceInfoDialog(activity: Activity, device: Device) : AlertDialog.Builder
         val versionText: TextView = rootView.findViewById<TextView>(R.id.versionText)
         val accessSwitch: SwitchCompat = rootView.findViewById(R.id.accessSwitch)
         val trustSwitch: SwitchCompat = rootView.findViewById(R.id.trustSwitch)
-        val isDeviceNormal = Device.Type.NORMAL == device.type
-        if (Device.Type.WEB != device.type && BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin) notSupportedText.setVisibility(
+        val isDeviceNormal = Device.Type.Normal == device.type
+        if (Device.Type.Web != device.type && BuildConfig.PROTOCOL_VERSION_MIN > device.protocolVersionMin) notSupportedText.setVisibility(
             View.VISIBLE
         )
         DeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity))

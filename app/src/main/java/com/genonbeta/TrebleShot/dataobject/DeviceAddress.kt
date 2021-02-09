@@ -86,9 +86,12 @@ class DeviceAddress() : DatabaseObject<Device?>, Parcelable {
         lastCheckedDate = item.getAsLong(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE)
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {}
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {}
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {}
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+
     override fun describeContents(): Int {
         return 0
     }

@@ -173,7 +173,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
             reloadRequested = false
             running = true
 
-            setListShown(adapter?.let { it.getCount() == 0 } ?: false)
+            setListShown(adapter?.let { it.getItemCount() == 0 } ?: false)
             setListLoading(true)
             return createLoader()
         }

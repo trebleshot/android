@@ -143,7 +143,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
 
     override fun onShareLocal(shareableList: List<Shareable>) {
         ChooseSharingMethodDialog(this) { sharingMethod: SharingMethod? ->
-            val task: OrganizeLocalSharingTask = ChooseSharingMethodDialog.Companion.createLocalShareOrganizingTask(
+            val task = ChooseSharingMethodDialog.Companion.createLocalShareOrganizingTask(
                 sharingMethod,
                 shareableList
             )

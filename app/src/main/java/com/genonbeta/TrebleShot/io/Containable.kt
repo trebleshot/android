@@ -21,50 +21,17 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
+import kotlinx.parcelize.Parcelize
 
-class Containable : Parcelable {
-    var targetUri: Uri?
-    var children: Array<Uri?>?
+@Parcelize
+data class Containable(var targetUri: Uri, var children: Array<Uri>) : Parcelable {
+    constructor(targetUri: Uri, children: List<Uri>) : this(targetUri, children.toTypedArray())
 
-    constructor(`in`: Parcel) {
-        val uriClassLoader = Uri::class.java.classLoader
-        targetUri = `in`.readParcelable(uriClassLoader)
-        children = `in`.createTypedArray(Uri.CREATOR)
+    override fun equals(other: Any?): Boolean {
+        return if (other is Containable) targetUri == other.targetUri else super.equals(other)
     }
 
-    constructor(targetUri: Uri?, children: List<Uri>) {
-        this.targetUri = targetUri
-        this.children = arrayOfNulls(children.size)
-        children.toArray<Uri>(this.children)
-    }
-
-    constructor(targetUri: Uri?, children: Array<Uri?>?) {
-        this.targetUri = targetUri
-        this.children = children
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun equals(obj: Any?): Boolean {
-        return if (obj is Containable) targetUri == obj.targetUri else super.equals(obj)
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeParcelable(targetUri, flags)
-        dest.writeTypedArray(children, flags)
-    }
-
-    companion object {
-        val CREATOR: Creator<Containable> = object : Creator<Containable?> {
-            override fun createFromParcel(source: Parcel): Containable? {
-                return Containable(source)
-            }
-
-            override fun newArray(size: Int): Array<Containable?> {
-                return arrayOfNulls(size)
-            }
-        }
+    override fun hashCode(): Int {
+        return targetUri.hashCode()
     }
 }

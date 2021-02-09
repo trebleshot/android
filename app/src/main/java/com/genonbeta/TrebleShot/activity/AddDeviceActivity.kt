@@ -77,7 +77,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         setResult(RESULT_CANCELED)
         setContentView(R.layout.activity_connection_manager)
         val hiddenDeviceTypes = ArrayList<String>()
-        hiddenDeviceTypes.add(Device.Type.WEB.toString())
+        hiddenDeviceTypes.add(Device.Type.Web.toString())
         val deviceListArgs = Bundle()
         deviceListArgs.putStringArrayList(DeviceListFragment.ARG_HIDDEN_DEVICES_LIST, hiddenDeviceTypes)
         val factory = supportFragmentManager.fragmentFactory

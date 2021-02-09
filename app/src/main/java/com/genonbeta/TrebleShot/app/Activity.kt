@@ -24,7 +24,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.PowerManager
 import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.StyleRes
@@ -53,19 +55,19 @@ import java.io.FileNotFoundException
 import java.util.*
 
 abstract class Activity : AppCompatActivity() {
-    private val mAttachedTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList()
-    private val mUiTaskList: MutableList<AsyncTask> = ArrayList()
-    private var mOngoingRequest: AlertDialog? = null
-    var selfApplication: App? = null
-        private set
-    private val mFilter = IntentFilter()
-    private var mDarkThemeRequested = false
-    private var mAmoledDarkThemeRequested = false
-    private var mThemeLoadingFailed = false
-    private var mCustomFontsEnabled = false
-    private var mSkipPermissionRequest = false
-    private var mWelcomePageDisallowed = false
-    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private var amoledDarkThemeRequested = false
+
+    private val attachedTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList()
+
+    private var customFontsEnabled = false
+
+    private var darkThemeRequested = false
+
+    private val intentFilter = IntentFilter()
+
+    private var ongoingRequest: AlertDialog? = null
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED == intent.action)
                 checkForThemeChange()
@@ -74,71 +76,88 @@ abstract class Activity : AppCompatActivity() {
         }
     }
 
+    lateinit var selfApplication: App
+        private set
+
+    var skipPermissionRequest = false
+        protected set
+
+    private var themeLoadingFailed = false
+
+    private val uiTaskList: MutableList<AsyncTask> = ArrayList()
+
+    var welcomePageDisallowed = false
+        protected set
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (application is App) selfApplication =
-            application as App else throw IllegalStateException("This activity cannot run a different Application class.")
-        mDarkThemeRequested = isDarkThemeRequested
-        mAmoledDarkThemeRequested = isAmoledDarkThemeRequested
-        mCustomFontsEnabled = isUsingCustomFonts
-        mFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED)
-        mFilter.addAction(App.ACTION_TASK_CHANGE)
-        if (mDarkThemeRequested) {
-            try {
-                @StyleRes var currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme
-                Log.d(Activity::class.java.simpleName, "Activity theme id: $currentThemeRes")
-                if (currentThemeRes == 0) currentThemeRes = applicationInfo.theme
-                Log.d(Activity::class.java.simpleName, "After change theme: $currentThemeRes")
-                @StyleRes var appliedRes = 0
-                when (currentThemeRes) {
-                    R.style.Theme_TrebleShot -> appliedRes = R.style.Theme_TrebleShot_Dark
-                    R.style.Theme_TrebleShot_NoActionBar -> appliedRes = R.style.Theme_TrebleShot_Dark_NoActionBar
-                    R.style.Theme_TrebleShot_NoActionBar_StaticStatusBar -> appliedRes =
-                        R.style.Theme_TrebleShot_Dark_NoActionBar_StaticStatusBar
-                    else -> Log.e(
-                        Activity::class.java.simpleName, "The theme in use for " + javaClass.simpleName
-                                + " is unknown. To change the theme to what user requested, it needs to be defined."
-                    )
-                }
-                mThemeLoadingFailed = appliedRes == 0
-                if (!mThemeLoadingFailed) {
-                    setTheme(appliedRes)
-                    if (mAmoledDarkThemeRequested) theme.applyStyle(R.style.BlackPatch, true)
-                }
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
+        if (application is App)
+            selfApplication = application as App
+        else
+            throw IllegalStateException("This activity cannot run a different Application class.")
+
+        darkThemeRequested = isDarkThemeRequested
+        amoledDarkThemeRequested = isAmoledDarkThemeRequested
+        customFontsEnabled = isUsingCustomFonts
+
+        intentFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED)
+        intentFilter.addAction(App.ACTION_TASK_CHANGE)
+
+        if (darkThemeRequested) try {
+            @StyleRes var currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme
+            Log.d(Activity::class.java.simpleName, "Activity theme id: $currentThemeRes")
+            if (currentThemeRes == 0) currentThemeRes = applicationInfo.theme
+            Log.d(Activity::class.java.simpleName, "After change theme: $currentThemeRes")
+            @StyleRes var appliedRes = 0
+            when (currentThemeRes) {
+                R.style.Theme_TrebleShot -> appliedRes = R.style.Theme_TrebleShot_Dark
+                R.style.Theme_TrebleShot_NoActionBar -> appliedRes = R.style.Theme_TrebleShot_Dark_NoActionBar
+                R.style.Theme_TrebleShot_NoActionBar_StaticStatusBar -> appliedRes =
+                    R.style.Theme_TrebleShot_Dark_NoActionBar_StaticStatusBar
+                else -> Log.e(
+                    Activity::class.java.simpleName, "The theme in use for " + javaClass.simpleName
+                            + " is unknown. To change the theme to what user requested, it needs to be defined."
+                )
             }
+            themeLoadingFailed = appliedRes == 0
+            if (!themeLoadingFailed) {
+                setTheme(appliedRes)
+                if (amoledDarkThemeRequested) theme.applyStyle(R.style.BlackPatch, true)
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
 
         // Apply the Preferred Font Family as a patch if enabled
-        if (mCustomFontsEnabled) {
+        if (customFontsEnabled) {
             Log.d(Activity::class.java.simpleName, "Custom fonts have been applied")
             theme.applyStyle(R.style.Roundies, true)
         }
+
         super.onCreate(savedInstanceState)
     }
 
     override fun onResume() {
         super.onResume()
         checkForThemeChange()
-        if (!hasIntroductionShown() && !mWelcomePageDisallowed) {
+        if (!hasIntroductionShown() && !welcomePageDisallowed) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
-        } else if (!AppUtils.checkRunningConditions(this)) {
-            if (!mSkipPermissionRequest) requestRequiredPermissions(true)
+        } else if (!AppUtils.checkRunningConditions(this) && !skipPermissionRequest) {
+            requestRequiredPermissions(true)
         }
     }
 
     override fun onStart() {
         super.onStart()
         attachTasks()
-        registerReceiver(mReceiver, mFilter)
-        selfApplication!!.notifyActivityInForeground(this, true)
+        registerReceiver(receiver, intentFilter)
+        selfApplication.notifyActivityInForeground(this, true)
     }
 
     override fun onStop() {
         super.onStop()
-        unregisterReceiver(mReceiver)
-        selfApplication!!.notifyActivityInForeground(this, false)
+        unregisterReceiver(receiver)
+        selfApplication.notifyActivityInForeground(this, false)
     }
 
     override fun onDestroy() {
@@ -153,7 +172,8 @@ abstract class Activity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (!AppUtils.checkRunningConditions(this)) requestRequiredPermissions(!mSkipPermissionRequest)
+        if (!AppUtils.checkRunningConditions(this))
+            requestRequiredPermissions(!skipPermissionRequest)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -195,16 +215,15 @@ abstract class Activity : AppCompatActivity() {
     open fun onUserProfileUpdated() {}
 
     fun attachTask(task: BaseAttachableAsyncTask) {
-        synchronized(mAttachedTaskList) { if (!mAttachedTaskList.add(task)) return }
-        if (task.acti == null) task.setContentIntent(this, intent)
+        synchronized(attachedTaskList) { if (!attachedTaskList.add(task)) return }
+        if (task.activityIntent == null)
+            task.setContentIntent(this, intent)
     }
 
     @Synchronized
     private fun attachTasks() {
-        val concurrentTaskList = selfApplication!!.findTasksBy(
-            identity
-        )
-        val attachableBgTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList(mAttachedTaskList)
+        val concurrentTaskList = selfApplication.findTasksBy(identity)
+        val attachableBgTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList(attachedTaskList)
         val checkIfExists = attachableBgTaskList.size > 0
 
         // If this call is in between of onStart and onStop, it means there could be some tasks held in the
@@ -239,35 +258,36 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun attachUiTask(task: AsyncTask) {
-        synchronized(mUiTaskList) { mUiTaskList.add(task) }
+        synchronized(uiTaskList) { uiTaskList.add(task) }
     }
 
     fun checkForThemeChange() {
-        if ((mDarkThemeRequested != isDarkThemeRequested || (isDarkThemeRequested
-                    && mAmoledDarkThemeRequested != isAmoledDarkThemeRequested)) && !mThemeLoadingFailed
-            || mCustomFontsEnabled != isUsingCustomFonts
+        if ((darkThemeRequested != isDarkThemeRequested || (isDarkThemeRequested
+                    && amoledDarkThemeRequested != isAmoledDarkThemeRequested)) && !themeLoadingFailed
+            || customFontsEnabled != isUsingCustomFonts
         ) recreate()
     }
 
     fun checkUiTasks() {
-        if (mUiTaskList.size <= 0) return
-        synchronized(mUiTaskList) {
+        if (uiTaskList.size <= 0)
+            return
+        synchronized(uiTaskList) {
             val uiTaskList: MutableList<AsyncTask> = ArrayList()
-            for (task in mUiTaskList) if (!task.isFinished) uiTaskList.add(task)
-            mUiTaskList.clear()
-            mUiTaskList.addAll(uiTaskList)
+            for (task in this.uiTaskList) if (!task.isFinished) uiTaskList.add(task)
+            this.uiTaskList.clear()
+            this.uiTaskList.addAll(uiTaskList)
         }
     }
 
     fun detachTask(task: BaseAttachableAsyncTask) {
-        synchronized(mAttachedTaskList) {
+        synchronized(attachedTaskList) {
             task.removeAnchor()
-            mAttachedTaskList.remove(task)
+            attachedTaskList.remove(task)
         }
     }
 
     private fun detachTasks() {
-        val taskList: List<BaseAttachableAsyncTask> = ArrayList(mAttachedTaskList)
+        val taskList: List<BaseAttachableAsyncTask> = ArrayList(attachedTaskList)
         for (task in taskList) detachTask(task)
     }
 
@@ -280,9 +300,9 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun findTasksWith(identity: Identity): List<BaseAttachableAsyncTask> {
-        synchronized(mAttachedTaskList) {
+        synchronized(attachedTaskList) {
             return App.findTasksBy(
-                mAttachedTaskList,
+                attachedTaskList,
                 identity
             )
         }
@@ -298,7 +318,7 @@ abstract class Activity : AppCompatActivity() {
         get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
 
     fun <T : BaseAttachableAsyncTask?> getTaskListOf(clazz: Class<T>): List<T> {
-        synchronized(mAttachedTaskList) { return App.getTaskListOf(mAttachedTaskList, clazz) }
+        synchronized(attachedTaskList) { return App.getTaskListOf(attachedTaskList, clazz) }
     }
 
     fun hasIntroductionShown(): Boolean {
@@ -306,11 +326,11 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun hasTaskOf(clazz: Class<out AsyncTask?>): Boolean {
-        synchronized(mAttachedTaskList) { return App.hasTaskOf(mAttachedTaskList, clazz) }
+        synchronized(attachedTaskList) { return App.hasTaskOf(attachedTaskList, clazz) }
     }
 
     fun hasTaskWith(identity: Identity): Boolean {
-        synchronized(mAttachedTaskList) { return App.hasTaskWith(mAttachedTaskList, identity) }
+        synchronized(attachedTaskList) { return App.hasTaskWith(attachedTaskList, identity) }
     }
 
     val isPowerSaveMode: Boolean
@@ -321,8 +341,8 @@ abstract class Activity : AppCompatActivity() {
         }
 
     fun interruptAllTasks(userAction: Boolean) {
-        if (mAttachedTaskList.size <= 0) return
-        synchronized(mAttachedTaskList) { for (task in mAttachedTaskList) task.interrupt(userAction) }
+        if (attachedTaskList.size <= 0) return
+        synchronized(attachedTaskList) { for (task in attachedTaskList) task.interrupt(userAction) }
     }
 
     val isAmoledDarkThemeRequested: Boolean
@@ -362,10 +382,10 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun requestRequiredPermissions(finishIfOtherwise: Boolean) {
-        if (mOngoingRequest != null && mOngoingRequest!!.isShowing) return
+        if (ongoingRequest != null && ongoingRequest!!.isShowing) return
         for (request in AppUtils.getRequiredPermissions(this))
             if (RationalePermissionRequest.requestIfNecessary(this, request, finishIfOtherwise).also {
-                    mOngoingRequest = it
+                    ongoingRequest = it
                 } != null
             ) break
     }
@@ -390,23 +410,15 @@ abstract class Activity : AppCompatActivity() {
         runUiTask(task)
     }
 
-    fun setSkipPermissionRequest(skip: Boolean) {
-        mSkipPermissionRequest = skip
-    }
-
-    fun setWelcomePageDisallowed(disallow: Boolean) {
-        mWelcomePageDisallowed = disallow
-    }
-
     fun startProfileEditor() {
         ProfileEditorDialog(this).show()
     }
 
     protected fun stopUiTasks() {
-        if (mUiTaskList.size <= 0) return
-        synchronized(mUiTaskList) {
-            for (task in mUiTaskList) task.interrupt(true)
-            mUiTaskList.clear()
+        if (uiTaskList.size <= 0) return
+        synchronized(uiTaskList) {
+            for (task in uiTaskList) task.interrupt(true)
+            uiTaskList.clear()
         }
     }
 

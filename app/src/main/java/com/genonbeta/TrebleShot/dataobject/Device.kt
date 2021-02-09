@@ -17,67 +17,64 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import androidx.core.util.ObjectsCompat
+import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.android.database.DatabaseObject
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
-import java.lang.Exception
+import com.genonbeta.android.database.SQLQuery
 
 class Device : DatabaseObject<Void?>, Parcelable {
-    @JvmField
     var brand: String? = null
-    @JvmField
-    var model: String? = null
-    @JvmField
-    var username: String? = null
-    @JvmField
-    var uid: String? = null
-    @JvmField
-    var versionName: String? = null
-    @JvmField
-    var versionCode = 0
-    @JvmField
-    var protocolVersion = 0
-    @JvmField
-    var protocolVersionMin = 0
-    @JvmField
-    var sendKey = 0
-    @JvmField
-    var receiveKey = 0
-    @JvmField
-    var lastUsageTime: Long = 0
-    @JvmField
-    var isTrusted = false
-    @JvmField
-    var isBlocked = false
-    @JvmField
-    var isLocal = false
-    @JvmField
-    var type = Type.NORMAL
-    private var mIsSelected = false
 
-    constructor() {}
-    constructor(uid: String?) {
+    var model: String? = null
+
+    lateinit var username: String
+
+    lateinit var uid: String
+
+    var versionName: String? = null
+
+    var versionCode = 0
+
+    var protocolVersion = 0
+
+    var protocolVersionMin = 0
+
+    var sendKey = 0
+
+    var receiveKey = 0
+
+    var lastUsageTime: Long = 0
+
+    var isTrusted = false
+
+    var isBlocked = false
+
+    var isLocal = false
+
+    var type = Type.Normal
+
+    private var isSelected = false
+
+    constructor()
+
+    constructor(uid: String) {
         this.uid = uid
     }
 
     protected constructor(`in`: Parcel) {
         brand = `in`.readString()
         model = `in`.readString()
-        username = `in`.readString()
-        uid = `in`.readString()
+        // FIXME: 2/9/21 The device username should not be zero length string
+        username = `in`.readString() ?: ""
+        // FIXME: 2/9/21 The device uid should not be zero length string.
+        uid = `in`.readString() ?: ""
         versionName = `in`.readString()
         versionCode = `in`.readInt()
         protocolVersion = `in`.readInt()
@@ -88,18 +85,20 @@ class Device : DatabaseObject<Void?>, Parcelable {
         isTrusted = `in`.readByte().toInt() != 0
         isBlocked = `in`.readByte().toInt() != 0
         isLocal = `in`.readByte().toInt() != 0
-        mIsSelected = `in`.readByte().toInt() != 0
+        isSelected = `in`.readByte().toInt() != 0
     }
 
     private fun checkFields() {
-        check(!(Type.NORMAL == type && (sendKey == 0 || receiveKey == 0))) { "Keys for $username cannot be invalid when the device is saved" }
-        check(Type.NORMAL_ONLINE != type) { "Online state should not be assigned even when the device is online." }
+        check(!(Type.Normal == type && (sendKey == 0 || receiveKey == 0))) {
+            "Keys for $username cannot be invalid when the device is saved"
+        }
+        check(Type.NormalOnline != type) {
+            "Online state should not be assigned even when the device is online."
+        }
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return if (obj is Device && uid != null) uid == obj.uid else super.equals(
-            obj
-        )
+    override fun equals(other: Any?): Boolean {
+        return if (other is Device && uid != null) uid == other.uid else super.equals(other)
     }
 
     override fun hashCode(): Int {
@@ -116,7 +115,8 @@ class Device : DatabaseObject<Void?>, Parcelable {
     }
 
     override fun getValues(): ContentValues {
-        if (Type.NORMAL_ONLINE == type) type = Type.NORMAL
+        if (Type.NormalOnline == type)
+            type = Type.Normal
         val values = ContentValues()
         values.put(Kuick.FIELD_DEVICES_ID, uid)
         values.put(Kuick.FIELD_DEVICES_USER, username)
@@ -151,36 +151,36 @@ class Device : DatabaseObject<Void?>, Parcelable {
         receiveKey = item.getAsInteger(Kuick.FIELD_DEVICES_RECEIVEKEY)
         protocolVersion = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSION)
         protocolVersionMin = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+
         try {
             type = Type.valueOf(item.getAsString(Kuick.FIELD_DEVICES_TYPE))
         } catch (e: Exception) {
-            type = Type.NORMAL
+            type = Type.Normal
         }
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener?) {
         checkFields()
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener) {
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener?) {
         checkFields()
     }
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener?) {
         kuick.context.deleteFile(generatePictureId())
         kuick.remove(
             db, SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
                 .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", uid)
         )
         val members = kuick.castQuery(
-            db, SQLQuery.Select(
-                Kuick.TABLE_TRANSFERMEMBER
-            ).setWhere(
-                Kuick.FIELD_TRANSFERMEMBER_DEVICEID
-                        + "=?", uid
-            ), TransferMember::class.java, null
+            db, SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
+                .setWhere(Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=?", uid),
+            TransferMember::class.java, null
         )
-        for (member in members) kuick.remove(db, member, null, listener)
+
+        for (member in members)
+            kuick.remove(db, member, null, listener)
     }
 
     override fun describeContents(): Int {
@@ -202,22 +202,20 @@ class Device : DatabaseObject<Void?>, Parcelable {
         dest.writeByte((if (isTrusted) 1 else 0).toByte())
         dest.writeByte((if (isBlocked) 1 else 0).toByte())
         dest.writeByte((if (isLocal) 1 else 0).toByte())
-        dest.writeByte((if (mIsSelected) 1 else 0).toByte())
+        dest.writeByte((if (isSelected) 1 else 0).toByte())
     }
 
     enum class Type {
-        NORMAL, NORMAL_ONLINE, WEB
+        Normal, NormalOnline, Web
     }
 
-    companion object {
-        val CREATOR: Creator<Device> = object : Creator<Device?> {
-            override fun createFromParcel(`in`: Parcel): Device? {
-                return Device(`in`)
-            }
+    companion object CREATOR : Creator<Device> {
+        override fun createFromParcel(parcel: Parcel): Device {
+            return Device(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Device?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Device?> {
+            return arrayOfNulls(size)
         }
     }
 }

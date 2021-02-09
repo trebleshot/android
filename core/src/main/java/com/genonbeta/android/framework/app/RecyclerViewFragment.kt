@@ -47,7 +47,7 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
 
     override fun onListRefreshed() {
         super.onListRefreshed()
-        setListShown(adapter?.let { it.getCount() > 0 } ?: false)
+        setListShown(adapter?.let { it.itemCount > 0 } ?: false)
     }
 
     override fun ensureList() {
