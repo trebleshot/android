@@ -36,9 +36,9 @@ import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.SelectionUtils
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.TrebleShot.widget.EditableListAdapterBase
 import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
+import com.genonbeta.TrebleShot.widgetimport.EditableListAdapterBase
 import com.genonbeta.android.framework.`object`.Selectable
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
@@ -101,7 +101,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         super.onCreate(savedInstanceState)
         mTwoRowLayoutState = isTwoRowLayout
 
-        arguments?.let{
+        arguments?.let {
             mSelectByClick = it.getBoolean(ARG_SELECT_BY_CLICK, mSelectByClick)
             mHasBottomSpace = it.getBoolean(ARG_HAS_BOTTOM_SPACE, mHasBottomSpace)
         }
@@ -257,23 +257,32 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         val groupId = item.groupId
-        if (groupId == R.id.actions_abs_editable_group_sorting) changeSortingCriteria(item.order) else if (groupId == R.id.actions_abs_editable_group_sort_order) changeOrderingCriteria(
-            item.order
-        ) else if (groupId == R.id.actions_abs_editable_group_grid_size) changeGridViewSize(item.order) else if (id == R.id.actions_abs_editable_multi_select && mPerformerMenu != null && activity != null) isLocalSelectionActivated =
-            !mLocalSelectionActivated else if (mPerformerMenu != null && mPerformerMenu!!.onMenuItemClick(item)) isLocalSelectionActivated =
-            false else super.onOptionsItemSelected(item)
+
+        if (groupId == R.id.actions_abs_editable_group_sorting)
+            changeSortingCriteria(item.order)
+        else if (groupId == R.id.actions_abs_editable_group_sort_order)
+            changeOrderingCriteria(item.order)
+        else if (groupId == R.id.actions_abs_editable_group_grid_size)
+            changeGridViewSize(item.order)
+        else if (id == R.id.actions_abs_editable_multi_select && mPerformerMenu != null && activity != null)
+            isLocalSelectionActivated = !mLocalSelectionActivated
+        else if (mPerformerMenu != null && mPerformerMenu!!.onMenuItemClick(item))
+            isLocalSelectionActivated = false
+        else
+            super.onOptionsItemSelected(item)
+
         return true
     }
 
     open fun onSortingOptions(options: MutableMap<String, Int>) {
-        options[getString(R.string.text_sortByName)] = EditableListAdapter.Companion.MODE_SORT_BY_NAME
-        options[getString(R.string.text_sortByDate)] = EditableListAdapter.Companion.MODE_SORT_BY_DATE
-        options[getString(R.string.text_sortBySize)] = EditableListAdapter.Companion.MODE_SORT_BY_SIZE
+        options[getString(R.string.text_sortByName)] = EditableListAdapter.MODE_SORT_BY_NAME
+        options[getString(R.string.text_sortByDate)] = EditableListAdapter.MODE_SORT_BY_DATE
+        options[getString(R.string.text_sortBySize)] = EditableListAdapter.MODE_SORT_BY_SIZE
     }
 
     fun onOrderingOptions(options: MutableMap<String, Int>) {
-        options[getString(R.string.text_sortOrderAscending)] = EditableListAdapter.Companion.MODE_SORT_ORDER_ASCENDING
-        options[getString(R.string.text_sortOrderDescending)] = EditableListAdapter.Companion.MODE_SORT_ORDER_DESCENDING
+        options[getString(R.string.text_sortOrderAscending)] = EditableListAdapter.MODE_SORT_ORDER_ASCENDING
+        options[getString(R.string.text_sortOrderDescending)] = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
     }
 
     open fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
@@ -298,8 +307,9 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
 
     fun applyViewingChanges(gridSize: Int, override: Boolean) {
         if (!isGridSupported && !override) return
-        adapter!!.notifyGridSizeUpdate(gridSize, isScreenLarge)
-        listView.layoutManager = layoutManager
+
+        adapter.notifyGridSizeUpdate(gridSize, isScreenLarge())
+        listView.layoutManager = getLayoutManager()
         listView.adapter = adapter
         refreshList()
     }
@@ -309,14 +319,14 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     override fun changeGridViewSize(gridSize: Int) {
-        viewPreferences!!.edit()
-            .putInt(getUniqueSettingKey("GridSize" + if (isScreenLandscape) "Landscape" else ""), gridSize)
+        viewPreferences.edit()
+            .putInt(getUniqueSettingKey("GridSize" + if (isScreenLandscape()) "Landscape" else ""), gridSize)
             .apply()
         applyViewingChanges(gridSize)
     }
 
     override fun changeOrderingCriteria(id: Int) {
-        viewPreferences!!.edit()
+        viewPreferences.edit()
             .putInt(getUniqueSettingKey("SortOrder"), id)
             .apply()
         adapter!!.setSortingCriteria(sortingCriteria, id)
@@ -401,7 +411,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     override fun getOrderingCriteria(): Int {
-        return viewPreferences!!.getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria)
+        return viewPreferences.getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria)
     }
 
     private val optimumGridSize: Int
@@ -415,16 +425,18 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     override fun getPerformerEngine(): IPerformerEngine? {
-        if (context != null && activity is PerformerEngineProvider) return (activity as PerformerEngineProvider).performerEngine
+        if (context != null && activity is PerformerEngineProvider)
+            return (activity as PerformerEngineProvider).performerEngine
+
         return if (mPerformerMenu != null) mPerformerEngine else null
     }
 
-    override fun getSelectableList(): List<T> {
+    override fun getSelectableList(): MutableList<T> {
         return mSelectableList
     }
 
     override fun getSortingCriteria(): Int {
-        return viewPreferences!!.getInt(getUniqueSettingKey("SortBy"), mDefaultSortingCriteria)
+        return viewPreferences.getInt(getUniqueSettingKey("SortBy"), mDefaultSortingCriteria)
     }
 
     override fun getUniqueSettingKey(setting: String): String {
@@ -442,7 +454,8 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
                 mDefaultViewingGridSize
             )
         }
-    val viewPreferences: SharedPreferences?
+
+    val viewPreferences: SharedPreferences
         get() = AppUtils.getViewingPreferences(context!!)
 
     fun invokeClickListener(holder: V, longClick: Boolean): Boolean {

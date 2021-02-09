@@ -71,6 +71,7 @@ abstract class GroupEditableListFragment<T : GroupEditable?, V : GroupViewHolder
     }
 
     open fun onGroupingOptions(options: MutableMap<String?, Int?>) {}
+
     fun changeGroupingCriteria(criteria: Int) {
         viewPreferences.edit()
             .putInt(getUniqueSettingKey("GroupBy"), criteria)

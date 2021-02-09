@@ -25,31 +25,31 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter.Holder
 import java.util.*
 
 /**
  * Created by: veli
  * Date: 5/29/17 4:29 PM
  */
-abstract class PathResolverRecyclerAdapter<T>(private val mContext: Context) :
-    RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder<T>>() {
+abstract class PathResolverRecyclerAdapter<T>(val context: Context) : RecyclerView.Adapter<Holder<T>>() {
+    var clickListener: OnClickListener<T>? = null
 
     val list: MutableList<Index<T>> = ArrayList()
-
-    var clickListener: OnClickListener<T>? = null
 
     /*
      * To fix issues with the RecyclerView not appearing, the first item must be provided
      * when dealing with wrap_content height.
      */
-    abstract fun onFirstItem(): Index<T?>
+    abstract fun onFirstItem(): Index<T>
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder<T> {
         return Holder(LayoutInflater.from(parent.context).inflate(R.layout.list_pathresolver, null))
     }
 
     override fun onBindViewHolder(holder: Holder<T>, position: Int) {
         holder.index = list[position]
-        holder.text.text = holder.index?.title
+        holder.text.text = holder.index.title
         holder.image.setImageResource(holder.index.imgRes)
         holder.image.visibility = if (position == 0) View.GONE else View.VISIBLE
         holder.text.isEnabled = itemCount - 1 != position
@@ -63,10 +63,6 @@ abstract class PathResolverRecyclerAdapter<T>(private val mContext: Context) :
         }
     }
 
-    fun getContext(): Context {
-        return mContext
-    }
-
     override fun getItemCount(): Int {
         return list.size
     }
@@ -75,16 +71,15 @@ abstract class PathResolverRecyclerAdapter<T>(private val mContext: Context) :
         fun onClick(holder: Holder<E>?)
     }
 
-    class Holder<E> private constructor(var container: View) : RecyclerView.ViewHolder(container) {
+    class Holder<E> constructor(var container: View, ) : RecyclerView.ViewHolder(container) {
         var image: ImageView = container.findViewById(R.id.list_pathresolver_image)
         var text: Button = container.findViewById(R.id.list_pathresolver_text)
-        var index: Index<E>? = null
+        lateinit var index: Index<E>
     }
 
-    class Index<D>(var title: String?, var data: D, var imgRes = R.drawable.ic_keyboard_arrow_right_white_24dp) {
+    class Index<D>(var title: String, var data: D, var imgRes: Int = R.drawable.ic_keyboard_arrow_right_white_24dp)
 
-        init {
-            initAdapter()
-        }
+    init {
+        initAdapter()
     }
 }
