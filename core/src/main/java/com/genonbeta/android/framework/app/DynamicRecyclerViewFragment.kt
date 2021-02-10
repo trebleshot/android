@@ -27,6 +27,13 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter
  */
 abstract class DynamicRecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, Z : RecyclerViewAdapter<T, V>> :
     RecyclerViewFragment<T, V, Z>() {
+    override var adapter: Z
+        get() = super.adapter
+        set(value) {
+            value.horizontalOrientation = isHorizontalOrientation()
+            super.adapter = value
+        }
+
     fun generateGridLayoutManager(): GridLayoutManager {
         return GridLayoutManager(
             context, if (isScreenLarge() && !isHorizontalOrientation()) 2 else 1,
@@ -40,10 +47,5 @@ abstract class DynamicRecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder
 
     open fun isHorizontalOrientation(): Boolean {
         return false
-    }
-
-    override fun setListAdapter(adapter: Z?, hadAdapter: Boolean) {
-        adapter?.horizontalOrientation = isHorizontalOrientation()
-        super.setListAdapter(adapter, hadAdapter)
     }
 }

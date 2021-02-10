@@ -54,9 +54,21 @@ import java.util.*
  */
 abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHolder, E : EditableListAdapter<T, V>> :
     DynamicRecyclerViewFragment<T, V, E>(), IEditableListFragment<T, V> {
-    private val mEngineConnection: IEngineConnection<T> = EngineConnection(this, this)
+    override var adapter: E
+        get() = super.adapter
+        set(value) {
+            super.adapter = value
+            fastScroller?.recyclerView = listView
+            engineConnection.setSelectableProvider(adapter)
 
-    private val mPerformerEngine: IPerformerEngine = PerformerEngine()
+            adapter.setFragment(this)
+            adapter.notifyGridSizeUpdate(viewingGridSize, isScreenLarge())
+            adapter.setSortingCriteria(sortingCriteria, orderingCriteria)
+        }
+
+    private val engineConnection: IEngineConnection<T> = EngineConnection(this, this)
+
+    private val performerEngine: IPerformerEngine = PerformerEngine()
 
     private var performerMenu: PerformerMenu? = null
 
@@ -119,7 +131,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
             hasBottomSpace = it.getBoolean(ARG_HAS_BOTTOM_SPACE, hasBottomSpace)
         }
 
-        performerMenu?.setUp(mPerformerEngine)
+        performerMenu?.setUp(performerEngine)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -159,8 +171,8 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     override fun onAttach(context: Context) {
         super.onAttach(context)
         performerMenu = onCreatePerformerMenu(context)
-        mEngineConnection.setDefinitiveTitle(getDistinctiveTitle(context))
-        mEngineConnection.addSelectionListener(this)
+        engineConnection.setDefinitiveTitle(getDistinctiveTitle(context))
+        engineConnection.addSelectionListener(this)
         getPerformerEngine()?.ensureSlot(this, engineConnection)
     }
 
@@ -377,7 +389,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     protected fun ensureLocalSelection() {
-        val shouldBeEnabled = mEngineConnection.getSelectedItemList()?.let { it.size > 0 } ?: false
+        val shouldBeEnabled = engineConnection.getSelectedItemList()?.let { it.size > 0 } ?: false
 
         if (isLocalSelectionActivated != shouldBeEnabled) {
             Log.d(TAG, "ensureLocalSelection: Altering local selection state to '$shouldBeEnabled'")
@@ -430,7 +442,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
                 return it.getPerformerEngine()
         }
 
-        return mPerformerEngine
+        return performerEngine
     }
 
     override fun getSelectableList(): MutableList<T> {
@@ -469,8 +481,8 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         set(value) {
             field = value
             if (value) {
-                val selectedItems: MutableList<T> = ArrayList(mEngineConnection.getSelectedItemList() ?:)
-                if (selectedItems.isNotEmpty()) mEngineConnection.setSelected(
+                val selectedItems: MutableList<T> = ArrayList(engineConnection.getSelectedItemList() ?:)
+                if (selectedItems.isNotEmpty()) engineConnection.setSelected(
                     selectedItems,
                     IntArray(selectedItems.size),
                     false
@@ -589,16 +601,6 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
 
     override fun setLayoutClickListener(clickListener: LayoutClickListener<V>?) {
         layoutClickListener = clickListener
-    }
-
-    override fun setListAdapter(adapter: E?, hadAdapter: Boolean) {
-        super.setListAdapter(adapter, hadAdapter)
-        fastScroller?.recyclerView = listView
-        mEngineConnection.setSelectableProvider(adapter)
-
-        adapter?.setFragment(this)
-        adapter?.notifyGridSizeUpdate(viewingGridSize, isScreenLarge())
-        adapter?.setSortingCriteria(sortingCriteria, orderingCriteria)
     }
 
     interface LayoutClickListener<V : RecyclerViewAdapter.ViewHolder?> {

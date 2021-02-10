@@ -33,6 +33,15 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter
  */
 abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : RecyclerViewAdapter<T, V>> :
     ListFragment<RecyclerView, T, E>() {
+    override var adapter: E
+        get() = adapterPrivate
+        set(value) {
+            listView.adapter = value
+            adapterPrivate = value
+        }
+
+    private lateinit var adapterPrivate: E
+
     private val handler: Handler = Handler()
 
     private val requestFocus: Runnable = Runnable {
@@ -47,7 +56,7 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
 
     override fun onListRefreshed() {
         super.onListRefreshed()
-        setListShown(adapter?.let { it.itemCount > 0 } ?: false)
+        setListShown(adapter.itemCount > 0)
     }
 
     override fun ensureList() {
@@ -60,11 +69,5 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
 
     override fun generateDefaultView(inflater: LayoutInflater, container: ViewGroup?, savedState: Bundle?): View? {
         return inflater.inflate(R.layout.genfw_listfragment_default_rv, container, false)
-    }
-
-    setLis
-
-    override fun setListAdapter(adapter: E?, hadAdapter: Boolean) {
-        listView.adapter = adapter
     }
 }
