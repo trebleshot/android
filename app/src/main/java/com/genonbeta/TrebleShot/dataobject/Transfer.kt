@@ -17,22 +17,16 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.android.database.DatabaseObject
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.database.SQLQuery
 
 /**
  * created by: veli
@@ -105,12 +99,13 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         dest.writeByte((if (deleteFilesOnRemoval) 1 else 0).toByte())
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
         dateCreated = System.currentTimeMillis()
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {}
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
         val objectSelection = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
             .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), id.toString())
         kuick.remove(db,
@@ -119,7 +114,7 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         )
         if (deleteFilesOnRemoval) {
             val itemList = kuick.castQuery(db, objectSelection, TransferItem::class.java, null)
-            listener.progress.addToTotal(itemList.size)
+            listener?.progress.addToTotal(itemList.size)
             for (`object` in itemList) {
                 listener.progress.addToCurrent(1)
                 `object`.deleteFile(kuick, this)
@@ -128,15 +123,13 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         kuick.remove(db, objectSelection)
     }
 
-    companion object {
-        val CREATOR: Creator<Transfer> = object : Creator<Transfer?> {
-            override fun createFromParcel(`in`: Parcel): Transfer? {
-                return Transfer(`in`)
-            }
+    companion object CREATOR : Creator<Transfer> {
+        override fun createFromParcel(parcel: Parcel): Transfer {
+            return Transfer(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Transfer?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Transfer?> {
+            return arrayOfNulls(size)
         }
     }
 }

@@ -17,128 +17,128 @@
  */
 package com.genonbeta.TrebleShot.widget.recyclerview
 
+import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
 import com.genonbeta.TrebleShot.dataobject.Editable
-import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * created by: veli
  * date: 3/11/19 1:02 AM
  */
-class SwipeSelectionListener<T : Editable?>(private val mListFragment: EditableListFragmentBase<T>) :
-    OnItemTouchListener {
-    private var mSelectionActivated = false
-    private var mActivationWaiting = false
-    private var mLastPosition = 0
-    private var mStartPosition = 0
-    private var mInitialX = 0
-    private var mInitialY = 0
+class SwipeSelectionListener<T : Editable>(private val listFragment: EditableListFragmentBase<T>) :
+    RecyclerView.OnItemTouchListener {
+    private var selectionActivated = false
+    private var activationWaiting = false
+    private var lastPos = 0
+    private var startPos = 0
+    private var initialX = 0
+    private var initialY = 0
+
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-        if (MotionEvent.ACTION_DOWN == e.getAction()) {
-            mActivationWaiting = mListFragment.performerEngine != null
-            mInitialX = e.getX()
-            mInitialY = e.getY()
-        } else if (MotionEvent.ACTION_MOVE == e.getAction() && mActivationWaiting
-            && (mInitialX != e.getX() as Int || mInitialY != e.getY() as Int)
+        if (MotionEvent.ACTION_DOWN == e.action) {
+            activationWaiting = listFragment.getPerformerEngine() != null
+            initialX = e.x.toInt()
+            initialY = e.y.toInt()
+        } else if (MotionEvent.ACTION_MOVE == e.action && activationWaiting
+            && (initialX != e.x.toInt() || initialY != e.y.toInt())
         ) {
-            mSelectionActivated = e.getEventTime() - e.getDownTime() > ViewConfiguration.getLongPressTimeout()
-            mActivationWaiting = false
+            selectionActivated = e.eventTime - e.downTime > ViewConfiguration.getLongPressTimeout()
+            activationWaiting = false
         }
-        return mSelectionActivated
+        return selectionActivated
     }
 
     override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-        if (MotionEvent.ACTION_UP == e.getAction() || MotionEvent.ACTION_CANCEL == e.getAction()) {
-            setInitials()
-        } else if (MotionEvent.ACTION_MOVE == e.getAction() && mSelectionActivated) {
+        if (MotionEvent.ACTION_UP == e.action || MotionEvent.ACTION_CANCEL == e.action) {
+            initialize()
+        } else if (MotionEvent.ACTION_MOVE == e.action && selectionActivated) {
             var currentPos = RecyclerView.NO_POSITION
-            val view = mListFragment.listView.findChildViewUnder(e.getX(), e.getY())
+            val view = listFragment.listView.findChildViewUnder(e.x, e.y)
+            val adapter = listFragment.adapterImpl ?: return
+
             if (view != null) {
-                val holder = mListFragment.listView
-                    .findContainingViewHolder(view) as RecyclerViewAdapter.ViewHolder?
+                val holder = listFragment.listView.findContainingViewHolder(view) as RecyclerViewAdapter.ViewHolder?
+
                 if (holder != null) {
                     currentPos = holder.adapterPosition
                     if (currentPos >= 0) {
-                        if (mStartPosition < 0) {
-                            mStartPosition = currentPos
-                            mLastPosition = currentPos
+                        if (startPos < 0) {
+                            startPos = currentPos
+                            lastPos = currentPos
                         }
-                        if (currentPos != mLastPosition) {
-                            synchronized(mListFragment.adapterImpl.list) {
 
-                                // The idea is that we start with some arbitrary position to select, so, for instance,
-                                // when the starting position is 8 and user goes to select 7, 6, 5, we declare these
-                                // as selected, however, when the user goes with 6, 7, 8 after 5, we decide that those
-                                // numbers are now unselected. This goes on until the user releases the touch event.
-                                val startPos = Math.min(currentPos, mLastPosition)
-                                val endPos = Math.max(currentPos, mLastPosition)
-                                for (i in startPos until endPos + 1) {
-                                    val selected =
-                                        if (currentPos > mLastPosition) mStartPosition <= i else mStartPosition >= i
-                                    mListFragment.engineConnection.setSelected(
-                                        mListFragment.adapterImpl.getItem(i), selected
-                                    )
-                                }
+                        if (currentPos != lastPos) {
+                            // The idea is that we start with some arbitrary position to select, so, for instance,
+                            // when the starting position is 8 and user goes to select 7, 6, 5, we declare these
+                            // as selected, however, when the user goes with 6, 7, 8 after 5, we decide that those
+                            // numbers are now unselected. This goes on until the user releases the touch event.
+                            val startPos = min(currentPos, lastPos)
+                            val endPos = max(currentPos, lastPos)
+                            for (i in startPos until endPos + 1) {
+                                val selected = if (currentPos > lastPos) this.startPos <= i else this.startPos >= i
+                                listFragment.engineConnection.setSelected(adapter.getItem(i), selected)
                             }
-                            mLastPosition = currentPos
+                            lastPos = currentPos
                         }
                     }
                 }
             }
-            if (mStartPosition < 0 && currentPos < 0) mSelectionActivated = false
-            run {
-                var scrollY = 0
-                var scrollX = 0
-                {
-                    val viewHeight = rv.height.toFloat()
-                    val viewPinPoint = viewHeight / 3
-                    val touchPointBelowStart = viewHeight - viewPinPoint
-                    if (touchPointBelowStart < e.getY()) {
-                        scrollY =
-                            (30 * ((Math.min(e.getY(), viewHeight) - touchPointBelowStart) / viewPinPoint)).toInt()
-                    } else if (viewPinPoint > e.getY()) {
-                        scrollY = (-30 * ((viewPinPoint - Math.max(e.getY(), 0f)) / viewPinPoint)).toInt()
-                    }
-                }
-                {
-                    val viewWidth = rv.width.toFloat()
-                    val viewPinPoint = viewWidth / 3
-                    val touchPointBelowStart = viewWidth - viewPinPoint
-                    if (viewWidth - viewPinPoint < e.getX()) {
-                        scrollX = (30 * ((Math.min(e.getX(), viewWidth) - touchPointBelowStart) / viewPinPoint)).toInt()
-                    } else if (viewPinPoint > e.getX()) {
-                        scrollX = (-30 / ((viewPinPoint - Math.max(e.getX(), 0f)) / viewPinPoint)).toInt()
-                    }
-                }
 
-                // Sadly a previous attempt to make this scroll continuous failed due to the limitations of the
-                // smoothScrollBy method of RecyclerView. The problem is that inside the touch events, calling it has
-                // no effect. And also, using scrollBy with touch listener has not benefits as it doesn't invoke
-                // onScrollStateChanged method which, if it did, could be used to repeat the scrolling process
-                // when the state is SETTLING. If it went according to the plan, as long as the mSelectionActivated
-                // is true, we could keep scrolling it. Another good solution could be to use SmoothScroller class
-                // with the layout manager, however, it was expensive use to because, firstly, it didn't scroll by
-                // pixels, but by pointing out the position of a child and secondly, even though it could work, it
-                // wasn't the best solution out there, because the next problem would be to guess where the user is
-                // pointing his or her hand.
-                rv.scrollBy(scrollX, scrollY)
-            }
+            if (startPos < 0 && currentPos < 0)
+                selectionActivated = false
+
+            // Sadly a previous attempt to make this scroll continuous failed due to the limitations of the
+            // smoothScrollBy method of RecyclerView. The problem is that inside the touch events, calling it has
+            // no effect. And also, using scrollBy with touch listener has not benefits as it doesn't invoke
+            // onScrollStateChanged method which, if it did, could be used to repeat the scrolling process
+            // when the state is SETTLING. If it went according to the plan, as long as the mSelectionActivated
+            // is true, we could keep scrolling it. Another good solution could be to use SmoothScroller class
+            // with the layout manager, however, it was expensive use to because, firstly, it didn't scroll by
+            // pixels, but by pointing out the position of a child and secondly, even though it could work, it
+            // wasn't the best solution out there, because the next problem would be to guess where the user is
+            // pointing his or her hand.
+            rv.scrollBy(calculateX(rv, e), calculateY(rv, e))
         }
     }
 
     override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-        if (disallowIntercept) setInitials()
+        if (disallowIntercept) initialize()
     }
 
-    fun setInitials() {
-        mActivationWaiting = false
-        mSelectionActivated = mActivationWaiting
-        mLastPosition = -1
-        mStartPosition = mLastPosition
-        mInitialY = 0
-        mInitialX = mInitialY
+    private fun calculateX(rv: RecyclerView, e: MotionEvent): Int {
+        val viewWidth = rv.width.toFloat()
+        val viewPinPoint = viewWidth / 3
+        val touchPointBelowStart = viewWidth - viewPinPoint
+        return when {
+            viewWidth - viewPinPoint < e.x -> (30 * (min(e.x, viewWidth) - touchPointBelowStart) / viewPinPoint).toInt()
+            viewPinPoint > e.x -> (-30 / ((viewPinPoint - max(e.x, 0f)) / viewPinPoint)).toInt()
+            else -> 0
+        }
+    }
+
+    private fun calculateY(rv: RecyclerView, e: MotionEvent): Int {
+        val viewHeight = rv.height.toFloat()
+        val viewPinPoint = viewHeight / 3
+        val touchPointBelowStart = viewHeight - viewPinPoint
+        return when {
+            touchPointBelowStart < e.y -> (30 * (min(e.y, viewHeight) - touchPointBelowStart) / viewPinPoint).toInt()
+            viewPinPoint > e.y -> (-30 * (viewPinPoint - max(e.y, 0f)) / viewPinPoint).toInt()
+            else -> 0
+        }
+    }
+
+    private fun initialize() {
+        activationWaiting = false
+        selectionActivated = activationWaiting
+        lastPos = -1
+        startPos = lastPos
+        initialY = 0
+        initialX = initialY
     }
 
     companion object {
@@ -146,6 +146,6 @@ class SwipeSelectionListener<T : Editable?>(private val mListFragment: EditableL
     }
 
     init {
-        setInitials()
+        initialize()
     }
 }

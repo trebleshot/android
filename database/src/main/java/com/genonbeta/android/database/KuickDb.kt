@@ -36,21 +36,21 @@ abstract class KuickDb(
         } ?: statement.bindNull(iteratorPosition)
     }
 
-    fun <T, V : DatabaseObject<T>> castQuery(select: SQLQuery.Select, clazz: Class<V>): MutableList<V> {
+    fun <T, V : DatabaseObject<T>> castQuery(select: SQLQuery.Select, clazz: Class<V>): List<V> {
         return castQuery(select, clazz, null)
     }
 
     fun <T, V : DatabaseObject<T>> castQuery(
         select: SQLQuery.Select, clazz: Class<V>,
         listener: CastQueryListener<V>?,
-    ): MutableList<V> {
+    ): List<V> {
         return castQuery(readableDatabase, select, clazz, listener)
     }
 
     fun <T, V : DatabaseObject<T>> castQuery(
         db: SQLiteDatabase, select: SQLQuery.Select,
         clazz: Class<V>, listener: CastQueryListener<V>?,
-    ): MutableList<V> {
+    ): List<V> {
         val returnedList: MutableList<V> = ArrayList()
         val itemList = getTable(db, select)
         try {
@@ -125,11 +125,11 @@ abstract class KuickDb(
         return if (list.size > 0) list[0] else null
     }
 
-    fun getTable(select: SQLQuery.Select): MutableList<ContentValues> {
+    fun getTable(select: SQLQuery.Select): List<ContentValues> {
         return getTable(readableDatabase, select)
     }
 
-    fun getTable(db: SQLiteDatabase, select: SQLQuery.Select): MutableList<ContentValues> {
+    fun getTable(db: SQLiteDatabase, select: SQLQuery.Select): List<ContentValues> {
         val list: MutableList<ContentValues> = ArrayList()
         val cursor = db.query(
             select.tableName, select.columns, select.where, select.whereArgs, select.groupBy,
@@ -183,12 +183,12 @@ abstract class KuickDb(
         return insertedId
     }
 
-    fun <T, V : DatabaseObject<T>> insert(objects: MutableList<V>): Boolean {
+    fun <T, V : DatabaseObject<T>> insert(objects: List<V>): Boolean {
         return insert(writableDatabase, objects, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> insert(
-        db: SQLiteDatabase, objects: MutableList<V>, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, objects: List<V>, parent: T?, listener: Progress.Listener?,
     ): Boolean {
         db.beginTransaction()
         try {
@@ -221,12 +221,12 @@ abstract class KuickDb(
         return rowsChanged
     }
 
-    fun <T, V : DatabaseObject<T>> publish(objects: MutableList<V>): Boolean {
+    fun <T, V : DatabaseObject<T>> publish(objects: List<V>): Boolean {
         return publish(writableDatabase, objects, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> publish(
-        db: SQLiteDatabase, objectList: MutableList<V>, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, objectList: List<V>, parent: T?, listener: Progress.Listener?,
     ): Boolean {
         db.beginTransaction()
         try {
@@ -291,12 +291,12 @@ abstract class KuickDb(
         return affectedRows
     }
 
-    fun <T, V : DatabaseObject<T>> remove(objects: MutableList<V>): Boolean {
+    fun <T, V : DatabaseObject<T>> remove(objects: List<V>): Boolean {
         return remove(writableDatabase, objects, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> remove(
-        db: SQLiteDatabase, objects: MutableList<V>, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, objects: List<V>, parent: T?, listener: Progress.Listener?,
     ): Boolean {
         db.beginTransaction()
         try {
@@ -362,12 +362,12 @@ abstract class KuickDb(
         return rowsAffected
     }
 
-    fun <T, V : DatabaseObject<T>> update(objects: MutableList<V>): Boolean {
+    fun <T, V : DatabaseObject<T>> update(objects: List<V>): Boolean {
         return update(writableDatabase, objects, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> update(
-        db: SQLiteDatabase, objects: MutableList<V>, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, objects: List<V>, parent: T?, listener: Progress.Listener?,
     ): Boolean {
         db.beginTransaction()
         try {

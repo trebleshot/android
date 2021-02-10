@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.adapter
 
-import android.content.*
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -57,7 +57,7 @@ open class SmartFragmentPagerAdapter(private val context: Context, fm: FragmentM
 
     @JvmOverloads
     fun createTabs(tabLayout: TabLayout, icons: Boolean = true, text: Boolean = true) {
-        if (getCount() > 0) for (iterator in 0 until count) {
+        if (count > 0) for (iterator in 0 until count) {
             val stableItem = getStableItem(iterator)
             val fragment = getItem(iterator)
             val tab: TabLayout.Tab = tabLayout.newTab()
@@ -115,7 +115,7 @@ open class SmartFragmentPagerAdapter(private val context: Context, fm: FragmentM
     }
 
     override fun getItemId(position: Int): Long {
-        return getStableItem(position).itemId
+        return getStableItem(position).itemId.toLong()
     }
 
     override fun getItem(position: Int): Fragment {
@@ -138,39 +138,24 @@ open class SmartFragmentPagerAdapter(private val context: Context, fm: FragmentM
         return fragments[position]
     }
 
-    class StableItem(var itemId: Long, var clazzName: String, var arguments: Bundle?) : Parcelable {
-        var title: String? = null
-        var iconOnly = false
+    class StableItem(
+        var itemId: Int, var clazzName: String, var arguments: Bundle? = null,
+        var title: String? = null, var iconOnly: Boolean = false,
+    ) : Parcelable {
         var initiatedItem: Fragment? = null
         var currentPosition = -1
 
-        constructor(itemId: Long, clazz: Class<out Fragment?>, arguments: Bundle?) : this(
-            itemId,
-            clazz.name,
-            arguments
+        constructor(source: Parcel) : this(
+            source.readInt(), source.readString()!!, source.readBundle(), source.readString(),
+            source.readInt() == 1
         )
-
-        constructor(source: Parcel) : this(source.readLong(), source.readString(), source.readBundle()) {
-            setTitle(source.readString())
-            setIconOnly(source.readInt() == 1)
-        }
-
-        fun setIconOnly(iconOnly: Boolean): StableItem {
-            this.iconOnly = iconOnly
-            return this
-        }
-
-        fun setTitle(title: String?): StableItem {
-            this.title = title
-            return this
-        }
 
         override fun describeContents(): Int {
             return 0
         }
 
         override fun writeToParcel(dest: Parcel, flags: Int) {
-            dest.writeLong(itemId)
+            dest.writeInt(itemId)
             dest.writeString(clazzName)
             dest.writeBundle(arguments)
             dest.writeString(title)

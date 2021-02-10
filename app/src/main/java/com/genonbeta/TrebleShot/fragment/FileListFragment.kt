@@ -250,7 +250,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
     }
 
     override fun setItemSelected(holder: GroupViewHolder): Boolean {
-        when (getAdapterImpl().getItem(holder.getAdapterPosition()).getType()) {
+        when (getAdapterImpl()?.getItem(holder.adapterPosition)?.getType()) {
             FileHolder.Type.SaveLocation, FileHolder.Type.Folder -> return false
         }
         return super.setItemSelected(holder)
@@ -279,18 +279,18 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
         }
 
         override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
-            val performerEngine = performerEngine ?: return false
-            val selectableList: List<Selectable> = ArrayList<Selectable>(performerEngine.selectionList)
+            val performerEngine = getPerformerEngine() ?: return false
+            val selectableList: List<Selectable> = ArrayList<Selectable>(performerEngine.getSelectionList())
             val fileList: MutableList<FileHolder> = ArrayList()
+
             for (selectable in selectableList)
                 if (selectable is FileHolder)
-                    fileList.add(selectable as FileHolder)
-            return if (fileList.size <= 0 || !handleEditingAction(
-                    item,
-                    mFragment,
-                    fileList
-                )
-            ) super.onPerformerMenuSelected(performerMenu, item) else true
+                    fileList.add(selectable)
+
+            return if (fileList.size <= 0 || !handleEditingAction(item, mFragment, fileList))
+                super.onPerformerMenuSelected(performerMenu, item)
+            else
+                true
         }
     }
 

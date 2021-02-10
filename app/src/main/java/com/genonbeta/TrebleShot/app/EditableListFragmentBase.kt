@@ -34,6 +34,34 @@ import com.genonbeta.android.framework.util.actionperformer.SelectableProvider
  */
 interface EditableListFragmentBase<T : Editable> : ListFragmentBase<T>, PerformerEngineProvider,
     IEngineConnection.SelectionListener<T>, SelectableProvider<T>, SelectableHost<T>, TitleProvider {
+    val adapterImpl: EditableListAdapterBase<T>?
+
+    val engineConnection: IEngineConnection<T>
+
+    var filteringDelegate: EditableListFragment.FilteringDelegate<T>
+
+    var isGridSupported: Boolean
+
+    var isFilteringSupported: Boolean
+
+    var isLocalSelectionActivated: Boolean
+
+    var isRefreshRequested: Boolean
+
+    var isSelectByClick: Boolean
+
+    var isSortingSupported: Boolean
+
+    var isTwoRowLayout: Boolean
+
+    var isUsingLocalSelection: Boolean
+
+    val listView: RecyclerView
+
+    val orderingCriteria: Int
+
+    val sortingCriteria: Int
+
     fun applyViewingChanges(gridSize: Int)
 
     fun changeGridViewSize(gridSize: Int)
@@ -42,33 +70,9 @@ interface EditableListFragmentBase<T : Editable> : ListFragmentBase<T>, Performe
 
     fun changeSortingCriteria(id: Int)
 
-    val adapterImpl: EditableListAdapterBase<T>?
-
-    val engineConnection: IEngineConnection<T>
-
-    fun getFilteringDelegate(): EditableListFragment.FilteringDelegate<T>
-
-    val listView: RecyclerView?
-
-    val orderingCriteria: Int
-
-    val sortingCriteria: Int
-
     fun getUniqueSettingKey(setting: String): String
-
-    val isGridSupported: Boolean
-
-    val isLocalSelectionActivated: Boolean
-
-    val isRefreshRequested: Boolean
-
-    val isSortingSupported: Boolean
-
-    val isUsingLocalSelection: Boolean
-
-    fun loadIfRequested(): Boolean
 
     fun openUri(uri: Uri): Boolean
 
-    fun setFilteringDelegate(delegate: EditableListFragment.FilteringDelegate<T>?)
+    fun loadIfRequested(): Boolean
 }

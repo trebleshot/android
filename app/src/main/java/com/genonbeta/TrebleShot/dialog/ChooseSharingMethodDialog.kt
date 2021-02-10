@@ -32,9 +32,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
 
-class ChooseSharingMethodDialog(activity: Activity?, listener: PickListener) : AlertDialog.Builder(
-    activity!!
-) {
+class ChooseSharingMethodDialog(activity: Activity, listener: (SharingMethod) -> Unit) : AlertDialog.Builder(activity) {
     private val layoutInflater = LayoutInflater.from(context)
     private val sharingMethods = SharingMethod.values()
 
@@ -72,29 +70,26 @@ class ChooseSharingMethodDialog(activity: Activity?, listener: PickListener) : A
     }
 
     interface PickListener {
-        fun onShareMethod(sharingMethod: SharingMethod?)
+        fun onShareMethod(sharingMethod: SharingMethod)
     }
 
     companion object {
         fun createLocalShareOrganizingTask(
-            method: SharingMethod?,
+            method: SharingMethod,
             shareableList: List<Shareable>,
         ): OrganizeLocalSharingTask {
             return when (method) {
                 SharingMethod.WebShare -> OrganizeLocalSharingTask(shareableList, false, true)
                 SharingMethod.LocalShare -> OrganizeLocalSharingTask(shareableList, true, false)
-                else -> OrganizeLocalSharingTask(shareableList, true, false)
             }
         }
     }
 
     init {
         setTitle(R.string.text_chooseSharingMethod)
-        setAdapter(SharingMethodListAdapter(), DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-            listener.onShareMethod(
-                sharingMethods[which]
-            )
-        })
+        setAdapter(SharingMethodListAdapter()) { _: DialogInterface?, which: Int ->
+            listener.onShareMethod(sharingMethods[which])
+        }
         setNegativeButton(R.string.butn_cancel, null)
     }
 }

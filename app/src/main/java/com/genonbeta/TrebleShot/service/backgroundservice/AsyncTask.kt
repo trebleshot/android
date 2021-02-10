@@ -51,7 +51,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     val kuick: Kuick
         get() = AppUtils.getKuick(context)
 
-    private val progressListener: ProgressListener = ProgressListener()
+    val progressListener: Progress.Listener = ProgressListener()
 
     private var stoppable = StoppableImpl()
 

@@ -21,4 +21,4 @@ package com.genonbeta.android.framework.util.listing
  * created by: Veli
  * date: 29.03.2018 08:14
  */
-abstract class ComparableMerger<T> : Merger<T?>(), Comparable<ComparableMerger<T?>?>
+abstract class ComparableMerger<T> : Merger<T>(), Comparable<ComparableMerger<T>>

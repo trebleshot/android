@@ -333,20 +333,20 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     }
 
     fun goPath(path: File?) {
-        goPath(DocumentFile.fromFile(path))
+        goPath(path?.let { DocumentFile.fromFile(path) })
     }
 
     override fun getRepresentativeText(merger: Merger<out FileHolder>): String {
         return if (merger is FileHolderMerger) {
             when (merger.type) {
-                FileHolderMerger.Type.Storage -> getContext().getString(R.string.text_storage)
-                FileHolderMerger.Type.PublicFolder -> getContext().getString(R.string.text_shortcuts)
-                FileHolderMerger.Type.Folder -> getContext().getString(R.string.text_folder)
-                FileHolderMerger.Type.PartFile -> getContext().getString(R.string.text_pendingTransfers)
-                FileHolderMerger.Type.RecentFile -> getContext().getString(R.string.text_recentFiles)
-                FileHolderMerger.Type.File -> getContext().getString(R.string.text_file)
-                FileHolderMerger.Type.Dummy -> getContext().getString(R.string.text_unknown)
-                else -> getContext().getString(R.string.text_unknown)
+                FileHolderMerger.Type.Storage -> context.getString(R.string.text_storage)
+                FileHolderMerger.Type.PublicFolder -> context.getString(R.string.text_shortcuts)
+                FileHolderMerger.Type.Folder -> context.getString(R.string.text_folder)
+                FileHolderMerger.Type.PartFile -> context.getString(R.string.text_pendingTransfers)
+                FileHolderMerger.Type.RecentFile -> context.getString(R.string.text_recentFiles)
+                FileHolderMerger.Type.File -> context.getString(R.string.text_file)
+                FileHolderMerger.Type.Dummy -> context.getString(R.string.text_unknown)
+                else -> context.getString(R.string.text_unknown)
             }
         } else super.getRepresentativeText(merger)
     }
@@ -380,8 +380,8 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                 try {
                     val kuick = AppUtils.getKuick(context)
                     val data: ContentValues? = kuick.getFirstFromTable(
-                        SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
-                            .setWhere(Kuick.Companion.FIELD_TRANSFERITEM_FILE + "=?", file!!.name)
+                        SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                            .setWhere(Kuick.FIELD_TRANSFERITEM_FILE + "=?", file!!.name)
                     )
                     if (data != null) {
                         transferItem = TransferItem()
@@ -477,25 +477,28 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
         }
 
         override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-            uri = Uri.parse(item.getAsString(Kuick.Companion.FIELD_FILEBOOKMARK_PATH))
+            uri = Uri.parse(item.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH))
             type = if (uri.toString().startsWith("file")) Type.Bookmarked else Type.Mounted
             try {
                 initialize(com.genonbeta.android.framework.util.Files.fromUri(kuick.getContext(), uri))
-                calculate(kuick.getContext())
+                calculate(kuick.context)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             }
             friendlyName = item.getAsString(Kuick.Companion.FIELD_FILEBOOKMARK_TITLE)
         }
 
-        override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any, listener: Progress.Listener) {}
-        override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any, listener: Progress.Listener) {}
-        override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any, listener: Progress.Listener) {}
+        override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+
+        override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+
+        override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+
         override fun setSelectableSelected(selected: Boolean): Boolean {
-            when (getType()) {
-                Type.Dummy, Type.Public, Type.Storage, Type.Mounted, Type.Bookmarked -> return false
+            return when (getType()) {
+                Type.Dummy, Type.Public, Type.Storage, Type.Mounted, Type.Bookmarked -> false
+                else -> super.setSelectableSelected(selected)
             }
-            return super.setSelectableSelected(selected)
         }
 
         enum class Type {
@@ -503,14 +506,14 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
         }
     }
 
-    private class FileHolderMerger(holder: FileHolder) : ComparableMerger<FileHolder?>() {
+    private class FileHolderMerger(holder: FileHolder) : ComparableMerger<FileHolder>() {
         lateinit var type: Type
 
         override fun equals(other: Any?): Boolean {
             return other is FileHolderMerger && other.type == type
         }
 
-        override operator fun compareTo(other: ComparableMerger<FileHolder?>): Int {
+        override operator fun compareTo(other: ComparableMerger<FileHolder>): Int {
             return if (other is FileHolderMerger)
                 MathUtils.compare(other.type.ordinal.toLong(), type.ordinal.toLong())
             else 0
@@ -534,8 +537,8 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     }
 
     companion object {
-        val MODE_GROUP_BY_DEFAULT: Int = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING + 1
-        val MODE_GROUP_FOR_INBOX: Int = GroupEditableListAdapter.MODE_GROUP_BY_DATE
+        const val MODE_GROUP_BY_DEFAULT: Int = MODE_GROUP_BY_NOTHING + 1
+        const val MODE_GROUP_FOR_INBOX: Int = MODE_GROUP_BY_DATE
         const val REQUEST_CODE_MOUNT_FOLDER = 1
     }
 }

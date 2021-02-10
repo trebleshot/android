@@ -40,22 +40,22 @@ class AboutActivity : Activity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        findViewById<View>(R.id.orgIcon).setOnClickListener { v: View? ->
+        findViewById<View>(R.id.orgIcon).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_ORG)))
         }
-        findViewById<View>(R.id.activity_about_see_source_layout).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.activity_about_see_source_layout).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_APP)))
         }
-        findViewById<View>(R.id.activity_about_translate_layout).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.activity_about_translate_layout).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TRANSLATE)))
         }
-        findViewById<View>(R.id.activity_about_changelog_layout).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.activity_about_changelog_layout).setOnClickListener {
             startActivity(Intent(this@AboutActivity, ChangelogActivity::class.java))
         }
-        findViewById<View>(R.id.activity_about_telegram_layout).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.activity_about_telegram_layout).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)))
         }
-        findViewById<View>(R.id.activity_about_option_fourth_layout).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.activity_about_option_fourth_layout).setOnClickListener {
             if (Keyword.Flavor.googlePlay == AppUtils.buildFlavor) {
                 try {
                     startActivity(
@@ -76,10 +76,8 @@ class AboutActivity : Activity() {
                     null
                 )
         }
-        findViewById<View>(R.id.activity_about_third_party_libraries_layout).setOnClickListener { v: View? ->
-            startActivity(
-                Intent(this@AboutActivity, ThirdPartyLibrariesActivity::class.java)
-            )
+        findViewById<View>(R.id.activity_about_third_party_libraries_layout).setOnClickListener {
+            startActivity(Intent(this@AboutActivity, ThirdPartyLibrariesActivity::class.java))
         }
     }
 

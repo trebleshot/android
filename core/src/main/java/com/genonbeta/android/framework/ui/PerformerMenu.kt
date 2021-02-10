@@ -175,10 +175,9 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
          * @param position      where the selectable is at on [SelectableProvider]
          * @return true if there is no problem with altering the state of selection of the selectable
          */
-        open fun onPerformerMenuItemSelection(
-            performerMenu: PerformerMenu?, engine: IPerformerEngine?,
-            owner: IBaseEngineConnection?, selectable: Selectable?, isSelected: Boolean,
-            position: Int,
+        fun onPerformerMenuItemSelection(
+            performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
+            selectable: Selectable, isSelected: Boolean, position: Int,
         ): Boolean
 
         /**
@@ -193,10 +192,9 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
          * @param positions      where the selectables are at on [SelectableProvider]
          * @return true if there is no problem with altering the state of selection of the selectable
          */
-        open fun onPerformerMenuItemSelection(
-            performerMenu: PerformerMenu?, engine: IPerformerEngine?,
-            owner: IBaseEngineConnection?, selectableList: MutableList<out Selectable?>?,
-            isSelected: Boolean, positions: IntArray?,
+        fun onPerformerMenuItemSelection(
+            performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
+            selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
         ): Boolean
 
         /**

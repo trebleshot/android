@@ -21,16 +21,19 @@ import android.content.*
 import android.database.sqlite.SQLiteDatabase
 import android.os.*
 import android.util.Log
+import android.widget.Toast
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.TransferMemberActivity
+import com.genonbeta.TrebleShot.activityimport.WebShareActivity
 import com.genonbeta.TrebleShot.adapter.FileListAdapter
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
 import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Transfers
-import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import java.io.FileNotFoundException
 import java.util.*
@@ -38,8 +41,8 @@ import java.util.*
 class OrganizeLocalSharingTask(
     var mList: List<Shareable>,
     private val mFlagAddNewDevice: Boolean,
-    private val mFlagWebShare: Boolean
-) : AttachableAsyncTask<AttachedTaskListener?>() {
+    private val mFlagWebShare: Boolean,
+) : AttachableAsyncTask<AttachedTaskListener>() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         if (mList.isEmpty())
@@ -60,20 +63,20 @@ class OrganizeLocalSharingTask(
             val containable = if (shareable is Container) (shareable as Container).expand() else null
 
             if (shareable is FileListAdapter.FileHolder) {
-                    if (shareable.isDirectory) Transfers.createFolderStructure(
-                        list,
-                        transfer.id,
-                        file,
-                        shareable.fileName,
-                        this
-                    ) else list
-                        .add(from(file, transfer.id, null))
+                if (shareable.file?.isDirectory() == true) Transfers.createFolderStructure(
+                    list,
+                    transfer.id,
+                    shareable.file,
+                    shareable.fileName,
+                    this
+                ) else
+                    list.add(from(shareable?.file, transfer.id, null))
             } else
                 list.add(from(shareable, transfer.id, if (containable == null) null else shareable.friendlyName))
             if (containable != null) {
-                progress.addToTotal(containable.children!!.size)
+                progress.addToTotal(containable.children.size)
 
-                for (uri in containable.children!!) {
+                for (uri in containable.children) {
                     progress().addToCurrent(1)
                     try {
                         list.add(
@@ -92,9 +95,10 @@ class OrganizeLocalSharingTask(
         }
         if (list.size <= 0) {
             post(
-                TaskMessage.Companion.newInstance()
-                    .setTitle(context, R.string.text_error)
-                    .setMessage(context, R.string.text_errorNoFileSelected)
+                TaskMessage.newInstance().apply {
+                    setTitle(context, R.string.text_error)
+                    setMessage(context, R.string.text_errorNoFileSelected)
+                }
             )
             Log.d(TAG, "onRun: No content is located with uri data")
             return
@@ -110,17 +114,18 @@ class OrganizeLocalSharingTask(
                 ).show()
             }
         }
-        kuick.insert(db, transfer, null, progressListener())
+        kuick.insert(db, transfer, null, progress)
         if (mFlagWebShare) context.startActivity(
             Intent(context, WebShareActivity::class.java).addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
             )
-        ) else TransferMemberActivity.Companion.startInstance(context, transfer, mFlagAddNewDevice)
+        ) else
+            TransferMemberActivity.startInstance(context, transfer, mFlagAddNewDevice)
         kuick.broadcast()
     }
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.mesg_organizingFiles)
+    override fun getName(context: Context): String {
+        return context.getString(R.string.mesg_organizingFiles)
     }
 
     companion object {

@@ -39,7 +39,7 @@ import com.genonbeta.android.framework.widget.ListAdapterBase
  * Date: 12/3/16 9:57 AM
  */
 abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment(), ListFragmentBase<T> {
-    var adapter: E? = null
+    lateinit var adapter: E
         private set
 
     open lateinit var listView: Z
@@ -106,7 +106,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
         refreshLoaderCallback.requestRefresh()
     }
 
-    protected fun setListAdapter(adapter: E?) {
+    protected fun setListAdapter(adapter: E) {
         val hadAdapter = this.adapter != null
         this.adapter = adapter
         setListAdapter(adapter, hadAdapter)

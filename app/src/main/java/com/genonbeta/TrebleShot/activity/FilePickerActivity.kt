@@ -27,9 +27,12 @@ import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.app.EditableListFragment.LayoutClickListener
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Created by: veli
@@ -65,35 +68,40 @@ class FilePickerActivity : Activity() {
                         R.string.text_chooseFolder
                     )
                 }
-                fileExplorerFragment.getAdapter()
-                    .setConfiguration(true, false, null)
+                fileExplorerFragment.adapter?.setConfiguration(true, false, null)
                 fileExplorerFragment.refreshList()
-                val recyclerView: RecyclerView = fileExplorerFragment.getListView()
-                recyclerView.setPadding(0, 0, 0, 200)
-                recyclerView.clipToPadding = false
+                fileExplorerFragment.listView.setPadding(0, 0, 0, 200)
+                fileExplorerFragment.listView.clipToPadding = false
                 fab.show()
-                fab.setOnClickListener(View.OnClickListener { v: View? ->
-                    val selectedPath: DocumentFile = fileExplorerFragment.getAdapter().getPath()
-                    if (selectedPath != null && selectedPath.canWrite()) finishWithResult(selectedPath) else Snackbar.make(
-                        v,
-                        R.string.mesg_currentPathUnavailable,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                })
+                fab.setOnClickListener { v: View ->
+                    val selectedPath = fileExplorerFragment.adapter?.getPath()
+                    if (selectedPath != null && selectedPath.canWrite())
+                        finishWithResult(selectedPath)
+                    else
+                        Snackbar.make(v, R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show()
+                }
             } else if (ACTION_CHOOSE_FILE == intent.action) {
                 if (supportActionBar != null) {
-                    if (!hasTitlesDefined) supportActionBar!!.setTitle(R.string.text_chooseFile) else supportActionBar!!.setSubtitle(
-                        R.string.text_chooseFolder
-                    )
+                    if (!hasTitlesDefined)
+                        supportActionBar?.setTitle(R.string.text_chooseFile)
+                    else
+                        supportActionBar?.setSubtitle(R.string.text_chooseFolder)
                 }
-                fileExplorerFragment.setLayoutClickListener(LayoutClickListener<GroupViewHolder> { listFragment: EditableListFragmentBase<*>?, holder: GroupViewHolder?, longClick: Boolean ->
-                    if (longClick) return@setLayoutClickListener false
-                    val fileHolder: FileHolder = fileExplorerFragment.getAdapter().getItem(holder)
-                    if (fileHolder.file.isFile()) {
-                        finishWithResult(fileHolder.file)
-                        return@setLayoutClickListener true
+                fileExplorerFragment.setLayoutClickListener(object : LayoutClickListener<GroupViewHolder> {
+                    override fun onLayoutClick(
+                        listFragment: EditableListFragmentBase<*>?,
+                        holder: GroupViewHolder,
+                        longClick: Boolean
+                    ): Boolean {
+                        if (longClick)
+                            return false
+                        val fileHolder = fileExplorerFragment.adapter.getItem(holder)
+                        if (fileHolder.file.isFile()) {
+                            finishWithResult(fileHolder.file)
+                            return true
+                        }
+                        return false
                     }
-                    false
                 })
             } else finish()
             if (!isFinishing) if (intent.hasExtra(EXTRA_START_PATH)) {
@@ -118,13 +126,14 @@ class FilePickerActivity : Activity() {
     }
 
     override fun onBackPressed() {
-        if (fileExplorerFragment == null || !fileExplorerFragment.onBackPressed()) super.onBackPressed()
+        if (!fileExplorerFragment.onBackPressed())
+            super.onBackPressed()
     }
 
     private fun finishWithResult(file: DocumentFile) {
         setResult(
             RESULT_OK, Intent(ACTION_CHOOSE_DIRECTORY)
-                .putExtra(EXTRA_CHOSEN_PATH, file.uri)
+                .putExtra(EXTRA_CHOSEN_PATH, file.getUri())
         )
         finish()
     }

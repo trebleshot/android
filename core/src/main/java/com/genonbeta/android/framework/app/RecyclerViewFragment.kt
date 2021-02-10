@@ -62,6 +62,8 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
         return inflater.inflate(R.layout.genfw_listfragment_default_rv, container, false)
     }
 
+    setLis
+
     override fun setListAdapter(adapter: E?, hadAdapter: Boolean) {
         listView.adapter = adapter
     }

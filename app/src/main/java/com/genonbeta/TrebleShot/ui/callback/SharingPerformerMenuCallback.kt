@@ -18,7 +18,9 @@
 package com.genonbeta.TrebleShot.ui.callback
 
 import android.app.Activity
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.EditableListFragment
@@ -27,15 +29,15 @@ import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFro
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.SharingMethod
-import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
-import com.genonbeta.TrebleShot.ui.callback.LocalSharingCallback
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
 import java.util.*
 
-open class SharingPerformerMenuCallback(activity: Activity?, provider: PerformerEngineProvider) :
-    EditableListFragment.SelectionCallback(activity, provider) {
-    private var mLocalSharingCallback: LocalSharingCallback? = null
+open class SharingPerformerMenuCallback(
+    activity: Activity, provider: PerformerEngineProvider,
+) : EditableListFragment.SelectionCallback(activity, provider) {
+    var localSharingCallback: LocalSharingCallback? = null
+
     override fun onPerformerMenuList(performerMenu: PerformerMenu, inflater: MenuInflater, targetMenu: Menu): Boolean {
         super.onPerformerMenuList(performerMenu, inflater, targetMenu)
         inflater.inflate(R.menu.action_mode_share, targetMenu)
@@ -44,29 +46,24 @@ open class SharingPerformerMenuCallback(activity: Activity?, provider: Performer
 
     override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
         val id = item.itemId
-        val performerEngine = performerEngine ?: return false
+        val performerEngine = getPerformerEngine() ?: return false
         val shareableList = compileShareableListFrom(compileFrom(performerEngine))
         if (id == R.id.action_mode_share_trebleshot) {
-            if (shareableList.size > 0) {
-                if (mLocalSharingCallback != null) mLocalSharingCallback!!.onShareLocal(shareableList) else ChooseSharingMethodDialog(
-                    activity
-                ) { method: SharingMethod? ->
-                    val task: OrganizeLocalSharingTask =
-                        ChooseSharingMethodDialog.Companion.createLocalShareOrganizingTask(
+            if (shareableList.isNotEmpty()) {
+                localSharingCallback?.onShareLocal(shareableList) ?: run {
+                    ChooseSharingMethodDialog(activity) { method: SharingMethod ->
+                        val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(
                             method, ArrayList(shareableList)
                         )
-                    App.Companion.run<OrganizeLocalSharingTask>(activity, task)
-                }.show()
+                        App.run(activity, task)
+                    }.show()
+                }
             }
         } else return super.onPerformerMenuSelected(performerMenu, item)
 
         // I want the menus to keep showing because sharing does not alter data. If it is so descendants should
         // check and return 'true'.
         return false
-    }
-
-    fun setLocalSharingCallback(callback: LocalSharingCallback?) {
-        mLocalSharingCallback = callback
     }
 
     companion object {

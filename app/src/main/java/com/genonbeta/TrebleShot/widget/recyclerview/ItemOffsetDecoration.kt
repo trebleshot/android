@@ -28,48 +28,46 @@ import androidx.recyclerview.widget.RecyclerView
  * This header was missing and I copied from TransferGroupListFragment and accidentally the dates were nearly identical
  * This header was missing and I copied from TransferListFragment and accidentally the dates were nearly identical
  */
-class ItemOffsetDecoration(padding: Int, edgeSpace: Boolean, horizontalView: Boolean) : ItemDecoration() {
-    private val mPadding: Int
-    private val mEdgeSpace: Boolean
-    private val mHorizontalView: Boolean
-    private val mTmpRect = Rect()
-    override fun getItemOffsets(
-        outRect: Rect, view: View, parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
-        if (parent.adapter == null) return
-        val size = parent.adapter!!.itemCount
+class ItemOffsetDecoration(
+    padding: Int, val edgeSpace: Boolean, val horizontalView: Boolean,
+) : RecyclerView.ItemDecoration() {
+    private val padding: Int = if (padding > 1) padding / 2 else padding
+
+    private val tmpRect = Rect()
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        val adapter = parent.adapter ?: return
+        val layoutManager = parent.layoutManager ?: return
+        val size = adapter.itemCount
         val position = parent.getChildAdapterPosition(view)
-        if (position < 0) return
+
+        if (position < 0)
+            return
+
         var spanIndex = 0
         var spanCount = 1
-        if (parent.layoutManager is GridLayoutManager) {
-            val layoutManager = parent.layoutManager as GridLayoutManager?
-            val layoutSpanCount = layoutManager!!.spanCount
+
+        if (layoutManager is GridLayoutManager) {
+            val layoutSpanCount = layoutManager.spanCount
             spanIndex = layoutManager.spanSizeLookup.getSpanIndex(position, layoutSpanCount)
             spanCount = layoutSpanCount - layoutManager.spanSizeLookup.getSpanSize(position)
         }
-        mTmpRect.set(outRect)
-        mTmpRect.left = if (mEdgeSpace || spanIndex != 0) mPadding else 0
-        mTmpRect.right = if (mEdgeSpace || spanIndex != spanCount) mPadding else 0
-        mTmpRect.top = if (mEdgeSpace || position != 0) mPadding else 0
-        mTmpRect.bottom = if (mEdgeSpace || position + 1 != size) mPadding else 0
-        outRect.left = if (mHorizontalView) mTmpRect.top else mTmpRect.left
-        outRect.right = if (mHorizontalView) mTmpRect.bottom else mTmpRect.right
-        outRect.top = if (mHorizontalView) mTmpRect.left else mTmpRect.top
-        outRect.bottom = if (mHorizontalView) mTmpRect.right else mTmpRect.bottom
+
+        tmpRect.set(outRect)
+        tmpRect.left = if (edgeSpace || spanIndex != 0) padding else 0
+        tmpRect.right = if (edgeSpace || spanIndex != spanCount) padding else 0
+        tmpRect.top = if (edgeSpace || position != 0) padding else 0
+        tmpRect.bottom = if (edgeSpace || position + 1 != size) padding else 0
+        outRect.left = if (edgeSpace) tmpRect.top else tmpRect.left
+        outRect.right = if (edgeSpace) tmpRect.bottom else tmpRect.right
+        outRect.top = if (edgeSpace) tmpRect.left else tmpRect.top
+        outRect.bottom = if (edgeSpace) tmpRect.right else tmpRect.bottom
     }
 
     fun prepare(parent: RecyclerView) {
-        if (mEdgeSpace) {
-            parent.setPadding(mPadding, mPadding, mPadding, mPadding)
+        if (edgeSpace) {
+            parent.setPadding(padding, padding, padding, padding)
             parent.clipToPadding = false
         }
-    }
-
-    init {
-        mPadding = if (padding > 1) padding / 2 else padding
-        mEdgeSpace = edgeSpace
-        mHorizontalView = horizontalView
     }
 }
