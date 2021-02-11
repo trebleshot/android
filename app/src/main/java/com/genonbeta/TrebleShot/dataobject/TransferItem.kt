@@ -68,7 +68,7 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
 
     protected val isSelected = false
 
-    constructor() {}
+    constructor()
 
     constructor(id: Long, transferId: Long, name: String, file: String?, mimeType: String?, size: Long, type: Type) {
         this.id = id
@@ -95,10 +95,9 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
         return true
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (obj !is TransferItem) return super.equals(obj)
-        val otherObject = obj
-        return otherObject.id == id && type == otherObject.type
+    override fun equals(other: Any?): Boolean {
+        if (other !is TransferItem) return super.equals(other)
+        return other.id == id && type == other.type
     }
 
     var flag: Flag
@@ -126,16 +125,16 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
                 return flags
             }
         }
-    val senderFlagList: Map<String?, Flag>
+    val senderFlagList: Map<String, Flag>
         get() {
             synchronized(senderFlagList1) {
-                val map: MutableMap<String?, Flag> = ArrayMap()
+                val map: MutableMap<String, Flag> = ArrayMap(senderFlagList)
                 map.putAll(senderFlagList1)
                 return map
             }
         }
 
-    fun putFlag(deviceId: String?, flag: Flag) {
+    fun putFlag(deviceId: String, flag: Flag) {
         if (Type.OUTGOING != type) throw InvalidParameterException()
         synchronized(senderFlagList1) { senderFlagList1.put(deviceId, flag) }
     }

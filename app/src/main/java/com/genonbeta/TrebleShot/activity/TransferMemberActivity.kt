@@ -56,7 +56,7 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     private lateinit var progressBar: ProgressBar
 
-    private var addingInitialDevice = false
+    var addingInitialDevice = false
 
     private var colorActive = 0
 

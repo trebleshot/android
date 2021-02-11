@@ -19,49 +19,54 @@ package com.genonbeta.TrebleShot.task
 
 import android.app.Activity
 import android.content.*
+import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity
+import com.genonbeta.TrebleShot.activity.TransferMemberActivity
 import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
+import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.CommonErrorHelper
 import com.genonbeta.TrebleShot.util.CommunicationBridge
+import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
+import com.genonbeta.android.database.SQLQuery
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
-class AddDeviceTask(private val mTransfer: Transfer, private val mDevice: Device, address: DeviceAddress) :
-    AttachableAsyncTask<TransferMemberActivity?>() {
-    private val mAddress: DeviceAddress
+class AddDeviceTask(
+    private val transfer: Transfer, val device: Device, val address: DeviceAddress,
+) : AttachableAsyncTask<TransferMemberActivity>() {
     @Throws(TaskStoppedException::class)
     public override fun onRun() {
-        val context = context
-        val kuick = AppUtils.getKuick(context)
         val db: SQLiteDatabase = kuick.writableDatabase
         try {
-            val member = TransferMember(mTransfer, mDevice, TransferItem.Type.OUTGOING)
+            val member = TransferMember(transfer, device, TransferItem.Type.OUTGOING)
             val objectList = kuick.castQuery(
                 db, SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                     .setWhere(
                         Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE
-                                + "=?", mTransfer.id.toString(), TransferItem.Type.OUTGOING.toString()
+                                + "=?", transfer.id.toString(), TransferItem.Type.OUTGOING.toString()
                     ),
                 TransferItem::class.java, null
             )
-            if (objectList.size == 0) throw ContentException(ContentException.Error.NotFound)
+            if (objectList.isEmpty()) throw ContentException(ContentException.Error.NotFound)
             val filesArray = JSONArray()
-            progress().addToTotal(objectList.size)
+            progress.addToTotal(objectList.size)
             for (transferItem in objectList) {
                 throwIfStopped()
-                progress().addToCurrent(1)
+                progress.addToCurrent(1)
                 ongoingContent = transferItem.name
                 publishStatus()
                 try {
                     val json = JSONObject()
                         .put(Keyword.INDEX_FILE_NAME, transferItem.name)
-                        .put(Keyword.INDEX_FILE_SIZE, transferItem.comparableSize)
+                        .put(Keyword.INDEX_FILE_SIZE, transferItem.getComparableSize())
                         .put(Keyword.TRANSFER_REQUEST_ID, transferItem.id)
                         .put(Keyword.INDEX_FILE_MIME, transferItem.mimeType)
                     if (transferItem.directory != null) json.put(Keyword.INDEX_DIRECTORY, transferItem.directory)
@@ -72,37 +77,32 @@ class AddDeviceTask(private val mTransfer: Transfer, private val mDevice: Device
             }
             if (filesArray.length() < 1) throw IOException("There is no file in the JSON array.")
             var successful: Boolean
-            CommunicationBridge.connect(kuick, mAddress, mDevice, 0).use { bridge ->
-                bridge.requestFileTransfer(mTransfer.id, filesArray)
+            CommunicationBridge.connect(kuick, address, device, 0).use { bridge ->
+                bridge.requestFileTransfer(transfer.id, filesArray)
                 successful = bridge.receiveResult()
             }
             if (successful) {
-                kuick.publish<Transfer, TransferMember>(member)
+                kuick.publish(member)
                 kuick.broadcast()
-                val anchor: TransferMemberActivity? = anchor
-                if (anchor != null) {
-                    anchor.setResult(
+                anchor?.let {
+                    it.setResult(
                         Activity.RESULT_OK, Intent()
-                            .putExtra(TransferMemberActivity.EXTRA_DEVICE, mDevice)
-                            .putExtra(TransferMemberActivity.EXTRA_TRANSFER, mTransfer)
+                            .putExtra(TransferMemberActivity.EXTRA_DEVICE, device)
+                            .putExtra(TransferMemberActivity.EXTRA_TRANSFER, transfer)
                     )
-                    if (anchor.isAddingFirstDevice()) {
-                        TransferDetailActivity.startInstance(anchor, mTransfer)
-                        anchor.finish()
+                    if (it.addingInitialDevice) {
+                        TransferDetailActivity.startInstance(it, transfer)
+                        it.finish()
                     }
                 }
             } else throw Exception("The remote returned false.")
         } catch (e: Exception) {
             e.printStackTrace()
-            post(CommonErrorHelper.messageOf(getContext(), e))
+            post(CommonErrorHelper.messageOf(context, e))
         }
     }
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.text_addDevices)
-    }
-
-    init {
-        mAddress = address
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_addDevices)
     }
 }

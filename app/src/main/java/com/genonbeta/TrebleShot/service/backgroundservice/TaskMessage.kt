@@ -72,8 +72,8 @@ interface TaskMessage {
     }
 
     companion object {
-        fun newInstance(): TaskMessage {
-            return TaskMessageImpl()
+        fun newInstance(title: String, message: String, tone: Tone = Tone.Neutral): TaskMessage {
+            return TaskMessageImpl(title, message, tone)
         }
     }
 }

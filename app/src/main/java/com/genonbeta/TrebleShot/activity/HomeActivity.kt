@@ -36,7 +36,6 @@ import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog
-import com.genonbeta.TrebleShot.migration.db.Migration
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Updates
 import com.google.android.material.navigation.NavigationView

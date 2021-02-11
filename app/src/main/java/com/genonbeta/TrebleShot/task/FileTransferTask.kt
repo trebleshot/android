@@ -25,17 +25,26 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
-import com.genonbeta.TrebleShot.dataobject.Identifier.from
-import com.genonbeta.TrebleShot.dataobject.Identity.withANDs
+import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
+import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
+import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException
+import com.genonbeta.TrebleShot.exception.DeviceNotFoundException
+import com.genonbeta.TrebleShot.exception.MemberNotFoundException
+import com.genonbeta.TrebleShot.exception.TransferNotFoundException
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
 import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.StreamInfo
 import com.genonbeta.android.framework.util.Files
 import org.json.JSONObject
 import org.monora.coolsocket.core.session.ActiveConnection
+import org.monora.coolsocket.core.session.CancelledException
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.channels.Channels
@@ -44,24 +53,38 @@ import java.nio.channels.WritableByteChannel
 class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
     // Static objects
     var activeConnection: ActiveConnection? = null
+
     var device: Device? = null
+
     var index: TransferIndex? = null
+
     var transfer: Transfer? = null
+
     var member: TransferMember? = null
+
     var addressList: List<DeviceAddress>? = null
+
     var type: TransferItem.Type? = null
 
     // Changing objects
     var item: TransferItem? = null
+
     var lastItem: TransferItem? = null
+
     var file: DocumentFile? = null
+
     var lastMovedBytes: Long = 0
-    var currentBytes // moving
-            : Long = 0
+
+    var currentBytes: Long = 0
+
     var completedBytes: Long = 0
+
     var completedCount = 0
+
     private val mTimeTransactionSaved: Long = 0
+
     private var mDatabase: SQLiteDatabase? = null
+
 
     @Throws(TaskStoppedException::class)
     override fun onRun() {
@@ -75,14 +98,15 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
 
     override fun onPublishStatus() {
         super.onPublishStatus()
-        if (isInterrupted || isFinished) {
-            if (isInterrupted) ongoingContent = context.getString(R.string.text_cancellingTransfer)
-            kuick().broadcast()
+        if (interrupted() || isFinished) {
+            if (interrupted()) ongoingContent = context.getString(R.string.text_cancellingTransfer)
+            kuick.broadcast()
             return
         }
         val bytesTransferred = completedBytes + currentBytes
         val text = StringBuilder()
-        progress().total = 100
+        progress.total = 100
+
         if (bytesTransferred > 0 && index.bytesPending() > 0) progress().current =
             (100 * (bytesTransferred.toDouble() / index.bytesPending())) as Int
         if (lastMovedBytes > 0 && bytesTransferred > 0) {
@@ -102,7 +126,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
         }
         lastMovedBytes = bytesTransferred
         if (item != null) {
-            if (text.length > 0) text.append(" ").append(context.getString(R.string.mode_middleDot)).append(" ")
+            if (text.isNotEmpty()) text.append(" ").append(context.getString(R.string.mode_middleDot)).append(" ")
             text.append(item!!.name)
             try {
                 val flag = TransferItem.Flag.IN_PROGRESS
@@ -139,8 +163,8 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
     override val identity: Identity
         get() = identityOf(this)
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.text_transfer)
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_transfer)
     }
 
     private fun handleTransferAsReceiver() {
@@ -153,7 +177,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
                 // An IO error for this side means there is a permission/storage issue.
                 file = com.genonbeta.TrebleShot.util.Files.getIncomingFile(context, item, transfer)
                 currentBytes = file!!.getLength()
-                val streamInfo: StreamInfo = StreamInfo.getStreamInfo(context, file!!.uri)
+                val streamInfo: StreamInfo = StreamInfo.from(context, file!!.getUri())
                 try {
                     streamInfo.openOutputStream().use { outputStream ->
                         CommunicationBridge.sendSecure(
@@ -332,10 +356,11 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
             e.printStackTrace()
             try {
                 post(
-                    TaskMessage.newInstance()
-                        .setTone(Tone.Negative)
-                        .setTitle(context, R.string.text_communicationError)
-                        .setMessage(context.getString(R.string.mesg_errorDuringTransfer, device!!.username))
+                    TaskMessage.newInstance(
+                        context.getString(R.string.text_communicationError),
+                        context.getString(R.string.mesg_errorDuringTransfer, device!!.username),
+                        TaskMessage.Tone.Negative
+                    )
                 )
             } catch (ignored: TaskStoppedException) {
             }
@@ -356,10 +381,10 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
     @Throws(TaskStoppedException::class)
     fun startTransferAsClient() {
         try {
-            CommunicationBridge.connect(kuick(), addressList, device, 0).use { bridge ->
+            CommunicationBridge.connect(kuick, addressList, device, 0).use { bridge ->
                 bridge.requestFileTransferStart(transfer!!.id, type)
                 if (bridge.receiveResult()) {
-                    activeConnection = bridge.getActiveConnection()
+                    activeConnection = bridge.activeConnection
                     if (TransferItem.Type.INCOMING == type) {
                         handleTransferAsReceiver()
                     } else if (TransferItem.Type.OUTGOING == type) {
@@ -379,13 +404,19 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
 
     companion object {
         val TAG = FileTransferTask::class.java.simpleName
+
         @Throws(
             TransferNotFoundException::class,
             DeviceNotFoundException::class,
             ConnectionNotFoundException::class,
             MemberNotFoundException::class
         )
-        fun createFrom(kuick: Kuick, transferId: Long, deviceId: String?, type: TransferItem.Type?): FileTransferTask {
+        private fun createFrom(
+            kuick: Kuick,
+            transferId: Long,
+            deviceId: String,
+            type: TransferItem.Type,
+        ): FileTransferTask {
             val db: SQLiteDatabase = kuick.readableDatabase
             val device = Device(deviceId)
             try {
@@ -403,15 +434,15 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
         }
 
         @Throws(MemberNotFoundException::class, ConnectionNotFoundException::class)
-        fun createFrom(kuick: Kuick?, transfer: Transfer, device: Device, type: TransferItem.Type?): FileTransferTask {
+        fun createFrom(kuick: Kuick, transfer: Transfer, device: Device, type: TransferItem.Type): FileTransferTask {
             val db: SQLiteDatabase = kuick.getReadableDatabase()
             val member = TransferMember(transfer, device, type)
             try {
-                kuick.reconstruct<Transfer, TransferMember>(db, member)
+                kuick.reconstruct(db, member)
             } catch (e: ReconstructionFailedException) {
                 throw MemberNotFoundException(member)
             }
-            val addressList: List<DeviceAddress?>? = Transfers.getAddressListFor(kuick, device.uid)
+            val addressList: List<DeviceAddress?> = Transfers.getAddressListFor(kuick, device.uid)
             Log.d(TAG, "createFrom: deviceId=" + device.uid + " transferId=" + transfer.id)
             val task = FileTransferTask()
             task.type = type
@@ -428,20 +459,20 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
         }
 
         fun identifyWith(transferId: Long): Identity {
-            return withANDs(Identifier.from(Id.TransferId, transferId))
+            return withANDs(from(Id.TransferId, transferId))
         }
 
         fun identifyWith(transferId: Long, type: TransferItem.Type?): Identity {
-            return withANDs(Identifier.from(Id.TransferId, transferId), from(Id.Type, type))
+            return withANDs(from(Id.TransferId, transferId), from(Id.Type, type))
         }
 
         fun identifyWith(transferId: Long, deviceId: String?): Identity {
-            return withANDs(Identifier.from(Id.TransferId, transferId), from(Id.DeviceId, deviceId))
+            return withANDs(from(Id.TransferId, transferId), from(Id.DeviceId, deviceId))
         }
 
         fun identifyWith(transferId: Long, deviceId: String?, type: TransferItem.Type?): Identity {
             return withANDs(
-                Identifier.from(Id.TransferId, transferId),
+                from(Id.TransferId, transferId),
                 from(Id.DeviceId, deviceId),
                 from(Id.Type, type)
             )

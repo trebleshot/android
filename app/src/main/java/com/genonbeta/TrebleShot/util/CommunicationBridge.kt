@@ -20,6 +20,8 @@ package com.genonbeta.TrebleShot.util
 import android.content.*
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -29,9 +31,9 @@ import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.dataobject.TransferItem
-import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
-import com.genonbeta.TrebleShot.protocol.communication.ContentException
-import com.genonbeta.TrebleShot.protocol.communication.DifferentClientException
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException
+import com.genonbeta.TrebleShot.protocol.DeviceVerificationException
+import com.genonbeta.TrebleShot.protocol.communication.*
 import com.genonbeta.android.database.exception.ReconstructionFailedException
 import org.json.JSONArray
 import org.json.JSONException
@@ -49,39 +51,28 @@ import java.net.SocketException
  */
 class CommunicationBridge(
     val kuick: Kuick,
-    activeConnection: ActiveConnection,
-    device: Device,
-    deviceAddress: DeviceAddress
+    val activeConnection: ActiveConnection,
+    var device: Device,
+    var deviceAddress: DeviceAddress,
 ) : Closeable {
-    private val activeConnection: ActiveConnection
-    val device: Device
-    private val deviceAddress: DeviceAddress
     override fun close() {
         try {
-            getActiveConnection().closeSafely()
+            activeConnection.closeSafely()
         } catch (ignored: Exception) {
         }
-    }
-
-    fun getActiveConnection(): ActiveConnection {
-        return activeConnection
     }
 
     val context: Context
         get() = kuick.context
 
-    fun getDeviceAddress(): DeviceAddress {
-        return deviceAddress
-    }
-
     @Throws(JSONException::class, IOException::class)
     fun requestAcquaintance() {
-        getActiveConnection().reply(JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE))
+        activeConnection.reply(JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE))
     }
 
     @Throws(JSONException::class, IOException::class)
     fun requestFileTransfer(transferId: Long, files: JSONArray?) {
-        getActiveConnection().reply(
+        activeConnection.reply(
             JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
                 .put(Keyword.TRANSFER_ID, transferId)
@@ -91,7 +82,7 @@ class CommunicationBridge(
 
     @Throws(JSONException::class, IOException::class)
     fun requestFileTransferStart(transferId: Long, type: TransferItem.Type?) {
-        getActiveConnection().reply(
+        activeConnection.reply(
             JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
                 .put(Keyword.TRANSFER_ID, transferId)
@@ -101,7 +92,7 @@ class CommunicationBridge(
 
     @Throws(JSONException::class, IOException::class)
     fun requestNotifyTransferState(transferId: Long, accepted: Boolean) {
-        getActiveConnection().reply(
+        activeConnection.reply(
             JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_NOTIFY_TRANSFER_STATE)
                 .put(Keyword.TRANSFER_ID, transferId)
@@ -110,8 +101,8 @@ class CommunicationBridge(
     }
 
     @Throws(JSONException::class, IOException::class)
-    fun requestTextTransfer(text: String?) {
-        getActiveConnection().reply(
+    fun requestTextTransfer(text: String) {
+        activeConnection.reply(
             JSONObject()
                 .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
                 .put(Keyword.TRANSFER_TEXT, text)
@@ -119,19 +110,19 @@ class CommunicationBridge(
     }
 
     @Throws(IOException::class, JSONException::class)
-    fun sendError(errorCode: String?) {
-        sendError(getActiveConnection(), errorCode)
+    fun sendError(errorCode: String) {
+        sendError(activeConnection, errorCode)
     }
 
     @Throws(IOException::class, JSONException::class)
     fun sendResult(result: Boolean) {
-        sendResult(getActiveConnection(), result)
+        sendResult(activeConnection, result)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private class NetworkBinderCallback(val connectivityManager: ConnectivityManager, val inetAddress: InetAddress) :
         ConnectivityManager.NetworkCallback() {
-        private val lock = Any()
+        private val lock = Object()
         private var exception: IOException? = null
         private var resultConnection: ActiveConnection? = null
 
@@ -186,13 +177,17 @@ class CommunicationBridge(
                 e.printStackTrace()
                 exception = IOException(e)
             }
-            if (resultConnection == null) throw IOException("No connection is handed over after waiting.") else if (exception != null) throw exception
-            return resultConnection
+
+            resultConnection?.let { return@let it }
+            exception?.let { throw it }
+
+            throw IOException("No connection is handed over after waiting.")
         }
     }
 
     companion object {
         val TAG = CommunicationBridge::class.java.simpleName
+
         @Throws(IOException::class, CommunicationException::class, JSONException::class)
         fun connect(kuick: Kuick, addressList: List<DeviceAddress>, device: Device?, pin: Int): CommunicationBridge {
             for (address in addressList) {
@@ -231,13 +226,13 @@ class CommunicationBridge(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 val manager: ConnectivityManager = context
                     .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                return if (manager != null) {
+                return run {
                     val callback = NetworkBinderCallback(manager, inetAddress)
                     val builder: NetworkRequest.Builder = NetworkRequest.Builder()
                     builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                     manager.requestNetwork(builder.build(), callback)
                     callback.waitForConnection()
-                } else throw IOException("Connectivity manager is empty.")
+                }
             }
             return openConnection(inetAddress)
         }
@@ -251,8 +246,8 @@ class CommunicationBridge(
         }
 
         @Throws(IOException::class, JSONException::class, CommunicationException::class)
-        fun receiveSecure(connection: ActiveConnection?, targetDevice: Device?): JSONObject {
-            val jsonObject: JSONObject = connection.receive().getAsJson()
+        fun receiveSecure(connection: ActiveConnection, targetDevice: Device): JSONObject {
+            val jsonObject: JSONObject = connection.receive().asJson
             if (jsonObject.has(Keyword.ERROR)) {
                 val errorCode = jsonObject.getString(Keyword.ERROR)
                 when (errorCode) {
@@ -268,12 +263,12 @@ class CommunicationBridge(
             return jsonObject
         }
 
-        @JvmOverloads
+        fun CommunicationBridge.receiveResult(): Boolean {
+            return receiveResult(activeConnection, device)
+        }
+
         @Throws(IOException::class, JSONException::class, CommunicationException::class)
-        fun receiveResult(
-            connection: ActiveConnection? = getActiveConnection(),
-            targetDevice: Device? = getDevice()
-        ): Boolean {
+        fun receiveResult(connection: ActiveConnection, targetDevice: Device): Boolean {
             return resultOf(receiveSecure(connection, targetDevice))
         }
 
@@ -283,9 +278,9 @@ class CommunicationBridge(
         }
 
         @Throws(IOException::class, JSONException::class, UnhandledCommunicationException::class)
-        fun sendError(connection: ActiveConnection?, exception: Exception?) {
+        fun sendError(connection: ActiveConnection, exception: Exception) {
             try {
-                throw exception!!
+                throw exception
             } catch (e: NotTrustedException) {
                 sendError(connection, Keyword.ERROR_NOT_TRUSTED)
             } catch (e: DeviceBlockedException) {
@@ -302,7 +297,7 @@ class CommunicationBridge(
         }
 
         @Throws(IOException::class, JSONException::class)
-        fun sendError(connection: ActiveConnection?, e: ContentException) {
+        fun sendError(connection: ActiveConnection, e: ContentException) {
             when (e.error) {
                 ContentException.Error.NotFound -> sendError(connection, Keyword.ERROR_NOT_FOUND)
                 ContentException.Error.NotAccessible -> sendError(connection, Keyword.ERROR_NOT_ACCESSIBLE)
@@ -312,7 +307,7 @@ class CommunicationBridge(
         }
 
         @Throws(IOException::class, JSONException::class)
-        fun sendError(connection: ActiveConnection?, errorCode: String?) {
+        fun sendError(connection: ActiveConnection, errorCode: String) {
             connection.reply(JSONObject().put(Keyword.ERROR, errorCode))
         }
 
@@ -325,11 +320,5 @@ class CommunicationBridge(
         fun sendSecure(connection: ActiveConnection?, result: Boolean, jsonObject: JSONObject) {
             connection.reply(jsonObject.put(Keyword.RESULT, result))
         }
-    }
-
-    init {
-        this.activeConnection = activeConnection
-        this.device = device
-        this.deviceAddress = deviceAddress
     }
 }

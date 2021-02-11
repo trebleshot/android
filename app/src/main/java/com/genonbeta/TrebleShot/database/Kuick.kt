@@ -22,7 +22,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.migration.db.Migration
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.android.database.*
 

@@ -27,9 +27,9 @@ import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.io.DocumentFile.fromUri
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.Files.fetchFile
+import com.genonbeta.android.framework.util.Files.fromUri
 import com.genonbeta.android.framework.util.Files.getUniqueFileName
 import com.genonbeta.android.framework.util.Stoppable
 import java.io.File
@@ -83,7 +83,7 @@ object Files {
     fun getIncomingPseudoFile(
         context: Context, item: TransferItem, transfer: Transfer, createIfNeeded: Boolean,
     ): DocumentFile {
-        return fetchFile(getSavePath(context, transfer), item.directory, item.file, createIfNeeded)
+        return fetchFile(getSavePath(context, transfer), item.directory, item.mimeType, item.file!!, createIfNeeded)
     }
 
     @Throws(IOException::class)
@@ -93,7 +93,7 @@ object Files {
         return pseudoFile
     }
 
-    fun getReadableUri(uri: String?): String? {
+    fun getReadableUri(uri: String): String? {
         return getReadableUri(Uri.parse(uri), uri)
     }
 

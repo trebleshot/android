@@ -18,25 +18,36 @@
 package com.genonbeta.TrebleShot.adapter
 
 import android.content.*
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
 import android.system.Os
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.collection.ArrayMap
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.widget.ImageViewCompat
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.TransferItemListAdapter.GenericItem
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.util.*
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.*
+import com.genonbeta.android.database.SQLQuery
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.io.TreeDocumentFile
 import com.genonbeta.android.framework.util.Files
@@ -50,9 +61,10 @@ import java.util.*
  * Created by: veli
  * Date: 4/15/17 12:29 PM
  */
-class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, GroupViewHolder?>?) :
-    GroupEditableListAdapter<GenericItem?, GroupViewHolder?>(fragment, MODE_GROUP_BY_DEFAULT),
-    CustomGroupLister<GenericItem?> {
+class TransferItemListAdapter(
+    fragment: IEditableListFragment<GenericItem, GroupViewHolder>,
+) : GroupEditableListAdapter<GenericItem, GroupViewHolder>(fragment, MODE_GROUP_BY_DEFAULT),
+    CustomGroupLister<GenericItem> {
     private var mSelect: SQLQuery.Select? = null
     private var mPath: String? = null
     private var mMember: LoadedMember? = null
@@ -65,41 +77,41 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
     private val mColorDone: Int
     private val mColorError: Int
     protected override fun onLoad(lister: GroupLister<GenericItem>) {
-        val loadThumbnails = AppUtils.getDefaultPreferences(getContext())
+        val loadThumbnails = AppUtils.getDefaultPreferences(context)
             .getBoolean("load_thumbnails", true)
         try {
-            AppUtils.getKuick(getContext()).reconstruct(mTransfer)
+            AppUtils.getKuick(context).reconstruct(mTransfer)
         } catch (e: ReconstructionFailedException) {
             e.printStackTrace()
             return
         }
         var hasIncoming = false
         var currentPath = getPath()
-        currentPath = if (currentPath == null || currentPath.length == 0) null else currentPath
+        currentPath = if (currentPath == null || currentPath.isEmpty()) null else currentPath
         val folders: MutableMap<String, TransferFolder> = ArrayMap()
         val member: LoadedMember? = getMember()
-        val members: List<LoadedMember?>? = Transfers.loadMemberList(getContext(), getGroupId(), null)
+        val members: List<LoadedMember> = Transfers.loadMemberList(, getGroupId(), null)
         val memberArray: Array<LoadedMember?> = arrayOfNulls<LoadedMember>(members!!.size)
         members.toArray(memberArray)
-        val transferSelect: SQLQuery.Select = SQLQuery.Select(KuickTABLE_TRANSFERITEM)
-        val transferWhere: StringBuilder = StringBuilder(KuickFIELD_TRANSFERITEM_TRANSFERID + "=?")
+        val transferSelect: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+        val transferWhere: StringBuilder = StringBuilder(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?")
         val transferArgs: MutableList<String> = ArrayList()
         transferArgs.add(mTransfer.id.toString())
         if (currentPath != null) {
             transferWhere.append(
-                " AND (" + KuickFIELD_TRANSFERITEM_DIRECTORY + "=? OR "
-                        + KuickFIELD_TRANSFERITEM_DIRECTORY + " LIKE ?)"
+                " AND (" + Kuick.FIELD_TRANSFERITEM_DIRECTORY + "=? OR "
+                        + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ?)"
             )
             transferArgs.add(currentPath)
             transferArgs.add(currentPath + File.separator + "%")
         }
         if (member != null) {
-            transferWhere.append(" AND " + KuickFIELD_TRANSFERITEM_TYPE + "=?")
+            transferWhere.append(" AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?")
             transferArgs.add(member.type.toString())
         }
         if (getSortingCriteria() == GroupEditableListAdapterMODE_GROUP_BY_DATE) {
             transferSelect.setOrderBy(
-                KuickFIELD_TRANSFERITEM_LASTCHANGETIME + " "
+                Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME + " "
                         + if (getSortingOrder() == EditableListAdapterMODE_SORT_ORDER_ASCENDING) "ASC" else "DESC"
             )
         }
@@ -108,53 +120,53 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         transferArgs.toArray<String>(transferSelect.whereArgs)
         val statusItem = DetailsTransferFolder(
             mTransfer.id,
-            if (currentPath == null) if (member == null) getContext().getString(R.string.text_home) else member.device.username else if (currentPath.contains(
+            if (currentPath == null) if (member == null) context.getString(R.string.text_home) else member.device.username else if (currentPath.contains(
                     File.separator
                 )
             ) currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) else currentPath,
             currentPath
         )
         lister.offerObliged(this, statusItem)
-        val derivedList = AppUtils.getKuick(getContext()).castQuery(
+        val derivedList = AppUtils.getKuick(context).castQuery(
             transferSelect, GenericTransferItem::class.java
         )
 
         // we first get the default files
-        for (`object` in derivedList) {
-            `object`.members = memberArray
-            `object`.directory =
-                if (`object`.directory == null || `object`.directory!!.length == 0) null else `object`.directory
-            if (currentPath != null && `object`.directory == null) continue
+        for (item in derivedList) {
+            item.members = memberArray
+            item.directory =
+                if (item.directory == null || item.directory!!.length == 0) null else item.directory
+            if (currentPath != null && item.directory == null) continue
             var transferFolder: TransferFolder? = null
-            val isIncoming = TransferItem.Type.INCOMING == `object`.type
-            val isOutgoing = TransferItem.Type.OUTGOING == `object`.type
-            if (currentPath == null && `object`.directory == null || `object`.directory == currentPath) {
+            val isIncoming = TransferItem.Type.INCOMING == item.type
+            val isOutgoing = TransferItem.Type.OUTGOING == item.type
+            if (currentPath == null && item.directory == null || item.directory == currentPath) {
                 try {
-                    if (!loadThumbnails) `object`.supportThumbnail = false else {
-                        val format = `object`.mimeType!!.split(File.separator.toRegex()).toTypedArray()
+                    if (!loadThumbnails) item.supportThumbnail = false else {
+                        val format = item.mimeType!!.split(File.separator.toRegex()).toTypedArray()
                         if (format.size > 0 && ("image" == format[0] || "video" == format[0])) {
                             var documentFile: DocumentFile? = null
                             if (isOutgoing) documentFile = Files.fromUri(
-                                getContext(),
-                                Uri.parse(`object`.file)
-                            ) else if (TransferItem.Flag.DONE == `object`.flag) documentFile =
+                                context,
+                                Uri.parse(item.file)
+                            ) else if (TransferItem.Flag.DONE == item.flag) documentFile =
                                 com.genonbeta.TrebleShot.util.Files.getIncomingPseudoFile(
-                                    getContext(), `object`, mTransfer,
+                                    context, item, mTransfer,
                                     false
                                 )
                             if (documentFile != null && documentFile.exists()) {
-                                `object`.documentFile = documentFile
-                                `object`.supportThumbnail = true
+                                item.documentFile = documentFile
+                                item.supportThumbnail = true
                             }
-                        } else `object`.supportThumbnail = false
+                        } else item.supportThumbnail = false
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                lister.offerObliged(this, `object`)
-            } else if (currentPath == null || `object`.directory!!.startsWith(currentPath)) {
+                lister.offerObliged(this, item)
+            } else if (currentPath == null || item.directory!!.startsWith(currentPath)) {
                 val pathToErase = if (currentPath == null) 0 else currentPath.length + File.separator.length
-                var cleanedPath = `object`.directory!!.substring(pathToErase)
+                var cleanedPath = item.directory!!.substring(pathToErase)
                 val slashPos = cleanedPath.indexOf(File.separator)
                 if (slashPos != -1) cleanedPath = cleanedPath.substring(0, slashPos)
                 transferFolder = folders[cleanedPath]
@@ -169,12 +181,12 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
                 }
             }
             if (!hasIncoming && isIncoming) hasIncoming = true
-            mergeTransferInfo(statusItem, `object`, isIncoming, transferFolder)
+            mergeTransferInfo(statusItem, item, isIncoming, transferFolder)
         }
         if (currentPath == null && hasIncoming) try {
             val transfer = Transfer(mTransfer.id)
-            AppUtils.getKuick(getContext()).reconstruct(transfer)
-            val savePath = com.genonbeta.TrebleShot.util.Files.getSavePath(getContext(), transfer)
+            AppUtils.getKuick(context).reconstruct(transfer)
+            val savePath = com.genonbeta.TrebleShot.util.Files.getSavePath(context, transfer)
             val storageItem = StorageStatusItem()
             storageItem.directory = savePath!!.uri.toString()
             storageItem.name = savePath.name
@@ -185,7 +197,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
                 storageItem.bytesFree = saveFile.freeSpace // return used space
             } else if (Build.VERSION.SDK_INT >= 21 && savePath is TreeDocumentFile) {
                 try {
-                    val descriptor: ParcelFileDescriptor = getContext().getContentResolver().openFileDescriptor(
+                    val descriptor: ParcelFileDescriptor = context.getContentResolver().openFileDescriptor(
                         savePath.getOriginalUri(), "r"
                     )
                     if (descriptor != null) {
@@ -233,7 +245,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
     fun mergeTransferInfo(
         details: DetailsTransferFolder, `object`: GenericTransferItem, isIncoming: Boolean,
-        folder: TransferFolder?
+        folder: TransferFolder?,
     ) {
         if (isIncoming) {
             mergeTransferInfo(details, `object`, `object`.flag, true, folder)
@@ -261,21 +273,21 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
     }
 
     fun mergeTransferInfo(
-        details: DetailsTransferFolder, `object`: TransferItem, flag: TransferItem.Flag,
-        isIncoming: Boolean, folder: TransferFolder?
+        details: DetailsTransferFolder, item: TransferItem, flag: TransferItem.Flag,
+        isIncoming: Boolean, folder: TransferFolder?,
     ) {
-        details.bytesTotal += `object`.comparableSize
+        details.bytesTotal += item.getComparableSize()
         details.numberOfTotal++
         if (folder != null) {
-            folder.bytesTotal += `object`.comparableSize
+            folder.bytesTotal += item.getComparableSize()
             folder.numberOfTotal++
         }
         if (TransferItem.Flag.DONE == flag) {
             details.numberOfCompleted++
-            details.bytesCompleted += `object`.comparableSize
+            details.bytesCompleted += item.getComparableSize()
             if (folder != null) {
                 folder.numberOfCompleted++
-                folder.bytesCompleted += `object`.comparableSize
+                folder.bytesCompleted += item.getComparableSize()
             }
         } else if (Transfers.isError(flag)) {
             details.hasIssues = true
@@ -301,7 +313,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
             return true
         }
         return try {
-            AppUtils.getKuick(getContext()).reconstruct<Transfer, LoadedMember>(member)
+            AppUtils.getKuick(context).reconstruct(member)
             mMember = member
             true
         } catch (ignored: ReconstructionFailedException) {
@@ -333,13 +345,13 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
     override fun getRepresentativeText(merger: Merger<out GenericItem>): String {
         return if (merger is GroupEditableTransferObjectMerger) {
             when ((merger as GroupEditableTransferObjectMerger).getType()) {
-                GroupEditableTransferObjectMerger.Type.STATUS -> getContext().getString(R.string.text_transactionDetails)
-                GroupEditableTransferObjectMerger.Type.FOLDER -> getContext().getString(R.string.text_folder)
-                GroupEditableTransferObjectMerger.Type.FILE_ERROR -> getContext().getString(R.string.text_flagInterrupted)
-                GroupEditableTransferObjectMerger.Type.FOLDER_ONGOING, GroupEditableTransferObjectMerger.Type.FILE_ONGOING -> getContext().getString(
+                GroupEditableTransferObjectMerger.Type.STATUS -> context.getString(R.string.text_transactionDetails)
+                GroupEditableTransferObjectMerger.Type.FOLDER -> context.getString(R.string.text_folder)
+                GroupEditableTransferObjectMerger.Type.FILE_ERROR -> context.getString(R.string.text_flagInterrupted)
+                GroupEditableTransferObjectMerger.Type.FOLDER_ONGOING, GroupEditableTransferObjectMerger.Type.FILE_ONGOING -> context.getString(
                     R.string.text_taskOngoing
                 )
-                else -> getContext().getString(R.string.text_file)
+                else -> context.getString(R.string.text_file)
             }
         } else super.getRepresentativeText(merger)
     }
@@ -376,29 +388,29 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         try {
-            val `object`: GenericItem = getItem(position)
-            if (!holder.tryBinding(`object`)) {
+            val item: GenericItem = getItem(position)
+            if (!holder.tryBinding(item)) {
                 val parentView: View = holder.itemView
                 @ColorInt val appliedColor: Int
-                val percentage = (`object`.getPercentage(this) * 100).toInt()
+                val percentage = (item.getPercentage(this) * 100).toInt()
                 val progressBar = parentView.findViewById<ProgressBar>(R.id.progressBar)
                 val thumbnail = parentView.findViewById<ImageView>(R.id.thumbnail)
                 val image = parentView.findViewById<ImageView>(R.id.image)
                 val indicator = parentView.findViewById<ImageView>(R.id.indicator)
                 val sIcon = parentView.findViewById<ImageView>(R.id.statusIcon)
-                val titleText: TextView = parentView.findViewById<TextView>(R.id.text)
-                val firstText: TextView = parentView.findViewById<TextView>(R.id.text2)
-                val secondText: TextView = parentView.findViewById<TextView>(R.id.text3)
-                val thirdText: TextView = parentView.findViewById<TextView>(R.id.text4)
-                parentView.isSelected = `object`.isSelectableSelected
+                val titleText: TextView = parentView.findViewById(R.id.text)
+                val firstText: TextView = parentView.findViewById(R.id.text2)
+                val secondText: TextView = parentView.findViewById(R.id.text3)
+                val thirdText: TextView = parentView.findViewById(R.id.text4)
+                parentView.isSelected = item.isSelectableSelected()
                 appliedColor =
-                    if (`object`.hasIssues(this)) mColorError else if (`object`.isComplete(this)) mColorDone else mColorPending
-                titleText.setText(`object`.name)
-                firstText.setText(`object`.getFirstText(this))
-                secondText.setText(`object`.getSecondText(this))
-                thirdText.setText(`object`.getThirdText(this))
-                `object`.handleStatusIcon(sIcon, mTransfer)
-                `object`.handleStatusIndicator(indicator)
+                    if (item.hasIssues(this)) mColorError else if (item.isComplete(this)) mColorDone else mColorPending
+                titleText.setText(item.name)
+                firstText.setText(item.getFirstText(this))
+                secondText.setText(item.getSecondText(this))
+                thirdText.setText(item.getThirdText(this))
+                item.handleStatusIcon(sIcon, mTransfer)
+                item.handleStatusIndicator(indicator)
                 ImageViewCompat.setImageTintList(sIcon, ColorStateList.valueOf(appliedColor))
                 progressBar.max = 100
                 if (Build.VERSION.SDK_INT >= 24) progressBar.setProgress(
@@ -412,11 +424,11 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
                     DrawableCompat.setTint(wrapDrawable, appliedColor)
                     progressBar.progressDrawable = DrawableCompat.unwrap<Drawable>(wrapDrawable)
                 } else progressBar.progressTintList = ColorStateList.valueOf(appliedColor)
-                val supportThumbnail = `object`.loadThumbnail(thumbnail)
+                val supportThumbnail = item.loadThumbnail(thumbnail)
                 progressBar.visibility =
-                    if (!supportThumbnail || !`object`.isComplete(this)) View.VISIBLE else View.GONE
+                    if (!supportThumbnail || !item.isComplete(this)) View.VISIBLE else View.GONE
                 if (supportThumbnail) image.setImageDrawable(null) else {
-                    image.setImageResource(`object`.getIconRes())
+                    image.setImageResource(item.getIconRes())
                     thumbnail.setImageDrawable(null)
                 }
             }
@@ -430,13 +442,16 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
     }
 
     internal interface StatusItem
-    abstract class GenericItem : TransferItem, GroupEditable {
-        var viewType = 0
-        var representativeText: String? = null
 
-        constructor() {}
+    abstract class GenericItem : TransferItem, GroupEditable {
+        private var viewType = 0
+
+        private var representativeText: String? = null
+
+        constructor()
+
         constructor(representativeText: String) {
-            viewType = GroupEditableListAdapterVIEW_TYPE_REPRESENTATIVE
+            viewType = VIEW_TYPE_REPRESENTATIVE
             setRepresentativeText(representativeText)
         }
 
@@ -449,16 +464,27 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
         @DrawableRes
         abstract fun getIconRes(): Int
+
         abstract fun loadThumbnail(imageView: ImageView): Boolean
+
         abstract fun getPercentage(adapter: TransferItemListAdapter): Double
+
         abstract fun hasIssues(adapter: TransferItemListAdapter): Boolean
+
         abstract fun isComplete(adapter: TransferItemListAdapter): Boolean
+
         abstract fun isOngoing(adapter: TransferItemListAdapter): Boolean
+
         abstract fun handleStatusIcon(imageView: ImageView, transfer: Transfer)
+
         abstract fun handleStatusIndicator(imageView: ImageView)
+
         abstract fun getFirstText(adapter: TransferItemListAdapter): String?
+
         abstract fun getSecondText(adapter: TransferItemListAdapter): String
+
         abstract fun getThirdText(adapter: TransferItemListAdapter): String?
+
         override fun getRequestCode(): Int {
             return 0
         }
@@ -476,7 +502,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun isGroupRepresentative(): Boolean {
-            return viewType == GroupEditableListAdapterVIEW_TYPE_REPRESENTATIVE
+            return viewType == VIEW_TYPE_REPRESENTATIVE
         }
 
         override fun setDate(date: Long) {
@@ -488,7 +514,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun setSize(size: Long) {
-            comparableSize = size
+            this.size = size
         }
     }
 
@@ -527,7 +553,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
             if (adapter.getMember() != null) return adapter.getMember().device.username
             var totalDevices = 1
             if (Type.OUTGOING == type) synchronized(senderFlagList1) { totalDevices = senderFlagList.size }
-            return adapter.getContext().getResources().getQuantityString(
+            return adapter.context.getResources().getQuantityString(
                 R.plurals.text_devices,
                 totalDevices, totalDevices
             )
@@ -535,7 +561,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
         override fun getThirdText(adapter: TransferItemListAdapter): String? {
             return TextUtils.getTransactionFlagString(
-                adapter.getContext(), this,
+                adapter.context, this,
                 adapter.getPercentFormat(), adapter.getDeviceId()
             )
         }
@@ -582,15 +608,27 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
     }
 
-    open class TransferFolder internal constructor(transferId: Long, friendlyName: String?, directory: String?) :
-        GenericItem() {
+    open class TransferFolder internal constructor(
+        transferId: Long, friendlyName: String?, directory: String?,
+    ) : GenericItem() {
         var hasIssues = false
+
         var hasOngoing = false
+
         var numberOfTotal = 0
+
         var numberOfCompleted = 0
+
         var bytesTotal: Long = 0
+
         var bytesCompleted: Long = 0
+
         var bytesReceived: Long = 0
+
+        override var id: Long
+            get() = directory.hashCode().toLong()
+            set(value) {}
+
         override fun equals(obj: Any?): Boolean {
             return obj is TransferFolder && directory != null && directory ==
                     obj.directory
@@ -609,7 +647,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun getSecondText(adapter: TransferItemListAdapter): String {
-            return adapter.getContext()
+            return adapter.context
                 .getString(R.string.text_transferStatusFiles, numberOfCompleted, numberOfTotal)
         }
 
@@ -618,7 +656,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun getWhere(): SQLQuery.Select {
-            return SQLQuery.Select(KuickTABLE_TRANSFERITEM)
+            return SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                 .setWhere(
                     Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND ("
                             + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ? OR "
@@ -639,15 +677,6 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
         override fun hasIssues(adapter: TransferItemListAdapter): Boolean {
             return hasIssues
-        }
-
-        override fun getId(): Long {
-            return directory.hashCode().toLong()
-        }
-
-        override fun setId(id: Long) {
-            super.setId(id)
-            Log.d(TransferItemListAdapter::class.java.simpleName, "setId(): This method should not be invoked")
         }
 
         override fun loadThumbnail(imageView: ImageView): Boolean {
@@ -747,12 +776,12 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun getFirstText(adapter: TransferItemListAdapter): String? {
-            return if (bytesFree == -1L) adapter.getContext()
+            return if (bytesFree == -1L) adapter.context
                 .getString(R.string.text_unknown) else Files.sizeExpression(bytesFree, false)
         }
 
         override fun getSecondText(adapter: TransferItemListAdapter): String {
-            return adapter.getContext().getString(R.string.text_savePath)
+            return adapter.context.getString(R.string.text_savePath)
         }
 
         override fun getThirdText(adapter: TransferItemListAdapter): String? {
@@ -770,7 +799,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
     class GroupEditableTransferObjectMerger internal constructor(
         holder: GenericItem,
-        adapter: TransferItemListAdapter
+        adapter: TransferItemListAdapter,
     ) : ComparableMerger<GenericItem?>() {
         private var mType: Type? = null
         override fun equals(obj: Any?): Boolean {
@@ -808,7 +837,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
     }
 
     init {
-        val context: Context = getContext()
+        val context: Context = context
         mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal))
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent))
         mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError))

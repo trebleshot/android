@@ -27,46 +27,45 @@ import com.genonbeta.TrebleShot.util.*
 import java.io.IOException
 import java.util.*
 
-class ChangeSaveDirectoryTask(private val mTransfer: Transfer, private val mNewSavePath: Uri) : AsyncTask() {
-    private var mSkipMoving = false
+class ChangeSaveDirectoryTask(
+    private val transfer: Transfer, private val newSavePath: Uri, var skipMoving: Boolean = false,
+) : AsyncTask() {
     override fun onRun() {
-        app.interruptTasksBy(FileTransferTask.identifyWith(mTransfer.id, TransferItem.Type.INCOMING), true)
+        app.interruptTasksBy(FileTransferTask.identifyWith(transfer.id, TransferItem.Type.INCOMING), true)
         val checkList = AppUtils.getKuick(context).castQuery(
-            Transfers.createIncomingSelection(mTransfer.id), TransferItem::class.java
+            Transfers.createIncomingSelection(transfer.id), TransferItem::class.java
         )
-        val pseudoGroup = Transfer(mTransfer.id)
-        progress().addToTotal(checkList.size)
+        val pseudoGroup = Transfer(transfer.id)
+        progress.addToTotal(checkList.size)
         try {
-            if (!mSkipMoving) {
+            if (!skipMoving) {
                 // Illustrate new change to build the structure accordingly
-                kuick().reconstruct(pseudoGroup)
-                pseudoGroup.savePath = mNewSavePath.toString()
+                kuick.reconstruct(pseudoGroup)
+                pseudoGroup.savePath = newSavePath.toString()
                 val erredFiles: MutableList<TransferItem> = ArrayList()
                 for (transferItem in checkList) {
                     throwIfStopped()
-                    progress().addToCurrent(1)
+                    progress.addToCurrent(1)
                     ongoingContent = transferItem.name
                     publishStatus()
                     try {
                         val file = Files.getIncomingPseudoFile(
-                            context, transferItem, mTransfer,
+                            context, transferItem, transfer,
                             false
                         )
                         val pseudoFile = Files.getIncomingPseudoFile(
                             context, transferItem,
                             pseudoGroup, true
                         )
-                        if (file != null && pseudoFile != null) {
-                            try {
-                                if (file.canWrite()) Files.move(
-                                    context,
-                                    file,
-                                    pseudoFile,
-                                    this
-                                ) else throw IOException("Failed to access: " + file.uri)
-                            } catch (e: Exception) {
-                                erredFiles.add(transferItem)
-                            }
+                        try {
+                            if (file.canWrite()) Files.move(
+                                context,
+                                file,
+                                pseudoFile,
+                                this
+                            ) else throw IOException("Failed to access: " + file.uri)
+                        } catch (e: Exception) {
+                            erredFiles.add(transferItem)
                         }
                     } catch (ignored: Exception) {
                     }
@@ -82,25 +81,20 @@ class ChangeSaveDirectoryTask(private val mTransfer: Transfer, private val mNewS
                     )
                 }
             }
-            mTransfer.savePath = mNewSavePath.toString()
-            kuick().publish(mTransfer)
-            kuick().broadcast()
+            transfer.savePath = newSavePath.toString()
+            kuick.publish(transfer)
+            kuick.broadcast()
             context.sendBroadcast(
                 Intent(ACTION_SAVE_PATH_CHANGED)
-                    .putExtra(EXTRA_TRANSFER, mTransfer)
+                    .putExtra(EXTRA_TRANSFER, transfer)
             )
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.butn_changeSavePath)
-    }
-
-    fun setSkipMoving(skip: Boolean): ChangeSaveDirectoryTask {
-        mSkipMoving = skip
-        return this
+    override fun getName(context: Context): String {
+        return context.getString(R.string.butn_changeSavePath)
     }
 
     companion object {

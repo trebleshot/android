@@ -20,34 +20,33 @@ package com.genonbeta.TrebleShot.dataobject
 import java.util.*
 
 class LoadedMember : TransferMember, Editable {
-    @JvmField
     var device: Device? = null
 
-    constructor() {}
+    override var id: Long
+        get() = String.format(Locale.getDefault(), "%s_%d", deviceId, transferId).hashCode().toLong()
+        set(id) {}
+
+    constructor()
+
     constructor(transferId: Long, deviceId: String?, type: TransferItem.Type?) : super(transferId, deviceId, type) {}
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         return false
     }
 
-    override var id: Long
-        get() = String.format(Locale.getDefault(), "%s_%d", deviceId, transferId).hashCode().toLong()
-        set(id) {}
-
     override fun comparisonSupported(): Boolean {
         return false
     }
 
-    override val comparableName: String?
-        get() = device!!.username
-    override val comparableDate: Long
-        get() = device!!.lastUsageTime
-    override val comparableSize: Long
-        get() = 0
-    val selectableTitle: String
-        get() = device!!.username!!
-    val isSelectableSelected: Boolean
-        get() = false
+    override fun getComparableName(): String = device!!.username
+
+    override fun getComparableDate(): Long = device!!.lastUsageTime
+
+    override fun getComparableSize(): Long = 0
+
+    override fun getSelectableTitle(): String = getComparableName()
+
+    override fun isSelectableSelected(): Boolean = false
 
     override fun setSelectableSelected(selected: Boolean): Boolean {
         return false

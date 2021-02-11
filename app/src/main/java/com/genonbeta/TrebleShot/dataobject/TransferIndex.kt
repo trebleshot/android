@@ -17,54 +17,60 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.android.database.DatabaseObject
-import com.genonbeta.android.database.SQLQuery
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
 import android.util.Log
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.util.Files
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupEditable
+import com.genonbeta.android.database.DatabaseObject
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.Progress
+import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.util.Files.sizeExpression
-import java.lang.StringBuilder
+import java.util.*
 
 /**
  * created by: veli
  * date: 7/24/19 6:08 PM
  */
 class TransferIndex : GroupEditable, DatabaseObject<Device> {
-    var viewType = 0
-    var representativeText: String? = null
-    @JvmField
+    private var viewType = 0
+
+    private var representativeText: String? = null
+
     var numberOfOutgoing = 0
-    @JvmField
+
     var numberOfIncoming = 0
-    @JvmField
+
     var numberOfOutgoingCompleted = 0
-    @JvmField
+
     var numberOfIncomingCompleted = 0
-    @JvmField
+
     var bytesOutgoing: Long = 0
-    @JvmField
+
     var bytesIncoming: Long = 0
-    @JvmField
+
     var bytesOutgoingCompleted: Long = 0
-    @JvmField
+
     var bytesIncomingCompleted: Long = 0
-    @JvmField
+
     var isRunning = false
-    @JvmField
+
     var hasIssues = false
-    @JvmField
+
     var transfer = Transfer()
-    @JvmField
+
     var members = arrayOfNulls<LoadedMember>(0)
-    var isSelectableSelected = false
-        private set
+
+    override var id: Long
+        get() = transfer.id
+        set(id) {
+            transfer.id = id
+        }
+
+    override var requestCode: Int = 0
 
     constructor() {
         transfer = Transfer()
@@ -75,14 +81,15 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
     }
 
     constructor(representativeText: String?) {
-        viewType = TransferListAdapter.VIEW_TYPE_REPRESENTATIVE
+        viewType = VIEW_TYPE_REPRESENTATIVE
         this.representativeText = representativeText
     }
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         val copyMembers = members
-        for (keyword in filteringKeywords) for (member in copyMembers) if (member!!.device!!.username!!.toLowerCase()
-                .contains(keyword.toLowerCase())
+        for (keyword in filteringKeywords) for (member in copyMembers) if (member!!.device!!.username!!.toLowerCase(
+                Locale.getDefault())
+                .contains(keyword.toLowerCase(Locale.getDefault()))
         ) return true
         return false
     }
@@ -103,8 +110,8 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         return true
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return if (obj is TransferIndex) transfer == obj.transfer else super.equals(obj)
+    override fun equals(other: Any?): Boolean {
+        return if (other is TransferIndex) transfer == other.transfer else super.equals(other)
     }
 
     fun hasIncoming(): Boolean {
@@ -115,16 +122,15 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         return numberOfOutgoing > 0
     }
 
-    val memberAsTitle: String
-        get() {
-            val copyMembers = members
-            val title = StringBuilder()
-            for (member in copyMembers) {
-                if (title.length > 0) title.append(", ")
-                title.append(member!!.device!!.username)
-            }
-            return title.toString()
+    private fun getMemberAsTitle(): String {
+        val copyMembers = members
+        val title = StringBuilder()
+        for (member in copyMembers) {
+            if (title.isNotEmpty()) title.append(", ")
+            title.append(member!!.device!!.username)
         }
+        return title.toString()
+    }
 
     fun getMemberAsTitle(context: Context): String {
         val copyMembers = members
@@ -134,28 +140,21 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         )
     }
 
-    val comparableName: String
-        get() = selectableTitle
+    override fun getComparableName(): String = getSelectableTitle()
 
-    val comparableDate: Long
-        get() = transfer.dateCreated
+    override fun getComparableDate(): Long = transfer.dateCreated
 
-    val comparableSize: Long
-        get() = bytesTotal()
-    var id: Long
-        get() = transfer.id
-        set(id) {
-            transfer.id = id
-        }
-    val selectableTitle: String
-        get() {
-            val title = memberAsTitle
-            val size = sizeExpression(bytesOutgoing + bytesOutgoing, false)
-            return if (title.isNotEmpty()) String.format("%s (%s)", title, size) else size
-        }
+    override fun getComparableSize(): Long = bytesTotal()
 
-    val requestCode: Int
-        get() = 0
+    override fun getSelectableTitle(): String {
+        val title = getMemberAsTitle()
+        val size = sizeExpression(bytesOutgoing + bytesOutgoing, false)
+        return if (title.isNotEmpty()) String.format("%s (%s)", title, size) else size
+    }
+
+    override fun isSelectableSelected(): Boolean {
+        TODO("Not yet implemented")
+    }
 
     fun numberOfTotal(): Int {
         return numberOfOutgoing + numberOfIncoming
@@ -168,7 +167,7 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
     fun percentage(): Double {
         val total = bytesTotal()
         val completed = bytesCompleted()
-        return if (total == 0L) 1 else if (completed == 0L) 0 else completed.toDouble() / total
+        return if (total == 0L) 1.0 else if (completed == 0L) 0.0 else completed.toDouble() / total
     }
 
     override fun getRepresentativeText(): String {
@@ -196,15 +195,15 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         Log.e(TAG, "setSize: This is not implemented")
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
         transfer.onCreateObject(db, kuick, parent, listener)
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
         transfer.onUpdateObject(db, kuick, parent, listener)
     }
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
         transfer.onRemoveObject(db, kuick, parent, listener)
     }
 

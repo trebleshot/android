@@ -22,11 +22,9 @@ import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
 
 class MappedSelectable<T : Selectable>(var selectable: T, val engineConnection: IEngineConnection<T>) : Selectable {
-    val selectableTitle: String
-        get() = selectable.getSelectableTitle()
+    override fun getSelectableTitle(): String = selectable.getSelectableTitle()
 
-    val isSelectableSelected: Boolean
-        get() = selectable.isSelectableSelected()
+    override fun isSelectableSelected(): Boolean = selectable.isSelectableSelected()
 
     override fun setSelectableSelected(selected: Boolean): Boolean {
         return engineConnection.setSelected(selectable, selected)
@@ -35,7 +33,7 @@ class MappedSelectable<T : Selectable>(var selectable: T, val engineConnection: 
     companion object {
         private fun <T : Selectable> addToMappedObjectList(
             list: MutableList<MappedSelectable<*>>,
-            connection: IEngineConnection<T>
+            connection: IEngineConnection<T>,
         ) {
             val selectedItemList = connection.getSelectedItemList() ?: return
             for (selectable in selectedItemList) list.add(MappedSelectable(selectable, connection))

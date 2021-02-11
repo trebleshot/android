@@ -17,23 +17,27 @@
  */
 package com.genonbeta.TrebleShot.adapter
 
-import android.content.*
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
-import android.os.*
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.widget.ImageViewCompat
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.AppUtils.getReference
 import com.genonbeta.TrebleShot.util.Transfers.loadTransferInfo
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
@@ -49,16 +53,16 @@ class TransferListAdapter(
 ) : GroupEditableListAdapter<TransferIndex, GroupViewHolder>(fragment, MODE_GROUP_BY_DATE) {
     private val runningTasks: MutableList<Long> = ArrayList()
 
-    private val percentFormat: NumberFormat
+    private val percentFormat: NumberFormat = NumberFormat.getPercentInstance()
 
     @ColorInt
-    private val colorPending: Int
+    private val colorPending: Int = ContextCompat.getColor(context, getReference(context, R.attr.colorControlNormal))
 
     @ColorInt
-    private val colorDone: Int
+    private val colorDone: Int = ContextCompat.getColor(context, getReference(context, R.attr.colorAccent))
 
     @ColorInt
-    private val colorError: Int
+    private val colorError: Int = ContextCompat.getColor(context, getReference(context, R.attr.colorError))
 
     override fun onLoad(lister: GroupLister<TransferIndex>) {
         val activeList: List<Long> = ArrayList(runningTasks)
@@ -71,7 +75,7 @@ class TransferListAdapter(
         }
     }
 
-    protected override fun onGenerateRepresentative(text: String, merger: Merger<TransferIndex>?): TransferIndex {
+    override fun onGenerateRepresentative(text: String, merger: Merger<TransferIndex>?): TransferIndex {
         return TransferIndex(text)
     }
 
@@ -104,7 +108,7 @@ class TransferListAdapter(
                 val text2: TextView = parentView.findViewById(R.id.text2)
                 val text3: TextView = parentView.findViewById(R.id.text3)
                 val text4: TextView = parentView.findViewById(R.id.text4)
-                parentView.isSelected = item.isSelectableSelected
+                parentView.isSelected = item.isSelectableSelected()
                 @ColorInt val appliedColor: Int = when {
                     item.hasIssues -> colorError
                     item.numberOfCompleted() == item.numberOfTotal() -> colorDone
@@ -120,18 +124,14 @@ class TransferListAdapter(
                 }
                 statusLayoutWeb.visibility =
                     if (item.hasOutgoing() && item.transfer.isServedOnWeb) View.VISIBLE else View.GONE
-                text1.setText(Files.sizeExpression(item.bytesTotal(), false))
-                text2.setText(
-                    if (membersText.length > 0) membersText else getContext().getString(
-                        if (item.transfer.isServedOnWeb) R.string.text_transferSharedOnBrowser else R.string.text_emptySymbol
-                    )
+                text1.text = Files.sizeExpression(item.bytesTotal(), false)
+                text2.text = if (membersText.isNotEmpty()) membersText else context.getString(
+                    if (item.transfer.isServedOnWeb) R.string.text_transferSharedOnBrowser else R.string.text_emptySymbol
                 )
-                text3.setText(percentFormat.format(item.percentage()))
-                text4.setText(
-                    getContext().getString(
-                        R.string.text_transferStatusFiles,
-                        item.numberOfCompleted(), item.numberOfTotal()
-                    )
+                text3.text = percentFormat.format(item.percentage())
+                text4.text = context.getString(
+                    R.string.text_transferStatusFiles,
+                    item.numberOfCompleted(), item.numberOfTotal()
                 )
                 progressBar.max = 100
                 if (Build.VERSION.SDK_INT >= 24) progressBar.setProgress(
@@ -142,7 +142,7 @@ class TransferListAdapter(
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     val wrapDrawable: Drawable = DrawableCompat.wrap(progressBar.progressDrawable)
                     DrawableCompat.setTint(wrapDrawable, appliedColor)
-                    progressBar.progressDrawable = DrawableCompat.unwrap<Drawable>(wrapDrawable)
+                    progressBar.progressDrawable = DrawableCompat.unwrap(wrapDrawable)
                 } else progressBar.progressTintList = ColorStateList.valueOf(appliedColor)
             }
         } catch (ignored: Exception) {
@@ -154,13 +154,5 @@ class TransferListAdapter(
             runningTasks.clear()
             runningTasks.addAll(list!!)
         }
-    }
-
-    init {
-        val context: Context = getContext()
-        percentFormat = NumberFormat.getPercentInstance()
-        colorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal))
-        colorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent))
-        colorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError))
     }
 }
