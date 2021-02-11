@@ -17,23 +17,10 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
 import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
+import android.os.Parcelable
 import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
-import java.util.ArrayList
+import java.util.*
 
 /**
  * This class has two modes. One is the AND values and the other is the OR values. The AND values are the first
@@ -43,63 +30,54 @@ import java.util.ArrayList
  * you put should be unique, so that it doesn't match with a random identifier. This class can be transferred with
  * intents.
  */
-class Identity : Parcelable {
-    private val mValueListOR: MutableList<Identifier>?
-    private val mValueListAND: MutableList<Identifier>?
+class Identity(private val orList: MutableList<Identifier>, private val andList: MutableList<Identifier>) : Parcelable {
+    constructor() : this(mutableListOf<Identifier>(), mutableListOf<Identifier>())
 
-    constructor() {
-        mValueListOR = ArrayList()
-        mValueListAND = ArrayList()
-    }
-
-    protected constructor(`in`: Parcel) {
-        mValueListOR = `in`.createTypedArrayList(Identifier.CREATOR)
-        mValueListAND = `in`.createTypedArrayList(Identifier.CREATOR)
-    }
+    protected constructor(parcel: Parcel) : this(
+        parcel.createTypedArrayList(Identifier)!!, parcel.createTypedArrayList(Identifier.getCrea)!!
+    )
 
     override fun describeContents(): Int {
         return 0
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (obj is Identity) {
-            val identity = obj
-            return isANDsTrue(identity) || isORsTrue(identity)
-        }
-        return super.equals(obj)
+    override fun equals(other: Any?): Boolean {
+        return if (other is Identity) isANDsTrue(other) || isORsTrue(other) else super.equals(other)
     }
 
     // AND
     @Synchronized
     private fun isANDsTrue(identity: Identity): Boolean {
-        if (mValueListAND!!.size <= 0 || identity.mValueListAND!!.size <= 0) return false
-        for (identifier in mValueListAND) if (!identity.mValueListAND.contains(identifier)) return false
+        if (andList.size <= 0 || identity.andList.size <= 0)
+            return false
+        for (identifier in andList) if (!identity.andList.contains(identifier)) return false
         return true
     }
 
     @Synchronized
     private fun isORsTrue(identity: Identity): Boolean {
-        for (identifier in mValueListOR!!) if (identity.mValueListOR!!.contains(identifier)) return true
+        for (identifier in orList) if (identity.orList.contains(identifier)) return true
         return false
     }
 
     fun putAND(identifier: Identifier) {
-        synchronized(mValueListAND!!) { mValueListAND.add(identifier) }
+        synchronized(andList) { andList.add(identifier) }
     }
 
     fun putOR(identifier: Identifier) {
-        synchronized(mValueListOR!!) { mValueListOR.add(identifier) }
+        synchronized(orList) { orList.add(identifier) }
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeTypedList(mValueListOR)
-        dest.writeTypedList(mValueListAND)
+        dest.writeTypedList(orList)
+        dest.writeTypedList(andList)
     }
 
     companion object {
-        val CREATOR: Creator<Identity> = object : Creator<Identity?> {
-            override fun createFromParcel(`in`: Parcel): Identity? {
-                return Identity(`in`)
+        @JvmField
+        val CREATOR = object : Creator<Identity> {
+            override fun createFromParcel(parcel: Parcel): Identity {
+                return Identity(parcel)
             }
 
             override fun newArray(size: Int): Array<Identity?> {
@@ -107,14 +85,12 @@ class Identity : Parcelable {
             }
         }
 
-        @JvmStatic
         fun withANDs(vararg ands: Identifier): Identity {
             val identity = Identity()
             for (and in ands) identity.putAND(and)
             return identity
         }
 
-        @JvmStatic
         fun withORs(vararg ors: Identifier): Identity {
             val identity = Identity()
             for (or in ors) identity.putOR(or)

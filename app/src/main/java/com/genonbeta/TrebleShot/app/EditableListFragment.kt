@@ -125,7 +125,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
             applyViewingChanges(value)
         }
 
-    private var hasBottomSpace = false
+    var hasBottomSpace = false
 
     var itemOffsetDecorationEnabled = false
 
@@ -537,7 +537,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     override fun performLayoutClickOpen(holder: V, target: T): Boolean {
-        return target is Shareable && target.uri?.let { openUri(it) } == true
+        return target is Shareable && target.uri.let { openUri(it) } == true
     }
 
     override fun performDefaultLayoutLongClick(holder: V, target: T): Boolean {

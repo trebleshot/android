@@ -79,7 +79,7 @@ abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.groupId == R.id.actions_abs_group_shareable_group_grouping)
-            changeGroupingCriteria(item.order)
+            groupingCriteria = item.order
         else
             return super.onOptionsItemSelected(item)
         return true
@@ -87,14 +87,13 @@ abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder,
 
     open fun onGroupingOptions(options: MutableMap<String, Int>) {}
 
-    fun changeGroupingCriteria(criteria: Int) {
-        viewPreferences.edit()
-            .putInt(getUniqueSettingKey("GroupBy"), criteria)
-            .apply()
-        adapter.setGroupBy(criteria)
-        refreshList()
-    }
-
-    val groupingCriteria: Int
+    var groupingCriteria: Int
         get() = viewPreferences.getInt(getUniqueSettingKey("GroupBy"), defaultGroupingCriteria)
+        set(value) {
+            viewPreferences.edit()
+                .putInt(getUniqueSettingKey("GroupBy"), value)
+                .apply()
+            adapter.setGroupBy(value)
+            refreshList()
+        }
 }

@@ -24,7 +24,7 @@ import com.genonbeta.android.framework.util.listing.ComparableMerger
  * date: 29.03.2018 01:44
  */
 class StringMerger<T>(val text: String) : ComparableMerger<T>() {
-    override operator fun compareTo(other: ComparableMerger<T?>?): Int {
+    override operator fun compareTo(other: ComparableMerger<T>): Int {
         return if (other is StringMerger<*>) text.compareTo(other.text, ignoreCase = true) else -1
     }
 

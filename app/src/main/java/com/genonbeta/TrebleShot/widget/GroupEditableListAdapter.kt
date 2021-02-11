@@ -37,10 +37,10 @@ import java.util.*
  * created by: Veli
  * date: 29.03.2018 08:00
  */
-abstract class GroupEditableListAdapter<T : GroupEditable>(
-    fragment: IEditableListFragment<T, GroupViewHolder>,
+abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
+    fragment: IEditableListFragment<T, V>,
     private var groupBy: Int,
-) : EditableListAdapter<T, GroupViewHolder>(fragment) {
+) : EditableListAdapter<T, V>(fragment) {
     protected abstract fun onLoad(lister: GroupLister<T>)
 
     protected abstract fun onGenerateRepresentative(text: String, merger: Merger<T>?): T

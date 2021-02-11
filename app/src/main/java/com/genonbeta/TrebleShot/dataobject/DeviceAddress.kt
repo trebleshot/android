@@ -35,13 +35,10 @@ import java.net.UnknownHostException
  * date: 8/3/19 1:22 PM
  */
 class DeviceAddress() : DatabaseObject<Device?>, Parcelable {
-    @JvmField
     var inetAddress: InetAddress? = null
 
-    @JvmField
     var deviceId: String? = null
 
-    @JvmField
     var lastCheckedDate: Long = 0
 
     constructor(inetAddress: InetAddress?) : this() {

@@ -71,7 +71,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
     protected open fun onListRefreshed() {}
 
     fun createLoader(): AsyncTaskLoader<MutableList<T>> {
-        return ListLoader(context!!, adapter)
+        return ListLoader(requireContext(), adapter)
     }
 
     protected abstract fun ensureList()
@@ -97,15 +97,9 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
         savedState: Bundle?,
     ): View?
 
-    fun getListAdapter(): E? {
-        return adapter
-    }
-
     override fun refreshList() {
         refreshLoaderCallback.requestRefresh()
     }
-
-    protected abstract fun setListAdapter(adapter: E, hadAdapter: Boolean)
 
     fun setListLoading(loading: Boolean) {
         setListLoading(loading, true)
@@ -166,7 +160,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
             reloadRequested = false
             running = true
 
-            setListShown(adapter?.let { it.getItemCount() == 0 } ?: false)
+            setListShown(adapter.let { it.getItemCount() == 0 } ?: false)
             setListLoading(true)
             return createLoader()
         }
@@ -174,8 +168,8 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
         override fun onLoadFinished(loader: Loader<MutableList<T>>, data: MutableList<T>) {
             if (isResumed) {
                 onPrepareRefreshingList()
-                adapter?.onUpdate(data)
-                adapter?.onDataSetChanged()
+                adapter.onUpdate(data)
+                adapter.onDataSetChanged()
                 setListLoading(false)
                 onListRefreshed()
             }

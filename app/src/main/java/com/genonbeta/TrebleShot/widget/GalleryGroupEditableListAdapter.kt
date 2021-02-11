@@ -41,8 +41,7 @@ abstract class GalleryGroupEditableListAdapter<T : GalleryGroupShareable, V : Gr
     }
 
     override fun createLister(loadedList: MutableList<T>, groupBy: Int): GroupLister<T> {
-        return super.createLister(loadedList, groupBy)
-            .setCustomLister(this)
+        return super.createLister(loadedList, groupBy).also { it.customLister = this }
     }
 
     override fun getSectionName(position: Int, item: T): String {

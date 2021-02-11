@@ -17,75 +17,33 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
 import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
+import kotlinx.parcelize.Parcelize
 
-class Identifier : Parcelable {
-    var key: String? = null
-    var value: String? = null
-    var isNull = false
-
-    constructor() {}
-    protected constructor(`in`: Parcel) {
-        key = `in`.readString()
-        value = `in`.readString()
-        isNull = `in`.readByte().toInt() != 0
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun equals(obj: Any?): Boolean {
-        if (obj is Identifier) {
-            val other = obj
+@Parcelize
+data class Identifier(var key: String, var value: String = "", var isNull: Boolean = false) : Parcelable {
+    override fun equals(other: Any?): Boolean {
+        if (other is Identifier) {
             return key == other.key && isNull == other.isNull && (isNull || value == other.value)
         }
-        return super.equals(obj)
+        return super.equals(other)
     }
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(key)
-        dest.writeString(value)
-        dest.writeByte((if (isNull) 1 else 0).toByte())
+    override fun hashCode(): Int {
+        var result = key.hashCode()
+        result = 31 * result + value.hashCode()
+        result = 31 * result + isNull.hashCode()
+        return result
     }
 
     companion object {
-        val CREATOR: Creator<Identifier> = object : Creator<Identifier?> {
-            override fun createFromParcel(`in`: Parcel): Identifier? {
-                return Identifier(`in`)
-            }
-
-            override fun newArray(size: Int): Array<Identifier?> {
-                return arrayOfNulls(size)
-            }
-        }
-
         fun from(key: Enum<*>, value: Any?): Identifier {
             return from(key.toString(), value)
         }
 
         @JvmStatic
-        fun from(key: String?, value: Any?): Identifier {
-            val identifier = Identifier()
-            identifier.key = key
-            identifier.isNull = value == null
-            identifier.value = if (identifier.isNull) "" else value.toString()
-            return identifier
+        fun from(key: String, value: Any?): Identifier {
+            return Identifier(key, value?.toString() ?: "", value == null)
         }
     }
 }

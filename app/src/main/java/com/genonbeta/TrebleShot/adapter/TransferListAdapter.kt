@@ -24,12 +24,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.annotation.ColorInt
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
-import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.util.Transfers.loadTransferInfo
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 import java.text.NumberFormat
@@ -39,24 +44,28 @@ import java.util.*
  * created by: Veli
  * date: 9.11.2017 23:39
  */
-class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupViewHolder?>?) :
-    GroupEditableListAdapter<TransferIndex?, GroupViewHolder?>(
-        fragment,
-        GroupEditableListAdapterMODE_GROUP_BY_DATE
-    ) {
-    private val mRunningTasks: MutableList<Long> = ArrayList()
-    private val mPercentFormat: NumberFormat
+class TransferListAdapter(
+    fragment: IEditableListFragment<TransferIndex, GroupViewHolder>,
+) : GroupEditableListAdapter<TransferIndex, GroupViewHolder>(fragment, MODE_GROUP_BY_DATE) {
+    private val runningTasks: MutableList<Long> = ArrayList()
+
+    private val percentFormat: NumberFormat
 
     @ColorInt
-    private val mColorPending: Int
-    private val mColorDone: Int
-    private val mColorError: Int
-    protected override fun onLoad(lister: GroupLister<TransferIndex>) {
-        val activeList: List<Long> = ArrayList(mRunningTasks)
-        for (index in AppUtils.getKuick(getContext()).castQuery<Device, TransferIndex>(
-            SQLQuery.Select(KuickTABLE_TRANSFER), TransferIndex::class.java
+    private val colorPending: Int
+
+    @ColorInt
+    private val colorDone: Int
+
+    @ColorInt
+    private val colorError: Int
+
+    override fun onLoad(lister: GroupLister<TransferIndex>) {
+        val activeList: List<Long> = ArrayList(runningTasks)
+        for (index in AppUtils.getKuick(context).castQuery(
+            SQLQuery.Select(Kuick.TABLE_TRANSFER), TransferIndex::class.java
         )) {
-            loadTransferInfo(getContext(), index)
+            loadTransferInfo(context, index)
             index.isRunning = activeList.contains(index.transfer.id)
             lister.offerObliged(this, index)
         }
@@ -67,60 +76,61 @@ class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupV
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapterVIEW_TYPE_DEFAULT) GroupViewHolder(
-            getInflater().inflate(
-                R.layout.list_transfer, parent, false
-            )
+        val holder: GroupViewHolder = if (viewType == VIEW_TYPE_DEFAULT) GroupViewHolder(
+            layoutInflater.inflate(R.layout.list_transfer, parent, false)
         ) else createDefaultViews(
-            parent, viewType,
-            true
+            parent, viewType, true
         )
         if (!holder.isRepresentative()) {
-            getFragment().registerLayoutViewClicks(holder)
-            holder.itemView.findViewById<View>(R.id.layout_image)
-                .setOnClickListener(View.OnClickListener { v: View? -> getFragment().setItemSelected(holder, true) })
+            fragment.registerLayoutViewClicks(holder)
+            holder.itemView.findViewById<View>(R.id.layout_image).setOnClickListener { v: View? ->
+                fragment.setItemSelected(holder, true)
+            }
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         try {
-            val `object`: TransferIndex = getItem(position)
-            if (!holder.tryBinding(`object`)) {
+            val item: TransferIndex = getItem(position)
+            if (!holder.tryBinding(item)) {
                 val parentView: View = holder.itemView
-                @ColorInt val appliedColor: Int
-                val percentage = (`object`.percentage() * 100) as Int
-                val membersText: String = `object`.getMemberAsTitle(getContext())
+                val percentage = (item.percentage() * 100).toInt()
+                val membersText: String = item.getMemberAsTitle(context)
                 val progressBar = parentView.findViewById<ProgressBar>(R.id.progressBar)
                 val image = parentView.findViewById<ImageView>(R.id.image)
                 val statusLayoutWeb = parentView.findViewById<View>(R.id.statusLayoutWeb)
-                val text1: TextView = parentView.findViewById<TextView>(R.id.text)
-                val text2: TextView = parentView.findViewById<TextView>(R.id.text2)
-                val text3: TextView = parentView.findViewById<TextView>(R.id.text3)
-                val text4: TextView = parentView.findViewById<TextView>(R.id.text4)
-                parentView.isSelected = `object`.isSelectableSelected
-                appliedColor =
-                    if (`object`.hasIssues) mColorError else if (`object`.numberOfCompleted() == `object`.numberOfTotal()) mColorDone else mColorPending
-                if (`object`.isRunning) {
+                val text1: TextView = parentView.findViewById(R.id.text)
+                val text2: TextView = parentView.findViewById(R.id.text2)
+                val text3: TextView = parentView.findViewById(R.id.text3)
+                val text4: TextView = parentView.findViewById(R.id.text4)
+                parentView.isSelected = item.isSelectableSelected
+                @ColorInt val appliedColor: Int = when {
+                    item.hasIssues -> colorError
+                    item.numberOfCompleted() == item.numberOfTotal() -> colorDone
+                    else -> colorPending
+                }
+
+                if (item.isRunning) {
                     image.setImageResource(R.drawable.ic_pause_white_24dp)
                 } else {
-                    if (`object`.hasOutgoing() == `object`.hasIncoming()) image.setImageResource(if (`object`.hasOutgoing()) R.drawable.ic_compare_arrows_white_24dp else R.drawable.ic_error_outline_white_24dp) else image.setImageResource(
-                        if (`object`.hasOutgoing()) R.drawable.ic_arrow_up_white_24dp else R.drawable.ic_arrow_down_white_24dp
+                    if (item.hasOutgoing() == item.hasIncoming()) image.setImageResource(if (item.hasOutgoing()) R.drawable.ic_compare_arrows_white_24dp else R.drawable.ic_error_outline_white_24dp) else image.setImageResource(
+                        if (item.hasOutgoing()) R.drawable.ic_arrow_up_white_24dp else R.drawable.ic_arrow_down_white_24dp
                     )
                 }
                 statusLayoutWeb.visibility =
-                    if (`object`.hasOutgoing() && `object`.transfer.isServedOnWeb) View.VISIBLE else View.GONE
-                text1.setText(Files.sizeExpression(`object`.bytesTotal(), false))
+                    if (item.hasOutgoing() && item.transfer.isServedOnWeb) View.VISIBLE else View.GONE
+                text1.setText(Files.sizeExpression(item.bytesTotal(), false))
                 text2.setText(
                     if (membersText.length > 0) membersText else getContext().getString(
-                        if (`object`.transfer.isServedOnWeb) R.string.text_transferSharedOnBrowser else R.string.text_emptySymbol
+                        if (item.transfer.isServedOnWeb) R.string.text_transferSharedOnBrowser else R.string.text_emptySymbol
                     )
                 )
-                text3.setText(mPercentFormat.format(`object`.percentage()))
+                text3.setText(percentFormat.format(item.percentage()))
                 text4.setText(
                     getContext().getString(
                         R.string.text_transferStatusFiles,
-                        `object`.numberOfCompleted(), `object`.numberOfTotal()
+                        item.numberOfCompleted(), item.numberOfTotal()
                     )
                 )
                 progressBar.max = 100
@@ -140,17 +150,17 @@ class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupV
     }
 
     fun updateActiveList(list: List<Long>?) {
-        synchronized(mRunningTasks) {
-            mRunningTasks.clear()
-            mRunningTasks.addAll(list!!)
+        synchronized(runningTasks) {
+            runningTasks.clear()
+            runningTasks.addAll(list!!)
         }
     }
 
     init {
         val context: Context = getContext()
-        mPercentFormat = NumberFormat.getPercentInstance()
-        mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal))
-        mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent))
-        mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError))
+        percentFormat = NumberFormat.getPercentInstance()
+        colorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal))
+        colorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent))
+        colorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError))
     }
 }

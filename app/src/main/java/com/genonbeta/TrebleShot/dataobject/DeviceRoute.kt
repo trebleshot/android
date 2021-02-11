@@ -17,55 +17,8 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
-import com.genonbeta.android.database.DatabaseObject
 import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
-import com.genonbeta.android.framework.``object`
+import kotlinx.parcelize.Parcelize
 
-class DeviceRoute : Parcelable {
-    @JvmField
-    var device: Device?
-    @JvmField
-    var address: DeviceAddress?
-
-    constructor(device: Device?, address: DeviceAddress?) {
-        this.device = device
-        this.address = address
-    }
-
-    protected constructor(`in`: Parcel) {
-        device = `in`.readParcelable(Device::class.java.classLoader)
-        address = `in`.readParcelable(DeviceAddress::class.java.classLoader)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeParcelable(device, flags)
-        dest.writeParcelable(address, flags)
-    }
-
-    companion object CREATOR : Creator<DeviceRoute> {
-        override fun createFromParcel(parcel: Parcel): DeviceRoute {
-            return DeviceRoute(parcel)
-        }
-
-        override fun newArray(size: Int): Array<DeviceRoute?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+@Parcelize
+class DeviceRoute(var device: Device, var address: DeviceAddress) : Parcelable

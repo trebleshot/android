@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.util.AppUtils
 import android.os.Bundle
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter.*
@@ -31,26 +32,26 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import java.lang.Exception
 
-class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupViewHolder?, ApplicationListAdapter>() {
+class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupViewHolder, ApplicationListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isFilteringSupported = true
         setHasOptionsMenu(true)
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_DATE)
-        setDefaultGroupingCriteria(GroupEditableListAdapter.MODE_GROUP_BY_DATE)
-        setItemOffsetDecorationEnabled(false)
+        defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
+        defaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_DATE
+        itemOffsetDecorationEnabled = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setListAdapter(ApplicationListAdapter(this))
 
-        emptyListImageView.drawable = R.drawable.ic_android_head_white_24dp
-        setEmptyListText(getString(R.string.text_listEmptyApp))
+        adapter = ApplicationListAdapter(this)
+        emptyListImageView.setImageResource(R.drawable.ic_android_head_white_24dp)
+        emptyListTextView.text = getString(R.string.text_listEmptyApp)
     }
 
-    override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
+    override fun onGroupingOptions(options: MutableMap<String, Int>) {
         super.onGroupingOptions(options)
         options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
         options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
@@ -63,11 +64,11 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.show_system_apps) {
-            val isShowingSystem = !AppUtils.getDefaultPreferences(getContext())!!.getBoolean(
+            val isShowingSystem = !AppUtils.getDefaultPreferences(getContext()).getBoolean(
                 "show_system_apps",
                 false
             )
-            AppUtils.getDefaultPreferences(getContext())!!.edit()
+            AppUtils.getDefaultPreferences(getContext()).edit()
                 .putBoolean("show_system_apps", isShowingSystem)
                 .apply()
             refreshList()
@@ -79,7 +80,7 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         val menuSystemApps = menu.findItem(R.id.show_system_apps)
-        menuSystemApps.isChecked = AppUtils.getDefaultPreferences(getContext())!!.getBoolean(
+        menuSystemApps.isChecked = AppUtils.getDefaultPreferences(getContext()).getBoolean(
             "show_system_apps",
             false
         )
@@ -91,32 +92,26 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
 
     override fun performLayoutClickOpen(
         holder: GroupViewHolder,
-        `object`: PackageHolder
+        target: PackageHolder
     ): Boolean {
         try {
-            val launchIntent: Intent = requireContext().getPackageManager()
-                .getLaunchIntentForPackage(`object`.packageName)
-            if (launchIntent != null) {
+            requireContext().packageManager.getLaunchIntentForPackage(target.packageName)?.let {
                 AlertDialog.Builder(requireActivity())
                     .setMessage(R.string.ques_launchApplication)
                     .setNegativeButton(R.string.butn_cancel, null)
                     .setPositiveButton(R.string.butn_appLaunch) { dialog: DialogInterface?, which: Int ->
-                        startActivity(
-                            launchIntent
-                        )
+                        startActivity(it)
                     }
                     .show()
-            } else Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show()
+
+            } ?: Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show()
             return true
         } catch (ignore: Exception) {
         }
         return false
     }
 
-    override fun performDefaultLayoutClick(
-        holder: GroupViewHolder,
-        `object`: PackageHolder
-    ): Boolean {
-        return performLayoutClickOpen(holder, `object`)
+    override fun performDefaultLayoutClick(holder: GroupViewHolder, target: PackageHolder): Boolean {
+        return performLayoutClickOpen(holder, target)
     }
 }

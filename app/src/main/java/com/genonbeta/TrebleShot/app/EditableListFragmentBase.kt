@@ -17,6 +17,7 @@
  */
 package com.genonbeta.TrebleShot.app
 
+import android.content.Context
 import android.net.Uri
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.dataobject.Editable

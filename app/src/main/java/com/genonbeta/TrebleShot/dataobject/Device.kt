@@ -68,24 +68,24 @@ class Device : DatabaseObject<Void?>, Parcelable {
         this.uid = uid
     }
 
-    protected constructor(`in`: Parcel) {
-        brand = `in`.readString()
-        model = `in`.readString()
+    protected constructor(parcel: Parcel) {
+        brand = parcel.readString()
+        model = parcel.readString()
         // FIXME: 2/9/21 The device username should not be zero length string
-        username = `in`.readString() ?: ""
+        username = parcel.readString() ?: ""
         // FIXME: 2/9/21 The device uid should not be zero length string.
-        uid = `in`.readString() ?: ""
-        versionName = `in`.readString()
-        versionCode = `in`.readInt()
-        protocolVersion = `in`.readInt()
-        protocolVersionMin = `in`.readInt()
-        sendKey = `in`.readInt()
-        receiveKey = `in`.readInt()
-        lastUsageTime = `in`.readLong()
-        isTrusted = `in`.readByte().toInt() != 0
-        isBlocked = `in`.readByte().toInt() != 0
-        isLocal = `in`.readByte().toInt() != 0
-        isSelected = `in`.readByte().toInt() != 0
+        uid = parcel.readString() ?: ""
+        versionName = parcel.readString()
+        versionCode = parcel.readInt()
+        protocolVersion = parcel.readInt()
+        protocolVersionMin = parcel.readInt()
+        sendKey = parcel.readInt()
+        receiveKey = parcel.readInt()
+        lastUsageTime = parcel.readLong()
+        isTrusted = parcel.readByte().toInt() != 0
+        isBlocked = parcel.readByte().toInt() != 0
+        isLocal = parcel.readByte().toInt() != 0
+        isSelected = parcel.readByte().toInt() != 0
     }
 
     private fun checkFields() {

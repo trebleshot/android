@@ -42,7 +42,7 @@ import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Identifier
 import com.genonbeta.TrebleShot.dataobject.Identity
-import com.genonbeta.TrebleShot.dataobject.Identity.withORs
+import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest
 import com.genonbeta.TrebleShot.service.BackgroundService

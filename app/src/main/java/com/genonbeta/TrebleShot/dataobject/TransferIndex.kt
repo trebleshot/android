@@ -25,9 +25,11 @@ import android.database.sqlite.SQLiteDatabase
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
 import android.util.Log
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupEditable
+import com.genonbeta.android.framework.util.Files.sizeExpression
 import java.lang.StringBuilder
 
 /**
@@ -124,7 +126,7 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
             return title.toString()
         }
 
-    fun getMemberAsTitle(context: Context): String? {
+    fun getMemberAsTitle(context: Context): String {
         val copyMembers = members
         return if (copyMembers.size == 1) copyMembers[0]!!.device!!.username else context.resources.getQuantityString(
             R.plurals.text_devices,
@@ -132,7 +134,7 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         )
     }
 
-    val comparableName: String?
+    val comparableName: String
         get() = selectableTitle
 
     val comparableDate: Long
@@ -148,9 +150,10 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
     val selectableTitle: String
         get() {
             val title = memberAsTitle
-            val size = Files.sizeExpression(bytesOutgoing + bytesOutgoing, false)
-            return if (title.length > 0) String.format("%s (%s)", title, size) else size
+            val size = sizeExpression(bytesOutgoing + bytesOutgoing, false)
+            return if (title.isNotEmpty()) String.format("%s (%s)", title, size) else size
         }
+
     val requestCode: Int
         get() = 0
 

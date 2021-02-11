@@ -26,8 +26,8 @@ import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 
 open class ProgressDialog : AlertDialog {
-    private var mProgress: ProgressBar? = null
-    private var mProgressStyle = STYLE_SPINNER
+    private var progressBar: ProgressBar? = null
+    private var progressStyle = STYLE_SPINNER
     private var mMax = 0
     private var mProgressVal = 0
     private var mSecondaryProgressVal = 0
@@ -43,7 +43,7 @@ open class ProgressDialog : AlertDialog {
      *
      * @param context the parent context
      */
-    constructor(context: Context?) : super(context!!) {}
+    constructor(context: Context) : super(context)
 
     /**
      * Creates a Progress dialog.
@@ -53,7 +53,7 @@ open class ProgressDialog : AlertDialog {
      * this dialog, or `0` to use the parent
      * `context`'s default alert dialog theme
      */
-    constructor(context: Context?, theme: Int) : super(context!!, theme) {}
+    constructor(context: Context, theme: Int) : super(context, theme)
 
     override fun onCreate(savedInstanceState: Bundle) {
         val inflater = LayoutInflater.from(context)
@@ -61,7 +61,7 @@ open class ProgressDialog : AlertDialog {
 
         /* Use a separate handler to update the text views as they
          * must be updated on the same thread that created them.
-         */mProgress = view.findViewById(R.id.progress)
+         */progressBar = view.findViewById(R.id.progress)
         setView(view)
         if (mMax > 0) max = mMax
         if (mProgressVal > 0) progress = mProgressVal
@@ -71,7 +71,6 @@ open class ProgressDialog : AlertDialog {
         if (mProgressDrawable != null) setProgressDrawable(mProgressDrawable)
         if (mIndeterminateDrawable != null) setIndeterminateDrawable(mIndeterminateDrawable)
         isIndeterminate = mIndeterminate
-        onProgressChanged()
         super.onCreate(savedInstanceState)
     }
 
@@ -96,13 +95,12 @@ open class ProgressDialog : AlertDialog {
      * @see ProgressBar.setProgress
      */
     var progress: Int
-        get() = if (mProgress != null) {
-            mProgress!!.progress
+        get() = if (progressBar != null) {
+            progressBar!!.progress
         } else mProgressVal
         set(value) {
             if (mHasStarted) {
-                mProgress!!.progress = value
-                onProgressChanged()
+                progressBar!!.progress = value
             } else {
                 mProgressVal = value
             }
@@ -120,48 +118,32 @@ open class ProgressDialog : AlertDialog {
      * @see ProgressBar.setSecondaryProgress
      */
     var secondaryProgress: Int
-        get() = if (mProgress != null) {
-            mProgress!!.secondaryProgress
+        get() = if (progressBar != null) {
+            progressBar!!.secondaryProgress
         } else mSecondaryProgressVal
         set(secondaryProgress) {
-            if (mProgress != null) {
-                mProgress!!.secondaryProgress = secondaryProgress
-                onProgressChanged()
+            if (progressBar != null) {
+                progressBar!!.secondaryProgress = secondaryProgress
             } else {
                 mSecondaryProgressVal = secondaryProgress
             }
         }
-    /**
-     * Gets the maximum allowed progress value. The default value is 100.
-     *
-     * @return the maximum value
-     */
-    /**
-     * Sets the maximum allowed progress value.
-     */
+
     var max: Int
-        get() = if (mProgress != null) {
-            mProgress!!.max
+        get() = if (progressBar != null) {
+            progressBar!!.max
         } else mMax
         set(max) {
-            if (mProgress != null) {
-                mProgress!!.max = max
-                onProgressChanged()
+            if (progressBar != null) {
+                progressBar!!.max = max
             } else {
                 mMax = max
             }
         }
 
-    /**
-     * Increments the current progress value.
-     *
-     * @param diff the amount by which the current progress will be incremented,
-     * up to [.getMax]
-     */
     fun incrementProgressBy(diff: Int) {
-        if (mProgress != null) {
-            mProgress!!.incrementProgressBy(diff)
-            onProgressChanged()
+        if (progressBar != null) {
+            progressBar!!.incrementProgressBy(diff)
         } else {
             mIncrementBy += diff
         }
@@ -174,9 +156,8 @@ open class ProgressDialog : AlertDialog {
      * up to [.getMax]
      */
     fun incrementSecondaryProgressBy(diff: Int) {
-        if (mProgress != null) {
-            mProgress!!.incrementSecondaryProgressBy(diff)
-            onProgressChanged()
+        if (progressBar != null) {
+            progressBar!!.incrementSecondaryProgressBy(diff)
         } else {
             mIncrementSecondaryBy += diff
         }
@@ -189,131 +170,46 @@ open class ProgressDialog : AlertDialog {
      * @see ProgressBar.setProgressDrawable
      */
     fun setProgressDrawable(d: Drawable?) {
-        if (mProgress != null) {
-            mProgress!!.progressDrawable = d
+        if (progressBar != null) {
+            progressBar!!.progressDrawable = d
         } else {
             mProgressDrawable = d
         }
     }
 
-    /**
-     * Sets the drawable to be used to display the indeterminate progress value.
-     *
-     * @param d the drawable to be used
-     * @see ProgressBar.setProgressDrawable
-     * @see .setIndeterminate
-     */
     fun setIndeterminateDrawable(d: Drawable?) {
-        if (mProgress != null) {
-            mProgress!!.indeterminateDrawable = d
+        if (progressBar != null) {
+            progressBar!!.indeterminateDrawable = d
         } else {
             mIndeterminateDrawable = d
         }
     }
-    /**
-     * Whether this ProgressDialog is in indeterminate mode.
-     *
-     * @return true if the dialog is in indeterminate mode, false otherwise
-     */
-    /**
-     * Change the indeterminate mode for this ProgressDialog. In indeterminate
-     * mode, the progress is ignored and the dialog shows an infinite
-     * animation instead.
-     *
-     *
-     * **Note:** A ProgressDialog with style [.STYLE_SPINNER]
-     * is always indeterminate and will ignore this setting.
-     *
-     * @param indeterminate true to enable indeterminate mode, false otherwise
-     * @see .setProgressStyle
-     */
+
     var isIndeterminate: Boolean
-        get() = if (mProgress != null) {
-            mProgress!!.isIndeterminate
+        get() = if (progressBar != null) {
+            progressBar!!.isIndeterminate
         } else mIndeterminate
         set(indeterminate) {
-            if (mProgress != null) {
-                mProgress!!.isIndeterminate = indeterminate
+            if (progressBar != null) {
+                progressBar!!.isIndeterminate = indeterminate
             } else {
                 mIndeterminate = indeterminate
             }
         }
 
-    /**
-     * Sets the style of this ProgressDialog, either [.STYLE_SPINNER] or
-     * [.STYLE_HORIZONTAL]. The default is [.STYLE_SPINNER].
-     *
-     *
-     * **Note:** A ProgressDialog with style [.STYLE_SPINNER]
-     * is always indeterminate and will ignore the [ indeterminate][.setIndeterminate] setting.
-     *
-     * @param style the style of this ProgressDialog, either [.STYLE_SPINNER] or
-     * [.STYLE_HORIZONTAL]
-     */
     fun setProgressStyle(style: Int) {
-        mProgressStyle = style
-    }
-
-    private fun onProgressChanged() {
-        if (mProgressStyle == STYLE_HORIZONTAL) {
-        }
+        progressStyle = style
     }
 
     companion object {
-        /**
-         * Creates a ProgressDialog with a circular, spinning progress
-         * bar. This is the default.
-         */
+
         const val STYLE_SPINNER = 0
 
-        /**
-         * Creates a ProgressDialog with a horizontal progress bar.
-         */
         const val STYLE_HORIZONTAL = 1
-        /**
-         * Creates and shows a ProgressDialog.
-         *
-         * @param context        the parent context
-         * @param title          the title text for the dialog's window
-         * @param message        the text to be displayed in the dialog
-         * @param indeterminate  true if the dialog should be [                       indeterminate][.setIndeterminate], false otherwise
-         * @param cancelable     true if the dialog is [cancelable][.setCancelable],
-         * false otherwise
-         * @param cancelListener the [listener][.setOnCancelListener]
-         * to be invoked when the dialog is canceled
-         * @return the ProgressDialog
-         */
-        /**
-         * Creates and shows a ProgressDialog.
-         *
-         * @param context       the parent context
-         * @param title         the title text for the dialog's window
-         * @param message       the text to be displayed in the dialog
-         * @param indeterminate true if the dialog should be [                      indeterminate][.setIndeterminate], false otherwise
-         * @return the ProgressDialog
-         */
-        /**
-         * Creates and shows a ProgressDialog.
-         *
-         * @param context the parent context
-         * @param title   the title text for the dialog's window
-         * @param message the text to be displayed in the dialog
-         * @return the ProgressDialog
-         */
-        /**
-         * Creates and shows a ProgressDialog.
-         *
-         * @param context       the parent context
-         * @param title         the title text for the dialog's window
-         * @param message       the text to be displayed in the dialog
-         * @param indeterminate true if the dialog should be [                      indeterminate][.setIndeterminate], false otherwise
-         * @param cancelable    true if the dialog is [cancelable][.setCancelable],
-         * false otherwise
-         * @return the ProgressDialog
-         */
+
         @JvmOverloads
         fun show(
-            context: Context?, title: CharSequence?,
+            context: Context, title: CharSequence?,
             message: CharSequence?, indeterminate: Boolean = false,
             cancelable: Boolean = false, cancelListener: DialogInterface.OnCancelListener? = null
         ): ProgressDialog {
