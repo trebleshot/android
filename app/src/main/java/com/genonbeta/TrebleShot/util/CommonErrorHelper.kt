@@ -29,7 +29,7 @@ import java.net.NoRouteToHostException
 
 object CommonErrorHelper {
     fun messageOf(context: Context, exception: Exception?): TaskMessage {
-        val taskMessage: TaskMessage = TaskMessage.Companion.newInstance()
+        val taskMessage: TaskMessage = TaskMessage.newInstance()
             .setTone(Tone.Negative)
         try {
             throw exception!!

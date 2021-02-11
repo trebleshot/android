@@ -17,41 +17,45 @@
  */
 package com.genonbeta.TrebleShot.adapter
 
-import android.content.SharedPreferences
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter.PackageHolder
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.dataobject.Container
 import com.genonbeta.TrebleShot.io.Containable
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 import java.io.File
 import java.util.*
 
-class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder?, GroupViewHolder?>?) :
-    GroupEditableListAdapter<PackageHolder?, GroupViewHolder?>(
-        fragment,
-        GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
-    ) {
-    private val mPreferences: SharedPreferences?
-    private val mManager: PackageManager
-    protected override fun onLoad(lister: GroupLister<PackageHolder>) {
-        val showSystemApps = mPreferences!!.getBoolean("show_system_apps", false)
-        for (packageInfo in getContext().getPackageManager().getInstalledPackages(
+class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, GroupViewHolder>) :
+    GroupEditableListAdapter<PackageHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_DATE) {
+    private val preferences = AppUtils.getDefaultPreferences(context)
+
+    private val manager = context.packageManager
+
+    override fun onLoad(lister: GroupLister<PackageHolder>) {
+        val showSystemApps = preferences.getBoolean("show_system_apps", false)
+        for (packageInfo in context.packageManager.getInstalledPackages(
             PackageManager.GET_META_DATA
         )) {
             val appInfo: ApplicationInfo = packageInfo.applicationInfo
             if (appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 1 || showSystemApps) {
                 val packageHolder = PackageHolder(
-                    appInfo.loadLabel(mManager).toString(), appInfo,
+                    appInfo.loadLabel(manager).toString(), appInfo,
                     packageInfo.versionName, packageInfo.packageName, File(appInfo.sourceDir)
                 )
                 lister.offerObliged(this, packageHolder)
@@ -59,43 +63,45 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder?, Gro
         }
     }
 
-    protected override fun onGenerateRepresentative(text: String, merger: Merger<PackageHolder>?): PackageHolder {
-        return PackageHolder(GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE, text)
+    override fun onGenerateRepresentative(text: String, merger: Merger<PackageHolder>?): PackageHolder {
+        return PackageHolder(VIEW_TYPE_REPRESENTATIVE, text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapter.Companion.VIEW_TYPE_DEFAULT) GroupViewHolder(
-            getInflater().inflate(
+        val holder: GroupViewHolder = if (viewType == VIEW_TYPE_DEFAULT) GroupViewHolder(
+            layoutInflater.inflate(
                 R.layout.list_application,
                 parent,
                 false
             )
         ) else createDefaultViews(parent, viewType, false)
         if (!holder.isRepresentative()) {
-            getFragment().registerLayoutViewClicks(holder)
-            holder.itemView.findViewById<View>(R.id.visitView)
-                .setOnClickListener(View.OnClickListener { v: View? -> getFragment().performLayoutClickOpen(holder) })
-            holder.itemView.findViewById<View>(R.id.selector)
-                .setOnClickListener(View.OnClickListener { v: View? -> getFragment().setItemSelected(holder, true) })
+            fragment.registerLayoutViewClicks(holder)
+            holder.itemView.findViewById<View>(R.id.visitView).setOnClickListener { v: View? ->
+                fragment.performLayoutClickOpen(holder)
+            }
+            holder.itemView.findViewById<View>(R.id.selector).setOnClickListener { v: View? ->
+                fragment.setItemSelected(holder, true)
+            }
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         val parentView: View = holder.itemView
-        val `object`: PackageHolder = getItem(position)
-        if (!holder.tryBinding(`object`)) {
+        val item: PackageHolder = getItem(position)
+        if (!holder.tryBinding(item)) {
             val image = parentView.findViewById<ImageView>(R.id.image)
-            val text1: TextView = parentView.findViewById<TextView>(R.id.text)
-            val text2: TextView = parentView.findViewById<TextView>(R.id.text2)
+            val text1: TextView = parentView.findViewById(R.id.text)
+            val text2: TextView = parentView.findViewById(R.id.text2)
             val layoutSplitApk = parentView.findViewById<ViewGroup>(R.id.layout_split_apk)
-            val isSplitApk = Build.VERSION.SDK_INT >= 21 && `object`.appInfo.splitSourceDirs != null
-            text1.setText(`object`.friendlyName)
-            text2.setText(`object`.version)
+            val isSplitApk = Build.VERSION.SDK_INT >= 21 && item.appInfo?.splitSourceDirs != null
+            text1.text = item.friendlyName
+            text2.text = item.version
             layoutSplitApk.visibility = if (isSplitApk) View.VISIBLE else View.GONE
-            parentView.isSelected = `object`.isSelectableSelected
-            GlideApp.with(getContext())
-                .load(`object`.appInfo)
+            parentView.isSelected = item.isSelectableSelected()
+            GlideApp.with(context)
+                .load(item.appInfo)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .override(160)
                 .into(image)
@@ -107,10 +113,10 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder?, Gro
         var version: String? = null
         var packageName: String? = null
 
-        constructor(viewType: Int, representativeText: String?) : super(viewType, representativeText) {}
+        constructor(viewType: Int, representativeText: String) : super(viewType, representativeText)
         constructor(
             friendlyName: String, appInfo: ApplicationInfo, version: String, packageName: String?,
-            executableFile: File
+            executableFile: File,
         ) {
             initialize(
                 appInfo.packageName.hashCode().toLong(), friendlyName, friendlyName + "_" + version + FORMAT,
@@ -122,9 +128,13 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder?, Gro
         }
 
         override fun expand(): Containable? {
-            if (Build.VERSION.SDK_INT < 21 || appInfo.splitSourceDirs == null) return null
+            if (Build.VERSION.SDK_INT < 21)
+                return null
+
+            val splitSourceDirs = appInfo?.splitSourceDirs ?: return null
             val fileList: MutableList<Uri> = ArrayList()
-            for (location in appInfo.splitSourceDirs) fileList.add(Uri.fromFile(File(location)))
+            for (location in splitSourceDirs) fileList.add(Uri.fromFile(File(location)))
+
             return Containable(uri, fileList)
         }
 
@@ -134,8 +144,4 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder?, Gro
         }
     }
 
-    init {
-        mPreferences = AppUtils.getDefaultPreferences(getContext())
-        mManager = getContext().getPackageManager()
-    }
 }

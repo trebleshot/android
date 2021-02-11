@@ -48,7 +48,7 @@ class OnlineDeviceListFragment : DeviceListFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val daemon: NsdDaemon = App.Companion.from(requireActivity()).getNsdDaemon()
+        val daemon: NsdDaemon = App.from(requireActivity()).getNsdDaemon()
         listView.isNestedScrollingEnabled = true
         setDividerVisible(false)
         if (!daemon.isServiceEnabled()) setEmptyListText(getString(R.string.text_nsdDisabled)) else if (!daemon.isDiscovering()) setEmptyListText(

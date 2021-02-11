@@ -59,8 +59,8 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: BroadcastData = KuickDb.toData(intent)
-                if (Kuick.Companion.TABLE_TRANSFER == data.tableName) reconstructGroup() else if (Kuick.Companion.TABLE_TRANSFERITEM == data.tableName && (data.inserted || data.removed)
-                    || Kuick.Companion.TABLE_TRANSFERMEMBER == data.tableName && (data.inserted || data.removed)
+                if (Kuick.TABLE_TRANSFER == data.tableName) reconstructGroup() else if (Kuick.TABLE_TRANSFERITEM == data.tableName && (data.inserted || data.removed)
+                    || Kuick.TABLE_TRANSFERMEMBER == data.tableName && (data.inserted || data.removed)
                 ) updateCalculations()
             }
         }
@@ -96,9 +96,9 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
                 val streamInfo: StreamInfo = StreamInfo.getStreamInfo(this, intent.data)
                 Log.d(TAG, "Requested file is: " + streamInfo.friendlyName)
                 val fileData = database.getFirstFromTable(
-                    SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                    SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                         .setWhere(
-                            Kuick.Companion.FIELD_TRANSFERITEM_FILE + "=? AND " + Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                            Kuick.FIELD_TRANSFERITEM_FILE + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                             streamInfo.friendlyName, TransferItem.Type.INCOMING.toString()
                         )
                 )
@@ -136,9 +136,9 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         }
         if (mTransfer == null) finish() else {
             val bundle = Bundle()
-            bundle.putLong(TransferItemListFragment.Companion.ARG_TRANSFER_ID, mTransfer!!.id)
+            bundle.putLong(TransferItemListFragment.ARG_TRANSFER_ID, mTransfer!!.id)
             bundle.putString(
-                TransferItemListFragment.Companion.ARG_PATH, if (transferItem == null
+                TransferItemListFragment.ARG_PATH, if (transferItem == null
                     || transferItem.directory == null
                 ) null else transferItem.directory
             )
@@ -219,7 +219,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             startActivity(
                 Intent(this, FileExplorerActivity::class.java)
                     .putExtra(
-                        FileExplorerActivity.Companion.EXTRA_FILE_PATH,
+                        FileExplorerActivity.EXTRA_FILE_PATH,
                         Files.getSavePath(this, mTransfer).uri
                     )
             )
@@ -297,7 +297,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     override fun getIdentity(): Identity {
-        return FileTransferTask.Companion.identifyWith(mTransfer!!.id)
+        return FileTransferTask.identifyWith(mTransfer!!.id)
     }
 
     fun getToggleButton(): ExtendedFloatingActionButton? {
@@ -306,7 +306,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     fun isDeviceRunning(deviceId: String?): Boolean {
-        return hasTaskWith(FileTransferTask.Companion.identifyWith(mTransfer!!.id, deviceId))
+        return hasTaskWith(FileTransferTask.identifyWith(mTransfer!!.id, deviceId))
     }
 
     fun reconstructGroup() {
@@ -376,7 +376,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     fun startDeviceAddingActivity() {
         startActivityForResult(
             Intent(this, TransferMemberActivity::class.java)
-                .putExtra(TransferMemberActivity.Companion.EXTRA_TRANSFER, mTransfer), REQUEST_ADD_DEVICES
+                .putExtra(TransferMemberActivity.EXTRA_TRANSFER, mTransfer), REQUEST_ADD_DEVICES
         )
     }
 
@@ -392,7 +392,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     fun toggleTaskForMember(member: LoadedMember?) {
         if (hasTaskWith(
-                FileTransferTask.Companion.identifyWith(
+                FileTransferTask.identifyWith(
                     mTransfer!!.id,
                     member.deviceId
                 )

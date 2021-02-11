@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.service.backgroundserviceimport
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
 
 enum class DefaultNotificationIds {
     ID_BG_DEFAULT_TASKS // Notification representing the tasks with BackgroundTask#TASK_GROUP_DEFAULT

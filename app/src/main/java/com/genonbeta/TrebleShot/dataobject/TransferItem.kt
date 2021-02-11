@@ -17,22 +17,21 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.android.database.DatabaseObject
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.TrebleShot.database.Kuick
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.database.Progress
-import android.util.Log
 import androidx.collection.ArrayMap
+import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.util.Transfers
+import com.genonbeta.android.database.DatabaseObject
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.Progress
+import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.StreamInfo
 import org.json.JSONException
 import org.json.JSONObject
-import java.lang.Exception
-import java.lang.NumberFormatException
 import java.security.InvalidParameterException
 
 /**
@@ -40,41 +39,44 @@ import java.security.InvalidParameterException
  * Date: 4/24/17 11:50 PM
  */
 open class TransferItem : DatabaseObject<Transfer?>, Editable {
-    @JvmField
-    var name: String? = null
-    @JvmField
+    lateinit var name: String
+
     var file: String? = null
-    @JvmField
+
     var mimeType: String? = null
-    @JvmField
+
     var directory: String? = null
-    @JvmField
+
     override var id: Long = 0
-    @JvmField
+
+    var length: Long = 0
+
+    var date: Long = 0
+
     var transferId: Long = 0
-    override var comparableSize: Long = 0
-    override var comparableDate: Long = 0
-    @JvmField
+
     var type = Type.INCOMING
 
     // When the type is outgoing, the sender gets to have device id : flag list
-    @JvmField
-    protected val mSenderFlagList: MutableMap<String?, Flag> = ArrayMap()
+
+    protected val senderFlagList1: MutableMap<String, Flag> = ArrayMap()
 
     // When the type is incoming, the receiver will only have a flag for its status.
-    private var mReceiverFlag = Flag.PENDING
-    private var mDeleteOnRemoval = false
-    var isSelectableSelected = false
-        private set
+    private var receiverFlag = Flag.PENDING
+
+    private var deleteOnRemoval = false
+
+    protected val isSelected = false
 
     constructor() {}
-    constructor(id: Long, transferId: Long, name: String?, file: String?, mimeType: String?, size: Long, type: Type) {
+
+    constructor(id: Long, transferId: Long, name: String, file: String?, mimeType: String?, size: Long, type: Type) {
         this.id = id
         this.transferId = transferId
         this.name = name
         this.file = file
         this.mimeType = mimeType
-        comparableSize = size
+        this.length = size
         this.type = type
     }
 
@@ -102,59 +104,55 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
     var flag: Flag
         get() {
             if (Type.INCOMING != type) throw InvalidParameterException()
-            return mReceiverFlag
+            return receiverFlag
         }
         set(flag) {
             if (Type.INCOMING != type) throw InvalidParameterException()
-            mReceiverFlag = flag
+            receiverFlag = flag
         }
 
     fun getFlag(deviceId: String?): Flag {
         if (Type.OUTGOING != type) throw InvalidParameterException()
         var flag: Flag?
-        synchronized(mSenderFlagList) { flag = mSenderFlagList[deviceId] }
+        synchronized(senderFlagList1) { flag = senderFlagList1[deviceId] }
         return if (flag == null) Flag.PENDING else flag!!
     }
 
     val flags: Array<Flag?>
         get() {
-            synchronized(mSenderFlagList) {
-                val flags = arrayOfNulls<Flag>(mSenderFlagList.size)
-                mSenderFlagList.values.toArray(flags)
+            synchronized(senderFlagList1) {
+                val flags = arrayOfNulls<Flag>(senderFlagList1.size)
+                senderFlagList1.values.toArray(flags)
                 return flags
             }
         }
     val senderFlagList: Map<String?, Flag>
         get() {
-            synchronized(mSenderFlagList) {
+            synchronized(senderFlagList1) {
                 val map: MutableMap<String?, Flag> = ArrayMap()
-                map.putAll(mSenderFlagList)
+                map.putAll(senderFlagList1)
                 return map
             }
         }
 
-    override fun setId(id: Long) {
-        this.id = id
-    }
-
     fun putFlag(deviceId: String?, flag: Flag) {
         if (Type.OUTGOING != type) throw InvalidParameterException()
-        synchronized(mSenderFlagList) { mSenderFlagList.put(deviceId, flag) }
+        synchronized(senderFlagList1) { senderFlagList1.put(deviceId, flag) }
     }
 
     fun getPercentage(members: Array<LoadedMember>, deviceId: String?): Double {
-        if (members.size == 0) return 0
+        if (members.isEmpty()) return 0.0
         if (Type.INCOMING == type) return Transfers.getPercentageByFlag(
-            flag, comparableSize
-        ) else if (deviceId != null) return Transfers.getPercentageByFlag(getFlag(deviceId), comparableSize)
+            flag, length
+        ) else if (deviceId != null) return Transfers.getPercentageByFlag(getFlag(deviceId), length)
         var percentageIndex = 0.0
         var senderMembers = 0
         for (member in members) {
             if (Type.OUTGOING != member.type) continue
             senderMembers++
-            percentageIndex += Transfers.getPercentageByFlag(getFlag(member.deviceId), comparableSize)
+            percentageIndex += Transfers.getPercentageByFlag(getFlag(member.deviceId), length)
         }
-        return if (percentageIndex > 0) percentageIndex / senderMembers else 0
+        return if (percentageIndex > 0) percentageIndex / senderMembers else 0.0
     }
 
     override fun getWhere(): SQLQuery.Select {
@@ -171,19 +169,19 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
         values.put(Kuick.FIELD_TRANSFERITEM_ID, id)
         values.put(Kuick.FIELD_TRANSFERITEM_TRANSFERID, transferId)
         values.put(Kuick.FIELD_TRANSFERITEM_NAME, name)
-        values.put(Kuick.FIELD_TRANSFERITEM_SIZE, comparableSize)
+        values.put(Kuick.FIELD_TRANSFERITEM_SIZE, length)
         values.put(Kuick.FIELD_TRANSFERITEM_MIME, mimeType)
         values.put(Kuick.FIELD_TRANSFERITEM_TYPE, type.toString())
         values.put(Kuick.FIELD_TRANSFERITEM_FILE, file)
         values.put(Kuick.FIELD_TRANSFERITEM_DIRECTORY, directory)
-        values.put(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME, comparableDate)
+        values.put(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME, date)
         if (Type.INCOMING == type) {
-            values.put(Kuick.FIELD_TRANSFERITEM_FLAG, mReceiverFlag.toString())
+            values.put(Kuick.FIELD_TRANSFERITEM_FLAG, receiverFlag.toString())
         } else {
             val `object` = JSONObject()
-            synchronized(mSenderFlagList) {
-                for (deviceId in mSenderFlagList.keys) try {
-                    `object`.put(deviceId, mSenderFlagList[deviceId])
+            synchronized(senderFlagList1) {
+                for (deviceId in senderFlagList1.keys) try {
+                    `object`.put(deviceId, senderFlagList1[deviceId])
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
@@ -196,7 +194,7 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
         name = item.getAsString(Kuick.FIELD_TRANSFERITEM_NAME)
         file = item.getAsString(Kuick.FIELD_TRANSFERITEM_FILE)
-        comparableSize = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE)
+        size = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE)
         mimeType = item.getAsString(Kuick.FIELD_TRANSFERITEM_MIME)
         id = item.getAsLong(Kuick.FIELD_TRANSFERITEM_ID)
         transferId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_TRANSFERID)
@@ -204,26 +202,26 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
         directory = item.getAsString(Kuick.FIELD_TRANSFERITEM_DIRECTORY)
 
         // Added with DB version 13
-        if (item.containsKey(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)) comparableDate =
+        if (item.containsKey(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)) date =
             item.getAsLong(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)
         val flagString = item.getAsString(Kuick.FIELD_TRANSFERITEM_FLAG)
         if (Type.INCOMING == type) {
             try {
-                mReceiverFlag = Flag.valueOf(flagString)
+                receiverFlag = Flag.valueOf(flagString)
             } catch (e: Exception) {
                 try {
-                    mReceiverFlag = Flag.IN_PROGRESS
-                    mReceiverFlag.bytesValue = flagString.toLong()
+                    receiverFlag = Flag.IN_PROGRESS
+                    receiverFlag.bytesValue = flagString.toLong()
                 } catch (e1: NumberFormatException) {
-                    mReceiverFlag = Flag.PENDING
+                    receiverFlag = Flag.PENDING
                 }
             }
         } else {
             try {
                 val jsonObject = JSONObject(flagString)
                 val iterator = jsonObject.keys()
-                synchronized(mSenderFlagList) {
-                    mSenderFlagList.clear()
+                synchronized(senderFlagList1) {
+                    senderFlagList1.clear()
                     while (iterator.hasNext()) {
                         val key = iterator.next()
                         val value = jsonObject.getString(key)
@@ -238,7 +236,7 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
                                 flag = Flag.PENDING
                             }
                         }
-                        mSenderFlagList[key] = flag
+                        senderFlagList1[key] = flag
                     }
                 }
             } catch (ignored: JSONException) {
@@ -247,56 +245,48 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
     }
 
     fun setDeleteOnRemoval(delete: Boolean) {
-        mDeleteOnRemoval = delete
+        deleteOnRemoval = delete
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener) {
-        comparableDate = System.currentTimeMillis()
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
+        date = System.currentTimeMillis()
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener) {
-        comparableDate = System.currentTimeMillis()
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
+        date = System.currentTimeMillis()
     }
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
         // Normally we'd like to check every file, but it may take a while.
-        if (mDeleteOnRemoval) deleteFile(kuick, parent)
+        if (deleteOnRemoval) deleteFile(kuick, parent)
     }
 
     fun deleteFile(kuick: KuickDb, parent: Transfer?) {
-        var parent = parent
-        if (Type.INCOMING != type || (Flag.INTERRUPTED != flag
-                    && Flag.DONE != flag)
-        ) return
+        if (Type.INCOMING != type || (Flag.INTERRUPTED != flag && Flag.DONE != flag)) return
+        val actualParent = parent ?: Transfer(transferId).also {
+            kuick.reconstruct(it)
+        }
+
         try {
-            if (parent == null) {
-                Log.d(TransferItem::class.java.simpleName, "onRemoveObject: Had to recreate the group")
-                parent = Transfer(transferId)
-                kuick.reconstruct<Device, Transfer>(parent)
-            }
-            val file = Files.getIncomingPseudoFile(
-                kuick.context, this, parent,
-                false
-            )
-            if (file != null && file.isFile) file.delete()
+            val file = Files.getIncomingPseudoFile(kuick.context, this, actualParent, false)
+            if (file.isFile()) file.delete()
         } catch (ignored: Exception) {
             // do nothing
         }
     }
 
-    override val comparableName: String?
-        get() = selectableTitle
+    override fun getComparableName(): String = name
 
-    @SuppressLint("DefaultLocale")
-    override fun getId(): Long {
-        return String.format("%d_%d", id, type.ordinal).hashCode().toLong()
-    }
+    override fun getComparableDate(): Long = date
 
-    val selectableTitle: String
-        get() = name!!
+    override fun getComparableSize(): Long = length
+
+    override fun getSelectableTitle(): String = name
+
+    override fun isSelectableSelected(): Boolean = isSelected
 
     override fun setSelectableSelected(selected: Boolean): Boolean {
-        isSelectableSelected = selected
+        isSelected = selected
         return true
     }
 
@@ -316,28 +306,28 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
     companion object {
         fun from(streamInfo: StreamInfo, transferId: Long): TransferItem {
             return TransferItem(
-                AppUtils.getUniqueNumber(), transferId, streamInfo.friendlyName,
+                AppUtils.uniqueNumber.toLong(), transferId, streamInfo.friendlyName,
                 streamInfo.uri.toString(), streamInfo.mimeType, streamInfo.size, Type.OUTGOING
             )
         }
 
         fun from(file: DocumentFile, transferId: Long, directory: String?): TransferItem {
-            val `object` = TransferItem(
-                AppUtils.getUniqueNumber(), transferId, file.name,
-                file.uri.toString(), file.type, file.getLength(), Type.OUTGOING
+            val transferItem = TransferItem(
+                AppUtils.uniqueNumber.toLong(), transferId, file.getName(),
+                file.getUri().toString(), file.getType(), file.getLength(), Type.OUTGOING
             )
-            if (directory != null) `object`.directory = directory
-            return `object`
+            if (directory.isNullOrEmpty()) transferItem.directory = directory
+            return transferItem
         }
 
         @JvmStatic
         fun from(shareable: Shareable, transferId: Long, directory: String?): TransferItem {
-            val `object` = TransferItem(
-                AppUtils.getUniqueNumber(), transferId, shareable.fileName,
-                shareable.uri.toString(), shareable.mimeType, shareable.size, Type.OUTGOING
+            val transferItem = TransferItem(
+                AppUtils.uniqueNumber.toLong(), transferId, shareable.fileName,
+                shareable.uri.toString(), shareable.mimeType, shareable.getComparableSize(), Type.OUTGOING
             )
-            if (directory != null) `object`.directory = directory
-            return `object`
+            if (directory != null) transferItem.directory = directory
+            return transferItem
         }
     }
 }

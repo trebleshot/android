@@ -53,8 +53,8 @@ class Identity : Parcelable {
     }
 
     protected constructor(`in`: Parcel) {
-        mValueListOR = `in`.createTypedArrayList(Identifier.Companion.CREATOR)
-        mValueListAND = `in`.createTypedArrayList(Identifier.Companion.CREATOR)
+        mValueListOR = `in`.createTypedArrayList(Identifier.CREATOR)
+        mValueListAND = `in`.createTypedArrayList(Identifier.CREATOR)
     }
 
     override fun describeContents(): Int {

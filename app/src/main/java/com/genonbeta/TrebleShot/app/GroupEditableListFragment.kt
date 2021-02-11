@@ -17,37 +17,51 @@
  */
 package com.genonbeta.TrebleShot.app
 
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.collection.ArrayMap
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupEditable
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 
 /**
  * created by: veli
  * date: 30.03.2018 16:10
  */
-abstract class GroupEditableListFragment<T : GroupEditable?, V : GroupViewHolder?, E : GroupEditableListAdapter<T, V>?> :
+abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder, E : GroupEditableListAdapter<T, V>>() :
     EditableListFragment<T, V, E>() {
-    private val mGroupingOptions: MutableMap<String?, Int?> = ArrayMap()
-    private var mDefaultGroupingCriteria: Int = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING
+    override var adapter: E
+        get() = super.adapter
+        set(value) {
+            super.adapter = value
+            value.setGroupBy(groupingCriteria)
+        }
+
+    private val groupingOptions: MutableMap<String, Int> = ArrayMap()
+
+    var defaultGroupingCriteria: Int = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
+
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return if (viewType == GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE
-            || viewType == GroupEditableListAdapter.Companion.VIEW_TYPE_ACTION_BUTTON
+        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE
+            || viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
         ) currentSpanSize else super.onGridSpanSize(viewType, currentSpanSize)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (!isUsingLocalSelection || !isLocalSelectionActivated) {
-            val options: MutableMap<String?, Int?> = ArrayMap()
+            val options: MutableMap<String, Int> = ArrayMap()
             onGroupingOptions(options)
-            mGroupingOptions.clear()
-            mGroupingOptions.putAll(options)
-            if (mGroupingOptions.size > 0) {
+            groupingOptions.clear()
+            groupingOptions.putAll(options)
+            if (groupingOptions.isNotEmpty()) {
                 inflater.inflate(R.menu.actions_abs_group_shareable_list, menu)
-                val groupingItem = menu.findItem(R.id.actions_abs_group_shareable_grouping)
-                if (groupingItem != null) applyDynamicMenuItems(
-                    groupingItem, R.id.actions_abs_group_shareable_group_grouping,
-                    mGroupingOptions
+                applyDynamicMenuItems(
+                    menu.findItem(R.id.actions_abs_group_shareable_grouping),
+                    R.id.actions_abs_group_shareable_group_grouping,
+                    groupingOptions
                 )
             }
         }
@@ -58,19 +72,20 @@ abstract class GroupEditableListFragment<T : GroupEditable?, V : GroupViewHolder
         if (!isUsingLocalSelection || !isLocalSelectionActivated) {
             checkPreferredDynamicItem(
                 menu.findItem(R.id.actions_abs_group_shareable_grouping), groupingCriteria,
-                mGroupingOptions
+                groupingOptions
             )
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.groupId == R.id.actions_abs_group_shareable_group_grouping) changeGroupingCriteria(item.order) else return super.onOptionsItemSelected(
-            item
-        )
+        if (item.groupId == R.id.actions_abs_group_shareable_group_grouping)
+            changeGroupingCriteria(item.order)
+        else
+            return super.onOptionsItemSelected(item)
         return true
     }
 
-    open fun onGroupingOptions(options: MutableMap<String?, Int?>) {}
+    open fun onGroupingOptions(options: MutableMap<String, Int>) {}
 
     fun changeGroupingCriteria(criteria: Int) {
         viewPreferences.edit()
@@ -81,14 +96,5 @@ abstract class GroupEditableListFragment<T : GroupEditable?, V : GroupViewHolder
     }
 
     val groupingCriteria: Int
-        get() = viewPreferences.getInt(getUniqueSettingKey("GroupBy"), mDefaultGroupingCriteria)
-
-    fun setDefaultGroupingCriteria(groupingCriteria: Int) {
-        mDefaultGroupingCriteria = groupingCriteria
-    }
-
-    override fun setListAdapter(adapter: E, hadAdapter: Boolean) {
-        super.setListAdapter(adapter, hadAdapter)
-        adapter.setGroupBy(groupingCriteria)
-    }
+        get() = viewPreferences.getInt(getUniqueSettingKey("GroupBy"), defaultGroupingCriteria)
 }

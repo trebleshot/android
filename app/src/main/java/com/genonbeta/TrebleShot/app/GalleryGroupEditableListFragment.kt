@@ -32,16 +32,15 @@ abstract class GalleryGroupEditableListFragment<T : GroupShareable, V : GroupVie
     GroupEditableListFragment<T, V, E>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setDefaultGroupingCriteria(GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE)
+        defaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_DATE
     }
 
-    override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
+    override fun onGroupingOptions(options: MutableMap<String, Int>) {
         super.onGroupingOptions(options)
         options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
         options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
         options[getString(R.string.text_groupByAlbum)] = GalleryGroupEditableListAdapter.MODE_GROUP_BY_ALBUM
     }
 
-    val isGridSupported: Boolean
-        get() = true
+    override var isGridSupported: Boolean = true
 }

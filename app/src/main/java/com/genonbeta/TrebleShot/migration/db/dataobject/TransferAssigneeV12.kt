@@ -71,8 +71,8 @@ class TransferAssigneeV12 : DatabaseObject<NetworkDeviceV12?> {
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        deviceId = item.getAsString(Kuick.Companion.FIELD_TRANSFERMEMBER_DEVICEID)
-        groupId = item.getAsLong(Kuick.Companion.FIELD_TRANSFERMEMBER_TRANSFERID)
+        deviceId = item.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID)
+        groupId = item.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID)
     }
 
     override fun onCreateObject(

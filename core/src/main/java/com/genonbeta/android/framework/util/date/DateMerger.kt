@@ -27,23 +27,22 @@ import java.util.*
  * created by: Veli
  * date: 29.03.2018 01:23
  */
-class DateMerger<T>(val time: Long) : ComparableMerger<T?>() {
+class DateMerger<T>(val time: Long) : ComparableMerger<T>() {
     private val year: Int
     private val month: Int
     private val day: Int
     private val dayOfYear: Int
 
-    override operator fun compareTo(other: ComparableMerger<T?>?): Int {
-        if (other !is DateMerger<*> || year < other.year)
-            return -1
+    override operator fun compareTo(other: ComparableMerger<T>): Int {
+        return if (other !is DateMerger<*> || year < other.year)
+            -1
         else if (year > other.year)
-            return 1
+            1
         else
-            return MathUtils.compare(dayOfYear, other.dayOfYear)
+            MathUtils.compare(dayOfYear, other.dayOfYear)
     }
 
     override fun equals(other: Any?): Boolean = other is DateMerger<*> && hashCode() == other.hashCode()
-
 
     override fun hashCode(): Int = ObjectsCompat.hash(year, dayOfYear)
 

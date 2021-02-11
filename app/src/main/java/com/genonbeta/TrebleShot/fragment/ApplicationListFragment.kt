@@ -24,30 +24,36 @@ import android.os.Bundle
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import android.view.*
 import androidx.appcompat.app.AlertDialog
+import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter
+import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter.*
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import java.lang.Exception
 
-class ApplicationListFragment : GroupEditableListFragment<PackageHolder?, GroupViewHolder?, ApplicationListAdapter?>() {
+class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupViewHolder?, ApplicationListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFilteringSupported(true)
+        isFilteringSupported = true
         setHasOptionsMenu(true)
-        setDefaultOrderingCriteria(EditableListAdapter.Companion.MODE_SORT_ORDER_DESCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.Companion.MODE_SORT_BY_DATE)
-        setDefaultGroupingCriteria(GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE)
+        defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
+        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_DATE)
+        setDefaultGroupingCriteria(GroupEditableListAdapter.MODE_GROUP_BY_DATE)
         setItemOffsetDecorationEnabled(false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListAdapter(ApplicationListAdapter(this))
-        setEmptyListImage(R.drawable.ic_android_head_white_24dp)
+
+        emptyListImageView.drawable = R.drawable.ic_android_head_white_24dp
         setEmptyListText(getString(R.string.text_listEmptyApp))
     }
 
     override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
         super.onGroupingOptions(options)
-        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING
-        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
+        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

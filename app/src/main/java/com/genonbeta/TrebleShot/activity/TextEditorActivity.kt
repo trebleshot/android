@@ -21,39 +21,55 @@ import android.content.*
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
+import com.genonbeta.TrebleShot.dataobject.TextStreamObject
+import com.genonbeta.TrebleShot.taskimport.TextShareTask
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.WriterException
+import com.google.zxing.common.BitMatrix
+import com.journeyapps.barcodescanner.BarcodeEncoder
 
 /**
  * Created by: veli
  * Date: 1/19/17 5:05 PM
  */
 class TextEditorActivity : Activity(), SnackbarPlacementProvider {
-    private var mEditTextEditor: EditText? = null
-    private var mDbObject: TextStreamObject? = null
-    private var mBackPressTime: Long = 0
+    private lateinit var editText: EditText
+
+    private var dbObject: TextStreamObject? = null
+
+    private var backPressTime: Long = 0
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (intent == null || ACTION_EDIT_TEXT != intent.action) finish() else {
             setContentView(R.layout.layout_text_editor_activity)
-            if (supportActionBar != null) supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            mEditTextEditor = findViewById<EditText>(R.id.layout_text_editor_activity_text_text_box)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            editText = findViewById(R.id.layout_text_editor_activity_text_text_box)
+
             if (intent.hasExtra(EXTRA_CLIPBOARD_ID)) {
-                mDbObject = TextStreamObject(intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1))
-                try {
-                    database.reconstruct<Any, TextStreamObject>(mDbObject)
-                    mEditTextEditor.getText()
-                        .append(mDbObject.text)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    mDbObject = null
+                TextStreamObject(intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1)).let {
+                    try {
+                        database.reconstruct(it)
+                        editText.text.append(it.text)
+                        dbObject = it
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
-            } else if (intent.hasExtra(EXTRA_TEXT_INDEX)) mEditTextEditor.getText()
+            } else if (intent.hasExtra(EXTRA_TEXT_INDEX)) editText.getText()
                 .append(intent.getStringExtra(EXTRA_TEXT_INDEX))
         }
     }
@@ -61,15 +77,15 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null && data.hasExtra(AddDeviceActivity.Companion.EXTRA_DEVICE)
-                && data.hasExtra(AddDeviceActivity.Companion.EXTRA_DEVICE_ADDRESS)
+            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
+                && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val device: Device = data.getParcelableExtra(AddDeviceActivity.Companion.EXTRA_DEVICE)
-                val address: DeviceAddress = data.getParcelableExtra(AddDeviceActivity.Companion.EXTRA_DEVICE_ADDRESS)
-                val text: String? =
-                    if (mEditTextEditor.getText() != null) mEditTextEditor.getText().toString() else null
-                if (device != null && address != null && text != null) {
-                    runUiTask(TextShareTask(device, address, text))
+                val device: Device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
+                val address: DeviceAddress = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val text: String? = if (editText.text != null) editText.text.toString() else null
+
+                text?.let {
+                    runUiTask(TextShareTask(device, address, it))
                 }
             }
         }
@@ -82,22 +98,22 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     }
 
     override fun onBackPressed() {
-        val hasObject = mDbObject != null
+        val hasObject = dbObject != null
         val deletionNeeded = checkDeletionNeeded()
         val saveNeeded = checkSaveNeeded()
-        if (!saveNeeded && !deletionNeeded || System.nanoTime() - mBackPressTime < 2e9) // 2secs to stay in interval
+        if (!saveNeeded && !deletionNeeded || System.nanoTime() - backPressTime < 2e9) // 2secs to stay in interval
             super.onBackPressed() else if (deletionNeeded) createSnackbar(R.string.ques_deleteEmptiedText)
-            .setAction(R.string.butn_delete, View.OnClickListener { v: View? ->
+            .setAction(R.string.butn_delete) {
                 removeText()
                 finish()
-            })
+            }
             .show() else createSnackbar(if (hasObject) R.string.mesg_clipboardUpdateNotice else R.string.mesg_textSaveNotice)
-            .setAction(if (hasObject) R.string.butn_update else R.string.butn_save, View.OnClickListener { v: View? ->
+            .setAction(if (hasObject) R.string.butn_update else R.string.butn_save) {
                 saveText()
                 finish()
-            })
+            }
             .show()
-        mBackPressTime = System.nanoTime()
+        backPressTime = System.nanoTime()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -108,9 +124,8 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         menu.findItem(R.id.menu_action_done).isVisible = applySupported
         menu.findItem(R.id.menu_action_share).isVisible = !applySupported
         menu.findItem(R.id.menu_action_share_trebleshot).isVisible = !applySupported
-        menu.findItem(R.id.menu_action_remove).isVisible = mDbObject != null
-        menu.findItem(R.id.menu_action_show_as_qr_code).isEnabled = (mEditTextEditor.length() > 0
-                && mEditTextEditor.length() <= 1200)
+        menu.findItem(R.id.menu_action_remove).isVisible = dbObject != null
+        menu.findItem(R.id.menu_action_show_as_qr_code).isEnabled = (editText.length() in 1..1200)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -122,16 +137,16 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
                 .show()
         } else if (id == R.id.menu_action_done) {
             val intent: Intent = Intent()
-                .putExtra(EXTRA_TEXT_INDEX, mEditTextEditor.getText().toString())
+                .putExtra(EXTRA_TEXT_INDEX, editText.getText().toString())
             setResult(RESULT_OK, intent)
             finish()
         } else if (id == R.id.menu_action_copy) {
             (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-                .setPrimaryClip(ClipData.newPlainText("copiedText", mEditTextEditor.getText().toString()))
+                .setPrimaryClip(ClipData.newPlainText("copiedText", editText.getText().toString()))
             createSnackbar(R.string.mesg_textCopiedToClipboard).show()
         } else if (id == R.id.menu_action_share) {
             val shareIntent: Intent = Intent(Intent.ACTION_SEND)
-                .putExtra(Intent.EXTRA_TEXT, mEditTextEditor.getText().toString())
+                .putExtra(Intent.EXTRA_TEXT, editText.getText().toString())
                 .setType("text/*")
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)))
         } else if (id == R.id.menu_action_share_trebleshot) {
@@ -140,11 +155,11 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
                 REQUEST_CODE_CHOOSE_DEVICE
             )
         } else if (id == R.id.menu_action_show_as_qr_code) {
-            if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
+            if (editText.length() in 1..1200) {
                 val formatWriter = MultiFormatWriter()
                 try {
                     val bitMatrix: BitMatrix = formatWriter.encode(
-                        mEditTextEditor.getText().toString(),
+                        editText.text.toString(),
                         BarcodeFormat.QR_CODE, 800, 800
                     )
                     val encoder = BarcodeEncoder()
@@ -175,32 +190,35 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     }
 
     protected fun checkDeletionNeeded(): Boolean {
-        val editorText: String = mEditTextEditor.getText().toString()
-        return editorText.length <= 0 && mDbObject != null && editorText != mDbObject.text
+        val editorText: String = editText.text.toString()
+        return editorText.length <= 0 && dbObject != null && editorText != dbObject?.text
     }
 
     protected fun checkSaveNeeded(): Boolean {
-        val editorText: String = mEditTextEditor.getText().toString()
-        return editorText.length > 0 && (mDbObject == null || editorText != mDbObject.text)
+        val editorText: String = editText.text.toString()
+        return editorText.isNotEmpty() && (dbObject == null || editorText != dbObject?.text)
     }
 
-    override fun createSnackbar(resId: Int, vararg objects: Any): Snackbar {
-        return Snackbar.make(findViewById<View>(android.R.id.content), getString(resId, *objects), Snackbar.LENGTH_LONG)
+    override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar {
+        return Snackbar.make(findViewById(android.R.id.content), getString(resId, *objects), Snackbar.LENGTH_LONG)
     }
 
     fun removeText() {
-        if (mDbObject != null) {
-            database.remove(mDbObject)
+        dbObject?.let {
+            database.remove(it)
             database.broadcast()
-            mDbObject = null
+            dbObject = null
         }
     }
 
     fun saveText() {
-        if (mDbObject == null) mDbObject = TextStreamObject(AppUtils.getUniqueNumber())
-        if (mDbObject.comparableDate === 0) mDbObject.comparableDate = System.currentTimeMillis()
-        mDbObject.text = mEditTextEditor.getText().toString()
-        database.publish<Any, TextStreamObject>(mDbObject)
+        val item = dbObject ?: TextStreamObject(AppUtils.uniqueNumber.toLong()).also {
+            it.dateInternal = System.currentTimeMillis()
+            dbObject = it
+        }
+
+        item.text = editText.text.toString()
+        database.publish(item)
         database.broadcast()
     }
 

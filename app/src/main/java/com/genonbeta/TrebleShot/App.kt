@@ -22,8 +22,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaScannerConnection
 import android.net.wifi.WifiConfiguration
-import android.net.wifi.WifiManager.*
-import android.os.*
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiManager.LocalOnlyHotspotCallback
+import android.net.wifi.WifiManager.LocalOnlyHotspotReservation
+import android.os.Build
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
@@ -37,7 +39,10 @@ import com.genonbeta.TrebleShot.activity.TransferDetailActivity
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.config.Keyword
-import com.genonbeta.TrebleShot.dataobject.*
+import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.Identity
+import com.genonbeta.TrebleShot.dataobject.Transfer
+import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.WebShareServer
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
@@ -82,6 +87,9 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     private var taskNotificationTime: Long = 0
 
+    val wifiManager: WifiManager
+        get() = hotspotManager.wifiManager
+
     override fun onCreate() {
         super.onCreate()
         crashLogFile = applicationContext.getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
@@ -121,7 +129,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     }
 
     fun canStopService(): Boolean {
-        return !hasTasks() && !hotspotManager.isStarted && !webShareServer.hadClients()
+        return !hasTasks() && !hotspotManager.started && !webShareServer.hadClients()
     }
 
     fun getDefaultPreferences(): SharedPreferences {
@@ -320,7 +328,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(this))
             return
 
-        if (hotspotManager.isEnabled)
+        if (hotspotManager.enabled)
             hotspotManager.disable()
         else
             Log.d(

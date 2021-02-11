@@ -17,14 +17,12 @@
  */
 package com.genonbeta.android.framework.util.listing
 
-import androidx.collection.ArraySet
-
 /**
  * created by: Veli
  * date: 29.03.2018 01:26
  */
 open class Lister<T, V : Merger<T>> {
-    val mergers: MutableSet<V> = ArraySet()
+    val mergers: MutableList<V> = ArrayList()
 
     fun offer(item: T, merger: V) {
         mergers.add(merger)

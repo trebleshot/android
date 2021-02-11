@@ -89,7 +89,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
         if (Method.PUT == method || Method.POST == method) {
             try {
                 notification = mNotificationUtils.buildDynamicNotification(
-                    notificationId, NotificationUtils.Companion.NOTIFICATION_CHANNEL_LOW
+                    notificationId, NotificationUtils.NOTIFICATION_CHANNEL_LOW
                 )
                 notification.setSmallIcon(android.R.drawable.stat_sys_download)
                     .setContentInfo(mContext.getString(R.string.text_webShare))
@@ -207,7 +207,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     kuick.broadcast()
                     notification = mNotificationUtils.buildDynamicNotification(
                         notificationId,
-                        NotificationUtils.Companion.NOTIFICATION_CHANNEL_HIGH
+                        NotificationUtils.NOTIFICATION_CHANNEL_HIGH
                     )
                     notification
                         .setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -228,7 +228,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                             mContext.getString(R.string.butn_showFiles), PendingIntent.getActivity(
                                 mContext, AppUtils.getUniqueNumber(),
                                 Intent(mContext, FileExplorerActivity::class.java)
-                                    .putExtra(FileExplorerActivity.Companion.EXTRA_FILE_PATH, savePath.uri), 0
+                                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.uri), 0
                             )
                         )
                     try {
@@ -244,9 +244,9 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     }
                     notification.show()
                     mContext.sendBroadcast(
-                        Intent(FileListFragment.Companion.ACTION_FILE_LIST_CHANGED)
-                            .putExtra(FileListFragment.Companion.EXTRA_FILE_PARENT, savePath.uri)
-                            .putExtra(FileListFragment.Companion.EXTRA_FILE_NAME, destFile.name)
+                        Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                            .putExtra(FileListFragment.EXTRA_FILE_PARENT, savePath.uri)
+                            .putExtra(FileListFragment.EXTRA_FILE_NAME, destFile.name)
                     )
                     if (mMediaScanner.isConnected() && destFile is LocalDocumentFile) mMediaScanner.scanFile(
                         (destFile as LocalDocumentFile).getFile().getAbsolutePath(),
@@ -372,10 +372,10 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
                 val transferList = AppUtils.getKuick(mContext)
                     .castQuery(
-                        SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                        SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             .setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?", transfer.id.toString(),
+                                Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TYPE + "=?", transfer.id.toString(),
                                 TransferItem.Type.OUTGOING.toString()
                             ), TransferItem::class.java
                     )
@@ -403,8 +403,8 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
     private fun serveMainPage(): String {
         val contentBuilder = StringBuilder()
         val groupList: List<TransferIndex> = AppUtils.getKuick(mContext).castQuery<Device, TransferIndex>(
-            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFER)
-                .setOrderBy(Kuick.Companion.FIELD_TRANSFER_DATECREATED + " DESC"), TransferIndex::class.java
+            SQLQuery.Select(Kuick.TABLE_TRANSFER)
+                .setOrderBy(Kuick.FIELD_TRANSFER_DATECREATED + " DESC"), TransferIndex::class.java
         )
         for (index in groupList) {
             if (!index.transfer.isServedOnWeb) continue
@@ -439,12 +439,12 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
             val contentBuilder = StringBuilder()
             val groupList = AppUtils.getKuick(mContext).castQuery(
-                SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                     .setWhere(
-                        String.format("%s = ?", Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID),
+                        String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID),
                         transfer.id.toString()
                     )
-                    .setOrderBy(Kuick.Companion.FIELD_TRANSFERITEM_NAME + " ASC"),
+                    .setOrderBy(Kuick.FIELD_TRANSFERITEM_NAME + " ASC"),
                 TransferItem::class.java
             )
             if (groupList.size > 0) {

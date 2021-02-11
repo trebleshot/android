@@ -210,12 +210,11 @@ object Files {
     @Throws(Exception::class)
     fun move(
         context: Context, target: DocumentFile, destination: DocumentFile,
-        stoppable: Stoppable, bufferLength: Int, socketTimeout: Int,
+        stoppable: Stoppable?, bufferLength: Int, socketTimeout: Int,
     ): Boolean {
-        if (target !is LocalDocumentFile || destination !is LocalDocumentFile
-            || target.file.renameTo(destination.file)
-        )
+        if (target !is LocalDocumentFile || destination !is LocalDocumentFile || target.file.renameTo(destination.file)) {
             copy(context, target, destination, stoppable, bufferLength, socketTimeout)
+        }
 
         // syncs the file with latest data if it is database based
         destination.sync()

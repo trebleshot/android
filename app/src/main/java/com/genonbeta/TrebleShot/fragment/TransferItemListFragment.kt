@@ -49,12 +49,12 @@ open class TransferItemListFragment :
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: BroadcastData = KuickDb.toData(intent)
-                if (Kuick.Companion.TABLE_TRANSFERITEM == data.tableName || Kuick.Companion.TABLE_TRANSFER == data.tableName) refreshList()
-            } else if (ChangeSaveDirectoryTask.Companion.ACTION_SAVE_PATH_CHANGED == intent.action && intent.hasExtra(
-                    ChangeSaveDirectoryTask.Companion.EXTRA_TRANSFER
+                if (Kuick.TABLE_TRANSFERITEM == data.tableName || Kuick.TABLE_TRANSFER == data.tableName) refreshList()
+            } else if (ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED == intent.action && intent.hasExtra(
+                    ChangeSaveDirectoryTask.EXTRA_TRANSFER
                 )
             ) {
-                val transfer: Transfer = intent.getParcelableExtra(ChangeSaveDirectoryTask.Companion.EXTRA_TRANSFER)
+                val transfer: Transfer = intent.getParcelableExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER)
                 if (transfer != null && transfer.equals(mTransfer)) createSnackbar(R.string.mesg_pathSaved).show()
             }
         }
@@ -63,11 +63,11 @@ open class TransferItemListFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setFilteringSupported(true)
-        setDefaultOrderingCriteria(EditableListAdapter.Companion.MODE_SORT_ORDER_ASCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.Companion.MODE_SORT_BY_NAME)
-        setDefaultGroupingCriteria(TransferItemListAdapter.Companion.MODE_GROUP_BY_DEFAULT)
+        setDefaultOrderingCriteria(EditableListAdapter.MODE_SORT_ORDER_ASCENDING)
+        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_NAME)
+        setDefaultGroupingCriteria(TransferItemListAdapter.MODE_GROUP_BY_DEFAULT)
         mIntentFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
-        mIntentFilter.addAction(ChangeSaveDirectoryTask.Companion.ACTION_SAVE_PATH_CHANGED)
+        mIntentFilter.addAction(ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -98,7 +98,7 @@ open class TransferItemListFragment :
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return if (viewType == GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE) currentSpanSize else super.onGridSpanSize(
+        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE) currentSpanSize else super.onGridSpanSize(
             viewType,
             currentSpanSize
         )
@@ -123,10 +123,10 @@ open class TransferItemListFragment :
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (data != null && resultCode == Activity.RESULT_OK && requestCode == REQUEST_CHOOSE_FOLDER && data.hasExtra(
-                FilePickerActivity.Companion.EXTRA_CHOSEN_PATH
+                FilePickerActivity.EXTRA_CHOSEN_PATH
             )
         ) {
-            val selectedPath = data.getParcelableExtra<Uri>(FilePickerActivity.Companion.EXTRA_CHOSEN_PATH)
+            val selectedPath = data.getParcelableExtra<Uri>(FilePickerActivity.EXTRA_CHOSEN_PATH)
             if (selectedPath == null) {
                 createSnackbar(R.string.mesg_somethingWentWrong).show()
             } else if (selectedPath.toString() == getTransfer()!!.savePath) {
@@ -138,13 +138,13 @@ open class TransferItemListFragment :
                     .setMessage(R.string.text_checkOldFiles)
                     .setNeutralButton(R.string.butn_cancel, null)
                     .setNegativeButton(R.string.butn_skip) { dialogInterface: DialogInterface?, i: Int ->
-                        App.Companion.run<ChangeSaveDirectoryTask>(
+                        App.run<ChangeSaveDirectoryTask>(
                             requireActivity(),
                             task.setSkipMoving(true)
                         )
                     }
                     .setPositiveButton(R.string.butn_proceed) { dialogInterface: DialogInterface?, i: Int ->
-                        App.Companion.run<ChangeSaveDirectoryTask>(
+                        App.run<ChangeSaveDirectoryTask>(
                             requireActivity(),
                             task
                         )
@@ -157,9 +157,9 @@ open class TransferItemListFragment :
     fun changeSavePath(initialPath: String?) {
         startActivityForResult(
             Intent(getActivity(), FilePickerActivity::class.java)
-                .setAction(FilePickerActivity.Companion.ACTION_CHOOSE_DIRECTORY)
-                .putExtra(FilePickerActivity.Companion.EXTRA_START_PATH, initialPath)
-                .putExtra(FilePickerActivity.Companion.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)),
+                .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
+                .putExtra(FilePickerActivity.EXTRA_START_PATH, initialPath)
+                .putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)),
             REQUEST_CHOOSE_FOLDER
         )
     }

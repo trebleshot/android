@@ -34,11 +34,13 @@ import com.genonbeta.android.framework.util.actionperformer.SelectableProvider
  */
 interface EditableListFragmentBase<T : Editable> : ListFragmentBase<T>, PerformerEngineProvider,
     IEngineConnection.SelectionListener<T>, SelectableProvider<T>, SelectableHost<T>, TitleProvider {
-    val adapterImpl: EditableListAdapterBase<T>?
+    val adapterImpl: EditableListAdapterBase<T>
 
     val engineConnection: IEngineConnection<T>
 
     var filteringDelegate: EditableListFragment.FilteringDelegate<T>
+
+    var gridSize: Int
 
     var isGridSupported: Boolean
 
@@ -58,21 +60,17 @@ interface EditableListFragmentBase<T : Editable> : ListFragmentBase<T>, Performe
 
     val listView: RecyclerView
 
-    val orderingCriteria: Int
+    var orderingCriteria: Int
 
-    val sortingCriteria: Int
+    var sortingCriteria: Int
 
     fun applyViewingChanges(gridSize: Int)
-
-    fun changeGridViewSize(gridSize: Int)
-
-    fun changeOrderingCriteria(id: Int)
-
-    fun changeSortingCriteria(id: Int)
 
     fun getUniqueSettingKey(setting: String): String
 
     fun openUri(uri: Uri): Boolean
 
     fun loadIfRequested(): Boolean
+
+    fun requireContext(): Context
 }

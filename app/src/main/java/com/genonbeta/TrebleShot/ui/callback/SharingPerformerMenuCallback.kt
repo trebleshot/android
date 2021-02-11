@@ -25,7 +25,7 @@ import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.EditableListFragment
 import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.SharingMethod

@@ -89,7 +89,7 @@ class FindConnectionDialog internal constructor(activity: Activity?) : ProgressD
                 BUTTON_NEGATIVE, activity.getString(R.string.butn_cancel)
             ) { dialog12: DialogInterface?, which: Int -> removeOnClose.run() }
             dialog.show()
-            App.Companion.run<FindWorkingNetworkTask>(activity, task)
+            App.run<FindWorkingNetworkTask>(activity, task)
         }
     }
 }

@@ -188,7 +188,7 @@ class NotificationHelper(val utils: NotificationUtils) {
     fun notifyClipboardRequest(device: Device, `object`: TextStreamObject) {
         val notification = utils.buildDynamicNotification(
             `object`.id,
-            NotificationUtils.Companion.NOTIFICATION_CHANNEL_HIGH
+            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
         )
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_CLIPBOARD)
@@ -207,8 +207,8 @@ class NotificationHelper(val utils: NotificationUtils) {
             0
         )
         activityIntent
-            .setAction(TextEditorActivity.Companion.ACTION_EDIT_TEXT)
-            .putExtra(TextEditorActivity.Companion.EXTRA_CLIPBOARD_ID, `object`.id)
+            .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+            .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, `object`.id)
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -283,7 +283,7 @@ class NotificationHelper(val utils: NotificationUtils) {
                             context,
                             FileExplorerActivity::class.java
                         )
-                            .putExtra(FileExplorerActivity.Companion.EXTRA_FILE_PATH, savePath.uri), 0
+                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.uri), 0
                     )
                 )
         } else {
@@ -299,7 +299,7 @@ class NotificationHelper(val utils: NotificationUtils) {
                         context, AppUtils.getUniqueNumber(), Intent(
                             context, FileExplorerActivity::class.java
                         )
-                            .putExtra(FileExplorerActivity.Companion.EXTRA_FILE_PATH, savePath.uri), 0
+                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.uri), 0
                     )
                 )
         }
@@ -314,7 +314,7 @@ class NotificationHelper(val utils: NotificationUtils) {
         if (notification == null) {
             notification = utils.buildDynamicNotification(
                 ID_BG_SERVICE.toLong(),
-                NotificationUtils.Companion.NOTIFICATION_CHANNEL_LOW
+                NotificationUtils.NOTIFICATION_CHANNEL_LOW
             )
             val transfersString = context!!.getString(R.string.butn_transfers)
             val transfersIntent: PendingIntent = PendingIntent.getActivity(

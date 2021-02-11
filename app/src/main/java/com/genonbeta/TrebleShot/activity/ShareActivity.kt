@@ -22,16 +22,24 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
+import com.genonbeta.TrebleShot.task.OrganizeSharingTask
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
-    private var mProgressBar: ProgressBar? = null
-    private var mTextMain: TextView? = null
+    private lateinit var progressBar: ProgressBar
+
+    private lateinit var textMain: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
@@ -40,9 +48,9 @@ class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListene
             if (intent.hasExtra(Intent.EXTRA_TEXT)) {
                 startActivity(
                     Intent(this@ShareActivity, TextEditorActivity::class.java)
-                        .setAction(TextEditorActivity.Companion.ACTION_EDIT_TEXT)
+                        .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
                         .putExtra(
-                            TextEditorActivity.Companion.EXTRA_TEXT_INDEX,
+                            TextEditorActivity.EXTRA_TEXT_INDEX,
                             intent.getStringExtra(Intent.EXTRA_TEXT)
                         )
                 )
@@ -59,8 +67,8 @@ class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListene
                     Toast.makeText(this, R.string.mesg_nothingToShare, Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    mProgressBar = findViewById(R.id.progressBar)
-                    mTextMain = findViewById<TextView>(R.id.textMain)
+                    progressBar = findViewById(R.id.progressBar)
+                    textMain = findViewById(R.id.textMain)
                     findViewById<View>(R.id.cancelButton).setOnClickListener { v: View? -> interruptAllTasks(true) }
                     runUiTask(OrganizeSharingTask(fileUris))
                 }
@@ -71,36 +79,32 @@ class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListene
         }
     }
 
-    override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State?) {
+    override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
         if (task is OrganizeSharingTask) {
             when (state) {
                 AsyncTask.State.Running -> {
-                    val progress = task.progress().current
-                    val total = task.progress().total
-                    runOnUiThread { mTextMain.setText(task.ongoingContent) }
-                    mProgressBar!!.progress = progress
-                    mProgressBar!!.max = total
+                    val progress = task.progress.current
+                    val total = task.progress.total
+                    runOnUiThread { textMain.setText(task.ongoingContent) }
+                    progressBar.progress = progress
+                    progressBar.max = total
                 }
                 AsyncTask.State.Finished -> finish()
             }
         }
     }
 
-    override fun onTaskMessage(message: TaskMessage): Boolean {
+    override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
         return false
     }
 
     override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
         super.onAttachTasks(taskList)
-        for (task in taskList) if (task is OrganizeSharingTask) (task as OrganizeSharingTask).setAnchor(this)
+        for (task in taskList) if (task is OrganizeSharingTask) task.anchor = this
     }
 
-    override fun createSnackbar(resId: Int, vararg objects: Any): Snackbar {
+    override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar {
         return Snackbar.make(window.decorView, getString(resId, *objects), Snackbar.LENGTH_LONG)
-    }
-
-    fun getProgressBar(): ProgressBar? {
-        return mProgressBar
     }
 
     companion object {

@@ -98,7 +98,7 @@ class Device : DatabaseObject<Void?>, Parcelable {
     }
 
     override fun equals(other: Any?): Boolean {
-        return if (other is Device && uid != null) uid == other.uid else super.equals(other)
+        return if (other is Device) uid == other.uid else super.equals(other)
     }
 
     override fun hashCode(): Int {

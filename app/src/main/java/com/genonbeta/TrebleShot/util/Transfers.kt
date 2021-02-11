@@ -7,7 +7,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
+import com.genonbeta.TrebleShot.dataobject.TransferItem.from
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.android.framework.io.DocumentFile
 import java.io.File
@@ -62,30 +62,30 @@ object Transfers {
     }
 
     fun createIncomingSelection(transferId: Long): SQLQuery.Select {
-        return SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM).setWhere(
+        return SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
             String.format(
-                "%s = ? AND %s = ?", Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID,
-                Kuick.Companion.FIELD_TRANSFERITEM_TYPE
+                "%s = ? AND %s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID,
+                Kuick.FIELD_TRANSFERITEM_TYPE
             ), transferId.toString(),
             TransferItem.Type.INCOMING.toString()
         )
     }
 
     fun createIncomingSelection(transferId: Long, flag: TransferItem.Flag, equals: Boolean): SQLQuery.Select {
-        return SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM).setWhere(
+        return SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
             String.format(
                 "%s = ? AND %s = ? AND %s " + (if (equals) "=" else "!=") + " ?",
-                Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID, Kuick.Companion.FIELD_TRANSFERITEM_TYPE,
-                Kuick.Companion.FIELD_TRANSFERITEM_FLAG
+                Kuick.FIELD_TRANSFERITEM_TRANSFERID, Kuick.FIELD_TRANSFERITEM_TYPE,
+                Kuick.FIELD_TRANSFERITEM_FLAG
             ), transferId.toString(),
             TransferItem.Type.INCOMING.toString(), flag.toString()
         )
     }
 
     fun createAddressSelection(deviceId: String?): SQLQuery.Select {
-        return SQLQuery.Select(Kuick.Companion.TABLE_DEVICEADDRESS)
-            .setWhere(Kuick.Companion.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId)
-            .setOrderBy(Kuick.Companion.FIELD_DEVICEADDRESS_LASTCHECKEDDATE + " DESC")
+        return SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+            .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId)
+            .setOrderBy(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE + " DESC")
     }
 
     fun getPercentageByFlag(flag: TransferItem.Flag, size: Long): Double {
@@ -95,8 +95,8 @@ object Transfers {
     }
 
     fun fetchFirstMember(kuick: Kuick, transferId: Long): LoadedMember? {
-        val select: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERMEMBER)
-            .setWhere(Kuick.Companion.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", transferId.toString())
+        val select: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
+            .setWhere(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", transferId.toString())
         val memberList: List<LoadedMember> = kuick.castQuery<Transfer, LoadedMember>(
             select,
             LoadedMember::class.java,
@@ -130,8 +130,8 @@ object Transfers {
             )
                 .setOrderBy(
                     String.format(
-                        "`%s` ASC, `%s` ASC", Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY,
-                        Kuick.Companion.FIELD_TRANSFERITEM_NAME
+                        "`%s` ASC, `%s` ASC", Kuick.FIELD_TRANSFERITEM_DIRECTORY,
+                        Kuick.FIELD_TRANSFERITEM_NAME
                     )
                 )
         ) ?: return null
@@ -168,13 +168,13 @@ object Transfers {
         context: Context?, transferId: Long,
         type: TransferItem.Type?
     ): List<LoadedMember> {
-        val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERMEMBER)
+        val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
         if (type == null) selection.setWhere(
-            Kuick.Companion.FIELD_TRANSFERMEMBER_TRANSFERID + "=?",
+            Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?",
             transferId.toString()
         ) else selection.setWhere(
-            Kuick.Companion.FIELD_TRANSFERMEMBER_TRANSFERID + "=? AND "
-                    + Kuick.Companion.FIELD_TRANSFERMEMBER_TYPE + "=?", transferId.toString(),
+            Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=? AND "
+                    + Kuick.FIELD_TRANSFERMEMBER_TYPE + "=?", transferId.toString(),
             type.toString()
         )
         return AppUtils.getKuick(context).castQuery<Transfer, LoadedMember>(selection, LoadedMember::class.java,
@@ -211,14 +211,14 @@ object Transfers {
         index.bytesIncomingCompleted = 0
         index.isRunning = false
         index.hasIssues = false
-        val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM).setWhere(
-            Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=?", transfer.id.toString()
+        val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
+            Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?", transfer.id.toString()
         )
         if (type == null) selection.setWhere(
-            Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=?",
+            Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?",
             transfer.id.toString()
         ) else selection.setWhere(
-            Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+            Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
             transfer.id.toString(),
             type.toString()
         )
@@ -261,9 +261,9 @@ object Transfers {
         activity: Activity?, transferId: Long, deviceId: String?,
         type: TransferItem.Type?
     ) {
-        App.Companion.interruptTasksBy(
+        App.interruptTasksBy(
             activity,
-            FileTransferTask.Companion.identifyWith(transferId, deviceId, type),
+            FileTransferTask.identifyWith(transferId, deviceId, type),
             true
         )
     }
@@ -271,12 +271,12 @@ object Transfers {
     fun recoverIncomingInterruptions(context: Context?, transferId: Long) {
         val kuick = AppUtils.getKuick(context)
         val contentValues = ContentValues()
-        contentValues.put(Kuick.Companion.FIELD_TRANSFERITEM_FLAG, TransferItem.Flag.PENDING.toString())
+        contentValues.put(Kuick.FIELD_TRANSFERITEM_FLAG, TransferItem.Flag.PENDING.toString())
         kuick.update(
-            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+            SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                 .setWhere(
-                    Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND  " + Kuick.Companion.FIELD_TRANSFERITEM_FLAG + "=? AND "
-                            + Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?", transferId.toString(),
+                    Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND  " + Kuick.FIELD_TRANSFERITEM_FLAG + "=? AND "
+                            + Kuick.FIELD_TRANSFERITEM_TYPE + "=?", transferId.toString(),
                     TransferItem.Flag.INTERRUPTED.toString(), TransferItem.Type.INCOMING.toString()
                 ), contentValues
         )
@@ -330,16 +330,16 @@ object Transfers {
     fun startTransfer(activity: Activity?, member: TransferMember?) {
         if (activity != null && !activity.isFinishing) activity.runOnUiThread(Runnable {
             try {
-                val task: FileTransferTask = FileTransferTask.Companion.createFrom(
+                val task: FileTransferTask = FileTransferTask.createFrom(
                     AppUtils.getKuick(activity),
                     member.transferId, member.deviceId, member.type
                 )
-                FindConnectionDialog.Companion.show(
+                FindConnectionDialog.show(
                     activity,
                     task.device,
                     OnDeviceResolvedListener { device: Device?, address: DeviceAddress? ->
                         try {
-                            App.Companion.run<FileTransferTask>(activity, task)
+                            App.run<FileTransferTask>(activity, task)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }

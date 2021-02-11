@@ -18,91 +18,107 @@
 package com.genonbeta.TrebleShot.activity
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.os.*
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.transition.TransitionManager
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.activity.WelcomeActivity
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.widget.DynamicViewPagerAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class WelcomeActivity : Activity() {
-    private var mSplashView: ViewGroup? = null
-    private var mProfileView: ViewGroup? = null
-    private var mPermissionsView: ViewGroup? = null
+    private lateinit var splashView: ViewGroup
+
+    private lateinit var profileView: ViewGroup
+
+    private lateinit var permissionsView: ViewGroup
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (hasIntroductionShown()) finish()
         setContentView(R.layout.activity_welcome)
-        setSkipPermissionRequest(true)
-        setWelcomePageDisallowed(true)
-        val nextButton: FloatingActionButton = findViewById<FloatingActionButton>(R.id.activity_welcome_view_next)
-        val previousButton: AppCompatImageView = findViewById<AppCompatImageView>(R.id.activity_welcome_view_previous)
+
+        skipPermissionRequest = true
+        welcomePageDisallowed = true
+
+        val nextButton: FloatingActionButton = findViewById(R.id.activity_welcome_view_next)
+        val previousButton: AppCompatImageView = findViewById(R.id.activity_welcome_view_previous)
         val progressBar = findViewById<ProgressBar>(R.id.activity_welcome_progress_bar)
-        val viewPager: ViewPager = findViewById<ViewPager>(R.id.activity_welcome_view_pager)
+        val viewPager: ViewPager = findViewById(R.id.activity_welcome_view_pager)
         val pagerAdapter = DynamicViewPagerAdapter()
-        run {
-            @ColorInt val appliedColor: Int = ContextCompat.getColor(
-                this, AppUtils.getReference(
-                    this,
-                    R.attr.colorSecondary
-                )
+
+        @ColorInt val appliedColor: Int = ContextCompat.getColor(
+            this, AppUtils.getReference(
+                this,
+                R.attr.colorSecondary
             )
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                val wrapDrawable: Drawable = DrawableCompat.wrap(progressBar.progressDrawable)
-                DrawableCompat.setTint(wrapDrawable, appliedColor)
-                progressBar.progressDrawable = DrawableCompat.unwrap<Drawable>(wrapDrawable)
-            } else progressBar.progressTintList = ColorStateList.valueOf(appliedColor)
+        )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            val wrapDrawable: Drawable = DrawableCompat.wrap(progressBar.progressDrawable)
+            DrawableCompat.setTint(wrapDrawable, appliedColor)
+            progressBar.progressDrawable = DrawableCompat.unwrap(wrapDrawable)
+        } else progressBar.progressTintList = ColorStateList.valueOf(appliedColor)
+
+        layoutInflater.inflate(R.layout.layout_welcome_page_1, null, false).also {
+            pagerAdapter.addView(it)
+            splashView = it as ViewGroup
         }
-        run {
-            mSplashView = layoutInflater.inflate(
-                R.layout.layout_welcome_page_1, null,
-                false
-            ) as ViewGroup
-            pagerAdapter.addView(mSplashView)
-        }
-        if (Build.VERSION.SDK_INT >= 23) {
-            mPermissionsView = layoutInflater.inflate(
-                R.layout.layout_welcome_page_3, null,
-                false
-            ) as ViewGroup
-            pagerAdapter.addView(mPermissionsView)
+
+        if (Build.VERSION.SDK_INT >= 23) layoutInflater.inflate(R.layout.layout_welcome_page_3, null, false).also {
+            pagerAdapter.addView(it)
             checkPermissionsState()
-            mPermissionsView!!.findViewById<View>(R.id.layout_welcome_page_3_request_button)
-                .setOnClickListener { v: View? -> requestRequiredPermissions(false) }
+            it.findViewById<View>(R.id.layout_welcome_page_3_request_button).setOnClickListener {
+                requestRequiredPermissions(false)
+            }
+
+            permissionsView = it as ViewGroup
         }
-        run {
-            mProfileView = layoutInflater.inflate(
-                R.layout.layout_welcome_page_2, null,
-                false
-            ) as ViewGroup
-            pagerAdapter.addView(mProfileView)
+
+        layoutInflater.inflate(R.layout.layout_welcome_page_2, null, false).also {
+            pagerAdapter.addView(it)
             setUserProfile()
+
+            profileView = it as ViewGroup
         }
+
         pagerAdapter.addView(layoutInflater.inflate(R.layout.layout_welcome_page_4, null, false))
-        run {
-            val view = layoutInflater.inflate(R.layout.layout_welcome_page_5, null, false)
+
+        layoutInflater.inflate(R.layout.layout_welcome_page_5, null, false).also { view: View ->
             val alphaAnimation = AlphaAnimation(0.3f, 1.0f)
-            alphaAnimation.setDuration(2000)
-            alphaAnimation.setRepeatCount(Animation.INFINITE)
-            alphaAnimation.setRepeatMode(Animation.REVERSE)
+            alphaAnimation.duration = 2000
+            alphaAnimation.repeatCount = Animation.INFINITE
+            alphaAnimation.repeatMode = Animation.REVERSE
             view.findViewById<View>(R.id.layout_welcome_page_5_text).animation = alphaAnimation
             pagerAdapter.addView(view)
         }
+
         progressBar.max = (pagerAdapter.getCount() - 1) * 100
-        previousButton.setOnClickListener(View.OnClickListener { v: View? ->
-            if (viewPager.getCurrentItem() - 1 >= 0) viewPager.setCurrentItem(
-                viewPager.getCurrentItem() - 1,
-                true
+
+        previousButton.setOnClickListener { v: View? ->
+            if (viewPager.currentItem - 1 >= 0) viewPager.setCurrentItem(
+                viewPager.currentItem - 1, true
             )
-        })
-        nextButton.setOnClickListener(View.OnClickListener { v: View? ->
-            if (viewPager.getCurrentItem() + 1 < pagerAdapter.getCount()) viewPager.setCurrentItem(viewPager.getCurrentItem() + 1) else {
+        }
+
+        nextButton.setOnClickListener {
+            if (viewPager.currentItem + 1 < pagerAdapter.getCount()) viewPager.currentItem =
+                viewPager.getCurrentItem() + 1 else {
                 // end presentation
                 defaultPreferences.edit()
                     .putBoolean("introduction_shown", true)
@@ -110,7 +126,8 @@ class WelcomeActivity : Activity() {
                 startActivity(Intent(this@WelcomeActivity, HomeActivity::class.java))
                 finish()
             }
-        })
+        }
+
         viewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 progressBar.progress = position * 100 + (positionOffset * 100).toInt()
@@ -124,12 +141,12 @@ class WelcomeActivity : Activity() {
             }
 
             override fun onPageSelected(position: Int) {
-                val interpolator = OvershootInterpolator()
                 nextButton.setImageResource(if (position + 1 >= pagerAdapter.getCount()) R.drawable.ic_check_white_24dp else R.drawable.ic_navigate_next_white_24dp)
             }
 
             override fun onPageScrollStateChanged(state: Int) {}
         })
+
         viewPager.setAdapter(pagerAdapter)
     }
 
@@ -157,31 +174,29 @@ class WelcomeActivity : Activity() {
     protected fun checkPermissionsState() {
         if (Build.VERSION.SDK_INT < 23) return
         val permissionsOk = AppUtils.checkRunningConditions(this)
-        mPermissionsView!!.findViewById<View>(R.id.layout_welcome_page_3_perm_ok_image).visibility =
+        permissionsView.findViewById<View>(R.id.layout_welcome_page_3_perm_ok_image).visibility =
             if (permissionsOk) View.VISIBLE else View.GONE
-        mPermissionsView!!.findViewById<View>(R.id.layout_welcome_page_3_request_button).visibility =
+        permissionsView.findViewById<View>(R.id.layout_welcome_page_3_request_button).visibility =
             if (permissionsOk) View.GONE else View.VISIBLE
     }
 
     protected fun setUserProfile() {
-        if (mProfileView != null) {
-            val localDevice = AppUtils.getLocalDevice(applicationContext)
-            val imageView = mProfileView!!.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
-            val editImageView = mProfileView!!.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
-            val deviceNameText: TextView = mProfileView.findViewById<TextView>(R.id.header_default_device_name_text)
-            val versionText: TextView = mProfileView.findViewById<TextView>(R.id.header_default_device_version_text)
-            deviceNameText.setText(localDevice!!.username)
-            versionText.setText(localDevice.versionName)
-            loadProfilePictureInto(localDevice.username, imageView)
-            editImageView.setOnClickListener { v: View? -> startProfileEditor() }
-            TransitionManager.beginDelayedTransition(mProfileView!!)
-        }
+        val localDevice = AppUtils.getLocalDevice(applicationContext)
+        val imageView = profileView.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
+        val editImageView = profileView.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
+        val deviceNameText: TextView = profileView.findViewById(R.id.header_default_device_name_text)
+        val versionText: TextView = profileView.findViewById(R.id.header_default_device_version_text)
+        deviceNameText.setText(localDevice.username)
+        versionText.setText(localDevice.versionName)
+        loadProfilePictureInto(localDevice.username, imageView)
+        editImageView.setOnClickListener { v: View? -> startProfileEditor() }
+        TransitionManager.beginDelayedTransition(profileView)
     }
 
     protected fun slideSplashView() {
-        mSplashView!!.findViewById<View>(R.id.layout_welcome_page_1_splash_image).animation =
+        splashView.findViewById<View>(R.id.layout_welcome_page_1_splash_image).animation =
             AnimationUtils.loadAnimation(this, R.anim.enter_from_bottom_centered)
-        mSplashView!!.findViewById<View>(R.id.layout_welcome_page_1_details).animation =
+        splashView.findViewById<View>(R.id.layout_welcome_page_1_details).animation =
             AnimationUtils.loadAnimation(this, R.anim.enter_from_bottom)
     }
 

@@ -24,9 +24,9 @@ package com.genonbeta.TrebleShot.dataobject
 interface Comparable {
     fun comparisonSupported(): Boolean
 
-    val comparableName: String?
+    fun getComparableName(): String
 
-    val comparableDate: Long
+    fun getComparableDate(): Long
 
-    val comparableSize: Long
+    fun getComparableSize(): Long
 }

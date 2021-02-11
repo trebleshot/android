@@ -38,7 +38,7 @@ class FileDeletionTask(list: List<FileHolder?>?) : AsyncTask() {
                 )
             }
         }
-        RenameMultipleFilesTask.Companion.notifyFileChanges(context, successfulList)
+        RenameMultipleFilesTask.notifyFileChanges(context, successfulList)
     }
 
     @Throws(TaskStoppedException::class)

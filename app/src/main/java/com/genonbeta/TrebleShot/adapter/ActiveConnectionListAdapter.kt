@@ -21,14 +21,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.*
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.EditableNetworkInterface
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.util.Networks
 import com.genonbeta.TrebleShot.util.TextUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import java.net.NetworkInterface
 import java.util.*
@@ -37,8 +36,9 @@ import java.util.*
  * created by: veli
  * date: 4/7/19 10:35 PM
  */
-class ActiveConnectionListAdapter(fragment: IEditableListFragment<EditableNetworkInterface, ViewHolder>) :
-    EditableListAdapter<EditableNetworkInterface, ViewHolder>(fragment) {
+class ActiveConnectionListAdapter(
+    fragment: IEditableListFragment<EditableNetworkInterface, ViewHolder>,
+) : EditableListAdapter<EditableNetworkInterface, ViewHolder>(fragment) {
     override fun onLoad(): MutableList<EditableNetworkInterface> {
         val resultList: MutableList<EditableNetworkInterface> = ArrayList()
         val interfaceList: List<NetworkInterface> = Networks.getInterfaces(
@@ -56,53 +56,41 @@ class ActiveConnectionListAdapter(fragment: IEditableListFragment<EditableNetwor
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val holder = ViewHolder(
-            layoutInflater.inflate(
-                R.layout.list_active_connection, parent,
-                false
-            )
-        )
-        getFragment()?.registerLayoutViewClicks(holder)
+        val holder = ViewHolder(layoutInflater.inflate(R.layout.list_active_connection, parent, false))
+        fragment.registerLayoutViewClicks(holder)
         holder.itemView.findViewById<View>(R.id.visitView)
-            .setOnClickListener { v: View? -> fragment!!.performLayoutClickOpen(holder) }
+            .setOnClickListener { v: View? -> fragment.performLayoutClickOpen(holder) }
         holder.itemView.findViewById<View>(R.id.selector)
-            .setOnClickListener { v: View? -> fragment!!.setItemSelected(holder, true) }
+            .setOnClickListener { v: View? -> fragment.setItemSelected(holder, true) }
         return holder
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val `object`: EditableNetworkInterface = getItem(position)
+        val item: EditableNetworkInterface = getItem(position)
         val text1: TextView = holder.itemView.findViewById(R.id.text)
         val text2: TextView = holder.itemView.findViewById(R.id.text2)
-        text1.text = `object`.getSelectableTitle()
-        text2.text = TextUtils.makeWebShareLink(context, Networks.getFirstInet4Address(`object`).hostAddress)
+        text1.text = item.getSelectableTitle()
+        text2.text = TextUtils.makeWebShareLink(context, Networks.getFirstInet4Address(item).hostAddress)
     }
 
-    class EditableNetworkInterface(private val mInterface: NetworkInterface, private val mName: String?) : Editable {
+    class EditableNetworkInterface(private val netInterface: NetworkInterface, private val name: String) : Editable {
+        override var id: Long = netInterface.hashCode().toLong()
+
         override fun applyFilter(filteringKeywords: Array<String>): Boolean {
             for (word in filteringKeywords) {
                 val wordLC = word.toLowerCase()
-                if (mInterface.displayName.toLowerCase().contains(wordLC)
-                    || mName!!.toLowerCase().contains(wordLC)
-                ) return true
+                if (netInterface.displayName.toLowerCase().contains(wordLC) || name.toLowerCase().contains(wordLC))
+                    return true
             }
             return false
-        }
-
-        override fun getId(): Long {
-            return mInterface.hashCode().toLong()
-        }
-
-        override fun setId(id: Long) {
-            // not required
         }
 
         override fun comparisonSupported(): Boolean {
             return false
         }
 
-        override fun getComparableName(): String? {
-            return mName
+        override fun getComparableName(): String {
+            return name
         }
 
         override fun getComparableDate(): Long {
@@ -114,22 +102,22 @@ class ActiveConnectionListAdapter(fragment: IEditableListFragment<EditableNetwor
         }
 
         fun getInterface(): NetworkInterface {
-            return mInterface
+            return netInterface
         }
 
-        fun getName(): String? {
-            return mName
+        fun getName(): String {
+            return name
         }
 
-        fun getSelectableTitle(): String? {
-            return mName
+        override fun getSelectableTitle(): String {
+            return name
         }
 
-        fun isSelectableSelected(): Boolean {
+        override fun isSelectableSelected(): Boolean {
             return false
         }
 
-        fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun setSelectableSelected(selected: Boolean): Boolean {
             return false
         }
     }

@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.util.AppUtils
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
 
 /**
  * created by: Veli

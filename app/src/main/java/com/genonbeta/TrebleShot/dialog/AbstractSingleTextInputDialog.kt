@@ -30,24 +30,18 @@ import com.genonbeta.TrebleShot.dialogimport.AbstractFailureAwareDialog
  * date: 26.02.2018 07:55
  */
 abstract class AbstractSingleTextInputDialog(context: Context) : AbstractFailureAwareDialog(context) {
-    private val mEditText: EditText
-    val containerView: ViewGroup = LayoutInflater.from(getContext()).inflate(
-        R.layout.layout_dialog_single_text_input,
-        null
+    private val containerView: ViewGroup = LayoutInflater.from(context).inflate(
+        R.layout.layout_dialog_single_text_input, null
     ) as ViewGroup
-    val editText: EditText
-        get() = mEditText
+
+    protected val editText: EditText = containerView.findViewById(R.id.layout_dialog_single_text_input_text)
 
     override fun show(): AlertDialog {
-        val dialog = super.show()
-        mEditText.requestFocus()
-        return dialog
-    }
-
-    init {
-        mEditText = containerView.findViewById(R.id.layout_dialog_single_text_input_text)
         setView(containerView)
-        setTitle(R.string.text_createFolder)
         setNegativeButton(R.string.butn_close, null)
+
+        val dialog = super.show()
+        editText.requestFocus()
+        return dialog
     }
 }

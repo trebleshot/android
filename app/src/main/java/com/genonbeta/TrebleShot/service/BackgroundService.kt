@@ -27,7 +27,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Service
 import com.genonbeta.TrebleShot.config.AppConfig
@@ -38,7 +37,6 @@ import com.genonbeta.TrebleShot.protocol.DeviceVerificationException
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.protocol.communication.NotAllowedException
-import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.WebShareServer.BoundRunner
 import com.genonbeta.TrebleShot.task.FileTransferTask
 import com.genonbeta.TrebleShot.task.IndexTransferTask
@@ -54,23 +52,23 @@ import java.io.IOException
 import java.util.concurrent.Executors
 
 class BackgroundService : Service() {
-    private val mCommunicationServer = CommunicationServer()
+    private val communicationServer = CommunicationServer()
     private val mBinder = LocalBinder()
-    private var wifiLock: WifiLock? = null
-    private var mApp: App? = null
+    private lateinit var wifiLock: WifiLock
+
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
     }
 
     override fun onCreate() {
         super.onCreate()
-        mApp =
-            if (application !is App) application as App else throw IllegalStateException("The service is not able to work with a different app class.")
-        val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-        if (wifiManager != null) wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG)
-        mApp!!.nsdDaemon.registerService()
-        mApp!!.nsdDaemon.startDiscovering()
-        if (wifiLock != null) wifiLock!!.acquire()
+
+        wifiLock = app.wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG)
+
+        app.nsdDaemon.registerService()
+        app.nsdDaemon.startDiscovering()
+        wifiLock.acquire()
+
         startForeground(NotificationHelper.ID_BG_SERVICE, notificationHelper.foregroundNotification.build())
         tryStartingOrStopSelf()
     }
@@ -86,7 +84,6 @@ class BackgroundService : Service() {
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
                 notificationHelper.utils.cancel(notificationId)
                 try {
-                    if (device == null || transfer == null) throw Exception("The device or group instance is broken")
                     val task = FileTransferTask.createFrom(
                         kuick, transfer, device,
                         TransferItem.Type.INCOMING
@@ -151,13 +148,11 @@ class BackgroundService : Service() {
                 val transfer: Transfer = intent.getParcelableExtra(EXTRA_TRANSFER)
                 val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type
                 try {
-                    if (device == null || transfer == null || type == null) throw Exception()
-                    val task = mApp!!.findTaskBy(
-                        FileTransferTask.identifyWith(
-                            transfer.id, device.uid, type
-                        )
+                    val task = app.findTaskBy(
+                        FileTransferTask.identifyWith(transfer.id, device.uid, type)
                     ) as FileTransferTask?
-                    if (task == null) mApp!!.run(
+
+                    if (task == null) app.run(
                         FileTransferTask.createFrom(
                             kuick,
                             transfer,
@@ -172,7 +167,7 @@ class BackgroundService : Service() {
                     e.printStackTrace()
                 }
             } else if (ACTION_STOP_ALL_TASKS == intent.action) {
-                mApp!!.interruptAllTasks()
+                app.interruptAllTasks()
             }
         }
         return START_STICKY
@@ -182,36 +177,35 @@ class BackgroundService : Service() {
         super.onDestroy()
         stopForeground(true)
         try {
-            mCommunicationServer.stop()
+            communicationServer.stop()
         } catch (ignored: Exception) {
         }
-        mApp!!.nsdDaemon.unregisterService()
-        mApp!!.nsdDaemon.stopDiscovering()
-        if (mApp!!.webShareServer != null) mApp!!.webShareServer.stop()
+
+        app.nsdDaemon.unregisterService()
+        app.nsdDaemon.stopDiscovering()
+        app.webShareServer.stop()
+
         val values = ContentValues()
         values.put(Kuick.FIELD_TRANSFER_ISSHAREDONWEB, 0)
         kuick.update(
             SQLQuery.Select(Kuick.TABLE_TRANSFER)
                 .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFER_ISSHAREDONWEB), 1.toString()), values
         )
-        if (mApp != null) {
-            val manager = mApp!!.hotspotManager
-            if (manager.unloadPreviousConfig()) Log.d(
-                TAG,
-                "onDestroy: Stopping hotspot (previously started)=" + manager.disable()
-            )
-            mApp!!.interruptAllTasks()
-        }
-        if (wifiLock != null && wifiLock!!.isHeld) {
-            wifiLock!!.release()
+
+        val manager = app.hotspotManager
+        if (manager.unloadPreviousConfig()) Log.d(
+            TAG,
+            "onDestroy: Stopping hotspot (previously started)=" + manager.disable()
+        )
+        app.interruptAllTasks()
+
+        if (wifiLock.isHeld) {
+            wifiLock.release()
             Log.d(TAG, "onDestroy: Releasing Wi-Fi lock")
         }
         AppUtils.generateNetworkPin(this)
         kuick.broadcast()
     }
-
-    private val notificationHelper: NotificationHelper
-        private get() = mApp!!.notificationHelper
 
     private fun isProcessRunning(transferId: Long, deviceId: String, type: TransferItem.Type): Boolean {
         return mApp!!.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
@@ -222,19 +216,19 @@ class BackgroundService : Service() {
      * So, it is best to avoid starting them when the app doesn't have the right permissions.
      */
     fun tryStartingOrStopSelf() {
-        val webServerRunning = mApp!!.webShareServer.isAlive
-        val commServerRunning = mCommunicationServer.isListening
+        val webServerRunning = app.webShareServer.isAlive
+        val commServerRunning = communicationServer.isListening
         if (webServerRunning && commServerRunning) return
         try {
-            if (!AppUtils.checkRunningConditions(this)) throw Exception("The app doesn't have the satisfactory permissions to start the services.")
-            if (!commServerRunning) mCommunicationServer.start()
+            if (!AppUtils.checkRunningConditions(this)) throw Exception(
+                "The app doesn't have the satisfactory permissions to start the services."
+            )
+            if (!commServerRunning) communicationServer.start()
             if (!webServerRunning) {
-                mApp!!.webShareServer.setAsyncRunner(
-                    BoundRunner(
-                        Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)
-                    )
+                app.webShareServer.setAsyncRunner(
+                    BoundRunner(Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX))
                 )
-                mApp!!.webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
+                app.webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -256,7 +250,7 @@ class BackgroundService : Service() {
                 try {
                     DeviceLoader.loadAsServer(kuick, response, device, hasPin)
                 } catch (e: DeviceVerificationException) {
-                    notificationHelper.notifyKeyChanged(device, e.receiveKey, AppUtils.generateKey())
+                    app.notificationHelper.notifyKeyChanged(device, e.receiveKey, AppUtils.generateKey())
                     throw e
                 } catch (e: Exception) {
                     sendInfo = false
@@ -297,7 +291,7 @@ class BackgroundService : Service() {
             device: Device,
             deviceAddress: DeviceAddress,
             hasPin: Boolean,
-            response: JSONObject
+            response: JSONObject,
         ) {
             when (response.getString(Keyword.REQUEST)) {
                 Keyword.REQUEST_TRANSFER -> {
@@ -317,7 +311,7 @@ class BackgroundService : Service() {
                 Keyword.REQUEST_NOTIFY_TRANSFER_STATE -> {
                     val transferId = response.getInt(Keyword.TRANSFER_ID)
                     val isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED)
-                    val transfer: Transfer = Transfer(transferId)
+                    val transfer = Transfer(transferId)
                     val member = TransferMember(transfer, device, TransferItem.Type.OUTGOING)
                     kuick.reconstruct(transfer)
                     kuick.reconstruct(member)
@@ -335,7 +329,7 @@ class BackgroundService : Service() {
                     )
                     kuick.publish(textStreamObject)
                     kuick.broadcast()
-                    notificationHelper.notifyClipboardRequest(device, textStreamObject)
+                    app.notificationHelper.notifyClipboardRequest(device, textStreamObject)
                     CommunicationBridge.sendResult(activeConnection, true)
                     return
                 }
@@ -357,7 +351,7 @@ class BackgroundService : Service() {
                     if (TransferItem.Type.INCOMING == type) type =
                         TransferItem.Type.OUTGOING else if (TransferItem.Type.OUTGOING == type) type =
                         TransferItem.Type.INCOMING
-                    val transfer: Transfer = Transfer(transferId)
+                    val transfer = Transfer(transferId)
                     kuick.reconstruct(transfer)
                     Log.d(
                         TAG, "CommunicationServer.onConnected(): "

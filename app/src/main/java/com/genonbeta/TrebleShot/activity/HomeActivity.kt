@@ -69,7 +69,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
         })
         navigationView.setNavigationItemSelectedListener(this)
-        navigationView.getMenu().setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG)
+        navigationView.menu.setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG)
         if (Updates.hasNewVersion(this))
             highlightUpdate()
         if (Keyword.Flavor.googlePlay == AppUtils.buildFlavor) {
@@ -86,7 +86,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             startActivity(
                 Intent(this, AddDeviceActivity::class.java)
                     .putExtra(
-                        AddDeviceActivity.Companion.EXTRA_CONNECTION_MODE,
+                        AddDeviceActivity.EXTRA_CONNECTION_MODE,
                         AddDeviceActivity.ConnectionMode.WaitForRequests
                     )
             )
@@ -207,7 +207,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
             R.id.menu_activity_main_db_migration == chosenMenuItemId -> {
                 val db = AppUtils.getKuick(this)
-                val dbVersion: Int = Kuick.Companion.DATABASE_VERSION
+                val dbVersion: Int = Kuick.DATABASE_VERSION
                 Toast.makeText(this, "Running migration rules again", Toast.LENGTH_SHORT).show()
                 Migration.migrate(db, db.writableDatabase, dbVersion, dbVersion)
             }
@@ -229,7 +229,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 val report = outputStream.toString()
                 val streamObject = TextStreamObject()
                 streamObject.text = report
-                streamObject.comparableDate = logFile.lastModified()
+                streamObject.dateInternal = logFile.lastModified()
                 streamObject.id = AppUtils.uniqueNumber.toLong()
                 logFile.delete()
                 val dialogBuilder = AlertDialog.Builder(this)

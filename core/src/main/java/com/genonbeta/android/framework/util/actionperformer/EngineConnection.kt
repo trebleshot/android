@@ -142,7 +142,7 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
 
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
     override fun setSelected(holder: RecyclerView.ViewHolder): Boolean {
-        return setSelected(holder.getAdapterPosition())
+        return setSelected(holder.adapterPosition)
     }
 
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)

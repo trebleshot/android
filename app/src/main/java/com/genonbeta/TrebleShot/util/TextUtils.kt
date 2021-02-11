@@ -51,56 +51,56 @@ object TextUtils {
         return if (adapterNameResource == -1) adapterName else context.getString(adapterNameResource)
     }
 
-    fun getLetters(text: String?, length: Int): String {
-        var text = text
-        var length = length
-        if (text == null || text.length == 0) text = "?"
-        val breakAfter = --length
+    fun getLetters(text: String = "?", length: Int): String {
+        val breakAfter = length - 1
         val stringBuilder = StringBuilder()
         for (letter in text.split(" ".toRegex()).toTypedArray()) {
             if (stringBuilder.length > breakAfter) break
-            if (letter.length == 0) continue
+            if (letter.isEmpty()) continue
             stringBuilder.append(letter[0])
         }
         return stringBuilder.toString().toUpperCase()
     }
 
     fun getTransactionFlagString(
-        context: Context, `object`: TransferItem, percentFormat: NumberFormat,
-        deviceId: String?
+        context: Context, transferItem: TransferItem, percentFormat: NumberFormat,
+        deviceId: String?,
     ): String {
         // Because it takes more arguments when the 'object' is 'Type.OUTGOING', it will be
         // chosen by the appropriate value that it may contain.
         var flag: TransferItem.Flag?
-        if (TransferItem.Type.OUTGOING == `object`.type) {
-            val flags = `object`.flags
-            if (deviceId != null) flag = `object`.getFlag(deviceId) else if (flags.size < 1) flag =
-                TransferItem.Flag.PENDING else if (flags.size == 1) flag = flags[0] else {
-                flag = TransferItem.Flag.PENDING
-                var pos = 0
-                for (flagTesting in flags) {
-                    var relativeOrdinal: Int
-                    relativeOrdinal = when (flagTesting) {
-                        TransferItem.Flag.DONE -> 0
-                        TransferItem.Flag.PENDING -> 1
-                        TransferItem.Flag.REMOVED -> 2
-                        TransferItem.Flag.INTERRUPTED -> 3
-                        TransferItem.Flag.IN_PROGRESS -> 4
-                        else -> 0
-                    }
-                    if (pos <= relativeOrdinal) {
-                        pos = relativeOrdinal
-                        flag = flagTesting
+        if (TransferItem.Type.OUTGOING == transferItem.type) {
+            val flags = transferItem.flags
+            when {
+                deviceId != null -> flag = transferItem.getFlag(deviceId)
+                flags.isEmpty() -> flag = TransferItem.Flag.PENDING
+                flags.size == 1 -> flag = flags[0]
+                else -> {
+                    flag = TransferItem.Flag.PENDING
+                    var pos = 0
+                    for (flagTesting in flags) {
+                        val relativeOrdinal: Int = when (flagTesting) {
+                            TransferItem.Flag.DONE -> 0
+                            TransferItem.Flag.PENDING -> 1
+                            TransferItem.Flag.REMOVED -> 2
+                            TransferItem.Flag.INTERRUPTED -> 3
+                            TransferItem.Flag.IN_PROGRESS -> 4
+                            else -> 0
+                        }
+                        if (pos <= relativeOrdinal) {
+                            pos = relativeOrdinal
+                            flag = flagTesting
+                        }
                     }
                 }
             }
-        } else flag = `object`.flag
+        } else flag = transferItem.flag
         return when (flag) {
             TransferItem.Flag.DONE -> percentFormat.format(1.0)
             TransferItem.Flag.IN_PROGRESS -> percentFormat.format(
-                if (`object`.comparableSize == 0L || flag.bytesValue == 0L) 0 else java.lang.Long.valueOf(
+                if (transferItem.comparableSize == 0L || flag.bytesValue == 0L) 0 else java.lang.Long.valueOf(
                     flag.bytesValue
-                ).toDouble() / java.lang.Long.valueOf(`object`.comparableSize).toDouble()
+                ).toDouble() / java.lang.Long.valueOf(transferItem.comparableSize).toDouble()
             )
             else -> context.getString(getTransactionFlagString(flag))
         }
@@ -121,11 +121,11 @@ object TextUtils {
         return context.getString(R.string.mode_webShareAddress, address, AppConfig.SERVER_PORT_WEBSHARE)
     }
 
-    fun searchWord(word: String?, searchThis: String?): Boolean {
-        return searchThis == null || searchThis.length == 0 || word!!.toLowerCase().contains(searchThis.toLowerCase())
+    fun searchWord(word: String, searchThis: String?): Boolean {
+        return searchThis == null || searchThis.isEmpty() || word.toLowerCase().contains(searchThis.toLowerCase())
     }
 
-    fun trimText(text: String?, length: Int): String? {
-        return if (text == null || text.length <= length) text else text.substring(0, length)
+    fun trimText(text: String, length: Int): String {
+        return if (text.length <= length) text else text.substring(0, length)
     }
 }

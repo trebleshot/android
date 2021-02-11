@@ -22,14 +22,14 @@ import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.CommunicationBridge
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
 
 class TextShareTask(private val mDevice: Device, address: DeviceAddress, text: String) : AsyncTask() {
     private val mAddress: DeviceAddress
     private val mText: String
     override fun onRun() {
         try {
-            CommunicationBridge.Companion.connect(kuick(), mAddress, mDevice, 0).use { bridge ->
+            CommunicationBridge.connect(kuick(), mAddress, mDevice, 0).use { bridge ->
                 bridge.requestTextTransfer(mText)
                 if (bridge.receiveResult()) {
                     // TODO: 31.03.2020 implement

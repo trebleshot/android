@@ -36,7 +36,7 @@ import java.util.ArrayList
  */
 object Migration {
     fun migrate(kuick: Kuick, db: SQLiteDatabase, old: Int, current: Int) {
-        val tables: SQLValues = Kuick.Companion.tables()
+        val tables: SQLValues = Kuick.tables()
         val tables12: SQLValues = v12.tables(tables)
         when (old) {
             0, 1, 2, 3, 4, 5 -> {
@@ -44,9 +44,9 @@ object Migration {
                 SQLQuery.createTables(db, tables12)
             }
             6 -> {
-                val groupTable: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFER)
-                val devicesTable: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_DEVICES)
-                val targetDevicesTable: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFERMEMBER)
+                val groupTable: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFER)
+                val devicesTable: SQLValues.Table = tables12.getTable(Kuick.TABLE_DEVICES)
+                val targetDevicesTable: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFERMEMBER)
                 db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`")
                 db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`")
                 SQLQuery.createTable(db, groupTable)
@@ -56,20 +56,20 @@ object Migration {
                 // With version 10, DIVISION section added for TABLE_TRANSFER and made deviceId nullable
                 // to allow users distinguish individual transfer file
                 try {
-                    val tableTransfer: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                    val tableTransfer: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFERITEM)
                     val divisTransfer: SQLValues.Table = tables12.getTable(v12.TABLE_DIVISTRANSFER)
                     val mapDist: MutableMap<Long, String> = ArrayMap()
                     val supportedItems: MutableList<TransferObjectV12> = ArrayList<TransferObjectV12>()
                     val availableAssignees: List<TransferAssigneeV12> =
                         kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                             db,
-                            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERMEMBER),
+                            SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER),
                             TransferAssigneeV12::class.java, null
                         )
                     val availableTransfers: List<TransferObjectV12> =
                         kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                             db,
-                            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM), TransferObjectV12::class.java, null
+                            SQLQuery.Select(Kuick.TABLE_TRANSFERITEM), TransferObjectV12::class.java, null
                         )
                     for (assignee in availableAssignees) {
                         if (!mapDist.containsKey(assignee.groupId)) mapDist[assignee.groupId] = assignee.deviceId
@@ -85,22 +85,22 @@ object Migration {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                val tableFileBookmark: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_FILEBOOKMARK)
+                val tableFileBookmark: SQLValues.Table = tables12.getTable(Kuick.TABLE_FILEBOOKMARK)
                 SQLQuery.createTable(db, tableFileBookmark)
                 val totalGroupList = kuick.castQuery(
                     db, SQLQuery.Select(
-                        Kuick.Companion.TABLE_TRANSFER
+                        Kuick.TABLE_TRANSFER
                     ), Transfer::class.java, null
                 )
-                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFER)
+                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFER)
                 db.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`")
                 SQLQuery.createTable(db, tableTransferGroup)
                 kuick.insert(db, totalGroupList, null, null)
                 run {
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_DEVICES)
-                        val typeColumn: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_TYPE)
-                        val clientVerCol: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_DEVICES)
+                        val typeColumn: Column = table.getColumn(Kuick.FIELD_DEVICES_TYPE)
+                        val clientVerCol: Column = table.getColumn(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
 
                         // Added: Type
                         db.execSQL(
@@ -121,22 +121,22 @@ object Migration {
                     run {
                         val oldList: List<TransferAssigneeV12> = kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                             db, SQLQuery.Select(
-                                Kuick.Companion.TABLE_TRANSFERMEMBER
+                                Kuick.TABLE_TRANSFERMEMBER
                             ), TransferAssigneeV12::class.java, null
                         )
 
                         // Added: Type, Removed: IsClone
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERMEMBER + "`")
-                        SQLQuery.createTable(db, tables.getTable(Kuick.Companion.TABLE_TRANSFERMEMBER))
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERMEMBER + "`")
+                        SQLQuery.createTable(db, tables.getTable(Kuick.TABLE_TRANSFERMEMBER))
                         val newAssignees: MutableList<TransferMember> = ArrayList<TransferMember>()
 
                         // The `transfer` table will be removed below. We can use the old versions
                         // columns still.
                         for (assigneeV12 in oldList) {
-                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.INCOMING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -147,8 +147,8 @@ object Migration {
                                 newAssignees.add(incomingMember)
                             }
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.OUTGOING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -162,7 +162,7 @@ object Migration {
                         if (newAssignees.size > 0) kuick.insert(db, newAssignees, null, null)
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFERITEM)
 
                         // Changed Flag as Flag[] for Type.OUTGOING objects
                         val outgoingBaseObjects: List<TransferObjectV12> =
@@ -174,18 +174,18 @@ object Migration {
                         val outgoingMirrorObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.OUTGOING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         val incomingObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.INCOMING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
@@ -194,7 +194,7 @@ object Migration {
                         db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`")
 
                         // Added: LastChangeTime, Removed: AccessPort, SkippedBytes
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERITEM + "`")
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERITEM + "`")
                         SQLQuery.createTable(db, table)
                         if (outgoingBaseObjects.size > 0) {
                             val newObjects: MutableMap<Long, TransferItem> = ArrayMap()
@@ -228,8 +228,8 @@ object Migration {
                         }
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFER)
-                        val column: Column = table.getColumn(Kuick.Companion.FIELD_TRANSFER_ISPAUSED)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFER)
+                        val column: Column = table.getColumn(Kuick.FIELD_TRANSFER_ISPAUSED)
 
                         // Added: IsPaused
                         db.execSQL(
@@ -263,20 +263,20 @@ object Migration {
             }
             7, 8, 9, 10 -> {
                 try {
-                    val tableTransfer: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                    val tableTransfer: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFERITEM)
                     val divisTransfer: SQLValues.Table = tables12.getTable(v12.TABLE_DIVISTRANSFER)
                     val mapDist: MutableMap<Long, String> = ArrayMap()
                     val supportedItems: MutableList<TransferObjectV12> = ArrayList<TransferObjectV12>()
                     val availableAssignees: List<TransferAssigneeV12> =
                         kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                             db,
-                            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERMEMBER),
+                            SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER),
                             TransferAssigneeV12::class.java, null
                         )
                     val availableTransfers: List<TransferObjectV12> =
                         kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                             db,
-                            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM), TransferObjectV12::class.java, null
+                            SQLQuery.Select(Kuick.TABLE_TRANSFERITEM), TransferObjectV12::class.java, null
                         )
                     for (assignee in availableAssignees) {
                         if (!mapDist.containsKey(assignee.groupId)) mapDist[assignee.groupId] = assignee.deviceId
@@ -292,22 +292,22 @@ object Migration {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                val tableFileBookmark: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_FILEBOOKMARK)
+                val tableFileBookmark: SQLValues.Table = tables12.getTable(Kuick.TABLE_FILEBOOKMARK)
                 SQLQuery.createTable(db, tableFileBookmark)
                 val totalGroupList = kuick.castQuery(
                     db, SQLQuery.Select(
-                        Kuick.Companion.TABLE_TRANSFER
+                        Kuick.TABLE_TRANSFER
                     ), Transfer::class.java, null
                 )
-                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFER)
+                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFER)
                 db.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`")
                 SQLQuery.createTable(db, tableTransferGroup)
                 kuick.insert(db, totalGroupList, null, null)
                 run {
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_DEVICES)
-                        val typeColumn: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_TYPE)
-                        val clientVerCol: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_DEVICES)
+                        val typeColumn: Column = table.getColumn(Kuick.FIELD_DEVICES_TYPE)
+                        val clientVerCol: Column = table.getColumn(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
@@ -324,17 +324,17 @@ object Migration {
                     run {
                         val oldList: List<TransferAssigneeV12> = kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                             db, SQLQuery.Select(
-                                Kuick.Companion.TABLE_TRANSFERMEMBER
+                                Kuick.TABLE_TRANSFERMEMBER
                             ), TransferAssigneeV12::class.java, null
                         )
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERMEMBER + "`")
-                        SQLQuery.createTable(db, tables.getTable(Kuick.Companion.TABLE_TRANSFERMEMBER))
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERMEMBER + "`")
+                        SQLQuery.createTable(db, tables.getTable(Kuick.TABLE_TRANSFERMEMBER))
                         val newAssignees: MutableList<TransferMember> = ArrayList<TransferMember>()
                         for (assigneeV12 in oldList) {
-                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.INCOMING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -345,8 +345,8 @@ object Migration {
                                 newAssignees.add(incomingMember)
                             }
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.OUTGOING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -360,7 +360,7 @@ object Migration {
                         if (newAssignees.size > 0) kuick.insert(db, newAssignees, null, null)
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFERITEM)
                         val outgoingBaseObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
@@ -370,23 +370,23 @@ object Migration {
                         val outgoingMirrorObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.OUTGOING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         val incomingObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.INCOMING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`")
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERITEM + "`")
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERITEM + "`")
                         SQLQuery.createTable(db, table)
                         if (outgoingBaseObjects.size > 0) {
                             val newObjects: MutableMap<Long, TransferItem> = ArrayMap()
@@ -420,8 +420,8 @@ object Migration {
                         }
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFER)
-                        val column: Column = table.getColumn(Kuick.Companion.FIELD_TRANSFER_ISPAUSED)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFER)
+                        val column: Column = table.getColumn(Kuick.FIELD_TRANSFER_ISPAUSED)
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
@@ -448,22 +448,22 @@ object Migration {
                 }
             }
             11 -> {
-                val tableFileBookmark: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_FILEBOOKMARK)
+                val tableFileBookmark: SQLValues.Table = tables12.getTable(Kuick.TABLE_FILEBOOKMARK)
                 SQLQuery.createTable(db, tableFileBookmark)
                 val totalGroupList = kuick.castQuery(
                     db, SQLQuery.Select(
-                        Kuick.Companion.TABLE_TRANSFER
+                        Kuick.TABLE_TRANSFER
                     ), Transfer::class.java, null
                 )
-                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFER)
+                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFER)
                 db.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`")
                 SQLQuery.createTable(db, tableTransferGroup)
                 kuick.insert(db, totalGroupList, null, null)
                 run {
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_DEVICES)
-                        val typeColumn: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_TYPE)
-                        val clientVerCol: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_DEVICES)
+                        val typeColumn: Column = table.getColumn(Kuick.FIELD_DEVICES_TYPE)
+                        val clientVerCol: Column = table.getColumn(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
@@ -480,17 +480,17 @@ object Migration {
                     run {
                         val oldList: List<TransferAssigneeV12> = kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                             db, SQLQuery.Select(
-                                Kuick.Companion.TABLE_TRANSFERMEMBER
+                                Kuick.TABLE_TRANSFERMEMBER
                             ), TransferAssigneeV12::class.java, null
                         )
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERMEMBER + "`")
-                        SQLQuery.createTable(db, tables.getTable(Kuick.Companion.TABLE_TRANSFERMEMBER))
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERMEMBER + "`")
+                        SQLQuery.createTable(db, tables.getTable(Kuick.TABLE_TRANSFERMEMBER))
                         val newAssignees: MutableList<TransferMember> = ArrayList<TransferMember>()
                         for (assigneeV12 in oldList) {
-                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.INCOMING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -501,8 +501,8 @@ object Migration {
                                 newAssignees.add(incomingMember)
                             }
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.OUTGOING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -516,7 +516,7 @@ object Migration {
                         if (newAssignees.size > 0) kuick.insert(db, newAssignees, null, null)
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFERITEM)
                         val outgoingBaseObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
@@ -526,23 +526,23 @@ object Migration {
                         val outgoingMirrorObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.OUTGOING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         val incomingObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.INCOMING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`")
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERITEM + "`")
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERITEM + "`")
                         SQLQuery.createTable(db, table)
                         if (outgoingBaseObjects.size > 0) {
                             val newObjects: MutableMap<Long, TransferItem> = ArrayMap()
@@ -576,8 +576,8 @@ object Migration {
                         }
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFER)
-                        val column: Column = table.getColumn(Kuick.Companion.FIELD_TRANSFER_ISPAUSED)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFER)
+                        val column: Column = table.getColumn(Kuick.FIELD_TRANSFER_ISPAUSED)
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
@@ -606,18 +606,18 @@ object Migration {
             12 -> {
                 val totalGroupList = kuick.castQuery(
                     db, SQLQuery.Select(
-                        Kuick.Companion.TABLE_TRANSFER
+                        Kuick.TABLE_TRANSFER
                     ), Transfer::class.java, null
                 )
-                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.Companion.TABLE_TRANSFER)
+                val tableTransferGroup: SQLValues.Table = tables12.getTable(Kuick.TABLE_TRANSFER)
                 db.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`")
                 SQLQuery.createTable(db, tableTransferGroup)
                 kuick.insert(db, totalGroupList, null, null)
                 run {
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_DEVICES)
-                        val typeColumn: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_TYPE)
-                        val clientVerCol: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_DEVICES)
+                        val typeColumn: Column = table.getColumn(Kuick.FIELD_DEVICES_TYPE)
+                        val clientVerCol: Column = table.getColumn(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                     + " " + typeColumn.getType()
@@ -634,17 +634,17 @@ object Migration {
                     run {
                         val oldList: List<TransferAssigneeV12> = kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                             db, SQLQuery.Select(
-                                Kuick.Companion.TABLE_TRANSFERMEMBER
+                                Kuick.TABLE_TRANSFERMEMBER
                             ), TransferAssigneeV12::class.java, null
                         )
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERMEMBER + "`")
-                        SQLQuery.createTable(db, tables.getTable(Kuick.Companion.TABLE_TRANSFERMEMBER))
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERMEMBER + "`")
+                        SQLQuery.createTable(db, tables.getTable(Kuick.TABLE_TRANSFERMEMBER))
                         val newAssignees: MutableList<TransferMember> = ArrayList<TransferMember>()
                         for (assigneeV12 in oldList) {
-                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                            val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.INCOMING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -655,8 +655,8 @@ object Migration {
                                 newAssignees.add(incomingMember)
                             }
                             selection.setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                        + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                        + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                         + "=?", TransferObjectV12.Type.OUTGOING.toString(),
                                 assigneeV12.groupId.toString(), assigneeV12.deviceId
                             )
@@ -670,7 +670,7 @@ object Migration {
                         if (newAssignees.size > 0) kuick.insert(db, newAssignees, null, null)
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFERITEM)
                         val outgoingBaseObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
@@ -680,23 +680,23 @@ object Migration {
                         val outgoingMirrorObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.OUTGOING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         val incomingObjects: List<TransferObjectV12> =
                             kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                                 db, SQLQuery.Select(
-                                    Kuick.Companion.TABLE_TRANSFERITEM
+                                    Kuick.TABLE_TRANSFERITEM
                                 ).setWhere(
-                                    Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                    Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                     TransferObjectV12.Type.INCOMING.toString()
                                 ), TransferObjectV12::class.java, null
                             )
                         db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`")
-                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERITEM + "`")
+                        db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERITEM + "`")
                         SQLQuery.createTable(db, table)
                         if (outgoingBaseObjects.size > 0) {
                             val newObjects: MutableMap<Long, TransferItem> = ArrayMap()
@@ -730,8 +730,8 @@ object Migration {
                         }
                     }
                     run {
-                        val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFER)
-                        val column: Column = table.getColumn(Kuick.Companion.FIELD_TRANSFER_ISPAUSED)
+                        val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFER)
+                        val column: Column = table.getColumn(Kuick.FIELD_TRANSFER_ISPAUSED)
                         db.execSQL(
                             "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                     + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
@@ -759,9 +759,9 @@ object Migration {
             }
             13 -> {
                 run {
-                    val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_DEVICES)
-                    val typeColumn: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_TYPE)
-                    val clientVerCol: Column = table.getColumn(Kuick.Companion.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+                    val table: SQLValues.Table = tables.getTable(Kuick.TABLE_DEVICES)
+                    val typeColumn: Column = table.getColumn(Kuick.FIELD_DEVICES_TYPE)
+                    val clientVerCol: Column = table.getColumn(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
                     db.execSQL(
                         "ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
                                 + " " + typeColumn.getType().toString() + (if (typeColumn.isNullable()) " NOT" else "")
@@ -777,17 +777,17 @@ object Migration {
                 run {
                     val oldList: List<TransferAssigneeV12> = kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                         db, SQLQuery.Select(
-                            Kuick.Companion.TABLE_TRANSFERMEMBER
+                            Kuick.TABLE_TRANSFERMEMBER
                         ), TransferAssigneeV12::class.java, null
                     )
-                    db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERMEMBER + "`")
-                    SQLQuery.createTable(db, tables.getTable(Kuick.Companion.TABLE_TRANSFERMEMBER))
+                    db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERMEMBER + "`")
+                    SQLQuery.createTable(db, tables.getTable(Kuick.TABLE_TRANSFERMEMBER))
                     val newAssignees: MutableList<TransferMember> = ArrayList<TransferMember>()
                     for (assigneeV12 in oldList) {
-                        val selection: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                        val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                         selection.setWhere(
-                            Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                    + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                            Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                    + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                     + "=?", TransferObjectV12.Type.INCOMING.toString(),
                             assigneeV12.groupId.toString(), assigneeV12.deviceId
                         )
@@ -798,8 +798,8 @@ object Migration {
                             newAssignees.add(incomingMember)
                         }
                         selection.setWhere(
-                            Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=? AND "
-                                    + Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                            Kuick.FIELD_TRANSFERITEM_TYPE + "=? AND "
+                                    + Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
                                     + "=?", TransferObjectV12.Type.OUTGOING.toString(),
                             assigneeV12.groupId.toString(), assigneeV12.deviceId
                         )
@@ -813,7 +813,7 @@ object Migration {
                     if (newAssignees.size > 0) kuick.insert(db, newAssignees, null, null)
                 }
                 run {
-                    val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFERITEM)
+                    val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFERITEM)
                     val outgoingBaseObjects: List<TransferObjectV12> =
                         kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                             db, SQLQuery.Select(
@@ -823,22 +823,22 @@ object Migration {
                     val outgoingMirrorObjects: List<TransferObjectV12> =
                         kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                             db, SQLQuery.Select(
-                                Kuick.Companion.TABLE_TRANSFERITEM
+                                Kuick.TABLE_TRANSFERITEM
                             ).setWhere(
-                                Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                                Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                                 TransferObjectV12.Type.OUTGOING.toString()
                             ), TransferObjectV12::class.java, null
                         )
                     val incomingObjects: List<TransferObjectV12> = kuick.castQuery<TransferGroupV12, TransferObjectV12>(
                         db, SQLQuery.Select(
-                            Kuick.Companion.TABLE_TRANSFERITEM
+                            Kuick.TABLE_TRANSFERITEM
                         ).setWhere(
-                            Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?",
+                            Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                             TransferObjectV12.Type.INCOMING.toString()
                         ), TransferObjectV12::class.java, null
                     )
                     db.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`")
-                    db.execSQL("DROP TABLE IF EXISTS `" + Kuick.Companion.TABLE_TRANSFERITEM + "`")
+                    db.execSQL("DROP TABLE IF EXISTS `" + Kuick.TABLE_TRANSFERITEM + "`")
                     SQLQuery.createTable(db, table)
                     if (outgoingBaseObjects.size > 0) {
                         val newObjects: MutableMap<Long, TransferItem> = ArrayMap()
@@ -872,8 +872,8 @@ object Migration {
                     }
                 }
                 run {
-                    val table: SQLValues.Table = tables.getTable(Kuick.Companion.TABLE_TRANSFER)
-                    val column: Column = table.getColumn(Kuick.Companion.FIELD_TRANSFER_ISPAUSED)
+                    val table: SQLValues.Table = tables.getTable(Kuick.TABLE_TRANSFER)
+                    val column: Column = table.getColumn(Kuick.FIELD_TRANSFER_ISPAUSED)
                     db.execSQL(
                         "ALTER TABLE " + table.getName() + " ADD " + column.getName()
                                 + " " + column.getType().toString() + (if (column.isNullable()) " NOT" else "")
@@ -924,7 +924,7 @@ object Migration {
                     .define(Column(Kuick.FIELD_TRANSFERITEM_FLAG, SQLType.Text, true))
 
                 // define the transfer division table based on the transfer table
-                val transferTable: SQLValues.Table = values.getTables().get(Kuick.Companion.TABLE_TRANSFERITEM)
+                val transferTable: SQLValues.Table = values.getTables().get(Kuick.TABLE_TRANSFERITEM)
                 val transDivisionTable: SQLValues.Table = SQLValues.Table(TABLE_DIVISTRANSFER)
                 transDivisionTable.getColumns().putAll(transferTable.getColumns())
                 values.defineTable(Kuick.TABLE_TRANSFERMEMBER)

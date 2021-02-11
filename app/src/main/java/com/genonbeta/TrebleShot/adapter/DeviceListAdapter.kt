@@ -18,36 +18,45 @@
 package com.genonbeta.TrebleShot.adapter
 
 import android.content.*
+import android.net.MacAddress
 import android.net.wifi.ScanResult
+import android.net.wifi.WifiNetworkSuggestion
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.util.ObjectsCompat
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.dataobject.Editable
+import com.genonbeta.TrebleShot.fragment.DeviceListFragment
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.*
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Connections
+import com.genonbeta.TrebleShot.util.DeviceLoader
 import com.genonbeta.TrebleShot.utilimport.NsdDaemon
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import java.util.*
 
 class DeviceListAdapter(
-    fragment: IEditableListFragment<VirtualDevice, ViewHolder>, private val mConnections: Connections,
-    nsdDaemon: NsdDaemon, hiddenDeviceTypes: Array<Device.Type?>?
+    fragment: IEditableListFragment<VirtualDevice, ViewHolder>, private val connections: Connections,
+    private val nsdDaemon: NsdDaemon, hiddenDeviceTypes: Array<Device.Type>,
 ) : EditableListAdapter<DeviceListAdapter.VirtualDevice, RecyclerViewAdapter.ViewHolder>(fragment) {
-    private val mIconBuilder: IShapeBuilder?
-    private val mHiddenDeviceTypes: List<Device.Type>
-    private val mNsdDaemon: NsdDaemon
-    override fun onLoad(): List<VirtualDevice> {
-        val devMode = AppUtils.getDefaultPreferences(context)!!
+    private val iconBuilder: IShapeBuilder = AppUtils.getDefaultIconBuilder(context)
+
+    private val hiddenDeviceTypes: List<Device.Type>
+
+    override fun onLoad(): MutableList<VirtualDevice> {
+        val devMode = AppUtils.getDefaultPreferences(context)
             .getBoolean("developer_mode", false)
         val list: MutableList<VirtualDevice> = ArrayList()
-        if (mConnections.canReadScanResults()) {
-            for (result in mConnections.wifiManager.scanResults) {
+        if (connections.canReadScanResults()) {
+            for (result in connections.wifiManager.scanResults) {
                 if ((result.capabilities == null || result.capabilities == "[ESS]")
                     && Connections.isClientNetwork(result.SSID)
                 ) list.add(DescriptionVirtualDevice(NetworkDescription(result)))
@@ -57,11 +66,11 @@ class DeviceListAdapter(
             SQLQuery.Select(Kuick.TABLE_DEVICES)
                 .setOrderBy(Kuick.FIELD_DEVICES_LASTUSAGETIME + " DESC"), Device::class.java
         )) {
-            if (mNsdDaemon.isDeviceOnline(device))
+            if (nsdDaemon.isDeviceOnline(device))
                 device.type = Device.Type.NormalOnline
             else if (Device.Type.NormalOnline == device.type)
                 device.type = Device.Type.Normal
-            if (!mHiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
+            if (!hiddenDeviceTypes.contains(device.type) && (!device.isLocal || devMode))
                 list.add(DbVirtualDevice(device))
         }
         val filteredList: MutableList<VirtualDevice> = ArrayList()
@@ -71,33 +80,33 @@ class DeviceListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(
-            inflater.inflate(
-                if (isHorizontalOrientation || isGridLayoutRequested) R.layout.list_network_device_grid else R.layout.list_network_device,
+            layoutInflater.inflate(
+                if (horizontalOrientation || isGridLayoutRequested()) R.layout.list_network_device_grid else R.layout.list_network_device,
                 parent,
                 false
             )
         )
-        fragment!!.registerLayoutViewClicks(holder)
+        fragment.registerLayoutViewClicks(holder)
         holder.itemView.findViewById<View>(R.id.menu)
             .setOnClickListener { v: View? ->
-                DeviceListFragment.Companion.openInfo(
-                    fragment!!.getActivity(), mConnections,
-                    list[holder.adapterPosition]
+                DeviceListFragment.openInfo(
+                    fragment.getActivity(), connections,
+                    getItem(holder.adapterPosition)
                 )
             }
         return holder
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val virtualDevice: VirtualDevice? = getItem(position)
+        val virtualDevice: VirtualDevice = getItem(position)
         val parentView = holder.itemView
-        val text1: TextView = parentView.findViewById<TextView>(R.id.text1)
-        val text2: TextView = parentView.findViewById<TextView>(R.id.text2)
+        val text1: TextView = parentView.findViewById(R.id.text1)
+        val text2: TextView = parentView.findViewById(R.id.text2)
         val image = parentView.findViewById<ImageView>(R.id.image)
         val statusImage = parentView.findViewById<ImageView>(R.id.imageStatus)
         val layoutOnline = parentView.findViewById<View>(R.id.layout_online)
-        text1.setText(virtualDevice!!.name())
-        text2.setText(virtualDevice.description(context))
+        text1.text = virtualDevice.name()
+        text2.text = virtualDevice.description(context)
         layoutOnline.visibility = if (virtualDevice.isOnline()) View.VISIBLE else View.GONE
         var isRestricted = false
         var isTrusted = false
@@ -105,8 +114,8 @@ class DeviceListAdapter(
             val device = virtualDevice.device
             isRestricted = device.isBlocked
             isTrusted = device.isTrusted
-            DeviceLoader.showPictureIntoView(device, image, mIconBuilder)
-        } else image.setImageDrawable(mIconBuilder.buildRound(virtualDevice.name()))
+            DeviceLoader.showPictureIntoView(device, image, iconBuilder)
+        } else image.setImageDrawable(iconBuilder.buildRound(virtualDevice.name()))
         if (isRestricted) {
             statusImage.visibility = View.VISIBLE
             statusImage.setImageResource(R.drawable.ic_block_white_24dp)
@@ -119,38 +128,36 @@ class DeviceListAdapter(
     }
 
     abstract class VirtualDevice : Editable {
-        protected var mIsSelected = false
+        protected var isSelected = false
+
         override fun applyFilter(filteringKeywords: Array<String>): Boolean {
             for (keyword in filteringKeywords) if (keyword == name()) return true
             return false
         }
 
-        abstract fun description(context: Context): String?
-        override fun getComparableName(): String? {
-            return name()
-        }
+        abstract fun description(context: Context): String
 
-        fun getSelectableTitle(): String? {
-            return name()
-        }
+        override fun getComparableName(): String = name()
+
+        override fun getSelectableTitle(): String = name()
 
         abstract fun isOnline(): Boolean
-        fun isSelectableSelected(): Boolean {
-            return mIsSelected
+
+        override fun isSelectableSelected(): Boolean {
+            return isSelected
         }
 
-        abstract fun name(): String?
-        override fun setId(id: Long) {
-            throw IllegalStateException("This object does not support ID attributing.")
-        }
+        abstract fun name(): String
     }
 
     class DbVirtualDevice(val device: Device) : VirtualDevice() {
+        override var id: Long = device.hashCode().toLong()
+
         override fun comparisonSupported(): Boolean {
             return true
         }
 
-        override fun description(context: Context): String? {
+        override fun description(context: Context): String {
             return device.model
         }
 
@@ -162,30 +169,28 @@ class DeviceListAdapter(
             return 0
         }
 
-        override fun getId(): Long {
-            return device.hashCode().toLong()
-        }
-
         override fun isOnline(): Boolean {
             return Device.Type.NormalOnline == device.type
         }
 
-        override fun name(): String? {
+        override fun name(): String {
             return device.username
         }
 
-        fun setSelectableSelected(selected: Boolean): Boolean {
-            mIsSelected = selected
+        override fun setSelectableSelected(selected: Boolean): Boolean {
+            isSelected = selected
             return true
         }
     }
 
     class DescriptionVirtualDevice(val description: NetworkDescription) : VirtualDevice() {
+        override var id: Long = hashCode().toLong()
+
         override fun comparisonSupported(): Boolean {
             return true
         }
 
-        override fun description(context: Context): String? {
+        override fun description(context: Context): String {
             return context.getString(R.string.text_trebleshotHotspot)
         }
 
@@ -197,19 +202,15 @@ class DeviceListAdapter(
             return 0
         }
 
-        override fun getId(): Long {
-            return hashCode().toLong()
-        }
-
         override fun isOnline(): Boolean {
             return true
         }
 
-        override fun name(): String? {
+        override fun name(): String {
             return description.ssid
         }
 
-        fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun setSelectableSelected(selected: Boolean): Boolean {
             return false
         }
     }
@@ -226,15 +227,14 @@ class DeviceListAdapter(
             val builder: WifiNetworkSuggestion.Builder = WifiNetworkSuggestion.Builder()
                 .setSsid(ssid)
                 .setIsAppInteractionRequired(true)
-            if (password != null) builder.setWpa2Passphrase(password)
-            if (bssid != null) builder.setBssid(MacAddress.fromString(bssid))
+            password?.let { builder.setWpa2Passphrase(it) }
+            bssid?.let { builder.setBssid(MacAddress.fromString(it)) }
+
             return builder.build()
         }
     }
 
     init {
-        mIconBuilder = AppUtils.getDefaultIconBuilder(context)
-        mNsdDaemon = nsdDaemon
-        mHiddenDeviceTypes = if (hiddenDeviceTypes != null) Arrays.asList(*hiddenDeviceTypes) else ArrayList()
+        this.hiddenDeviceTypes = listOf(*hiddenDeviceTypes)
     }
 }

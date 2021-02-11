@@ -40,7 +40,7 @@ class PreferencesActivity : Activity() {
                 .setMessage(R.string.text_resetPreferencesToDefaultSummary)
                 .setNegativeButton(R.string.butn_cancel, null)
                 .setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
-                    AppUtils.getDefaultPreferences(applicationContext)!!.edit()
+                    AppUtils.getDefaultPreferences(applicationContext).edit()
                         .clear()
                         .apply()
                     finish()

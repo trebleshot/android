@@ -26,7 +26,7 @@ class AudioListFragment : GroupEditableListFragment<AudioItemHolder?, GroupViewH
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setFilteringSupported(true)
-        setDefaultGroupingCriteria(AudioListAdapter.Companion.MODE_GROUP_BY_ALBUM)
+        setDefaultGroupingCriteria(AudioListAdapter.MODE_GROUP_BY_ALBUM)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,15 +51,15 @@ class AudioListFragment : GroupEditableListFragment<AudioItemHolder?, GroupViewH
 
     override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
         super.onGroupingOptions(options)
-        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING
-        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
-        options[getString(R.string.text_groupByAlbum)] = AudioListAdapter.Companion.MODE_GROUP_BY_ALBUM
-        options[getString(R.string.text_groupByArtist)] = AudioListAdapter.Companion.MODE_GROUP_BY_ARTIST
-        options[getString(R.string.text_groupByFolder)] = AudioListAdapter.Companion.MODE_GROUP_BY_FOLDER
+        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
+        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
+        options[getString(R.string.text_groupByAlbum)] = AudioListAdapter.MODE_GROUP_BY_ALBUM
+        options[getString(R.string.text_groupByArtist)] = AudioListAdapter.MODE_GROUP_BY_ARTIST
+        options[getString(R.string.text_groupByFolder)] = AudioListAdapter.MODE_GROUP_BY_FOLDER
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return if (viewType == GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE) currentSpanSize else super.onGridSpanSize(
+        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE) currentSpanSize else super.onGridSpanSize(
             viewType,
             currentSpanSize
         )

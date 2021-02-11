@@ -24,15 +24,15 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Device
 import com.genonbeta.TrebleShot.util.AppUtils
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
+com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
+import com.genonbeta.TrebleShot.dataobject.Identity.withORs
+import com.genonbeta.TrebleShot.dataobject.Identifier.from
 import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesPending
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.bytesValue
 import com.genonbeta.TrebleShot.dataobject.TransferItem.flag
 import com.genonbeta.TrebleShot.dataobject.TransferItem.putFlag
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
+import com.genonbeta.TrebleShot.dataobject.Identity.withANDs
+import com.genonbeta.TrebleShot.dataobject.TransferItem.from
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress.hostAddress
 import com.genonbeta.TrebleShot.dataobject.Container.expand
 import com.genonbeta.TrebleShot.dataobject.Device.equals

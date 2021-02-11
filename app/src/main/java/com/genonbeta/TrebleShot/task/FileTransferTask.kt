@@ -25,8 +25,8 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
+import com.genonbeta.TrebleShot.dataobject.Identifier.from
+import com.genonbeta.TrebleShot.dataobject.Identity.withANDs
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
@@ -48,7 +48,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
     var index: TransferIndex? = null
     var transfer: Transfer? = null
     var member: TransferMember? = null
-    var addressList: List<DeviceAddress?>? = null
+    var addressList: List<DeviceAddress>? = null
     var type: TransferItem.Type? = null
 
     // Changing objects
@@ -156,12 +156,12 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
                 val streamInfo: StreamInfo = StreamInfo.getStreamInfo(context, file!!.uri)
                 try {
                     streamInfo.openOutputStream().use { outputStream ->
-                        CommunicationBridge.Companion.sendSecure(
+                        CommunicationBridge.sendSecure(
                             activeConnection, true, JSONObject()
                                 .put(Keyword.TRANSFER_REQUEST_ID, item!!.id)
                                 .put(Keyword.SKIPPED_BYTES, currentBytes)
                         )
-                        if (CommunicationBridge.Companion.receiveResult(activeConnection, device)) {
+                        if (CommunicationBridge.receiveResult(activeConnection, device)) {
                             var len: Int
                             val description: ActiveConnection.Description = activeConnection.readBegin()
                             val writableByteChannel: WritableByteChannel = Channels.newChannel(outputStream)
@@ -188,9 +188,9 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
                                             + " and name is " + item!!.file
                                 )
                                 context.sendBroadcast(
-                                    Intent(FileListFragment.Companion.ACTION_FILE_LIST_CHANGED)
-                                        .putExtra(FileListFragment.Companion.EXTRA_FILE_PARENT, file!!.parentFile.uri)
-                                        .putExtra(FileListFragment.Companion.EXTRA_FILE_NAME, file!!.name)
+                                    Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                                        .putExtra(FileListFragment.EXTRA_FILE_PARENT, file!!.parentFile.uri)
+                                        .putExtra(FileListFragment.EXTRA_FILE_NAME, file!!.name)
                                 )
                             }
                             if (file is LocalDocumentFile && mediaScanner.isConnected) mediaScanner.scanFile(
@@ -222,7 +222,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
                     item = null
                 }
             }
-            CommunicationBridge.Companion.sendResult(activeConnection, false)
+            CommunicationBridge.sendResult(activeConnection, false)
             if (completedCount > 0) {
                 notificationHelper.notifyFileReceived(
                     this,
@@ -235,11 +235,11 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
         } catch (e: Exception) {
             e.printStackTrace()
             try {
-                CommunicationBridge.Companion.sendError(activeConnection, e)
+                CommunicationBridge.sendError(activeConnection, e)
             } catch (e1: Exception) {
                 try {
                     post(
-                        TaskMessage.Companion.newInstance()
+                        TaskMessage.newInstance()
                             .setTone(Tone.Negative)
                             .setTitle(context, R.string.text_communicationError)
                             .setMessage(context.getString(R.string.mesg_errorDuringTransfer, device!!.username))
@@ -255,8 +255,8 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
             Transfers.loadTransferInfo(context, index, member)
             while (activeConnection.getSocket().isConnected()) {
                 publishStatus()
-                val request: JSONObject = CommunicationBridge.Companion.receiveSecure(activeConnection, device)
-                if (!CommunicationBridge.Companion.resultOf(request)) break
+                val request: JSONObject = CommunicationBridge.receiveSecure(activeConnection, device)
+                if (!CommunicationBridge.resultOf(request)) break
                 try {
                     item = TransferItem(transfer!!.id, request.getLong(Keyword.TRANSFER_REQUEST_ID), type!!)
                     kuick().reconstruct(
@@ -276,7 +276,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
                         ).use { inputStream ->
                             if (inputStream == null) throw FileNotFoundException("The input stream for the file has failed to open.")
                             if (currentBytes > 0 && inputStream.skip(currentBytes) != currentBytes) throw IOException("Failed to skip " + currentBytes + "bytes")
-                            CommunicationBridge.Companion.sendResult(activeConnection, true)
+                            CommunicationBridge.sendResult(activeConnection, true)
                             item!!.putFlag(device!!.uid, TransferItem.Flag.IN_PROGRESS)
                             kuick().update(
                                 database, item, transfer, null
@@ -318,13 +318,13 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
                 } catch (e: CancelledException) {
                     throw e
                 } catch (e: FileNotFoundException) {
-                    CommunicationBridge.Companion.sendError(activeConnection, Keyword.ERROR_NOT_FOUND)
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND)
                 } catch (e: ReconstructionFailedException) {
-                    CommunicationBridge.Companion.sendError(activeConnection, Keyword.ERROR_NOT_FOUND)
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND)
                 } catch (e: IOException) {
-                    CommunicationBridge.Companion.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE)
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE)
                 } catch (e: Exception) {
-                    CommunicationBridge.Companion.sendError(activeConnection, Keyword.ERROR_UNKNOWN)
+                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN)
                 }
             }
         } catch (ignored: CancelledException) {
@@ -332,7 +332,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
             e.printStackTrace()
             try {
                 post(
-                    TaskMessage.Companion.newInstance()
+                    TaskMessage.newInstance()
                         .setTone(Tone.Negative)
                         .setTitle(context, R.string.text_communicationError)
                         .setMessage(context.getString(R.string.mesg_errorDuringTransfer, device!!.username))
@@ -356,7 +356,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
     @Throws(TaskStoppedException::class)
     fun startTransferAsClient() {
         try {
-            CommunicationBridge.Companion.connect(kuick(), addressList, device, 0).use { bridge ->
+            CommunicationBridge.connect(kuick(), addressList, device, 0).use { bridge ->
                 bridge.requestFileTransferStart(transfer!!.id, type)
                 if (bridge.receiveResult()) {
                     activeConnection = bridge.getActiveConnection()

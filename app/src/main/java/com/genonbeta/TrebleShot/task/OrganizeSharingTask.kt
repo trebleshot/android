@@ -23,7 +23,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
+import com.genonbeta.TrebleShot.dataobject.TransferItem.from
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import com.genonbeta.TrebleShot.util.AppUtils
@@ -54,15 +54,15 @@ class OrganizeSharingTask(private val mUriList: List<Uri>) : AttachableAsyncTask
             kuick().insert(db, transfer, null, progressListener())
             addCloser(Stoppable.Closer { userAction: Boolean ->
                 kuick().remove(
-                    db, SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                    db, SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                         .setWhere(
-                            String.format("%s = ?", Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID),
+                            String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID),
                             transfer.id.toString()
                         )
                 )
             })
             kuick().broadcast()
-            TransferMemberActivity.Companion.startInstance(context, transfer, true)
+            TransferMemberActivity.startInstance(context, transfer, true)
         }
     }
 

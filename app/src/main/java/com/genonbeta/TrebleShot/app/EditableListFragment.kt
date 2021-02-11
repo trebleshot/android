@@ -44,7 +44,7 @@ import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.*
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller
 import java.util.*
 
@@ -52,8 +52,8 @@ import java.util.*
  * created by: Veli
  * date: 21.11.2017 10:12
  */
-abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHolder, E : EditableListAdapter<T, V>> :
-    DynamicRecyclerViewFragment<T, V, E>(), IEditableListFragment<T, V> {
+abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableListAdapter<T, V>>
+    : DynamicRecyclerViewFragment<T, V, E>(), IEditableListFragment<T, V> {
     override var adapter: E
         get() = super.adapter
         set(value) {
@@ -61,33 +61,24 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
             fastScroller?.recyclerView = listView
             engineConnection.setSelectableProvider(adapter)
 
-            adapter.setFragment(this)
-            adapter.notifyGridSizeUpdate(viewingGridSize, isScreenLarge())
+            adapter.fragment = this
+            adapter.notifyGridSizeUpdate(gridSize, isScreenLarge())
             adapter.setSortingCriteria(sortingCriteria, orderingCriteria)
         }
 
-    private val engineConnection: IEngineConnection<T> = EngineConnection(this, this)
+    override val adapterImpl: EditableListAdapterBase<T>
+        get() = adapter
 
-    private val performerEngine: IPerformerEngine = PerformerEngine()
+    val defaultContentObserver: ContentObserver
+        get() = observer ?: object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun deliverSelfNotifications(): Boolean {
+                return true
+            }
 
-    private var performerMenu: PerformerMenu? = null
-
-    override var filteringDelegate: FilteringDelegate<T> = object : FilteringDelegate<T> {
-        override fun changeFilteringKeyword(keyword: String?): Boolean {
-            searchText = keyword
-            return true
-        }
-
-        override fun getFilteringKeyword(listFragment: EditableListFragmentBase<T>): Array<String>? {
-            return searchText?.split(" ".toRegex())?.toTypedArray()
-        }
-    }
-
-    var itemOffsetDecorationEnabled = false
-
-    var itemOffsetForEdges = true
-
-    private var hasBottomSpace = false
+            override fun onChange(selfChange: Boolean) {
+                refreshList()
+            }
+        }.also { observer = it }
 
     var defaultItemOffsetPadding = -1f
 
@@ -101,24 +92,147 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
 
     var dividerResId = R.id.abstract_layout_fast_scroll_recyclerview_bottom_divider
 
-    var layoutResId = R.layout.abstract_layout_editable_list_fragment
+    override val engineConnection: IEngineConnection<T> = EngineConnection(this, this)
 
     var fastScroller: FastScroller? = null
         private set
 
-    private val mSortingOptions: MutableMap<String, Int> = ArrayMap()
+    override var filteringDelegate: FilteringDelegate<T> = object : FilteringDelegate<T> {
+        override fun changeFilteringKeyword(keyword: String?): Boolean {
+            searchText = keyword
+            return true
+        }
 
-    private val mOrderingOptions: MutableMap<String, Int> = ArrayMap()
+        override fun getFilteringKeyword(listFragment: EditableListFragmentBase<T>): Array<String>? {
+            return searchText?.split(" ".toRegex())?.toTypedArray()
+        }
+    }
 
-    private val mSelectableList: MutableList<T> = ArrayList()
+    override var gridSize: Int
+        get() {
+            return if (isScreenLandscape()) viewPreferences.getInt(
+                getUniqueSettingKey("GridSizeLandscape"),
+                defaultViewingGridSizeLandscape
+            ) else viewPreferences.getInt(
+                getUniqueSettingKey("GridSize"),
+                defaultViewingGridSize
+            )
+        }
+        set(value) {
+            viewPreferences.edit()
+                .putInt(getUniqueSettingKey("GridSize" + if (isScreenLandscape()) "Landscape" else ""), value)
+                .apply()
+            applyViewingChanges(value)
+        }
 
-    private var observer: ContentObserver? = null
+    private var hasBottomSpace = false
+
+    var itemOffsetDecorationEnabled = false
+
+    var itemOffsetForEdges = true
+
+    override var isFilteringSupported: Boolean = false
+
+    override var isGridSupported: Boolean = false
+
+    override var isLocalSelectionActivated: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                val selectedItems: MutableList<T> = ArrayList(engineConnection.getSelectedItemList() ?: emptyList())
+                if (selectedItems.isNotEmpty()) engineConnection.setSelected(
+                    selectedItems,
+                    IntArray(selectedItems.size),
+                    false
+                )
+            }
+            activity?.invalidateOptionsMenu()
+        }
+
+    override var isRefreshRequested: Boolean = false
+
+    override var isSelectByClick: Boolean = false
+        get() = field || isUsingLocalSelection
+
+    override var isSortingSupported: Boolean = true
+
+    override var isTwoRowLayout: Boolean = false
+        get() = AppUtils.getDefaultPreferences(context).getBoolean("two_row_layout", true)
+        set(value) {
+            field = value
+            applyViewingChanges(optimumGridSize, true)
+        }
+
+    override var isUsingLocalSelection: Boolean
+        get() = activity !is PerformerEngineProvider && performerMenu != null
+        set(value) {
+
+        }
+
+    var layoutResId = R.layout.abstract_layout_editable_list_fragment
 
     private var layoutClickListener: LayoutClickListener<V>? = null
 
+    override var listView: RecyclerView
+        get() = super.listView
+        set(value) {
+            super.listView = value
+
+            snackbarContainer = listView
+            value.addOnItemTouchListener(SwipeSelectionListener(this))
+
+            if (hasBottomSpace) {
+                value.clipToPadding = false
+                value.setPadding(0, 0, 0, (resources.getDimension(R.dimen.fab_margin) * 12).toInt())
+            }
+        }
+
+    private var observer: ContentObserver? = null
+
+    private val optimumGridSize: Int
+        get() {
+            val preferredGridSize = gridSize
+            return if (preferredGridSize > 1) preferredGridSize else if (canShowWideView() && isTwoRowLayout) 2 else 1
+        }
+
+    override var orderingCriteria: Int
+        get() = viewPreferences.getInt(getUniqueSettingKey("SortOrder"), defaultOrderingCriteria)
+        set(value) {
+            viewPreferences.edit()
+                .putInt(getUniqueSettingKey("SortOrder"), value)
+                .apply()
+            adapter.setSortingCriteria(sortingCriteria, value)
+            refreshList()
+        }
+
+    private val orderingOptions: MutableMap<String, Int> = ArrayMap()
+
+    private val performerEngine: IPerformerEngine = PerformerEngine()
+
+    private var performerMenu: PerformerMenu? = null
+
     private var searchText: String? = null
 
-    open fun onCreatePerformerMenu(context: Context?): PerformerMenu? {
+    private val selectableList: MutableList<T> = ArrayList()
+
+    override var sortingCriteria: Int
+        get() = viewPreferences.getInt(getUniqueSettingKey("SortBy"), defaultSortingCriteria)
+        set(value) {
+            viewPreferences.edit()
+                .putInt(getUniqueSettingKey("SortBy"), value)
+                .apply()
+            adapter.setSortingCriteria(value, orderingCriteria)
+            refreshList()
+        }
+
+    private val sortingOptions: MutableMap<String, Int> = ArrayMap()
+
+    var twoRowLayoutState: Boolean = false
+
+    val viewPreferences: SharedPreferences
+        get() = AppUtils.getViewingPreferences(requireContext())
+
+    open fun onCreatePerformerMenu(context: Context): PerformerMenu? {
         return null
     }
 
@@ -185,7 +299,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         engine: IPerformerEngine, owner: IEngineConnection<T>, selectable: T, isSelected: Boolean,
         position: Int,
     ) {
-        if (position >= 0) adapter!!.syncAndNotify(position) else adapter!!.syncAllAndNotify()
+        if (position >= 0) adapter.syncAndNotify(position) else adapter.syncAllAndNotify()
         ensureLocalSelection()
     }
 
@@ -193,7 +307,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         engine: IPerformerEngine, owner: IEngineConnection<T>, selectableList: MutableList<T>,
         isSelected: Boolean, positions: IntArray,
     ) {
-        adapter?.syncAllAndNotify()
+        adapter.syncAllAndNotify()
         ensureLocalSelection()
     }
 
@@ -234,20 +348,20 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
             val sortingOptions: MutableMap<String, Int> = ArrayMap()
             onSortingOptions(sortingOptions)
             if (sortingOptions.isNotEmpty()) {
-                mSortingOptions.clear()
-                mSortingOptions.putAll(sortingOptions)
+                this.sortingOptions.clear()
+                this.sortingOptions.putAll(sortingOptions)
                 applyDynamicMenuItems(
                     menu.findItem(R.id.actions_abs_editable_sort_by),
-                    R.id.actions_abs_editable_group_sorting, mSortingOptions
+                    R.id.actions_abs_editable_group_sorting, this.sortingOptions
                 )
                 val orderingOptions: MutableMap<String, Int> = ArrayMap()
                 onOrderingOptions(orderingOptions)
                 if (orderingOptions.isNotEmpty()) {
-                    mOrderingOptions.clear()
-                    mOrderingOptions.putAll(orderingOptions)
+                    this.orderingOptions.clear()
+                    this.orderingOptions.putAll(orderingOptions)
                     applyDynamicMenuItems(
                         menu.findItem(R.id.actions_abs_editable_order_by),
-                        R.id.actions_abs_editable_group_sort_order, mOrderingOptions
+                        R.id.actions_abs_editable_group_sort_order, this.orderingOptions
                     )
                 }
             }
@@ -260,19 +374,17 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
             menu.findItem(R.id.actions_abs_editable_sort_by).isEnabled = isSortingSupported
             menu.findItem(R.id.actions_abs_editable_multi_select).isVisible = performerMenu != null
             menu.findItem(R.id.actions_abs_editable_grid_size).isVisible = isGridSupported
-            val sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by)
-            if (sortingItem != null) {
+            menu.findItem(R.id.actions_abs_editable_sort_by)?.also { sortingItem: MenuItem ->
                 sortingItem.isVisible = isSortingSupported
                 if (sortingItem.isVisible) {
-                    checkPreferredDynamicItem(sortingItem, sortingCriteria, mSortingOptions)
+                    checkPreferredDynamicItem(sortingItem, sortingCriteria, sortingOptions)
                     val orderingItem = menu.findItem(R.id.actions_abs_editable_order_by)
-                    orderingItem?.let { checkPreferredDynamicItem(it, orderingCriteria, mOrderingOptions) }
+                    orderingItem?.let { checkPreferredDynamicItem(it, orderingCriteria, orderingOptions) }
                 }
             }
-            val gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size)
-            if (gridSizeItem != null) {
+            menu.findItem(R.id.actions_abs_editable_grid_size)?.also { gridSizeItem: MenuItem ->
                 val gridRowMenu: Menu = gridSizeItem.subMenu
-                val currentRow = viewingGridSize - 1
+                val currentRow = gridSize - 1
                 if (currentRow < gridRowMenu.size()) gridRowMenu.getItem(currentRow).isChecked = true
             }
         }
@@ -283,11 +395,11 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         val groupId = item.groupId
 
         if (groupId == R.id.actions_abs_editable_group_sorting)
-            changeSortingCriteria(item.order)
+            sortingCriteria = item.order
         else if (groupId == R.id.actions_abs_editable_group_sort_order)
-            changeOrderingCriteria(item.order)
+            orderingCriteria = item.order
         else if (groupId == R.id.actions_abs_editable_group_grid_size)
-            changeGridViewSize(item.order)
+            gridSize = item.order
         else if (id == R.id.actions_abs_editable_multi_select && performerMenu != null && activity != null)
             isLocalSelectionActivated = !isLocalSelectionActivated
         else if (performerMenu?.onMenuItemClick(item) == true)
@@ -314,15 +426,15 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     protected fun applyDynamicMenuItems(mainItem: MenuItem?, transferId: Int, options: Map<String, Int>) {
-        if (mainItem != null) {
-            mainItem.isVisible = true
-            val dynamicMenu: Menu = mainItem.subMenu
-            for (currentKey in options.keys) {
-                val modeId = options[currentKey]!!
-                dynamicMenu.add(transferId, 0, modeId, currentKey)
-            }
-            dynamicMenu.setGroupCheckable(transferId, true, true)
+        if (mainItem == null)
+            return
+        mainItem.isVisible = true
+        val dynamicMenu = mainItem.subMenu
+
+        for (currentKey in options.keys) options[currentKey]?.let { modeId ->
+            dynamicMenu.add(transferId, 0, modeId, currentKey)
         }
+        dynamicMenu.setGroupCheckable(transferId, true, true)
     }
 
     override fun applyViewingChanges(gridSize: Int) {
@@ -333,7 +445,7 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         if (!isGridSupported && !override)
             return
 
-        adapter?.notifyGridSizeUpdate(gridSize, isScreenLarge())
+        adapter.notifyGridSizeUpdate(gridSize, isScreenLarge())
         listView.layoutManager = getLayoutManager()
         listView.adapter = adapter
         refreshList()
@@ -341,29 +453,6 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
 
     fun canShowWideView(): Boolean {
         return !isGridSupported && isScreenLarge() && !isHorizontalOrientation()
-    }
-
-    override fun changeGridViewSize(gridSize: Int) {
-        viewPreferences.edit()
-            .putInt(getUniqueSettingKey("GridSize" + if (isScreenLandscape()) "Landscape" else ""), gridSize)
-            .apply()
-        applyViewingChanges(gridSize)
-    }
-
-    override fun changeOrderingCriteria(id: Int) {
-        viewPreferences.edit()
-            .putInt(getUniqueSettingKey("SortOrder"), id)
-            .apply()
-        adapter?.setSortingCriteria(sortingCriteria, id)
-        refreshList()
-    }
-
-    override fun changeSortingCriteria(id: Int) {
-        viewPreferences.edit()
-            .putInt(getUniqueSettingKey("SortBy"), id)
-            .apply()
-        adapter?.setSortingCriteria(id, orderingCriteria)
-        refreshList()
     }
 
     fun checkPreferredDynamicItem(dynamicItem: MenuItem?, preferredItemId: Int, options: Map<String, Int>) {
@@ -397,44 +486,17 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         }
     }
 
-    override fun getAdapterImpl(): EditableListAdapterBase<T>? {
-        return adapter
-    }
-
-    val defaultContentObserver: ContentObserver
-        get() = observer ?: object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun deliverSelfNotifications(): Boolean {
-                return true
-            }
-
-            override fun onChange(selfChange: Boolean) {
-                refreshList()
-            }
-        }.also { observer = it }
-
     override fun getLayoutManager(): RecyclerView.LayoutManager {
         val layoutManager = generateGridLayoutManager()
         val optimumGridSize = optimumGridSize
         layoutManager.spanCount = optimumGridSize
         layoutManager.spanSizeLookup = object : SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (adapter?.getItemViewType(position) == EditableListAdapter.VIEW_TYPE_DEFAULT)
-                    1
-                else
-                    onGridSpanSize(type, optimumGridSize)
+            override fun getSpanSize(position: Int): Int = adapter.getItemViewType(position).let {
+                return if (it == EditableListAdapter.VIEW_TYPE_DEFAULT) 1 else onGridSpanSize(it, optimumGridSize)
             }
         }
         return layoutManager
     }
-
-    override val orderingCriteria: Int
-        get() = viewPreferences.getInt(getUniqueSettingKey("SortOrder"), defaultOrderingCriteria)
-
-    private val optimumGridSize: Int
-        get() {
-            val preferredGridSize = viewingGridSize
-            return if (preferredGridSize > 1) preferredGridSize else if (canShowWideView() && isTwoRowLayout) 2 else 1
-        }
 
     override fun getPerformerEngine(): IPerformerEngine? {
         activity?.let {
@@ -446,86 +508,16 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     override fun getSelectableList(): MutableList<T> {
-        return mSelectableList
-    }
-
-    override fun getSortingCriteria(): Int {
-        return viewPreferences.getInt(getUniqueSettingKey("SortBy"), defaultSortingCriteria)
+        return selectableList
     }
 
     override fun getUniqueSettingKey(setting: String): String {
         return javaClass.simpleName + "_" + setting
     }
 
-    val viewingGridSize: Int
-        get() {
-            return if (isScreenLandscape()) viewPreferences.getInt(
-                getUniqueSettingKey("GridSizeLandscape"),
-                defaultViewingGridSizeLandscape
-            ) else viewPreferences.getInt(
-                getUniqueSettingKey("GridSize"),
-                defaultViewingGridSize
-            )
-        }
-
-    val viewPreferences: SharedPreferences
-        get() = AppUtils.getViewingPreferences(context!!)
-
     fun invokeClickListener(holder: V, longClick: Boolean): Boolean {
         return layoutClickListener?.onLayoutClick(this, holder, longClick) ?: false
     }
-
-    override var isGridSupported: Boolean = false
-
-    override var isLocalSelectionActivated: Boolean = false
-        set(value) {
-            field = value
-            if (value) {
-                val selectedItems: MutableList<T> = ArrayList(engineConnection.getSelectedItemList() ?:)
-                if (selectedItems.isNotEmpty()) engineConnection.setSelected(
-                    selectedItems,
-                    IntArray(selectedItems.size),
-                    false
-                )
-            }
-            activity?.invalidateOptionsMenu()
-        }
-
-    override var isRefreshRequested: Boolean = false
-
-    override var isSelectByClick: Boolean = false
-        get() = field || isUsingLocalSelection
-
-    override var isSortingSupported: Boolean = true
-
-    override var isFilteringSupported: Boolean = false
-
-    override var isTwoRowLayout: Boolean = false
-        get() = AppUtils.getDefaultPreferences(context).getBoolean("two_row_layout", true)
-        set(value) {
-            field = value
-            applyViewingChanges(optimumGridSize, true)
-        }
-
-    override var isUsingLocalSelection: Boolean
-        get() = activity !is PerformerEngineProvider && performerMenu != null
-        set(value) {
-
-        }
-
-    override var listView: RecyclerView
-        get() = super.listView
-        set(value) {
-            super.listView = value
-
-            snackbarContainer = listView
-            value.addOnItemTouchListener(SwipeSelectionListener(this))
-
-            if (hasBottomSpace) {
-                value.clipToPadding = false
-                value.setPadding(0, 0, 0, (resources.getDimension(R.dimen.fab_margin) * 12).toInt())
-            }
-        }
 
     override fun loadIfRequested(): Boolean {
         val refreshed = isRefreshRequested
@@ -541,14 +533,14 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
 
     override fun performLayoutClickOpen(holder: V): Boolean {
         val pos = holder.adapterPosition
-        return pos != RecyclerView.NO_POSITION && performLayoutClickOpen(holder, adapterImpl!!.getItem(pos))
+        return pos != RecyclerView.NO_POSITION && performLayoutClickOpen(holder, adapterImpl.getItem(pos))
     }
 
-    override fun performLayoutClickOpen(holder: V, `object`: T): Boolean {
-        return `object` is Shareable && openUri((`object` as Shareable).uri)
+    override fun performLayoutClickOpen(holder: V, target: T): Boolean {
+        return target is Shareable && target.uri?.let { openUri(it) } == true
     }
 
-    override fun performDefaultLayoutLongClick(holder: V, `object`: T): Boolean {
+    override fun performDefaultLayoutLongClick(holder: V, target: T): Boolean {
         return false
     }
 
@@ -556,18 +548,14 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         val position = holder.adapterPosition
         return if (position == RecyclerView.NO_POSITION) false else setItemSelected(holder)
                 || invokeClickListener(holder, false)
-                || performDefaultLayoutClick(holder, adapterImpl?.getItem(position))
+                || performDefaultLayoutClick(holder, adapterImpl.getItem(position))
     }
 
     override fun performLayoutLongClick(holder: V): Boolean {
         val position = holder.adapterPosition
-        return if (position == RecyclerView.NO_POSITION) false else invokeClickListener(
-            holder,
-            true
-        ) || performDefaultLayoutLongClick(
-            holder,
-            adapterImpl.getItem(position)
-        ) || setItemSelected(holder, true)
+        return if (position == RecyclerView.NO_POSITION) false else invokeClickListener(holder, true)
+                || performDefaultLayoutLongClick(holder, adapterImpl.getItem(position))
+                || setItemSelected(holder, true)
     }
 
     override fun registerLayoutViewClicks(holder: V) {
@@ -575,10 +563,9 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         holder.itemView.setOnLongClickListener { performLayoutLongClick(holder) }
     }
 
-
     fun setDividerVisible(visible: Boolean) {
-        if (view != null) {
-            val divider = view!!.findViewById<View>(dividerResId)
+        view?.let {
+            val divider = it.findViewById<View>(dividerResId)
             divider.visibility = if (visible) View.VISIBLE else View.GONE
         }
     }
@@ -588,7 +575,8 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
     }
 
     override fun setItemSelected(holder: V, force: Boolean): Boolean {
-        if (engineConnection.getSelectedItemList().size <= 0 && !force) return false
+        if (engineConnection.getSelectedItemList()?.let { it.size <= 0 } == true && !force)
+            return false
         try {
             engineConnection.setSelected(holder)
             return true
@@ -603,7 +591,11 @@ abstract class EditableListFragment<T : Editable, V : RecyclerViewAdapter.ViewHo
         layoutClickListener = clickListener
     }
 
-    interface LayoutClickListener<V : RecyclerViewAdapter.ViewHolder?> {
+    fun toggleTwoRowLayout() {
+
+    }
+
+    interface LayoutClickListener<V : ViewHolder?> {
         fun onLayoutClick(listFragment: EditableListFragmentBase<*>?, holder: V, longClick: Boolean): Boolean
     }
 

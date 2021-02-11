@@ -17,78 +17,79 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.TrebleShot.io.Containable
 import com.genonbeta.android.database.DatabaseObject
-import android.os.Parcelable
-import android.os.Parcel
-import androidx.core.util.ObjectsCompat
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.TrebleShot.database.Kuick
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import android.net.Uri
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.dataobject.TransferMember
-import android.os.Parcelable.Creator
-import com.genonbeta.TrebleShot.dataobject.DeviceAddress
-import com.genonbeta.TrebleShot.dataobject.DeviceRoute
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.android.framework.`object`
+import java.util.*
 
 /**
  * created by: Veli
  * date: 30.12.2017 13:19
  */
-class TextStreamObject(var text: String?) : GroupEditableListAdapter.GroupShareable, DatabaseObject<Any?> {
+class TextStreamObject : GroupEditableListAdapter.GroupShareable, DatabaseObject<Any?> {
+    var text = ""
 
-    constructor() : this(null) {}
-    constructor(representativeText: String?) : super(GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText) {}
+    constructor() : super()
 
-    constructor(id: Long) {
-        setId(id)
+    constructor(representativeText: String): super(GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText)
+
+    constructor(id: Long) : this() {
+        this.id = id
     }
 
-    constructor(id: Long, index: String) {
-        initialize(id, index, index, "text/plain", System.currentTimeMillis(), index.length.toLong(), null)
+    constructor(id: Long, index: String) : this() {
+        initialize(id, index, index, "text/plain", System.currentTimeMillis(), index.length.toLong(), Uri.EMPTY)
         text = index
     }
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         if (super.applyFilter(filteringKeywords)) return true
         for (keyword in filteringKeywords)
-            if (text.toLowerCase().contains(keyword.toLowerCase()))
-                return true
+            if (text.toLowerCase(Locale.getDefault()).contains(keyword.toLowerCase(Locale.getDefault())))
+            return true
         return false
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return obj is TextStreamObject && obj.id == id
+    override fun equals(other: Any?): Boolean {
+        return other is TextStreamObject && other.id == id
     }
 
     override fun getWhere(): SQLQuery.Select {
         return SQLQuery.Select(Kuick.TABLE_CLIPBOARD)
-            .setWhere(Kuick.FIELD_CLIPBOARD_ID + "=?", getId().toString())
+            .setWhere(Kuick.FIELD_CLIPBOARD_ID + "=?", id.toString())
     }
 
     override fun getValues(): ContentValues {
         val values = ContentValues()
         values.put(Kuick.FIELD_CLIPBOARD_ID, id)
-        values.put(Kuick.FIELD_CLIPBOARD_TIME, date)
+        values.put(Kuick.FIELD_CLIPBOARD_TIME, dateInternal)
         values.put(Kuick.FIELD_CLIPBOARD_TEXT, text)
         return values
     }
 
+    override fun hashCode(): Int {
+        return text.hashCode()
+    }
+
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
         this.id = item.getAsLong(Kuick.FIELD_CLIPBOARD_ID)
-        text = item.getAsString(Kuick.FIELD_CLIPBOARD_TEXT)
-        this.date = item.getAsLong(Kuick.FIELD_CLIPBOARD_TIME)
+        this.text = item.getAsString(Kuick.FIELD_CLIPBOARD_TEXT)
+        this.dateInternal = item.getAsLong(Kuick.FIELD_CLIPBOARD_TIME)
         this.mimeType = "text/plain"
-        this.size = text.length.toLong()
+        this.sizeInternal = text.length.toLong()
         this.friendlyName = text
         this.fileName = text
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener) {}
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener) {}
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener) {}
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
 }

@@ -32,9 +32,9 @@ abstract class GalleryGroupEditableListAdapter<T : GalleryGroupShareable, V : Gr
     fragment: IEditableListFragment<T, V>,
     groupBy: Int
 ) : GroupEditableListAdapter<T, V>(fragment, groupBy), GroupLister.CustomGroupLister<T> {
-    override fun onCustomGroupListing(lister: GroupLister<T>, mode: Int, `object`: T): Boolean {
+    override fun onCustomGroupListing(lister: GroupLister<T>, mode: Int, holder: T): Boolean {
         if (mode == MODE_GROUP_BY_ALBUM) {
-            lister.offer(`object`, StringMerger(`object`.albumName))
+            lister.offer(holder, StringMerger(holder.albumName))
             return true
         }
         return false
@@ -45,9 +45,9 @@ abstract class GalleryGroupEditableListAdapter<T : GalleryGroupShareable, V : Gr
             .setCustomLister(this)
     }
 
-    override fun getSectionName(position: Int, `object`: T): String {
-        if (!`object`.isGroupRepresentative()) if (getGroupBy() == MODE_GROUP_BY_ALBUM) return `object`.albumName
-        return super.getSectionName(position, `object`)
+    override fun getSectionName(position: Int, item: T): String {
+        if (!item.isGroupRepresentative()) if (getGroupBy() == MODE_GROUP_BY_ALBUM) return item.albumName
+        return super.getSectionName(position, item)
     }
 
     open class GalleryGroupShareable : GroupShareable {

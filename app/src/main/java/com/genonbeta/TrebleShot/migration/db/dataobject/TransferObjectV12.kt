@@ -80,58 +80,58 @@ class TransferObjectV12 : DatabaseObject<TransferGroupV12?> {
     override fun getWhere(): SQLQuery.Select {
         val whereClause = if (isDivisionObject()) String.format(
             "%s = ? AND %s = ?",
-            Kuick.Companion.FIELD_TRANSFERITEM_ID,
-            Kuick.Companion.FIELD_TRANSFERITEM_TYPE
+            Kuick.FIELD_TRANSFERITEM_ID,
+            Kuick.FIELD_TRANSFERITEM_TYPE
         ) else String.format(
-            "%s = ? AND %s = ? AND %s = ?", Kuick.Companion.FIELD_TRANSFERITEM_ID,
-            Kuick.Companion.FIELD_TRANSFERITEM_TYPE, v12.Companion.FIELD_TRANSFER_DEVICEID
+            "%s = ? AND %s = ? AND %s = ?", Kuick.FIELD_TRANSFERITEM_ID,
+            Kuick.FIELD_TRANSFERITEM_TYPE, v12.FIELD_TRANSFER_DEVICEID
         )
-        return if (isDivisionObject()) SQLQuery.Select(v12.Companion.TABLE_DIVISTRANSFER).setWhere(
+        return if (isDivisionObject()) SQLQuery.Select(v12.TABLE_DIVISTRANSFER).setWhere(
             whereClause,
             requestId.toString(),
             type.toString()
-        ) else SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM).setWhere(
+        ) else SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
             whereClause, requestId.toString(), type.toString(), deviceId
         )
     }
 
     override fun getValues(): ContentValues {
         val values = ContentValues()
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_ID, requestId)
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID, groupId)
-        values.put(v12.Companion.FIELD_TRANSFER_DEVICEID, deviceId)
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_NAME, friendlyName)
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_SIZE, fileSize)
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_MIME, fileMimeType)
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_FLAG, flag.toString())
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_TYPE, type.toString())
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_FILE, file)
-        values.put(v12.Companion.FIELD_TRANSFER_ACCESSPORT, accessPort)
-        values.put(v12.Companion.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes)
-        values.put(Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY, directory)
+        values.put(Kuick.FIELD_TRANSFERITEM_ID, requestId)
+        values.put(Kuick.FIELD_TRANSFERITEM_TRANSFERID, groupId)
+        values.put(v12.FIELD_TRANSFER_DEVICEID, deviceId)
+        values.put(Kuick.FIELD_TRANSFERITEM_NAME, friendlyName)
+        values.put(Kuick.FIELD_TRANSFERITEM_SIZE, fileSize)
+        values.put(Kuick.FIELD_TRANSFERITEM_MIME, fileMimeType)
+        values.put(Kuick.FIELD_TRANSFERITEM_FLAG, flag.toString())
+        values.put(Kuick.FIELD_TRANSFERITEM_TYPE, type.toString())
+        values.put(Kuick.FIELD_TRANSFERITEM_FILE, file)
+        values.put(v12.FIELD_TRANSFER_ACCESSPORT, accessPort)
+        values.put(v12.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes)
+        values.put(Kuick.FIELD_TRANSFERITEM_DIRECTORY, directory)
         return values
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        friendlyName = item.getAsString(Kuick.Companion.FIELD_TRANSFERITEM_NAME)
-        file = item.getAsString(Kuick.Companion.FIELD_TRANSFERITEM_FILE)
-        fileSize = item.getAsLong(Kuick.Companion.FIELD_TRANSFERITEM_SIZE)
-        fileMimeType = item.getAsString(Kuick.Companion.FIELD_TRANSFERITEM_MIME)
-        requestId = item.getAsLong(Kuick.Companion.FIELD_TRANSFERITEM_ID)
-        groupId = item.getAsLong(Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID)
-        deviceId = item.getAsString(v12.Companion.FIELD_TRANSFER_DEVICEID)
-        type = Type.valueOf(item.getAsString(Kuick.Companion.FIELD_TRANSFERITEM_TYPE))
+        friendlyName = item.getAsString(Kuick.FIELD_TRANSFERITEM_NAME)
+        file = item.getAsString(Kuick.FIELD_TRANSFERITEM_FILE)
+        fileSize = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE)
+        fileMimeType = item.getAsString(Kuick.FIELD_TRANSFERITEM_MIME)
+        requestId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_ID)
+        groupId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_TRANSFERID)
+        deviceId = item.getAsString(v12.FIELD_TRANSFER_DEVICEID)
+        type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERITEM_TYPE))
 
         // We may have put long in that field indicating that the file was / is in progress so generate
         try {
-            flag = Flag.valueOf(item.getAsString(Kuick.Companion.FIELD_TRANSFERITEM_FLAG))
+            flag = Flag.valueOf(item.getAsString(Kuick.FIELD_TRANSFERITEM_FLAG))
         } catch (e: Exception) {
             flag = Flag.IN_PROGRESS
-            flag.setBytesValue(item.getAsLong(Kuick.Companion.FIELD_TRANSFERITEM_FLAG))
+            flag.setBytesValue(item.getAsLong(Kuick.FIELD_TRANSFERITEM_FLAG))
         }
-        accessPort = item.getAsInteger(v12.Companion.FIELD_TRANSFER_ACCESSPORT)
-        skippedBytes = item.getAsLong(v12.Companion.FIELD_TRANSFER_SKIPPEDBYTES)
-        directory = item.getAsString(Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY)
+        accessPort = item.getAsInteger(v12.FIELD_TRANSFER_ACCESSPORT)
+        skippedBytes = item.getAsLong(v12.FIELD_TRANSFER_SKIPPEDBYTES)
+        directory = item.getAsString(Kuick.FIELD_TRANSFERITEM_DIRECTORY)
     }
 
     override fun onCreateObject(

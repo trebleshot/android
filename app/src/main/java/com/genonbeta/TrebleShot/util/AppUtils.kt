@@ -73,7 +73,7 @@ object AppUtils {
 
     fun createLog(context: Context): DocumentFile? {
         val saveDirectory = Files.getApplicationDirectory(context)
-        val logFile = saveDirectory.createFile("text/plain", "trebleshot_log")
+        val logFile = saveDirectory.createFile("text/plain", "trebleshot_log") ?: return null
         val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
 
         if (logFile.exists())
@@ -85,7 +85,7 @@ object AppUtils {
             val process = Runtime.getRuntime().exec(command)
             val reader = BufferedReader(InputStreamReader(process.inputStream))
             val outputStream = context.contentResolver
-                .openOutputStream(logFile.uri, "w") ?: throw IOException("Could not open " + logFile.name)
+                .openOutputStream(logFile.getUri(), "w") ?: throw IOException("Open failed " + logFile.getName())
             var readLine: String
             while (reader.readLine().also { readLine = it } != null)
                 for (processInfo in processList) if (readLine.contains(processInfo.pid.toString())) {
@@ -126,7 +126,7 @@ object AppUtils {
         }
 
     fun getDefaultIconBuilder(context: Context): TextDrawable.IShapeBuilder {
-        val builder: TextDrawable.IShapeBuilder = TextDrawable.Companion.builder()
+        val builder: TextDrawable.IShapeBuilder = TextDrawable.builder()
         builder.beginConfig()
             .firstLettersOnly(true)
             .textMaxLength(1)
@@ -160,7 +160,7 @@ object AppUtils {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    fun getKuick(context: Context?): Kuick {
+    fun getKuick(context: Context): Kuick {
         if (mKuick == null)
             mKuick = Kuick(context)
         return mKuick as Kuick
@@ -192,16 +192,18 @@ object AppUtils {
 
     fun <T : Editable> showFolderSelectionHelp(fragment: EditableListFragmentBase<T>) {
         val connection = fragment.engineConnection
-        val preferences = getDefaultPreferences(fragment.context)
-        if (connection.selectedItemList.size > 0 && !preferences.getBoolean("helpFolderSelection", false))
+        val preferences = getDefaultPreferences(fragment.requireContext())
+        val selectedItemList = connection.getSelectedItemList() ?: return
+
+        if (selectedItemList.isNotEmpty() && !preferences.getBoolean("helpFolderSelection", false))
             fragment.createSnackbar(R.string.mesg_helpFolderSelection)
-                .setAction(R.string.butn_gotIt) {
+                ?.setAction(R.string.butn_gotIt) {
                     preferences
                         .edit()
                         .putBoolean("helpFolderSelection", true)
                         .apply()
                 }
-                .show()
+                ?.show()
     }
 
     fun startApplicationDetails(context: Context) {

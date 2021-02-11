@@ -25,7 +25,7 @@ import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider

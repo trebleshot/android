@@ -26,13 +26,15 @@ import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
 import android.util.Log
 import com.genonbeta.TrebleShot.util.Files
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupEditable
 import java.lang.StringBuilder
 
 /**
  * created by: veli
  * date: 7/24/19 6:08 PM
  */
-class TransferIndex : GroupEditable, DatabaseObject<Device?> {
+class TransferIndex : GroupEditable, DatabaseObject<Device> {
     var viewType = 0
     var representativeText: String? = null
     @JvmField
@@ -132,8 +134,10 @@ class TransferIndex : GroupEditable, DatabaseObject<Device?> {
 
     val comparableName: String?
         get() = selectableTitle
+
     val comparableDate: Long
         get() = transfer.dateCreated
+
     val comparableSize: Long
         get() = bytesTotal()
     var id: Long

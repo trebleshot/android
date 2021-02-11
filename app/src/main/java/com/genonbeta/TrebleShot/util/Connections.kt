@@ -402,7 +402,7 @@ class Connections(val context: Context) {
                     )
                 }
                 .show()
-        } else if (Build.VERSION.SDK_INT < 26 && !manager!!.isEnabled && isMobileDataActive && suggestActions) {
+        } else if (Build.VERSION.SDK_INT < 26 && !manager!!.enabled && isMobileDataActive && suggestActions) {
             AlertDialog.Builder(activity)
                 .setMessage(R.string.mesg_warningHotspotMobileActive)
                 .setNegativeButton(R.string.butn_cancel, null)
@@ -413,9 +413,9 @@ class Connections(val context: Context) {
                 .show()
         } else {
             val config: WifiConfiguration? = manager.configuration
-            if (!manager.isEnabled || config != null && AppUtils.getHotspotName(activity) == config.SSID)
+            if (!manager.enabled || config != null && AppUtils.getHotspotName(activity) == config.SSID)
                 provider.createSnackbar(
-                    if (manager.isEnabled) R.string.mesg_stoppingSelfHotspot else R.string.mesg_startingSelfHotspot
+                    if (manager.enabled) R.string.mesg_stoppingSelfHotspot else R.string.mesg_startingSelfHotspot
                 )?.show()
             toggleHotspot(activity)
         }
@@ -423,7 +423,7 @@ class Connections(val context: Context) {
 
     private fun toggleHotspot(activity: Activity) {
         try {
-            App.Companion.from(activity).toggleHotspot()
+            App.from(activity).toggleHotspot()
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }

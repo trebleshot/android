@@ -25,22 +25,21 @@ import com.genonbeta.TrebleShot.util.TextUtils
  * date: 19.11.2017 16:50
  */
 abstract class Shareable : Editable {
-
     override var id: Long = 0
 
-    var friendlyName: String? = null
+    lateinit var friendlyName: String
 
     var fileName: String? = null
 
     var mimeType: String? = null
 
-    var uri: Uri? = null
+    lateinit var uri: Uri
 
-    override var comparableDate: Long = 0
+    var selectableSelected = false
 
-    override var comparableSize: Long = 0
+    var dateInternal: Long = 0
 
-    override var selectableSelected = false
+    var sizeInternal: Long = 0
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         for (keyword in filteringKeywords) if (TextUtils.searchWord(friendlyName, keyword)) return true
@@ -53,28 +52,38 @@ abstract class Shareable : Editable {
 
     protected fun initialize(
         id: Long, friendlyName: String, fileName: String?, mimeType: String?, date: Long, size: Long,
-        uri: Uri?
+        uri: Uri,
     ) {
         this.id = id
         this.friendlyName = friendlyName
         this.fileName = fileName
         this.mimeType = mimeType
-        comparableDate = date
-        comparableSize = size
+        this.dateInternal = date
+        this.sizeInternal = size
         this.uri = uri
     }
 
-    override val comparableName: String?
-        get() = selectableTitle
-    val selectableTitle: String
-        get() = friendlyName
 
-    override fun equals(obj: Any?): Boolean {
-        return if (obj is Shareable) obj.uri == uri else super.equals(obj)
+    override fun equals(other: Any?): Boolean {
+        return if (other is Shareable) other.uri == uri else super.equals(other)
+    }
+
+    override fun getComparableName(): String = friendlyName
+
+    override fun getComparableDate(): Long = dateInternal
+
+    override fun getComparableSize(): Long = sizeInternal
+
+    override fun getSelectableTitle(): String = friendlyName
+
+    override fun isSelectableSelected(): Boolean = selectableSelected
+
+    override fun hashCode(): Int {
+        return uri.hashCode()
     }
 
     override fun setSelectableSelected(selected: Boolean): Boolean {
-        isSelectableSelected = selected
+        selectableSelected = selected
         return true
     }
 }

@@ -42,7 +42,7 @@ import java.util.*
 class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupViewHolder?>?) :
     GroupEditableListAdapter<TransferIndex?, GroupViewHolder?>(
         fragment,
-        GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+        GroupEditableListAdapterMODE_GROUP_BY_DATE
     ) {
     private val mRunningTasks: MutableList<Long> = ArrayList()
     private val mPercentFormat: NumberFormat
@@ -54,7 +54,7 @@ class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupV
     protected override fun onLoad(lister: GroupLister<TransferIndex>) {
         val activeList: List<Long> = ArrayList(mRunningTasks)
         for (index in AppUtils.getKuick(getContext()).castQuery<Device, TransferIndex>(
-            SQLQuery.Select(Kuick.Companion.TABLE_TRANSFER), TransferIndex::class.java
+            SQLQuery.Select(KuickTABLE_TRANSFER), TransferIndex::class.java
         )) {
             loadTransferInfo(getContext(), index)
             index.isRunning = activeList.contains(index.transfer.id)
@@ -67,7 +67,7 @@ class TransferListAdapter(fragment: IEditableListFragment<TransferIndex?, GroupV
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapter.Companion.VIEW_TYPE_DEFAULT) GroupViewHolder(
+        val holder: GroupViewHolder = if (viewType == EditableListAdapterVIEW_TYPE_DEFAULT) GroupViewHolder(
             getInflater().inflate(
                 R.layout.list_transfer, parent, false
             )

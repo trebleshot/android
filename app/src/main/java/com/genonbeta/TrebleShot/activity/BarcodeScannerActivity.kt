@@ -61,19 +61,33 @@ import java.net.UnknownHostException
 
 class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProvider {
     private val dismissListener = DialogInterface.OnDismissListener { dialog: DialogInterface? -> updateState() }
+
     private lateinit var barcodeView: DecoratedBarcodeView
+
     private lateinit var connections: Connections
+
     private lateinit var conductContainer: ViewGroup
+
     private lateinit var conductText: TextView
+
     private lateinit var conductImage: ImageView
+
     private lateinit var textModeIndicator: ImageView
+
     private lateinit var conductButton: Button
+
     private lateinit var taskInterruptButton: Button
+
     private lateinit var taskContainer: View
+
     private val intentFilter = IntentFilter()
+
     private var permissionRequestedCamera = false
+
     private var permissionRequestedLocation = false
+
     private var showAsText = false
+
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action

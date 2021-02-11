@@ -41,7 +41,7 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
                     progress().addToCurrent(1)
                     publishStatus()
                     try {
-                        CommunicationBridge.Companion.connect(kuick(), address, device, 0).use { client ->
+                        CommunicationBridge.connect(kuick(), address, device, 0).use { client ->
                             client.requestAcquaintance()
                             if (client.receiveResult()) {
                                 val anchor: CalculationResultListener? = anchor

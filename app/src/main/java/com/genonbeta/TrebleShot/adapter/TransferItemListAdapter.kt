@@ -81,26 +81,26 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         val members: List<LoadedMember?>? = Transfers.loadMemberList(getContext(), getGroupId(), null)
         val memberArray: Array<LoadedMember?> = arrayOfNulls<LoadedMember>(members!!.size)
         members.toArray(memberArray)
-        val transferSelect: SQLQuery.Select = SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
-        val transferWhere: StringBuilder = StringBuilder(Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=?")
+        val transferSelect: SQLQuery.Select = SQLQuery.Select(KuickTABLE_TRANSFERITEM)
+        val transferWhere: StringBuilder = StringBuilder(KuickFIELD_TRANSFERITEM_TRANSFERID + "=?")
         val transferArgs: MutableList<String> = ArrayList()
         transferArgs.add(mTransfer.id.toString())
         if (currentPath != null) {
             transferWhere.append(
-                " AND (" + Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY + "=? OR "
-                        + Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ?)"
+                " AND (" + KuickFIELD_TRANSFERITEM_DIRECTORY + "=? OR "
+                        + KuickFIELD_TRANSFERITEM_DIRECTORY + " LIKE ?)"
             )
             transferArgs.add(currentPath)
             transferArgs.add(currentPath + File.separator + "%")
         }
         if (member != null) {
-            transferWhere.append(" AND " + Kuick.Companion.FIELD_TRANSFERITEM_TYPE + "=?")
+            transferWhere.append(" AND " + KuickFIELD_TRANSFERITEM_TYPE + "=?")
             transferArgs.add(member.type.toString())
         }
-        if (getSortingCriteria() == GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE) {
+        if (getSortingCriteria() == GroupEditableListAdapterMODE_GROUP_BY_DATE) {
             transferSelect.setOrderBy(
-                Kuick.Companion.FIELD_TRANSFERITEM_LASTCHANGETIME + " "
-                        + if (getSortingOrder() == EditableListAdapter.Companion.MODE_SORT_ORDER_ASCENDING) "ASC" else "DESC"
+                KuickFIELD_TRANSFERITEM_LASTCHANGETIME + " "
+                        + if (getSortingOrder() == EditableListAdapterMODE_SORT_ORDER_ASCENDING) "ASC" else "DESC"
             )
         }
         transferSelect.where = transferWhere.toString()
@@ -358,7 +358,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapter.Companion.VIEW_TYPE_DEFAULT) GroupViewHolder(
+        val holder: GroupViewHolder = if (viewType == EditableListAdapterVIEW_TYPE_DEFAULT) GroupViewHolder(
             getInflater().inflate(
                 R.layout.list_transfer_item, parent, false
             )
@@ -436,7 +436,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
         constructor() {}
         constructor(representativeText: String) {
-            viewType = GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE
+            viewType = GroupEditableListAdapterVIEW_TYPE_REPRESENTATIVE
             setRepresentativeText(representativeText)
         }
 
@@ -476,7 +476,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun isGroupRepresentative(): Boolean {
-            return viewType == GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE
+            return viewType == GroupEditableListAdapterVIEW_TYPE_REPRESENTATIVE
         }
 
         override fun setDate(date: Long) {
@@ -526,7 +526,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         override fun getSecondText(adapter: TransferItemListAdapter): String {
             if (adapter.getMember() != null) return adapter.getMember().device.username
             var totalDevices = 1
-            if (Type.OUTGOING == type) synchronized(mSenderFlagList) { totalDevices = senderFlagList.size }
+            if (Type.OUTGOING == type) synchronized(senderFlagList1) { totalDevices = senderFlagList.size }
             return adapter.getContext().getResources().getQuantityString(
                 R.plurals.text_devices,
                 totalDevices, totalDevices
@@ -561,7 +561,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
             if (members.size == 0) return false
             if (Type.INCOMING == type) return Transfers.isError(flag) else if (adapter.getDeviceId() != null) {
                 return Transfers.isError(getFlag(adapter.getDeviceId()))
-            } else synchronized(mSenderFlagList) { for (member in members) if (Transfers.isError(getFlag(member.deviceId))) return true }
+            } else synchronized(senderFlagList1) { for (member in members) if (Transfers.isError(getFlag(member.deviceId))) return true }
             return false
         }
 
@@ -569,7 +569,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
             if (members.size == 0) return false
             if (Type.INCOMING == type) return Flag.DONE == flag else if (adapter.getDeviceId() != null) {
                 return Flag.DONE == getFlag(adapter.getDeviceId())
-            } else synchronized(mSenderFlagList) { for (member in members) if (Flag.DONE != getFlag(member.deviceId)) return false }
+            } else synchronized(senderFlagList1) { for (member in members) if (Flag.DONE != getFlag(member.deviceId)) return false }
             return true
         }
 
@@ -577,7 +577,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
             if (members.size == 0) return false
             if (Type.INCOMING == type) return Flag.IN_PROGRESS == flag else if (adapter.getDeviceId() != null) {
                 return Flag.IN_PROGRESS == getFlag(adapter.getDeviceId())
-            } else synchronized(mSenderFlagList) { for (member in members) if (Flag.IN_PROGRESS == getFlag(member.deviceId)) return true }
+            } else synchronized(senderFlagList1) { for (member in members) if (Flag.IN_PROGRESS == getFlag(member.deviceId)) return true }
             return false
         }
     }
@@ -618,11 +618,11 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         }
 
         override fun getWhere(): SQLQuery.Select {
-            return SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+            return SQLQuery.Select(KuickTABLE_TRANSFERITEM)
                 .setWhere(
-                    Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND ("
-                            + Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ? OR "
-                            + Kuick.Companion.FIELD_TRANSFERITEM_DIRECTORY + " = ?)",
+                    Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND ("
+                            + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " LIKE ? OR "
+                            + Kuick.FIELD_TRANSFERITEM_DIRECTORY + " = ?)",
                     transferId.toString(),
                     directory + File.separator + "%",
                     directory
@@ -804,7 +804,7 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
 
     companion object {
         //public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
-        val MODE_GROUP_BY_DEFAULT: Int = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING + 1
+        val MODE_GROUP_BY_DEFAULT: Int = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING + 1
     }
 
     init {
@@ -812,6 +812,6 @@ class TransferItemListAdapter(fragment: IEditableListFragment<GenericItem?, Grou
         mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal))
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent))
         mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError))
-        setSelect(SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM))
+        setSelect(SQLQuery.Select(Kuick.TABLE_TRANSFERITEM))
     }
 }

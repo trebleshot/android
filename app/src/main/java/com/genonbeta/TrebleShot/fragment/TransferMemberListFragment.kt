@@ -41,7 +41,7 @@ class TransferMemberListFragment :
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: BroadcastData = KuickDb.toData(intent)
-                if (Kuick.Companion.TABLE_TRANSFERMEMBER == data.tableName) refreshList() else if (Kuick.Companion.TABLE_TRANSFER == data.tableName) updateTransferGroup()
+                if (Kuick.TABLE_TRANSFERMEMBER == data.tableName) refreshList() else if (Kuick.TABLE_TRANSFER == data.tableName) updateTransferGroup()
             }
         }
     }
@@ -83,16 +83,16 @@ class TransferMemberListFragment :
         requireContext().unregisterReceiver(mReceiver)
     }
 
-    override fun performDefaultLayoutClick(holder: RecyclerViewAdapter.ViewHolder, `object`: LoadedMember): Boolean {
-        DeviceInfoDialog(requireActivity(), `object`.device).show()
+    override fun performDefaultLayoutClick(holder: RecyclerViewAdapter.ViewHolder, target: LoadedMember): Boolean {
+        DeviceInfoDialog(requireActivity(), target.device).show()
         return true
     }
 
     override fun performDefaultLayoutLongClick(
         holder: RecyclerViewAdapter.ViewHolder,
-        `object`: LoadedMember
+        target: LoadedMember
     ): Boolean {
-        showPopupMenu<LoadedMember>(this, adapter, getTransferGroup(), holder, holder.itemView, `object`)
+        showPopupMenu<LoadedMember>(this, adapter, getTransferGroup(), holder, holder.itemView, target)
         return true
     }
 

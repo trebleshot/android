@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.utilimport
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
 
 object InetAddresses {
     fun toByteArray(address: Int): ByteArray {

@@ -18,43 +18,54 @@
 package com.genonbeta.TrebleShot.task
 
 import android.content.*
+import android.media.MediaScannerConnection
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.FileListAdapter
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.FileHolder
 import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.TrebleShot.fragment.FileListFragment
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.android.framework.io.DocumentFile
 import java.util.*
 
-class RenameMultipleFilesTask(fileList: List<FileHolder>, renameTo: String) : AsyncTask() {
-    private val mList: List<FileHolder>
-    private val mNewName: String
+class RenameMultipleFilesTask(val fileList: List<FileHolder>, val renameTo: String) : AsyncTask() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        if (mList.size <= 0) return
-        progress().addToTotal(mList.size)
+        if (fileList.isEmpty())
+            return
+
+        progress.addToTotal(fileList.size)
+
         val scannerList: MutableList<DocumentFile> = ArrayList()
-        for (i in mList.indices) {
+
+        for (i in fileList.indices) {
             throwIfStopped()
-            val fileHolder: FileHolder = mList[i]
+
+            val fileHolder = fileList[i]
             ongoingContent = fileHolder.friendlyName
-            progress().addToCurrent(1)
+            progress.addToCurrent(1)
             publishStatus()
-            if (fileHolder.file == null) continue
+
+            if (fileHolder.file == null)
+                continue
             var ext = Files.getFileFormat(fileHolder.file.getName())
             ext = if (ext != null) String.format(".%s", ext) else ""
-            renameFile(kuick(), fileHolder, String.format("%s%s", String.format(mNewName, i), ext), scannerList)
+            renameFile(kuick, fileHolder, String.format("%s%s", String.format(renameTo, i), ext), scannerList)
         }
         notifyFileChanges(context, scannerList)
     }
 
-    override fun getName(context: Context?): String? {
-        return getContext().getString(R.string.text_renameMultipleItems)
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_renameMultipleItems)
     }
 
     companion object {
-        fun notifyFileChanges(context: Context?, scannerList: List<DocumentFile>) {
-            if (scannerList.size < 1) return
+        fun notifyFileChanges(context: Context, scannerList: List<DocumentFile>) {
+            if (scannerList.isEmpty())
+                return
+
             val paths = arrayOfNulls<String>(scannerList.size)
             val mimeTypes = arrayOfNulls<String>(scannerList.size)
             for (i in scannerList.indices) {
@@ -63,17 +74,16 @@ class RenameMultipleFilesTask(fileList: List<FileHolder>, renameTo: String) : As
                 mimeTypes[i] = file.type
             }
             MediaScannerConnection.scanFile(context, paths, mimeTypes, null)
-            context!!.sendBroadcast(Intent(FileListFragment.Companion.ACTION_FILE_RENAME_COMPLETED))
+            context.sendBroadcast(Intent(FileListFragment.ACTION_FILE_RENAME_COMPLETED))
         }
 
         fun renameFile(
-            kuick: Kuick?, holder: FileHolder, renameTo: String,
-            scannerList: MutableList<DocumentFile>
+            kuick: Kuick, holder: FileHolder, renameTo: String, scannerList: MutableList<DocumentFile>
         ): Boolean {
             try {
-                if (FileListAdapter.FileHolder.Type.Bookmarked == holder.getType() || FileListAdapter.FileHolder.Type.Mounted == holder.getType()) {
+                if (FileHolder.Type.Bookmarked == holder.getType() || FileHolder.Type.Mounted == holder.getType()) {
                     holder.friendlyName = renameTo
-                    kuick.publish<Any, FileHolder>(holder)
+                    kuick.publish(holder)
                     kuick.broadcast()
                     return true
                 } else if (holder.file != null && holder.file.canWrite() && holder.file.renameTo(renameTo)) {
@@ -85,10 +95,5 @@ class RenameMultipleFilesTask(fileList: List<FileHolder>, renameTo: String) : As
             }
             return false
         }
-    }
-
-    init {
-        mList = fileList
-        mNewName = renameTo
     }
 }

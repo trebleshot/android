@@ -34,19 +34,19 @@ import java.util.*
  * created by: Veli
  * date: 12.01.2018 16:55
  */
-abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHolder>(fragment: IEditableListFragment<T, V>) :
-    RecyclerViewAdapter<T, V>(fragment.getContext()), EditableListAdapterBase<T>, SectionTitleProvider {
-    private var mFragment: IEditableListFragment<T, V>? = null
-    private var mCollator: Collator? = null
-    private val mItemList: MutableList<T> = ArrayList()
-    private var mSortingCriteria = MODE_SORT_BY_NAME
-    private var mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING
-    private var mGridLayoutRequested = false
+abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHolder>(
+    var fragment: IEditableListFragment<T, V>,
+) : RecyclerViewAdapter<T, V>(fragment.getContext()!!), EditableListAdapterBase<T>, SectionTitleProvider {
+    private var collator: Collator? = null
+    private val itemList: MutableList<T> = ArrayList()
+    var sortingCriteria = MODE_SORT_BY_NAME
+    var sortingOrder = MODE_SORT_ORDER_ASCENDING
+    private var gridLayoutRequested = false
 
     override fun onUpdate(passedItem: MutableList<T>) {
-        synchronized(mItemList) {
-            mItemList.clear()
-            mItemList.addAll(passedItem)
+        synchronized(itemList) {
+            itemList.clear()
+            itemList.addAll(passedItem)
             syncSelectionList()
         }
     }
@@ -61,34 +61,30 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
             return 1
         else if (!compareTo.comparisonSupported())
             return -1
-        return compareItems(getSortingCriteria(compare, compareTo), getSortingOrder(), obj1, obj2)
+        return compareItems(getSortingCriteria(compare, compareTo), obj1, obj2)
     }
 
-    fun compareItems(sortingCriteria: Int, sortingOrder: Int, obj1: T, obj2: T): Int {
+    fun compareItems(sortingCriteria: Int, obj1: T, obj2: T): Int {
         when (sortingCriteria) {
-            MODE_SORT_BY_DATE -> return MathUtils.compare(obj1.comparableDate, obj2.comparableDate)
-            MODE_SORT_BY_SIZE -> return MathUtils.compare(obj1.comparableSize, obj2.comparableSize)
-            MODE_SORT_BY_NAME -> return getDefaultCollator()!!.compare(obj1.comparableName, obj2.comparableName)
+            MODE_SORT_BY_DATE -> return MathUtils.compare(obj1.getComparableDate(), obj2.getComparableDate())
+            MODE_SORT_BY_SIZE -> return MathUtils.compare(obj1.getComparableSize(), obj2.getComparableSize())
+            MODE_SORT_BY_NAME -> return getDefaultCollator().compare(obj1.getComparableName(), obj2.getComparableName())
         }
         throw IllegalStateException("Asked for $sortingCriteria which isn't known.")
     }
 
-    override fun filterItem(item: T): Boolean = getFragment()?.let {
-        val filteringKeywords = it.getFilteringDelegate().getFilteringKeyword(it)
+    override fun filterItem(item: T): Boolean {
+        val filteringKeywords = fragment.filteringDelegate.getFilteringKeyword(fragment)
         return filteringKeywords == null || filteringKeywords.isEmpty() || item.applyFilter(filteringKeywords)
-    } ?: false
+    }
 
     fun isGridLayoutRequested(): Boolean {
-        return mGridLayoutRequested
+        return gridLayoutRequested
     }
 
-    fun getDefaultCollator(): Collator = mCollator ?: Collator.getInstance().also {
+    fun getDefaultCollator(): Collator = collator ?: Collator.getInstance().also {
         it.strength = Collator.TERTIARY
-        mCollator = it
-    }
-
-    fun getFragment(): IEditableListFragment<T, V>? {
-        return mFragment
+        collator = it
     }
 
     override fun getItemCount(): Int {
@@ -96,7 +92,7 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
     }
 
     override fun getItem(position: Int): T {
-        synchronized(mItemList) { return mItemList[position] }
+        synchronized(itemList) { return itemList[position] }
     }
 
     fun getItem(holder: V): T {
@@ -114,18 +110,18 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
     }
 
     override fun getList(): MutableList<T> {
-        return mItemList
+        return itemList
     }
 
     override fun getSelectableList(): MutableList<T> {
         return getList()
     }
 
-    open fun getSectionName(position: Int, `object`: T): String {
-        when (getSortingCriteria()) {
-            MODE_SORT_BY_NAME -> return getSectionNameTrimmedText(`object`.comparableName)
-            MODE_SORT_BY_DATE -> return getSectionNameDate(`object`.comparableDate)
-            MODE_SORT_BY_SIZE -> return Files.sizeExpression(`object`.comparableSize, false)
+    open fun getSectionName(position: Int, item: T): String {
+        when (sortingCriteria) {
+            MODE_SORT_BY_NAME -> return getSectionNameTrimmedText(item.getComparableName())
+            MODE_SORT_BY_DATE -> return getSectionNameDate(item.getComparableDate())
+            MODE_SORT_BY_SIZE -> return Files.sizeExpression(item.getComparableSize(), false)
         }
         return position.toString()
     }
@@ -134,8 +130,8 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
         return DateUtils.formatDateTime(context, date, DateUtils.FORMAT_SHOW_DATE).toString()
     }
 
-    fun getSectionNameTrimmedText(text: String?): String {
-        return TextUtils.trimText(text, 1)!!.toUpperCase()
+    fun getSectionNameTrimmedText(text: String): String {
+        return TextUtils.trimText(text, 1).toUpperCase(Locale.getDefault())
     }
 
     override fun getSectionTitle(position: Int): String {
@@ -143,32 +139,20 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
     }
 
     open fun getSortingCriteria(objectOne: T, objectTwo: T): Int {
-        return getSortingCriteria()
-    }
-
-    fun getSortingCriteria(): Int {
-        return mSortingCriteria
+        return sortingCriteria
     }
 
     open fun getSortingOrder(objectOne: T, objectTwo: T): Int {
-        return getSortingOrder()
-    }
-
-    fun getSortingOrder(): Int {
-        return mSortingOrderAscending
+        return sortingCriteria
     }
 
     fun notifyGridSizeUpdate(gridSize: Int, isScreenLarge: Boolean) {
-        mGridLayoutRequested = !isScreenLarge && gridSize > 1 || gridSize > 2
-    }
-
-    fun setFragment(fragmentImpl: IEditableListFragment<T, V>?) {
-        mFragment = fragmentImpl
+        gridLayoutRequested = !isScreenLarge && gridSize > 1 || gridSize > 2
     }
 
     fun setSortingCriteria(sortingCriteria: Int, sortingOrder: Int) {
-        mSortingCriteria = sortingCriteria
-        mSortingOrderAscending = sortingOrder
+        this.sortingCriteria = sortingCriteria
+        this.sortingOrder = sortingOrder
     }
 
     override fun syncAndNotify(adapterPosition: Int) {
@@ -184,13 +168,13 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
     @Synchronized
     fun syncSelection(adapterPosition: Int) {
         val item = getItem(adapterPosition)
-        item.setSelectableSelected(mFragment!!.engineConnection.isSelectedOnHost(item))
+        item.setSelectableSelected(fragment.engineConnection.isSelectedOnHost(item))
     }
 
     @Synchronized
     fun syncSelectionList() {
         val itemList: List<T> = ArrayList(getList())
-        for (item in itemList) item.setSelectableSelected(mFragment!!.engineConnection.isSelectedOnHost(item))
+        for (item in itemList) item.setSelectableSelected(fragment.engineConnection.isSelectedOnHost(item))
     }
 
     companion object {
@@ -204,6 +188,5 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
 
     init {
         setHasStableIds(true)
-        setFragment(fragment)
     }
 }

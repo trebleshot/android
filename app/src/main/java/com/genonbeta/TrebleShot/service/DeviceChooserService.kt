@@ -42,10 +42,10 @@ class DeviceChooserService : ChooserTargetService() {
 
         // use default accent color for light theme
         val iconBuilder: IShapeBuilder? = AppUtils.getDefaultIconBuilder(getApplicationContext())
-        for (device in kuick.castQuery(SQLQuery.Select(Kuick.Companion.TABLE_DEVICES), Device::class.java)) {
+        for (device in kuick.castQuery(SQLQuery.Select(Kuick.TABLE_DEVICES), Device::class.java)) {
             if (device.isLocal) continue
             val bundle = Bundle()
-            bundle.putString(ShareActivity.Companion.EXTRA_DEVICE_ID, device.uid)
+            bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.uid)
             val textImage: TextDrawable = iconBuilder.buildRound(device.username)
             val bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)

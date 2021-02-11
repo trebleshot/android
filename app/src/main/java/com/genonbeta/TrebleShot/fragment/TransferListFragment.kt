@@ -19,15 +19,15 @@ package com.genonbeta.TrebleShot.fragment
 
 import android.app.Activity
 import android.content.*
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
+import com.genonbeta.TrebleShot.dataobject.Identity.withORs
+import com.genonbeta.TrebleShot.dataobject.Identifier.from
 import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesPending
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.bytesValue
 import com.genonbeta.TrebleShot.dataobject.TransferItem.flag
 import com.genonbeta.TrebleShot.dataobject.TransferItem.putFlag
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
+import com.genonbeta.TrebleShot.dataobject.Identity.withANDs
+import com.genonbeta.TrebleShot.dataobject.TransferItem.from
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress.hostAddress
 import com.genonbeta.TrebleShot.dataobject.Container.expand
 import com.genonbeta.TrebleShot.dataobject.Device.equals
@@ -156,17 +156,17 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex?, GroupView
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: BroadcastData = KuickDb.toData(intent)
-                if (data != null && (Kuick.Companion.TABLE_TRANSFER == data.tableName || Kuick.Companion.TABLE_TRANSFERITEM == data.tableName)) refreshList()
-            } else if (App.Companion.ACTION_TASK_CHANGE == intent.action) updateTasks()
+                if (data != null && (Kuick.TABLE_TRANSFER == data.tableName || Kuick.TABLE_TRANSFERITEM == data.tableName)) refreshList()
+            } else if (App.ACTION_TASK_CHANGE == intent.action) updateTasks()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setFilteringSupported(true)
-        setDefaultOrderingCriteria(EditableListAdapter.Companion.MODE_SORT_ORDER_DESCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.Companion.MODE_SORT_BY_DATE)
-        setDefaultGroupingCriteria(GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE)
+        setDefaultOrderingCriteria(EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
+        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_DATE)
+        setDefaultGroupingCriteria(GroupEditableListAdapter.MODE_GROUP_BY_DATE)
         setItemOffsetDecorationEnabled(true)
         setItemOffsetForEdgesEnabled(true)
         setDefaultItemOffsetPadding(getResources().getDimension(R.dimen.padding_list_content_parent_layout))
@@ -182,7 +182,7 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex?, GroupView
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
-        mFilter.addAction(App.Companion.ACTION_TASK_CHANGE)
+        mFilter.addAction(App.ACTION_TASK_CHANGE)
     }
 
     override fun onCreatePerformerMenu(context: Context?): PerformerMenu? {
@@ -201,13 +201,13 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex?, GroupView
     }
 
     override fun onSortingOptions(options: MutableMap<String, Int>) {
-        options[getString(R.string.text_sortByDate)] = EditableListAdapter.Companion.MODE_SORT_BY_DATE
-        options[getString(R.string.text_sortBySize)] = EditableListAdapter.Companion.MODE_SORT_BY_SIZE
+        options[getString(R.string.text_sortByDate)] = EditableListAdapter.MODE_SORT_BY_DATE
+        options[getString(R.string.text_sortBySize)] = EditableListAdapter.MODE_SORT_BY_SIZE
     }
 
     override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
-        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING
-        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
+        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {
@@ -222,13 +222,13 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex?, GroupView
         holder: GroupViewHolder,
         `object`: TransferIndex
     ): Boolean {
-        TransferDetailActivity.Companion.startInstance(requireActivity(), `object`.transfer)
+        TransferDetailActivity.startInstance(requireActivity(), `object`.transfer)
         return true
     }
 
     fun updateTasks() {
         try {
-            val tasks: List<FileTransferTask> = App.Companion.from(requireActivity()).getTaskListOf<FileTransferTask>(
+            val tasks: List<FileTransferTask> = App.from(requireActivity()).getTaskListOf<FileTransferTask>(
                 FileTransferTask::class.java
             )
             val activeTaskList: MutableList<Long> = ArrayList()

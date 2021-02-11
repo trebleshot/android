@@ -19,15 +19,15 @@ package com.genonbeta.TrebleShot.fragment
 
 import android.app.Activity
 import android.content.*
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
+import com.genonbeta.TrebleShot.dataobject.Identity.withORs
+import com.genonbeta.TrebleShot.dataobject.Identifier.from
 import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesPending
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.bytesValue
 import com.genonbeta.TrebleShot.dataobject.TransferItem.flag
 import com.genonbeta.TrebleShot.dataobject.TransferItem.putFlag
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
+import com.genonbeta.TrebleShot.dataobject.Identity.withANDs
+import com.genonbeta.TrebleShot.dataobject.TransferItem.from
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress.hostAddress
 import com.genonbeta.TrebleShot.dataobject.Container.expand
 import com.genonbeta.TrebleShot.dataobject.Device.equals
@@ -158,9 +158,9 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject?, Grou
         super.onCreate(savedInstanceState)
         setLayoutResId(R.layout.layout_text_stream)
         setFilteringSupported(true)
-        setDefaultOrderingCriteria(EditableListAdapter.Companion.MODE_SORT_ORDER_DESCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.Companion.MODE_SORT_BY_DATE)
-        setDefaultGroupingCriteria(GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE)
+        setDefaultOrderingCriteria(EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
+        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_DATE)
+        setDefaultGroupingCriteria(GroupEditableListAdapter.MODE_GROUP_BY_DATE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -172,7 +172,7 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject?, Grou
             .setOnClickListener { v: View? ->
                 startActivity(
                     Intent(getActivity(), TextEditorActivity::class.java)
-                        .setAction(TextEditorActivity.Companion.ACTION_EDIT_TEXT)
+                        .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
                 )
             }
     }
@@ -182,13 +182,13 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject?, Grou
     }
 
     override fun onSortingOptions(options: MutableMap<String, Int>) {
-        options[getString(R.string.text_sortByName)] = EditableListAdapter.Companion.MODE_SORT_BY_NAME
-        options[getString(R.string.text_sortByDate)] = EditableListAdapter.Companion.MODE_SORT_BY_DATE
+        options[getString(R.string.text_sortByName)] = EditableListAdapter.MODE_SORT_BY_NAME
+        options[getString(R.string.text_sortByDate)] = EditableListAdapter.MODE_SORT_BY_DATE
     }
 
     override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
-        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_NOTHING
-        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+        options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
+        options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
     }
 
     override fun onResume() {
@@ -212,8 +212,8 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject?, Grou
     override fun performDefaultLayoutClick(holder: GroupViewHolder, `object`: TextStreamObject): Boolean {
         startActivity(
             Intent(getContext(), TextEditorActivity::class.java)
-                .setAction(TextEditorActivity.Companion.ACTION_EDIT_TEXT)
-                .putExtra(TextEditorActivity.Companion.EXTRA_CLIPBOARD_ID, `object`.id)
+                .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+                .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, `object`.id)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
         return true
@@ -305,7 +305,7 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject?, Grou
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: BroadcastData = KuickDb.toData(intent)
-                if (Kuick.Companion.TABLE_CLIPBOARD == data.tableName) refreshList()
+                if (Kuick.TABLE_CLIPBOARD == data.tableName) refreshList()
             }
         }
     }

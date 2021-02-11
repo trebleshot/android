@@ -51,12 +51,19 @@ import com.google.android.material.snackbar.Snackbar
 
 class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
     private lateinit var transfer: Transfer
+
     private lateinit var actionButton: ExtendedFloatingActionButton
+
     private lateinit var progressBar: ProgressBar
+
     private var addingInitialDevice = false
+
     private var colorActive = 0
+
     private var colorNormal = 0
+
     private val filter: IntentFilter = IntentFilter(KuickDb.ACTION_DATABASE_CHANGE)
+
     private val selfReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {

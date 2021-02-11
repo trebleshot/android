@@ -23,9 +23,9 @@ import android.media.MediaScannerConnection
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Identifiable
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
+import com.genonbeta.TrebleShot.dataobject.Identifier.from
 import com.genonbeta.TrebleShot.dataobject.Identity
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
+import com.genonbeta.TrebleShot.dataobject.Identity.withORs
 import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.DynamicNotification

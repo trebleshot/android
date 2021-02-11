@@ -18,15 +18,15 @@
 package com.genonbeta.TrebleShot.fragment
 
 import android.content.*
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
-import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
+import com.genonbeta.TrebleShot.dataobject.Identity.withORs
+import com.genonbeta.TrebleShot.dataobject.Identifier.from
 import com.genonbeta.TrebleShot.dataobject.TransferIndex.bytesPending
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Flag.bytesValue
 import com.genonbeta.TrebleShot.dataobject.TransferItem.flag
 import com.genonbeta.TrebleShot.dataobject.TransferItem.putFlag
-import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withANDs
-import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
+import com.genonbeta.TrebleShot.dataobject.Identity.withANDs
+import com.genonbeta.TrebleShot.dataobject.TransferItem.from
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress.hostAddress
 import com.genonbeta.TrebleShot.dataobject.Container.expand
 import com.genonbeta.TrebleShot.dataobject.Device.equals
@@ -147,8 +147,8 @@ class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder?, GroupVi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setFilteringSupported(true)
-        setDefaultOrderingCriteria(EditableListAdapter.Companion.MODE_SORT_ORDER_DESCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.Companion.MODE_SORT_BY_DATE)
+        setDefaultOrderingCriteria(EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
+        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_DATE)
         setDefaultViewingGridSize(3, 5)
         setItemOffsetDecorationEnabled(true)
     }
@@ -174,7 +174,7 @@ class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder?, GroupVi
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return if (viewType == VideoListAdapter.Companion.VIEW_TYPE_TITLE) currentSpanSize else super.onGridSpanSize(
+        return if (viewType == VideoListAdapter.VIEW_TYPE_TITLE) currentSpanSize else super.onGridSpanSize(
             viewType,
             currentSpanSize
         )

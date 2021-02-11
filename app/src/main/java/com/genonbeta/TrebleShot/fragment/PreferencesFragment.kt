@@ -26,6 +26,6 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         addPreferencesFromResource(R.xml.preferences_main_app)
         addPreferencesFromResource(R.xml.preferences_main_notification)
         addPreferencesFromResource(R.xml.preferences_main_advanced)
-        LookPreferencesFragment.Companion.loadThemeOptionsTo(requireContext(), findPreference<ListPreference>("theme"))
+        LookPreferencesFragment.loadThemeOptionsTo(requireContext(), findPreference<ListPreference>("theme"))
     }
 }

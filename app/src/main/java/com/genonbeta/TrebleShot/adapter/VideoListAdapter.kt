@@ -37,12 +37,12 @@ import com.genonbeta.android.framework.util.listing.Merger
 class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHolder?>?) :
     GalleryGroupEditableListAdapter<VideoHolder?, GroupViewHolder?>(
         fragment,
-        GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
+        GroupEditableListAdapter.MODE_GROUP_BY_DATE
     ) {
     private val mResolver: ContentResolver
     private val mSelectedInset: Int
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapter.Companion.VIEW_TYPE_DEFAULT) GroupViewHolder(
+        val holder: GroupViewHolder = if (viewType == EditableListAdapter.VIEW_TYPE_DEFAULT) GroupViewHolder(
             getInflater().inflate(
                 if (isGridLayoutRequested()) R.layout.list_video_grid else R.layout.list_video, parent, false
             )
@@ -123,7 +123,7 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
         var duration: String? = null
 
         constructor(representativeText: String?) : super(
-            GroupEditableListAdapter.Companion.VIEW_TYPE_REPRESENTATIVE,
+            GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE,
             representativeText
         ) {
         }

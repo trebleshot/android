@@ -47,36 +47,36 @@ class NetworkDeviceV12 : DatabaseObject<Any?> {
     }
 
     override fun getWhere(): SQLQuery.Select {
-        return SQLQuery.Select(Kuick.Companion.TABLE_DEVICES)
-            .setWhere(Kuick.Companion.FIELD_DEVICES_ID + "=?", deviceId)
+        return SQLQuery.Select(Kuick.TABLE_DEVICES)
+            .setWhere(Kuick.FIELD_DEVICES_ID + "=?", deviceId)
     }
 
     override fun getValues(): ContentValues {
         val values = ContentValues()
-        values.put(Kuick.Companion.FIELD_DEVICES_ID, deviceId)
-        values.put(Kuick.Companion.FIELD_DEVICES_USER, nickname)
-        values.put(Kuick.Companion.FIELD_DEVICES_BRAND, brand)
-        values.put(Kuick.Companion.FIELD_DEVICES_MODEL, model)
-        values.put(Kuick.Companion.FIELD_DEVICES_BUILDNAME, versionName)
-        values.put(Kuick.Companion.FIELD_DEVICES_BUILDNUMBER, versionNumber)
-        values.put(Kuick.Companion.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime)
-        values.put(Kuick.Companion.FIELD_DEVICES_ISRESTRICTED, if (isRestricted) 1 else 0)
-        values.put(Kuick.Companion.FIELD_DEVICES_ISTRUSTED, if (isTrusted) 1 else 0)
-        values.put(Kuick.Companion.FIELD_DEVICES_ISLOCALADDRESS, if (isLocalAddress) 1 else 0)
+        values.put(Kuick.FIELD_DEVICES_ID, deviceId)
+        values.put(Kuick.FIELD_DEVICES_USER, nickname)
+        values.put(Kuick.FIELD_DEVICES_BRAND, brand)
+        values.put(Kuick.FIELD_DEVICES_MODEL, model)
+        values.put(Kuick.FIELD_DEVICES_BUILDNAME, versionName)
+        values.put(Kuick.FIELD_DEVICES_BUILDNUMBER, versionNumber)
+        values.put(Kuick.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime)
+        values.put(Kuick.FIELD_DEVICES_ISRESTRICTED, if (isRestricted) 1 else 0)
+        values.put(Kuick.FIELD_DEVICES_ISTRUSTED, if (isTrusted) 1 else 0)
+        values.put(Kuick.FIELD_DEVICES_ISLOCALADDRESS, if (isLocalAddress) 1 else 0)
         return values
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        deviceId = item.getAsString(Kuick.Companion.FIELD_DEVICES_ID)
-        nickname = item.getAsString(Kuick.Companion.FIELD_DEVICES_USER)
-        brand = item.getAsString(Kuick.Companion.FIELD_DEVICES_BRAND)
-        model = item.getAsString(Kuick.Companion.FIELD_DEVICES_MODEL)
-        versionName = item.getAsString(Kuick.Companion.FIELD_DEVICES_BUILDNAME)
-        versionNumber = item.getAsInteger(Kuick.Companion.FIELD_DEVICES_BUILDNUMBER)
-        lastUsageTime = item.getAsLong(Kuick.Companion.FIELD_DEVICES_LASTUSAGETIME)
-        isTrusted = item.getAsInteger(Kuick.Companion.FIELD_DEVICES_ISTRUSTED) == 1
-        isRestricted = item.getAsInteger(Kuick.Companion.FIELD_DEVICES_ISRESTRICTED) == 1
-        isLocalAddress = item.getAsInteger(Kuick.Companion.FIELD_DEVICES_ISLOCALADDRESS) == 1
+        deviceId = item.getAsString(Kuick.FIELD_DEVICES_ID)
+        nickname = item.getAsString(Kuick.FIELD_DEVICES_USER)
+        brand = item.getAsString(Kuick.FIELD_DEVICES_BRAND)
+        model = item.getAsString(Kuick.FIELD_DEVICES_MODEL)
+        versionName = item.getAsString(Kuick.FIELD_DEVICES_BUILDNAME)
+        versionNumber = item.getAsInteger(Kuick.FIELD_DEVICES_BUILDNUMBER)
+        lastUsageTime = item.getAsLong(Kuick.FIELD_DEVICES_LASTUSAGETIME)
+        isTrusted = item.getAsInteger(Kuick.FIELD_DEVICES_ISTRUSTED) == 1
+        isRestricted = item.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1
+        isLocalAddress = item.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1
     }
 
     override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any, listener: Progress.Listener) {}
@@ -84,14 +84,14 @@ class NetworkDeviceV12 : DatabaseObject<Any?> {
     override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any, listener: Progress.Listener) {
         kuick.getContext().deleteFile(generatePictureId())
         kuick.remove(
-            db, SQLQuery.Select(Kuick.Companion.TABLE_DEVICEADDRESS)
-                .setWhere(Kuick.Companion.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId)
+            db, SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId)
         )
         val assignees: List<TransferAssigneeV12> = kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
             db, SQLQuery.Select(
-                Kuick.Companion.TABLE_TRANSFERMEMBER
+                Kuick.TABLE_TRANSFERMEMBER
             ).setWhere(
-                Kuick.Companion.FIELD_TRANSFERMEMBER_DEVICEID + "=?",
+                Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=?",
                 deviceId
             ), TransferAssigneeV12::class.java, null
         )
@@ -105,9 +105,9 @@ class NetworkDeviceV12 : DatabaseObject<Any?> {
                 val relatedAssignees: List<TransferAssigneeV12> =
                     kuick.castQuery<NetworkDeviceV12, TransferAssigneeV12>(
                         SQLQuery.Select(
-                            Kuick.Companion.TABLE_TRANSFERMEMBER
+                            Kuick.TABLE_TRANSFERMEMBER
                         ).setWhere(
-                            Kuick.Companion.FIELD_TRANSFERMEMBER_TRANSFERID + "=?",
+                            Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?",
                             transferGroup.groupId.toString()
                         ), TransferAssigneeV12::class.java
                     )

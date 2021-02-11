@@ -24,8 +24,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.dataobject.Shareable
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.TrebleShot.widget.EditableListAdapterBase
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
 import com.genonbeta.TrebleShot.widgetimport.EditableListAdapterBase
 import com.genonbeta.android.framework.util.date.DateMerger
@@ -39,31 +37,30 @@ import java.util.*
  * created by: Veli
  * date: 29.03.2018 08:00
  */
-abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
-    fragment: IEditableListFragment<T, V>,
-    private var mGroupBy: Int
-) : EditableListAdapter<T, V>(fragment) {
+abstract class GroupEditableListAdapter<T : GroupEditable>(
+    fragment: IEditableListFragment<T, GroupViewHolder>,
+    private var groupBy: Int,
+) : EditableListAdapter<T, GroupViewHolder>(fragment) {
     protected abstract fun onLoad(lister: GroupLister<T>)
+
     protected abstract fun onGenerateRepresentative(text: String, merger: Merger<T>?): T
-    override fun onLoad(): List<T> {
+
+    override fun onLoad(): MutableList<T> {
         val loadedList: MutableList<T> = ArrayList()
         val groupLister = createLister(loadedList, getGroupBy())
         onLoad(groupLister)
-        if (groupLister.getList().size > 0) {
-            Collections.sort(
-                groupLister.getList(),
-                Comparator<ComparableMerger<T>> { o1: ComparableMerger<T>?, o2: ComparableMerger<T> -> o2.compareTo(o1) })
-            for (thisMerger in groupLister.getList()) {
-                Collections.sort(thisMerger.getBelongings(), this)
-                val generated: T? = onGenerateRepresentative(getRepresentativeText(thisMerger), thisMerger)
-                val firstEditable: T = thisMerger.getBelongings().get(0)
-                if (generated != null) {
-                    loadedList.add(generated)
-                    generated.setSize(thisMerger.getBelongings().size.toLong())
-                    generated.setDate(firstEditable.comparableDate)
-                    generated.setId(generated.getRepresentativeText().hashCode().inv().toLong())
-                }
-                loadedList.addAll(thisMerger.getBelongings())
+        if (groupLister.mergers.isNotEmpty()) {
+            groupLister.mergers.sortWith { o1: ComparableMerger<T>, o2: ComparableMerger<T> -> o2.compareTo(o1) }
+
+            for (thisMerger in groupLister.mergers) {
+                Collections.sort(thisMerger.belongings, this)
+                val generated: T = onGenerateRepresentative(getRepresentativeText(thisMerger), thisMerger)
+                val firstEditable: T = thisMerger.belongings[0]
+                loadedList.add(generated)
+                generated.setSize(thisMerger.belongings.size.toLong())
+                generated.setDate(firstEditable.getComparableDate())
+                generated.id = generated.getRepresentativeText().hashCode().inv().toLong()
+                loadedList.addAll(thisMerger.belongings)
             }
         } else Collections.sort(loadedList, this)
         return loadedList
@@ -75,26 +72,20 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
 
     protected fun createDefaultViews(parent: ViewGroup?, viewType: Int, noPadding: Boolean): GroupViewHolder {
         if (viewType == VIEW_TYPE_REPRESENTATIVE) return GroupViewHolder(
-            inflater.inflate(
-                if (noPadding) R.layout.layout_list_title_no_padding else R.layout.layout_list_title,
-                parent,
-                false
-            ), R.id.layout_list_title_text
+            layoutInflater.inflate(if (noPadding) R.layout.layout_list_title_no_padding else R.layout.layout_list_title,
+                parent, false), R.id.layout_list_title_text
         ) else if (viewType == VIEW_TYPE_ACTION_BUTTON) return GroupViewHolder(
-            inflater.inflate(
-                R.layout.layout_list_action_button, parent,
-                false
-            ), R.id.text
+            layoutInflater.inflate(R.layout.layout_list_action_button, parent, false), R.id.text
         )
         throw IllegalArgumentException("$viewType is not defined in defaults")
     }
 
     open fun getGroupBy(): Int {
-        return mGroupBy
+        return groupBy
     }
 
     fun setGroupBy(groupBy: Int) {
-        mGroupBy = groupBy
+        this.groupBy = groupBy
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -103,48 +94,53 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
 
     open fun getRepresentativeText(merger: Merger<out T>): String {
         if (merger is DateMerger<*>)
-            return getSectionNameDate((merger as DateMerger<*>).getTime())
+            return getSectionNameDate(merger.time)
         else if (merger is StringMerger<*>)
-            return (merger as StringMerger<*>).getString()
+            return merger.text
         return merger.toString()
     }
 
-    override fun getSectionName(position: Int, `object`: T): String {
-        if (`object`.isGroupRepresentative())
-            return `object`.getRepresentativeText()
-        return if (getGroupBy() == MODE_GROUP_BY_DATE) getSectionNameDate(`object`.comparableDate)
-        else
-            super.getSectionName(position, `object`)
+    override fun getSectionName(position: Int, item: T): String {
+        return when {
+            item.isGroupRepresentative() -> item.getRepresentativeText()
+            getGroupBy() == MODE_GROUP_BY_DATE -> getSectionNameDate(item.getComparableDate())
+            else -> super.getSectionName(position, item)
+        }
     }
 
     interface GroupEditable : Editable {
+        var requestCode: Int
+
         fun getViewType(): Int
-        fun getRequestCode(): Int
-        fun getRepresentativeText(): String?
+
+        fun getRepresentativeText(): String
+
         fun setRepresentativeText(text: CharSequence)
+
         fun isGroupRepresentative(): Boolean
+
         fun setDate(date: Long)
+
         fun setSize(size: Long)
     }
 
     abstract class GroupShareable : Shareable, GroupEditable {
-        private var mViewType: Int = VIEW_TYPE_DEFAULT
+        private var viewType: Int = VIEW_TYPE_DEFAULT
+
+        override var requestCode: Int = 0
 
         constructor() : super()
+
         constructor(viewType: Int, representativeText: String) {
-            mViewType = viewType
+            this.viewType = viewType
             friendlyName = representativeText
         }
 
-        override fun getRequestCode(): Int {
-            return 0
-        }
-
         override fun getViewType(): Int {
-            return mViewType
+            return viewType
         }
 
-        override fun getRepresentativeText(): String? {
+        override fun getRepresentativeText(): String {
             return friendlyName
         }
 
@@ -153,15 +149,15 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
         }
 
         override fun isGroupRepresentative(): Boolean {
-            return mViewType == VIEW_TYPE_REPRESENTATIVE || mViewType == VIEW_TYPE_ACTION_BUTTON
+            return viewType == VIEW_TYPE_REPRESENTATIVE || viewType == VIEW_TYPE_ACTION_BUTTON
         }
 
         override fun setDate(date: Long) {
-            comparableDate = date
+            this.dateInternal = date
         }
 
         override fun setSize(size: Long) {
-            comparableSize = size
+            this.sizeInternal = size
         }
 
         override fun setSelectableSelected(selected: Boolean): Boolean {
@@ -170,77 +166,55 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
     }
 
     class GroupViewHolder : ViewHolder {
-        private var mRepresentativeTextView: TextView? = null
-        private var mRequestCode = 0
+        private var representativeTextView: TextView? = null
 
-        constructor(itemView: View?, textView: TextView?) : super(itemView) {
-            mRepresentativeTextView = textView
+        var requestCode = 0
+
+        constructor(itemView: View, textView: TextView) : super(itemView) {
+            representativeTextView = textView
         }
 
         constructor(itemView: View, resRepresentativeText: Int) : this(
-            itemView,
-            itemView.findViewById<TextView>(resRepresentativeText)
+            itemView, itemView.findViewById<TextView>(resRepresentativeText)
         )
 
-        constructor(itemView: View?) : super(itemView)
+        constructor(itemView: View) : super(itemView)
 
         fun getRepresentativeTextView(): TextView? {
-            return mRepresentativeTextView
-        }
-
-        fun getRequestCode(): Int {
-            return mRequestCode
-        }
-
-        fun setRequestCode(requestCode: Int): GroupViewHolder {
-            mRequestCode = requestCode
-            return this
+            return representativeTextView
         }
 
         fun isRepresentative(): Boolean {
-            return mRepresentativeTextView != null
+            return representativeTextView != null
         }
 
         fun tryBinding(editable: GroupEditable): Boolean {
-            if (getRepresentativeTextView() == null || editable.getRepresentativeText() == null) return false
-            getRepresentativeTextView().setText(editable.getRepresentativeText())
-            setRequestCode(editable.getRequestCode())
+            if (getRepresentativeTextView() == null) return false
+            getRepresentativeTextView()?.text = editable.getRepresentativeText()
+            requestCode = editable.requestCode
             return true
         }
     }
 
-    class GroupLister<T : GroupEditable?>(private val mNoGroupingList: MutableList<T>, private val mMode: Int) :
-        Lister<T, ComparableMerger<T>?>() {
-        private var mCustomLister: CustomGroupLister<T>? = null
-
-        constructor(noGroupingList: MutableList<T>, mode: Int, customList: CustomGroupLister<T>?) : this(
-            noGroupingList,
-            mode
-        ) {
-            mCustomLister = customList
-        }
+    class GroupLister<T : GroupEditable>(
+        private val noGroupingList: MutableList<T>, private val mode: Int,
+        var customLister: CustomGroupLister<T>? = null,
+    ) : Lister<T, ComparableMerger<T>>() {
 
         fun offerObliged(adapter: EditableListAdapterBase<T>, `object`: T) {
             if (adapter.filterItem(`object`)) offer(`object`)
         }
 
-        fun offer(`object`: T) {
-            if (mCustomLister == null || !mCustomLister.onCustomGroupListing(this, mMode, `object`)) {
-                if (mMode == MODE_GROUP_BY_DATE) offer(
-                    `object`, DateMerger(
-                        `object`!!.comparableDate
-                    )
-                ) else mNoGroupingList.add(`object`)
+        fun offer(item: T) {
+            if (customLister?.onCustomGroupListing(this, mode, item) == false) {
+                if (mode == MODE_GROUP_BY_DATE) offer(
+                    item, DateMerger(item.getComparableDate())
+                ) else noGroupingList.add(item)
             }
         }
 
-        fun setCustomLister(customLister: CustomGroupLister<T>?): GroupLister<T> {
-            mCustomLister = customLister
-            return this
-        }
-
-        interface CustomGroupLister<T : GroupEditable?> {
-            fun onCustomGroupListing(lister: GroupLister<T>, mode: Int, `object`: T): Boolean
+        interface CustomGroupLister<T : GroupEditable> {
+            fun onCustomGroupListing(lister: GroupLister<T>, mode: Int, holder: T): Boolean
         }
     }
 

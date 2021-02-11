@@ -39,24 +39,24 @@ class TransferGroupV12 : DatabaseObject<NetworkDeviceV12?> {
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        groupId = item.getAsLong(Kuick.Companion.FIELD_TRANSFER_ID)
-        savePath = item.getAsString(Kuick.Companion.FIELD_TRANSFER_SAVEPATH)
-        dateCreated = item.getAsLong(Kuick.Companion.FIELD_TRANSFER_DATECREATED)
-        isServedOnWeb = item.getAsInteger(Kuick.Companion.FIELD_TRANSFER_ISSHAREDONWEB) == 1
+        groupId = item.getAsLong(Kuick.FIELD_TRANSFER_ID)
+        savePath = item.getAsString(Kuick.FIELD_TRANSFER_SAVEPATH)
+        dateCreated = item.getAsLong(Kuick.FIELD_TRANSFER_DATECREATED)
+        isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFER_ISSHAREDONWEB) == 1
     }
 
     override fun getValues(): ContentValues {
         val values = ContentValues()
-        values.put(Kuick.Companion.FIELD_TRANSFER_ID, groupId)
-        values.put(Kuick.Companion.FIELD_TRANSFER_SAVEPATH, savePath)
-        values.put(Kuick.Companion.FIELD_TRANSFER_DATECREATED, dateCreated)
-        values.put(Kuick.Companion.FIELD_TRANSFER_ISSHAREDONWEB, if (isServedOnWeb) 1 else 0)
+        values.put(Kuick.FIELD_TRANSFER_ID, groupId)
+        values.put(Kuick.FIELD_TRANSFER_SAVEPATH, savePath)
+        values.put(Kuick.FIELD_TRANSFER_DATECREATED, dateCreated)
+        values.put(Kuick.FIELD_TRANSFER_ISSHAREDONWEB, if (isServedOnWeb) 1 else 0)
         return values
     }
 
     override fun getWhere(): SQLQuery.Select {
-        return SQLQuery.Select(Kuick.Companion.TABLE_TRANSFER)
-            .setWhere(Kuick.Companion.FIELD_TRANSFER_ID + "=?", groupId.toString())
+        return SQLQuery.Select(Kuick.TABLE_TRANSFER)
+            .setWhere(Kuick.FIELD_TRANSFER_ID + "=?", groupId.toString())
     }
 
     override fun onCreateObject(
@@ -83,16 +83,16 @@ class TransferGroupV12 : DatabaseObject<NetworkDeviceV12?> {
         listener: Progress.Listener
     ) {
         kuick.remove(
-            db, SQLQuery.Select(v12.Companion.TABLE_DIVISTRANSFER)
-                .setWhere(String.format("%s = ?", Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID), groupId.toString())
+            db, SQLQuery.Select(v12.TABLE_DIVISTRANSFER)
+                .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), groupId.toString())
         )
         kuick.remove(
-            db, SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERMEMBER)
-                .setWhere(Kuick.Companion.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", groupId.toString())
+            db, SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
+                .setWhere(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?", groupId.toString())
         )
         kuick.removeAsObject<TransferGroupV12, TransferObjectV12>(
-            db, SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
-                .setWhere(Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=?", groupId.toString()),
+            db, SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+                .setWhere(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?", groupId.toString()),
             TransferObjectV12::class.java, this, listener, null
         )
     }

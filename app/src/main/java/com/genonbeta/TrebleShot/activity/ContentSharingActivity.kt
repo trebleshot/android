@@ -121,10 +121,9 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
 
                 if (fragment is EditableListFragmentBase<*>) {
                     val editableListFragment = fragment as EditableListFragmentBase<*>
-                    val adapter = editableListFragment.adapterImpl
                     attachListeners(editableListFragment)
-                    if (editableListFragment.adapterImpl != null) Handler(Looper.getMainLooper()).postDelayed(
-                        { adapter?.syncAllAndNotify() }, 200
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        { editableListFragment.adapterImpl.syncAllAndNotify() }, 200
                     )
                 }
             }

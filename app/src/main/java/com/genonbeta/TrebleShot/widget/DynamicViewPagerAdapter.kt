@@ -19,11 +19,13 @@ package com.genonbeta.TrebleShot.widget
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
 import java.util.*
 
 class DynamicViewPagerAdapter : PagerAdapter() {
     // This holds all the currently displayable views, in order from left to right.
-    private val views: List<View> = ArrayList()
+    private val views: MutableList<View> = ArrayList()
 
     //-----------------------------------------------------------------------------
     // Used by ViewPager.  "Object" represents the page; tell the ViewPager where the
@@ -31,7 +33,7 @@ class DynamicViewPagerAdapter : PagerAdapter() {
     // return POSITION_NONE.
     override fun getItemPosition(`object`: Any): Int {
         val index = views.indexOf(`object`)
-        return if (index == -1) PagerAdapter.POSITION_NONE else index
+        return if (index == -1) POSITION_NONE else index
     }
 
     //-----------------------------------------------------------------------------
@@ -100,9 +102,9 @@ class DynamicViewPagerAdapter : PagerAdapter() {
         // that we set the adapter to null before removing the view from "views" - that's
         // because while ViewPager deletes all its views, it will call destroyItem which
         // will in turn cause a null pointer ref.
-        pager.setAdapter(null)
+        pager.adapter = null
         views.removeAt(position)
-        pager.setAdapter(this)
+        pager.adapter = this
         return position
     }
 

@@ -24,9 +24,9 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 interface IEditableListFragment<T : Editable, V : ViewHolder> : EditableListFragmentBase<T>, EditableListFragmentViewBase<V> {
     fun performLayoutClickOpen(holder: V): Boolean
 
-    fun performLayoutClickOpen(holder: V, `object`: T): Boolean
+    fun performLayoutClickOpen(holder: V, target: T): Boolean
 
-    fun performDefaultLayoutClick(holder: V, `object`: T): Boolean
+    fun performDefaultLayoutClick(holder: V, target: T): Boolean
 
-    fun performDefaultLayoutLongClick(holder: V, `object`: T): Boolean
+    fun performDefaultLayoutLongClick(holder: V, target: T): Boolean
 }

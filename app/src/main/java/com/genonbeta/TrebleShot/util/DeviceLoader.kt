@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.util
 
-import android.content.*
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -27,6 +27,13 @@ import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.IShapeBuilder
+import com.genonbeta.TrebleShot.protocol.DeviceBlockedException
+import com.genonbeta.TrebleShot.protocol.DeviceInsecureException
+import com.genonbeta.TrebleShot.protocol.DeviceVerificationException
+import com.genonbeta.android.database.SQLQuery
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -34,16 +41,16 @@ import java.net.InetAddress
 
 object DeviceLoader {
     @Throws(JSONException::class)
-    fun loadAsClient(kuick: Kuick, `object`: JSONObject, device: Device) {
+    fun loadAsClient(kuick: Kuick, jsonObject: JSONObject, device: Device) {
         device.isBlocked = false
-        device.receiveKey = `object`.getInt(Keyword.DEVICE_KEY)
-        loadFrom(kuick, `object`, device)
+        device.receiveKey = jsonObject.getInt(Keyword.DEVICE_KEY)
+        loadFrom(kuick, jsonObject, device)
     }
 
-    @Throws(JSONException::class, DeviceInsecureException::class)
-    fun loadAsServer(kuick: Kuick, `object`: JSONObject, device: Device, hasPin: Boolean) {
-        device.uid = `object`.getString(Keyword.DEVICE_UID)
-        val receiveKey = `object`.getInt(Keyword.DEVICE_KEY)
+    @Throws(JSONException::class, DeviceInsecureException::class, DeviceBlockedException::class)
+    fun loadAsServer(kuick: Kuick, jsonObject: JSONObject, device: Device, hasPin: Boolean) {
+        device.uid = jsonObject.getString(Keyword.DEVICE_UID)
+        val receiveKey = jsonObject.getInt(Keyword.DEVICE_KEY)
         if (hasPin) device.isTrusted = true
         try {
             try {
@@ -63,40 +70,39 @@ object DeviceLoader {
                 throw DeviceVerificationException("The device receive key is different.", device, receiveKey)
             }
         } finally {
-            loadFrom(kuick, `object`, device)
+            loadFrom(kuick, jsonObject, device)
         }
     }
 
     @Throws(JSONException::class)
-    private fun loadFrom(kuick: Kuick, `object`: JSONObject, device: Device) {
+    private fun loadFrom(kuick: Kuick, jsonObject: JSONObject, device: Device) {
         device.isLocal = AppUtils.getDeviceId(kuick.context) == device.uid
-        device.brand = `object`.getString(Keyword.DEVICE_BRAND)
-        device.model = `object`.getString(Keyword.DEVICE_MODEL)
-        device.username = `object`.getString(Keyword.DEVICE_USERNAME)
+        device.brand = jsonObject.getString(Keyword.DEVICE_BRAND)
+        device.model = jsonObject.getString(Keyword.DEVICE_MODEL)
+        device.username = jsonObject.getString(Keyword.DEVICE_USERNAME)
         device.lastUsageTime = System.currentTimeMillis()
-        device.versionCode = `object`.getInt(Keyword.DEVICE_VERSION_CODE)
-        device.versionName = `object`.getString(Keyword.DEVICE_VERSION_NAME)
-        device.protocolVersion = `object`.getInt(Keyword.DEVICE_PROTOCOL_VERSION)
-        device.protocolVersionMin = `object`.getInt(Keyword.DEVICE_PROTOCOL_VERSION_MIN)
+        device.versionCode = jsonObject.getInt(Keyword.DEVICE_VERSION_CODE)
+        device.versionName = jsonObject.getString(Keyword.DEVICE_VERSION_NAME)
+        device.protocolVersion = jsonObject.getInt(Keyword.DEVICE_PROTOCOL_VERSION)
+        device.protocolVersionMin = jsonObject.getInt(Keyword.DEVICE_PROTOCOL_VERSION_MIN)
         if (device.username.length > AppConfig.NICKNAME_LENGTH_MAX) device.username =
             device.username.substring(0, AppConfig.NICKNAME_LENGTH_MAX)
         kuick.publish(device)
-        saveProfilePicture(kuick.context, device, `object`)
+        saveProfilePicture(kuick.context, device, jsonObject)
     }
 
-    fun load(kuick: Kuick?, address: InetAddress?, listener: OnDeviceResolvedListener?) {
+    fun load(kuick: Kuick, address: InetAddress?, listener: OnDeviceResolvedListener?) {
         Thread {
             try {
-                CommunicationBridge.Companion.connect(
-                    kuick, DeviceAddress(address),
-                    null, 0
-                ).use { bridge -> listener?.onDeviceResolved(bridge.getDevice(), bridge.getDeviceAddress()) }
+                CommunicationBridge.connect(kuick, DeviceAddress(address), null, 0).use { bridge ->
+                    listener?.onDeviceResolved(bridge.device, bridge.getDeviceAddress())
+                }
             } catch (ignored: Exception) {
             }
         }.start()
     }
 
-    fun processConnection(kuick: Kuick?, device: Device, address: InetAddress?): DeviceAddress {
+    fun processConnection(kuick: Kuick, device: Device, address: InetAddress): DeviceAddress {
         val deviceAddress = DeviceAddress(device.uid, address, System.currentTimeMillis())
         processConnection(kuick, device, deviceAddress)
         return deviceAddress
@@ -106,16 +112,16 @@ object DeviceLoader {
         deviceAddress.lastCheckedDate = System.currentTimeMillis()
         deviceAddress.deviceId = device.uid
         kuick.remove(
-            SQLQuery.Select(Kuick.Companion.TABLE_DEVICEADDRESS)
-                .setWhere(Kuick.Companion.FIELD_DEVICEADDRESS_IPADDRESSTEXT + "=?", deviceAddress.hostAddress)
+            SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
+                .setWhere(Kuick.FIELD_DEVICEADDRESS_IPADDRESSTEXT + "=?", deviceAddress.hostAddress)
         )
-        kuick.publish<Device, DeviceAddress>(deviceAddress)
+        kuick.publish(deviceAddress)
     }
 
-    fun saveProfilePicture(context: Context, device: Device, `object`: JSONObject) {
-        if (!`object`.has(Keyword.DEVICE_AVATAR)) return
+    fun saveProfilePicture(context: Context, device: Device, item: JSONObject) {
+        if (!item.has(Keyword.DEVICE_AVATAR)) return
         try {
-            saveProfilePicture(context, device, Base64.decode(`object`.getString(Keyword.DEVICE_AVATAR), 0))
+            saveProfilePicture(context, device, Base64.decode(item.getString(Keyword.DEVICE_AVATAR), 0))
         } catch (ignored: Exception) {
         }
     }

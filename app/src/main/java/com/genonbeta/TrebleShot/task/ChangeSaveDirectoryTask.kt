@@ -30,7 +30,7 @@ import java.util.*
 class ChangeSaveDirectoryTask(private val mTransfer: Transfer, private val mNewSavePath: Uri) : AsyncTask() {
     private var mSkipMoving = false
     override fun onRun() {
-        app.interruptTasksBy(FileTransferTask.Companion.identifyWith(mTransfer.id, TransferItem.Type.INCOMING), true)
+        app.interruptTasksBy(FileTransferTask.identifyWith(mTransfer.id, TransferItem.Type.INCOMING), true)
         val checkList = AppUtils.getKuick(context).castQuery(
             Transfers.createIncomingSelection(mTransfer.id), TransferItem::class.java
         )
@@ -76,7 +76,7 @@ class ChangeSaveDirectoryTask(private val mTransfer: Transfer, private val mNewS
                     for (item in erredFiles) fileNames.append("\n")
                         .append(item.name)
                     post(
-                        TaskMessage.Companion.newInstance()
+                        TaskMessage.newInstance()
                             .setTitle(name)
                             .setMessage(context.getString(R.string.mesg_errorMoveFile, fileNames.toString()))
                     )

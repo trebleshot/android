@@ -20,15 +20,14 @@ package com.genonbeta.TrebleShot.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
-import androidx.recyclerview.widget.RecyclerView
+import android.view.MenuItem
+import android.view.View
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.app.EditableListFragment.LayoutClickListener
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -68,13 +67,13 @@ class FilePickerActivity : Activity() {
                         R.string.text_chooseFolder
                     )
                 }
-                fileExplorerFragment.adapter?.setConfiguration(true, false, null)
+                fileExplorerFragment.adapter.setConfiguration(true, false, null)
                 fileExplorerFragment.refreshList()
                 fileExplorerFragment.listView.setPadding(0, 0, 0, 200)
                 fileExplorerFragment.listView.clipToPadding = false
                 fab.show()
                 fab.setOnClickListener { v: View ->
-                    val selectedPath = fileExplorerFragment.adapter?.getPath()
+                    val selectedPath = fileExplorerFragment.adapter.getPath()
                     if (selectedPath != null && selectedPath.canWrite())
                         finishWithResult(selectedPath)
                     else
@@ -91,13 +90,15 @@ class FilePickerActivity : Activity() {
                     override fun onLayoutClick(
                         listFragment: EditableListFragmentBase<*>?,
                         holder: GroupViewHolder,
-                        longClick: Boolean
+                        longClick: Boolean,
                     ): Boolean {
                         if (longClick)
                             return false
                         val fileHolder = fileExplorerFragment.adapter.getItem(holder)
-                        if (fileHolder.file.isFile()) {
-                            finishWithResult(fileHolder.file)
+                        val file = fileHolder.file
+
+                        if (file?.isDirectory() == true) {
+                            finishWithResult(file)
                             return true
                         }
                         return false

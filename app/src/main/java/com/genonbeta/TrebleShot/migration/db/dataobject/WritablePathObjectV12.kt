@@ -37,20 +37,20 @@ class WritablePathObjectV12 : DatabaseObject<Any?> {
     }
 
     override fun getWhere(): SQLQuery.Select {
-        return SQLQuery.Select(v12.Companion.TABLE_WRITABLEPATH)
-            .setWhere(v12.Companion.FIELD_WRITABLEPATH_PATH + "=?", path.toString())
+        return SQLQuery.Select(v12.TABLE_WRITABLEPATH)
+            .setWhere(v12.FIELD_WRITABLEPATH_PATH + "=?", path.toString())
     }
 
     override fun getValues(): ContentValues {
         val contentValues = ContentValues()
-        contentValues.put(v12.Companion.FIELD_WRITABLEPATH_TITLE, title)
-        contentValues.put(v12.Companion.FIELD_WRITABLEPATH_PATH, path.toString())
+        contentValues.put(v12.FIELD_WRITABLEPATH_TITLE, title)
+        contentValues.put(v12.FIELD_WRITABLEPATH_PATH, path.toString())
         return contentValues
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        title = item.getAsString(v12.Companion.FIELD_WRITABLEPATH_TITLE)
-        path = Uri.parse(item.getAsString(v12.Companion.FIELD_WRITABLEPATH_PATH))
+        title = item.getAsString(v12.FIELD_WRITABLEPATH_TITLE)
+        path = Uri.parse(item.getAsString(v12.FIELD_WRITABLEPATH_PATH))
     }
 
     override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any, listener: Progress.Listener) {}

@@ -43,9 +43,9 @@ class AddDeviceTask(private val mTransfer: Transfer, private val mDevice: Device
         try {
             val member = TransferMember(mTransfer, mDevice, TransferItem.Type.OUTGOING)
             val objectList = kuick.castQuery(
-                db, SQLQuery.Select(Kuick.Companion.TABLE_TRANSFERITEM)
+                db, SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                     .setWhere(
-                        Kuick.Companion.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.Companion.FIELD_TRANSFERITEM_TYPE
+                        Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE
                                 + "=?", mTransfer.id.toString(), TransferItem.Type.OUTGOING.toString()
                     ),
                 TransferItem::class.java, null
@@ -67,12 +67,12 @@ class AddDeviceTask(private val mTransfer: Transfer, private val mDevice: Device
                     if (transferItem.directory != null) json.put(Keyword.INDEX_DIRECTORY, transferItem.directory)
                     filesArray.put(json)
                 } catch (e: Exception) {
-                    Log.e(TransferMemberActivity.Companion.TAG, "Sender error on fileUri on " + transferItem.name, e)
+                    Log.e(TransferMemberActivity.TAG, "Sender error on fileUri on " + transferItem.name, e)
                 }
             }
             if (filesArray.length() < 1) throw IOException("There is no file in the JSON array.")
             var successful: Boolean
-            CommunicationBridge.Companion.connect(kuick, mAddress, mDevice, 0).use { bridge ->
+            CommunicationBridge.connect(kuick, mAddress, mDevice, 0).use { bridge ->
                 bridge.requestFileTransfer(mTransfer.id, filesArray)
                 successful = bridge.receiveResult()
             }
@@ -83,11 +83,11 @@ class AddDeviceTask(private val mTransfer: Transfer, private val mDevice: Device
                 if (anchor != null) {
                     anchor.setResult(
                         Activity.RESULT_OK, Intent()
-                            .putExtra(TransferMemberActivity.Companion.EXTRA_DEVICE, mDevice)
-                            .putExtra(TransferMemberActivity.Companion.EXTRA_TRANSFER, mTransfer)
+                            .putExtra(TransferMemberActivity.EXTRA_DEVICE, mDevice)
+                            .putExtra(TransferMemberActivity.EXTRA_TRANSFER, mTransfer)
                     )
                     if (anchor.isAddingFirstDevice()) {
-                        TransferDetailActivity.Companion.startInstance(anchor, mTransfer)
+                        TransferDetailActivity.startInstance(anchor, mTransfer)
                         anchor.finish()
                     }
                 }
