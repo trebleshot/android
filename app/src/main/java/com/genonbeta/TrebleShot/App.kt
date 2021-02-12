@@ -47,7 +47,7 @@ import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.WebShareServer
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.*
-import com.genonbeta.TrebleShot.utilimport.NsdDaemon
+import com.genonbeta.TrebleShot.util.NsdDaemon
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
 import java.io.ByteArrayInputStream
 import java.io.File

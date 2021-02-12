@@ -41,9 +41,9 @@ import java.security.InvalidParameterException
 open class TransferItem : DatabaseObject<Transfer>, Editable {
     lateinit var name: String
 
-    var file: String? = null
+    lateinit var file: String
 
-    var mimeType: String? = null
+    lateinit var mimeType: String
 
     var directory: String? = null
 
@@ -59,18 +59,18 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
 
     // When the type is outgoing, the sender gets to have device id : flag list
 
-    protected val senderFlagList1: MutableMap<String, Flag> = ArrayMap()
+    protected val senderFlagListInternal: MutableMap<String, Flag> = ArrayMap()
 
     // When the type is incoming, the receiver will only have a flag for its status.
     private var receiverFlag = Flag.PENDING
 
     private var deleteOnRemoval = false
 
-    protected val isSelected = false
+    protected var isSelected = false
 
     constructor()
 
-    constructor(id: Long, transferId: Long, name: String, file: String?, mimeType: String?, size: Long, type: Type) {
+    constructor(id: Long, transferId: Long, name: String, file: String, mimeType: String, size: Long, type: Type) {
         this.id = id
         this.transferId = transferId
         this.name = name
@@ -87,7 +87,7 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
     }
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
-        for (keyword in filteringKeywords) if (name!!.contains(keyword)) return true
+        for (keyword in filteringKeywords) if (name.contains(keyword)) return true
         return false
     }
 
@@ -113,30 +113,27 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
     fun getFlag(deviceId: String?): Flag {
         if (Type.OUTGOING != type) throw InvalidParameterException()
         var flag: Flag?
-        synchronized(senderFlagList1) { flag = senderFlagList1[deviceId] }
+        synchronized(senderFlagListInternal) { flag = senderFlagListInternal[deviceId] }
         return if (flag == null) Flag.PENDING else flag!!
     }
 
-    val flags: Array<Flag?>
+    val flags: Array<Flag>
         get() {
-            synchronized(senderFlagList1) {
-                val flags = arrayOfNulls<Flag>(senderFlagList1.size)
-                senderFlagList1.values.toArray(flags)
-                return flags
+            synchronized(senderFlagListInternal) {
+                return senderFlagListInternal.values.toTypedArray()
             }
         }
-    val senderFlagList: Map<String, Flag>
+
+    val senderFlagList: MutableMap<String, Flag>
         get() {
-            synchronized(senderFlagList1) {
-                val map: MutableMap<String, Flag> = ArrayMap(senderFlagList)
-                map.putAll(senderFlagList1)
-                return map
+            synchronized(senderFlagListInternal) {
+                return senderFlagListInternal.toMutableMap()
             }
         }
 
     fun putFlag(deviceId: String, flag: Flag) {
         if (Type.OUTGOING != type) throw InvalidParameterException()
-        synchronized(senderFlagList1) { senderFlagList1.put(deviceId, flag) }
+        synchronized(senderFlagListInternal) { senderFlagListInternal.put(deviceId, flag) }
     }
 
     fun getPercentage(members: Array<LoadedMember>, deviceId: String?): Double {
@@ -178,9 +175,9 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
             values.put(Kuick.FIELD_TRANSFERITEM_FLAG, receiverFlag.toString())
         } else {
             val item = JSONObject()
-            synchronized(senderFlagList1) {
-                for (deviceId in senderFlagList1.keys) try {
-                    item.put(deviceId, senderFlagList1[deviceId])
+            synchronized(senderFlagListInternal) {
+                for (deviceId in senderFlagListInternal.keys) try {
+                    item.put(deviceId, senderFlagListInternal[deviceId])
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
@@ -191,19 +188,19 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
-        name = item.getAsString(Kuick.FIELD_TRANSFERITEM_NAME)
-        file = item.getAsString(Kuick.FIELD_TRANSFERITEM_FILE)
-        size = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE)
-        mimeType = item.getAsString(Kuick.FIELD_TRANSFERITEM_MIME)
-        id = item.getAsLong(Kuick.FIELD_TRANSFERITEM_ID)
-        transferId = item.getAsLong(Kuick.FIELD_TRANSFERITEM_TRANSFERID)
-        type = Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERITEM_TYPE))
-        directory = item.getAsString(Kuick.FIELD_TRANSFERITEM_DIRECTORY)
+        name = values.getAsString(Kuick.FIELD_TRANSFERITEM_NAME)
+        file = values.getAsString(Kuick.FIELD_TRANSFERITEM_FILE)
+        length = values.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE)
+        mimeType = values.getAsString(Kuick.FIELD_TRANSFERITEM_MIME)
+        id = values.getAsLong(Kuick.FIELD_TRANSFERITEM_ID)
+        transferId = values.getAsLong(Kuick.FIELD_TRANSFERITEM_TRANSFERID)
+        type = Type.valueOf(values.getAsString(Kuick.FIELD_TRANSFERITEM_TYPE))
+        directory = values.getAsString(Kuick.FIELD_TRANSFERITEM_DIRECTORY)
 
         // Added with DB version 13
-        if (item.containsKey(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)) date =
-            item.getAsLong(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)
-        val flagString = item.getAsString(Kuick.FIELD_TRANSFERITEM_FLAG)
+        if (values.containsKey(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)) date =
+            values.getAsLong(Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME)
+        val flagString = values.getAsString(Kuick.FIELD_TRANSFERITEM_FLAG)
         if (Type.INCOMING == type) {
             try {
                 receiverFlag = Flag.valueOf(flagString)
@@ -219,8 +216,8 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
             try {
                 val jsonObject = JSONObject(flagString)
                 val iterator = jsonObject.keys()
-                synchronized(senderFlagList1) {
-                    senderFlagList1.clear()
+                synchronized(senderFlagListInternal) {
+                    senderFlagListInternal.clear()
                     while (iterator.hasNext()) {
                         val key = iterator.next()
                         val value = jsonObject.getString(key)
@@ -235,7 +232,7 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
                                 flag = Flag.PENDING
                             }
                         }
-                        senderFlagList1[key] = flag
+                        senderFlagListInternal[key] = flag
                     }
                 }
             } catch (ignored: JSONException) {

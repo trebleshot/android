@@ -19,19 +19,23 @@ package com.genonbeta.TrebleShot.viewimport
 
 import android.content.*
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
+
 /**
  * created by: veli
  * date: 11.04.2018 00:00
  */
 class SelectionIllustratorImageView : AppCompatImageView {
-    constructor(context: Context?) : super(context) {}
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun setSelected(selected: Boolean) {
         super.setSelected(selected)
         if (selected) {
-            getDrawable().setVisible(false, false)
-        } else getDrawable().setVisible(true, false)
+            drawable.setVisible(false, false)
+        } else drawable.setVisible(true, false)
     }
 }

@@ -31,7 +31,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.collection.ArrayMap
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.ImageViewCompat
 import com.genonbeta.TrebleShot.GlideApp
@@ -43,6 +43,7 @@ import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.TrebleShot.util.AppUtils.getReference
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.*
@@ -52,6 +53,7 @@ import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.io.TreeDocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.MathUtils
+import com.genonbeta.android.framework.util.listing.ComparableMerger
 import com.genonbeta.android.framework.util.listing.Merger
 import java.io.File
 import java.text.NumberFormat
@@ -65,17 +67,37 @@ class TransferItemListAdapter(
     fragment: IEditableListFragment<GenericItem, GroupViewHolder>,
 ) : GroupEditableListAdapter<GenericItem, GroupViewHolder>(fragment, MODE_GROUP_BY_DEFAULT),
     CustomGroupLister<GenericItem> {
-    private var mSelect: SQLQuery.Select? = null
-    private var mPath: String? = null
-    private var mMember: LoadedMember? = null
+    var select: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+
+    var path: String? = null
+        set(value) {
+            field = value
+            pathChangedListener?.onPathChange(value)
+        }
+
+    var mMember: LoadedMember? = null
+        set(value) {
+            if (value != null) {
+                try {
+                    AppUtils.getKuick(context).reconstruct(value)
+                    field = value
+                } catch (ignored: ReconstructionFailedException) {
+                }
+            } else
+                field = null
+        }
+
+    var pathChangedListener: PathChangedListener? = null
+
+    private val percentFormat = NumberFormat.getPercentInstance()
+
     private val mTransfer = Transfer()
-    private var mListener: PathChangedListener? = null
-    private val mPercentFormat = NumberFormat.getPercentInstance()
 
     @ColorInt
-    private val mColorPending: Int
-    private val mColorDone: Int
-    private val mColorError: Int
+    private val colorPending: Int = getColor(context, getReference(context, R.attr.colorControlNormal))
+    private val colorDone: Int = getColor(context, getReference(context, R.attr.colorAccent))
+    private val colorError: Int = getColor(context, getReference(context, R.attr.colorError))
+
     protected override fun onLoad(lister: GroupLister<GenericItem>) {
         val loadThumbnails = AppUtils.getDefaultPreferences(context)
             .getBoolean("load_thumbnails", true)
@@ -86,15 +108,13 @@ class TransferItemListAdapter(
             return
         }
         var hasIncoming = false
-        var currentPath = getPath()
-        currentPath = if (currentPath == null || currentPath.isEmpty()) null else currentPath
+        var currentPath = path?.let { if (it.isEmpty()) null else it }
         val folders: MutableMap<String, TransferFolder> = ArrayMap()
-        val member: LoadedMember? = getMember()
-        val members: List<LoadedMember> = Transfers.loadMemberList(, getGroupId(), null)
-        val memberArray: Array<LoadedMember?> = arrayOfNulls<LoadedMember>(members!!.size)
-        members.toArray(memberArray)
-        val transferSelect: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-        val transferWhere: StringBuilder = StringBuilder(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?")
+        val member = mMember
+        val members = Transfers.loadMemberList(context, getGroupId(), null)
+        val memberArray = members.toTypedArray()
+        val transferSelect = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
+        val transferWhere = StringBuilder(Kuick.FIELD_TRANSFERITEM_TRANSFERID + "=?")
         val transferArgs: MutableList<String> = ArrayList()
         transferArgs.add(mTransfer.id.toString())
         if (currentPath != null) {
@@ -109,15 +129,14 @@ class TransferItemListAdapter(
             transferWhere.append(" AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?")
             transferArgs.add(member.type.toString())
         }
-        if (getSortingCriteria() == GroupEditableListAdapterMODE_GROUP_BY_DATE) {
+        if (sortingCriteria == MODE_GROUP_BY_DATE) {
             transferSelect.setOrderBy(
                 Kuick.FIELD_TRANSFERITEM_LASTCHANGETIME + " "
-                        + if (getSortingOrder() == EditableListAdapterMODE_SORT_ORDER_ASCENDING) "ASC" else "DESC"
+                        + if (sortingOrder == MODE_SORT_ORDER_ASCENDING) "ASC" else "DESC"
             )
         }
         transferSelect.where = transferWhere.toString()
-        transferSelect.whereArgs = arrayOfNulls<String>(transferArgs.size)
-        transferArgs.toArray<String>(transferSelect.whereArgs)
+        transferSelect.whereArgs = transferArgs.toTypedArray()
         val statusItem = DetailsTransferFolder(
             mTransfer.id,
             if (currentPath == null) if (member == null) context.getString(R.string.text_home) else member.device.username else if (currentPath.contains(
@@ -222,21 +241,16 @@ class TransferItemListAdapter(
         return GenericTransferItem(text)
     }
 
-    override fun onCustomGroupListing(lister: GroupLister<GenericItem>, mode: Int, item: GenericItem): Boolean {
+    override fun onCustomGroupListing(lister: GroupLister<GenericItem>, mode: Int, holder: GenericItem): Boolean {
         if (mode == MODE_GROUP_BY_DEFAULT) lister.offer(
-            item,
-            GroupEditableTransferObjectMerger(item, this)
+            holder,
+            GroupEditableTransferObjectMerger(holder, this)
         ) else return false
         return true
     }
 
     override fun createLister(loadedList: MutableList<GenericItem>, groupBy: Int): GroupLister<GenericItem> {
-        return super.createLister(loadedList, groupBy)
-            .setCustomLister(this)
-    }
-
-    fun getMember(): LoadedMember? {
-        return mMember
+        return super.createLister(loadedList, groupBy).also { it.customLister = this }
     }
 
     fun getDeviceId(): String? {
@@ -307,20 +321,6 @@ class TransferItemListAdapter(
         }
     }
 
-    fun setMember(member: LoadedMember?): Boolean {
-        if (member == null) {
-            mMember = null
-            return true
-        }
-        return try {
-            AppUtils.getKuick(context).reconstruct(member)
-            mMember = member
-            true
-        } catch (ignored: ReconstructionFailedException) {
-            false
-        }
-    }
-
     fun getGroupId(): Long {
         return mTransfer.id
     }
@@ -329,17 +329,8 @@ class TransferItemListAdapter(
         mTransfer.id = transferId
     }
 
-    fun getPath(): String? {
-        return mPath
-    }
-
-    fun setPath(path: String?) {
-        mPath = path
-        if (mListener != null) mListener!!.onPathChange(path)
-    }
-
     private fun getPercentFormat(): NumberFormat {
-        return mPercentFormat
+        return percentFormat
     }
 
     override fun getRepresentativeText(merger: Merger<out GenericItem>): String {
@@ -356,32 +347,18 @@ class TransferItemListAdapter(
         } else super.getRepresentativeText(merger)
     }
 
-    fun getSelect(): SQLQuery.Select? {
-        return mSelect
-    }
-
-    fun setSelect(select: SQLQuery.Select?): TransferItemListAdapter {
-        if (select != null) mSelect = select
-        return this
-    }
-
-    fun setPathChangedListener(listener: PathChangedListener?) {
-        mListener = listener
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapterVIEW_TYPE_DEFAULT) GroupViewHolder(
-            getInflater().inflate(
-                R.layout.list_transfer_item, parent, false
-            )
+        val holder: GroupViewHolder = if (viewType == VIEW_TYPE_DEFAULT) GroupViewHolder(
+            layoutInflater.inflate(R.layout.list_transfer_item, parent, false)
         ) else createDefaultViews(
             parent, viewType,
             false
         )
         if (!holder.isRepresentative()) {
-            getFragment().registerLayoutViewClicks(holder)
-            holder.itemView.findViewById<View>(R.id.layout_image)
-                .setOnClickListener(View.OnClickListener { v: View? -> getFragment().setItemSelected(holder, true) })
+            fragment.registerLayoutViewClicks(holder)
+            holder.itemView.findViewById<View>(R.id.layout_image).setOnClickListener { v: View? ->
+                fragment.setItemSelected(holder, true)
+            }
         }
         return holder
     }
@@ -404,7 +381,7 @@ class TransferItemListAdapter(
                 val thirdText: TextView = parentView.findViewById(R.id.text4)
                 parentView.isSelected = item.isSelectableSelected()
                 appliedColor =
-                    if (item.hasIssues(this)) mColorError else if (item.isComplete(this)) mColorDone else mColorPending
+                    if (item.hasIssues(this)) colorError else if (item.isComplete(this)) colorDone else colorPending
                 titleText.setText(item.name)
                 firstText.setText(item.getFirstText(this))
                 secondText.setText(item.getSecondText(this))
@@ -446,7 +423,9 @@ class TransferItemListAdapter(
     abstract class GenericItem : TransferItem, GroupEditable {
         private var viewType = 0
 
-        private var representativeText: String? = null
+        private lateinit var representativeText: String
+
+        override var requestCode: Int = 0
 
         constructor()
 
@@ -485,15 +464,11 @@ class TransferItemListAdapter(
 
         abstract fun getThirdText(adapter: TransferItemListAdapter): String?
 
-        override fun getRequestCode(): Int {
-            return 0
-        }
-
         override fun getViewType(): Int {
             return viewType
         }
 
-        override fun getRepresentativeText(): String? {
+        override fun getRepresentativeText(): String {
             return representativeText
         }
 
@@ -514,21 +489,23 @@ class TransferItemListAdapter(
         }
 
         override fun setSize(size: Long) {
-            this.size = size
+            this.length = size
         }
     }
 
     class GenericTransferItem : GenericItem {
         var documentFile: DocumentFile? = null
-        var members: Array<LoadedMember?>
+
+        lateinit var members: Array<LoadedMember>
+
         var supportThumbnail = false
 
-        constructor() {}
-        internal constructor(representativeText: String) : super(representativeText) {}
+        constructor()
+        internal constructor(representativeText: String) : super(representativeText)
 
         override fun applyFilter(filteringKeywords: Array<String>): Boolean {
             if (super.applyFilter(filteringKeywords)) return true
-            for (keyword in filteringKeywords) if (mimeType!!.toLowerCase().contains(keyword.toLowerCase())) return true
+            for (keyword in filteringKeywords) if (mimeType.toLowerCase().contains(keyword.toLowerCase())) return true
             return false
         }
 
@@ -545,21 +522,22 @@ class TransferItemListAdapter(
             imageView.visibility = View.GONE
         }
 
-        override fun getFirstText(adapter: TransferItemListAdapter): String? {
-            return Files.sizeExpression(comparableSize, false)
+        override fun getFirstText(adapter: TransferItemListAdapter): String {
+            return Files.sizeExpression(getComparableSize(), false)
         }
 
         override fun getSecondText(adapter: TransferItemListAdapter): String {
-            if (adapter.getMember() != null) return adapter.getMember().device.username
+            val member = adapter.mMember
+            if (member != null) return member.device.username
             var totalDevices = 1
-            if (Type.OUTGOING == type) synchronized(senderFlagList1) { totalDevices = senderFlagList.size }
+            if (Type.OUTGOING == type) synchronized(senderFlagListInternal) { totalDevices = senderFlagList.size }
             return adapter.context.getResources().getQuantityString(
                 R.plurals.text_devices,
                 totalDevices, totalDevices
             )
         }
 
-        override fun getThirdText(adapter: TransferItemListAdapter): String? {
+        override fun getThirdText(adapter: TransferItemListAdapter): String {
             return TextUtils.getTransactionFlagString(
                 adapter.context, this,
                 adapter.getPercentFormat(), adapter.getDeviceId()
@@ -567,9 +545,11 @@ class TransferItemListAdapter(
         }
 
         override fun loadThumbnail(imageView: ImageView): Boolean {
-            if (documentFile != null && supportThumbnail && documentFile!!.exists()) {
+            val localDocumentFile = documentFile
+
+            if (localDocumentFile != null && supportThumbnail && localDocumentFile.exists()) {
                 GlideApp.with(imageView.context)
-                    .load(documentFile!!.uri)
+                    .load(localDocumentFile.getUri())
                     .error(getIconRes())
                     .override(160)
                     .circleCrop()
@@ -587,7 +567,7 @@ class TransferItemListAdapter(
             if (members.size == 0) return false
             if (Type.INCOMING == type) return Transfers.isError(flag) else if (adapter.getDeviceId() != null) {
                 return Transfers.isError(getFlag(adapter.getDeviceId()))
-            } else synchronized(senderFlagList1) { for (member in members) if (Transfers.isError(getFlag(member.deviceId))) return true }
+            } else synchronized(senderFlagListInternal) { for (member in members) if (Transfers.isError(getFlag(member.deviceId))) return true }
             return false
         }
 
@@ -595,7 +575,7 @@ class TransferItemListAdapter(
             if (members.size == 0) return false
             if (Type.INCOMING == type) return Flag.DONE == flag else if (adapter.getDeviceId() != null) {
                 return Flag.DONE == getFlag(adapter.getDeviceId())
-            } else synchronized(senderFlagList1) { for (member in members) if (Flag.DONE != getFlag(member.deviceId)) return false }
+            } else synchronized(senderFlagListInternal) { for (member in members) if (Flag.DONE != getFlag(member.deviceId)) return false }
             return true
         }
 
@@ -603,7 +583,7 @@ class TransferItemListAdapter(
             if (members.size == 0) return false
             if (Type.INCOMING == type) return Flag.IN_PROGRESS == flag else if (adapter.getDeviceId() != null) {
                 return Flag.IN_PROGRESS == getFlag(adapter.getDeviceId())
-            } else synchronized(senderFlagList1) { for (member in members) if (Flag.IN_PROGRESS == getFlag(member.deviceId)) return true }
+            } else synchronized(senderFlagListInternal) { for (member in members) if (Flag.IN_PROGRESS == getFlag(member.deviceId)) return true }
             return false
         }
     }
@@ -629,9 +609,8 @@ class TransferItemListAdapter(
             get() = directory.hashCode().toLong()
             set(value) {}
 
-        override fun equals(obj: Any?): Boolean {
-            return obj is TransferFolder && directory != null && directory ==
-                    obj.directory
+        override fun equals(other: Any?): Boolean {
+            return other is TransferFolder && directory != null && directory == other.directory
         }
 
         override fun getComparableSize(): Long {
@@ -800,47 +779,34 @@ class TransferItemListAdapter(
     class GroupEditableTransferObjectMerger internal constructor(
         holder: GenericItem,
         adapter: TransferItemListAdapter,
-    ) : ComparableMerger<GenericItem?>() {
-        private var mType: Type? = null
-        override fun equals(obj: Any?): Boolean {
-            return (obj is GroupEditableTransferObjectMerger
-                    && obj.getType() == getType())
+    ) : ComparableMerger<GenericItem>() {
+        val type = when {
+            holder is StatusItem -> Type.STATUS
+            holder is TransferFolder -> Type.FOLDER
+            holder.hasIssues(adapter) -> Type.FILE_ERROR
+            holder.isOngoing(adapter) -> Type.FILE_ONGOING
+            else -> Type.FILE
         }
 
-        fun getType(): Type? {
-            return mType
+        override fun equals(other: Any?): Boolean {
+            return (other is GroupEditableTransferObjectMerger && other.type == type)
         }
 
-        override operator fun compareTo(o: ComparableMerger<GenericItem?>): Int {
-            return if (o is GroupEditableTransferObjectMerger) MathUtils.compare(
-                (o as GroupEditableTransferObjectMerger).getType()!!.ordinal.toLong(),
-                getType()!!.ordinal.toLong()
-            ) else 1
+        override fun hashCode(): Int = type.hashCode()
+
+        override operator fun compareTo(other: ComparableMerger<GenericItem>): Int {
+            return if (other is GroupEditableTransferObjectMerger) {
+                MathUtils.compare(other.type.ordinal.toLong(), type.ordinal.toLong())
+            } else 1
         }
 
         enum class Type {
             STATUS, FOLDER_ONGOING, FOLDER, FILE_ONGOING, FILE_ERROR, FILE
-        }
-
-        init {
-            mType =
-                if (holder is StatusItem) Type.STATUS else if (holder is TransferFolder) //mType = holder.hasOngoing(adapter.getDeviceId()) ? Type.FOLDER_ONGOING : Type.FOLDER;
-                    Type.FOLDER else {
-                    if (holder.hasIssues(adapter)) Type.FILE_ERROR else if (holder.isOngoing(adapter)) Type.FILE_ONGOING else Type.FILE
-                }
         }
     }
 
     companion object {
         //public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
         val MODE_GROUP_BY_DEFAULT: Int = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING + 1
-    }
-
-    init {
-        val context: Context = context
-        mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal))
-        mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent))
-        mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError))
-        setSelect(SQLQuery.Select(Kuick.TABLE_TRANSFERITEM))
     }
 }

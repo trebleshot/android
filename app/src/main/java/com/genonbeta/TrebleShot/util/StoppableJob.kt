@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.util
 
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.android.framework.util.Stoppable
 
 /**

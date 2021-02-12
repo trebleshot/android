@@ -17,14 +17,13 @@
  */
 package com.genonbeta.TrebleShot.util
 
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.EditableNetworkInterface
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.util.*
 
 object Networks {
-    fun getFirstInet4Address(
-        networkInterface: EditableNetworkInterface
-    ): Inet4Address {
+    fun getFirstInet4Address(networkInterface: EditableNetworkInterface): Inet4Address? {
         return getFirstInet4Address(networkInterface.getInterface())
     }
 
@@ -44,10 +43,11 @@ object Networks {
             while (networkInterfaces.hasMoreElements()) {
                 val networkInterface = networkInterfaces.nextElement()
                 var avoidedInterface = false
-                if (avoidedInterfaces != null && avoidedInterfaces.size > 0) for (match in avoidedInterfaces) if (networkInterface.displayName.startsWith(
-                        match!!
-                    )
-                ) avoidedInterface = true
+                if (avoidedInterfaces != null && avoidedInterfaces.isNotEmpty()) {
+                    for (match in avoidedInterfaces) {
+                        if (networkInterface.displayName.startsWith(match)) avoidedInterface = true
+                    }
+                }
                 if (avoidedInterface) continue
                 val addressList = networkInterface.inetAddresses
                 while (addressList.hasMoreElements()) {

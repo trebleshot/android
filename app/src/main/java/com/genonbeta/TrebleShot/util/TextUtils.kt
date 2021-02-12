@@ -98,9 +98,9 @@ object TextUtils {
         return when (flag) {
             TransferItem.Flag.DONE -> percentFormat.format(1.0)
             TransferItem.Flag.IN_PROGRESS -> percentFormat.format(
-                if (transferItem.comparableSize == 0L || flag.bytesValue == 0L) 0 else java.lang.Long.valueOf(
-                    flag.bytesValue
-                ).toDouble() / java.lang.Long.valueOf(transferItem.comparableSize).toDouble()
+                if (transferItem.getComparableSize() == 0L || flag.bytesValue == 0L) {
+                    0
+                } else flag.bytesValue.toDouble() / transferItem.getComparableSize().toDouble()
             )
             else -> context.getString(getTransactionFlagString(flag))
         }

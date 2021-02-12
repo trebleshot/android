@@ -32,33 +32,36 @@ class ComparativeRelativeLayout(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : RelativeLayout(context, attrs, defStyleAttr) {
-    private var mAlwaysUseWidth = true
-    private var mBaseOnSmaller = false
-    private var mTallerExtraLength = 0
+    private var alwaysUseWidth = true
+
+    private var baseOnSmaller = false
+
+    private var tallerExtraLength = 0
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // Set a proportional layout.
         var widthMeasureSpec = widthMeasureSpec
         var heightMeasureSpec = heightMeasureSpec
-        if (mBaseOnSmaller) {
+        if (baseOnSmaller) {
             if (widthMeasureSpec > heightMeasureSpec) widthMeasureSpec =
-                heightMeasureSpec + mTallerExtraLength else if (heightMeasureSpec > widthMeasureSpec) heightMeasureSpec =
-                widthMeasureSpec + mTallerExtraLength
-        } else if (mAlwaysUseWidth) heightMeasureSpec = widthMeasureSpec + mTallerExtraLength else widthMeasureSpec =
-            heightMeasureSpec + mTallerExtraLength
+                heightMeasureSpec + tallerExtraLength else if (heightMeasureSpec > widthMeasureSpec) heightMeasureSpec =
+                widthMeasureSpec + tallerExtraLength
+        } else if (alwaysUseWidth) heightMeasureSpec = widthMeasureSpec + tallerExtraLength else widthMeasureSpec =
+            heightMeasureSpec + tallerExtraLength
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     init {
         val typedAttributes: TypedArray = context.theme
             .obtainStyledAttributes(attrs, R.styleable.ComparativeRelativeLayout, defStyleAttr, 0)
-        mBaseOnSmaller = typedAttributes.getBoolean(
-            R.styleable.ComparativeRelativeLayout_baseOnSmallerLength, mBaseOnSmaller
+        baseOnSmaller = typedAttributes.getBoolean(
+            R.styleable.ComparativeRelativeLayout_baseOnSmallerLength, baseOnSmaller
         )
-        mTallerExtraLength = typedAttributes.getDimensionPixelSize(
-            R.styleable.ComparativeRelativeLayout_tallerLengthExtra, mTallerExtraLength
+        tallerExtraLength = typedAttributes.getDimensionPixelSize(
+            R.styleable.ComparativeRelativeLayout_tallerLengthExtra, tallerExtraLength
         )
-        mAlwaysUseWidth = typedAttributes.getBoolean(
-            R.styleable.ComparativeRelativeLayout_alwaysUseWidth, mAlwaysUseWidth
+        alwaysUseWidth = typedAttributes.getBoolean(
+            R.styleable.ComparativeRelativeLayout_alwaysUseWidth, alwaysUseWidth
         )
     }
 }

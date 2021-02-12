@@ -91,11 +91,11 @@ object DeviceLoader {
         saveProfilePicture(kuick.context, device, jsonObject)
     }
 
-    fun load(kuick: Kuick, address: InetAddress?, listener: OnDeviceResolvedListener?) {
+    fun load(kuick: Kuick, address: InetAddress, listener: OnDeviceResolvedListener?) {
         Thread {
             try {
                 CommunicationBridge.connect(kuick, DeviceAddress(address), null, 0).use { bridge ->
-                    listener?.onDeviceResolved(bridge.device, bridge.getDeviceAddress())
+                    listener?.onDeviceResolved(bridge.device, bridge.deviceAddress)
                 }
             } catch (ignored: Exception) {
             }
@@ -150,6 +150,6 @@ object DeviceLoader {
     }
 
     interface OnDeviceResolvedListener {
-        fun onDeviceResolved(device: Device?, address: DeviceAddress?)
+        fun onDeviceResolved(device: Device, address: DeviceAddress)
     }
 }

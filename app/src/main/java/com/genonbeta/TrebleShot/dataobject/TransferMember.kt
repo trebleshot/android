@@ -34,13 +34,13 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException
 open class TransferMember : DatabaseObject<Transfer> {
     var transferId: Long = 0
 
-    var deviceId: String? = null
+    lateinit var deviceId: String
 
-    var type: TransferItem.Type? = null
+    lateinit var type: TransferItem.Type
 
     constructor()
 
-    constructor(transferId: Long, deviceId: String?, type: TransferItem.Type?) {
+    constructor(transferId: Long, deviceId: String, type: TransferItem.Type) {
         this.transferId = transferId
         this.deviceId = deviceId
         this.type = type
@@ -72,13 +72,13 @@ open class TransferMember : DatabaseObject<Transfer> {
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
-        deviceId = item.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID)
-        transferId = item.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID)
+        deviceId = values.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID)
+        transferId = values.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID)
 
         // Added in DB version 13 and might be null and may throw an error since ContentValues doesn't like it when
         // when the requested column name doesn't exist or has type different than requested.
-        if (item.containsKey(Kuick.FIELD_TRANSFERMEMBER_TYPE)) type =
-            TransferItem.Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERMEMBER_TYPE))
+        if (values.containsKey(Kuick.FIELD_TRANSFERMEMBER_TYPE)) type =
+            TransferItem.Type.valueOf(values.getAsString(Kuick.FIELD_TRANSFERMEMBER_TYPE))
     }
 
     override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {}
@@ -91,7 +91,7 @@ open class TransferMember : DatabaseObject<Transfer> {
         try {
             val actualParent = parent ?: Transfer(transferId).also { kuick.reconstruct(db, it) }
             val selection = Transfers.createIncomingSelection(transferId, TransferItem.Flag.INTERRUPTED, true)
-            kuick.removeAsObject(db, selection, TransferItem::class.java, actualParent, listener, null)
+            kuick.removeAsObject(db, selection, TransferItem::class.java, actualParent, progress, null)
         } catch (e: ReconstructionFailedException) {
             e.printStackTrace()
         }

@@ -15,18 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package com.genonbeta.TrebleShot.utilimport
+package com.genonbeta.TrebleShot.util
 
 import android.content.*
+import android.net.nsd.NsdManager
+import android.net.nsd.NsdServiceInfo
 import android.os.*
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
-import com.genonbeta.TrebleShot.util.AppUtils
-
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
+import com.genonbeta.TrebleShot.dataobject.DeviceRoute
 
 /**
  * created by: Veli
@@ -36,52 +38,49 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
     private var mNsdManager: NsdManager? = null
     private var mNsdDiscoveryListener: NsdManager.DiscoveryListener? = null
     private var mNsdRegistrationListener: NsdManager.RegistrationListener? = null
-    private val mOnlineDeviceList: MutableMap<String, DeviceRoute?> = ArrayMap<String, DeviceRoute?>()
+    private val onlineDeviceList: MutableMap<String, DeviceRoute> = ArrayMap()
 
     @get:RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private val discoveryListener: NsdManager.DiscoveryListener?
-        private get() {
-            if (mNsdDiscoveryListener == null) mNsdDiscoveryListener =
-                com.genonbeta.TrebleShot.util.NsdDaemon.DiscoveryListener()
+        get() {
+            if (mNsdDiscoveryListener == null) mNsdDiscoveryListener = DiscoveryListener()
             return mNsdDiscoveryListener
         }
 
     @get:RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private val nsdManager: NsdManager
-        private get() {
-            if (mNsdManager == null) mNsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
-            return mNsdManager
+        get() {
+            return mNsdManager ?: (context.getSystemService(Context.NSD_SERVICE) as NsdManager).also {
+                mNsdManager = it
+            }
         }
 
     @get:RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private val registrationListener: NsdManager.RegistrationListener?
-        private get() {
-            if (mNsdRegistrationListener == null) mNsdRegistrationListener =
-                com.genonbeta.TrebleShot.util.NsdDaemon.RegistrationListener()
+        get() {
+            if (mNsdRegistrationListener == null) mNsdRegistrationListener = RegistrationListener()
             return mNsdRegistrationListener
         }
 
-    fun isDeviceOnline(device: Device?): Boolean {
-        synchronized(mOnlineDeviceList) {
-            for (deviceRoute in mOnlineDeviceList.values) if (deviceRoute.device.equals(
-                    device
-                )
-            ) return true
+    fun isDeviceOnline(device: Device): Boolean {
+        synchronized(onlineDeviceList) {
+            for (deviceRoute in onlineDeviceList.values) if (deviceRoute.device.equals(device)) return true
         }
         return false
     }
 
     val isDiscovering: Boolean
         get() = mNsdDiscoveryListener != null
+
     val isServiceEnabled: Boolean
         get() = mPreferences.getBoolean("nsd_enabled", false)
 
     fun registerService() {
         if (isServiceEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             val localServiceInfo = NsdServiceInfo()
-            localServiceInfo.setServiceName(AppUtils.getLocalDeviceName(context))
-            localServiceInfo.setServiceType(AppConfig.NSD_SERVICE_TYPE)
-            localServiceInfo.setPort(AppConfig.SERVER_PORT_COMMUNICATION)
+            localServiceInfo.serviceName = AppUtils.getLocalDeviceName(context)
+            localServiceInfo.serviceType = AppConfig.NSD_SERVICE_TYPE
+            localServiceInfo.port = AppConfig.SERVER_PORT_COMMUNICATION
             try {
                 nsdManager.registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
             } catch (e: Exception) {
@@ -92,28 +91,27 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
 
     fun startDiscovering() {
         try {
-            if (isServiceEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) nsdManager.discoverServices(
-                AppConfig.NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD,
-                discoveryListener
-            )
+            if (isServiceEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                nsdManager.discoverServices(AppConfig.NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+            }
         } catch (ignored: Exception) {
         }
     }
 
     fun stopDiscovering() {
         try {
-            if (mNsdDiscoveryListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) nsdManager.stopServiceDiscovery(
-                mNsdDiscoveryListener
-            )
+            if (mNsdDiscoveryListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                nsdManager.stopServiceDiscovery(mNsdDiscoveryListener)
+            }
         } catch (ignored: Exception) {
         }
     }
 
     fun unregisterService() {
         try {
-            if (mNsdRegistrationListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) nsdManager.unregisterService(
-                mNsdRegistrationListener
-            )
+            if (mNsdRegistrationListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                nsdManager.unregisterService(mNsdRegistrationListener)
+            }
         } catch (ignored: Exception) {
         }
     }
@@ -165,26 +163,23 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
 
         override fun onServiceFound(serviceInfo: NsdServiceInfo) {
             Log.v(TAG, "'" + serviceInfo.getServiceName() + "' service has been discovered.")
-            if (serviceInfo.getServiceType() == AppConfig.NSD_SERVICE_TYPE) nsdManager.resolveService(
-                serviceInfo,
-                com.genonbeta.TrebleShot.util.NsdDaemon.ResolveListener()
+            if (serviceInfo.serviceType == AppConfig.NSD_SERVICE_TYPE) nsdManager.resolveService(
+                serviceInfo, ResolveListener()
             )
         }
 
         override fun onServiceLost(serviceInfo: NsdServiceInfo) {
-            Log.i(TAG, "'" + serviceInfo.getServiceName() + "' service is now lost.")
-            synchronized(mOnlineDeviceList) {
-                if (mOnlineDeviceList.remove(serviceInfo.getServiceName()) != null) context.sendBroadcast(
-                    Intent(
-                        ACTION_DEVICE_STATUS
-                    )
-                )
+            Log.i(TAG, "'" + serviceInfo.serviceName + "' service is now lost.")
+            synchronized(onlineDeviceList) {
+                if (onlineDeviceList.remove(serviceInfo.serviceName) != null) {
+                    context.sendBroadcast(Intent(ACTION_DEVICE_STATUS))
+                }
             }
         }
 
         fun clear() {
             mNsdDiscoveryListener = null
-            synchronized(mOnlineDeviceList) { mOnlineDeviceList.clear() }
+            synchronized(onlineDeviceList) { onlineDeviceList.clear() }
         }
     }
 
@@ -196,21 +191,24 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
             Log.v(
-                TAG, "Resolved " + serviceInfo.getServiceName() + " with success has the IP address of "
-                        + serviceInfo.getHost().getHostAddress()
+                TAG, "Resolved " + serviceInfo.serviceName + " with success has the IP address of "
+                        + serviceInfo.host.hostAddress
             )
             DeviceLoader.load(
                 database,
-                serviceInfo.getHost(),
-                OnDeviceResolvedListener { device: Device?, address: DeviceAddress? ->
-                    synchronized(mOnlineDeviceList) {
-                        mOnlineDeviceList.put(
-                            serviceInfo.getServiceName(),
-                            DeviceRoute(device, address)
-                        )
+                serviceInfo.host,
+                object : DeviceLoader.OnDeviceResolvedListener {
+                    override fun onDeviceResolved(device: Device, address: DeviceAddress) {
+                        synchronized(onlineDeviceList) {
+                            onlineDeviceList.put(
+                                serviceInfo.getServiceName(),
+                                DeviceRoute(device, address)
+                            )
+                        }
+                        context.sendBroadcast(Intent(ACTION_DEVICE_STATUS))
                     }
-                    context.sendBroadcast(Intent(ACTION_DEVICE_STATUS))
-                })
+                }
+            )
         }
     }
 

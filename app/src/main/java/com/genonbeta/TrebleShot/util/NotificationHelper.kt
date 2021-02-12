@@ -18,15 +18,21 @@
 package com.genonbeta.TrebleShot.util
 
 import android.app.PendingIntent
-import android.content.*
-import android.os.*
+import android.content.Context
+import android.content.Intent
+import android.graphics.Typeface
+import android.os.Build
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.activity.AddDeviceActivity
-import com.genonbeta.TrebleShot.activity.ContentSharingActivity
-import com.genonbeta.TrebleShot.activity.HomeActivity
-import com.genonbeta.TrebleShot.activity.TextEditorActivity
-import com.genonbeta.TrebleShot.dataobject.*
+import com.genonbeta.TrebleShot.activity.*
+import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.TextStreamObject
+import com.genonbeta.TrebleShot.dataobject.Transfer
+import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver
 import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
@@ -46,8 +52,8 @@ class NotificationHelper(val utils: Notifications) {
             val notification = utils.buildDynamicNotification(
                 ID_BG_SERVICE.toLong(), Notifications.NOTIFICATION_CHANNEL_LOW
             )
-            val sendString = context!!.getString(R.string.butn_send)
-            val receiveString = context!!.getString(R.string.butn_receive)
+            val sendString = context.getString(R.string.butn_send)
+            val receiveString = context.getString(R.string.butn_receive)
             val sendIntent: PendingIntent = PendingIntent.getActivity(
                 context,
                 0,
@@ -62,8 +68,8 @@ class NotificationHelper(val utils: Notifications) {
                 0
             )
             notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
-                .setContentTitle(context!!.getString(R.string.text_communicationServiceRunning))
-                .setContentText(context!!.getString(R.string.text_notificationOpenHome))
+                .setContentTitle(context.getString(R.string.text_communicationServiceRunning))
+                .setContentText(context.getString(R.string.text_notificationOpenHome))
                 .setContentIntent(generateHomePendingIntent())
                 .addAction(generateExitNotificationAction())
                 .addAction(R.drawable.ic_arrow_up_white_24dp_static, sendString, sendIntent)
@@ -73,13 +79,13 @@ class NotificationHelper(val utils: Notifications) {
 
     fun generateHomePendingIntent(): PendingIntent {
         return PendingIntent.getActivity(context, 0, Intent(context, HomeActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
+            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
         )
     }
 
     fun generateStopAllTasksAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
-            R.drawable.ic_close_white_24dp_static, context!!.getString(
+            R.drawable.ic_close_white_24dp_static, context.getString(
                 R.string.butn_stopAll
             ), PendingIntent.getService(
                 context, AppUtils.uniqueNumber,
@@ -91,7 +97,7 @@ class NotificationHelper(val utils: Notifications) {
 
     fun generateExitNotificationAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
-            R.drawable.ic_close_white_24dp_static, context!!.getString(
+            R.drawable.ic_close_white_24dp_static, context.getString(
                 R.string.butn_exit
             ), PendingIntent.getService(
                 context, AppUtils.uniqueNumber,
@@ -209,7 +215,7 @@ class NotificationHelper(val utils: Notifications) {
         activityIntent
             .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
             .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, item.id)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .flags = Intent.FLAG_ACTIVITY_NEW_TASK
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setContentTitle(context.getString(R.string.ques_copyToClipboard))
@@ -242,10 +248,12 @@ class NotificationHelper(val utils: Notifications) {
     }
 
     fun notifyFileReceived(task: FileTransferTask, savePath: DocumentFile) {
+        val file = task.file ?: return
+        val lastItem = task.lastItem ?: return
+
         val notification = utils.buildDynamicNotification(
-            Transfers.createUniqueTransferId(
-                task.transfer.id, task.device.uid, task.type
-            ), Notifications.NOTIFICATION_CHANNEL_HIGH
+            Transfers.createUniqueTransferId(task.transfer.id, task.device.uid, task.type),
+            Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -254,90 +262,85 @@ class NotificationHelper(val utils: Notifications) {
             .setDefaults(utils.notificationSettings)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentText(
-                context!!.getString(
+                context.getString(
                     R.string.text_receivedTransfer,
                     Files.sizeExpression(task.completedBytes, false),
                     TimeUtils.getFriendlyElapsedTime(
-                        context, System.currentTimeMillis()
-                                - task.getStartTime()
+                        context, System.currentTimeMillis() - task.startTime
                     )
                 )
             )
         if (task.completedCount == 1) {
             try {
-                val openIntent = Files.getOpenIntent(context, task.file)
-                notification!!.setContentIntent(
+                val openIntent = Files.getOpenIntent(context, file)
+                notification.setContentIntent(
                     PendingIntent.getActivity(
-                        context, AppUtils.getUniqueNumber(),
-                        openIntent, 0
+                        context, AppUtils.uniqueNumber, openIntent, 0
                     )
                 )
             } catch (ignored: Exception) {
             }
             notification
-                .setContentTitle(task.lastItem.name)
+                .setContentTitle(lastItem.name)
                 .addAction(
-                    R.drawable.ic_folder_white_24dp_static, context!!.getString(R.string.butn_showFiles),
+                    R.drawable.ic_folder_white_24dp_static, context.getString(R.string.butn_showFiles),
                     PendingIntent.getActivity(
-                        context, AppUtils.getUniqueNumber(), Intent(
-                            context,
-                            FileExplorerActivity::class.java
-                        )
-                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.uri), 0
+                        context, AppUtils.uniqueNumber,
+                        Intent(context, FileExplorerActivity::class.java)
+                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
                     )
                 )
         } else {
             notification
                 .setContentTitle(
-                    context!!.resources.getQuantityString(
+                    context.resources.getQuantityString(
                         R.plurals.text_fileReceiveCompletedSummary, task.completedCount,
                         task.completedCount
                     )
                 )
                 .setContentIntent(
                     PendingIntent.getActivity(
-                        context, AppUtils.getUniqueNumber(), Intent(
-                            context, FileExplorerActivity::class.java
-                        )
-                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.uri), 0
+                        context, AppUtils.uniqueNumber,
+                        Intent(context, FileExplorerActivity::class.java)
+                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
                     )
                 )
         }
-        notification!!.show()
+        notification.show()
     }
 
     fun notifyTasksNotification(
         taskList: List<AsyncTask>,
         notification: DynamicNotification?,
     ): DynamicNotification {
-        var notification = notification
-        if (notification == null) {
-            notification = utils.buildDynamicNotification(
-                ID_BG_SERVICE.toLong(),
-                Notifications.NOTIFICATION_CHANNEL_LOW
-            )
-            val transfersString = context!!.getString(R.string.butn_transfers)
+        var notificationLocal = notification ?: utils.buildDynamicNotification(
+            ID_BG_SERVICE.toLong(),
+            Notifications.NOTIFICATION_CHANNEL_LOW
+        ).also {
+            val transfersString = context.getString(R.string.butn_transfers)
             val transfersIntent: PendingIntent = PendingIntent.getActivity(
                 context, 0,
                 Intent(context, TransferHistoryActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0
             )
-            notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
-                .setContentTitle(context!!.getString(R.string.text_taskOngoing))
+
+            it.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
+                .setContentTitle(context.getString(R.string.text_taskOngoing))
                 .setContentIntent(generateHomePendingIntent())
                 .setOngoing(true)
                 .addAction(generateStopAllTasksAction())
                 .addAction(R.drawable.ic_swap_vert_white_24dp_static, transfersString, transfersIntent)
         }
+
         val msg = SpannableStringBuilder()
         for (task in taskList) {
             task.onPublishStatus()
             val content = task.ongoingContent
-            val middleDot = " " + context!!.getString(R.string.mode_middleDot) + " "
+            val middleDot = " " + context.getString(R.string.mode_middleDot) + " "
             val taskName = task.getName(context)
-            val progressCurrent = task.progress().current
-            val progressTotal = task.progress().total
-            if (msg.length > 0) msg.append("\n")
+            val progressCurrent = task.progress.getProgress()
+            val progressTotal = task.progress.getTotal()
+            if (msg.isNotEmpty()) msg.append("\n")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) msg.append(
                 taskName,
                 StyleSpan(Typeface.BOLD),
@@ -352,21 +355,20 @@ class NotificationHelper(val utils: Notifications) {
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 ) else msg.append(percentage)
             }
-            if (content != null && content.length > 0) msg.append(middleDot)
-                .append(content)
-            if (msg.length < 1) msg.append(context!!.getString(R.string.text_empty))
+            if (content != null && content.isNotEmpty()) msg.append(middleDot).append(content)
+            if (msg.isEmpty()) msg.append(context.getString(R.string.text_empty))
         }
-        val summary = context!!.resources.getQuantityString(
+        val summary = context.resources.getQuantityString(
             R.plurals.text_tasks, taskList.size,
             taskList.size
         )
         val textStyle: NotificationCompat.BigTextStyle = NotificationCompat.BigTextStyle()
-            .setBigContentTitle(context!!.getString(R.string.text_taskOngoing))
+            .setBigContentTitle(context.getString(R.string.text_taskOngoing))
             .setSummaryText(summary)
             .bigText(msg)
-        notification.setContentText(summary)
+        notificationLocal.setContentText(summary)
             .setStyle(textStyle)
-        return notification.show()
+        return notificationLocal.show()
     }
 
     fun showToast(toastTextRes: Int) {

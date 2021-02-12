@@ -30,7 +30,7 @@ class ElapsedTime(
     val minutes: Long,
     val seconds: Long,
 ) {
-    private class Calculator(var time: Long) {
+    class Calculator(var time: Long) {
         fun crop(summonBy: Long): Long {
             var result: Long = 0
             if (time > summonBy) {

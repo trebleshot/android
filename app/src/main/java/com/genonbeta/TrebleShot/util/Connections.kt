@@ -49,7 +49,7 @@ import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.SuggestNetworkException
 import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
-import com.genonbeta.TrebleShot.utilimport.InetAddresses
+import com.genonbeta.TrebleShot.util.InetAddresses
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
 import org.json.JSONException
@@ -521,7 +521,7 @@ class Connections(val context: Context) {
 
         @WorkerThread
         @Throws(CommunicationException::class, IOException::class, JSONException::class)
-        fun setupConnection(context: Context, inetAddress: InetAddress?, pin: Int): DeviceRoute {
+        fun setupConnection(context: Context, inetAddress: InetAddress, pin: Int): DeviceRoute {
             val kuick = AppUtils.getKuick(context)
             val deviceAddress = DeviceAddress(inetAddress)
             val bridge: CommunicationBridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)

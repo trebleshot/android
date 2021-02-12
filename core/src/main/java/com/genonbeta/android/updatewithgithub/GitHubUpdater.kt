@@ -39,13 +39,14 @@ import org.json.JSONArray
  */
 
 class GitHubUpdater(
-    private val activity: Activity,
+    private val context: Context,
     private val repo: String,
-    private val includePreReleases: Boolean
+    private val includePreReleases: Boolean,
 ) {
     fun checkForUpdates(popupDialog: Boolean, listener: OnInfoAvailableListener?) {
-        if (popupDialog)
-            Toast.makeText(activity, R.string.genfw_uwg_check_for_updates_ongoing, Toast.LENGTH_LONG).show()
+        if (popupDialog) {
+            Toast.makeText(context, R.string.genfw_uwg_check_for_updates_ongoing, Toast.LENGTH_LONG).show()
+        }
 
         val thread = Thread {
             try {
@@ -56,7 +57,7 @@ class GitHubUpdater(
 
                 Log.d(TAG, "Server connected")
 
-                val packageInfo = activity.packageManager.getPackageInfo(activity.applicationInfo.packageName, 0)
+                val packageInfo = context.packageManager.getPackageInfo(context.applicationInfo.packageName, 0)
                 val versionName = packageInfo.versionName
                 val applicationName = getAppLabel()
                 val releases = JSONArray(result)
@@ -67,8 +68,7 @@ class GitHubUpdater(
                     for (iterator in 0 until releases.length()) {
                         val releaseObject = releases.getJSONObject(iterator)
                         val isPreRelease = releaseObject.getBoolean("prerelease")
-                        if (isPreRelease && !includePreReleases)
-                            continue
+                        if (isPreRelease && !includePreReleases) continue
                         val updateVersion = releaseObject.getString("tag_name")
                         val updateTitle = releaseObject.getString("name")
                         val updateDate = releaseObject.getString("published_at")
@@ -78,12 +78,14 @@ class GitHubUpdater(
                         val comparableCurrent = ComparableVersion(versionName)
                         val isNew = comparableLatest > comparableCurrent
 
-                        activity.runOnUiThread {
-                            if (!activity.isFinishing)
-                                listener?.onInfoAvailable(isNew, updateVersion, updateTitle, updateBody, updateDate)
-                        }
+                        if (context is Activity && !context.isFinishing) context.runOnUiThread {
+                            listener?.onInfoAvailable(isNew, updateVersion, updateTitle, updateBody, updateDate)
+                        } else
+                            listener?.onInfoAvailable(isNew, updateVersion, updateTitle, updateBody, updateDate)
 
-                        if (popupDialog && isNew) {
+                        if (!popupDialog || context !is Activity) {
+                            Log.d(TAG, "Skipping showing dialogs: requested=$popupDialog")
+                        } else if (isNew) {
                             Log.d(TAG, "New version found: $updateVersion")
 
                             if (releaseObject.has("assets")) {
@@ -95,17 +97,17 @@ class GitHubUpdater(
 
                                     val visitPage = DialogInterface.OnClickListener { _, _ ->
                                         startActivity(
-                                            activity, Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl)),
+                                            context, Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl)),
                                             null
                                         )
                                     }
 
-                                    activity.runOnUiThread {
-                                        AlertDialog.Builder(activity)
+                                    context.runOnUiThread {
+                                        AlertDialog.Builder(context)
                                             .setTitle(R.string.genfw_uwg_update_available)
                                             .setMessage(
                                                 String.format(
-                                                    activity.getString(R.string.genfw_uwg_update_body),
+                                                    context.getString(R.string.genfw_uwg_update_body),
                                                     versionName,
                                                     updateVersion,
                                                     updateDate,
@@ -118,24 +120,21 @@ class GitHubUpdater(
                                     }
 
                                 } else Log.d(TAG, "No downloadable file is provided")
-                            } else if (popupDialog)
-                                activity.runOnUiThread {
-                                    Toast.makeText(activity, R.string.genfw_uwg_no_update, Toast.LENGTH_LONG).show()
-                                }
-                        } else if (popupDialog)
-                            activity.runOnUiThread {
-                                Toast.makeText(activity, R.string.genfw_uwg_up_to_date, Toast.LENGTH_LONG).show()
+                            } else context.runOnUiThread {
+                                Toast.makeText(context, R.string.genfw_uwg_no_update, Toast.LENGTH_LONG).show()
                             }
+                        } else context.runOnUiThread {
+                            Toast.makeText(context, R.string.genfw_uwg_up_to_date, Toast.LENGTH_LONG).show()
+                        }
                         break
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
 
-                if (popupDialog)
-                    activity.runOnUiThread {
-                        Toast.makeText(activity, R.string.genfw_uwg_version_check_error, Toast.LENGTH_LONG).show()
-                    }
+                if (popupDialog && context is Activity) context.runOnUiThread {
+                    Toast.makeText(context, R.string.genfw_uwg_version_check_error, Toast.LENGTH_LONG).show()
+                }
             }
         }
 
@@ -143,14 +142,11 @@ class GitHubUpdater(
     }
 
     private fun getAppLabel(): String? {
-        val packageManager = activity.packageManager
+        val packageManager = context.packageManager
 
         try {
             packageManager.getApplicationLabel(
-                packageManager.getApplicationInfo(
-                    activity.applicationInfo.packageName,
-                    0
-                )
+                packageManager.getApplicationInfo(context.applicationInfo.packageName, 0)
             )
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
@@ -159,7 +155,7 @@ class GitHubUpdater(
     }
 
     fun isNewVersion(versionName: String): Boolean {
-        return isNewVersion(activity, versionName)
+        return isNewVersion(context, versionName)
     }
 
     interface OnInfoAvailableListener {
@@ -168,7 +164,7 @@ class GitHubUpdater(
             versionName: String?,
             title: String?,
             description: String?,
-            releaseDate: String?
+            releaseDate: String?,
         )
     }
 

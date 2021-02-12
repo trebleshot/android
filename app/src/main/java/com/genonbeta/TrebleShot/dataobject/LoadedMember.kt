@@ -20,7 +20,7 @@ package com.genonbeta.TrebleShot.dataobject
 import java.util.*
 
 class LoadedMember : TransferMember, Editable {
-    var device: Device? = null
+    lateinit var device: Device
 
     override var id: Long
         get() = String.format(Locale.getDefault(), "%s_%d", deviceId, transferId).hashCode().toLong()
@@ -28,7 +28,7 @@ class LoadedMember : TransferMember, Editable {
 
     constructor()
 
-    constructor(transferId: Long, deviceId: String?, type: TransferItem.Type?) : super(transferId, deviceId, type) {}
+    constructor(transferId: Long, deviceId: String, type: TransferItem.Type) : super(transferId, deviceId, type)
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         return false
@@ -38,9 +38,9 @@ class LoadedMember : TransferMember, Editable {
         return false
     }
 
-    override fun getComparableName(): String = device!!.username
+    override fun getComparableName(): String = device.username
 
-    override fun getComparableDate(): Long = device!!.lastUsageTime
+    override fun getComparableDate(): Long = device.lastUsageTime
 
     override fun getComparableSize(): Long = 0
 

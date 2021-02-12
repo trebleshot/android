@@ -17,8 +17,10 @@
  */
 package com.genonbeta.TrebleShot.util
 
-import android.content.*
+import android.content.Context
+import android.text.format.DateUtils
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.android.framework.util.date.ElapsedTime
 import java.util.*
 
 /**
@@ -26,7 +28,7 @@ import java.util.*
  * date: 12.11.2017 10:53
  */
 object TimeUtils {
-    fun formatDateTime(context: Context?, millis: Long): CharSequence {
+    fun formatDateTime(context: Context, millis: Long): CharSequence {
         return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_DATE)
     }
 
@@ -36,17 +38,17 @@ object TimeUtils {
 
     fun getDuration(time: Long, divideMilliseconds: Boolean): String {
         val string = StringBuilder()
-        val calculator = ElapsedTimeCalculator(
-            if (divideMilliseconds) time / 1000 else time
-        )
+        val calculator = ElapsedTime.Calculator(if (divideMilliseconds) time / 1000 else time)
         val hours: Long = calculator.crop(3600)
         val minutes: Long = calculator.crop(60)
-        val seconds: Long = calculator.getLeftTime()
+        val seconds: Long = calculator.time
+
         if (hours > 0) {
             if (hours < 10) string.append("0")
             string.append(hours)
             string.append(":")
         }
+
         if (minutes < 10) string.append("0")
         string.append(minutes)
         string.append(":")
@@ -55,50 +57,31 @@ object TimeUtils {
         return string.toString()
     }
 
-    fun getFriendlyElapsedTime(context: Context?, estimatedTime: Long): String {
-        val elapsedTime = ElapsedTime(estimatedTime)
-        val appendList: MutableList<String> = ArrayList()
-        if (elapsedTime.getYears() > 0) appendList.add(
-            context!!.getString(
-                R.string.text_yearCountShort,
-                elapsedTime.getYears()
-            )
-        )
-        if (elapsedTime.getMonths() > 0) appendList.add(
-            context!!.getString(
-                R.string.text_monthCountShort,
-                elapsedTime.getMonths()
-            )
-        )
-        if (elapsedTime.getYears() == 0L) {
-            if (elapsedTime.getDays() > 0) appendList.add(
-                context!!.getString(
-                    R.string.text_dayCountShort,
-                    elapsedTime.getDays()
-                )
-            )
-            if (elapsedTime.getMonths() == 0L) {
-                if (elapsedTime.getHours() > 0) appendList.add(
-                    context!!.getString(
-                        R.string.text_hourCountShort,
-                        elapsedTime.getHours()
-                    )
-                )
-                if (elapsedTime.getDays() == 0L) {
-                    if (elapsedTime.getMinutes() > 0) appendList.add(
-                        context!!.getString(
-                            R.string.text_minuteCountShort,
-                            elapsedTime.getMinutes()
-                        )
-                    )
-                    if (elapsedTime.getHours() == 0L) // always applied
-                        appendList.add(context!!.getString(R.string.text_secondCountShort, elapsedTime.getSeconds()))
+    fun getFriendlyElapsedTime(context: Context, estimatedTime: Long): String {
+        val elapsedTime = ElapsedTime.from(estimatedTime)
+        val list: MutableList<String> = ArrayList()
+        if (elapsedTime.years > 0) list.add(context.getString(R.string.text_yearCountShort, elapsedTime.years))
+        if (elapsedTime.months > 0) list.add(context.getString(R.string.text_monthCountShort, elapsedTime.months))
+        if (elapsedTime.years == 0L) {
+            if (elapsedTime.days > 0) list.add(context.getString(R.string.text_dayCountShort, elapsedTime.days))
+            if (elapsedTime.months == 0L) {
+                if (elapsedTime.hours > 0) list.add(context.getString(R.string.text_hourCountShort, elapsedTime.hours))
+                if (elapsedTime.days == 0L) {
+                    if (elapsedTime.minutes > 0) {
+                        list.add(context.getString(R.string.text_minuteCountShort, elapsedTime.minutes))
+                    }
+
+                    if (elapsedTime.hours == 0L) {
+                        // always applied
+                        list.add(context.getString(R.string.text_secondCountShort, elapsedTime.seconds))
+                    }
+
                 }
             }
         }
         val stringBuilder = StringBuilder()
-        for (appendItem in appendList) {
-            if (stringBuilder.length > 0) stringBuilder.append(" ")
+        for (appendItem in list) {
+            if (stringBuilder.isNotEmpty()) stringBuilder.append(" ")
             stringBuilder.append(appendItem)
         }
         return stringBuilder.toString()
@@ -106,15 +89,14 @@ object TimeUtils {
 
     fun getTimeAgo(context: Context, time: Long): String {
         val differ = ((System.currentTimeMillis() - time) / 1000).toInt()
-        if (differ == 0) return context.getString(R.string.text_timeJustNow) else if (differ < 60) return context.resources.getQuantityString(
-            R.plurals.text_secondsAgo,
-            differ,
-            differ
-        ) else if (differ < 3600) return context.resources.getQuantityString(
-            R.plurals.text_minutesAgo,
-            differ / 60,
-            differ / 60
-        )
+        if (differ == 0) {
+            return context.getString(R.string.text_timeJustNow)
+        } else if (differ < 60) {
+            return context.resources.getQuantityString(R.plurals.text_secondsAgo, differ, differ)
+        } else if (differ < 3600) {
+            val minutes = differ / 60
+            return context.resources.getQuantityString(R.plurals.text_minutesAgo, minutes, minutes)
+        }
         return context.getString(R.string.text_longAgo)
     }
 }

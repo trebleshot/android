@@ -17,104 +17,102 @@
  */
 package com.genonbeta.TrebleShot.util
 
-import android.content.*
+import android.content.Context
+import android.content.Intent
 import android.provider.Settings
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
-import com.genonbeta.TrebleShot.protocol.communication.ContentException
+import com.genonbeta.TrebleShot.protocol.communication.*
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage.Tone
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask
 import java.net.ConnectException
 import java.net.NoRouteToHostException
 
 object CommonErrorHelper {
     fun messageOf(context: Context, exception: Exception?): TaskMessage {
-        val taskMessage: TaskMessage = TaskMessage.newInstance()
-            .setTone(Tone.Negative)
-        try {
-            throw exception!!
-        } catch (e: CommunicationException) {
-            taskMessage.setTitle(context, R.string.text_communicationError)
-            if (e is DifferentClientException) taskMessage.setMessage(
-                context,
-                R.string.mesg_errorDifferentDevice
-            ) else if (e is NotAllowedException) taskMessage.setMessage(
-                context,
-                R.string.mesg_notAllowed
-            ) else if (e is NotTrustedException) taskMessage.setMessage(
-                context,
-                R.string.mesg_errorNotTrusted
-            ) else if (e is UnknownCommunicationErrorException) taskMessage.setMessage(
-                context.getString(
-                    R.string.mesg_unknownErrorOccurredWithCode,
-                    (e as UnknownCommunicationErrorException).errorCode
-                )
-            ) else if (e is ContentException) {
-                when (e.error) {
-                    ContentException.Error.NotAccessible -> taskMessage.setMessage(
-                        context,
-                        R.string.text_contentNotAccessible
+        val title: String
+        val message: String
+        var action: TaskMessage.Action? = null
+
+        when (exception) {
+            is CommunicationException -> {
+                title = context.getString(R.string.text_communicationError)
+                message = when (exception) {
+                    is DifferentClientException -> context.getString(R.string.mesg_errorDifferentDevice)
+                    is NotAllowedException -> context.getString(R.string.mesg_notAllowed)
+                    is NotTrustedException -> context.getString(R.string.mesg_errorNotTrusted)
+                    is UnknownCommunicationErrorException -> context.getString(
+                        R.string.mesg_unknownErrorOccurredWithCode,
+                        exception.errorCode
                     )
-                    ContentException.Error.AlreadyExists -> taskMessage.setMessage(
-                        context,
-                        R.string.text_contentAlreadyExists
+                    is ContentException -> context.getString(
+                        when (exception.error) {
+                            ContentException.Error.NotAccessible -> R.string.text_contentNotAccessible
+                            ContentException.Error.AlreadyExists -> R.string.text_contentAlreadyExists
+                            ContentException.Error.NotFound -> R.string.text_contentNotFound
+                            else -> R.string.mesg_unknownErrorOccurred
+                        }
                     )
-                    ContentException.Error.NotFound -> taskMessage.setMessage(context, R.string.text_contentNotFound)
-                    else -> taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred)
+                    else -> context.getString(R.string.mesg_unknownErrorOccurred)
                 }
-            } else taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred)
-        } catch (e: SuggestNetworkException) {
-            taskMessage.setTitle(context, R.string.text_networkSuggestionError)
-            when (e.type) {
-                DeviceIntroductionTask.SuggestNetworkException.Type.ExceededLimit -> taskMessage.setMessage(
-                    context,
-                    R.string.text_errorExceededMaximumSuggestions
-                )
-                    .addAction(
-                        context,
-                        R.string.butn_openSettings,
-                        Tone.Positive,
-                        TaskMessage.Callback { appContext: Context? ->
-                            appContext?.startActivity(
-                                Intent(
-                                    Settings.ACTION_WIFI_SETTINGS
-                                )
-                            )
-                        })
-                DeviceIntroductionTask.SuggestNetworkException.Type.AppDisallowed -> taskMessage.setMessage(
-                    context,
-                    R.string.text_errorNetworkSuggestionsDisallowed
-                )
-                    .addAction(
-                        context,
-                        R.string.butn_openSettings,
-                        Tone.Positive,
-                        TaskMessage.Callback { appContext: Context? ->
-                            if (appContext != null) AppUtils.startApplicationDetails(appContext)
-                        })
-                DeviceIntroductionTask.SuggestNetworkException.Type.ErrorInternal -> taskMessage.setMessage(
-                    context,
-                    R.string.text_errorNetworkSuggestionInternal
-                )
-                    .addAction(
-                        context,
-                        R.string.butn_feedbackContact,
-                        Tone.Positive,
-                        TaskMessage.Callback { appContext: Context? ->
-                            if (appContext != null) AppUtils.startFeedbackActivity(appContext)
-                        })
-                else -> taskMessage.setMessage(context, R.string.mesg_unknownErrorOccurred)
             }
-        } catch (e: ConnectException) {
-            taskMessage.setTitle(context, R.string.text_communicationError)
-                .setMessage(context, R.string.mesg_socketConnectionError)
-        } catch (e: NoRouteToHostException) {
-            taskMessage.setTitle(context, R.string.text_communicationError)
-                .setMessage(context, R.string.mesg_noRouteToHostError)
-        } catch (e: Exception) {
-            taskMessage.setTitle(context, R.string.mesg_somethingWentWrong)
-                .setMessage(context, R.string.mesg_unknownErrorOccurred)
+            is DeviceIntroductionTask.SuggestNetworkException -> {
+                title = context.getString(R.string.text_networkSuggestionError)
+                when (exception.type) {
+                    DeviceIntroductionTask.SuggestNetworkException.Type.ExceededLimit -> {
+                        message = context.getString(R.string.text_errorExceededMaximumSuggestions)
+                        action = TaskMessage.Action(
+                            context.getString(R.string.butn_openSettings),
+                            Tone.Positive, object : TaskMessage.Callback {
+                                override fun call(context: Context) {
+                                    context.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                                }
+                            }
+                        )
+                    }
+                    DeviceIntroductionTask.SuggestNetworkException.Type.AppDisallowed -> {
+                        message = context.getString(R.string.text_errorNetworkSuggestionsDisallowed)
+                        action = TaskMessage.Action(
+                            context.getString(R.string.butn_openSettings),
+                            Tone.Positive,
+                            object : TaskMessage.Callback {
+                                override fun call(context: Context) {
+                                    AppUtils.startApplicationDetails(context)
+                                }
+                            }
+                        )
+                    }
+                    DeviceIntroductionTask.SuggestNetworkException.Type.ErrorInternal -> {
+                        message = context.getString(R.string.text_errorNetworkSuggestionInternal)
+                        action = TaskMessage.Action(
+                            context.getString(R.string.butn_feedbackContact),
+                            Tone.Positive,
+                            object : TaskMessage.Callback {
+                                override fun call(context: Context) {
+                                    AppUtils.startFeedbackActivity(context)
+                                }
+                            }
+                        )
+                    }
+                    else -> message = context.getString(R.string.mesg_unknownErrorOccurred)
+                }
+            }
+            is ConnectException -> {
+                title = context.getString(R.string.text_communicationError)
+                message = context.getString(R.string.mesg_socketConnectionError)
+            }
+            is NoRouteToHostException -> {
+                title = context.getString(R.string.text_communicationError)
+                message = context.getString(R.string.mesg_noRouteToHostError)
+            }
+            else -> {
+                title = context.getString(R.string.mesg_somethingWentWrong)
+                message = context.getString(R.string.mesg_unknownErrorOccurred)
+            }
         }
+
+        val taskMessage = TaskMessage.newInstance(title, message, Tone.Negative)
+        if (action != null) taskMessage.addAction(action)
         return taskMessage
     }
 }

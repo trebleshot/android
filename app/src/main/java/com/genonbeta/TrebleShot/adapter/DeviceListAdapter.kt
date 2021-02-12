@@ -37,7 +37,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.*
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Connections
 import com.genonbeta.TrebleShot.util.DeviceLoader
-import com.genonbeta.TrebleShot.utilimport.NsdDaemon
+import com.genonbeta.TrebleShot.util.NsdDaemon
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter

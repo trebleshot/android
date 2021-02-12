@@ -29,8 +29,13 @@ import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.dataobject.TransferItem
-import com.genonbeta.TrebleShot.util.*
-import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.Files
+import com.genonbeta.TrebleShot.util.TextUtils
+import com.genonbeta.android.framework.util.Files.fromUri
+import com.genonbeta.android.framework.util.Files.getOpenIntent
+import com.genonbeta.android.framework.util.Files.openUri
+import com.genonbeta.android.framework.util.Files.sizeExpression
 import java.text.NumberFormat
 
 /**
@@ -42,22 +47,23 @@ class TransferInfoDialog(
     item: TransferItem, deviceId: String?,
 ) : AlertDialog.Builder(activity) {
     init {
-        var attemptedFile: DocumentFile? = null
         val isIncoming = TransferItem.Type.INCOMING == item.type
-        try {
-            // If it is incoming than get the received or cache file
-            // If not then try to reach to the source file that is being send
-            attemptedFile = if (isIncoming) Files.getIncomingPseudoFile(
-                context, item, loadedGroup.transfer,
-                false
-            ) else com.genonbeta.android.framework.util.Files.fromUri(context, Uri.parse(item.file))
+        val file = try {
+            val attemptedFile = if (isIncoming) Files.getIncomingPseudoFile(
+                context, item, loadedGroup.transfer, false
+            ) else fromUri(context, Uri.parse(item.file))
+
+            if (attemptedFile.canRead()) attemptedFile else null
         } catch (e: Exception) {
             e.printStackTrace()
+            null
         }
-        val pseudoFile = attemptedFile
-        val fileExists = pseudoFile != null && pseudoFile.canRead()
-        @SuppressLint("InflateParams") val rootView =
-            LayoutInflater.from(activity).inflate(R.layout.layout_transfer_info, null)
+        val parentFile = file?.getParentFile()
+        val unknown = context.getString(R.string.text_unknown)
+
+        @SuppressLint("InflateParams") val rootView = LayoutInflater.from(activity).inflate(
+            R.layout.layout_transfer_info, null
+        )
         val nameText: TextView = rootView.findViewById(R.id.transfer_info_file_name)
         val sizeText: TextView = rootView.findViewById(R.id.transfer_info_file_size)
         val typeText: TextView = rootView.findViewById(R.id.transfer_info_file_mime)
@@ -68,12 +74,10 @@ class TransferInfoDialog(
         setTitle(R.string.text_transactionDetails)
         setView(rootView)
         nameText.text = item.name
-        sizeText.text = com.genonbeta.android.framework.util.Files.sizeExpression(item.getComparableSize(), false)
+        sizeText.text = sizeExpression(item.getComparableSize(), false)
         typeText.text = item.mimeType
-        receivedSizeText.text = if (fileExists) com.genonbeta.android.framework.util.Files.sizeExpression(
-            pseudoFile!!.getLength(), false
-        ) else context.getString(R.string.text_unknown)
-        locationText.text = if (fileExists) Files.getReadableUri(pseudoFile!!.uri) else context.getString(R.string.text_unknown)
+        receivedSizeText.text = if (file != null) sizeExpression(file.getLength(), false) else unknown
+        locationText.text = if (file != null) Files.getReadableUri(file.getUri()) else unknown
         flagText.text = TextUtils.getTransactionFlagString(context, item, NumberFormat.getPercentInstance(), deviceId)
         setPositiveButton(R.string.butn_close, null)
         setNegativeButton(R.string.butn_remove) { dialogInterface: DialogInterface?, i: Int ->
@@ -87,8 +91,8 @@ class TransferInfoDialog(
                     AppUtils.getKuick(activity).publish(item)
                     AppUtils.getKuick(activity).broadcast()
                 }
-            } else if (fileExists) {
-                if (TransferItem.Flag.REMOVED == item.flag && pseudoFile!!.parentFile != null) {
+            } else if (file != null) {
+                if (TransferItem.Flag.REMOVED == item.flag && parentFile != null) {
                     setNeutralButton(R.string.butn_saveAnyway) { dialogInterface: DialogInterface?, i: Int ->
                         val saveAnyway = AlertDialog.Builder(context)
                         saveAnyway.setTitle(R.string.ques_saveAnyway)
@@ -96,7 +100,7 @@ class TransferInfoDialog(
                         saveAnyway.setNegativeButton(R.string.butn_cancel, null)
                         saveAnyway.setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
                             try {
-                                val savedFile = Files.saveReceivedFile(pseudoFile.getParentFile(), pseudoFile, item)
+                                val savedFile = Files.saveReceivedFile(parentFile, file, item)
                                 item.flag = TransferItem.Flag.DONE
                                 AppUtils.getKuick(activity).update(item)
                                 AppUtils.getKuick(activity).broadcast()
@@ -111,15 +115,15 @@ class TransferInfoDialog(
                 } else if (TransferItem.Flag.DONE == item.flag) {
                     setNeutralButton(R.string.butn_open) { dialog: DialogInterface?, which: Int ->
                         try {
-                            com.genonbeta.android.framework.util.Files.openUri(context, pseudoFile)
+                            openUri(context, file)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
                 }
             }
-        } else if (fileExists) try {
-            val startIntent = com.genonbeta.android.framework.util.Files.getOpenIntent(context, attemptedFile)
+        } else if (file != null) try {
+            val startIntent = getOpenIntent(context, file)
             setNeutralButton(R.string.butn_open) { dialog: DialogInterface?, which: Int ->
                 try {
                     context.startActivity(startIntent)

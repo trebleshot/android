@@ -83,7 +83,7 @@ object Files {
     fun getIncomingPseudoFile(
         context: Context, item: TransferItem, transfer: Transfer, createIfNeeded: Boolean,
     ): DocumentFile {
-        return fetchFile(getSavePath(context, transfer), item.directory, item.mimeType, item.file!!, createIfNeeded)
+        return fetchFile(getSavePath(context, transfer), item.directory, item.mimeType, item.file, createIfNeeded)
     }
 
     @Throws(IOException::class)
@@ -93,16 +93,16 @@ object Files {
         return pseudoFile
     }
 
-    fun getReadableUri(uri: String): String? {
+    fun getReadableUri(uri: String): String {
         return getReadableUri(Uri.parse(uri), uri)
     }
 
-    fun getReadableUri(uri: Uri): String? {
+    fun getReadableUri(uri: Uri): String {
         return getReadableUri(uri, uri.toString())
     }
 
-    fun getReadableUri(uri: Uri, defaultValue: String?): String? {
-        return if (uri.path == null) defaultValue else uri.path
+    fun getReadableUri(uri: Uri, defaultValue: String): String {
+        return uri.path ?: defaultValue
     }
 
     @Throws(Exception::class)

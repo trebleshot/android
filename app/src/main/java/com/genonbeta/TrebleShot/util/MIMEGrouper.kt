@@ -20,14 +20,18 @@ package com.genonbeta.TrebleShot.util
 import java.io.File
 
 class MIMEGrouper {
-    private var mMajor: String? = null
-    private var mMinor: String? = null
+    private var majorInternal: String? = null
+
+    private var minorInternal: String? = null
+
     var isLocked = false
         private set
+
     val major: String
-        get() = if (mMajor == null) TYPE_GENERIC else mMajor!!
+        get() = majorInternal ?: TYPE_GENERIC
+
     val minor: String
-        get() = if (mMinor == null) TYPE_GENERIC else mMinor!!
+        get() = minorInternal ?: TYPE_GENERIC
 
     fun process(mimeType: String?) {
         if (mimeType == null || mimeType.length < 3 || !mimeType.contains(File.separator)) return
@@ -36,15 +40,15 @@ class MIMEGrouper {
     }
 
     fun process(major: String, minor: String) {
-        if (mMajor == null || mMinor == null) {
-            mMajor = major
-            mMinor = minor
+        if (majorInternal == null || minorInternal == null) {
+            majorInternal = major
+            minorInternal = minor
         } else if (major == TYPE_GENERIC) isLocked = true else if (major != major) {
-            mMajor = TYPE_GENERIC
-            mMinor = TYPE_GENERIC
+            majorInternal = TYPE_GENERIC
+            minorInternal = TYPE_GENERIC
             isLocked = true
         } else if (minor != minor) {
-            mMinor = TYPE_GENERIC
+            minorInternal = TYPE_GENERIC
         }
     }
 

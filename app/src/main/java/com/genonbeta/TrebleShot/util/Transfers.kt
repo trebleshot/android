@@ -1,15 +1,25 @@
 package com.genonbeta.TrebleShot.util
 
-import android.content.*
+import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context
+import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
-import com.genonbeta.TrebleShot.dataobject.TransferItem.from
+import com.genonbeta.TrebleShot.dialog.FindConnectionDialog
+import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
+import com.genonbeta.TrebleShot.task.FileTransferStarterTask
+import com.genonbeta.TrebleShot.task.FileTransferTask
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import java.io.File
 
 /**
@@ -18,46 +28,46 @@ import java.io.File
  */
 object Transfers {
     val TAG = Transfers::class.java.simpleName
-    private fun appendOutgoingData(group: TransferIndex?, item: TransferItem, flag: TransferItem.Flag) {
-        group.bytesOutgoing += item.comparableSize
+
+    private fun appendOutgoingData(group: TransferIndex, item: TransferItem, flag: TransferItem.Flag) {
+        group.bytesOutgoing += item.getComparableSize()
         group.numberOfOutgoing++
         if (TransferItem.Flag.DONE == flag) {
-            group.bytesOutgoingCompleted += item.comparableSize
+            group.bytesOutgoingCompleted += item.getComparableSize()
             group.numberOfOutgoingCompleted++
-        } else if (TransferItem.Flag.IN_PROGRESS == flag) group.bytesOutgoingCompleted += flag.bytesValue else if (isError(
-                flag
-            )
-        ) group.hasIssues = true
+        } else if (TransferItem.Flag.IN_PROGRESS == flag) {
+            group.bytesOutgoingCompleted += flag.bytesValue
+        } else if (isError(flag)) group.hasIssues = true
     }
 
     @Throws(TaskStoppedException::class)
     fun createFolderStructure(
         list: MutableList<TransferItem>, transferId: Long, file: DocumentFile,
-        directory: String?, task: AsyncTask
+        directory: String?, task: AsyncTask,
     ) {
         val files = file.listFiles()
-        if (files == null || files.size <= 0) return
-        task.progress().addToTotal(files.size)
+        if (files.isEmpty()) return
+        task.progress.increaseTotalBy(files.size)
         for (thisFile in files) {
             task.throwIfStopped()
-            task.ongoingContent = thisFile.name
-            task.progress().addToCurrent(1)
-            if (thisFile.isDirectory) {
+            task.ongoingContent = thisFile.getName()
+            task.progress.increaseBy(1)
+            if (thisFile.isDirectory()) {
                 createFolderStructure(
                     list,
                     transferId,
                     thisFile,
-                    (if (directory == null) null else directory + File.separator) + thisFile.name,
+                    (if (directory == null) null else directory + File.separator) + thisFile.getName(),
                     task
                 )
                 continue
             }
-            list.add(from(thisFile, transferId, directory))
+            list.add(TransferItem.from(thisFile, transferId, directory))
         }
     }
 
     @SuppressLint("DefaultLocale")
-    fun createUniqueTransferId(transferId: Long, deviceId: String?, type: TransferItem.Type?): Long {
+    fun createUniqueTransferId(transferId: Long, deviceId: String, type: TransferItem.Type): Long {
         return String.format("%d_%s_%s", transferId, deviceId, type).hashCode().toLong()
     }
 
@@ -82,16 +92,16 @@ object Transfers {
         )
     }
 
-    fun createAddressSelection(deviceId: String?): SQLQuery.Select {
+    fun createAddressSelection(deviceId: String): SQLQuery.Select {
         return SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
             .setWhere(Kuick.FIELD_DEVICEADDRESS_DEVICEID + "=?", deviceId)
             .setOrderBy(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE + " DESC")
     }
 
     fun getPercentageByFlag(flag: TransferItem.Flag, size: Long): Double {
-        if (TransferItem.Flag.DONE == flag) return 1
+        if (TransferItem.Flag.DONE == flag) return 1.0
         val bytesValue = flag.bytesValue
-        return if (bytesValue == 0L || size == 0L) 0 else (bytesValue.toFloat() / size).toDouble()
+        return if (bytesValue == 0L || size == 0L) 0.0 else (bytesValue.toFloat() / size).toDouble()
     }
 
     fun fetchFirstMember(kuick: Kuick, transferId: Long): LoadedMember? {
@@ -100,27 +110,28 @@ object Transfers {
         val memberList: List<LoadedMember> = kuick.castQuery<Transfer, LoadedMember>(
             select,
             LoadedMember::class.java,
-            CastQueryListener<LoadedMember> { db: KuickDb, values: ContentValues?, item: LoadedMember ->
-                item.device = Device(item.deviceId)
-                try {
-                    db.reconstruct<Void, Device>(item.device)
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            object : KuickDb.CastQueryListener<LoadedMember> {
+                override fun onObjectReconstructed(manager: KuickDb, values: ContentValues, item: LoadedMember) {
+                    item.device = Device(item.deviceId)
+                    try {
+                        manager.reconstruct(item.device)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
-            })
-        return if (memberList.size == 0) null else memberList[0]
+            }
+        )
+        return if (memberList.isEmpty()) null else memberList[0]
     }
 
     fun fetchFirstMember(snackbar: SnackbarPlacementProvider, kuick: Kuick, transferId: Long): LoadedMember? {
-        val member: LoadedMember? = fetchFirstMember(kuick, transferId)
-        if (member == null) {
-            snackbar.createSnackbar(R.string.mesg_noReceiverOrSender).show()
-            return null
+        return fetchFirstMember(kuick, transferId) ?: run {
+            snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)?.show()
+            null
         }
-        return member
     }
 
-    fun fetchFirstValidIncomingTransferItem(context: Context?, transferId: Long): TransferItem? {
+    fun fetchFirstValidIncomingTransferItem(context: Context, transferId: Long): TransferItem? {
         val kuick = AppUtils.getKuick(context)
         val receiverInstance = kuick.getFirstFromTable(
             createIncomingSelection(
@@ -141,10 +152,9 @@ object Transfers {
     }
 
     @Throws(ConnectionNotFoundException::class)
-    fun getAddressListFor(kuick: KuickDb?, deviceId: String?): List<DeviceAddress> {
-        val addressList: List<DeviceAddress> =
-            kuick.castQuery<Device, DeviceAddress>(createAddressSelection(deviceId), DeviceAddress::class.java)
-        if (addressList.size <= 0) throw ConnectionNotFoundException(deviceId)
+    fun getAddressListFor(kuick: KuickDb, deviceId: String): List<DeviceAddress> {
+        val addressList = kuick.castQuery(createAddressSelection(deviceId), DeviceAddress::class.java)
+        if (addressList.isEmpty()) throw ConnectionNotFoundException(deviceId)
         return addressList
     }
 
@@ -152,22 +162,19 @@ object Transfers {
         return TransferItem.Flag.INTERRUPTED == flag || TransferItem.Flag.REMOVED == flag
     }
 
-    fun loadMemberInfo(context: Context?, member: LoadedMember) {
+    fun loadMemberInfo(context: Context, member: LoadedMember) {
         loadMemberInfo(AppUtils.getKuick(context), member)
     }
 
-    fun loadMemberInfo(kuick: KuickDb?, member: LoadedMember) {
+    fun loadMemberInfo(kuick: KuickDb, member: LoadedMember) {
         member.device = Device(member.deviceId)
         try {
-            kuick.reconstruct<Void, Device>(member.device)
+            kuick.reconstruct(member.device)
         } catch (ignored: Exception) {
         }
     }
 
-    fun loadMemberList(
-        context: Context?, transferId: Long,
-        type: TransferItem.Type?
-    ): List<LoadedMember> {
+    fun loadMemberList(context: Context, transferId: Long, type: TransferItem.Type?): List<LoadedMember> {
         val selection: SQLQuery.Select = SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER)
         if (type == null) selection.setWhere(
             Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=?",
@@ -177,28 +184,26 @@ object Transfers {
                     + Kuick.FIELD_TRANSFERMEMBER_TYPE + "=?", transferId.toString(),
             type.toString()
         )
-        return AppUtils.getKuick(context).castQuery<Transfer, LoadedMember>(selection, LoadedMember::class.java,
-            CastQueryListener<LoadedMember> { db: KuickDb?, values: ContentValues?, item: LoadedMember? ->
-                loadMemberInfo(
-                    db,
-                    item
-                )
-            })
+        return AppUtils.getKuick(context).castQuery(
+            selection,
+            LoadedMember::class.java,
+            object : KuickDb.CastQueryListener<LoadedMember> {
+                override fun onObjectReconstructed(manager: KuickDb, values: ContentValues, item: LoadedMember) {
+                    loadMemberInfo(manager, item)
+                }
+            }
+        )
     }
 
-    fun loadTransferInfo(context: Context?, transfer: TransferIndex?, member: TransferMember?) {
-        if (member == null) loadTransferInfo(context, transfer) else loadTransferInfo(
-            context,
-            transfer,
-            member.deviceId,
-            member.type
-        )
+    fun loadTransferInfo(context: Context, transfer: TransferIndex, member: TransferMember? = null) {
+        if (member == null) {
+            loadTransferInfo(context, transfer)
+        } else loadTransferInfo(context, transfer, member.deviceId, member.type)
     }
 
     @JvmOverloads
     fun loadTransferInfo(
-        context: Context?, index: TransferIndex?, deviceId: String? = null,
-        type: TransferItem.Type? = null
+        context: Context, index: TransferIndex, deviceId: String? = null, type: TransferItem.Type? = null,
     ) {
         val transfer: Transfer = index.transfer
         index.numberOfOutgoing = 0
@@ -224,26 +229,25 @@ object Transfers {
         )
         val memberList: List<LoadedMember> = loadMemberList(context, transfer.id, type)
         val objectList = AppUtils.getKuick(context).castQuery(selection, TransferItem::class.java)
-        index.members = arrayOfNulls<LoadedMember>(memberList.size)
-        memberList.toArray(index.members)
+        index.members = memberList.toTypedArray()
         for (item in objectList) {
             if (TransferItem.Type.INCOMING == item.type) {
-                index.bytesIncoming += item.comparableSize
+                index.bytesIncoming += item.getComparableSize()
                 index.numberOfIncoming++
                 val flag = item.flag
                 if (TransferItem.Flag.DONE == flag) {
-                    index.bytesIncomingCompleted += item.comparableSize
+                    index.bytesIncomingCompleted += item.getComparableSize()
                     index.numberOfIncomingCompleted++
-                } else if (TransferItem.Flag.IN_PROGRESS == flag) index.bytesIncomingCompleted += flag.bytesValue else if (isError(
-                        flag
-                    )
+                } else if (TransferItem.Flag.IN_PROGRESS == flag) {
+                    index.bytesIncomingCompleted += flag.bytesValue
+                } else if (isError(flag)
                 ) index.hasIssues = true
             } else if (TransferItem.Type.OUTGOING == item.type) {
-                if (deviceId != null) appendOutgoingData(
-                    index,
-                    item,
-                    item.getFlag(deviceId)
-                ) else if (memberList.size < 1) appendOutgoingData(index, item, TransferItem.Flag.PENDING) else {
+                if (deviceId != null) {
+                    appendOutgoingData(index, item, item.getFlag(deviceId))
+                } else if (memberList.isEmpty()) {
+                    appendOutgoingData(index, item, TransferItem.Flag.PENDING)
+                } else {
                     for (member in memberList) {
                         if (TransferItem.Type.OUTGOING != member.type) continue
                         appendOutgoingData(index, item, item.getFlag(member.deviceId))
@@ -253,14 +257,11 @@ object Transfers {
         }
     }
 
-    fun pauseTransfer(activity: Activity?, member: TransferMember?) {
+    fun pauseTransfer(activity: Activity, member: TransferMember) {
         pauseTransfer(activity, member.transferId, member.deviceId, member.type)
     }
 
-    fun pauseTransfer(
-        activity: Activity?, transferId: Long, deviceId: String?,
-        type: TransferItem.Type?
-    ) {
+    fun pauseTransfer(activity: Activity, transferId: Long, deviceId: String, type: TransferItem.Type) {
         App.interruptTasksBy(
             activity,
             FileTransferTask.identifyWith(transferId, deviceId, type),
@@ -268,7 +269,7 @@ object Transfers {
         )
     }
 
-    fun recoverIncomingInterruptions(context: Context?, transferId: Long) {
+    fun recoverIncomingInterruptions(context: Context, transferId: Long) {
         val kuick = AppUtils.getKuick(context)
         val contentValues = ContentValues()
         contentValues.put(Kuick.FIELD_TRANSFERITEM_FLAG, TransferItem.Flag.PENDING.toString())
@@ -283,16 +284,13 @@ object Transfers {
         kuick.broadcast()
     }
 
-    fun startTransferWithTest(
-        activity: Activity, transfer: Transfer?,
-        member: TransferMember?
-    ) {
-        val context = activity.applicationContext
+    fun startTransferWithTest(activity: Activity, transfer: Transfer, member: TransferMember) {
         if (activity.isFinishing) return
-        if (TransferItem.Type.INCOMING == member.type && fetchFirstValidIncomingTransferItem(
-                activity,
-                transfer!!.id
-            ) == null
+
+        val context = activity.applicationContext
+        val savePath = transfer.savePath
+        if (TransferItem.Type.INCOMING == member.type
+            && fetchFirstValidIncomingTransferItem(activity, transfer.id) == null
         ) {
             activity.runOnUiThread {
                 AlertDialog.Builder(activity)
@@ -304,15 +302,15 @@ object Transfers {
                     }
                     .show()
             }
-        } else if (TransferItem.Type.INCOMING == member.type && Files.getSavePath(activity, transfer)
-                .uri.toString() != transfer!!.savePath
+        } else if (TransferItem.Type.INCOMING == member.type
+            && Files.getSavePath(activity, transfer).getUri().toString() != savePath
         ) {
             activity.runOnUiThread {
                 AlertDialog.Builder(activity)
                     .setMessage(
                         context.getString(
                             R.string.mesg_notSavingToChosenLocation,
-                            Files.getReadableUri(transfer.savePath)
+                            if (savePath == null) "null" else Files.getReadableUri(savePath)
                         )
                     )
                     .setNegativeButton(R.string.butn_close, null)
@@ -327,23 +325,26 @@ object Transfers {
         } else startTransfer(activity, member)
     }
 
-    fun startTransfer(activity: Activity?, member: TransferMember?) {
-        if (activity != null && !activity.isFinishing) activity.runOnUiThread(Runnable {
+    fun startTransfer(activity: Activity, member: TransferMember) {
+        if (!activity.isFinishing) activity.runOnUiThread {
             try {
-                val task: FileTransferTask = FileTransferTask.createFrom(
+                val task = FileTransferStarterTask.createFrom(
                     AppUtils.getKuick(activity),
                     member.transferId, member.deviceId, member.type
                 )
                 FindConnectionDialog.show(
                     activity,
                     task.device,
-                    OnDeviceResolvedListener { device: Device?, address: DeviceAddress? ->
-                        try {
-                            App.run<FileTransferTask>(activity, task)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                    object : DeviceLoader.OnDeviceResolvedListener {
+                        override fun onDeviceResolved(device: Device, address: DeviceAddress) {
+                            try {
+                                App.run(activity, task)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
-                    })
+                    }
+                )
             } catch (e: Exception) {
                 AlertDialog.Builder(activity)
                     .setMessage(R.string.mesg_somethingWentWrong)
@@ -356,6 +357,6 @@ object Transfers {
                     }
                     .show()
             }
-        })
+        }
     }
 }

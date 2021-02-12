@@ -83,9 +83,9 @@ class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListene
         if (task is OrganizeSharingTask) {
             when (state) {
                 AsyncTask.State.Running -> {
-                    val progress = task.progress.progress
-                    val total = task.progress.total
-                    runOnUiThread { textMain.setText(task.ongoingContent) }
+                    val progress = task.progress.getProgress()
+                    val total = task.progress.getTotal()
+                    runOnUiThread { textMain.text = task.ongoingContent }
                     progressBar.progress = progress
                     progressBar.max = total
                 }

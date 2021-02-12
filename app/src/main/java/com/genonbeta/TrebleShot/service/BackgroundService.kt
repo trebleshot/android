@@ -38,6 +38,7 @@ import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.protocol.communication.NotAllowedException
 import com.genonbeta.TrebleShot.service.WebShareServer.BoundRunner
+import com.genonbeta.TrebleShot.task.FileTransferStarterTask
 import com.genonbeta.TrebleShot.task.FileTransferTask
 import com.genonbeta.TrebleShot.task.IndexTransferTask
 import com.genonbeta.TrebleShot.util.*
@@ -85,7 +86,7 @@ class BackgroundService : Service() {
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
                 app.notificationHelper.utils.cancel(notificationId)
                 try {
-                    val task = FileTransferTask.createFrom(
+                    val task = FileTransferStarterTask.createFrom(
                         kuick, transfer, device,
                         TransferItem.Type.INCOMING
                     )
@@ -147,16 +148,17 @@ class BackgroundService : Service() {
                     ) as FileTransferTask?
 
                     if (task == null) app.run(
-                        FileTransferTask.createFrom(
+                        FileTransferStarterTask.createFrom(
                             kuick,
                             transfer,
                             device,
                             type
                         )
-                    ) else Toast.makeText(
-                        this, getString(R.string.mesg_groupOngoingNotice, task.item.name),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    ) else task.item?.let {
+                        Toast.makeText(
+                            this, getString(R.string.mesg_groupOngoingNotice, it.name), Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -351,20 +353,15 @@ class BackgroundService : Service() {
                         TAG, "CommunicationServer.onConnected(): "
                                 + "transferId=" + transferId + " typeValue=" + typeValue
                     )
-                    if (TransferItem.Type.INCOMING == type && !device.isTrusted) CommunicationBridge.sendError(
-                        activeConnection,
-                        Keyword.ERROR_NOT_TRUSTED
-                    ) else if (isProcessRunning(transferId.toLong(), device.uid, type)) throw ContentException(
-                        ContentException.Error.NotAccessible
-                    ) else {
-                        val task = FileTransferTask()
-                        task.activeConnection = activeConnection
-                        task.transfer = transfer
-                        task.device = device
-                        task.type = type
-                        task.member = TransferMember(transfer, device, type)
-                        task.index = TransferIndex(transfer)
-                        kuick.reconstruct(task.member)
+                    if (TransferItem.Type.INCOMING == type && !device.isTrusted) {
+                        CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_TRUSTED)
+                    } else if (isProcessRunning(transferId, device.uid, type)) {
+                        throw ContentException(ContentException.Error.NotAccessible)
+                    } else {
+                        val member = TransferMember(transfer, device, type).also { kuick.reconstruct(it) }
+                        val task = FileTransferTask(
+                            activeConnection, transfer, device, member, TransferIndex(transfer), type,
+                        )
                         CommunicationBridge.sendResult(activeConnection, true)
                         app.attach(task)
                         return

@@ -327,8 +327,7 @@ abstract class KuickDb(
             val objects = castQuery(db, select, objectType, queryListener)
             progress?.increaseTotalBy(objects.size)
             for (item in objects) {
-                if (progress != null && !progress.increaseBy(1))
-                    break
+                if (progress != null && !progress.increaseBy(1)) break
                 remove(db, item, parent, progress)
             }
             db.setTransactionSuccessful()

@@ -55,7 +55,7 @@ object Updates {
     }
 
     fun getDefaultUpdater(context: Context): GitHubUpdater {
-        return GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, R.style.Theme_TrebleShot, false)
+        return GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, false)
     }
 
     fun hasNewVersion(context: Context): Boolean {

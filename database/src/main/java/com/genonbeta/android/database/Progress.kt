@@ -5,7 +5,11 @@ class Progress(var total: Int = 0, var progress: Int = 0) {
         var progress: Progress?
         
         fun onProgressChange(progress: Progress): Boolean
-        
+
+        fun getProgress(): Int
+
+        fun getTotal(): Int
+
         fun increaseBy(increase: Int): Boolean
 
         fun increaseTotalBy(increase: Int): Boolean
@@ -13,6 +17,10 @@ class Progress(var total: Int = 0, var progress: Int = 0) {
 
     abstract class SimpleContext : Context {
         override var progress: Progress? = null
+
+        override fun getProgress(): Int = dissect(this).progress
+
+        override fun getTotal(): Int = dissect(this).total
 
         override fun increaseBy(increase: Int): Boolean {
             val progress = dissect(this)
@@ -25,7 +33,6 @@ class Progress(var total: Int = 0, var progress: Int = 0) {
             progress.total += increase
             return onProgressChange(progress)
         }
-
     }
 
     companion object {

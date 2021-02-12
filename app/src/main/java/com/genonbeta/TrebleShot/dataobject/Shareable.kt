@@ -29,9 +29,9 @@ abstract class Shareable : Editable {
 
     lateinit var friendlyName: String
 
-    var fileName: String? = null
+    lateinit var fileName: String
 
-    var mimeType: String? = null
+    lateinit var mimeType: String
 
     lateinit var uri: Uri
 
@@ -51,7 +51,7 @@ abstract class Shareable : Editable {
     }
 
     protected fun initialize(
-        id: Long, friendlyName: String, fileName: String?, mimeType: String?, date: Long, size: Long,
+        id: Long, friendlyName: String, fileName: String, mimeType: String, date: Long, size: Long,
         uri: Uri,
     ) {
         this.id = id

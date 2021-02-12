@@ -200,7 +200,6 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
         private val noGroupingList: MutableList<T>, private val mode: Int,
         var customLister: CustomGroupLister<T>? = null,
     ) : Lister<T, ComparableMerger<T>>() {
-
         fun offerObliged(adapter: EditableListAdapterBase<T>, item: T) {
             if (adapter.filterItem(item)) offer(item)
         }
@@ -220,8 +219,11 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
 
     companion object {
         const val VIEW_TYPE_REPRESENTATIVE = 100
+
         const val VIEW_TYPE_ACTION_BUTTON = 110
+
         const val MODE_GROUP_BY_NOTHING = 100
+
         const val MODE_GROUP_BY_DATE = 110
     }
 }
