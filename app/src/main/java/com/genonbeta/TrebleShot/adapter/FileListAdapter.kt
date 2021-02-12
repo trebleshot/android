@@ -61,9 +61,13 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     GroupEditableListAdapter<FileHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_DEFAULT),
     CustomGroupLister<FileHolder> {
     private var showDirectories = true
+
     private var showFiles = true
+
     private var showThumbnails = true
+
     private var searchWord: String? = null
+
     private var path: DocumentFile? = null
 
     protected override fun onLoad(lister: GroupLister<FileHolder>) {
@@ -492,7 +496,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
         }
 
         override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
-            uri = Uri.parse(item.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH))
+            uri = Uri.parse(values.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH))
             type = if (uri.toString().startsWith("file")) Type.Bookmarked else Type.Mounted
             try {
                 initialize(com.genonbeta.android.framework.util.Files.fromUri(kuick.context, uri))
@@ -500,7 +504,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             }
-            friendlyName = item.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE)
+            friendlyName = values.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE)
         }
 
         override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}

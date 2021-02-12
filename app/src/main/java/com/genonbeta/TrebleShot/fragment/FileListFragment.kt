@@ -45,11 +45,11 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.google.android.material.snackbar.Snackbar
 import java.io.FileNotFoundException
 
@@ -170,10 +170,11 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
         super.onPrepareOptionsMenu(menu)
         val shortcutMenuItem = menu.findItem(R.id.actions_file_list_toggle_shortcut)
         if (shortcutMenuItem != null) {
-            val hasPath = adapter.getPath() != null
-            shortcutMenuItem.isEnabled = hasPath
-            if (hasPath) try {
-                AppUtils.getKuick(requireContext()).reconstruct(FileHolder(requireContext(), adapter.getPath()))
+            val path = adapter.getPath()
+
+            shortcutMenuItem.isEnabled = path != null
+            if (path != null) try {
+                AppUtils.getKuick(requireContext()).reconstruct(FileHolder(requireContext(), path))
                 shortcutMenuItem.setTitle(R.string.butn_removeShortcut)
             } catch (e: Exception) {
                 shortcutMenuItem.setTitle(R.string.butn_addShortcut)
@@ -238,8 +239,10 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
 
     override fun performDefaultLayoutClick(holder: GroupViewHolder, target: FileHolder): Boolean {
         if (target.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
-            && target.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER
-        ) requestMountStorage() else if (target.file?.isDirectory() == true) {
+            && target.requestCode == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER
+        ) {
+            requestMountStorage()
+        } else if (target.file.isDirectory()) {
             goPath(target.file)
             AppUtils.showFolderSelectionHelp(this)
         } else performLayoutClickOpen(holder, target)
@@ -248,7 +251,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
 
     override fun performLayoutClickOpen(holder: GroupViewHolder, target: FileHolder): Boolean {
         val file = target.file
-        return (file != null && com.genonbeta.TrebleShot.util.Files.openUriForeground(requireActivity(), file))
+        return (com.genonbeta.TrebleShot.util.Files.openUriForeground(requireActivity(), file))
                 || super.performLayoutClickOpen(holder, target)
     }
 
@@ -259,7 +262,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
     }
 
     override fun setItemSelected(holder: GroupViewHolder): Boolean {
-        return when (adapter.getItem(holder.adapterPosition).getType()) {
+        return when (adapter.getItem(holder.adapterPosition).type) {
             FileHolder.Type.SaveLocation, FileHolder.Type.Folder -> false
             else -> super.setItemSelected(holder)
         }
@@ -269,10 +272,10 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
         fun onPathChanged(file: DocumentFile?)
     }
 
-    private class SelectionCallback(private val fragment: FileListFragment, provider: PerformerEngineProvider) :
-        SharingPerformerMenuCallback(
-            fragment.requireActivity(), provider
-        ) {
+    private class SelectionCallback(
+        private val fragment: FileListFragment,
+        provider: PerformerEngineProvider,
+    ) : SharingPerformerMenuCallback(fragment.requireActivity(), provider) {
         override fun onPerformerMenuList(
             performerMenu: PerformerMenu,
             inflater: MenuInflater,

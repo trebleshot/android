@@ -39,6 +39,7 @@ class ImageListFragment : GalleryGroupEditableListFragment<ImageHolder, GroupVie
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         itemOffsetDecorationEnabled = true
+
         setDefaultViewingGridSize(3, 5)
     }
 
