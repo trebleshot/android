@@ -56,7 +56,7 @@ abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsy
     override fun publishStatus(force: Boolean): Boolean {
         if (!super.publishStatus(force))
             return false
-        val state = state
+        val state = getState()
         handler.post { notifyAnchor(state) }
         return true
     }

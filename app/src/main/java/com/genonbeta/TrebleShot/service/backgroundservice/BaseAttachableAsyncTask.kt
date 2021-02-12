@@ -19,5 +19,6 @@ package com.genonbeta.TrebleShot.service.backgroundservice
 
 abstract class BaseAttachableAsyncTask : AsyncTask() {
     abstract fun hasAnchor(): Boolean
+
     abstract fun removeAnchor()
 }

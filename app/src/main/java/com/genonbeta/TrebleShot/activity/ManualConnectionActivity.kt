@@ -78,7 +78,7 @@ class ManualConnectionActivity : Activity(), DeviceIntroductionTask.ResultListen
     }
 
     override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
-        val running = task is DeviceIntroductionTask && !task.isFinished
+        val running = task is DeviceIntroductionTask && !task.finished
         setShowProgress(running)
         getButton().isEnabled = !running
     }

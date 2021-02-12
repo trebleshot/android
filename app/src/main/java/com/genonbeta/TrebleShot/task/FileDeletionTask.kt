@@ -17,25 +17,28 @@
  */
 package com.genonbeta.TrebleShot.task
 
-import android.content.*
+import android.content.Context
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.FileListAdapter.FileHolder
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.android.framework.io.DocumentFile
 import java.util.*
 
-class FileDeletionTask(list: List<FileHolder?>?) : AsyncTask() {
-    private val mList: List<FileHolder>
+class FileDeletionTask(list: List<FileHolder>) : AsyncTask() {
+    private val list: List<FileHolder> = ArrayList(list)
+
     @Throws(TaskStoppedException::class)
     override fun onRun() {
+        progress.increaseTotalBy(list.size)
+
         val successfulList: MutableList<DocumentFile> = ArrayList()
-        progress().addToTotal(mList.size)
-        for (holder in mList) {
+
+        for (holder in list) {
             throwIfStopped()
-            if (holder.file != null) {
-                if (holder.file.isFile()) deleteFile(holder.file, successfulList) else deleteDirectory(
-                    holder.file,
-                    successfulList
-                )
+            val file = holder.file
+            if (file != null) {
+                if (file.isFile()) deleteFile(file, successfulList) else deleteDirectory(file, successfulList)
             }
         }
         RenameMultipleFilesTask.notifyFileChanges(context, successfulList)
@@ -44,30 +47,24 @@ class FileDeletionTask(list: List<FileHolder?>?) : AsyncTask() {
     @Throws(TaskStoppedException::class)
     fun deleteDirectory(folder: DocumentFile, successfulList: MutableList<DocumentFile>) {
         val files = folder.listFiles()
-        if (files != null) {
-            progress().addToTotal(files.size)
-            for (file in files) {
-                throwIfStopped()
-                ongoingContent = file.name
-                if (file.isFile) deleteFile(file, successfulList) else if (file.isDirectory) deleteDirectory(
-                    file,
-                    successfulList
-                )
-            }
-            deleteFile(folder, successfulList)
+        progress.increaseTotalBy(files.size)
+        for (file in files) {
+            throwIfStopped()
+            ongoingContent = file.getName()
+            if (file.isFile()) deleteFile(file, successfulList) else if (file.isDirectory()) deleteDirectory(
+                file,
+                successfulList
+            )
         }
+        deleteFile(folder, successfulList)
     }
 
     fun deleteFile(file: DocumentFile, successfulList: MutableList<DocumentFile>) {
-        progress().addToCurrent(1)
+        progress.increaseBy(1)
         if (file.delete()) successfulList.add(file)
     }
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.text_deletingFilesOngoing)
-    }
-
-    init {
-        mList = ArrayList<FileHolder>(list)
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_deletingFilesOngoing)
     }
 }

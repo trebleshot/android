@@ -35,13 +35,17 @@ import com.genonbeta.android.database.SQLQuery
 class Transfer : DatabaseObject<Device?>, Parcelable {
     @JvmField
     var id: Long = 0
+
     @JvmField
     var dateCreated: Long = 0
+
     @JvmField
     var savePath: String? = null
     var isPaused = false
+
     @JvmField
     var isServedOnWeb = false
+
     @JvmField
     var deleteFilesOnRemoval = false
 
@@ -63,8 +67,8 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         return 0
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return obj is Transfer && obj.id == id
+    override fun equals(other: Any?): Boolean {
+        return other is Transfer && other.id == id
     }
 
     override fun getValues(): ContentValues {
@@ -82,12 +86,12 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
             .setWhere(Kuick.FIELD_TRANSFER_ID + "=?", id.toString())
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        id = item.getAsLong(Kuick.FIELD_TRANSFER_ID)
-        savePath = item.getAsString(Kuick.FIELD_TRANSFER_SAVEPATH)
-        dateCreated = item.getAsLong(Kuick.FIELD_TRANSFER_DATECREATED)
-        isServedOnWeb = item.getAsInteger(Kuick.FIELD_TRANSFER_ISSHAREDONWEB) == 1
-        isPaused = item.getAsInteger(Kuick.FIELD_TRANSFER_ISPAUSED) == 1
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
+        id = values.getAsLong(Kuick.FIELD_TRANSFER_ID)
+        savePath = values.getAsString(Kuick.FIELD_TRANSFER_SAVEPATH)
+        dateCreated = values.getAsLong(Kuick.FIELD_TRANSFER_DATECREATED)
+        isServedOnWeb = values.getAsInteger(Kuick.FIELD_TRANSFER_ISSHAREDONWEB) == 1
+        isPaused = values.getAsInteger(Kuick.FIELD_TRANSFER_ISPAUSED) == 1
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -99,13 +103,13 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         dest.writeByte((if (deleteFilesOnRemoval) 1 else 0).toByte())
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
         dateCreated = System.currentTimeMillis()
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {}
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
         val objectSelection = SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
             .setWhere(String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID), id.toString())
         kuick.remove(db,
@@ -114,9 +118,9 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         )
         if (deleteFilesOnRemoval) {
             val itemList = kuick.castQuery(db, objectSelection, TransferItem::class.java, null)
-            listener?.progress.addToTotal(itemList.size)
+            progress?.increaseTotalBy(itemList.size)
             for (item in itemList) {
-                listener.progress.addToCurrent(1)
+                if (progress != null && !progress.increaseBy(1)) break
                 item.deleteFile(kuick, this)
             }
         }

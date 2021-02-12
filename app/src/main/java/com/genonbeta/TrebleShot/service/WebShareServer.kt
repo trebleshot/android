@@ -18,17 +18,32 @@
  */
 package com.genonbeta.TrebleShot.service
 
+import android.app.PendingIntent
 import android.content.*
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.collection.ArrayMap
+import androidx.core.app.NotificationCompat
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.FileExplorerActivity
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
+import com.genonbeta.TrebleShot.fragment.FileListFragment
 import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.TrebleShot.util.Transfers.loadTransferInfo
+import com.genonbeta.android.database.SQLQuery
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.LocalDocumentFile
+import com.genonbeta.android.framework.io.StreamInfo
+import com.genonbeta.android.framework.util.Files.getOpenIntent
+import com.genonbeta.android.framework.util.Stoppable
+import com.genonbeta.android.framework.util.StoppableImpl
 import fi.iki.elonen.NanoHTTPD
 import java.io.*
 import java.net.InetAddress
@@ -43,39 +58,49 @@ import java.util.zip.ZipOutputStream
  * created by: veli
  * date: 4/7/19 12:41 AM
  */
-class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port) {
-    private val mAssetManager: AssetManager
-    private val mNotificationUtils: NotificationUtils
-    private val mMediaScanner: MediaScannerConnection
-    private val mThisDevice: Device?
-    private var mHadClients = false
+class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) {
+    private val assetManager = context.assets
+
+    private val kuick = AppUtils.getKuick(context)
+
+    private val preferences = AppUtils.getDefaultPreferences(context)
+
+    private val notifications: Notifications = Notifications(context, kuick, preferences)
+
+    private val mediaScanner = MediaScannerConnection(context, null)
+
+    private val thisDevice: Device = AppUtils.getLocalDevice(context)
+
+    var hadClients = false
+        private set
+
     override fun stop() {
         super.stop()
-        mMediaScanner.disconnect()
+        mediaScanner.disconnect()
     }
 
     override fun serve(session: IHTTPSession): Response {
-        mHadClients = true
+        hadClients = true
         val files: Map<String, String> = ArrayMap()
-        val method: Method = session.getMethod()
+        val method: Method = session.method
         var receiveTimeElapsed = System.currentTimeMillis()
-        val notificationId = AppUtils.getUniqueNumber().toLong()
-        var notification: DynamicNotification? = null
-        val clientAddress: String = session.getHeaders().get("http-client-ip")
+        val notificationId = AppUtils.uniqueNumber.toLong()
+        val notification = notifications.buildDynamicNotification(notificationId, Notifications.NOTIFICATION_CHANNEL_LOW)
+        val clientAddress: String = session.getHeaders().get("http-client-ip")!!
         val device = Device(clientAddress)
         try {
-            AppUtils.getKuick(mContext).reconstruct(device)
+            kuick.reconstruct(device)
         } catch (e: ReconstructionFailedException) {
             device.brand = "TrebleShot"
             device.model = "Web"
-            device.versionCode = mThisDevice!!.versionCode
-            device.versionName = mThisDevice.versionName
+            device.versionCode = thisDevice.versionCode
+            device.versionName = thisDevice.versionName
             device.username = clientAddress
             device.type = Device.Type.Web
         }
         device.lastUsageTime = System.currentTimeMillis()
-        AppUtils.getKuick(mContext).publish(device)
-        AppUtils.getKuick(mContext).broadcast()
+        kuick.publish(device)
+        kuick.broadcast()
         if (device.isBlocked) return newFixedLengthResponse(
             Response.Status.ACCEPTED, "text/html",
             makePage(
@@ -88,12 +113,9 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
         )
         if (Method.PUT == method || Method.POST == method) {
             try {
-                notification = mNotificationUtils.buildDynamicNotification(
-                    notificationId, NotificationUtils.NOTIFICATION_CHANNEL_LOW
-                )
                 notification.setSmallIcon(android.R.drawable.stat_sys_download)
-                    .setContentInfo(mContext.getString(R.string.text_webShare))
-                    .setContentTitle(mContext.getString(R.string.text_receiving))
+                    .setContentInfo(context.getString(R.string.text_webShare))
+                    .setContentTitle(context.getString(R.string.text_receiving))
                     .setContentText(device.username)
                 notification.show()
                 session.parseBody(files)
@@ -111,10 +133,10 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 )
             }
         }
-        if (notification != null && session.getParms().containsKey("file")) {
-            val fileName: String = session.getParms().get("file")
+        if (session.parms.containsKey("file")) {
+            val fileName = session.parms.get("file")
             val filePath = files["file"]
-            if (fileName == null || filePath == null || fileName.length < 1) {
+            if (fileName == null || filePath == null || fileName.isEmpty()) {
                 notification.cancel()
                 return newFixedLengthResponse(
                     Response.Status.ACCEPTED, "text/html",
@@ -128,24 +150,23 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 )
             } else {
                 val tmpFile = File(filePath)
-                val savePath = Files.getApplicationDirectory(mContext)
+                val savePath = Files.getApplicationDirectory(context)
                 val stoppable: Stoppable = StoppableImpl()
                 val sourceFile = DocumentFile.fromFile(tmpFile)
-                val destFile = savePath!!.createFile(
-                    null,
+                val destFile = savePath.createFile(
+                    sourceFile.getType(),
                     com.genonbeta.android.framework.util.Files.getUniqueFileName(savePath, fileName, true)
-                )
+                )!!
                 run {
                     notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
-                        .setContentInfo(mContext.getString(R.string.text_webShare))
-                        .setContentTitle(mContext.getString(R.string.text_preparingFiles))
+                        .setContentInfo(context.getString(R.string.text_webShare))
+                        .setContentTitle(context.getString(R.string.text_preparingFiles))
                         .setContentText(fileName)
                     notification.show()
                     try {
-                        val resolver: ContentResolver = mContext.contentResolver
-                        val inputStream: InputStream = resolver.openInputStream(sourceFile.uri)
-                        val outputStream: OutputStream = resolver.openOutputStream(destFile.uri)
-                        if (inputStream == null || outputStream == null) throw IOException("Failed to open streams to start copying")
+                        val resolver: ContentResolver = context.contentResolver
+                        val inputStream: InputStream = resolver.openInputStream(sourceFile.getUri())!!
+                        val outputStream: OutputStream = resolver.openOutputStream(destFile.getUri())!!
                         val buffer = ByteArray(AppConfig.BUFFER_LENGTH_DEFAULT)
                         var len = 0
                         var lastRead = System.currentTimeMillis()
@@ -166,7 +187,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                                 lastNotified = System.currentTimeMillis()
                             }
                             if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_TIMEOUT_SOCKET
-                                || stoppable.isInterrupted()
+                                || stoppable.interrupted()
                             ) throw Exception("Timed out or interrupted. Exiting!")
                         }
                         outputStream.close()
@@ -181,17 +202,16 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     e.printStackTrace()
                 }
                 if (destFile.getLength() == tmpFile.length() || tmpFile.length() == 0L) try {
-                    val kuick = AppUtils.getKuick(mContext)
-                    val webTransfer: Transfer = Transfer(AppConfig.ID_GROUP_WEB_SHARE)
+                    val webTransfer = Transfer(AppConfig.ID_GROUP_WEB_SHARE)
                     webTransfer.dateCreated = System.currentTimeMillis()
                     try {
                         kuick.reconstruct(webTransfer)
                     } catch (e: ReconstructionFailedException) {
-                        webTransfer.savePath = savePath.uri.toString()
+                        webTransfer.savePath = savePath.getUri().toString()
                     }
                     val transferItem = TransferItem(
-                        AppUtils.getUniqueNumber(), webTransfer.id,
-                        destFile.name, destFile.name, destFile.type, destFile.getLength(),
+                        AppUtils.uniqueNumber.toLong(), webTransfer.id,
+                        destFile.getName(), destFile.getName(), destFile.getType(), destFile.getLength(),
                         TransferItem.Type.INCOMING
                     )
                     transferItem.flag = TransferItem.Flag.DONE
@@ -201,67 +221,61 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     )
                     val member = TransferMember(webTransfer, device, TransferItem.Type.INCOMING)
                     kuick.publish(webTransfer)
-                    kuick.publish<Transfer, TransferMember>(member)
-                    kuick.publish<Device, DeviceAddress>(address)
+                    kuick.publish(member)
+                    kuick.publish(address)
                     kuick.publish(transferItem)
                     kuick.broadcast()
-                    notification = mNotificationUtils.buildDynamicNotification(
-                        notificationId,
-                        NotificationUtils.NOTIFICATION_CHANNEL_HIGH
-                    )
                     notification
                         .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                        .setContentInfo(mContext.getString(R.string.text_webShare))
+                        .setContentInfo(context.getString(R.string.text_webShare))
                         .setAutoCancel(true)
                         .setContentTitle(fileName)
-                        .setDefaults(mNotificationUtils.notificationSettings)
+                        .setDefaults(notifications.notificationSettings)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentText(
-                            mContext.getString(
+                            context.getString(
                                 R.string.text_receivedTransfer,
                                 com.genonbeta.android.framework.util.Files.sizeExpression(destFile.getLength(), false),
-                                TimeUtils.getFriendlyElapsedTime(mContext, receiveTimeElapsed)
+                                TimeUtils.getFriendlyElapsedTime(context, receiveTimeElapsed)
                             )
                         )
                         .addAction(
                             R.drawable.ic_folder_white_24dp_static,
-                            mContext.getString(R.string.butn_showFiles), PendingIntent.getActivity(
-                                mContext, AppUtils.getUniqueNumber(),
-                                Intent(mContext, FileExplorerActivity::class.java)
-                                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.uri), 0
+                            context.getString(R.string.butn_showFiles), PendingIntent.getActivity(
+                                context, AppUtils.uniqueNumber,
+                                Intent(context, FileExplorerActivity::class.java)
+                                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
                             )
                         )
                     try {
-                        val openIntent =
-                            com.genonbeta.android.framework.util.Files.getOpenIntent(mContext, destFile)
+                        val openIntent = getOpenIntent(context, destFile)
                         notification.setContentIntent(
                             PendingIntent.getActivity(
-                                mContext,
-                                AppUtils.getUniqueNumber(), openIntent, 0
+                                context,
+                                AppUtils.uniqueNumber, openIntent, 0
                             )
                         )
                     } catch (ignored: Exception) {
                     }
                     notification.show()
-                    mContext.sendBroadcast(
+                    context.sendBroadcast(
                         Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-                            .putExtra(FileListFragment.EXTRA_FILE_PARENT, savePath.uri)
-                            .putExtra(FileListFragment.EXTRA_FILE_NAME, destFile.name)
+                            .putExtra(FileListFragment.EXTRA_FILE_PARENT, savePath.getUri())
+                            .putExtra(FileListFragment.EXTRA_FILE_NAME, destFile.getName())
                     )
-                    if (mMediaScanner.isConnected() && destFile is LocalDocumentFile) mMediaScanner.scanFile(
-                        (destFile as LocalDocumentFile).getFile().getAbsolutePath(),
-                        destFile.type
+                    if (mediaScanner.isConnected && destFile is LocalDocumentFile) mediaScanner.scanFile(
+                        destFile.file.absolutePath, destFile.getType()
                     ) else Log.d(
                         TAG, "Could not save file to the media database: scanner="
-                                + mMediaScanner.isConnected() + " localFile=" + (destFile is LocalDocumentFile)
+                                + mediaScanner.isConnected() + " localFile=" + (destFile is LocalDocumentFile)
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 } else notification.cancel()
             }
         }
-        val args: Array<String> = if (session.getUri().length > 1) session.getUri().substring(1).split("/".toRegex())
-            .toTypedArray() else arrayOfNulls(0)
+        val args: Array<String> = if (session.getUri().length > 1) session.uri.substring(1).split("/".toRegex())
+            .toTypedArray() else emptyArray()
         return try {
             when (if (args.size >= 1) args[0] else "") {
                 "download", "download-zip" -> serveFileDownload(args, session)
@@ -295,7 +309,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
 
     private fun serveAPK(): Response {
         try {
-            val file = File(mContext.applicationInfo.sourceDir)
+            val file = File(context.applicationInfo.sourceDir)
             val inputStream = FileInputStream(file)
             return newFixedLengthResponse(
                 Response.Status.ACCEPTED, "application/force-download",
@@ -343,17 +357,13 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     transfer.id, args[2].toLong(),
                     TransferItem.Type.OUTGOING
                 )
-                AppUtils.getKuick(mContext).reconstruct(transfer)
-                AppUtils.getKuick(mContext).reconstruct(item)
+                kuick.reconstruct(transfer)
+                kuick.reconstruct(item)
                 if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
-                val streamInfo: StreamInfo = StreamInfo.getStreamInfo(
-                    mContext, Uri.parse(
-                        item.file
-                    )
-                )
-                val stream: InputStream = streamInfo.openInputStream()
+                val streamInfo = StreamInfo.from(context, Uri.parse(item.file))
+                val stream: InputStream = streamInfo.openInputStream(context)!!
                 run {
-                    val positionString: String = session.getHeaders().get("Accept-Ranges")
+                    val positionString: String? = session.getHeaders().get("Accept-Ranges")
                     if (positionString != null) try {
                         val position = positionString.toLong()
                         if (position < streamInfo.size) stream.skip(position)
@@ -368,9 +378,9 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             } else if ("download-zip" == args[0]) {
                 if (args.size < 2) throw Exception("Expected 2 args, " + args.size + " given")
                 val transfer = Transfer(args[1].toLong())
-                AppUtils.getKuick(mContext).reconstruct(transfer)
+                kuick.reconstruct(transfer)
                 if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
-                val transferList = AppUtils.getKuick(mContext)
+                val transferList = kuick
                     .castQuery(
                         SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                             .setWhere(
@@ -379,11 +389,8 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                                 TransferItem.Type.OUTGOING.toString()
                             ), TransferItem::class.java
                     )
-                if (transferList.size < 1) throw Exception("No files to send")
-                return ZipBundleResponse(
-                    Response.Status.ACCEPTED, "application/force-download",
-                    transferList
-                )
+                if (transferList.isEmpty()) throw Exception("No files to send")
+                return ZipBundleResponse(Response.Status.ACCEPTED, "application/force-download", transferList)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -402,18 +409,18 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
 
     private fun serveMainPage(): String {
         val contentBuilder = StringBuilder()
-        val groupList: List<TransferIndex> = AppUtils.getKuick(mContext).castQuery<Device, TransferIndex>(
+        val groupList: List<TransferIndex> = kuick.castQuery<Device, TransferIndex>(
             SQLQuery.Select(Kuick.TABLE_TRANSFER)
                 .setOrderBy(Kuick.FIELD_TRANSFER_DATECREATED + " DESC"), TransferIndex::class.java
         )
         for (index in groupList) {
             if (!index.transfer.isServedOnWeb) continue
-            loadTransferInfo(mContext, index)
+            loadTransferInfo(context, index)
             if (!index.hasOutgoing()) continue
             contentBuilder.append(
                 makeContent(
-                    "list_transfer_group", mContext.getString(
-                        R.string.mode_itemCountedDetailed, mContext.resources.getQuantityString(
+                    "list_transfer_group", context.getString(
+                        R.string.mode_itemCountedDetailed, context.resources.getQuantityString(
                             R.plurals.text_files, index.numberOfOutgoing, index.numberOfOutgoing
                         ),
                         com.genonbeta.android.framework.util.Files.sizeExpression(index.bytesOutgoing, false)
@@ -422,7 +429,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 )
             )
         }
-        if (contentBuilder.length == 0) contentBuilder.append(
+        if (contentBuilder.isEmpty()) contentBuilder.append(
             makeNotFoundTemplate(
                 R.string.text_listEmptyTransfer,
                 R.string.text_webShareNoContentNotice
@@ -435,10 +442,10 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
         try {
             if (args.size < 2) throw Exception("Expected 2 args, " + args.size + " given")
             val transfer = Transfer(args[1].toLong())
-            AppUtils.getKuick(mContext).reconstruct(transfer)
+            kuick.reconstruct(transfer)
             if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
             val contentBuilder = StringBuilder()
-            val groupList = AppUtils.getKuick(mContext).castQuery(
+            val groupList = kuick.castQuery(
                 SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
                     .setWhere(
                         String.format("%s = ?", Kuick.FIELD_TRANSFERITEM_TRANSFERID),
@@ -451,11 +458,11 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                 contentBuilder.append(
                     makeContent(
                         "list_transfer",
-                        mContext.getString(R.string.butn_downloadAllAsZip),
+                        context.getString(R.string.butn_downloadAllAsZip),
                         R.string.butn_download,
                         "download-zip",
                         transfer.id,
-                        mContext.resources.getQuantityString(
+                        context.resources.getQuantityString(
                             R.plurals.text_files,
                             groupList.size, groupList.size
                         ) + ".zip"
@@ -465,10 +472,10 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                     makeContent(
                         "list_transfer",
                         item.name + " " + com.genonbeta.android.framework.util.Files.sizeExpression(
-                            item.comparableSize,
+                            item.getComparableSize(),
                             false
                         ), R.string.butn_download, "download", item.transferId,
-                        item.id, item.name!!
+                        item.id, item.name
                     )
                 )
             }
@@ -487,18 +494,18 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
 
     private fun serveHelpPage(): String {
         val values: MutableMap<String, String?> = ArrayMap()
-        values["help_title"] = mContext.getString(R.string.text_help)
-        values["licence_text"] = Tools.escapeHtml(mContext.getString(R.string.conf_licence))
+        values["help_title"] = context.getString(R.string.text_help)
+        values["licence_text"] = Tools.escapeHtml(context.getString(R.string.conf_licence))
         try {
-            val pm = mContext.packageManager
+            val pm = context.packageManager
             val packageInfo: PackageInfo = pm.getPackageInfo(
-                mContext.applicationInfo.packageName,
+                context.applicationInfo.packageName,
                 0
             )
             val fileName: String = (packageInfo.applicationInfo.loadLabel(pm).toString() + "_"
                     + packageInfo.versionName + ".apk")
             values["apk_link"] = "/trebleshot/$fileName"
-            values["apk_filename"] = mContext.getString(R.string.text_dowloadTrebleshotAndroid)
+            values["apk_filename"] = context.getString(R.string.text_dowloadTrebleshotAndroid)
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
@@ -511,14 +518,14 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
 
     private fun makeContent(
         pageName: String, content: String, @StringRes buttonRes: Int,
-        vararg objects: Any
+        vararg objects: Any,
     ): String {
         val actionUrlBuilder = StringBuilder()
         val values: MutableMap<String, String?> = ArrayMap()
         values["content"] = content
-        values["action_layout"] = mContext.getString(buttonRes)
+        values["action_layout"] = context.getString(buttonRes)
         for (item in objects) {
-            if (actionUrlBuilder.length > 0) actionUrlBuilder.append("/")
+            if (actionUrlBuilder.isNotEmpty()) actionUrlBuilder.append("/")
             actionUrlBuilder.append(item)
         }
         values["actionUrl"] = actionUrlBuilder.toString()
@@ -527,8 +534,8 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
 
     private fun makeNotFoundTemplate(@StringRes msg: Int, @StringRes detail: Int): String {
         val values: MutableMap<String, String?> = ArrayMap()
-        values["content"] = mContext.getString(msg)
-        values["detail"] = mContext.getString(detail)
+        values["content"] = context.getString(msg)
+        values["detail"] = context.getString(detail)
         return applyPattern(
             getFieldPattern(), readPage("layout_not_found.html"),
             values
@@ -536,28 +543,28 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
     }
 
     private fun makePage(image: String, @StringRes titleRes: Int, content: String): String {
-        val title = mContext.getString(titleRes)
-        val appName = mContext.getString(R.string.text_appName)
+        val title = context.getString(titleRes)
+        val appName = context.getString(R.string.text_appName)
         val values: MutableMap<String, String?> = ArrayMap()
         values["title"] = String.format("%s - %s", title, appName)
         values["header_logo"] = "/image/$image"
-        values["header"] = mContext.getString(R.string.text_appName)
+        values["header"] = context.getString(R.string.text_appName)
         values["title_header"] = title
         values["main_content"] = content
         values["help_icon"] = "/image/help-circle.svg"
-        values["help_alt"] = mContext.getString(R.string.butn_help)
-        values["username"] = AppUtils.getLocalDeviceName(mContext)
-        values["footer_text"] = mContext.getString(R.string.text_aboutSummary)
+        values["help_alt"] = context.getString(R.string.butn_help)
+        values["username"] = AppUtils.getLocalDeviceName(context)
+        values["footer_text"] = context.getString(R.string.text_aboutSummary)
         return applyPattern(getFieldPattern(), readPage("home.html"), values)
     }
 
     fun hadClients(): Boolean {
-        return mHadClients
+        return hadClients
     }
 
     @Throws(IOException::class)
     private fun openFile(fileName: String): InputStream {
-        return mAssetManager.open("webshare" + File.separator + fileName)
+        return assetManager.open("webshare" + File.separator + fileName)
     }
 
     private fun readPage(pageName: String): String {
@@ -651,7 +658,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
         }
 
         override fun getRequestMethod(): Method {
-            return mRequestMethod
+            return mRequestMethod!!
         }
 
         override fun getStatus(): IStatus {
@@ -679,17 +686,16 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
         }
 
         protected override fun send(outputStream: OutputStream) {
-            val mime = getMimeType()
+            val mime = mimeType
             val gmtFormat = SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US)
             gmtFormat.timeZone = TimeZone.getTimeZone("GMT")
             try {
-                if (getStatus() == null) throw Error("sendResponse(): Status can't be null.")
                 val pw = PrintWriter(BufferedWriter(OutputStreamWriter(outputStream, "UTF-8")), false)
                 pw.print(
                     """HTTP/1.1 ${getStatus().getDescription()} 
 """
                 )
-                if (mime != null) pw.print("Content-Type: $mime\r\n")
+                pw.print("Content-Type: $mime\r\n")
                 if (this.getHeader("Date") == null) pw.print(
                     """
     Date: ${gmtFormat.format(Date())}
@@ -726,11 +732,11 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             //zipOutputStream.setMethod(ZipEntry.STORED);
             for (item in mFiles) {
                 try {
-                    val streamInfo: StreamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(item.file))
-                    val inputStream: InputStream = streamInfo.openInputStream()
+                    val streamInfo = StreamInfo.from(context, Uri.parse(item.file))
+                    val inputStream: InputStream = streamInfo.openInputStream(context)!!
                     val thisEntry =
                         ZipEntry((if (item.directory != null) item.directory + File.pathSeparator else "") + item.name)
-                    thisEntry.time = item.comparableDate
+                    thisEntry.time = item.getComparableDate()
                     zipOutputStream.putNextEntry(thisEntry)
                     var len: Int
                     while (inputStream.read(buffer, 0, bufferSize).also { len = it } != -1) {
@@ -771,7 +777,7 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
 
         private fun withinStyle(
             out: StringBuilder, text: CharSequence,
-            start: Int, end: Int
+            start: Int, end: Int,
         ) {
             var i = start
             while (i < end) {
@@ -836,15 +842,5 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             for (headerName in header.keys) alreadySent = alreadySent or headerName.equals(name, ignoreCase = true)
             return alreadySent
         }
-    }
-
-    init {
-        mAssetManager = mContext.assets
-        mMediaScanner = MediaScannerConnection(mContext, null)
-        mNotificationUtils = NotificationUtils(
-            mContext, AppUtils.getKuick(mContext),
-            AppUtils.getDefaultPreferences(mContext)
-        )
-        mThisDevice = AppUtils.getLocalDevice(mContext)
     }
 }

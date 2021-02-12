@@ -29,9 +29,7 @@ import com.genonbeta.TrebleShot.task.FileDeletionTask
  * Created by: veli
  * Date: 5/21/17 2:21 AM
  */
-class FileDeletionDialog(activity: Activity, items: List<FileListAdapter.FileHolder?>) : AlertDialog.Builder(
-    activity
-) {
+class FileDeletionDialog(activity: Activity, items: List<FileListAdapter.FileHolder>) : AlertDialog.Builder(activity) {
     init {
         setTitle(R.string.text_deleteConfirm)
         setMessage(context.resources.getQuantityString(R.plurals.ques_deleteFile, items.size, items.size))

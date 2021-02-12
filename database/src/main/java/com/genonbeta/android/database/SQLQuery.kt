@@ -87,7 +87,7 @@ object SQLQuery {
 
         interface LoadListener {
             fun onOpen(db: KuickDb, cursor: Cursor)
-            fun onLoad(db: KuickDb, cursor: Cursor, item: ContentValues)
+            fun onLoad(db: KuickDb, cursor: Cursor, values: ContentValues)
         }
     }
 }

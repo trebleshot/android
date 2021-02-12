@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.database.Kuick
  * Created by: veli
  * Date: 4/28/17 2:00 AM
  */
-class NotificationUtils(val context: Context, val database: Kuick, val preferences: SharedPreferences) {
+class Notifications(val context: Context, val database: Kuick, val preferences: SharedPreferences) {
     val manager = NotificationManagerCompat.from(context)
 
     fun buildDynamicNotification(notificationId: Long, channelId: String): DynamicNotification {

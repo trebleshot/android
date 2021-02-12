@@ -41,6 +41,7 @@ import com.genonbeta.TrebleShot.service.WebShareServer.BoundRunner
 import com.genonbeta.TrebleShot.task.FileTransferTask
 import com.genonbeta.TrebleShot.task.IndexTransferTask
 import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.database.exception.ReconstructionFailedException
 import fi.iki.elonen.NanoHTTPD
@@ -53,11 +54,11 @@ import java.util.concurrent.Executors
 
 class BackgroundService : Service() {
     private val communicationServer = CommunicationServer()
-    private val mBinder = LocalBinder()
+    private val binder = LocalBinder()
     private lateinit var wifiLock: WifiLock
 
-    override fun onBind(intent: Intent): IBinder? {
-        return mBinder
+    override fun onBind(intent: Intent): IBinder {
+        return binder
     }
 
     override fun onCreate() {
@@ -69,20 +70,20 @@ class BackgroundService : Service() {
         app.nsdDaemon.startDiscovering()
         wifiLock.acquire()
 
-        startForeground(NotificationHelper.ID_BG_SERVICE, notificationHelper.foregroundNotification.build())
+        startForeground(NotificationHelper.ID_BG_SERVICE, app.notificationHelper.foregroundNotification.build())
         tryStartingOrStopSelf()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        if (intent != null) Log.d(TAG, "onStart() : action = " + intent.action)
-        if (intent != null && AppUtils.checkRunningConditions(this)) {
+        Log.d(TAG, "onStart() : action = " + intent.action)
+        if (AppUtils.checkRunningConditions(this)) {
             if (ACTION_FILE_TRANSFER == intent.action) {
                 val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
                 val transfer: Transfer = intent.getParcelableExtra(EXTRA_TRANSFER)
-                val notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1)
+                val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
-                notificationHelper.utils.cancel(notificationId)
+                app.notificationHelper.utils.cancel(notificationId)
                 try {
                     val task = FileTransferTask.createFrom(
                         kuick, transfer, device,
@@ -90,51 +91,44 @@ class BackgroundService : Service() {
                     )
                     Thread {
                         try {
-                            CommunicationBridge.connect(
-                                kuick, task.addressList,
-                                task.device, 0
-                            ).use { bridge ->
+                            CommunicationBridge.connect(kuick, task.addressList, task.device, 0).use { bridge ->
                                 bridge.requestNotifyTransferState(transfer.id, isAccepted)
                                 bridge.receiveResult()
                             }
                         } catch (ignored: Exception) {
                         }
                     }.start()
-                    if (isAccepted) mApp!!.run(task) else kuick.removeAsynchronous(mApp, task.transfer, task.device)
+                    if (isAccepted) app.run(task) else kuick.removeAsynchronous(app, task.transfer, task.device)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    if (isAccepted) notificationHelper.showToast(R.string.mesg_somethingWentWrong)
+                    if (isAccepted) app.notificationHelper.showToast(R.string.mesg_somethingWentWrong)
                 }
             } else if (ACTION_DEVICE_KEY_CHANGE_APPROVAL == intent.action) {
                 val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
                 val accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
-                val notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1)
+                val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
                 val receiveKey = intent.getIntExtra(EXTRA_RECEIVE_KEY, -1)
                 val sendKey = intent.getIntExtra(EXTRA_SEND_KEY, -1)
-                notificationHelper.utils.cancel(notificationId)
-                if (device != null) {
-                    device.isBlocked = !accepted
-                    if (accepted) {
-                        device.receiveKey = receiveKey
-                        device.sendKey = sendKey
-                    }
-                    kuick.update(device)
-                    kuick.broadcast()
+                app.notificationHelper.utils.cancel(notificationId)
+                device.isBlocked = !accepted
+                if (accepted) {
+                    device.receiveKey = receiveKey
+                    device.sendKey = sendKey
                 }
+                kuick.update(device)
+                kuick.broadcast()
             } else if (ACTION_CLIPBOARD == intent.action && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
-                val notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1)
+                val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
                 val clipboardId = intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1)
                 val isAccepted = intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false)
                 val textStreamObject = TextStreamObject(clipboardId)
-                notificationHelper.utils.cancel(notificationId)
+                app.notificationHelper.utils.cancel(notificationId)
                 try {
                     kuick.reconstruct(textStreamObject)
                     if (isAccepted) {
                         val cbManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                        if (cbManager != null) {
-                            cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", textStreamObject.text))
-                            Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-                        }
+                        cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", textStreamObject.text))
+                        Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -208,7 +202,7 @@ class BackgroundService : Service() {
     }
 
     private fun isProcessRunning(transferId: Long, deviceId: String, type: TransferItem.Type): Boolean {
-        return mApp!!.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
+        return app.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
     }
 
     /**
@@ -295,7 +289,7 @@ class BackgroundService : Service() {
         ) {
             when (response.getString(Keyword.REQUEST)) {
                 Keyword.REQUEST_TRANSFER -> {
-                    if (mApp!!.hasTaskOf(IndexTransferTask::class.java)) throw NotAllowedException(device) else {
+                    if (app.hasTaskOf(IndexTransferTask::class.java)) throw NotAllowedException(device) else {
                         val transferId = response.getLong(Keyword.TRANSFER_ID)
                         val jsonIndex = response.getString(Keyword.INDEX)
                         try {
@@ -303,13 +297,13 @@ class BackgroundService : Service() {
                             throw ContentException(ContentException.Error.AlreadyExists)
                         } catch (e: ReconstructionFailedException) {
                             CommunicationBridge.sendResult(activeConnection, true)
-                            mApp!!.run(IndexTransferTask(transferId, jsonIndex, device, hasPin))
+                            app.run(IndexTransferTask(transferId, jsonIndex, device, hasPin))
                         }
                     }
                     return
                 }
                 Keyword.REQUEST_NOTIFY_TRANSFER_STATE -> {
-                    val transferId = response.getInt(Keyword.TRANSFER_ID)
+                    val transferId = response.getLong(Keyword.TRANSFER_ID)
                     val isAccepted = response.getBoolean(Keyword.TRANSFER_IS_ACCEPTED)
                     val transfer = Transfer(transferId)
                     val member = TransferMember(transfer, device, TransferItem.Type.OUTGOING)
@@ -343,7 +337,7 @@ class BackgroundService : Service() {
                     return
                 }
                 Keyword.REQUEST_TRANSFER_JOB -> {
-                    val transferId = response.getInt(Keyword.TRANSFER_ID)
+                    val transferId = response.getLong(Keyword.TRANSFER_ID)
                     val typeValue = response.getString(Keyword.TRANSFER_TYPE)
                     var type = TransferItem.Type.valueOf(typeValue)
 
@@ -372,7 +366,7 @@ class BackgroundService : Service() {
                         task.index = TransferIndex(transfer)
                         kuick.reconstruct(task.member)
                         CommunicationBridge.sendResult(activeConnection, true)
-                        mApp!!.attach(task)
+                        app.attach(task)
                         return
                     }
                     CommunicationBridge.sendResult(activeConnection, false)

@@ -30,9 +30,9 @@ import com.genonbeta.android.database.Progress
 import com.genonbeta.android.database.SQLQuery
 
 class Device : DatabaseObject<Void?>, Parcelable {
-    var brand: String? = null
+    lateinit var brand: String
 
-    var model: String? = null
+    lateinit var model: String
 
     lateinit var username: String
 
@@ -69,8 +69,8 @@ class Device : DatabaseObject<Void?>, Parcelable {
     }
 
     protected constructor(parcel: Parcel) {
-        brand = parcel.readString()
-        model = parcel.readString()
+        brand = parcel.readString() ?: ""
+        model = parcel.readString() ?: ""
         // FIXME: 2/9/21 The device username should not be zero length string
         username = parcel.readString() ?: ""
         // FIXME: 2/9/21 The device uid should not be zero length string.
@@ -136,38 +136,38 @@ class Device : DatabaseObject<Void?>, Parcelable {
         return values
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
-        uid = item.getAsString(Kuick.FIELD_DEVICES_ID)
-        username = item.getAsString(Kuick.FIELD_DEVICES_USER)
-        brand = item.getAsString(Kuick.FIELD_DEVICES_BRAND)
-        model = item.getAsString(Kuick.FIELD_DEVICES_MODEL)
-        versionName = item.getAsString(Kuick.FIELD_DEVICES_BUILDNAME)
-        versionCode = item.getAsInteger(Kuick.FIELD_DEVICES_BUILDNUMBER)
-        lastUsageTime = item.getAsLong(Kuick.FIELD_DEVICES_LASTUSAGETIME)
-        isTrusted = item.getAsInteger(Kuick.FIELD_DEVICES_ISTRUSTED) == 1
-        isBlocked = item.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1
-        isLocal = item.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1
-        sendKey = item.getAsInteger(Kuick.FIELD_DEVICES_SENDKEY)
-        receiveKey = item.getAsInteger(Kuick.FIELD_DEVICES_RECEIVEKEY)
-        protocolVersion = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSION)
-        protocolVersionMin = item.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
+        uid = values.getAsString(Kuick.FIELD_DEVICES_ID)
+        username = values.getAsString(Kuick.FIELD_DEVICES_USER)
+        brand = values.getAsString(Kuick.FIELD_DEVICES_BRAND)
+        model = values.getAsString(Kuick.FIELD_DEVICES_MODEL)
+        versionName = values.getAsString(Kuick.FIELD_DEVICES_BUILDNAME)
+        versionCode = values.getAsInteger(Kuick.FIELD_DEVICES_BUILDNUMBER)
+        lastUsageTime = values.getAsLong(Kuick.FIELD_DEVICES_LASTUSAGETIME)
+        isTrusted = values.getAsInteger(Kuick.FIELD_DEVICES_ISTRUSTED) == 1
+        isBlocked = values.getAsInteger(Kuick.FIELD_DEVICES_ISRESTRICTED) == 1
+        isLocal = values.getAsInteger(Kuick.FIELD_DEVICES_ISLOCALADDRESS) == 1
+        sendKey = values.getAsInteger(Kuick.FIELD_DEVICES_SENDKEY)
+        receiveKey = values.getAsInteger(Kuick.FIELD_DEVICES_RECEIVEKEY)
+        protocolVersion = values.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSION)
+        protocolVersionMin = values.getAsInteger(Kuick.FIELD_DEVICES_PROTOCOLVERSIONMIN)
 
         try {
-            type = Type.valueOf(item.getAsString(Kuick.FIELD_DEVICES_TYPE))
+            type = Type.valueOf(values.getAsString(Kuick.FIELD_DEVICES_TYPE))
         } catch (e: Exception) {
             type = Type.Normal
         }
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener?) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, progress: Progress.Context?) {
         checkFields()
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener?) {
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, progress: Progress.Context?) {
         checkFields()
     }
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, listener: Progress.Listener?) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Void?, progress: Progress.Context?) {
         kuick.context.deleteFile(generatePictureId())
         kuick.remove(
             db, SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
@@ -180,7 +180,7 @@ class Device : DatabaseObject<Void?>, Parcelable {
         )
 
         for (member in members)
-            kuick.remove(db, member, null, listener)
+            kuick.remove(db, member, null, progress)
     }
 
     override fun describeContents(): Int {

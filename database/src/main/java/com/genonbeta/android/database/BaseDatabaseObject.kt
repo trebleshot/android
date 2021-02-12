@@ -8,5 +8,5 @@ interface BaseDatabaseObject {
 
     fun getWhere(): SQLQuery.Select
 
-    fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues)
+    fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues)
 }

@@ -24,7 +24,7 @@ import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.dataobject.DeviceRoute
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.TrebleShot.util.CommonErrorHelper
 import com.genonbeta.TrebleShot.util.Connections
 import java.net.InetAddress
@@ -34,8 +34,7 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
     private var mDescription: NetworkDescription? = null
     private var mAddress: InetAddress? = null
 
-    constructor(address: InetAddress?, pin: Int) {
-        assert(address != null)
+    constructor(address: InetAddress, pin: Int) {
         mAddress = address
         mPin = pin
     }
@@ -52,7 +51,7 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
         try {
             val deviceRoute: DeviceRoute = if (mAddress == null) {
                 val connections = Connections(context)
-                connections.connectToNetwork(this, mDescription, mPin)
+                connections.connectToNetwork(this, mDescription!!, mPin)
             } else
                 Connections.setupConnection(context, mAddress, mPin)
 

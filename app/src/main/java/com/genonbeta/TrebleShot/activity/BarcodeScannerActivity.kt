@@ -376,7 +376,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                 AsyncTask.State.Finished -> updateState(false)
             }
         }
-        updateState(!task.isFinished)
+        updateState(!task.finished)
     }
 
     override fun onTaskMessage(taskMessage: TaskMessage): Boolean {

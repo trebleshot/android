@@ -23,7 +23,9 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
 import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.android.database.Progress
 import java.io.IOException
 import java.util.*
 
@@ -36,7 +38,9 @@ class ChangeSaveDirectoryTask(
             Transfers.createIncomingSelection(transfer.id), TransferItem::class.java
         )
         val pseudoGroup = Transfer(transfer.id)
-        progress.addToTotal(checkList.size)
+
+        progress.increaseTotalBy(checkList.size)
+
         try {
             if (!skipMoving) {
                 // Illustrate new change to build the structure accordingly
@@ -45,40 +49,31 @@ class ChangeSaveDirectoryTask(
                 val erredFiles: MutableList<TransferItem> = ArrayList()
                 for (transferItem in checkList) {
                     throwIfStopped()
-                    progress.addToCurrent(1)
                     ongoingContent = transferItem.name
                     publishStatus()
+
                     try {
-                        val file = Files.getIncomingPseudoFile(
-                            context, transferItem, transfer,
-                            false
-                        )
+                        val file = Files.getIncomingPseudoFile(context, transferItem, transfer, false)
                         val pseudoFile = Files.getIncomingPseudoFile(
                             context, transferItem,
                             pseudoGroup, true
                         )
                         try {
-                            if (file.canWrite()) Files.move(
-                                context,
-                                file,
-                                pseudoFile,
-                                this
-                            ) else throw IOException("Failed to access: " + file.uri)
+                            if (file.canWrite()) {
+                                Files.move(context, file, pseudoFile, this)
+                            } else throw IOException("Failed to access: " + file.getUri())
                         } catch (e: Exception) {
                             erredFiles.add(transferItem)
                         }
                     } catch (ignored: Exception) {
+                        progress.increaseBy(1)
                     }
                 }
                 if (erredFiles.size > 0) {
                     val fileNames = StringBuilder("\n")
-                    for (item in erredFiles) fileNames.append("\n")
-                        .append(item.name)
-                    post(
-                        TaskMessage.newInstance()
-                            .setTitle(name)
-                            .setMessage(context.getString(R.string.mesg_errorMoveFile, fileNames.toString()))
-                    )
+                    for (item in erredFiles) fileNames.append("\n").append(item.name)
+
+                    post(TaskMessage.newInstance(name, context.getString(R.string.mesg_errorMoveFile, fileNames)))
                 }
             }
             transfer.savePath = newSavePath.toString()

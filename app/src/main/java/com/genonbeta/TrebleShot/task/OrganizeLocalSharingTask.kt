@@ -17,73 +17,77 @@
  */
 package com.genonbeta.TrebleShot.task
 
-import android.content.*
+import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
-import android.os.*
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.activity.TransferMemberActivity
 import com.genonbeta.TrebleShot.activityimport.WebShareActivity
 import com.genonbeta.TrebleShot.adapter.FileListAdapter
-import com.genonbeta.TrebleShot.dataobject.*
-import com.genonbeta.TrebleShot.dataobject.TransferItem.from
+import com.genonbeta.TrebleShot.dataobject.Container
+import com.genonbeta.TrebleShot.dataobject.Shareable
+import com.genonbeta.TrebleShot.dataobject.Transfer
+import com.genonbeta.TrebleShot.dataobject.TransferItem
+import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Transfers
 import com.genonbeta.android.framework.util.Files
+import com.genonbeta.android.framework.util.Stoppable
 import java.io.FileNotFoundException
 import java.util.*
 
 class OrganizeLocalSharingTask(
-    var mList: List<Shareable>,
-    private val mFlagAddNewDevice: Boolean,
-    private val mFlagWebShare: Boolean,
+    var list: List<Shareable>,
+    private val flagAddNewDevice: Boolean,
+    private val flagWebShare: Boolean,
 ) : AttachableAsyncTask<AttachedTaskListener>() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        if (mList.isEmpty())
+        if (list.isEmpty())
             return
 
         val db: SQLiteDatabase = kuick.writableDatabase
         val transfer = Transfer(AppUtils.uniqueNumber.toLong())
         val list: MutableList<TransferItem> = ArrayList()
 
-        progress.addToTotal(mList.size)
+        progress.increaseTotalBy(this.list.size)
 
-        for (shareable in mList) {
+        for (shareable in this.list) {
             throwIfStopped()
             ongoingContent = shareable.fileName
-            progress.addToCurrent(1)
-            publishStatus()
+            progress.increaseBy(1)
 
             val containable = if (shareable is Container) (shareable as Container).expand() else null
 
             if (shareable is FileListAdapter.FileHolder) {
-                if (shareable.file?.isDirectory() == true) Transfers.createFolderStructure(
+                if (shareable.file.isDirectory()) Transfers.createFolderStructure(
                     list,
                     transfer.id,
                     shareable.file,
                     shareable.fileName,
                     this
                 ) else
-                    list.add(from(shareable?.file, transfer.id, null))
+                    list.add(from(shareable.file, transfer.id, null))
             } else
                 list.add(from(shareable, transfer.id, if (containable == null) null else shareable.friendlyName))
             if (containable != null) {
-                progress.addToTotal(containable.children.size)
+                progress.increaseTotalBy(containable.children.size)
 
                 for (uri in containable.children) {
-                    progress().addToCurrent(1)
+                    progress.increaseBy(1)
                     try {
                         list.add(
                             from(
-                                Files.fromUri(
-                                    context, uri
-                                ), transfer.id,
+                                Files.fromUri(context, uri),
+                                transfer.id,
                                 shareable.friendlyName
                             )
                         )
@@ -95,17 +99,21 @@ class OrganizeLocalSharingTask(
         }
         if (list.size <= 0) {
             post(
-                TaskMessage.newInstance().apply {
-                    setTitle(context, R.string.text_error)
-                    setMessage(context, R.string.text_errorNoFileSelected)
-                }
+                TaskMessage.newInstance(
+                    context.getString(R.string.text_error),
+                    context.getString(R.string.text_errorNoFileSelected)
+                )
             )
             Log.d(TAG, "onRun: No content is located with uri data")
             return
         }
-        addCloser(Stoppable.Closer { userAction: Boolean -> kuick.remove(db, transfer, null, null) })
-        kuick.insert(db, list, transfer, progressListener())
-        if (mFlagWebShare) {
+        addCloser(object : Stoppable.Closer {
+            override fun onClose(userAction: Boolean) {
+                kuick.remove(db, transfer, null, null)
+            }
+        })
+        kuick.insert(db, list, transfer, progress)
+        if (flagWebShare) {
             transfer.isServedOnWeb = true
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(
@@ -115,12 +123,12 @@ class OrganizeLocalSharingTask(
             }
         }
         kuick.insert(db, transfer, null, progress)
-        if (mFlagWebShare) context.startActivity(
+        if (flagWebShare) context.startActivity(
             Intent(context, WebShareActivity::class.java).addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
             )
         ) else
-            TransferMemberActivity.startInstance(context, transfer, mFlagAddNewDevice)
+            TransferMemberActivity.startInstance(context, transfer, flagAddNewDevice)
         kuick.broadcast()
     }
 

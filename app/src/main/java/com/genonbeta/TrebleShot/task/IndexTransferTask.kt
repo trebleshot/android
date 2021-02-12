@@ -25,45 +25,49 @@ import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.*
 
 class IndexTransferTask(
-    private val mTransferId: Long,
-    private val mJsonIndex: String,
-    private val mDevice: Device,
-    private val mNoPrompt: Boolean
+    private val transferId: Long,
+    private val jsonIndex: String,
+    private val device: Device,
+    private val noPrompt: Boolean
 ) : AsyncTask() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        val db: SQLiteDatabase = kuick().writableDatabase
-        val jsonArray: JSONArray
-        val transfer = Transfer(mTransferId)
-        val member = TransferMember(transfer, mDevice, TransferItem.Type.INCOMING)
-        jsonArray = try {
-            JSONArray(mJsonIndex)
+        val db: SQLiteDatabase = kuick.writableDatabase
+        val transfer = Transfer(transferId)
+        val member = TransferMember(transfer, device, TransferItem.Type.INCOMING)
+        val jsonArray: JSONArray = try {
+            JSONArray(jsonIndex)
         } catch (e: Exception) {
             return
         }
-        progress().addToTotal(jsonArray.length())
+
+        progress.increaseTotalBy(jsonArray.length())
+
         try {
-            kuick().reconstruct(transfer)
+            kuick.reconstruct(transfer)
             return
         } catch (ignored: Exception) {
         }
-        kuick().publish(transfer)
-        kuick().publish<Transfer, TransferMember>(member)
+
+        kuick.publish(transfer)
+        kuick.publish(member)
+
         var uniqueId = System.currentTimeMillis() // The uniqueIds
         val itemList: MutableList<TransferItem> = ArrayList()
+
         for (i in 0 until jsonArray.length()) {
             throwIfStopped()
-            progress().addToCurrent(1)
+            progress.increaseBy(1)
             try {
                 val index = jsonArray.getJSONObject(i)
                 val transferItem = TransferItem(
-                    index.getLong(Keyword.TRANSFER_REQUEST_ID), mTransferId,
+                    index.getLong(Keyword.TRANSFER_REQUEST_ID), transferId,
                     index.getString(Keyword.INDEX_FILE_NAME), "." + uniqueId++ + "." + AppConfig.EXT_FILE_PART,
                     index.getString(Keyword.INDEX_FILE_MIME), index.getLong(Keyword.INDEX_FILE_SIZE),
                     TransferItem.Type.INCOMING
@@ -77,22 +81,22 @@ class IndexTransferTask(
             }
         }
         if (itemList.size > 0) {
-            kuick().insert(db, itemList, transfer, progressListener())
+            kuick.insert(db, itemList, transfer, progress)
             context.sendBroadcast(
                 Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
-                    .putExtra(BackgroundService.EXTRA_DEVICE, mDevice)
+                    .putExtra(BackgroundService.EXTRA_DEVICE, device)
             )
-            if (mNoPrompt) try {
-                app.run(FileTransferTask.createFrom(kuick(), transfer, mDevice, TransferItem.Type.INCOMING))
+            if (noPrompt) try {
+                app.run(FileTransferTask.createFrom(kuick, transfer, device, TransferItem.Type.INCOMING))
             } catch (e: Exception) {
                 e.printStackTrace()
-            } else app.notifyFileRequest(mDevice, transfer, itemList)
+            } else app.notifyFileRequest(device, transfer, itemList)
         }
-        kuick().broadcast()
+        kuick.broadcast()
     }
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.text_preparingFiles)
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_preparingFiles)
     }
 }

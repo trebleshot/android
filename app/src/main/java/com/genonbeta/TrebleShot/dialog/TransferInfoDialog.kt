@@ -17,11 +17,14 @@
  */
 package com.genonbeta.TrebleShot.dialog
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.TransferIndex
@@ -36,7 +39,7 @@ import java.text.NumberFormat
  */
 class TransferInfoDialog(
     activity: Activity, loadedGroup: TransferIndex,
-    item: TransferItem, deviceId: String?
+    item: TransferItem, deviceId: String?,
 ) : AlertDialog.Builder(activity) {
     init {
         var attemptedFile: DocumentFile? = null
@@ -55,35 +58,27 @@ class TransferInfoDialog(
         val fileExists = pseudoFile != null && pseudoFile.canRead()
         @SuppressLint("InflateParams") val rootView =
             LayoutInflater.from(activity).inflate(R.layout.layout_transfer_info, null)
-        val nameText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_file_name)
-        val sizeText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_file_size)
-        val typeText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_file_mime)
-        val flagText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_file_status)
+        val nameText: TextView = rootView.findViewById(R.id.transfer_info_file_name)
+        val sizeText: TextView = rootView.findViewById(R.id.transfer_info_file_size)
+        val typeText: TextView = rootView.findViewById(R.id.transfer_info_file_mime)
+        val flagText: TextView = rootView.findViewById(R.id.transfer_info_file_status)
         val incomingDetailsLayout = rootView.findViewById<View>(R.id.transfer_info_incoming_details_layout)
-        val receivedSizeText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_received_size)
-        val locationText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_pseudo_location)
+        val receivedSizeText: TextView = rootView.findViewById(R.id.transfer_info_received_size)
+        val locationText: TextView = rootView.findViewById(R.id.transfer_info_pseudo_location)
         setTitle(R.string.text_transactionDetails)
         setView(rootView)
-        nameText.setText(item.name)
-        sizeText.setText(com.genonbeta.android.framework.util.Files.sizeExpression(item.comparableSize, false))
-        typeText.setText(item.mimeType)
-        receivedSizeText.setText(
-            if (fileExists) com.genonbeta.android.framework.util.Files.sizeExpression(
-                pseudoFile!!.getLength(),
-                false
-            ) else context.getString(R.string.text_unknown)
-        )
-        locationText.setText(if (fileExists) Files.getReadableUri(pseudoFile!!.uri) else context.getString(R.string.text_unknown))
-        flagText.setText(
-            TextUtils.getTransactionFlagString(
-                context, item,
-                NumberFormat.getPercentInstance(), deviceId
-            )
-        )
+        nameText.text = item.name
+        sizeText.text = com.genonbeta.android.framework.util.Files.sizeExpression(item.getComparableSize(), false)
+        typeText.text = item.mimeType
+        receivedSizeText.text = if (fileExists) com.genonbeta.android.framework.util.Files.sizeExpression(
+            pseudoFile!!.getLength(), false
+        ) else context.getString(R.string.text_unknown)
+        locationText.text = if (fileExists) Files.getReadableUri(pseudoFile!!.uri) else context.getString(R.string.text_unknown)
+        flagText.text = TextUtils.getTransactionFlagString(context, item, NumberFormat.getPercentInstance(), deviceId)
         setPositiveButton(R.string.butn_close, null)
-        setNegativeButton(
-            R.string.butn_remove
-        ) { dialogInterface: DialogInterface?, i: Int -> DialogUtils.showRemoveDialog(activity, item) }
+        setNegativeButton(R.string.butn_remove) { dialogInterface: DialogInterface?, i: Int ->
+            DialogUtils.showRemoveDialog(activity, item)
+        }
         if (isIncoming) {
             incomingDetailsLayout.visibility = View.VISIBLE
             if (TransferItem.Flag.INTERRUPTED == item.flag || TransferItem.Flag.IN_PROGRESS == item.flag) {
@@ -95,17 +90,13 @@ class TransferInfoDialog(
             } else if (fileExists) {
                 if (TransferItem.Flag.REMOVED == item.flag && pseudoFile!!.parentFile != null) {
                     setNeutralButton(R.string.butn_saveAnyway) { dialogInterface: DialogInterface?, i: Int ->
-                        val saveAnyway = AlertDialog.Builder(
-                            context
-                        )
+                        val saveAnyway = AlertDialog.Builder(context)
                         saveAnyway.setTitle(R.string.ques_saveAnyway)
                         saveAnyway.setMessage(R.string.text_saveAnywaySummary)
                         saveAnyway.setNegativeButton(R.string.butn_cancel, null)
                         saveAnyway.setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
                             try {
-                                val savedFile = Files.saveReceivedFile(
-                                    pseudoFile.parentFile, pseudoFile, item
-                                )
+                                val savedFile = Files.saveReceivedFile(pseudoFile.getParentFile(), pseudoFile, item)
                                 item.flag = TransferItem.Flag.DONE
                                 AppUtils.getKuick(activity).update(item)
                                 AppUtils.getKuick(activity).broadcast()

@@ -103,7 +103,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         hotspotManager = HotspotManager.newInstance(this)
         mediaScanner = MediaScannerConnection(this, null)
         notificationHelper = NotificationHelper(
-            NotificationUtils(
+            Notifications(
                 applicationContext,
                 AppUtils.getKuick(applicationContext),
                 AppUtils.getDefaultPreferences(applicationContext)

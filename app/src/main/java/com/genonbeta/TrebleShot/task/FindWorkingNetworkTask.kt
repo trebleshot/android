@@ -20,28 +20,30 @@ package com.genonbeta.TrebleShot.task
 import android.content.*
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
+import com.genonbeta.TrebleShot.task.FindWorkingNetworkTask.CalculationResultListener
 import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
 import java.io.IOException
 
-class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<CalculationResultListener?>() {
+class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<CalculationResultListener>() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         try {
             val knownAddressList: List<DeviceAddress> = AppUtils.getKuick(context).castQuery<Device, DeviceAddress>(
                 Transfers.createAddressSelection(device.uid), DeviceAddress::class.java
             )
-            progress().addToTotal(knownAddressList.size)
-            publishStatus()
-            if (knownAddressList.size > 0) {
+            progress.increaseTotalBy(knownAddressList.size)
+            if (knownAddressList.isNotEmpty()) {
                 for (address in knownAddressList) {
                     throwIfStopped()
                     ongoingContent = address.hostAddress
-                    progress().addToCurrent(1)
-                    publishStatus()
+                    progress.increaseBy(1)
                     try {
-                        CommunicationBridge.connect(kuick(), address, device, 0).use { client ->
+                        CommunicationBridge.connect(kuick, address, device, 0).use { client ->
                             client.requestAcquaintance()
                             if (client.receiveResult()) {
                                 val anchor: CalculationResultListener? = anchor
@@ -61,8 +63,8 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
         }
     }
 
-    override fun getName(context: Context?): String? {
-        return context!!.getString(R.string.text_findAvailableNetwork)
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_findAvailableNetwork)
     }
 
     interface CalculationResultListener : AttachedTaskListener {

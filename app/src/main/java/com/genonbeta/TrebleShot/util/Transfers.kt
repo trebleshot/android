@@ -100,7 +100,7 @@ object Transfers {
         val memberList: List<LoadedMember> = kuick.castQuery<Transfer, LoadedMember>(
             select,
             LoadedMember::class.java,
-            CastQueryListener<LoadedMember> { db: KuickDb, item: ContentValues?, item: LoadedMember ->
+            CastQueryListener<LoadedMember> { db: KuickDb, values: ContentValues?, item: LoadedMember ->
                 item.device = Device(item.deviceId)
                 try {
                     db.reconstruct<Void, Device>(item.device)
@@ -178,7 +178,7 @@ object Transfers {
             type.toString()
         )
         return AppUtils.getKuick(context).castQuery<Transfer, LoadedMember>(selection, LoadedMember::class.java,
-            CastQueryListener<LoadedMember> { db: KuickDb?, item: ContentValues?, item: LoadedMember? ->
+            CastQueryListener<LoadedMember> { db: KuickDb?, values: ContentValues?, item: LoadedMember? ->
                 loadMemberInfo(
                     db,
                     item

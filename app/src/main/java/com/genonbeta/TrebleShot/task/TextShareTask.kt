@@ -18,19 +18,22 @@
 package com.genonbeta.TrebleShot.taskimport
 
 import android.content.*
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.CommunicationBridge
+import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
-
-class TextShareTask(private val mDevice: Device, address: DeviceAddress, text: String) : AsyncTask() {
-    private val mAddress: DeviceAddress
-    private val mText: String
+class TextShareTask(
+    private val device: Device,
+    private val address: DeviceAddress,
+    private val text: String,
+) : AsyncTask() {
     override fun onRun() {
         try {
-            CommunicationBridge.connect(kuick(), mAddress, mDevice, 0).use { bridge ->
-                bridge.requestTextTransfer(mText)
+            CommunicationBridge.connect(kuick, address, device, 0).use { bridge ->
+                bridge.requestTextTransfer(text)
                 if (bridge.receiveResult()) {
                     // TODO: 31.03.2020 implement
                 }
@@ -40,12 +43,7 @@ class TextShareTask(private val mDevice: Device, address: DeviceAddress, text: S
         }
     }
 
-    override fun getName(context: Context?): String? {
-        return null
-    }
-
-    init {
-        mAddress = address
-        mText = text
+    override fun getName(context: Context): String {
+        return context.getString(R.string.text_shareTextShort)
     }
 }

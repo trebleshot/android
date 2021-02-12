@@ -33,34 +33,17 @@ import com.genonbeta.TrebleShot.service.BackgroundService
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
 class CommunicationToggleTile : TileService() {
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onTileAdded() {
-        super.onTileAdded()
-    }
-
-    override fun onTileRemoved() {
-        super.onTileRemoved()
-    }
-
     override fun onStartListening() {
         super.onStartListening()
         updateTileState()
     }
 
-    override fun onStopListening() {
-        super.onStopListening()
-    }
-
     override fun onClick() {
         super.onClick()
         val serviceIntent = Intent(applicationContext, BackgroundService::class.java)
-        if (isMyServiceRunning(BackgroundService::class.java)) stopService(serviceIntent) else ContextCompat.startForegroundService(
-            this,
-            serviceIntent
-        )
+        if (isMyServiceRunning(BackgroundService::class.java)) {
+            stopService(serviceIntent)
+        } else ContextCompat.startForegroundService(this, serviceIntent)
         updateTileState()
     }
 

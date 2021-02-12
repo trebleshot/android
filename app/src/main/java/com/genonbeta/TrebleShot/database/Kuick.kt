@@ -59,7 +59,7 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
 
         override fun onProgressChange(progress: Progress) {
             super.onProgressChange(progress)
-            ongoingContent = context.getString(R.string.text_transferStatusFiles, progress.current, progress.total)
+            ongoingContent = context.getString(R.string.text_transferStatusFiles, progress.progress, progress.total)
         }
 
         override fun getName(context: Context): String {
@@ -74,7 +74,7 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
         private val parent: T?,
     ) : BgTaskImpl(context, R.string.mesg_removing, db) {
         override fun onRun() {
-            kuick.remove(db, targetObject, parent, progressListener)
+            kuick.remove(db, targetObject, parent, progress)
             kuick.broadcast()
         }
     }
@@ -86,7 +86,7 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
         private val parent: T?,
     ) : BgTaskImpl(context, R.string.mesg_removing, db) {
         override fun onRun() {
-            kuick.remove(db, targetObjectList, parent, progressListener)
+            kuick.remove(db, targetObjectList, parent, progress)
             kuick.broadcast()
         }
     }

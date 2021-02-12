@@ -273,7 +273,7 @@ abstract class Activity : AppCompatActivity() {
             return
         synchronized(uiTaskList) {
             val uiTaskList: MutableList<AsyncTask> = ArrayList()
-            for (task in this.uiTaskList) if (!task.isFinished) uiTaskList.add(task)
+            for (task in this.uiTaskList) if (!task.finished) uiTaskList.add(task)
             this.uiTaskList.clear()
             this.uiTaskList.addAll(uiTaskList)
         }

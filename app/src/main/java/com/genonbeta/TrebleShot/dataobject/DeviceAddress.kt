@@ -34,30 +34,30 @@ import java.net.UnknownHostException
  * created by: veli
  * date: 8/3/19 1:22 PM
  */
-class DeviceAddress() : DatabaseObject<Device?>, Parcelable {
-    var inetAddress: InetAddress? = null
+class DeviceAddress() : DatabaseObject<Device>, Parcelable {
+    lateinit var inetAddress: InetAddress
 
-    var deviceId: String? = null
+    lateinit var deviceId: String
 
     var lastCheckedDate: Long = 0
 
-    constructor(inetAddress: InetAddress?) : this() {
+    constructor(inetAddress: InetAddress) : this() {
         this.inetAddress = inetAddress
     }
 
-    constructor(deviceId: String?, inetAddress: InetAddress?, lastCheckedDate: Long) : this(inetAddress) {
+    constructor(deviceId: String, inetAddress: InetAddress, lastCheckedDate: Long) : this(inetAddress) {
         this.deviceId = deviceId
         this.lastCheckedDate = lastCheckedDate
     }
 
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readSerializable() as InetAddress?,
+        parcel.readString() ?: "",
+        parcel.readSerializable() as InetAddress? ?: InetAddress.getLocalHost(),
         parcel.readLong()
     )
 
     val hostAddress: String
-        get() = inetAddress!!.hostAddress
+        get() = inetAddress.hostAddress
 
     override fun getWhere(): SQLQuery.Select {
         return SQLQuery.Select(Kuick.TABLE_DEVICEADDRESS)
@@ -67,27 +67,27 @@ class DeviceAddress() : DatabaseObject<Device?>, Parcelable {
     override fun getValues(): ContentValues {
         val values = ContentValues()
         values.put(Kuick.FIELD_DEVICEADDRESS_DEVICEID, deviceId)
-        values.put(Kuick.FIELD_DEVICEADDRESS_IPADDRESS, inetAddress!!.address)
-        values.put(Kuick.FIELD_DEVICEADDRESS_IPADDRESSTEXT, inetAddress!!.hostAddress)
+        values.put(Kuick.FIELD_DEVICEADDRESS_IPADDRESS, inetAddress.address)
+        values.put(Kuick.FIELD_DEVICEADDRESS_IPADDRESSTEXT, inetAddress.hostAddress)
         values.put(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE, lastCheckedDate)
         return values
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
         try {
-            inetAddress = InetAddress.getByAddress(item.getAsByteArray(Kuick.FIELD_DEVICEADDRESS_IPADDRESS))
+            inetAddress = InetAddress.getByAddress(values.getAsByteArray(Kuick.FIELD_DEVICEADDRESS_IPADDRESS))
         } catch (e: UnknownHostException) {
             e.printStackTrace()
         }
-        deviceId = item.getAsString(Kuick.FIELD_DEVICEADDRESS_DEVICEID)
-        lastCheckedDate = item.getAsLong(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE)
+        deviceId = values.getAsString(Kuick.FIELD_DEVICEADDRESS_DEVICEID)
+        lastCheckedDate = values.getAsLong(Kuick.FIELD_DEVICEADDRESS_LASTCHECKEDDATE)
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {}
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {}
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {}
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {}
 
     override fun describeContents(): Int {
         return 0

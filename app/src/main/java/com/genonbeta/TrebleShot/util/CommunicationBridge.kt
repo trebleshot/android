@@ -312,12 +312,12 @@ class CommunicationBridge(
         }
 
         @Throws(IOException::class, JSONException::class)
-        fun sendResult(connection: ActiveConnection?, result: Boolean) {
+        fun sendResult(connection: ActiveConnection, result: Boolean) {
             sendSecure(connection, result, JSONObject())
         }
 
         @Throws(JSONException::class, IOException::class)
-        fun sendSecure(connection: ActiveConnection?, result: Boolean, jsonObject: JSONObject) {
+        fun sendSecure(connection: ActiveConnection, result: Boolean, jsonObject: JSONObject) {
             connection.reply(jsonObject.put(Keyword.RESULT, result))
         }
     }

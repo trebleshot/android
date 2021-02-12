@@ -190,7 +190,7 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
         return values
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
         name = item.getAsString(Kuick.FIELD_TRANSFERITEM_NAME)
         file = item.getAsString(Kuick.FIELD_TRANSFERITEM_FILE)
         size = item.getAsLong(Kuick.FIELD_TRANSFERITEM_SIZE)
@@ -247,15 +247,15 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
         deleteOnRemoval = delete
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {
         date = System.currentTimeMillis()
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {
         date = System.currentTimeMillis()
     }
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {
         // Normally we'd like to check every file, but it may take a while.
         if (deleteOnRemoval) deleteFile(kuick, parent)
     }

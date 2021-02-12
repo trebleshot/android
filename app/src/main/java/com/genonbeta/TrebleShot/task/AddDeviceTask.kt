@@ -18,7 +18,8 @@
 package com.genonbeta.TrebleShot.task
 
 import android.app.Activity
-import android.content.*
+import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.genonbeta.TrebleShot.R
@@ -29,8 +30,7 @@ import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
 import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
-import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.TrebleShot.util.CommonErrorHelper
 import com.genonbeta.TrebleShot.util.CommunicationBridge
 import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
@@ -57,12 +57,11 @@ class AddDeviceTask(
             )
             if (objectList.isEmpty()) throw ContentException(ContentException.Error.NotFound)
             val filesArray = JSONArray()
-            progress.addToTotal(objectList.size)
+            progress.increaseTotalBy(objectList.size)
             for (transferItem in objectList) {
                 throwIfStopped()
-                progress.addToCurrent(1)
                 ongoingContent = transferItem.name
-                publishStatus()
+
                 try {
                     val json = JSONObject()
                         .put(Keyword.INDEX_FILE_NAME, transferItem.name)
@@ -73,6 +72,8 @@ class AddDeviceTask(
                     filesArray.put(json)
                 } catch (e: Exception) {
                     Log.e(TransferMemberActivity.TAG, "Sender error on fileUri on " + transferItem.name, e)
+                } finally {
+                    progress.increaseBy(1)
                 }
             }
             if (filesArray.length() < 1) throw IOException("There is no file in the JSON array.")

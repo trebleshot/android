@@ -17,14 +17,22 @@
  */
 package com.genonbeta.TrebleShot.service
 
+import android.content.ComponentName
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Icon
 import android.os.*
+import android.service.chooser.ChooserTarget
+import android.service.chooser.ChooserTargetService
+import androidx.annotation.RequiresApi
+import com.genonbeta.TrebleShot.activity.ShareActivity
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.IShapeBuilder
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.android.database.SQLQuery
 import java.util.*
 
 /**
@@ -41,7 +49,7 @@ class DeviceChooserService : ChooserTargetService() {
         val list: MutableList<ChooserTarget> = ArrayList<ChooserTarget>()
 
         // use default accent color for light theme
-        val iconBuilder: IShapeBuilder? = AppUtils.getDefaultIconBuilder(getApplicationContext())
+        val iconBuilder: IShapeBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext())
         for (device in kuick.castQuery(SQLQuery.Select(Kuick.TABLE_DEVICES), Device::class.java)) {
             if (device.isLocal) continue
             val bundle = Bundle()

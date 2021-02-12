@@ -34,7 +34,7 @@ class FindConnectionDialog internal constructor(activity: Activity?) : ProgressD
         var listener: OnDeviceResolvedListener?
         override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State?) {
             if (dialog.isShowing) {
-                if (task.isFinished) {
+                if (task.finished) {
                     dialog.dismiss()
                 } else {
                     dialog.setMessage(task.ongoingContent)

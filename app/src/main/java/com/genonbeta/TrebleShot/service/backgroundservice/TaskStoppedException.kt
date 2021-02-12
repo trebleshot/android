@@ -15,6 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package com.genonbeta.TrebleShot.service.backgroundserviceimport
+package com.genonbeta.TrebleShot.service.backgroundservice
 
 class TaskStoppedException(message: String?, val byUser: Boolean) : Exception()

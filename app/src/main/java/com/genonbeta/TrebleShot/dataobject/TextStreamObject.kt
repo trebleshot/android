@@ -77,7 +77,7 @@ class TextStreamObject : GroupEditableListAdapter.GroupShareable, DatabaseObject
         return text.hashCode()
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
         this.id = item.getAsLong(Kuick.FIELD_CLIPBOARD_ID)
         this.text = item.getAsString(Kuick.FIELD_CLIPBOARD_TEXT)
         this.dateInternal = item.getAsLong(Kuick.FIELD_CLIPBOARD_TIME)
@@ -87,9 +87,9 @@ class TextStreamObject : GroupEditableListAdapter.GroupShareable, DatabaseObject
         this.fileName = text
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}
 }

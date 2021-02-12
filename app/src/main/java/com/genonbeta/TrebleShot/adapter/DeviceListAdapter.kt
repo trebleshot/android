@@ -216,7 +216,7 @@ class DeviceListAdapter(
     }
 
     class NetworkDescription(var ssid: String, var bssid: String?, var password: String?) {
-        constructor(result: ScanResult) : this(result.SSID, result.BSSID, null) {}
+        constructor(result: ScanResult) : this(result.SSID, result.BSSID, null)
 
         override fun hashCode(): Int {
             return ObjectsCompat.hash(ssid, bssid, password)

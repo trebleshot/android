@@ -19,7 +19,9 @@ package com.genonbeta.TrebleShot.util
 
 import android.Manifest
 import android.app.Activity
-import android.content.*
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.ConnectivityManager
@@ -28,7 +30,7 @@ import android.net.NetworkInfo
 import android.net.Uri
 import android.net.wifi.*
 import android.net.wifi.p2p.WifiP2pManager
-import android.os.*
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -39,13 +41,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.*
+import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.dataobject.DeviceRoute
 import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
-import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.*
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
+import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.SuggestNetworkException
+import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
 import com.genonbeta.TrebleShot.utilimport.InetAddresses
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
@@ -129,7 +132,7 @@ class Connections(val context: Context) {
         // NOTTODO: Networks added by other applications will possibly reconnect even if we disconnect them.
         // This is because we are only allowed to manipulate the networks that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
-        return (isConnectedToAnyNetwork && wifiManager.disconnect()
+        return (isConnectedToAnyNetwork() && wifiManager.disconnect()
                 && wifiManager.disableNetwork(wifiManager.getConnectionInfo().getNetworkId()))
     }
 
@@ -154,6 +157,7 @@ class Connections(val context: Context) {
         val timeout = (System.nanoTime() + AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6).toLong()
         var connectionToggled = Build.VERSION.SDK_INT >= 29
         var connectionReset = false
+
         while (true) {
             val timedOut = System.nanoTime() > timeout
             val wifiDhcpInfo: DhcpInfo = wifiManager.dhcpInfo
@@ -161,7 +165,7 @@ class Connections(val context: Context) {
                 TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
                         + wifiDhcpInfo.toString()
             )
-            if (!wifiManager.isWifiEnabled()) {
+            if (!wifiManager.isWifiEnabled) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on")
                 if (Build.VERSION.SDK_INT >= 29 || !wifiManager.setWifiEnabled(true)) {
                     Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.")
@@ -174,7 +178,7 @@ class Connections(val context: Context) {
                 Log.d(TAG, "establishHotspotConnection: The network is not ready to be used yet.")
                 wifiManager.startScan()
                 val result = findFromScanResults(description)
-                if (!connectionReset && isConnectedToAnyNetwork) {
+                if (!connectionReset && isConnectedToAnyNetwork()) {
                     disableCurrentNetwork()
                     wifiManager.setWifiEnabled(false)
                     connectionReset = true
@@ -266,20 +270,18 @@ class Connections(val context: Context) {
             Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
-    val isConnectionToHotspotNetwork: Boolean
-        get() {
-            val wifiInfo: WifiInfo = wifiManager.getConnectionInfo()
-            return wifiInfo != null && getCleanSsid(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT)
-        }
+    fun isConnectionToHotspotNetwork(): Boolean {
+        val wifiInfo: WifiInfo = wifiManager.connectionInfo
+        return getCleanSsid(wifiInfo.ssid).startsWith(AppConfig.PREFIX_ACCESS_POINT)
+    }
 
     /**
      * @return True if connected to a Wi-Fi network.
      */
-    val isConnectedToAnyNetwork: Boolean
-        get() {
-            val info: NetworkInfo? = this.connectivityManager.activeNetworkInfo
-            return info != null && info.type == ConnectivityManager.TYPE_WIFI && info.isConnected
-        }
+    fun isConnectedToAnyNetwork(): Boolean {
+        val info: NetworkInfo? = this.connectivityManager.activeNetworkInfo
+        return info != null && info.type == ConnectivityManager.TYPE_WIFI && info.isConnected
+    }
 
     fun isConnectedToNetwork(description: NetworkDescription): Boolean {
         return isConnectedToNetwork(description.ssid, description.bssid)
@@ -290,7 +292,7 @@ class Connections(val context: Context) {
     }
 
     fun isConnectedToNetwork(ssid: String, bssid: String?): Boolean {
-        if (!isConnectedToAnyNetwork) return false
+        if (!isConnectedToAnyNetwork()) return false
         val wifiInfo: WifiInfo = wifiManager.getConnectionInfo()
         val tgSsid = getCleanSsid(wifiInfo.getSSID())
         Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + ":" + bssid + "=" + wifiInfo.getBSSID())
@@ -305,10 +307,10 @@ class Connections(val context: Context) {
     /**
      * @return True if the mobile data connection is active.
      */
-    @get:Deprecated("Do not use this method above 9, there is a better method in-place.")
-    val isMobileDataActive: Boolean
-        get() = connectivityManager.getActiveNetworkInfo() != null
-                && connectivityManager.activeNetworkInfo.type == ConnectivityManager.TYPE_MOBILE
+    @Deprecated("Do not use this method above 9, there is a better method in-place.")
+    fun isMobileDataActive(): Boolean {
+        return connectivityManager.activeNetworkInfo?.type == ConnectivityManager.TYPE_MOBILE
+    }
 
     fun notifyWirelessRequestHandled(): Boolean {
         val returnedState = wirelessEnableRequested
@@ -347,7 +349,7 @@ class Connections(val context: Context) {
             Log.d(TAG, "startConnection: Already connected to the network")
             return true
         }
-        if (isConnectedToAnyNetwork) {
+        if (isConnectedToAnyNetwork()) {
             Log.d(TAG, "startConnection: Connected to some other network, will try to disable it.")
             disableCurrentNetwork()
         }
@@ -373,10 +375,7 @@ class Connections(val context: Context) {
      * @param config The network specifier that you want to toggle the connection to.
      * @return True when the request is successful, false if otherwise.
      */
-    @Deprecated(
-        """The use of this method is limited to Android version 9 and below due to the deprecation of the
-      APIs it makes use of."""
-    )
+    @Deprecated("The use of this method is limited to Android version 9 and below.")
     fun toggleConnection(config: WifiConfiguration): Boolean {
         return if (isConnectedToNetwork(config)) wifiManager.disconnect() else startConnection(config)
     }
@@ -402,7 +401,7 @@ class Connections(val context: Context) {
                     )
                 }
                 .show()
-        } else if (Build.VERSION.SDK_INT < 26 && !manager!!.enabled && isMobileDataActive && suggestActions) {
+        } else if (Build.VERSION.SDK_INT < 26 && !manager.enabled && isMobileDataActive() && suggestActions) {
             AlertDialog.Builder(activity)
                 .setMessage(R.string.mesg_warningHotspotMobileActive)
                 .setNegativeButton(R.string.butn_cancel, null)
@@ -522,7 +521,7 @@ class Connections(val context: Context) {
 
         @WorkerThread
         @Throws(CommunicationException::class, IOException::class, JSONException::class)
-        fun setupConnection(context: Context?, inetAddress: InetAddress?, pin: Int): DeviceRoute {
+        fun setupConnection(context: Context, inetAddress: InetAddress?, pin: Int): DeviceRoute {
             val kuick = AppUtils.getKuick(context)
             val deviceAddress = DeviceAddress(inetAddress)
             val bridge: CommunicationBridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)

@@ -35,7 +35,7 @@ object AppConfig {
     const val DELAY_UPDATE_CHECK = 21600
     const val PHOTO_SCALE_FACTOR = 100
     const val WEB_SHARE_CONNECTION_MAX = 20
-    const val ID_GROUP_WEB_SHARE = 10
+    const val ID_GROUP_WEB_SHARE = 10L
     const val EMAIL_DEVELOPER = "genonbeta@gmail.com"
     const val URI_REPO_APP_UPDATE = "https://api.github.com/repos/genonbeta/TrebleShot/releases"
     const val URI_REPO_APP_CONTRIBUTORS = "https://api.github.com/repos/genonbeta/TrebleShot/contributors"

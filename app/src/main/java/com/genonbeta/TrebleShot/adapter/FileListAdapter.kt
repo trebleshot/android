@@ -366,7 +366,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     }
 
     class FileHolder : GroupShareable, DatabaseObject<Any?> {
-        var file: DocumentFile? = null
+        lateinit var file: DocumentFile
 
         var transferItem: TransferItem? = null
 
@@ -491,7 +491,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
             return true
         }
 
-        override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
+        override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
             uri = Uri.parse(item.getAsString(Kuick.FIELD_FILEBOOKMARK_PATH))
             type = if (uri.toString().startsWith("file")) Type.Bookmarked else Type.Mounted
             try {
@@ -503,11 +503,11 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
             friendlyName = item.getAsString(Kuick.FIELD_FILEBOOKMARK_TITLE)
         }
 
-        override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+        override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}
 
-        override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+        override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}
 
-        override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, listener: Progress.Listener?) {}
+        override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Any?, progress: Progress.Context?) {}
 
         override fun setSelectableSelected(selected: Boolean): Boolean {
             return when (type) {

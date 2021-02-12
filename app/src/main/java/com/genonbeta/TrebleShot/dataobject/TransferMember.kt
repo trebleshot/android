@@ -71,7 +71,7 @@ open class TransferMember : DatabaseObject<Transfer> {
         return values
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
         deviceId = item.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID)
         transferId = item.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID)
 
@@ -81,11 +81,11 @@ open class TransferMember : DatabaseObject<Transfer> {
             TransferItem.Type.valueOf(item.getAsString(Kuick.FIELD_TRANSFERMEMBER_TYPE))
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {}
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {}
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {}
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {}
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, listener: Progress.Listener?) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {
         if (TransferItem.Type.INCOMING != type) return
 
         try {

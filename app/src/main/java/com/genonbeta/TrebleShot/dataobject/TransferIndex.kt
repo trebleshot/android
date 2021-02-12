@@ -195,15 +195,15 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         Log.e(TAG, "setSize: This is not implemented")
     }
 
-    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
         transfer.onCreateObject(db, kuick, parent, listener)
     }
 
-    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
         transfer.onUpdateObject(db, kuick, parent, listener)
     }
 
-    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, listener: Progress.Listener?) {
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
         transfer.onRemoveObject(db, kuick, parent, listener)
     }
 
@@ -215,7 +215,7 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         return transfer.where
     }
 
-    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, item: ContentValues) {
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
         transfer.reconstruct(db, kuick, item)
     }
 

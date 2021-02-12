@@ -39,12 +39,12 @@ import java.text.NumberFormat
  * created by: Veli
  * date: 26.01.2018 18:29
  */
-class NotificationHelper(val utils: NotificationUtils) {
+class NotificationHelper(val utils: Notifications) {
     private val mPercentFormat = NumberFormat.getPercentInstance()
     val foregroundNotification: DynamicNotification
         get() {
             val notification = utils.buildDynamicNotification(
-                ID_BG_SERVICE.toLong(), NotificationUtils.NOTIFICATION_CHANNEL_LOW
+                ID_BG_SERVICE.toLong(), Notifications.NOTIFICATION_CHANNEL_LOW
             )
             val sendString = context!!.getString(R.string.butn_send)
             val receiveString = context!!.getString(R.string.butn_receive)
@@ -107,13 +107,13 @@ class NotificationHelper(val utils: NotificationUtils) {
     fun notifyKeyChanged(device: Device, receiveKey: Int, sendKey: Int) {
         val notification = utils.buildDynamicNotification(
             AppUtils.uniqueNumber.toLong(),
-            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
+            Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         val acceptIntent = Intent(context, BackgroundService::class.java)
         val dialogIntent = Intent(context, DialogEventReceiver::class.java)
         acceptIntent.setAction(BackgroundService.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
             .putExtra(BackgroundService.EXTRA_DEVICE, device)
-            .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
+            .putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
             .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
             .putExtra(BackgroundService.EXTRA_RECEIVE_KEY, receiveKey)
             .putExtra(BackgroundService.EXTRA_SEND_KEY, sendKey)
@@ -151,10 +151,10 @@ class NotificationHelper(val utils: NotificationUtils) {
     ) {
         val notification = utils.buildDynamicNotification(
             Transfers.createUniqueTransferId(transfer.id, device.uid, TransferItem.Type.INCOMING),
-            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
+            Notifications.NOTIFICATION_CHANNEL_HIGH
         )
-        acceptIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
-        rejectIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
+        acceptIntent.putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
+        rejectIntent.putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val positiveIntent: PendingIntent = PendingIntent.getService(
             context, AppUtils.uniqueNumber, acceptIntent,
             0
@@ -188,12 +188,12 @@ class NotificationHelper(val utils: NotificationUtils) {
     fun notifyClipboardRequest(device: Device, item: TextStreamObject) {
         val notification = utils.buildDynamicNotification(
             item.id,
-            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
+            Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_CLIPBOARD)
             .putExtra(BackgroundService.EXTRA_CLIPBOARD_ID, item.id)
-            .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
+            .putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val activityIntent = Intent(context, TextEditorActivity::class.java)
         val rejectIntent = acceptIntent.clone() as Intent
         acceptIntent.putExtra(BackgroundService.EXTRA_CLIPBOARD_ACCEPTED, true)
@@ -245,7 +245,7 @@ class NotificationHelper(val utils: NotificationUtils) {
         val notification = utils.buildDynamicNotification(
             Transfers.createUniqueTransferId(
                 task.transfer.id, task.device.uid, task.type
-            ), NotificationUtils.NOTIFICATION_CHANNEL_HIGH
+            ), Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -314,7 +314,7 @@ class NotificationHelper(val utils: NotificationUtils) {
         if (notification == null) {
             notification = utils.buildDynamicNotification(
                 ID_BG_SERVICE.toLong(),
-                NotificationUtils.NOTIFICATION_CHANNEL_LOW
+                Notifications.NOTIFICATION_CHANNEL_LOW
             )
             val transfersString = context!!.getString(R.string.butn_transfers)
             val transfersIntent: PendingIntent = PendingIntent.getActivity(

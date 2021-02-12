@@ -22,7 +22,6 @@ import android.content.SharedPreferences
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.NotificationUtils
 import java.lang.IllegalStateException
 
 /**

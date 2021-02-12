@@ -35,7 +35,7 @@ import com.genonbeta.TrebleShot.protocol.communication.ContentException
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachableAsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
 import com.genonbeta.android.database.exception.ReconstructionFailedException
@@ -98,7 +98,7 @@ class FileTransferTask : AttachableAsyncTask<AttachedTaskListener>() {
 
     override fun onPublishStatus() {
         super.onPublishStatus()
-        if (interrupted() || isFinished) {
+        if (interrupted() || finished) {
             if (interrupted()) ongoingContent = context.getString(R.string.text_cancellingTransfer)
             kuick.broadcast()
             return

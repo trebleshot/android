@@ -23,10 +23,9 @@ import android.media.MediaScannerConnection
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Identifiable
-import com.genonbeta.TrebleShot.dataobject.Identifier.from
+import com.genonbeta.TrebleShot.dataobject.Identifier.Companion.from
 import com.genonbeta.TrebleShot.dataobject.Identity
-import com.genonbeta.TrebleShot.dataobject.Identity.withORs
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
+import com.genonbeta.TrebleShot.dataobject.Identity.Companion.withORs
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.DynamicNotification
 import com.genonbeta.TrebleShot.util.NotificationHelper
@@ -45,28 +44,43 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     override val closers: MutableList<Stoppable.Closer>
         get() = stoppable.closers
 
+    val context: Context
+        get() = app.applicationContext
+
+    private var customHashCode = 0
+
     protected var customNotification // The notification that is not part of the default notification.
             : DynamicNotification? = null
+
+    var finished = false
+        private set
+
+    override val identity: Identity
+        get() = withORs(from(Id.HashCode, hashCode()))
 
     val kuick: Kuick
         get() = AppUtils.getKuick(context)
 
-    val progressListener: Progress.Listener = ProgressListener()
+    val mediaScanner: MediaScannerConnection
+        get() = app.mediaScanner
 
-    private var stoppable = StoppableImpl()
+    val name: String
+        get() = getName(context)
 
-    var isFinished = false
-        private set
+    val notificationHelper: NotificationHelper
+        get() = app.notificationHelper
 
-    var isStarted = false
+    var ongoingContent: String? = null
+
+    val progress: Progress.Context = ProgressContext()
+
+    var started = false
         private set
 
     var startTime: Long = 0
         private set
 
-    var ongoingContent: String? = null
-
-    private var customHashCode = 0
+    private var stoppable = StoppableImpl()
 
     protected open fun onProgressChange(progress: Progress) {
         publishStatus()
@@ -83,33 +97,13 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
             interrupt()
     }
 
-    val context: Context
-        get() = app.applicationContext
+    abstract fun getName(context: Context): String
 
-    override val identity: Identity
-        get() = withORs(from(Id.HashCode, hashCode()))
+    fun getState(): State {
+        return if (!started) State.Starting else if (!finished) State.Running else State.Finished
+    }
 
-    val mediaScanner: MediaScannerConnection
-        get() = app.mediaScanner
-
-    val name: String?
-        get() = getName(context)
-
-    abstract fun getName(context: Context): String?
-
-    val notificationHelper: NotificationHelper
-        get() = app.notificationHelper
-
-    val state: State
-        get() {
-            if (!isStarted)
-                return State.Starting
-            else if (!isFinished)
-                return State.Running
-            return State.Finished
-        }
-
-    open val taskGroup = TASK_GROUP_DEFAULT
+    open fun getTaskGroup() = TASK_GROUP_DEFAULT
 
     override fun hasCloser(closer: Stoppable.Closer): Boolean {
         return stoppable.hasCloser(closer)
@@ -138,17 +132,12 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         customNotification = notification
     }
 
-    val progress: Progress
-        get() {
-            return Progress.dissect(progressListener)
-        }
-
     fun publishStatus(): Boolean {
         return publishStatus(false)
     }
 
     protected open fun publishStatus(force: Boolean): Boolean {
-        return isStarted && !isFinished && app.publishTaskNotifications(force)
+        return started && !finished && app.publishTaskNotifications(force)
     }
 
     override fun removeCloser(closer: Stoppable.Closer): Boolean {
@@ -166,10 +155,10 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     private fun resetInternal() {
-        check(!(isStarted && !isFinished)) { "Can't reset when the task is running" }
-        isStarted = false
-        isFinished = false
-        progressListener.progress = null
+        check(!(started && !finished)) { "Can't reset when the task is running" }
+        started = false
+        finished = false
+        progress.progress = null
     }
 
     override fun removeClosers() {
@@ -177,24 +166,24 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     fun run(application: App) {
-        check(!(isStarted || isFinished || interrupted())) { javaClass.name + " isStarted" }
+        check(!(started || finished || interrupted())) { javaClass.name + " isStarted" }
 
         startTime = System.currentTimeMillis()
         app = application
 
         publishStatus(true)
-        isStarted = true
+        started = true
 
         try {
             run(stoppable)
         } catch (ignored: TaskStoppedException) {
         } finally {
-            isFinished = true
+            finished = true
             publishStatus(true)
         }
     }
 
-    fun setContentIntent(context: Context?, intent: Intent) {
+    fun setContentIntent(context: Context, intent: Intent) {
         customHashCode = hashIntent(intent)
         activityIntent = PendingIntent.getActivity(context, 0, intent, 0)
     }
@@ -205,7 +194,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
             throw TaskStoppedException("This task been interrupted", interrupted())
     }
 
-    private inner class ProgressListener : Progress.SimpleListener() {
+    private inner class ProgressContext : Progress.SimpleContext() {
         override fun onProgressChange(progress: Progress): Boolean {
             this@AsyncTask.onProgressChange(progress)
             publishStatus()

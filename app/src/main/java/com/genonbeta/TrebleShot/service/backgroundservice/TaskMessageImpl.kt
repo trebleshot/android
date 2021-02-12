@@ -29,7 +29,7 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.activity.HomeActivity
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage.Tone
 import com.genonbeta.TrebleShot.util.DynamicNotification
-import com.genonbeta.TrebleShot.util.NotificationUtils
+import com.genonbeta.TrebleShot.util.Notifications
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
@@ -112,7 +112,7 @@ class TaskMessageImpl(
         val utils = task.notificationHelper.utils
         val notification = utils.buildDynamicNotification(
             task.hashCode().toLong(),
-            NotificationUtils.NOTIFICATION_CHANNEL_HIGH
+            Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         val intent: PendingIntent = PendingIntent.getActivity(
             context, 0, Intent(context, HomeActivity::class.java)
