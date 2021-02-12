@@ -19,7 +19,11 @@ package com.genonbeta.TrebleShot.dialog
 
 import android.app.Activity
 import android.view.LayoutInflater
+import androidx.annotation.IdRes
+import androidx.annotation.MenuRes
 import com.genonbeta.TrebleShot.R
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.navigation.NavigationView
 
 class NavigationViewBottomSheetDialog(
     activity: Activity,
@@ -33,7 +37,7 @@ class NavigationViewBottomSheetDialog(
             null, false
         )
         val navigationView: NavigationView = view.findViewById(R.id.nav_view)
-        activity.menuInflater.inflate(menu, navigationView.getMenu())
+        activity.menuInflater.inflate(menu, navigationView.menu)
         navigationView.setCheckedItem(selectedItemId)
         navigationView.setNavigationItemSelectedListener(listener)
         setContentView(view)

@@ -44,9 +44,13 @@ import java.io.IOException
 
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var navigationView: NavigationView
+
     private lateinit var drawerLayout: DrawerLayout
+
     private var exitPressTime: Long = 0
+
     private var chosenMenuItemId = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -203,12 +207,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
             R.id.menu_activity_main_crash_test == chosenMenuItemId -> {
                 throw NullPointerException("The crash was intentional, since 'Crash now' was called")
-            }
-            R.id.menu_activity_main_db_migration == chosenMenuItemId -> {
-                val db = AppUtils.getKuick(this)
-                val dbVersion: Int = Kuick.DATABASE_VERSION
-                Toast.makeText(this, "Running migration rules again", Toast.LENGTH_SHORT).show()
-                Migration.migrate(db, db.writableDatabase, dbVersion, dbVersion)
             }
         }
         chosenMenuItemId = 0

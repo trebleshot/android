@@ -37,7 +37,7 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
         super.onCreate(savedInstanceState)
         isFilteringSupported = true
         setHasOptionsMenu(true)
-        defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
+        defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         defaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_DATE
         itemOffsetDecorationEnabled = false

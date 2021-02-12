@@ -15,9 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package com.genonbeta.TrebleShot.service.backgroundserviceimport
-
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
+package com.genonbeta.TrebleShot.service.backgroundservice
 
 enum class DefaultNotificationIds {
     ID_BG_DEFAULT_TASKS // Notification representing the tasks with BackgroundTask#TASK_GROUP_DEFAULT

@@ -18,7 +18,13 @@
 package com.genonbeta.TrebleShot.fragment.innerimport
 
 import android.content.*
+import android.os.Bundle
 import android.view.*
+import android.widget.TextView
+import androidx.annotation.DrawableRes
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.ui.callback.IconProvider
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider
 import com.genonbeta.android.framework.app.Fragment
 
 /**
@@ -26,13 +32,16 @@ import com.genonbeta.android.framework.app.Fragment
  * date: 9/4/18 12:03 AM
  */
 class TextViewerFragment : Fragment(), IconProvider, TitleProvider {
-    private var mMainText: TextView? = null
+    private lateinit var mainTextView: TextView
+
+    override val iconRes: Int = R.drawable.ic_forum_white_24dp
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.layout_text_viewer, container, false)
     }
 
@@ -43,12 +52,7 @@ class TextViewerFragment : Fragment(), IconProvider, TitleProvider {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mMainText = view.findViewById<TextView>(R.id.layout_text_viewer_text)
-    }
-
-    @DrawableRes
-    override fun getIconRes(): Int {
-        return R.drawable.ic_forum_white_24dp
+        mainTextView = view.findViewById(R.id.layout_text_viewer_text)
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {

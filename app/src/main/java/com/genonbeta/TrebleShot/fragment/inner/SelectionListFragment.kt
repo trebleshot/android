@@ -17,12 +17,28 @@
  */
 package com.genonbeta.TrebleShot.fragment.inner
 
+import android.content.Context
+import android.os.Bundle
+import android.view.*
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatCheckBox
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.fragment.inner.SelectionListFragment.MyAdapter
+import com.genonbeta.TrebleShot.ui.callback.IconProvider
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
+import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
+
 /**
  * created by: veli
  * date: 9/3/18 10:17 PM
  */
-class SelectionListFragment : DynamicRecyclerViewFragment<Selectable?, RecyclerViewAdapter.ViewHolder?, MyAdapter?>(),
-    IconProvider, TitleProvider {
+class SelectionListFragment : DynamicRecyclerViewFragment<Selectable, ViewHolder, MyAdapter>(), IconProvider,
+    TitleProvider {
+    override val iconRes: Int = R.drawable.ic_insert_drive_file_white_24dp
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -34,18 +50,19 @@ class SelectionListFragment : DynamicRecyclerViewFragment<Selectable?, RecyclerV
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.actions_selection_list_check_all) updateSelection(true) else if (id == R.id.actions_selection_list_undo_all) updateSelection(
-            false
-        ) else return super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            R.id.actions_selection_list_check_all -> updateSelection(true)
+            R.id.actions_selection_list_undo_all -> updateSelection(false)
+            else -> return super.onOptionsItemSelected(item)
+        }
         return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listAdapter = MyAdapter(context)
-        setEmptyListImage(R.drawable.ic_insert_drive_file_white_24dp)
-        setEmptyListText(getString(R.string.text_listEmpty))
+        adapter = MyAdapter(requireContext())
+        emptyListImageView.setImageResource(R.drawable.ic_insert_drive_file_white_24dp)
+        emptyListTextView.text = getString(R.string.text_listEmpty)
         useEmptyListActionButton(getString(R.string.butn_refresh)) { v: View? -> refreshList() }
     }
 
@@ -54,39 +71,27 @@ class SelectionListFragment : DynamicRecyclerViewFragment<Selectable?, RecyclerV
         refreshList()
     }
 
-    @DrawableRes
-    override fun getIconRes(): Int {
-        return R.drawable.ic_insert_drive_file_white_24dp
-    }
-
     override fun getDistinctiveTitle(context: Context): CharSequence {
         return context.getString(R.string.text_files)
     }
 
     fun updateSelection(selectAll: Boolean) {
-        if (adapter != null) {
-            synchronized(adapter.getList()) {
-                for (selectable in adapter.getList()) selectable.setSelectableSelected(
-                    selectAll
-                )
-            }
-            adapter.notifyDataSetChanged()
+        synchronized(adapter.getList()) {
+            for (selectable in adapter.getList()) selectable.setSelectableSelected(selectAll)
         }
+        adapter.notifyDataSetChanged()
     }
 
-    class MyAdapter(context: Context?) : RecyclerViewAdapter<Selectable, RecyclerViewAdapter.ViewHolder>(context) {
-        private val mList: ArrayList<Selectable> = ArrayList<Selectable>()
-        private val mPendingList: ArrayList<Selectable> = ArrayList<Selectable>()
+    class MyAdapter(context: Context) : RecyclerViewAdapter<Selectable, ViewHolder>(context) {
+        private val list: ArrayList<Selectable> = ArrayList()
+
+        private val pendingList: ArrayList<Selectable> = ArrayList()
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val holder = ViewHolder(inflater.inflate(R.layout.list_selection, parent, false))
+            val holder = ViewHolder(layoutInflater.inflate(R.layout.list_selection, parent, false))
             val checkBox: AppCompatCheckBox = holder.itemView.findViewById(R.id.checkbox)
             holder.itemView.setOnClickListener { v: View? -> checkReversed(checkBox, list[holder.adapterPosition]) }
-            checkBox.setOnClickListener(View.OnClickListener { v: View? ->
-                checkReversed(
-                    checkBox,
-                    list[holder.adapterPosition]
-                )
-            })
+            checkBox.setOnClickListener { v: View -> checkReversed(checkBox, list[holder.adapterPosition]) }
             return holder
         }
 
@@ -94,40 +99,43 @@ class SelectionListFragment : DynamicRecyclerViewFragment<Selectable?, RecyclerV
             val selectable: Selectable = list[position]
             val checkBox: AppCompatCheckBox = holder.itemView.findViewById(R.id.checkbox)
             val text1: TextView = holder.itemView.findViewById<TextView>(R.id.text)
-            text1.setText(selectable.getSelectableTitle())
-            checkBox.setChecked(selectable.isSelectableSelected())
+
+            text1.text = selectable.getSelectableTitle()
+            checkBox.isChecked = selectable.isSelectableSelected()
         }
 
         override fun getItemCount(): Int {
-            return mList.size
+            return list.size
         }
 
-        override fun onLoad(): List<Selectable> {
-            val selectableList: List<Selectable> = ArrayList<Selectable>(mPendingList)
-            mPendingList.clear()
+        override fun onLoad(): MutableList<Selectable> {
+            val selectableList: MutableList<Selectable> = ArrayList(pendingList)
+            pendingList.clear()
             return selectableList
         }
 
-        override fun onUpdate(passedItem: List<Selectable>) {
+        override fun onUpdate(passedItem: MutableList<Selectable>) {
             synchronized(list) {
-                mList.clear()
-                mList.addAll(passedItem)
+                list.clear()
+                list.addAll(passedItem)
             }
         }
 
         override fun getList(): ArrayList<Selectable> {
-            return mList
+            return list
         }
 
         fun checkReversed(checkBox: AppCompatCheckBox, selectable: Selectable) {
-            if (selectable.setSelectableSelected(!selectable.isSelectableSelected())) checkBox.setChecked(selectable.isSelectableSelected())
+            if (selectable.setSelectableSelected(!selectable.isSelectableSelected())) {
+                checkBox.isChecked = selectable.isSelectableSelected()
+            }
         }
 
         protected fun load(selectableList: ArrayList<out Selectable>?) {
             if (selectableList == null) return
-            synchronized(mPendingList) {
-                mPendingList.clear()
-                mPendingList.addAll(selectableList)
+            synchronized(pendingList) {
+                pendingList.clear()
+                pendingList.addAll(selectableList)
             }
         }
     }

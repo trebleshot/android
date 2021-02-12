@@ -35,10 +35,10 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
     }
 
     override fun onUpgrade(db: SQLiteDatabase, old: Int, current: Int) {
-        Migration.migrate(this, db, old, current)
+
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, item: V, parent: T) {
+    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, item: V, parent: T?) {
         removeAsynchronous(App.from(activity), item, parent)
     }
 
@@ -46,11 +46,11 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
         app.run(SingleRemovalTask(app.applicationContext, writableDatabase, item, parent))
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, objects: List<V>, parent: T) {
+    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, objects: List<V>, parent: T?) {
         removeAsynchronous(App.from(activity), objects, parent)
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, objects: List<V>, parent: T) {
+    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, objects: List<V>, parent: T?) {
         app.run(MultipleRemovalTask(app.applicationContext, writableDatabase, objects, parent))
     }
 

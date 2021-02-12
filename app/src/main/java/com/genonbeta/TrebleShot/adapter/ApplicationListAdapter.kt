@@ -34,7 +34,6 @@ import com.genonbeta.TrebleShot.dataobject.Container
 import com.genonbeta.TrebleShot.io.Containable
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.Companion.MODE_GROUP_BY_DATE
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
@@ -95,7 +94,7 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
             val text1: TextView = parentView.findViewById(R.id.text)
             val text2: TextView = parentView.findViewById(R.id.text2)
             val layoutSplitApk = parentView.findViewById<ViewGroup>(R.id.layout_split_apk)
-            val isSplitApk = Build.VERSION.SDK_INT >= 21 && item.appInfo?.splitSourceDirs != null
+            val isSplitApk = Build.VERSION.SDK_INT >= 21 && item.appInfo.splitSourceDirs != null
             text1.text = item.friendlyName
             text2.text = item.version
             layoutSplitApk.visibility = if (isSplitApk) View.VISIBLE else View.GONE
@@ -109,13 +108,13 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
     }
 
     class PackageHolder : GroupShareable, Container {
-        var appInfo: ApplicationInfo? = null
-        var version: String? = null
-        var packageName: String? = null
+        lateinit var appInfo: ApplicationInfo
+        lateinit var version: String
+        lateinit var packageName: String
 
         constructor(viewType: Int, representativeText: String) : super(viewType, representativeText)
         constructor(
-            friendlyName: String, appInfo: ApplicationInfo, version: String, packageName: String?,
+            friendlyName: String, appInfo: ApplicationInfo, version: String, packageName: String,
             executableFile: File,
         ) {
             initialize(
@@ -131,7 +130,7 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
             if (Build.VERSION.SDK_INT < 21)
                 return null
 
-            val splitSourceDirs = appInfo?.splitSourceDirs ?: return null
+            val splitSourceDirs = appInfo.splitSourceDirs ?: return null
             val fileList: MutableList<Uri> = ArrayList()
             for (location in splitSourceDirs) fileList.add(Uri.fromFile(File(location)))
 

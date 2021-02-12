@@ -21,8 +21,12 @@ import android.content.*
 import com.genonbeta.TrebleShot.R
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter
+import com.genonbeta.TrebleShot.adapter.TransferPathResolverRecyclerAdapter
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import java.io.File
 
 /**
@@ -30,54 +34,56 @@ import java.io.File
  * date: 3/11/19 7:37 PM
  */
 class TransferItemExplorerFragment : TransferItemListFragment() {
-    private var mPathView: RecyclerView? = null
-    private var mPathAdapter: TransferPathResolverRecyclerAdapter? = null
-    private var mToggleButton: ExtendedFloatingActionButton? = null
+    private lateinit var pathView: RecyclerView
+
+    lateinit var toggleButton: ExtendedFloatingActionButton
+
+    private lateinit var pathAdapter: TransferPathResolverRecyclerAdapter
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        setHasBottomSpace(true)
+        hasBottomSpace = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setLayoutResId(R.layout.layout_transfer_explorer)
-        setDividerView(R.id.layout_transfer_explorer_separator)
+        layoutResId = R.layout.layout_transfer_explorer
+        dividerResId = R.id.layout_transfer_explorer_separator
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mToggleButton = view.findViewById(R.id.layout_transfer_explorer_efab)
-        mPathView = view.findViewById(R.id.layout_transfer_explorer_recycler)
-        mPathAdapter = TransferPathResolverRecyclerAdapter(context)
+        toggleButton = view.findViewById(R.id.layout_transfer_explorer_efab)
+        pathView = view.findViewById(R.id.layout_transfer_explorer_recycler)
+        pathAdapter = TransferPathResolverRecyclerAdapter(requireContext())
         val layoutManager = LinearLayoutManager(
             context, RecyclerView.HORIZONTAL,
             false
         )
-        layoutManager.setStackFromEnd(true)
-        mPathView.setHasFixedSize(true)
-        mPathView.setLayoutManager(layoutManager)
-        mPathView.setAdapter(mPathAdapter)
-        mPathAdapter.setOnClickListener(PathResolverRecyclerAdapter.OnClickListener { holder: PathResolverRecyclerAdapter.Holder<String?> ->
-            goPath(
-                holder.index.data
-            )
-        })
-        if (activity is TransferDetailActivity) (activity as TransferDetailActivity).showMenus()
+        layoutManager.stackFromEnd = true
+        pathView.setHasFixedSize(true)
+        pathView.layoutManager = layoutManager
+        pathView.adapter = pathAdapter
+        pathAdapter.clickListener = object : PathResolverRecyclerAdapter.OnClickListener<String?> {
+            override fun onClick(holder: PathResolverRecyclerAdapter.Holder<String?>) {
+                goPath(holder.index.data)
+            }
+        }
+
+        activity?.let {
+            if (it is TransferDetailActivity) it.showMenus()
+        }
     }
 
     override fun onListRefreshed() {
         super.onListRefreshed()
         val path = adapter.path
-        mPathAdapter.goTo(adapter.member, path?.split(File.separator.toRegex())?.toTypedArray())
-        mPathAdapter.notifyDataSetChanged()
-        if (mPathAdapter.getItemCount() > 0) mPathView!!.smoothScrollToPosition(mPathAdapter.getItemCount() - 1)
+        pathAdapter.goTo(adapter.mMember, path?.split(File.separator.toRegex())?.toTypedArray())
+        pathAdapter.notifyDataSetChanged()
+        if (pathAdapter.itemCount > 0) pathView.smoothScrollToPosition(pathAdapter.itemCount - 1)
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {
         return context.getString(R.string.text_files)
-    }
-
-    fun getToggleButton(): ExtendedFloatingActionButton? {
-        return mToggleButton
     }
 }

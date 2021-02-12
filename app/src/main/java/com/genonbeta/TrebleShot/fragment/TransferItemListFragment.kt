@@ -19,77 +19,94 @@ package com.genonbeta.TrebleShot.fragment
 
 import android.app.Activity
 import android.content.*
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.TrebleShot.App
-import com.genonbeta.TrebleShot.database.Kuick
-import com.genonbeta.TrebleShot.util.AppUtils
-import android.os.Bundle
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import android.net.Uri
-import com.genonbeta.TrebleShot.app.EditableListFragment
+import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
+import com.genonbeta.TrebleShot.App
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.FilePickerActivity
+import com.genonbeta.TrebleShot.adapter.TransferItemListAdapter
+import com.genonbeta.TrebleShot.adapter.TransferItemListAdapter.*
+import com.genonbeta.TrebleShot.app.Activity.OnBackPressedListener
+import com.genonbeta.TrebleShot.app.EditableListFragment
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment
+import com.genonbeta.TrebleShot.database.Kuick
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.Transfer
+import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.dataobject.TransferItem
+import com.genonbeta.TrebleShot.dialog.ChooseMemberDialog
+import com.genonbeta.TrebleShot.dialog.DialogUtils
+import com.genonbeta.TrebleShot.dialog.TransferInfoDialog
+import com.genonbeta.TrebleShot.task.ChangeSaveDirectoryTask
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider
+import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Transfers
+import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.framework.ui.PerformerMenu
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 import java.io.File
-import java.lang.Exception
-import java.util.ArrayList
+import java.util.*
 
 open class TransferItemListFragment :
-    GroupEditableListFragment<GenericItem?, GroupViewHolder?, TransferItemListAdapter?>(), TitleProvider,
-    OnBackPressedListener {
+    GroupEditableListFragment<GenericItem, GroupViewHolder, TransferItemListAdapter>(),
+    TitleProvider, OnBackPressedListener {
     private var mTransfer: Transfer? = null
     private var mIndex: TransferIndex? = null
-    private var mLastKnownPath: String? = null
-    private val mIntentFilter = IntentFilter()
+    private var lastKnownPath: String? = null
+    private val intentFilter = IntentFilter()
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
-                val data: BroadcastData = KuickDb.toData(intent)
+                val data: KuickDb.BroadcastData = KuickDb.toData(intent)
                 if (Kuick.TABLE_TRANSFERITEM == data.tableName || Kuick.TABLE_TRANSFER == data.tableName) refreshList()
             } else if (ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED == intent.action && intent.hasExtra(
                     ChangeSaveDirectoryTask.EXTRA_TRANSFER
                 )
             ) {
                 val transfer: Transfer = intent.getParcelableExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER)
-                if (transfer != null && transfer.equals(mTransfer)) createSnackbar(R.string.mesg_pathSaved).show()
+                if (transfer == mTransfer) createSnackbar(R.string.mesg_pathSaved)?.show()
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFilteringSupported(true)
-        setDefaultOrderingCriteria(EditableListAdapter.MODE_SORT_ORDER_ASCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_NAME)
-        setDefaultGroupingCriteria(TransferItemListAdapter.MODE_GROUP_BY_DEFAULT)
-        mIntentFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
-        mIntentFilter.addAction(ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED)
+
+        isFilteringSupported = true
+        defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING
+        defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME
+        defaultGroupingCriteria = TransferItemListAdapter.MODE_GROUP_BY_DEFAULT
+        intentFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
+        intentFilter.addAction(ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setListAdapter(TransferItemListAdapter(this))
-        setEmptyListImage(R.drawable.ic_compare_arrows_white_24dp)
-        val args: Bundle = getArguments()
-        if (args != null && args.containsKey(ARG_TRANSFER_ID)) {
-            goPath(
+        adapter = TransferItemListAdapter(this)
+        emptyListImageView.setImageResource(R.drawable.ic_compare_arrows_white_24dp)
+
+        arguments?.let { args ->
+            if (args.containsKey(ARG_TRANSFER_ID)) goPath(
                 args.getString(ARG_PATH), args.getLong(ARG_TRANSFER_ID), args.getString(ARG_DEVICE_ID),
                 args.getString(ARG_TYPE)
             )
         }
+
     }
 
-    override fun onCreatePerformerMenu(context: Context?): PerformerMenu? {
-        return PerformerMenu(context, SelectionCallback(getActivity(), this))
+    override fun onCreatePerformerMenu(context: Context): PerformerMenu {
+        return PerformerMenu(context, SelectionCallback(requireActivity(), this))
     }
 
     override fun onResume() {
         super.onResume()
-        requireContext().registerReceiver(mReceiver, mIntentFilter)
+        requireContext().registerReceiver(mReceiver, intentFilter)
     }
 
     override fun onPause() {
@@ -98,39 +115,37 @@ open class TransferItemListFragment :
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE) currentSpanSize else super.onGridSpanSize(
-            viewType,
+        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE) {
             currentSpanSize
-        )
+        } else super.onGridSpanSize(viewType, currentSpanSize)
     }
 
-    protected override fun onListRefreshed() {
+    override fun onListRefreshed() {
         super.onListRefreshed()
-        val pathOnTrial: String = getAdapter().getPath()
-        if (!(mLastKnownPath == null && getAdapter().getPath() == null)
-            && mLastKnownPath != null && mLastKnownPath != pathOnTrial
-        ) getListView().scrollToPosition(0)
-        mLastKnownPath = pathOnTrial
+        val path = adapter.path
+        if (!(lastKnownPath == null && path == null) && lastKnownPath != null && lastKnownPath != path) {
+            listView.scrollToPosition(0)
+        }
+        lastKnownPath = path
     }
 
     override fun onBackPressed(): Boolean {
-        val path: String = getAdapter().getPath() ?: return false
+        val path = adapter.path ?: return false
         val slashPos = path.lastIndexOf(File.separator)
-        goPath(if (slashPos == -1 && path.length > 0) null else path.substring(0, slashPos))
+        goPath(if (slashPos == -1 && path.isNotEmpty()) null else path.substring(0, slashPos))
         return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (data != null && resultCode == Activity.RESULT_OK && requestCode == REQUEST_CHOOSE_FOLDER && data.hasExtra(
-                FilePickerActivity.EXTRA_CHOSEN_PATH
-            )
+        if (data != null && resultCode == Activity.RESULT_OK && requestCode == REQUEST_CHOOSE_FOLDER
+            && data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)
         ) {
             val selectedPath = data.getParcelableExtra<Uri>(FilePickerActivity.EXTRA_CHOSEN_PATH)
             if (selectedPath == null) {
-                createSnackbar(R.string.mesg_somethingWentWrong).show()
+                createSnackbar(R.string.mesg_somethingWentWrong)?.show()
             } else if (selectedPath.toString() == getTransfer()!!.savePath) {
-                createSnackbar(R.string.mesg_pathSameError).show()
+                createSnackbar(R.string.mesg_pathSameError)?.show()
             } else {
                 val task = ChangeSaveDirectoryTask(mTransfer, selectedPath)
                 AlertDialog.Builder(requireActivity())
@@ -138,16 +153,10 @@ open class TransferItemListFragment :
                     .setMessage(R.string.text_checkOldFiles)
                     .setNeutralButton(R.string.butn_cancel, null)
                     .setNegativeButton(R.string.butn_skip) { dialogInterface: DialogInterface?, i: Int ->
-                        App.run<ChangeSaveDirectoryTask>(
-                            requireActivity(),
-                            task.setSkipMoving(true)
-                        )
+                        App.run(requireActivity(), task.also { it.skipMoving = true })
                     }
                     .setPositiveButton(R.string.butn_proceed) { dialogInterface: DialogInterface?, i: Int ->
-                        App.run<ChangeSaveDirectoryTask>(
-                            requireActivity(),
-                            task
-                        )
+                        App.run(requireActivity(), task)
                     }
                     .show()
             }
@@ -156,7 +165,7 @@ open class TransferItemListFragment :
 
     fun changeSavePath(initialPath: String?) {
         startActivityForResult(
-            Intent(getActivity(), FilePickerActivity::class.java)
+            Intent(requireActivity(), FilePickerActivity::class.java)
                 .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
                 .putExtra(FilePickerActivity.EXTRA_START_PATH, initialPath)
                 .putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)),
@@ -170,11 +179,11 @@ open class TransferItemListFragment :
 
     fun getTransfer(): Transfer? {
         if (mTransfer == null) {
-            val arguments: Bundle = getArguments()
-            if (arguments != null) {
-                mTransfer = Transfer(arguments.getLong(ARG_TRANSFER_ID, -1))
+            arguments?.let { args ->
                 try {
-                    AppUtils.getKuick(getContext()).reconstruct(mTransfer)
+                    mTransfer = Transfer(args.getLong(ARG_TRANSFER_ID, -1)).also {
+                        AppUtils.getKuick(requireContext()).reconstruct(it)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -191,75 +200,76 @@ open class TransferItemListFragment :
     fun goPath(path: String?, transferId: Long, deviceId: String?, type: String?) {
         if (deviceId != null && type != null) try {
             val member = LoadedMember(transferId, deviceId, TransferItem.Type.valueOf(type))
-            AppUtils.getKuick(getContext()).reconstruct<Transfer, LoadedMember>(member)
-            Transfers.loadMemberInfo(getContext(), member)
-            getAdapter().setMember(member)
+            AppUtils.getKuick(requireContext()).reconstruct(member)
+            Transfers.loadMemberInfo(requireContext(), member)
+            adapter.mMember = member
         } catch (ignored: Exception) {
         }
         goPath(path, transferId)
     }
 
     fun goPath(path: String?, transferId: Long) {
-        getAdapter().setTransferId(transferId)
+        adapter.setTransferId(transferId)
         goPath(path)
     }
 
     fun goPath(path: String?) {
-        getAdapter().setPath(path)
+        adapter.path = path
         refreshList()
     }
 
     override fun performDefaultLayoutClick(
         holder: GroupViewHolder,
-        item: GenericItem
+        item: GenericItem,
     ): Boolean {
         if (item is DetailsTransferFolder) {
-            val list: List<LoadedMember?>? = Transfers.loadMemberList(getContext(), getTransfer()!!.id, null)
-            if (list!!.size > 0) {
+            val list = Transfers.loadMemberList(requireContext(), getTransfer()!!.id, null)
+            if (list!!.isNotEmpty()) {
                 val listClickListener = DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
                     getAdapter().setMember(list[which])
                     getAdapter().setPath(getAdapter().getPath())
                     refreshList()
                 }
                 val noLimitListener = DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                    getAdapter().setMember(null)
-                    getAdapter().setPath(getAdapter().getPath())
+                    adapter.mMember = null
+                    adapter.path = adapter.path
                     refreshList()
                 }
-                val dialog = ChooseMemberDialog(requireActivity(), list, listClickListener)
-                dialog.setTitle(R.string.text_limitTo)
+                ChooseMemberDialog(requireActivity(), list, listClickListener)
+                    .setTitle(R.string.text_limitTo)
                     .setNeutralButton(R.string.butn_showAll, noLimitListener)
                     .show()
-            } else createSnackbar(R.string.text_noDeviceForTransfer).show()
+            } else createSnackbar(R.string.text_noDeviceForTransfer)?.show()
         } else if (item is StorageStatusItem) {
-            val statusItem: StorageStatusItem = item as StorageStatusItem
-            if (statusItem.hasIssues(getAdapter())) AlertDialog.Builder(requireActivity())
-                .setMessage(getString(R.string.mesg_notEnoughSpace))
-                .setNegativeButton(R.string.butn_close, null)
-                .setPositiveButton(
-                    R.string.butn_saveTo,
-                    DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int -> changeSavePath(statusItem.directory) })
-                .show() else changeSavePath(statusItem.directory)
+            if (item.hasIssues(adapter)) {
+                AlertDialog.Builder(requireActivity())
+                    .setMessage(getString(R.string.mesg_notEnoughSpace))
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(R.string.butn_saveTo) { dialog: DialogInterface?, which: Int ->
+                        changeSavePath(item.directory)
+                    }
+                    .show()
+            } else changeSavePath(item.directory)
         } else if (item is TransferFolder) {
-            getAdapter().setPath(item.directory)
+            adapter = item.directory
             refreshList()
-            AppUtils.showFolderSelectionHelp<GenericItem>(this)
-        } else TransferInfoDialog(requireActivity(), getIndex(), item, getAdapter().getDeviceId()).show()
+            AppUtils.showFolderSelectionHelp(this)
+        } else TransferInfoDialog(requireActivity(), getIndex(), item, adapter.getDeviceId()).show()
         return true
     }
 
     override fun setItemSelected(holder: GroupViewHolder): Boolean {
-        return if (getAdapterImpl().getItem(holder.getAdapterPosition()) is TransferFolder) false else super.setItemSelected(
-            holder
-        )
+        return if (adapter.getItem(holder.adapterPosition) is TransferFolder) {
+            false
+        } else super.setItemSelected(holder)
     }
 
-    private class SelectionCallback(activity: Activity?, provider: PerformerEngineProvider) :
+    private class SelectionCallback(activity: Activity, provider: PerformerEngineProvider) :
         EditableListFragment.SelectionCallback(activity, provider) {
         override fun onPerformerMenuList(
             performerMenu: PerformerMenu,
             inflater: MenuInflater,
-            targetMenu: Menu
+            targetMenu: Menu,
         ): Boolean {
             super.onPerformerMenuList(performerMenu, inflater, targetMenu)
             inflater.inflate(R.menu.action_mode_transfer, targetMenu)
@@ -268,10 +278,12 @@ open class TransferItemListFragment :
 
         override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
             val id = item.itemId
-            val engine = performerEngine ?: return false
-            val genericList: List<Selectable> = ArrayList<Selectable>(engine.selectionList)
+            val engine = getPerformerEngine() ?: return false
+            val genericList: List<Selectable> = ArrayList(engine.getSelectionList())
             val selectionList: MutableList<GenericItem> = ArrayList<GenericItem>()
-            for (selectable in genericList) if (selectable is GenericItem) selectionList.add(selectable as GenericItem)
+            for (selectable in genericList) {
+                if (selectable is GenericItem) selectionList.add(selectable)
+            }
             return if (id == R.id.action_mode_transfer_delete) {
                 DialogUtils.showRemoveTransferObjectListDialog(activity, selectionList)
                 true

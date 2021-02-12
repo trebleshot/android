@@ -17,34 +17,45 @@
  */
 package com.genonbeta.TrebleShot.fragment.inner
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.SharedPreferences.*
+import android.os.Build
+import android.os.Bundle
+import androidx.preference.ListPreference
+import androidx.preference.PreferenceFragmentCompat
+import com.genonbeta.TrebleShot.R
+
 class LookPreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
         addPreferencesFromResource(R.xml.preference_introduction_look)
-        loadThemeOptionsTo(getContext(), findPreference<ListPreference>("theme"))
+        loadThemeOptionsTo(requireContext(), findPreference("theme"))
     }
 
     override fun onResume() {
         super.onResume()
-        getPreferenceManager()
-            .getSharedPreferences()
+        preferenceManager
+            .sharedPreferences
             .registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onPause() {
         super.onPause()
-        getPreferenceManager()
-            .getSharedPreferences()
+        preferenceManager
+            .sharedPreferences
             .unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (("custom_fonts" == key || "theme" == key || "amoled_theme" == key)
-            && getActivity() != null
-        ) getActivity().recreate()
+        if (("custom_fonts" == key || "theme" == key || "amoled_theme" == key) && activity != null) {
+            requireActivity().recreate()
+        }
     }
 
     companion object {
-        fun loadThemeOptionsTo(context: Context, themePreference: ListPreference) {
+        fun loadThemeOptionsTo(context: Context, themePreference: ListPreference?) {
+            if (themePreference == null) return
+
             val valueList: MutableList<String> = ArrayList()
             val titleList: MutableList<String> = ArrayList()
             valueList.add("light")
@@ -58,12 +69,9 @@ class LookPreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceCh
                 valueList.add("battery")
                 titleList.add(context.getString(R.string.text_batterySaverTheme))
             }
-            val values: Array<CharSequence?> = arrayOfNulls<String>(valueList.size)
-            val titles: Array<CharSequence?> = arrayOfNulls<String>(titleList.size)
-            valueList.toArray<CharSequence>(values)
-            titleList.toArray<CharSequence>(titles)
-            themePreference.entries = titles
-            themePreference.entryValues = values
+
+            themePreference.entries = valueList.toTypedArray()
+            themePreference.entryValues = titleList.toTypedArray()
         }
     }
 }

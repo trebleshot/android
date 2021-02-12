@@ -62,7 +62,9 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
 
     var transfer = Transfer()
 
-    var members = arrayOfNulls<LoadedMember>(0)
+    var members = emptyArray<LoadedMember>()
+
+    private var isSelected = false
 
     override var id: Long
         get() = transfer.id
@@ -87,10 +89,11 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         val copyMembers = members
-        for (keyword in filteringKeywords) for (member in copyMembers) if (member!!.device!!.username!!.toLowerCase(
-                Locale.getDefault())
-                .contains(keyword.toLowerCase(Locale.getDefault()))
-        ) return true
+        for (keyword in filteringKeywords) for (member in copyMembers) {
+            if (member.device.username.toLowerCase(Locale.getDefault())
+                    .contains(keyword.toLowerCase(Locale.getDefault()))
+            ) return true
+        }
         return false
     }
 
@@ -127,17 +130,18 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         val title = StringBuilder()
         for (member in copyMembers) {
             if (title.isNotEmpty()) title.append(", ")
-            title.append(member!!.device!!.username)
+            title.append(member.device.username)
         }
         return title.toString()
     }
 
     fun getMemberAsTitle(context: Context): String {
         val copyMembers = members
-        return if (copyMembers.size == 1) copyMembers[0]!!.device!!.username else context.resources.getQuantityString(
-            R.plurals.text_devices,
-            copyMembers.size, copyMembers.size
-        )
+        return if (copyMembers.size == 1) {
+            copyMembers[0].device.username
+        } else {
+            context.resources.getQuantityString(R.plurals.text_devices, copyMembers.size, copyMembers.size)
+        }
     }
 
     override fun getComparableName(): String = getSelectableTitle()
@@ -151,6 +155,8 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         val size = sizeExpression(bytesOutgoing + bytesOutgoing, false)
         return if (title.isNotEmpty()) String.format("%s (%s)", title, size) else size
     }
+
+    override fun getViewType(): Int = viewType
 
     override fun isSelectableSelected(): Boolean {
         TODO("Not yet implemented")
@@ -178,16 +184,15 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
         representativeText = text.toString()
     }
 
-    val isGroupRepresentative: Boolean
-        get() = representativeText != null
+    override fun isGroupRepresentative(): Boolean = representativeText != null
 
     override fun setDate(date: Long) {
         transfer.dateCreated = date
     }
 
     override fun setSelectableSelected(selected: Boolean): Boolean {
-        if (isGroupRepresentative) return false
-        isSelectableSelected = selected
+        if (isGroupRepresentative()) return false
+        isSelected = selected
         return true
     }
 
@@ -196,27 +201,27 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
     }
 
     override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
-        transfer.onCreateObject(db, kuick, parent, listener)
+        transfer.onCreateObject(db, kuick, parent, progress)
     }
 
     override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
-        transfer.onUpdateObject(db, kuick, parent, listener)
+        transfer.onUpdateObject(db, kuick, parent, progress)
     }
 
     override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {
-        transfer.onRemoveObject(db, kuick, parent, listener)
+        transfer.onRemoveObject(db, kuick, parent, progress)
     }
 
     override fun getValues(): ContentValues {
-        return transfer.values
+        return transfer.getValues()
     }
 
     override fun getWhere(): SQLQuery.Select {
-        return transfer.where
+        return transfer.getWhere()
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
-        transfer.reconstruct(db, kuick, item)
+        transfer.reconstruct(db, kuick, values)
     }
 
     companion object {

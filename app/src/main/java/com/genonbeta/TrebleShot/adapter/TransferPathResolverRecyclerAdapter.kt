@@ -19,6 +19,7 @@ package com.genonbeta.TrebleShot.adapter
 
 import android.content.*
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import java.io.File
 
 /**
@@ -26,31 +27,33 @@ import java.io.File
  * date: 3/11/19 7:39 PM
  */
 class TransferPathResolverRecyclerAdapter(context: Context) : PathResolverRecyclerAdapter<String?>(context) {
-    private var mMember: LoadedMember? = null
-    private val mHomeName: String
+    private var member: LoadedMember? = null
+
+    private val homeName: String = context.getString(R.string.text_home)
+
     override fun onFirstItem(): Index<String?> {
-        return if (mMember != null) Index(
-            mMember.device.username,
-            R.drawable.ic_device_hub_white_24dp,
-            null
-        ) else Index(mHomeName, R.drawable.ic_home_white_24dp, null)
+        return Index(
+            member?.device?.username ?: homeName,
+            null,
+            if (member == null) R.drawable.ic_home_white_24dp else R.drawable.ic_device_hub_white_24dp
+        )
     }
 
     fun goTo(member: LoadedMember?, paths: Array<String>?) {
-        mMember = member
+        this.member = member
         val mergedPath = StringBuilder()
         initAdapter()
         synchronized(list) {
-            if (paths != null) for (path in paths) {
-                if (path.length == 0) continue
-                if (mergedPath.length > 0) mergedPath.append(File.separator)
-                mergedPath.append(path)
-                list.add(Index(path, mergedPath.toString()))
+            if (paths != null) {
+                for (path in paths) {
+                    if (path.isEmpty()) continue
+                    if (mergedPath.isNotEmpty()) mergedPath.append(File.separator)
+
+                    mergedPath.append(path)
+                    list.add(Index(path, mergedPath.toString()))
+                }
             }
         }
     }
 
-    init {
-        mHomeName = context.getString(R.string.text_home)
-    }
 }

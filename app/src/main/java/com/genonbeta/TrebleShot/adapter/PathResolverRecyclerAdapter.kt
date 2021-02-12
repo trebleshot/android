@@ -68,7 +68,7 @@ abstract class PathResolverRecyclerAdapter<T>(val context: Context) : RecyclerVi
     }
 
     interface OnClickListener<E> {
-        fun onClick(holder: Holder<E>?)
+        fun onClick(holder: Holder<E>)
     }
 
     class Holder<E> constructor(var container: View, ) : RecyclerView.ViewHolder(container) {

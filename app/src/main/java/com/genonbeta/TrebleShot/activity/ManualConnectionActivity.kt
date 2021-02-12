@@ -132,12 +132,12 @@ class ManualConnectionActivity : Activity(), DeviceIntroductionTask.ResultListen
     }
 
     inner class CheckHostnameListener {
-        fun onConnect(address: InetAddress?) {
+        fun onConnect(address: InetAddress) {
             runUiTask(DeviceIntroductionTask(address, 0), this@ManualConnectionActivity)
         }
 
         fun onHostnameError() {
-            getEditText().setError(getString(R.string.mesg_unknownHostError))
+            getEditText().error = getString(R.string.mesg_unknownHostError)
         }
     }
 

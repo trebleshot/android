@@ -18,48 +18,80 @@
 package com.genonbeta.TrebleShot.activity
 
 import android.content.*
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.database.Kuick
-import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
-import kotlin.jvm.Synchronized
-import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
 import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activityimport.WebShareActivity
 import com.genonbeta.TrebleShot.app.Activity
+import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.*
+import com.genonbeta.TrebleShot.dialog.TransferInfoDialog
+import com.genonbeta.TrebleShot.fragment.TransferItemExplorerFragment
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.AttachedTaskListener
+import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
+import com.genonbeta.TrebleShot.task.FileTransferTask
 import com.genonbeta.TrebleShot.util.*
-import com.genonbeta.TrebleShot.util.Files
-import java.lang.Exception
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.SQLQuery
+import com.genonbeta.android.framework.io.StreamInfo
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Created by: veli
  * Date: 5/23/17 1:43 PM
  */
 class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
-    private var mBackPressedListener: OnBackPressedListener? = null
-    private var mTransfer: Transfer? = null
-    private var mIndex: TransferIndex? = null
-    private var mOpenWebShareButton: Button? = null
-    private var mNoDevicesNoticeText: View? = null
+    private var backPressedListener: OnBackPressedListener? = null
+
+    private var transferInternal: Transfer? = null
+
+    private var indexInternal: TransferIndex? = null
+
+    private val transfer: Transfer
+        get() {
+
+        }
+
+    private val index: TransferIndex
+        get() {}
+
+    private lateinit var openWebShareButton: Button
+
+    private lateinit var noDevicesNoticeText: View
+
     private var mMember: LoadedMember? = null
-    private var mRetryMenu: MenuItem? = null
-    private var mShowFilesMenu: MenuItem? = null
-    private var mAddDeviceMenu: MenuItem? = null
-    private var mLimitMenu: MenuItem? = null
-    private var mToggleBrowserShare: MenuItem? = null
-    private var mColorActive = 0
-    private var mColorNormal = 0
-    private var mDataCruncher: CrunchLatestDataTask? = null
+
+    private lateinit var retryMenu: MenuItem
+
+    private lateinit var showFilesMenu: MenuItem
+
+    private lateinit var addDeviceMenu: MenuItem
+
+    private lateinit var limitMenu: MenuItem
+
+    private lateinit var toggleBrowserShare: MenuItem
+
+    private var colorActive = 0
+
+    private var colorNormal = 0
+
+    private var dataCruncher: CrunchLatestDataTask? = null
+
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
-                val data: BroadcastData = KuickDb.toData(intent)
-                if (Kuick.TABLE_TRANSFER == data.tableName) reconstructGroup() else if (Kuick.TABLE_TRANSFERITEM == data.tableName && (data.inserted || data.removed)
+                val data: KuickDb.BroadcastData = KuickDb.toData(intent)
+                if (Kuick.TABLE_TRANSFER == data.tableName) {
+                    reconstructGroup()
+                } else if (Kuick.TABLE_TRANSFERITEM == data.tableName && (data.inserted || data.removed)
                     || Kuick.TABLE_TRANSFERMEMBER == data.tableName && (data.inserted || data.removed)
                 ) updateCalculations()
             }
@@ -69,31 +101,31 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_transfer)
+
         var transferItem: TransferItem? = null
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val intentData = intent.data
+
         setSupportActionBar(toolbar)
-        mTransfer = savedInstanceState?.getParcelable(EXTRA_TRANSFER)
-        mOpenWebShareButton = findViewById(R.id.activity_transfer_detail_open_web_share_button)
-        mNoDevicesNoticeText = findViewById(R.id.activity_transfer_detail_no_devices_warning)
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        transferInternal = savedInstanceState?.getParcelable(EXTRA_TRANSFER)
+        openWebShareButton = findViewById(R.id.activity_transfer_detail_open_web_share_button)
+        noDevicesNoticeText = findViewById(R.id.activity_transfer_detail_no_devices_warning)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        colorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError))
+        colorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent))
+
+        openWebShareButton.setOnClickListener { v: View? ->
+            startActivity(Intent(this, WebShareActivity::class.java))
         }
-        mColorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError))
-        mColorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent))
-        mOpenWebShareButton.setOnClickListener(View.OnClickListener { v: View? ->
-            startActivity(
-                Intent(
-                    this,
-                    WebShareActivity::class.java
-                )
-            )
-        })
-        if (mTransfer != null) {
+        transferInternal?.let {
             Log.d(TAG, "onCreate: Created transfer instance from the bundle")
-            setTransfer(mTransfer!!)
-        } else if (Intent.ACTION_VIEW == intent.action && intent.data != null) {
+            setTransfer(it)
+        } ?: if (Intent.ACTION_VIEW == intent.action && intentData != null) {
             try {
-                val streamInfo: StreamInfo = StreamInfo.getStreamInfo(this, intent.data)
+                val streamInfo: StreamInfo = StreamInfo.from(this, intentData)
                 Log.d(TAG, "Requested file is: " + streamInfo.friendlyName)
                 val fileData = database.getFirstFromTable(
                     SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
@@ -101,14 +133,13 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
                             Kuick.FIELD_TRANSFERITEM_FILE + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
                             streamInfo.friendlyName, TransferItem.Type.INCOMING.toString()
                         )
-                )
-                    ?: throw Exception("File is not found in the database")
+                ) ?: throw Exception("File is not found in the database")
                 transferItem = TransferItem()
                 transferItem.reconstruct(database.writableDatabase, database, fileData)
                 val transfer = Transfer(transferItem.transferId)
                 database.reconstruct(transfer)
                 setTransfer(transfer)
-                TransferInfoDialog(this, mIndex, transferItem, null).show()
+                TransferInfoDialog(this, index, transferItem, null).show()
                 Log.d(
                     TAG, "Created instance from an file intent. Original has been cleaned " +
                             "and changed to open intent"
@@ -126,17 +157,17 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
                     val requestId = intent.getLongExtra(EXTRA_TRANSFER_ITEM_ID, -1)
                     val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
                     val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type
-                    transferItem = TransferItem(mTransfer!!.id, requestId, type)
+                    transferItem = TransferItem(transfer!!.id, requestId, type)
                     database.reconstruct(transferItem)
-                    if (device != null) TransferInfoDialog(this, mIndex, transferItem, device.uid).show()
+                    if (device != null) TransferInfoDialog(this, index, transferItem, device.uid).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        if (mTransfer == null) finish() else {
+        if (transfer == null) finish() else {
             val bundle = Bundle()
-            bundle.putLong(TransferItemListFragment.ARG_TRANSFER_ID, mTransfer!!.id)
+            bundle.putLong(TransferItemListFragment.ARG_TRANSFER_ID, transfer!!.id)
             bundle.putString(
                 TransferItemListFragment.ARG_PATH, if (transferItem == null
                     || transferItem.directory == null
@@ -172,13 +203,13 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(EXTRA_TRANSFER, mTransfer)
+        outState.putParcelable(EXTRA_TRANSFER, transfer)
     }
 
     override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
         super.onAttachTasks(taskList)
         for (attachableAsyncTask in taskList) {
-            if (attachableAsyncTask is FileTransferTask) (attachableAsyncTask as FileTransferTask).setAnchor(this)
+            if (attachableAsyncTask is FileTransferTask) attachableAsyncTask.anchor = this
         }
         if (!hasTaskOf(FileTransferTask::class.java)) showMenus()
     }
@@ -186,11 +217,11 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.actions_transfer, menu)
-        mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving)
-        mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files)
-        mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device)
-        mLimitMenu = menu.findItem(R.id.actions_transfer_limit_to)
-        mToggleBrowserShare = menu.findItem(R.id.actions_transfer_toggle_browser_share)
+        retryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving)
+        showFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files)
+        addDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device)
+        limitMenu = menu.findItem(R.id.actions_transfer_limit_to)
+        toggleBrowserShare = menu.findItem(R.id.actions_transfer_toggle_browser_share)
         showMenus()
         return true
     }
@@ -211,27 +242,27 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         if (id == android.R.id.home) {
             finish()
         } else if (id == R.id.actions_transfer_remove) {
-            DialogUtils.showRemoveDialog(this, mTransfer)
+            DialogUtils.showRemoveDialog(this, transfer)
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
-            Transfers.recoverIncomingInterruptions(this@TransferDetailActivity, mTransfer!!.id)
+            Transfers.recoverIncomingInterruptions(this@TransferDetailActivity, transfer!!.id)
             createSnackbar(R.string.mesg_retryReceivingNotice).show()
         } else if (id == R.id.actions_transfer_receiver_show_files) {
             startActivity(
                 Intent(this, FileExplorerActivity::class.java)
                     .putExtra(
                         FileExplorerActivity.EXTRA_FILE_PATH,
-                        Files.getSavePath(this, mTransfer).uri
+                        Files.getSavePath(this, transfer).uri
                     )
             )
         } else if (id == R.id.actions_transfer_sender_add_device) {
             startDeviceAddingActivity()
         } else if (item.itemId == R.id.actions_transfer_toggle_browser_share) {
-            mTransfer!!.isServedOnWeb = !mTransfer!!.isServedOnWeb
-            database.update(mTransfer)
+            transfer!!.isServedOnWeb = !transfer!!.isServedOnWeb
+            database.update(transfer)
             database.broadcast()
             showMenus()
         } else if (item.groupId == R.id.actions_abs_view_transfer_activity_limit_to) {
-            mMember = if (item.order < mIndex.members.length) mIndex.members.get(item.order) else null
+            mMember = if (item.order < index.members.length) index.members.get(item.order) else null
             val fragment: TransferItemExplorerFragment? = supportFragmentManager
                 .findFragmentById(R.id.activity_transaction_content_frame) as TransferItemExplorerFragment?
             if (fragment != null && fragment.getAdapter().setMember(mMember)) fragment.refreshList()
@@ -240,13 +271,10 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     override fun onBackPressed() {
-        if (mBackPressedListener == null || !mBackPressedListener!!.onBackPressed()) super.onBackPressed()
+        if (backPressedListener == null || !backPressedListener!!.onBackPressed()) super.onBackPressed()
     }
 
-    override fun onTaskStateChange(
-        task: BaseAttachableAsyncTask,
-        state: AsyncTask.State?
-    ) {
+    override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
         if (task is FileTransferTask) {
             when (state) {
                 AsyncTask.State.Finished, AsyncTask.State.Starting -> showMenus()
@@ -254,29 +282,30 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         }
     }
 
-    override fun onTaskMessage(message: TaskMessage): Boolean {
-        runOnUiThread { message.toDialogBuilder(this).show() }
+    override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
+        runOnUiThread { taskMessage.toDialogBuilder(this).show() }
         return true
     }
 
     private fun attachListeners(initiatedItem: Fragment?) {
-        mBackPressedListener = if (initiatedItem is OnBackPressedListener) initiatedItem else null
+        backPressedListener = if (initiatedItem is OnBackPressedListener) initiatedItem else null
     }
 
-    override fun createSnackbar(resId: Int, vararg objects: Any): Snackbar {
-        val explorerFragment: TransferItemExplorerFragment? = supportFragmentManager
-            .findFragmentById(R.id.activity_transaction_content_frame) as TransferItemExplorerFragment?
-        return if (explorerFragment != null && explorerFragment.isAdded()) explorerFragment.createSnackbar(
-            resId,
-            *objects
-        ) else Snackbar.make(
-            findViewById<View>(R.id.activity_transaction_content_frame), getString(resId, *objects),
+    override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar? {
+        val explorerFragment = supportFragmentManager.findFragmentById(
+            R.id.activity_transaction_content_frame
+        ) as TransferItemExplorerFragment?
+
+        return if (explorerFragment != null && explorerFragment.isAdded) {
+            explorerFragment.createSnackbar(resId, *objects)
+        } else Snackbar.make(
+            findViewById(R.id.activity_transaction_content_frame), getString(resId, *objects),
             Snackbar.LENGTH_LONG
         )
     }
 
     fun findCurrentDevicePosition(): Int {
-        val members: Array<LoadedMember> = mIndex.members
+        val members: Array<LoadedMember> = index.members
         if (mMember != null && members.size > 0) {
             for (i in members.indices) {
                 val member: LoadedMember = members[i]
@@ -297,7 +326,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     override fun getIdentity(): Identity {
-        return FileTransferTask.identifyWith(mTransfer!!.id)
+        return FileTransferTask.identifyWith(transfer!!.id)
     }
 
     fun getToggleButton(): ExtendedFloatingActionButton? {
@@ -306,12 +335,12 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     fun isDeviceRunning(deviceId: String?): Boolean {
-        return hasTaskWith(FileTransferTask.identifyWith(mTransfer!!.id, deviceId))
+        return hasTaskWith(FileTransferTask.identifyWith(transfer!!.id, deviceId))
     }
 
     fun reconstructGroup() {
         try {
-            database.reconstruct(mTransfer)
+            database.reconstruct(transfer)
             showMenus()
         } catch (e: Exception) {
             finish()
@@ -319,40 +348,40 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     private fun setTransfer(transfer: Transfer) {
-        mTransfer = transfer
-        mIndex = TransferIndex(transfer)
+        this.transfer = transfer
+        index = TransferIndex(transfer)
     }
 
     fun showMenus() {
         val hasRunning = hasTaskOf(FileTransferTask::class.java)
-        val hasAnyFiles: Boolean = mIndex.numberOfTotal() > 0
-        val hasIncoming: Boolean = mIndex.hasIncoming()
-        val hasOutgoing: Boolean = mIndex.hasOutgoing()
+        val hasAnyFiles: Boolean = index.numberOfTotal() > 0
+        val hasIncoming: Boolean = index.hasIncoming()
+        val hasOutgoing: Boolean = index.hasOutgoing()
         val toggleButton: ExtendedFloatingActionButton? = getToggleButton()
-        if (mRetryMenu == null || mShowFilesMenu == null) return
+        if (retryMenu == null || showFilesMenu == null) return
         if (toggleButton != null) {
             if (Build.VERSION.SDK_INT <= 14 || !toggleButton.hasOnClickListeners()) toggleButton.setOnClickListener(
                 View.OnClickListener { v: View? -> toggleTask() })
             if (hasAnyFiles || hasRunning) {
                 toggleButton.setIconResource(if (hasRunning) R.drawable.ic_pause_white_24dp else R.drawable.ic_play_arrow_white_24dp)
-                toggleButton.setBackgroundTintList(ColorStateList.valueOf(if (hasRunning) mColorActive else mColorNormal))
+                toggleButton.setBackgroundTintList(ColorStateList.valueOf(if (hasRunning) colorActive else colorNormal))
                 if (hasRunning) toggleButton.setText(R.string.butn_pause) else toggleButton.setText(if (hasIncoming == hasOutgoing) R.string.butn_start else if (hasIncoming) R.string.butn_receive else R.string.butn_send)
                 toggleButton.setVisibility(View.VISIBLE)
             } else toggleButton.setVisibility(View.GONE)
         }
-        mOpenWebShareButton!!.visibility = if (mTransfer!!.isServedOnWeb) View.VISIBLE else View.GONE
-        mNoDevicesNoticeText!!.visibility =
-            if (mIndex.members.length > 0 || mTransfer!!.isServedOnWeb) View.GONE else View.VISIBLE
-        mToggleBrowserShare!!.setTitle(if (mTransfer!!.isServedOnWeb) R.string.butn_hideOnBrowser else R.string.butn_shareOnBrowser)
-        mToggleBrowserShare!!.isVisible = hasOutgoing || mTransfer!!.isServedOnWeb
-        mAddDeviceMenu!!.isVisible = hasOutgoing
-        mRetryMenu!!.isVisible = hasIncoming
-        mShowFilesMenu!!.isVisible = hasIncoming
-        if (hasOutgoing && (mIndex.members.length > 0 || mMember != null)) {
-            val dynamicMenu: Menu = mLimitMenu!!.setVisible(true).subMenu
+        openWebShareButton!!.visibility = if (transfer!!.isServedOnWeb) View.VISIBLE else View.GONE
+        noDevicesNoticeText!!.visibility =
+            if (index.members.length > 0 || transfer!!.isServedOnWeb) View.GONE else View.VISIBLE
+        toggleBrowserShare!!.setTitle(if (transfer!!.isServedOnWeb) R.string.butn_hideOnBrowser else R.string.butn_shareOnBrowser)
+        toggleBrowserShare!!.isVisible = hasOutgoing || transfer!!.isServedOnWeb
+        addDeviceMenu!!.isVisible = hasOutgoing
+        retryMenu!!.isVisible = hasIncoming
+        showFilesMenu!!.isVisible = hasIncoming
+        if (hasOutgoing && (index.members.length > 0 || mMember != null)) {
+            val dynamicMenu: Menu = limitMenu!!.setVisible(true).subMenu
             dynamicMenu.clear()
             var i = 0
-            val members: Array<LoadedMember> = mIndex.members
+            val members: Array<LoadedMember> = index.members
             if (members.size > 0) while (i < members.size) {
                 val member: LoadedMember = members[i]
                 dynamicMenu.add(
@@ -366,41 +395,41 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
                 R.id.actions_abs_view_transfer_activity_limit_to, true,
                 true
             )
-        } else mLimitMenu!!.isVisible = false
+        } else limitMenu!!.isVisible = false
         title = resources.getQuantityString(
-            R.plurals.text_files, mIndex.numberOfTotal(),
-            mIndex.numberOfTotal()
+            R.plurals.text_files, index.numberOfTotal(),
+            index.numberOfTotal()
         )
     }
 
     fun startDeviceAddingActivity() {
         startActivityForResult(
             Intent(this, TransferMemberActivity::class.java)
-                .putExtra(TransferMemberActivity.EXTRA_TRANSFER, mTransfer), REQUEST_ADD_DEVICES
+                .putExtra(TransferMemberActivity.EXTRA_TRANSFER, transfer), REQUEST_ADD_DEVICES
         )
     }
 
     private fun toggleTask() {
-        val memberList: List<LoadedMember?>? = Transfers.loadMemberList(this, mTransfer!!.id, null)
+        val memberList: List<LoadedMember?>? = Transfers.loadMemberList(this, transfer!!.id, null)
         if (memberList!!.size > 0) {
             if (memberList.size == 1) {
                 val member: LoadedMember? = memberList[0]
                 toggleTaskForMember(member)
-            } else ToggleMultipleTransferDialog(this@TransferDetailActivity, mIndex).show()
-        } else if (mIndex.hasOutgoing()) startDeviceAddingActivity()
+            } else ToggleMultipleTransferDialog(this@TransferDetailActivity, index).show()
+        } else if (index.hasOutgoing()) startDeviceAddingActivity()
     }
 
     fun toggleTaskForMember(member: LoadedMember?) {
         if (hasTaskWith(
                 FileTransferTask.identifyWith(
-                    mTransfer!!.id,
+                    transfer!!.id,
                     member.deviceId
                 )
             )
         ) Transfers.pauseTransfer(this, member) else {
             try {
                 Transfers.getAddressListFor(database, member.deviceId)
-                Transfers.startTransferWithTest(this, mTransfer, member)
+                Transfers.startTransferWithTest(this, transfer, member)
             } catch (e: ConnectionNotFoundException) {
                 createSnackbar(R.string.mesg_transferConnectionNotSetUpFix).show()
             }
@@ -409,9 +438,9 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     @Synchronized
     fun updateCalculations() {
-        if (mDataCruncher == null || !mDataCruncher!!.requestRestart()) {
-            mDataCruncher = CrunchLatestDataTask(PostExecutionListener { showMenus() })
-            mDataCruncher!!.execute(this)
+        if (dataCruncher == null || !dataCruncher!!.requestRestart()) {
+            dataCruncher = CrunchLatestDataTask(PostExecutionListener { showMenus() })
+            dataCruncher!!.execute(this)
         }
     }
 
@@ -423,9 +452,9 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         protected override fun doInBackground(vararg activities: TransferDetailActivity): Void? {
             do {
                 mRestartRequested = false
-                for (activity in activities) if (activity.mTransfer != null) Transfers.loadTransferInfo(
+                for (activity in activities) if (activity.transfer != null) Transfers.loadTransferInfo(
                     activity,
-                    activity.mIndex,
+                    activity.index,
                     activity.getMember()
                 )
             } while (mRestartRequested && !isCancelled)

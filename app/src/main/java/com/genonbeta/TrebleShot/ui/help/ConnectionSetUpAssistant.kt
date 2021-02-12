@@ -25,8 +25,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity.AvailableFragment
 
-com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
-
 class ConnectionSetUpAssistant(activity: Activity) {
     val context: Context
     val dialogInstance: AlertDialog.Builder
