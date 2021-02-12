@@ -169,7 +169,7 @@ object AppUtils {
     @Throws(JSONException::class)
     fun getLocalDeviceAsJson(context: Context, sendKey: Int, pin: Int): JSONObject {
         val device = getLocalDevice(context)
-        val `object` = JSONObject()
+        val item = JSONObject()
             .put(Keyword.DEVICE_UID, device.uid)
             .put(Keyword.DEVICE_BRAND, device.brand)
             .put(Keyword.DEVICE_MODEL, device.model)
@@ -179,15 +179,15 @@ object AppUtils {
             .put(Keyword.DEVICE_PROTOCOL_VERSION, device.protocolVersion)
             .put(Keyword.DEVICE_PROTOCOL_VERSION_MIN, device.protocolVersionMin)
             .put(Keyword.DEVICE_KEY, sendKey)
-        if (pin != 0) `object`.put(Keyword.DEVICE_PIN, pin)
+        if (pin != 0) item.put(Keyword.DEVICE_PIN, pin)
         try {
             val imageBytes = ByteArrayOutputStream()
             val bitmap = BitmapFactory.decodeStream(context.openFileInput("profilePicture"))
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageBytes)
-            `object`.put(Keyword.DEVICE_AVATAR, Base64.encodeToString(imageBytes.toByteArray(), 0))
+            item.put(Keyword.DEVICE_AVATAR, Base64.encodeToString(imageBytes.toByteArray(), 0))
         } catch (ignored: Exception) {
         }
-        return `object`
+        return item
     }
 
     fun <T : Editable> showFolderSelectionHelp(fragment: EditableListFragmentBase<T>) {

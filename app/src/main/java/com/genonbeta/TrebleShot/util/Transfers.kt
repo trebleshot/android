@@ -18,11 +18,11 @@ import java.io.File
  */
 object Transfers {
     val TAG = Transfers::class.java.simpleName
-    private fun appendOutgoingData(group: TransferIndex?, `object`: TransferItem, flag: TransferItem.Flag) {
-        group.bytesOutgoing += `object`.comparableSize
+    private fun appendOutgoingData(group: TransferIndex?, item: TransferItem, flag: TransferItem.Flag) {
+        group.bytesOutgoing += item.comparableSize
         group.numberOfOutgoing++
         if (TransferItem.Flag.DONE == flag) {
-            group.bytesOutgoingCompleted += `object`.comparableSize
+            group.bytesOutgoingCompleted += item.comparableSize
             group.numberOfOutgoingCompleted++
         } else if (TransferItem.Flag.IN_PROGRESS == flag) group.bytesOutgoingCompleted += flag.bytesValue else if (isError(
                 flag
@@ -100,10 +100,10 @@ object Transfers {
         val memberList: List<LoadedMember> = kuick.castQuery<Transfer, LoadedMember>(
             select,
             LoadedMember::class.java,
-            CastQueryListener<LoadedMember> { db: KuickDb, item: ContentValues?, `object`: LoadedMember ->
-                `object`.device = Device(`object`.deviceId)
+            CastQueryListener<LoadedMember> { db: KuickDb, item: ContentValues?, item: LoadedMember ->
+                item.device = Device(item.deviceId)
                 try {
-                    db.reconstruct<Void, Device>(`object`.device)
+                    db.reconstruct<Void, Device>(item.device)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -135,9 +135,9 @@ object Transfers {
                     )
                 )
         ) ?: return null
-        val `object` = TransferItem()
-        `object`.reconstruct(kuick.writableDatabase, kuick, receiverInstance)
-        return `object`
+        val item = TransferItem()
+        item.reconstruct(kuick.writableDatabase, kuick, receiverInstance)
+        return item
     }
 
     @Throws(ConnectionNotFoundException::class)
@@ -178,10 +178,10 @@ object Transfers {
             type.toString()
         )
         return AppUtils.getKuick(context).castQuery<Transfer, LoadedMember>(selection, LoadedMember::class.java,
-            CastQueryListener<LoadedMember> { db: KuickDb?, item: ContentValues?, `object`: LoadedMember? ->
+            CastQueryListener<LoadedMember> { db: KuickDb?, item: ContentValues?, item: LoadedMember? ->
                 loadMemberInfo(
                     db,
-                    `object`
+                    item
                 )
             })
     }
@@ -226,27 +226,27 @@ object Transfers {
         val objectList = AppUtils.getKuick(context).castQuery(selection, TransferItem::class.java)
         index.members = arrayOfNulls<LoadedMember>(memberList.size)
         memberList.toArray(index.members)
-        for (`object` in objectList) {
-            if (TransferItem.Type.INCOMING == `object`.type) {
-                index.bytesIncoming += `object`.comparableSize
+        for (item in objectList) {
+            if (TransferItem.Type.INCOMING == item.type) {
+                index.bytesIncoming += item.comparableSize
                 index.numberOfIncoming++
-                val flag = `object`.flag
+                val flag = item.flag
                 if (TransferItem.Flag.DONE == flag) {
-                    index.bytesIncomingCompleted += `object`.comparableSize
+                    index.bytesIncomingCompleted += item.comparableSize
                     index.numberOfIncomingCompleted++
                 } else if (TransferItem.Flag.IN_PROGRESS == flag) index.bytesIncomingCompleted += flag.bytesValue else if (isError(
                         flag
                     )
                 ) index.hasIssues = true
-            } else if (TransferItem.Type.OUTGOING == `object`.type) {
+            } else if (TransferItem.Type.OUTGOING == item.type) {
                 if (deviceId != null) appendOutgoingData(
                     index,
-                    `object`,
-                    `object`.getFlag(deviceId)
-                ) else if (memberList.size < 1) appendOutgoingData(index, `object`, TransferItem.Flag.PENDING) else {
+                    item,
+                    item.getFlag(deviceId)
+                ) else if (memberList.size < 1) appendOutgoingData(index, item, TransferItem.Flag.PENDING) else {
                     for (member in memberList) {
                         if (TransferItem.Type.OUTGOING != member.type) continue
-                        appendOutgoingData(index, `object`, `object`.getFlag(member.deviceId))
+                        appendOutgoingData(index, item, item.getFlag(member.deviceId))
                     }
                 }
             }

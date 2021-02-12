@@ -18,7 +18,6 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.android.framework.`object`.Selectable
 
 /**
  * The base class for engine connection. This is free of generics for most compatibility.

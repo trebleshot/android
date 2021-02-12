@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.TrebleShot.widgetimport.EditableListAdapterBase
-import com.genonbeta.android.framework.`object`.Selectable
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files

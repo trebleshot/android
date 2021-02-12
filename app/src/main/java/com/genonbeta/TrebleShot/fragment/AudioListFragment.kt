@@ -67,9 +67,9 @@ class AudioListFragment : GroupEditableListFragment<AudioItemHolder?, GroupViewH
 
     override fun performDefaultLayoutClick(
         holder: GroupViewHolder,
-        `object`: AudioItemHolder
+        item: AudioItemHolder
     ): Boolean {
-        return performLayoutClickOpen(holder, `object`)
+        return performLayoutClickOpen(holder, item)
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {

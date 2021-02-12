@@ -43,7 +43,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.framework.`object`.Selectable
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine

@@ -17,8 +17,6 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import com.genonbeta.android.framework.`object`.Selectable
-
 /**
  * A UI-related class that handles [IEngineConnection] and [PerformerCallback] to help them communicate with
  * the UI and each other.

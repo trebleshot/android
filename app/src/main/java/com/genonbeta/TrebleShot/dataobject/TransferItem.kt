@@ -38,7 +38,7 @@ import java.security.InvalidParameterException
  * Created by: veli
  * Date: 4/24/17 11:50 PM
  */
-open class TransferItem : DatabaseObject<Transfer?>, Editable {
+open class TransferItem : DatabaseObject<Transfer>, Editable {
     lateinit var name: String
 
     var file: String? = null
@@ -177,15 +177,15 @@ open class TransferItem : DatabaseObject<Transfer?>, Editable {
         if (Type.INCOMING == type) {
             values.put(Kuick.FIELD_TRANSFERITEM_FLAG, receiverFlag.toString())
         } else {
-            val `object` = JSONObject()
+            val item = JSONObject()
             synchronized(senderFlagList1) {
                 for (deviceId in senderFlagList1.keys) try {
-                    `object`.put(deviceId, senderFlagList1[deviceId])
+                    item.put(deviceId, senderFlagList1[deviceId])
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
             }
-            values.put(Kuick.FIELD_TRANSFERITEM_FLAG, `object`.toString())
+            values.put(Kuick.FIELD_TRANSFERITEM_FLAG, item.toString())
         }
         return values
     }

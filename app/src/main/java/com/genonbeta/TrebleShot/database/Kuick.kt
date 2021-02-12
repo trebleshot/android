@@ -38,12 +38,12 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
         Migration.migrate(this, db, old, current)
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, `object`: V, parent: T) {
-        removeAsynchronous(App.from(activity), `object`, parent)
+    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, item: V, parent: T) {
+        removeAsynchronous(App.from(activity), item, parent)
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, `object`: V, parent: T) {
-        app.run(SingleRemovalTask(app.applicationContext, writableDatabase, `object`, parent))
+    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, item: V, parent: T) {
+        app.run(SingleRemovalTask(app.applicationContext, writableDatabase, item, parent))
     }
 
     fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, objects: List<V>, parent: T) {

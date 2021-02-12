@@ -61,20 +61,20 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         try {
-            val `object`: VideoHolder = this.getItem(position)
+            val item: VideoHolder = this.getItem(position)
             val parentView: View = holder.itemView
-            if (!holder.tryBinding(`object`)) {
+            if (!holder.tryBinding(item)) {
                 val container = parentView.findViewById<ViewGroup>(R.id.container)
                 val image = parentView.findViewById<ImageView>(R.id.image)
                 val text1: TextView = parentView.findViewById<TextView>(R.id.text)
                 val text2: TextView = parentView.findViewById<TextView>(R.id.text2)
                 val text3: TextView = parentView.findViewById<TextView>(R.id.text3)
-                text1.setText(`object`.friendlyName)
-                text2.setText(`object`.duration)
-                text3.setText(Files.sizeExpression(`object`.comparableSize, false))
-                parentView.isSelected = `object`.isSelectableSelected
+                text1.setText(item.friendlyName)
+                text2.setText(item.duration)
+                text3.setText(Files.sizeExpression(item.comparableSize, false))
+                parentView.isSelected = item.isSelectableSelected
                 GlideApp.with(getContext())
-                    .load(`object`.uri)
+                    .load(item.uri)
                     .override(300)
                     .centerCrop()
                     .into(image)

@@ -17,8 +17,6 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import com.genonbeta.android.framework.`object`.Selectable
-
 /**
  * This class takes care of connecting [IPerformerEngine] to the UI element that needs to be free of limitations
  * like knowing whether the [T] is something that it can work on. It does that by extending from

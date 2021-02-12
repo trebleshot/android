@@ -211,9 +211,9 @@ open class TransferItemListFragment :
 
     override fun performDefaultLayoutClick(
         holder: GroupViewHolder,
-        `object`: GenericItem
+        item: GenericItem
     ): Boolean {
-        if (`object` is DetailsTransferFolder) {
+        if (item is DetailsTransferFolder) {
             val list: List<LoadedMember?>? = Transfers.loadMemberList(getContext(), getTransfer()!!.id, null)
             if (list!!.size > 0) {
                 val listClickListener = DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
@@ -231,8 +231,8 @@ open class TransferItemListFragment :
                     .setNeutralButton(R.string.butn_showAll, noLimitListener)
                     .show()
             } else createSnackbar(R.string.text_noDeviceForTransfer).show()
-        } else if (`object` is StorageStatusItem) {
-            val statusItem: StorageStatusItem = `object` as StorageStatusItem
+        } else if (item is StorageStatusItem) {
+            val statusItem: StorageStatusItem = item as StorageStatusItem
             if (statusItem.hasIssues(getAdapter())) AlertDialog.Builder(requireActivity())
                 .setMessage(getString(R.string.mesg_notEnoughSpace))
                 .setNegativeButton(R.string.butn_close, null)
@@ -240,11 +240,11 @@ open class TransferItemListFragment :
                     R.string.butn_saveTo,
                     DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int -> changeSavePath(statusItem.directory) })
                 .show() else changeSavePath(statusItem.directory)
-        } else if (`object` is TransferFolder) {
-            getAdapter().setPath(`object`.directory)
+        } else if (item is TransferFolder) {
+            getAdapter().setPath(item.directory)
             refreshList()
             AppUtils.showFolderSelectionHelp<GenericItem>(this)
-        } else TransferInfoDialog(requireActivity(), getIndex(), `object`, getAdapter().getDeviceId()).show()
+        } else TransferInfoDialog(requireActivity(), getIndex(), item, getAdapter().getDeviceId()).show()
         return true
     }
 

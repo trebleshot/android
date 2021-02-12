@@ -20,7 +20,7 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerListener
 import android.view.MenuInflater
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.``object`
+import com.genonbeta.android.framework.`item
 
 /* This stub is only used by the IDE. It is NOT the BuildConfig class actually packed into the APK */
 object BuildConfig {

@@ -60,8 +60,8 @@ class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder?, GroupVi
 
     override fun performDefaultLayoutClick(
         holder: GroupViewHolder,
-        `object`: VideoHolder
+        item: VideoHolder
     ): Boolean {
-        return performLayoutClickOpen(holder, `object`)
+        return performLayoutClickOpen(holder, item)
     }
 }

@@ -201,8 +201,8 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
         var customLister: CustomGroupLister<T>? = null,
     ) : Lister<T, ComparableMerger<T>>() {
 
-        fun offerObliged(adapter: EditableListAdapterBase<T>, `object`: T) {
-            if (adapter.filterItem(`object`)) offer(`object`)
+        fun offerObliged(adapter: EditableListAdapterBase<T>, item: T) {
+            if (adapter.filterItem(item)) offer(item)
         }
 
         fun offer(item: T) {

@@ -115,9 +115,9 @@ class Transfer : DatabaseObject<Device?>, Parcelable {
         if (deleteFilesOnRemoval) {
             val itemList = kuick.castQuery(db, objectSelection, TransferItem::class.java, null)
             listener?.progress.addToTotal(itemList.size)
-            for (`object` in itemList) {
+            for (item in itemList) {
                 listener.progress.addToCurrent(1)
-                `object`.deleteFile(kuick, this)
+                item.deleteFile(kuick, this)
             }
         }
         kuick.remove(db, objectSelection)

@@ -185,14 +185,14 @@ class NotificationHelper(val utils: NotificationUtils) {
         notification.show()
     }
 
-    fun notifyClipboardRequest(device: Device, `object`: TextStreamObject) {
+    fun notifyClipboardRequest(device: Device, item: TextStreamObject) {
         val notification = utils.buildDynamicNotification(
-            `object`.id,
+            item.id,
             NotificationUtils.NOTIFICATION_CHANNEL_HIGH
         )
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_CLIPBOARD)
-            .putExtra(BackgroundService.EXTRA_CLIPBOARD_ID, `object`.id)
+            .putExtra(BackgroundService.EXTRA_CLIPBOARD_ID, item.id)
             .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val activityIntent = Intent(context, TextEditorActivity::class.java)
         val rejectIntent = acceptIntent.clone() as Intent
@@ -208,7 +208,7 @@ class NotificationHelper(val utils: NotificationUtils) {
         )
         activityIntent
             .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-            .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, `object`.id)
+            .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, item.id)
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -216,7 +216,7 @@ class NotificationHelper(val utils: NotificationUtils) {
             .setContentText(context.getString(R.string.text_textReceived))
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(`object`.text)
+                    .bigText(item.text)
                     .setBigContentTitle(context.getString(R.string.ques_copyToClipboard))
             )
             .setContentInfo(device.username)

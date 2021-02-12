@@ -69,14 +69,14 @@ object DialogUtils {
             })
     }
 
-    fun showRemoveDialog(activity: Activity, `object`: TransferItem) {
-        val checkBox = if (TransferItem.Type.INCOMING == `object`.type) R.string.text_alsoDeleteReceivedFiles else 0
+    fun showRemoveDialog(activity: Activity, item: TransferItem) {
+        val checkBox = if (TransferItem.Type.INCOMING == item.type) R.string.text_alsoDeleteReceivedFiles else 0
         showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer, activity.getString(
-            R.string.text_removeTransferSummary, `object`.name
+            R.string.text_removeTransferSummary, item.name
         ),
             R.string.butn_remove, checkBox, ClickListener { dialog: DialogInterface?, which: Int, checkBox1: CheckBox ->
-                `object`.setDeleteOnRemoval(checkBox1.isChecked())
-                AppUtils.getKuick(activity)!!.removeAsynchronous(activity, `object`, null)
+                item.setDeleteOnRemoval(checkBox1.isChecked())
+                AppUtils.getKuick(activity)!!.removeAsynchronous(activity, item, null)
             })
     }
 
@@ -90,7 +90,7 @@ object DialogUtils {
             R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
             ClickListener { dialog: DialogInterface?, which: Int, checkBox: CheckBox ->
                 val isChecked: Boolean = checkBox.isChecked()
-                for (`object` in copiedObjects) `object`.setDeleteOnRemoval(isChecked)
+                for (item in copiedObjects) item.setDeleteOnRemoval(isChecked)
                 AppUtils.getKuick(activity)!!.removeAsynchronous(activity, copiedObjects, null)
             })
     }

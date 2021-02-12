@@ -17,8 +17,6 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import com.genonbeta.android.framework.`object`.Selectable
-
 /**
  * When [IPerformerEngine] is finally notified by [IEngineConnection], it may call one or more
  * [PerformerCallback] instances to manipulate the given selection process by allowing or not allowing an

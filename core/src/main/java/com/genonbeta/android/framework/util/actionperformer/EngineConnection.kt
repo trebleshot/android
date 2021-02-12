@@ -19,7 +19,6 @@ package com.genonbeta.android.framework.util.actionperformer
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.android.framework.`object`.Selectable
 import java.util.*
 
 class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: SelectableHost<T>) :

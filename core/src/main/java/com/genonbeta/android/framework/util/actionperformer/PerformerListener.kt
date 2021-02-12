@@ -17,8 +17,6 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import com.genonbeta.android.framework.`object`.Selectable
-
 /**
  * If you want to be informed when [IEngineConnection.setSelected] is invoked you can do so with this listener.
  * Unlike [PerformerCallback], this doesn't have the ability to manipulate the process. This is informed after

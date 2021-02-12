@@ -222,10 +222,10 @@ class TransferItemListAdapter(
         return GenericTransferItem(text)
     }
 
-    override fun onCustomGroupListing(lister: GroupLister<GenericItem>, mode: Int, `object`: GenericItem): Boolean {
+    override fun onCustomGroupListing(lister: GroupLister<GenericItem>, mode: Int, item: GenericItem): Boolean {
         if (mode == MODE_GROUP_BY_DEFAULT) lister.offer(
-            `object`,
-            GroupEditableTransferObjectMerger(`object`, this)
+            item,
+            GroupEditableTransferObjectMerger(item, this)
         ) else return false
         return true
     }
@@ -244,28 +244,28 @@ class TransferItemListAdapter(
     }
 
     fun mergeTransferInfo(
-        details: DetailsTransferFolder, `object`: GenericTransferItem, isIncoming: Boolean,
+        details: DetailsTransferFolder, item: GenericTransferItem, isIncoming: Boolean,
         folder: TransferFolder?,
     ) {
         if (isIncoming) {
-            mergeTransferInfo(details, `object`, `object`.flag, true, folder)
+            mergeTransferInfo(details, item, item.flag, true, folder)
         } else {
             if (getMember() != null) mergeTransferInfo(
                 details,
-                `object`,
-                `object`.getFlag(getDeviceId()),
+                item,
+                item.getFlag(getDeviceId()),
                 false,
                 folder
-            ) else if (`object`.members.size < 1) mergeTransferInfo(
+            ) else if (item.members.size < 1) mergeTransferInfo(
                 details,
-                `object`,
+                item,
                 TransferItem.Flag.PENDING,
                 false,
                 folder
-            ) else for (loadedMember in `object`.members) {
+            ) else for (loadedMember in item.members) {
                 if (TransferItem.Type.OUTGOING != loadedMember.type) continue
                 mergeTransferInfo(
-                    details, `object`, `object`.getFlag(loadedMember.deviceId),
+                    details, item, item.getFlag(loadedMember.deviceId),
                     false, folder
                 )
             }

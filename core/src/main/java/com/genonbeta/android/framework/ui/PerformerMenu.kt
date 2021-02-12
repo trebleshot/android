@@ -22,7 +22,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.view.SupportMenuInflater
-import com.genonbeta.android.framework.`object`.Selectable
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.ui.PerformerMenu.Callback
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine

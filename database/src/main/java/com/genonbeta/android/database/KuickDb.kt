@@ -166,15 +166,15 @@ abstract class KuickDb(
         return list
     }
 
-    fun <T, V : DatabaseObject<T>> insert(`object`: V): Long {
-        return insert(writableDatabase, `object`, null, null)
+    fun <T, V : DatabaseObject<T>> insert(item: V): Long {
+        return insert(writableDatabase, item, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> insert(
-        db: SQLiteDatabase, `object`: V, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, item: V, parent: T?, listener: Progress.Listener?,
     ): Long {
-        `object`.onCreateObject(db, this, parent, listener)
-        return insert(db, `object`.getWhere().tableName, null, `object`.getValues())
+        item.onCreateObject(db, this, parent, listener)
+        return insert(db, item.getWhere().tableName, null, item.getValues())
     }
 
     fun insert(db: SQLiteDatabase, tableName: String, nullColumnHack: String?, contentValues: ContentValues): Long {
@@ -193,10 +193,10 @@ abstract class KuickDb(
         db.beginTransaction()
         try {
             Progress.addToTotal(listener, objects.size)
-            for (`object` in objects) {
+            for (item in objects) {
                 if (!Progress.call(listener, 1))
                     break
-                insert(db, `object`, parent, listener)
+                insert(db, item, parent, listener)
             }
             db.setTransactionSuccessful()
             return true
@@ -208,16 +208,16 @@ abstract class KuickDb(
         return false
     }
 
-    fun <T, V : DatabaseObject<T>> publish(`object`: V): Int {
-        return publish(writableDatabase, `object`, null, null)
+    fun <T, V : DatabaseObject<T>> publish(item: V): Int {
+        return publish(writableDatabase, item, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> publish(
-        database: SQLiteDatabase, `object`: V, parent: T?, listener: Progress.Listener?,
+        database: SQLiteDatabase, item: V, parent: T?, listener: Progress.Listener?,
     ): Int {
-        var rowsChanged = update(database, `object`, parent, listener)
+        var rowsChanged = update(database, item, parent, listener)
         if (rowsChanged <= 0)
-            rowsChanged = if (insert(database, `object`, parent, listener) >= -1) 1 else 0
+            rowsChanged = if (insert(database, item, parent, listener) >= -1) 1 else 0
         return rowsChanged
     }
 
@@ -231,9 +231,9 @@ abstract class KuickDb(
         db.beginTransaction()
         try {
             Progress.addToTotal(listener, objectList.size)
-            for (`object` in objectList) {
+            for (item in objectList) {
                 if (!Progress.call(listener, 1)) break
-                publish(db, `object`, parent, listener)
+                publish(db, item, parent, listener)
             }
             db.setTransactionSuccessful()
             return true
@@ -246,15 +246,15 @@ abstract class KuickDb(
     }
 
     @Throws(ReconstructionFailedException::class)
-    fun <T, V : DatabaseObject<T>> reconstruct(`object`: V) {
-        reconstruct(readableDatabase, `object`)
+    fun <T, V : DatabaseObject<T>> reconstruct(item: V) {
+        reconstruct(readableDatabase, item)
     }
 
     @Throws(ReconstructionFailedException::class)
-    fun <T, V : DatabaseObject<T>> reconstruct(db: SQLiteDatabase, `object`: V) {
-        val item = getFirstFromTable(db, `object`.getWhere())
+    fun <T, V : DatabaseObject<T>> reconstruct(db: SQLiteDatabase, item: V) {
+        val item = getFirstFromTable(db, item.getWhere())
         if (item == null) {
-            val select = `object`.getWhere()
+            val select = item.getWhere()
             val whereArgs = StringBuilder()
 
             select.whereArgs?.forEach {
@@ -267,18 +267,18 @@ abstract class KuickDb(
             throw ReconstructionFailedException("No data was returned from: query" + "; tableName: "
                     + select.tableName + "; where: " + select.where + "; whereArgs: " + whereArgs.toString())
         }
-        `object`.reconstruct(db, this, item)
+        item.reconstruct(db, this, item)
     }
 
-    fun <T, V : DatabaseObject<T>> remove(`object`: V) {
-        remove(writableDatabase, `object`, null, null)
+    fun <T, V : DatabaseObject<T>> remove(item: V) {
+        remove(writableDatabase, item, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> remove(
-        db: SQLiteDatabase, `object`: V, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, item: V, parent: T?, listener: Progress.Listener?,
     ) {
-        `object`.onRemoveObject(db, this, parent, listener)
-        remove(db, `object`.getWhere())
+        item.onRemoveObject(db, this, parent, listener)
+        remove(db, item.getWhere())
     }
 
     fun remove(select: SQLQuery.Select): Int {
@@ -301,10 +301,10 @@ abstract class KuickDb(
         db.beginTransaction()
         try {
             Progress.addToTotal(listener, objects.size)
-            for (`object` in objects) {
+            for (item in objects) {
                 if (!Progress.call(listener, 1))
                     break
-                remove(db, `object`, parent, listener)
+                remove(db, item, parent, listener)
             }
             db.setTransactionSuccessful()
             return true
@@ -326,10 +326,10 @@ abstract class KuickDb(
         try {
             val objects = castQuery(db, select, objectType, queryListener)
             Progress.addToTotal(progressListener, objects.size)
-            for (`object` in objects) {
+            for (item in objects) {
                 if (!Progress.call(progressListener, 1))
                     break
-                remove(db, `object`, parent, progressListener)
+                remove(db, item, parent, progressListener)
             }
             db.setTransactionSuccessful()
             return true
@@ -341,15 +341,15 @@ abstract class KuickDb(
         return false
     }
 
-    fun <T, V : DatabaseObject<T>> update(`object`: V): Int {
-        return update(writableDatabase, `object`, null, null)
+    fun <T, V : DatabaseObject<T>> update(item: V): Int {
+        return update(writableDatabase, item, null, null)
     }
 
     fun <T, V : DatabaseObject<T>> update(
-        db: SQLiteDatabase, `object`: V, parent: T?, listener: Progress.Listener?,
+        db: SQLiteDatabase, item: V, parent: T?, listener: Progress.Listener?,
     ): Int {
-        `object`.onUpdateObject(db, this, parent, listener)
-        return update(db, `object`.getWhere(), `object`.getValues())
+        item.onUpdateObject(db, this, parent, listener)
+        return update(db, item.getWhere(), item.getValues())
     }
 
     fun update(select: SQLQuery.Select, values: ContentValues): Int {
@@ -372,10 +372,10 @@ abstract class KuickDb(
         db.beginTransaction()
         try {
             Progress.addToTotal(listener, objects.size)
-            for (`object` in objects) {
+            for (item in objects) {
                 if (!Progress.call(listener, 1))
                     break
-                update(db, `object`, parent, listener)
+                update(db, item, parent, listener)
             }
             db.setTransactionSuccessful()
             return true
@@ -388,7 +388,7 @@ abstract class KuickDb(
     }
 
     interface CastQueryListener<T : DatabaseObject<*>> {
-        fun onObjectReconstructed(manager: KuickDb, item: ContentValues, `object`: T)
+        fun onObjectReconstructed(manager: KuickDb, item: ContentValues, item: T)
     }
 
     class BroadcastData internal constructor(var tableName: String) : Serializable {

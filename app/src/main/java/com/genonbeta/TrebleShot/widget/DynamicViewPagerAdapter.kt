@@ -31,8 +31,8 @@ class DynamicViewPagerAdapter : PagerAdapter() {
     // Used by ViewPager.  "Object" represents the page; tell the ViewPager where the
     // page should be displayed, from left-to-right.  If the page no longer exists,
     // return POSITION_NONE.
-    override fun getItemPosition(`object`: Any): Int {
-        val index = views.indexOf(`object`)
+    override fun getItemPosition(item: Any): Int {
+        val index = views.indexOf(item)
         return if (index == -1) POSITION_NONE else index
     }
 
@@ -51,7 +51,7 @@ class DynamicViewPagerAdapter : PagerAdapter() {
     // is our job to remove the page from the container, which is normally the
     // ViewPager itself.  Since all our pages are persistent, we do nothing to the
     // contents of our "views" ArrayList.
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+    override fun destroyItem(container: ViewGroup, position: Int, item: Any) {
         container.removeView(views[position])
     }
 
@@ -65,8 +65,8 @@ class DynamicViewPagerAdapter : PagerAdapter() {
 
     //-----------------------------------------------------------------------------
     // Used by ViewPager.
-    override fun isViewFromObject(view: View, `object`: Any): Boolean {
-        return view === `object`
+    override fun isViewFromObject(view: View, item: Any): Boolean {
+        return view === item
     }
 
     //-----------------------------------------------------------------------------

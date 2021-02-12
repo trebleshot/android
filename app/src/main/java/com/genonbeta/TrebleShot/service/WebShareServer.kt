@@ -339,16 +339,16 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             if ("download" == args[0]) {
                 if (args.size < 3) throw Exception("Expected 3 args, " + args.size + " given")
                 val transfer = Transfer(args[1].toLong())
-                val `object` = TransferItem(
+                val item = TransferItem(
                     transfer.id, args[2].toLong(),
                     TransferItem.Type.OUTGOING
                 )
                 AppUtils.getKuick(mContext).reconstruct(transfer)
-                AppUtils.getKuick(mContext).reconstruct(`object`)
+                AppUtils.getKuick(mContext).reconstruct(item)
                 if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
                 val streamInfo: StreamInfo = StreamInfo.getStreamInfo(
                     mContext, Uri.parse(
-                        `object`.file
+                        item.file
                     )
                 )
                 val stream: InputStream = streamInfo.openInputStream()
@@ -461,14 +461,14 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
                         ) + ".zip"
                     )
                 )
-                for (`object` in groupList) contentBuilder.append(
+                for (item in groupList) contentBuilder.append(
                     makeContent(
                         "list_transfer",
-                        `object`.name + " " + com.genonbeta.android.framework.util.Files.sizeExpression(
-                            `object`.comparableSize,
+                        item.name + " " + com.genonbeta.android.framework.util.Files.sizeExpression(
+                            item.comparableSize,
                             false
-                        ), R.string.butn_download, "download", `object`.transferId,
-                        `object`.id, `object`.name!!
+                        ), R.string.butn_download, "download", item.transferId,
+                        item.id, item.name!!
                     )
                 )
             }
@@ -517,9 +517,9 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
         val values: MutableMap<String, String?> = ArrayMap()
         values["content"] = content
         values["action_layout"] = mContext.getString(buttonRes)
-        for (`object` in objects) {
+        for (item in objects) {
             if (actionUrlBuilder.length > 0) actionUrlBuilder.append("/")
-            actionUrlBuilder.append(`object`)
+            actionUrlBuilder.append(item)
         }
         values["actionUrl"] = actionUrlBuilder.toString()
         return applyPattern(getFieldPattern(), readPage("$pageName.html"), values)
@@ -724,13 +724,13 @@ class WebShareServer(private val mContext: Context, port: Int) : NanoHTTPD(port)
             val zipOutputStream = ZipOutputStream(chunkedOutputStream)
             zipOutputStream.setLevel(0)
             //zipOutputStream.setMethod(ZipEntry.STORED);
-            for (`object` in mFiles) {
+            for (item in mFiles) {
                 try {
-                    val streamInfo: StreamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(`object`.file))
+                    val streamInfo: StreamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(item.file))
                     val inputStream: InputStream = streamInfo.openInputStream()
                     val thisEntry =
-                        ZipEntry((if (`object`.directory != null) `object`.directory + File.pathSeparator else "") + `object`.name)
-                    thisEntry.time = `object`.comparableDate
+                        ZipEntry((if (item.directory != null) item.directory + File.pathSeparator else "") + item.name)
+                    thisEntry.time = item.comparableDate
                     zipOutputStream.putNextEntry(thisEntry)
                     var len: Int
                     while (inputStream.read(buffer, 0, bufferSize).also { len = it } != -1) {

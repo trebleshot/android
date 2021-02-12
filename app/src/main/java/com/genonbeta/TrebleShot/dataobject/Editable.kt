@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.android.framework.`object`.Selectable
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 
 /**
  * created by: Veli

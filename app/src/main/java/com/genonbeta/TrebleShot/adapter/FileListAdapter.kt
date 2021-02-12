@@ -153,12 +153,12 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                     SQLQuery.Select(Kuick.TABLE_TRANSFER), Transfer::class.java
                 )) transferMap[transfer.id] = transfer
                 var errorLimit = 3
-                for (`object` in objects) {
-                    val transfer = transferMap[`object`.transferId]
+                for (item in objects) {
+                    val transfer = transferMap[item.transferId]
                     if (pickedRecentFiles.size >= 20 || errorLimit == 0 || transfer == null) break
                     try {
                         val documentFile = Files.getIncomingPseudoFile(
-                            context, `object`, transfer,
+                            context, item, transfer,
                             false
                         )
                         if (documentFile.exists() && !pickedRecentFiles.contains(documentFile)) pickedRecentFiles.add(

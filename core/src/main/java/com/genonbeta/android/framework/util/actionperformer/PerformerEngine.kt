@@ -17,7 +17,6 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
-import com.genonbeta.android.framework.`object`.Selectable
 import java.util.*
 
 class PerformerEngine : IPerformerEngine {

@@ -24,6 +24,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.android.framework.io.DocumentFile
@@ -35,18 +36,18 @@ import java.text.NumberFormat
  */
 class TransferInfoDialog(
     activity: Activity, loadedGroup: TransferIndex,
-    `object`: TransferItem, deviceId: String?
+    item: TransferItem, deviceId: String?
 ) : AlertDialog.Builder(activity) {
     init {
         var attemptedFile: DocumentFile? = null
-        val isIncoming = TransferItem.Type.INCOMING == `object`.type
+        val isIncoming = TransferItem.Type.INCOMING == item.type
         try {
             // If it is incoming than get the received or cache file
             // If not then try to reach to the source file that is being send
             attemptedFile = if (isIncoming) Files.getIncomingPseudoFile(
-                context, `object`, loadedGroup.transfer,
+                context, item, loadedGroup.transfer,
                 false
-            ) else com.genonbeta.android.framework.util.Files.fromUri(context, Uri.parse(`object`.file))
+            ) else com.genonbeta.android.framework.util.Files.fromUri(context, Uri.parse(item.file))
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -63,9 +64,9 @@ class TransferInfoDialog(
         val locationText: TextView = rootView.findViewById<TextView>(R.id.transfer_info_pseudo_location)
         setTitle(R.string.text_transactionDetails)
         setView(rootView)
-        nameText.setText(`object`.name)
-        sizeText.setText(com.genonbeta.android.framework.util.Files.sizeExpression(`object`.comparableSize, false))
-        typeText.setText(`object`.mimeType)
+        nameText.setText(item.name)
+        sizeText.setText(com.genonbeta.android.framework.util.Files.sizeExpression(item.comparableSize, false))
+        typeText.setText(item.mimeType)
         receivedSizeText.setText(
             if (fileExists) com.genonbeta.android.framework.util.Files.sizeExpression(
                 pseudoFile!!.getLength(),
@@ -75,24 +76,24 @@ class TransferInfoDialog(
         locationText.setText(if (fileExists) Files.getReadableUri(pseudoFile!!.uri) else context.getString(R.string.text_unknown))
         flagText.setText(
             TextUtils.getTransactionFlagString(
-                context, `object`,
+                context, item,
                 NumberFormat.getPercentInstance(), deviceId
             )
         )
         setPositiveButton(R.string.butn_close, null)
         setNegativeButton(
             R.string.butn_remove
-        ) { dialogInterface: DialogInterface?, i: Int -> DialogUtils.showRemoveDialog(activity, `object`) }
+        ) { dialogInterface: DialogInterface?, i: Int -> DialogUtils.showRemoveDialog(activity, item) }
         if (isIncoming) {
             incomingDetailsLayout.visibility = View.VISIBLE
-            if (TransferItem.Flag.INTERRUPTED == `object`.flag || TransferItem.Flag.IN_PROGRESS == `object`.flag) {
+            if (TransferItem.Flag.INTERRUPTED == item.flag || TransferItem.Flag.IN_PROGRESS == item.flag) {
                 setNeutralButton(R.string.butn_retry) { dialogInterface: DialogInterface?, i: Int ->
-                    `object`.flag = TransferItem.Flag.PENDING
-                    AppUtils.getKuick(activity).publish(`object`)
+                    item.flag = TransferItem.Flag.PENDING
+                    AppUtils.getKuick(activity).publish(item)
                     AppUtils.getKuick(activity).broadcast()
                 }
             } else if (fileExists) {
-                if (TransferItem.Flag.REMOVED == `object`.flag && pseudoFile!!.parentFile != null) {
+                if (TransferItem.Flag.REMOVED == item.flag && pseudoFile!!.parentFile != null) {
                     setNeutralButton(R.string.butn_saveAnyway) { dialogInterface: DialogInterface?, i: Int ->
                         val saveAnyway = AlertDialog.Builder(
                             context
@@ -103,10 +104,10 @@ class TransferInfoDialog(
                         saveAnyway.setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
                             try {
                                 val savedFile = Files.saveReceivedFile(
-                                    pseudoFile.parentFile, pseudoFile, `object`
+                                    pseudoFile.parentFile, pseudoFile, item
                                 )
-                                `object`.flag = TransferItem.Flag.DONE
-                                AppUtils.getKuick(activity).update(`object`)
+                                item.flag = TransferItem.Flag.DONE
+                                AppUtils.getKuick(activity).update(item)
                                 AppUtils.getKuick(activity).broadcast()
                                 Toast.makeText(context, R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show()
                             } catch (e: Exception) {
@@ -116,7 +117,7 @@ class TransferInfoDialog(
                         }
                         saveAnyway.show()
                     }
-                } else if (TransferItem.Flag.DONE == `object`.flag) {
+                } else if (TransferItem.Flag.DONE == item.flag) {
                     setNeutralButton(R.string.butn_open) { dialog: DialogInterface?, which: Int ->
                         try {
                             com.genonbeta.android.framework.util.Files.openUri(context, pseudoFile)
