@@ -70,8 +70,8 @@ class LookPreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceCh
                 titleList.add(context.getString(R.string.text_batterySaverTheme))
             }
 
-            themePreference.entries = valueList.toTypedArray()
-            themePreference.entryValues = titleList.toTypedArray()
+            themePreference.entries = titleList.toTypedArray()
+            themePreference.entryValues = valueList.toTypedArray()
         }
     }
 }

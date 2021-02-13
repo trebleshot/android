@@ -33,7 +33,7 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         try {
-            val knownAddressList: List<DeviceAddress> = AppUtils.getKuick(context).castQuery<Device, DeviceAddress>(
+            val knownAddressList: List<DeviceAddress> = AppUtils.getKuick(context).castQuery(
                 Transfers.createAddressSelection(device.uid), DeviceAddress::class.java
             )
             progress.increaseTotalBy(knownAddressList.size)
@@ -46,8 +46,7 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
                         CommunicationBridge.connect(kuick, address, device, 0).use { client ->
                             client.requestAcquaintance()
                             if (client.receiveResult()) {
-                                val anchor: CalculationResultListener? = anchor
-                                if (anchor != null) post { anchor.onCalculationResult(device, address) }
+                                post { anchor?.onCalculationResult(device, address) }
                                 return
                             }
                         }
@@ -56,8 +55,7 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
                     }
                 }
             }
-            val anchor: CalculationResultListener? = anchor
-            if (anchor != null) post { anchor.onCalculationResult(device, null) }
+            post { anchor?.onCalculationResult(device, null) }
         } catch (e: Exception) {
             post(CommonErrorHelper.messageOf(context, e))
         }

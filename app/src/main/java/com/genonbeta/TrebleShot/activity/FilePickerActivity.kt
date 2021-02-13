@@ -73,7 +73,7 @@ class FilePickerActivity : Activity() {
                 fileExplorerFragment.listView.clipToPadding = false
                 fab.show()
                 fab.setOnClickListener { v: View ->
-                    val selectedPath = fileExplorerFragment.adapter.getPath()
+                    val selectedPath = fileExplorerFragment.adapter.path
                     if (selectedPath != null && selectedPath.canWrite())
                         finishWithResult(selectedPath)
                     else

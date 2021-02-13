@@ -60,12 +60,8 @@ class FindConnectionDialog internal constructor(activity: Activity) : ProgressDi
                     .setTitle(R.string.text_connectionError)
                     .setMessage(R.string.text_connectionToRemoteFailed)
                     .setNegativeButton(R.string.butn_close, null)
-                    .setPositiveButton(
-                        R.string.butn_retry
-                    ) { dialog: DialogInterface?, which: Int ->
-                        show(
-                            activity, device, listener
-                        )
+                    .setPositiveButton(R.string.butn_retry) { dialog: DialogInterface?, which: Int ->
+                        show(activity, device, listener)
                     }
                     .show()
             } else listener?.onDeviceResolved(device, address)
@@ -84,10 +80,9 @@ class FindConnectionDialog internal constructor(activity: Activity) : ProgressDi
             }
             dialog.setTitle(R.string.text_automaticNetworkConnectionOngoing)
             dialog.setCancelable(false)
-            dialog.setOnDismissListener { dialog1: DialogInterface? -> removeOnClose.run() }
-            dialog.setOnCancelListener { dialog1: DialogInterface? -> removeOnClose.run() }
-            dialog.setButton(BUTTON_NEGATIVE,
-                activity.getString(R.string.butn_cancel)) { dialog12: DialogInterface?, which: Int ->
+            dialog.setOnDismissListener { removeOnClose.run() }
+            dialog.setOnCancelListener { removeOnClose.run() }
+            dialog.setButton(BUTTON_NEGATIVE, activity.getString(R.string.butn_cancel)) { _: DialogInterface?, _: Int ->
                 removeOnClose.run()
             }
             dialog.show()

@@ -55,13 +55,14 @@ open class ProgressDialog : AlertDialog {
      */
     constructor(context: Context, theme: Int) : super(context, theme)
 
-    override fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.internal_layout_alert_dialog_progress, null)
 
         /* Use a separate handler to update the text views as they
          * must be updated on the same thread that created them.
-         */progressBar = view.findViewById(R.id.progress)
+         */
+        progressBar = view.findViewById(R.id.progress)
         setView(view)
         if (mMax > 0) max = mMax
         if (mProgressVal > 0) progress = mProgressVal

@@ -72,21 +72,13 @@ open class DeviceListFragment :
         intentFilter.addAction(ACTION_DEVICE_STATUS)
         intentFilter.addAction(SCAN_RESULTS_AVAILABLE_ACTION)
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
-        arguments?.let {
-            if (it.containsKey(ARG_HIDDEN_DEVICES_LIST)) {
-                val hiddenTypes: List<String>? = it.getStringArrayList(ARG_HIDDEN_DEVICES_LIST)
-                if (hiddenTypes != null && hiddenTypes.isNotEmpty()) {
-                    val containerList = ArrayList<Device.Type>()
 
-                    for (i in hiddenTypes.indices) {
-                        containerList.add(Device.Type.valueOf(hiddenTypes[i]))
-                    }
-
-                    hiddenDeviceTypes = containerList.toTypedArray()
-                }
-            }
-        }
-
+        hiddenDeviceTypes = arguments?.getStringArrayList(ARG_HIDDEN_DEVICES_LIST)?.let {
+            val containerList = ArrayList<Device.Type>()
+            for (i in it.indices) containerList.add(Device.Type.valueOf(it[i]))
+            containerList.toTypedArray()
+        } ?: emptyArray()
+        
         // TODO: 2/1/21 Wifi Direct daemon? Might not be supported by Android TV.
         //if (Build.VERSION.SDK_INT >= 16)
         //    mP2pDaemon = new P2pDaemon(getConnections());

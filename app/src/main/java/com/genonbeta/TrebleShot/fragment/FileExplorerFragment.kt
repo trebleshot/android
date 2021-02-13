@@ -77,7 +77,7 @@ class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener,
     }
 
     override fun onBackPressed(): Boolean {
-        val path = adapter.getPath() ?: return false
+        val path = adapter.path ?: return false
         val parentFile = getReadableFolder(path)
         if (parentFile == null || File.separator == parentFile.getName()) goPath(null) else goPath(parentFile)
         return true
@@ -90,7 +90,7 @@ class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener,
 
     override fun onListRefreshed() {
         super.onListRefreshed()
-        pathAdapter.goTo(adapter.getPath())
+        pathAdapter.goTo(adapter.path)
         pathAdapter.notifyDataSetChanged()
         if (pathAdapter.itemCount > 0) pathView.smoothScrollToPosition(pathAdapter.itemCount - 1)
     }
@@ -98,7 +98,7 @@ class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.actions_file_explorer_create_folder) {
-            val path = adapter.getPath()
+            val path = adapter.path
             if (path != null && path.canWrite()) {
                 FolderCreationDialog(
                     requireContext(),

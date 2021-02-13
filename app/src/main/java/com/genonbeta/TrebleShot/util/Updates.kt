@@ -18,7 +18,6 @@
 package com.genonbeta.TrebleShot.util
 
 import android.content.Context
-import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
 
@@ -27,23 +26,26 @@ import com.genonbeta.android.updatewithgithub.GitHubUpdater
  * date: 30.12.2017 17:08
  */
 object Updates {
-    // TODO: 2/6/21 Check for updates method  is commented out
     fun checkForUpdates(
         context: Context, updater: GitHubUpdater, popupDialog: Boolean,
         listener: GitHubUpdater.OnInfoAvailableListener?,
     ) {
-        /*
-        updater.checkForUpdates(popupDialog, (newVersion, versionName, title, description, releaseDate) -> {
-            SharedPreferences sharedPreferences = AppUtils . getDefaultPreferences (context);
+        updater.checkForUpdates(popupDialog, object : GitHubUpdater.OnInfoAvailableListener {
+            override fun onInfoAvailable(
+                newVersion: Boolean,
+                versionName: String?,
+                title: String?,
+                description: String?,
+                releaseDate: String?,
+            ) {
+                AppUtils.getDefaultPreferences(context).edit()
+                    .putString("availableVersion", versionName)
+                    .putLong("checkedForUpdatesTime", System.currentTimeMillis())
+                    .apply()
 
-            sharedPreferences.edit()
-                .putString("availableVersion", versionName)
-                .putLong("checkedForUpdatesTime", System.currentTimeMillis())
-                .apply();
-
-            if (listener != null)
-                listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
-        });*/
+                listener?.onInfoAvailable(newVersion, versionName, title, description, releaseDate)
+            }
+        })
     }
 
     private fun getAvailableVersion(context: Context): String? {

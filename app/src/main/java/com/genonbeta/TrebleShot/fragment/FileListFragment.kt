@@ -66,11 +66,11 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
             if (ACTION_FILE_LIST_CHANGED == intent.action && intent.hasExtra(EXTRA_FILE_PARENT)) {
                 try {
                     val parentUri: Uri? = intent.getParcelableExtra(EXTRA_FILE_PARENT)
-                    if (parentUri == null && adapter.getPath() == null) {
+                    if (parentUri == null && adapter.path == null) {
                         refreshList()
                     } else if (parentUri != null) {
                         val parentFile = Files.fromUri(requireContext(), parentUri)
-                        val path = adapter.getPath()
+                        val path = adapter.path
 
                         if (path != null && parentFile.getUri() == path.getUri())
                             refreshList()
@@ -90,7 +90,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            } else if (adapter.getPath() == null && KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
+            } else if (adapter.path == null && KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: KuickDb.BroadcastData = KuickDb.toData(intent)
                 if (Kuick.TABLE_FILEBOOKMARK == data.tableName)
                     refreshList()
@@ -128,7 +128,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
         if (resultCode == Activity.RESULT_OK)
             if (requestCode == REQUEST_WRITE_ACCESS) {
                 val pathUri = data!!.data
-                if (Build.VERSION.SDK_INT >= 21 && pathUri != null && getContext() != null) {
+                if (Build.VERSION.SDK_INT >= 21 && pathUri != null && context != null) {
                     context?.contentResolver?.takePersistableUriPermission(
                         pathUri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -142,7 +142,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
                         goPath(null)
                     } catch (e: FileNotFoundException) {
                         e.printStackTrace()
-                        Toast.makeText(getContext(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -157,7 +157,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        val path = adapter.getPath()
+        val path = adapter.path
         if (id == R.id.actions_file_list_mount_directory) {
             requestMountStorage()
         } else if (id == R.id.actions_file_list_toggle_shortcut && path != null) {
@@ -170,7 +170,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
         super.onPrepareOptionsMenu(menu)
         val shortcutMenuItem = menu.findItem(R.id.actions_file_list_toggle_shortcut)
         if (shortcutMenuItem != null) {
-            val path = adapter.getPath()
+            val path = adapter.path
 
             shortcutMenuItem.isEnabled = path != null
             if (path != null) try {
@@ -198,7 +198,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        adapter.getPath()?.let {
+        adapter.path?.let {
             outState.putString(EXTRA_FILE_LOCATION, it.getUri().toString())
         }
     }
@@ -219,8 +219,8 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
 
         // If the current path is different from the older one, move the scroll position
         // to the top.
-        val pathOnTrial: DocumentFile? = adapter.getPath()
-        if (!(lastKnownPath == null && adapter.getPath() == null)
+        val pathOnTrial: DocumentFile? = adapter.path
+        if (!(lastKnownPath == null && adapter.path == null)
             && lastKnownPath != null && lastKnownPath != pathOnTrial
         ) listView.scrollToPosition(0)
         lastKnownPath = pathOnTrial
@@ -258,7 +258,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
     fun requestMountStorage() {
         if (Build.VERSION.SDK_INT < 21) return
         startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS)
-        Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show()
+        Toast.makeText(activity, R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show()
     }
 
     override fun setItemSelected(holder: GroupViewHolder): Boolean {

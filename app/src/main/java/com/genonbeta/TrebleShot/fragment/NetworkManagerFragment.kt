@@ -182,7 +182,11 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT == requestCode) toggleHotspot() else if (REQUEST_LOCATION_PERMISSION == requestCode) updateState()
+        if (REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT == requestCode) {
+            toggleHotspot()
+        } else if (REQUEST_LOCATION_PERMISSION == requestCode) {
+            updateState()
+        }
     }
 
     override fun onResume() {
@@ -357,7 +361,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
                 e.printStackTrace()
             }
         } else codeView.setImageResource(R.drawable.ic_qrcode_white_128dp)
-        codeText.setVisibility(if (showQRCode) View.GONE else View.VISIBLE)
+        codeText.visibility = if (showQRCode) View.GONE else View.VISIBLE
         ImageViewCompat.setImageTintList(codeView, if (showQRCode) null else colorPassiveState)
     }
 

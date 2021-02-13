@@ -33,20 +33,23 @@ class PreferencesActivity : Activity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home) onBackPressed() else if (id == R.id.actions_preference_main_reset_to_defaults) {
-            AlertDialog.Builder(this)
-                .setTitle(R.string.ques_resetToDefault)
-                .setMessage(R.string.text_resetPreferencesToDefaultSummary)
-                .setNegativeButton(R.string.butn_cancel, null)
-                .setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
-                    AppUtils.getDefaultPreferences(applicationContext).edit()
-                        .clear()
-                        .apply()
-                    finish()
-                }
-                .show()
-        } else return super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            android.R.id.home -> onBackPressed()
+            R.id.actions_preference_main_reset_to_defaults -> {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.ques_resetToDefault)
+                    .setMessage(R.string.text_resetPreferencesToDefaultSummary)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
+                        AppUtils.getDefaultPreferences(applicationContext).edit()
+                            .clear()
+                            .apply()
+                        finish()
+                    }
+                    .show()
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
         return true
     }
 

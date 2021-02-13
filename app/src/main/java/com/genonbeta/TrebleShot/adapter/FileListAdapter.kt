@@ -60,6 +60,8 @@ import java.util.*
 class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolder>) :
     GroupEditableListAdapter<FileHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_DEFAULT),
     CustomGroupLister<FileHolder> {
+    var path: DocumentFile? = null
+
     private var showDirectories = true
 
     private var showFiles = true
@@ -68,11 +70,9 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
 
     private var searchWord: String? = null
 
-    private var path: DocumentFile? = null
-
     protected override fun onLoad(lister: GroupLister<FileHolder>) {
         showThumbnails = AppUtils.getDefaultPreferences(context).getBoolean("load_thumbnails", true)
-        val path = getPath()
+        val path = path
         if (path != null) {
             val fileIndex = path.listFiles()
             if (fileIndex.isNotEmpty()) {
@@ -84,18 +84,15 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                 }
             }
         } else {
-            run {
-                val saveDir = FileHolder(context, Files.getApplicationDirectory(context))
-                saveDir.type = FileHolder.Type.SaveLocation
-                lister.offerObliged(this, saveDir)
-            }
-            run {
-                val rootDir = File(".")
-                if (rootDir.canRead()) {
-                    val rootHolder = FileHolder(context, DocumentFile.fromFile(rootDir))
-                    rootHolder.friendlyName = context.getString(R.string.text_fileRoot)
-                    lister.offerObliged(this, rootHolder)
-                }
+            val saveDir = FileHolder(context, Files.getApplicationDirectory(context))
+            saveDir.type = FileHolder.Type.SaveLocation
+            lister.offerObliged(this, saveDir)
+
+            val rootDir = File(".")
+            if (rootDir.canRead()) {
+                val rootHolder = FileHolder(context, DocumentFile.fromFile(rootDir))
+                rootHolder.friendlyName = context.getString(R.string.text_fileRoot)
+                lister.offerObliged(this, rootHolder)
             }
             val referencedDirectoryList: MutableList<File> = ArrayList()
             when {
@@ -207,14 +204,15 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
             layoutInflater.inflate(R.layout.list_file, parent, false)
         ) else createDefaultViews(parent, viewType, false)
 
-        if (viewType == VIEW_TYPE_ACTION_BUTTON) fragment.registerLayoutViewClicks(
-            holder
-        ) else if (!holder.isRepresentative()) {
+        if (viewType == VIEW_TYPE_ACTION_BUTTON) {
             fragment.registerLayoutViewClicks(holder)
-            holder.itemView.findViewById<View>(R.id.layout_image)
-                .setOnClickListener { v: View? -> fragment.setItemSelected(holder, true) }
+        } else if (!holder.isRepresentative()) {
+            fragment.registerLayoutViewClicks(holder)
+            holder.itemView.findViewById<View>(R.id.layout_image).setOnClickListener { v: View? ->
+                fragment.setItemSelected(holder, true)
+            }
             holder.itemView.findViewById<View>(R.id.menu).setOnClickListener { v: View? ->
-                val fileHolder: FileHolder = getList().get(holder.adapterPosition)
+                val fileHolder: FileHolder = getList()[holder.adapterPosition]
                 val file = fileHolder.file
                 val isFile =
                     FileHolder.Type.File == fileHolder.type || FileHolder.Type.Recent == fileHolder.type
@@ -323,12 +321,16 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     }
 
     override fun getGroupBy(): Int {
-        return if (path != null && path == Files.getApplicationDirectory(context)) MODE_GROUP_FOR_INBOX else super.getGroupBy()
+        return if (path != null && path == Files.getApplicationDirectory(context)) {
+            MODE_GROUP_FOR_INBOX
+        } else {
+            super.getGroupBy()
+        }
     }
 
     override fun getSortingCriteria(objectOne: FileHolder, objectTwo: FileHolder): Int {
         // Checking whether the path is null helps to increase the speed.
-        return if (getPath() == null && FileHolder.Type.Recent == objectOne.type
+        return if (path == null && FileHolder.Type.Recent == objectOne.type
             && FileHolder.Type.Recent == objectTwo.type
         )
             MODE_SORT_BY_DATE
@@ -338,20 +340,12 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
 
     override fun getSortingOrder(objectOne: FileHolder, objectTwo: FileHolder): Int {
         // Checking whether the path is null helps to increase the speed.
-        return if (getPath() == null && FileHolder.Type.Recent == objectOne.type
+        return if (path == null && FileHolder.Type.Recent == objectOne.type
             && FileHolder.Type.Recent == objectTwo.type
         )
             MODE_SORT_ORDER_DESCENDING
         else
             super.getSortingOrder(objectOne, objectTwo)
-    }
-
-    fun getPath(): DocumentFile? {
-        return path
-    }
-
-    fun goPath(path: File?) {
-        goPath(path?.let { DocumentFile.fromFile(path) })
     }
 
     override fun getRepresentativeText(merger: Merger<out FileHolder>): String {
@@ -452,7 +446,7 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                 Type.Storage -> context.getString(R.string.text_storage)
                 Type.Mounted -> context.getString(R.string.text_mountedDirectory)
                 Type.Bookmarked, Type.Folder, Type.Public -> if (fileLocal != null && fileLocal.isDirectory()) {
-                    val itemSize = file!!.listFiles().size
+                    val itemSize = fileLocal.listFiles().size
                     context.resources.getQuantityString(R.plurals.text_items, itemSize, itemSize)
                 } else context.getString(R.string.text_unknown)
                 Type.SaveLocation -> context.getString(R.string.text_defaultFolder)

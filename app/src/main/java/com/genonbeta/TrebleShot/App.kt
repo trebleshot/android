@@ -79,7 +79,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     val taskList: MutableList<AsyncTask> = ArrayList()
 
-    lateinit var taskNotification: DynamicNotification
+    var taskNotification: DynamicNotification? = null
 
     lateinit var webShareServer: WebShareServer
 

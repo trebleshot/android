@@ -19,7 +19,6 @@ package com.genonbeta.android.framework.app
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,9 +78,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
 
     private fun findViewDefaultsFrom(view: View?) {
         view?.let {
-            Log.d("Setttttt", "aafdasdfasdfafsadfasd")
             listView = it.findViewById(R.id.genfw_customListFragment_listView)
-            Log.d("Setttttt", "Yeahahhahahah")
             emptyListContainerView = it.findViewById<View?>(R.id.genfw_customListFragment_emptyView) as ViewGroup
             emptyListTextView = it.findViewById<View?>(R.id.genfw_customListFragment_emptyTextView) as TextView
             emptyListImageView = it.findViewById<View?>(R.id.genfw_customListFragment_emptyImageView) as ImageView
@@ -104,11 +101,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
         refreshLoaderCallback.requestRefresh()
     }
 
-    fun setListLoading(loading: Boolean) {
-        setListLoading(loading, true)
-    }
-
-    private fun setListLoading(loading: Boolean, animate: Boolean) {
+    private fun setListLoading(loading: Boolean) {
         ensureList()
         // progress is shown == loading
         // container is not shown == progress cannot be shown
@@ -117,28 +110,23 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
 
         progressBar.visibility = if (loading) View.VISIBLE else View.GONE
 
-        if (animate)
-            TransitionManager.beginDelayedTransition(emptyListContainerView)
+        TransitionManager.beginDelayedTransition(emptyListContainerView)
     }
 
     protected fun setListShown(shown: Boolean) {
-        setListShown(shown, true)
-    }
-
-    protected fun setListShown(shown: Boolean, animate: Boolean) {
         if (listView.visibility == View.VISIBLE != shown) {
             listView.visibility = if (shown) View.VISIBLE else View.GONE
 
-            if (animate)
-                listView.startAnimation(
-                    AnimationUtils.loadAnimation(
-                        context, if (shown) android.R.anim.fade_in else android.R.anim.fade_out
-                    )
+            listView.startAnimation(
+                AnimationUtils.loadAnimation(
+                    context, if (shown) android.R.anim.fade_in else android.R.anim.fade_out
                 )
+            )
         }
 
-        if (emptyListContainerView.visibility == View.VISIBLE == shown)
+        if (emptyListContainerView.visibility == View.VISIBLE == shown) {
             emptyListContainerView.visibility = if (shown) View.GONE else View.VISIBLE
+        }
     }
 
     fun showEmptyListActionButton(show: Boolean) {
@@ -163,7 +151,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
             reloadRequested = false
             running = true
 
-            setListShown(adapter.let { it.getItemCount() == 0 } ?: false)
+            setListShown(adapter.getItemCount() == 0)
             setListLoading(true)
             return createLoader()
         }

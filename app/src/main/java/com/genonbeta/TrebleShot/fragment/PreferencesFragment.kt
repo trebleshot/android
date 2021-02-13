@@ -17,14 +17,13 @@
  */
 package com.genonbeta.TrebleShot.fragment
 
-import com.genonbeta.TrebleShot.R
 import android.os.Bundle
-import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.fragment.inner.LookPreferencesFragment
 
 class PreferencesFragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences_main_app)
         addPreferencesFromResource(R.xml.preferences_main_notification)
         addPreferencesFromResource(R.xml.preferences_main_advanced)
