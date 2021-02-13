@@ -93,7 +93,7 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex, GroupViewH
     }
 
     override fun onCreatePerformerMenu(context: Context): PerformerMenu {
-        return PerformerMenu(context, SelectionCallback(getActivity(), this))
+        return PerformerMenu(context, SelectionCallback(requireActivity(), this))
     }
 
     override fun onResume() {

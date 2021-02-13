@@ -148,10 +148,15 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
     }
 
     override fun onShareLocal(shareableList: List<Shareable>) {
-        ChooseSharingMethodDialog(this) {
-            val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(it, shareableList)
-            runUiTask(task, this)
-        }.show()
+        ChooseSharingMethodDialog(
+            this,
+            object : ChooseSharingMethodDialog.PickListener {
+                override fun onShareMethod(sharingMethod: ChooseSharingMethodDialog.SharingMethod) {
+                    val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(sharingMethod, shareableList)
+                    runUiTask(task, this@ContentSharingActivity)
+                }
+            }
+        ).show()
     }
 
     override fun onBackPressed() {

@@ -40,7 +40,7 @@ class FileRenameDialog(val activity: Activity, val list: List<FileHolder>) : Abs
         editText.setText(if (multiple) "%d" else itemList[0].fileName)
 
         setOnProceedClickListener(R.string.butn_rename, object : OnProceedClickListener {
-            override fun onProceedClick(dialog: AlertDialog?): Boolean {
+            override fun onProceedClick(dialog: AlertDialog): Boolean {
                 val renameTo = editText.text.toString()
                 if (multiple) try {
                     String.format(renameTo, itemList.size)

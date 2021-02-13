@@ -252,7 +252,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             R.plurals.ques_receiveMultipleFiles,
             numberOfFiles, numberOfFiles
         ) else
-            itemList[0].name!!
+            itemList[0].name
 
         if (activity == null)
             notificationHelper.notifyTransferRequest(
@@ -419,8 +419,8 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         }
 
         @Throws(IllegalStateException::class)
-        fun from(activity: android.app.Activity?): App {
-            if (activity!!.application is App) return activity.application as App
+        fun from(activity: android.app.Activity): App {
+            if (activity.application is App) return activity.application as App
             throw IllegalStateException("The app does not have an App instance.")
         }
 
@@ -444,7 +444,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             return false
         }
 
-        fun interruptTasksBy(activity: android.app.Activity?, identity: Identity, userAction: Boolean) {
+        fun interruptTasksBy(activity: android.app.Activity, identity: Identity, userAction: Boolean) {
             try {
                 from(activity).interruptTasksBy(identity, userAction)
             } catch (e: IllegalStateException) {
@@ -452,7 +452,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             }
         }
 
-        fun <T : AsyncTask> run(activity: android.app.Activity?, task: T) {
+        fun <T : AsyncTask> run(activity: android.app.Activity, task: T) {
             try {
                 from(activity).run(task)
             } catch (e: IllegalStateException) {

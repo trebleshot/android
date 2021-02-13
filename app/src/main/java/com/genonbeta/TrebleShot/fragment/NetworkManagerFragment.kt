@@ -225,7 +225,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
         if (v.id == R.id.layout_network_manager_info_toggle_button) {
             when (activeType) {
                 Type.LocationPermissionNeeded -> connections.validateLocationPermission(
-                    activity!!, REQUEST_LOCATION_PERMISSION
+                    requireActivity(), REQUEST_LOCATION_PERMISSION
                 )
                 Type.WiFi, Type.HotspotExternal -> openWifiSettings()
                 Type.Hotspot, Type.None -> toggleHotspot()
@@ -334,14 +334,14 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
         }
         when (activeType) {
             Type.LocationPermissionNeeded, Type.None, Type.HotspotExternal -> {
-                text2.setText(null)
-                text3.setText(null)
+                text2.text = null
+                text3.text = null
             }
         }
         containerText1.visibility = if (text1.length() > 0) View.VISIBLE else View.GONE
         containerText2.visibility = if (text2.length() > 0) View.VISIBLE else View.GONE
         containerText3.visibility = if (text3.length() > 0) View.VISIBLE else View.GONE
-        val showQRCode = code.length > 0 && context != null
+        val showQRCode = code.isNotEmpty()
         if (showQRCode) {
             code.append(delimiter)
                 .append("end")
@@ -350,7 +350,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
                 val bitMatrix: BitMatrix = formatWriter.encode(code.toString(), BarcodeFormat.QR_CODE, 400, 400)
                 val encoder = BarcodeEncoder()
                 val bitmap: Bitmap = encoder.createBitmap(bitMatrix)
-                GlideApp.with(context!!)
+                GlideApp.with(requireContext())
                     .load(bitmap)
                     .into(codeView)
             } catch (e: Exception) {

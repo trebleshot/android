@@ -90,7 +90,7 @@ class DeviceListAdapter(
         holder.itemView.findViewById<View>(R.id.menu)
             .setOnClickListener { v: View? ->
                 DeviceListFragment.openInfo(
-                    fragment.getActivity(), connections,
+                    fragment.requireActivity(), connections,
                     getItem(holder.adapterPosition)
                 )
             }
