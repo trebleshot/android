@@ -42,7 +42,7 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
         removeAsynchronous(App.from(activity), item, parent)
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, item: V, parent: T) {
+    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, item: V, parent: T?) {
         app.run(SingleRemovalTask(app.applicationContext, writableDatabase, item, parent))
     }
 

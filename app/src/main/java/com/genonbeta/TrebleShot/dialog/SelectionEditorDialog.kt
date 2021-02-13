@@ -21,27 +21,34 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.ListView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.compileFrom
-import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
+import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
+import com.genonbeta.android.framework.util.actionperformer.Selectable
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * created by: Veli
  * date: 5.01.2018 10:38
  */
-class SelectionEditorDialog(activity: Activity?, provider: PerformerEngineProvider) : AlertDialog.Builder(
-    activity!!
-) {
-    private val mLayoutInflater: LayoutInflater
-    private val mAdapter: SelfAdapter
-    private val mList: List<MappedSelectable<*>>
-    private val mMappedConnectionList: MutableList<MappedConnection<*>> = ArrayList()
+class SelectionEditorDialog(activity: Activity, provider: PerformerEngineProvider) : AlertDialog.Builder(activity) {
+    private val inflater: LayoutInflater = LayoutInflater.from(activity)
+
+    private val adapter = SelfAdapter()
+
+    private val engine = provider.getPerformerEngine()
+
+    private val mappedList: List<MappedSelectable<*>> = compileFrom(engine)
+
+    private val mappedConnectionList: MutableList<MappedConnection<*>> = ArrayList()
+
     fun checkReversed(textView: TextView, removeSign: View, selectable: Selectable) {
         selectable.setSelectableSelected(!selectable.isSelectableSelected())
         mark(textView, removeSign, selectable)
@@ -54,11 +61,11 @@ class SelectionEditorDialog(activity: Activity?, provider: PerformerEngineProvid
     }
 
     fun massCheck(check: Boolean) {
-        synchronized(mList) { for (mappedConnection in mMappedConnectionList) massCheck(check, mappedConnection) }
-        mAdapter.notifyDataSetChanged()
+        synchronized(mappedList) { for (mappedConnection in mappedConnectionList) massCheck(check, mappedConnection) }
+        adapter.notifyDataSetChanged()
     }
 
-    private fun <T : Selectable?> massCheck(check: Boolean, mappedConnection: MappedConnection<T>) {
+    private fun <T : Selectable> massCheck(check: Boolean, mappedConnection: MappedConnection<T>) {
         mappedConnection.connection.setSelected(mappedConnection.list, IntArray(mappedConnection.list.size), check)
     }
 
@@ -71,41 +78,36 @@ class SelectionEditorDialog(activity: Activity?, provider: PerformerEngineProvid
 
     private inner class SelfAdapter : BaseAdapter() {
         override fun getCount(): Int {
-            return mList.size
+            return mappedList.size
         }
 
         override fun getItem(position: Int): Any {
-            return mList[position]
+            return mappedList[position]
         }
 
         override fun getItemId(position: Int): Long {
             return 0
         }
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            var convertView = convertView
-            if (convertView == null) convertView = mLayoutInflater.inflate(R.layout.list_selection, parent, false)
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView ?: inflater.inflate(R.layout.list_selection, parent, false)
             val selectable = getItem(position) as MappedSelectable<*>
-            val textView1: TextView = convertView.findViewById<TextView>(R.id.text)
-            val removalSignView = convertView.findViewById<View>(R.id.removalSign)
-            textView1.setText(selectable.selectableTitle)
+            val textView1: TextView = view.findViewById(R.id.text)
+            val removalSignView = view.findViewById<View>(R.id.removalSign)
+            textView1.text = selectable.getSelectableTitle()
             mark(textView1, removalSignView, selectable)
-            convertView.isClickable = true
-            convertView.setOnClickListener { v: View? -> checkReversed(textView1, removalSignView, selectable) }
-            return convertView
+            view.isClickable = true
+            view.setOnClickListener { v: View? -> checkReversed(textView1, removalSignView, selectable) }
+            return view
         }
     }
 
-    private fun <T : Selectable?> addToMappedObjectList(connection: IEngineConnection<T>) {
-        mMappedConnectionList.add(MappedConnection(connection, connection.getSelectedItemList()))
+    private fun <T : Selectable> addToMappedObjectList(connection: IEngineConnection<T>) {
+        mappedConnectionList.add(MappedConnection(connection, connection.getSelectedItemList()))
     }
 
-    private class MappedConnection<T : Selectable?>(var connection: IEngineConnection<T>, list: List<T>?) {
-        var list: List<T>
-
-        init {
-            this.list = ArrayList(list)
-        }
+    private class MappedConnection<T : Selectable>(var connection: IEngineConnection<T>, list: List<T>?) {
+        var list: MutableList<T> = if (list == null) ArrayList() else ArrayList(list)
     }
 
     companion object {
@@ -113,18 +115,18 @@ class SelectionEditorDialog(activity: Activity?, provider: PerformerEngineProvid
     }
 
     init {
-        val engine = provider.performerEngine
-        mLayoutInflater = LayoutInflater.from(activity)
-        mAdapter = SelfAdapter()
-        mList = compileFrom(engine)
-        if (engine != null) for (baseEngineConnection in engine.connectionList) if (baseEngineConnection is IEngineConnection<*>) addToMappedObjectList(
-            baseEngineConnection
-        )
-        val view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false)
+        if (engine != null) {
+            for (baseEngineConnection in engine.getConnectionList()) {
+                if (baseEngineConnection is IEngineConnection<*>) {
+                    addToMappedObjectList(baseEngineConnection)
+                }
+            }
+        }
+        val view = inflater.inflate(R.layout.layout_selection_editor, null, false)
         val listView = view.findViewById<ListView>(R.id.listView)
-        listView.setAdapter(mAdapter)
+        listView.adapter = adapter
         listView.dividerHeight = 0
-        if (mList.size > 0) setView(view) else setMessage(R.string.text_listEmpty)
+        if (mappedList.isNotEmpty()) setView(view) else setMessage(R.string.text_listEmpty)
         setTitle(R.string.text_previewAndEditList)
         setNeutralButton(R.string.butn_check, null)
         setNegativeButton(R.string.butn_uncheck, null)

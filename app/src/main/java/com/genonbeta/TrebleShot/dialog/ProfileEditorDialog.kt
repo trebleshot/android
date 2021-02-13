@@ -27,15 +27,17 @@ import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.util.AppUtils
 
 class ProfileEditorDialog(activity: Activity) : AlertDialog.Builder(activity) {
-    private var mDialog: AlertDialog? = null
+    private var dialog: AlertDialog? = null
+
     protected fun closeIfPossible() {
-        if (mDialog != null) {
-            if (mDialog!!.isShowing) mDialog!!.dismiss() else mDialog = null
+        dialog?.let {
+            if (it.isShowing) it.dismiss()
+            dialog = null
         }
     }
 
     override fun show(): AlertDialog {
-        return super.show().also { mDialog = it }
+        return super.show().also { dialog = it }
     }
 
     fun saveNickname(activity: Activity, editText: EditText) {

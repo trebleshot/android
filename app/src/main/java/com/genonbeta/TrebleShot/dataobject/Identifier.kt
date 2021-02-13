@@ -41,7 +41,7 @@ data class Identifier(var key: String, var value: String = "", var isNull: Boole
             return from(key.toString(), value)
         }
 
-        @JvmStatic
+
         fun from(key: String, value: Any?): Identifier {
             return Identifier(key, value?.toString() ?: "", value == null)
         }

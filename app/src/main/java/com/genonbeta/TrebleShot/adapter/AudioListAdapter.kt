@@ -28,12 +28,12 @@ import android.widget.TextView
 import androidx.collection.ArrayMap
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.adapter.AudioListAdapter.*
+import com.genonbeta.TrebleShot.adapter.AudioListAdapter.AudioItemHolder
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TextUtils
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.*
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.CustomGroupLister
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.framework.util.listing.Merger
 import com.genonbeta.android.framework.util.listing.merger.StringMerger
 import java.io.File
@@ -130,18 +130,19 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
                 val textSeparator1: TextView = parentView.findViewById(R.id.textSeparator1)
                 text1.setText(itemHolder.song)
                 if (getGroupBy() == MODE_GROUP_BY_ALBUM || getGroupBy() == MODE_GROUP_BY_ARTIST) {
-                    text2.text = if (getGroupBy() == MODE_GROUP_BY_ALBUM) itemHolder.artist else itemHolder.albumHolder!!.title
+                    text2.text =
+                        if (getGroupBy() == MODE_GROUP_BY_ALBUM) itemHolder.artist else itemHolder.albumHolder.title
                     text3.visibility = View.GONE
                     textSeparator1.setVisibility(View.GONE)
                 } else {
-                    text2.setText(itemHolder.artist)
-                    text3.setText(itemHolder.albumHolder!!.title)
-                    text3.setVisibility(View.VISIBLE)
-                    textSeparator1.setVisibility(View.VISIBLE)
+                    text2.text = itemHolder.artist
+                    text3.text = itemHolder.albumHolder.title
+                    text3.visibility = View.VISIBLE
+                    textSeparator1.visibility = View.VISIBLE
                 }
                 parentView.isSelected = itemHolder.isSelectableSelected()
                 GlideApp.with(context)
-                    .load(itemHolder.albumHolder!!.art)
+                    .load(itemHolder.albumHolder.art)
                     .placeholder(R.drawable.ic_music_note_white_24dp)
                     .override(160)
                     .centerCrop()
@@ -156,17 +157,12 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
         mode: Int,
         holder: AudioItemHolder,
     ): Boolean {
-        if (mode == MODE_GROUP_BY_ALBUM) lister.offer(
-            holder, StringMerger(
-                holder.albumHolder!!.title
-            )
-        ) else if (mode == MODE_GROUP_BY_ARTIST) lister.offer(
-            holder,
-            StringMerger(holder.artist)
-        ) else if (mode == MODE_GROUP_BY_FOLDER) lister.offer(
-            holder,
-            StringMerger(holder.folder)
-        ) else return false
+        when (mode) {
+            MODE_GROUP_BY_ALBUM -> lister.offer(holder, StringMerger(holder.albumHolder.title))
+            MODE_GROUP_BY_ARTIST -> lister.offer(holder, StringMerger(holder.artist))
+            MODE_GROUP_BY_FOLDER -> lister.offer(holder, StringMerger(holder.folder))
+            else -> return false
+        }
         return true
     }
 
@@ -175,27 +171,31 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
     }
 
     fun extractFolderName(folder: String): String {
-        var folder = folder
         if (folder.contains(File.separator)) {
             val split = folder.split(File.separator.toRegex()).toTypedArray()
-            if (split.size >= 2) folder = split[split.size - 2]
+            if (split.size >= 2) return split[split.size - 2]
         }
         return folder
     }
 
     override fun getSectionName(position: Int, item: AudioItemHolder): String {
         if (!item.isGroupRepresentative()) {
-            if (getGroupBy() == MODE_GROUP_BY_ARTIST) return item.artist!! else if (getGroupBy() == MODE_GROUP_BY_FOLDER) return item.folder!! else if (getGroupBy() == MODE_GROUP_BY_ALBUM) return item.albumHolder!!.title
+            return when {
+                getGroupBy() == MODE_GROUP_BY_ARTIST -> item.artist
+                getGroupBy() == MODE_GROUP_BY_FOLDER -> item.folder
+                getGroupBy() == MODE_GROUP_BY_ALBUM -> item.albumHolder.title
+                else -> item.friendlyName
+            }
         }
         return super.getSectionName(position, item)
     }
 
     class AudioItemHolder : GroupShareable {
-        var artist: String? = null
-        var song: String? = null
-        var folder: String? = null
+        lateinit var artist: String
+        lateinit var song: String
+        lateinit var folder: String
+        lateinit var albumHolder: AlbumHolder
         var albumId = 0
-        var albumHolder: AlbumHolder? = null
 
         constructor(representativeText: String) : super(
             VIEW_TYPE_REPRESENTATIVE,
@@ -203,8 +203,8 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
         )
 
         constructor(
-            id: Long, displayName: String?, artist: String, song: String, folder: String?, mimeType: String?,
-            albumId: Int, albumHolder: AlbumHolder?, date: Long, size: Long, uri: Uri?,
+            id: Long, displayName: String, artist: String, song: String, folder: String, mimeType: String,
+            albumId: Int, albumHolder: AlbumHolder?, date: Long, size: Long, uri: Uri,
         ) {
             initialize(id, "$song - $artist", displayName, mimeType, date, size, uri)
             this.artist = artist
@@ -218,7 +218,7 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
             if (super.applyFilter(filteringKeywords)) return true
             for (keyword in filteringKeywords) if (TextUtils.searchWord(folder, keyword)
                 || TextUtils.searchWord(artist, keyword) || TextUtils.searchWord(song, keyword)
-                || TextUtils.searchWord(albumHolder!!.title, keyword)
+                || TextUtils.searchWord(albumHolder.title, keyword)
             ) return true
             return false
         }

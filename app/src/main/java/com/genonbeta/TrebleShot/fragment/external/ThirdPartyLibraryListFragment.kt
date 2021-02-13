@@ -17,12 +17,30 @@
  */
 package com.genonbeta.TrebleShot.fragment.external
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.PopupMenu
+import android.widget.TextView
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.fragment.external.ThirdPartyLibraryListFragment.LicencesAdapter
+import com.genonbeta.TrebleShot.fragment.external.ThirdPartyLibraryListFragment.ModuleItem
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+
 /**
  * created by: veli
  * date: 7/20/18 8:56 PM
  */
-class ThirdPartyLibraryListFragment :
-    DynamicRecyclerViewFragment<ModuleItem?, RecyclerViewAdapter.ViewHolder?, LicencesAdapter?>() {
+class ThirdPartyLibraryListFragment : DynamicRecyclerViewFragment<ModuleItem, ViewHolder, LicencesAdapter>() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,18 +50,15 @@ class ThirdPartyLibraryListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listAdapter = LicencesAdapter(context)
+        adapter = LicencesAdapter(requireContext())
     }
 
-    class LicencesAdapter(context: Context?) :
-        RecyclerViewAdapter<ModuleItem, RecyclerViewAdapter.ViewHolder>(context) {
-        private val mList: MutableList<ModuleItem> = ArrayList()
+    class LicencesAdapter(context: Context) : RecyclerViewAdapter<ModuleItem, ViewHolder>(context) {
+        private val list: MutableList<ModuleItem> = ArrayList()
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val holder = ViewHolder(
-                inflater.inflate(
-                    R.layout.list_third_party_library, parent,
-                    false
-                )
+                layoutInflater.inflate(R.layout.list_third_party_library, parent, false)
             )
             holder.itemView.findViewById<View>(R.id.menu).setOnClickListener { v: View? ->
                 val moduleItem = list[holder.adapterPosition]
@@ -71,23 +86,23 @@ class ThirdPartyLibraryListFragment :
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = list[position]
-            val text1: TextView = holder.itemView.findViewById<TextView>(R.id.text)
-            val text2: TextView = holder.itemView.findViewById<TextView>(R.id.text2)
-            text1.setText(item.moduleName)
+            val text1 = holder.itemView.findViewById<TextView>(R.id.text)
+            val text2 = holder.itemView.findViewById<TextView>(R.id.text2)
+            text1.text = item.moduleName
             val stringBuilder = StringBuilder()
             if (item.moduleVersion != null) stringBuilder.append(item.moduleVersion)
             if (item.licence != null) {
                 if (stringBuilder.length > 0) stringBuilder.append(", ")
                 stringBuilder.append(item.licence)
             }
-            text2.setText(stringBuilder.toString())
+            text2.text = stringBuilder.toString()
         }
 
         override fun getItemCount(): Int {
-            return mList.size
+            return list.size
         }
 
-        override fun onLoad(): List<ModuleItem> {
+        override fun onLoad(): MutableList<ModuleItem> {
             val inputStream = context.resources.openRawResource(R.raw.libraries_index)
             val outputStream = ByteArrayOutputStream()
             try {
@@ -109,7 +124,7 @@ class ThirdPartyLibraryListFragment :
             return ArrayList()
         }
 
-        override fun onUpdate(passedItem: List<ModuleItem>) {
+        override fun onUpdate(passedItem: MutableList<ModuleItem>) {
             synchronized(list) {
                 list.clear()
                 list.addAll(passedItem)
@@ -117,7 +132,7 @@ class ThirdPartyLibraryListFragment :
         }
 
         override fun getList(): MutableList<ModuleItem> {
-            return mList
+            return list
         }
     }
 

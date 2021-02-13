@@ -17,12 +17,13 @@
  */
 package com.genonbeta.TrebleShot.fragment
 
-import android.content.*
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.App
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import com.genonbeta.TrebleShot.App
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.util.NsdDaemon
 
 /**
  * created by: veli
@@ -31,33 +32,34 @@ import com.genonbeta.TrebleShot.dataobject.Device
 class OnlineDeviceListFragment : DeviceListFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        setHiddenDeviceTypes(arrayOf<Device.Type?>(Device.Type.Web, Device.Type.Normal))
+        setHiddenDeviceTypes(arrayOf(Device.Type.Web, Device.Type.Normal))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(false)
-        setFilteringSupported(false)
-        setItemOffsetDecorationEnabled(false)
-        setItemOffsetForEdgesEnabled(false)
-        if (isScreenLarge) setDefaultViewingGridSize(4, 5) else if (isScreenNormal) setDefaultViewingGridSize(
-            3,
-            4
-        ) else setDefaultViewingGridSize(2, 3)
+        isFilteringSupported = false
+        itemOffsetDecorationEnabled = false
+        itemOffsetForEdgesEnabled = false
+        defaultViewingGridSize = if (isScreenNormal()) 3 else 2
+        defaultViewingGridSizeLandscape = if (isScreenNormal()) 5 else 3
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val daemon: NsdDaemon = App.from(requireActivity()).getNsdDaemon()
+        val daemon: NsdDaemon = App.from(requireActivity()).nsdDaemon
         listView.isNestedScrollingEnabled = true
         setDividerVisible(false)
-        if (!daemon.isServiceEnabled()) setEmptyListText(getString(R.string.text_nsdDisabled)) else if (!daemon.isDiscovering()) setEmptyListText(
+        emptyListTextView.text = if (!daemon.isServiceEnabled) {
+            getString(R.string.text_nsdDisabled)
+        } else if (!daemon.isDiscovering) {
             getString(R.string.text_nsdNotDiscovering)
-        ) else setEmptyListText(getString(R.string.text_noOnlineDevices))
-        if (context != null) {
-            val padding = context!!.resources.getDimension(R.dimen.short_content_width_padding)
-            listView.clipToPadding = false
-            listView.setPadding(padding.toInt(), 0, padding.toInt(), 0)
+        } else {
+            getString(R.string.text_noOnlineDevices)
         }
+
+        val padding = requireContext().resources.getDimension(R.dimen.short_content_width_padding)
+        listView.clipToPadding = false
+        listView.setPadding(padding.toInt(), 0, padding.toInt(), 0)
     }
 }

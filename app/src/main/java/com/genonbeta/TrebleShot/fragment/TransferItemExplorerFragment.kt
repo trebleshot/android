@@ -78,7 +78,7 @@ class TransferItemExplorerFragment : TransferItemListFragment() {
     override fun onListRefreshed() {
         super.onListRefreshed()
         val path = adapter.path
-        pathAdapter.goTo(adapter.mMember, path?.split(File.separator.toRegex())?.toTypedArray())
+        pathAdapter.goTo(adapter.member, path?.split(File.separator.toRegex())?.toTypedArray())
         pathAdapter.notifyDataSetChanged()
         if (pathAdapter.itemCount > 0) pathView.smoothScrollToPosition(pathAdapter.itemCount - 1)
     }

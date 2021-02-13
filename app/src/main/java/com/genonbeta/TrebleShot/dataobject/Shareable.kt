@@ -37,9 +37,9 @@ abstract class Shareable : Editable {
 
     var selectableSelected = false
 
-    var dateInternal: Long = 0
+    open var date: Long = 0
 
-    var sizeInternal: Long = 0
+    open var size: Long = 0
 
     override fun applyFilter(filteringKeywords: Array<String>): Boolean {
         for (keyword in filteringKeywords) if (TextUtils.searchWord(friendlyName, keyword)) return true
@@ -58,8 +58,8 @@ abstract class Shareable : Editable {
         this.friendlyName = friendlyName
         this.fileName = fileName
         this.mimeType = mimeType
-        this.dateInternal = date
-        this.sizeInternal = size
+        this.date = date
+        this.size = size
         this.uri = uri
     }
 
@@ -70,9 +70,9 @@ abstract class Shareable : Editable {
 
     override fun getComparableName(): String = friendlyName
 
-    override fun getComparableDate(): Long = dateInternal
+    override fun getComparableDate(): Long = date
 
-    override fun getComparableSize(): Long = sizeInternal
+    override fun getComparableSize(): Long = size
 
     override fun getSelectableTitle(): String = friendlyName
 

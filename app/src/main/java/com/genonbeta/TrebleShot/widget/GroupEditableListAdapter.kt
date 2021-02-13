@@ -57,8 +57,8 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
                 val generated: T = onGenerateRepresentative(getRepresentativeText(thisMerger), thisMerger)
                 val firstEditable: T = thisMerger.belongings[0]
                 loadedList.add(generated)
-                generated.setSize(thisMerger.belongings.size.toLong())
-                generated.setDate(firstEditable.getComparableDate())
+                generated.size = thisMerger.belongings.size.toLong()
+                generated.date = firstEditable.getComparableDate()
                 generated.id = generated.getRepresentativeText().hashCode().inv().toLong()
                 loadedList.addAll(thisMerger.belongings)
             }
@@ -111,6 +111,10 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
     interface GroupEditable : Editable {
         var requestCode: Int
 
+        var date: Long
+
+        var size: Long
+
         fun getViewType(): Int
 
         fun getRepresentativeText(): String
@@ -118,16 +122,16 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
         fun setRepresentativeText(text: CharSequence)
 
         fun isGroupRepresentative(): Boolean
-
-        fun setDate(date: Long)
-
-        fun setSize(size: Long)
     }
 
     abstract class GroupShareable : Shareable, GroupEditable {
         private var viewType: Int = VIEW_TYPE_DEFAULT
 
         override var requestCode: Int = 0
+
+        override var date: Long = 0
+
+        override var size: Long = 0
 
         constructor() : super()
 
@@ -150,14 +154,6 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
 
         override fun isGroupRepresentative(): Boolean {
             return viewType == VIEW_TYPE_REPRESENTATIVE || viewType == VIEW_TYPE_ACTION_BUTTON
-        }
-
-        override fun setDate(date: Long) {
-            this.dateInternal = date
-        }
-
-        override fun setSize(size: Long) {
-            this.sizeInternal = size
         }
 
         override fun setSelectableSelected(selected: Boolean): Boolean {

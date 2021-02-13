@@ -129,7 +129,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     var itemOffsetDecorationEnabled = false
 
-    var itemOffsetForEdges = true
+    var itemOffsetForEdgesEnabled = true
 
     override var isFilteringSupported: Boolean = false
 
@@ -269,7 +269,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
                 defaultItemOffsetPadding
             else
                 resources.getDimension(R.dimen.padding_list_content_parent_layout)
-            val offsetDecoration = ItemOffsetDecoration(padding.toInt(), itemOffsetForEdges, isHorizontalOrientation())
+            val offsetDecoration = ItemOffsetDecoration(padding.toInt(), itemOffsetForEdgesEnabled, isHorizontalOrientation())
 
             offsetDecoration.prepare(listView)
             listView.addItemDecoration(offsetDecoration)

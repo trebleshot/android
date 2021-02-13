@@ -19,17 +19,17 @@ class DefaultScrollViewProvider : ScrollViewProvider() {
 
     override lateinit var handleView: View
 
-    override fun getBubbleOffset(): Int = if (scroller.horizontalLayout)
+    override fun getBubbleOffset(): Int = if (scroller.horizontalLayout) {
         (handleView.width.toFloat() / 2f - bubbleView.width).toInt()
-    else
+    } else {
         (handleView.height.toFloat() / 2f - bubbleView.height).toInt()
+    }
 
     override fun recreateViews(container: ViewGroup?) {
         bubbleTextView = LayoutInflater.from(context).inflate(
             R.layout.genfw_fastscroll_default_bubble, container, false
         ) as TextView
         bubbleView = bubbleTextView
-
         handleView = View(context).also {
             val inset = context.resources.getDimensionPixelSize(R.dimen.genfw_fastscroll_handle_inset)
             val verticalInset = if (scroller.horizontalLayout) inset else 0
@@ -45,16 +45,18 @@ class DefaultScrollViewProvider : ScrollViewProvider() {
             Utils.setBackground(it, handleBackground)
 
             val handleWidth = context.resources.getDimensionPixelSize(
-                if (scroller.horizontalLayout)
+                if (scroller.horizontalLayout) {
                     R.dimen.genfw_fastscroll_handle_height
-                else
+                } else {
                     R.dimen.genfw_fastscroll_handle_clickable_width
+                }
             )
             val handleHeight = context.resources.getDimensionPixelSize(
-                if (scroller.horizontalLayout)
+                if (scroller.horizontalLayout) {
                     R.dimen.genfw_fastscroll_handle_clickable_width
-                else
+                } else {
                     R.dimen.genfw_fastscroll_handle_height
+                }
             )
 
             it.layoutParams = ViewGroup.LayoutParams(handleWidth, handleHeight)

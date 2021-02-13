@@ -68,7 +68,7 @@ class TextStreamObject : GroupEditableListAdapter.GroupShareable, DatabaseObject
     override fun getValues(): ContentValues {
         val values = ContentValues()
         values.put(Kuick.FIELD_CLIPBOARD_ID, id)
-        values.put(Kuick.FIELD_CLIPBOARD_TIME, dateInternal)
+        values.put(Kuick.FIELD_CLIPBOARD_TIME, date)
         values.put(Kuick.FIELD_CLIPBOARD_TEXT, text)
         return values
     }
@@ -78,11 +78,11 @@ class TextStreamObject : GroupEditableListAdapter.GroupShareable, DatabaseObject
     }
 
     override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
-        this.id = item.getAsLong(Kuick.FIELD_CLIPBOARD_ID)
-        this.text = item.getAsString(Kuick.FIELD_CLIPBOARD_TEXT)
-        this.dateInternal = item.getAsLong(Kuick.FIELD_CLIPBOARD_TIME)
+        this.id = values.getAsLong(Kuick.FIELD_CLIPBOARD_ID)
+        this.text = values.getAsString(Kuick.FIELD_CLIPBOARD_TEXT)
+        this.date = values.getAsLong(Kuick.FIELD_CLIPBOARD_TIME)
         this.mimeType = "text/plain"
-        this.sizeInternal = text.length.toLong()
+        this.size = text.length.toLong()
         this.friendlyName = text
         this.fileName = text
     }

@@ -17,7 +17,8 @@
  */
 package com.genonbeta.TrebleShot.dialog
 
-import android.content.*
+import android.content.Context
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.android.framework.io.DocumentFile
@@ -27,8 +28,8 @@ import com.genonbeta.android.framework.io.DocumentFile
  * Date: 5/30/17 12:18 PM
  */
 class FolderCreationDialog(
-    context: Context?, currentFolder: DocumentFile,
-    createdListener: OnFolderCreatedListener
+    context: Context, currentFolder: DocumentFile,
+    createdListener: OnFolderCreatedListener,
 ) : AbstractSingleTextInputDialog(context) {
     interface OnFolderCreatedListener {
         fun onFolderCreated(directoryFile: DocumentFile?)
@@ -36,17 +37,19 @@ class FolderCreationDialog(
 
     init {
         setTitle(R.string.text_createFolder)
-        setOnProceedClickListener(R.string.butn_create) { dialog: AlertDialog ->
-            val fileName = editText.text.toString()
-            if (fileName.length == 0) return@setOnProceedClickListener false
-            val createdFile = currentFolder.createDirectory(fileName)
-            if (createdFile == null) {
-                Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show()
-                return@setOnProceedClickListener false
+        setOnProceedClickListener(R.string.butn_create, object : OnProceedClickListener {
+            override fun onProceedClick(dialog: AlertDialog): Boolean {
+                val fileName = editText.text.toString()
+                if (fileName.isEmpty()) return false
+                val createdFile = currentFolder.createDirectory(fileName)
+                if (createdFile == null) {
+                    Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                createdListener.onFolderCreated(createdFile)
+                dialog.dismiss()
+                return true
             }
-            createdListener.onFolderCreated(createdFile)
-            dialog.dismiss()
-            true
-        }
+        })
     }
 }

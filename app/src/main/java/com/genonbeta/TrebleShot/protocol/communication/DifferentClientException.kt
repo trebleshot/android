@@ -17,4 +17,6 @@
  */
 package com.genonbeta.TrebleShot.protocol.communication
 
+import com.genonbeta.TrebleShot.dataobject.Device
+
 class DifferentClientException(expected: Device, var gotUid: String) : NotAllowedException(expected)

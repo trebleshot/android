@@ -28,20 +28,20 @@ import androidx.appcompat.app.AlertDialog
 abstract class AbstractFailureAwareDialog(context: Context) : AlertDialog.Builder(context) {
     private var clickListener: OnProceedClickListener? = null
 
-    fun setOnProceedClickListener(buttonText: String?, listener: OnProceedClickListener?) {
+    fun setOnProceedClickListener(buttonText: String, listener: OnProceedClickListener) {
         setPositiveButton(buttonText, null)
         clickListener = listener
     }
 
-    fun setOnProceedClickListener(buttonRes: Int, listener: OnProceedClickListener?) {
+    fun setOnProceedClickListener(buttonRes: Int, listener: OnProceedClickListener) {
         setOnProceedClickListener(context.getString(buttonRes), listener)
     }
 
     override fun show(): AlertDialog {
         val dialog = super.show()
         clickListener?.let {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                    v: View? -> if (it.onProceedClick(dialog)) dialog.dismiss()
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v: View? ->
+                if (it.onProceedClick(dialog)) dialog.dismiss()
             }
         }
 
@@ -49,6 +49,6 @@ abstract class AbstractFailureAwareDialog(context: Context) : AlertDialog.Builde
     }
 
     interface OnProceedClickListener {
-        fun onProceedClick(dialog: AlertDialog?): Boolean
+        fun onProceedClick(dialog: AlertDialog): Boolean
     }
 }

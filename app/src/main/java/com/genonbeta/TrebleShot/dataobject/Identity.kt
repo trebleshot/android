@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.dataobject
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 /**
@@ -30,16 +31,10 @@ import java.util.*
  * you put should be unique, so that it doesn't match with a random identifier. This class can be transferred with
  * intents.
  */
+
+@Parcelize
 class Identity(private val orList: MutableList<Identifier>, private val andList: MutableList<Identifier>) : Parcelable {
     constructor() : this(mutableListOf<Identifier>(), mutableListOf<Identifier>())
-
-    protected constructor(parcel: Parcel) : this(
-        parcel.createTypedArrayList(Identifier)!!, parcel.createTypedArrayList(Identifier.getCrea)!!
-    )
-
-    override fun describeContents(): Int {
-        return 0
-    }
 
     override fun equals(other: Any?): Boolean {
         return if (other is Identity) isANDsTrue(other) || isORsTrue(other) else super.equals(other)
@@ -68,23 +63,7 @@ class Identity(private val orList: MutableList<Identifier>, private val andList:
         synchronized(orList) { orList.add(identifier) }
     }
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeTypedList(orList)
-        dest.writeTypedList(andList)
-    }
-
     companion object {
-        @JvmField
-        val CREATOR = object : Creator<Identity> {
-            override fun createFromParcel(parcel: Parcel): Identity {
-                return Identity(parcel)
-            }
-
-            override fun newArray(size: Int): Array<Identity?> {
-                return arrayOfNulls(size)
-            }
-        }
-
         fun withANDs(vararg ands: Identifier): Identity {
             val identity = Identity()
             for (and in ands) identity.putAND(and)

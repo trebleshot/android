@@ -25,16 +25,26 @@ import android.graphics.drawable.shapes.RoundRectShape
 import com.genonbeta.TrebleShot.util.TextUtils
 
 class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder.mShape) {
-    private val mTextPaint: Paint
-    private val mBorderPaint: Paint
+    private val textPaint: Paint
+
+    private val borderPaint: Paint
+
     private val mText: String
-    private val mShape: RectShape
+
+    private val shape: RectShape = builder.mShape
+
     private val mColor: Int
+
     private val mHeight: Int
+
     private val mWidth: Int
+
     private val mFontSize: Int
-    private val mBorderThickness: Int
+
+    private val borderThickness: Int
+
     private val mRadius: Float
+
     private fun getDarkerShade(color: Int): Int {
         return Color.rgb(
             (SHADE_FACTOR * Color.red(color)).toInt(),
@@ -48,7 +58,7 @@ class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder
         val r: Rect = bounds
 
         // draw border
-        if (mBorderThickness > 0) drawBorder(canvas)
+        if (borderThickness > 0) drawBorder(canvas)
         val count = canvas.save()
         canvas.translate(r.left.toFloat(), r.top.toFloat())
 
@@ -56,34 +66,34 @@ class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder
         val width = if (mWidth < 0) r.width() else mWidth
         val height = if (mHeight < 0) r.height() else mHeight
         val fontSize = if (mFontSize < 0) Math.min(width, height) / 2 else mFontSize
-        mTextPaint.textSize = fontSize.toFloat()
+        textPaint.textSize = fontSize.toFloat()
         canvas.drawText(
             mText,
             (width / 2).toFloat(),
-            height / 2 - (mTextPaint.descent() + mTextPaint.ascent()) / 2,
-            mTextPaint
+            height / 2 - (textPaint.descent() + textPaint.ascent()) / 2,
+            textPaint
         )
         canvas.restoreToCount(count)
     }
 
     private fun drawBorder(canvas: Canvas) {
         val rect = RectF(getBounds())
-        rect.inset((mBorderThickness / 2).toFloat(), (mBorderThickness / 2).toFloat())
-        if (mShape is OvalShape) {
-            canvas.drawOval(rect, mBorderPaint)
-        } else if (mShape is RoundRectShape) {
-            canvas.drawRoundRect(rect, mRadius, mRadius, mBorderPaint)
+        rect.inset((borderThickness / 2).toFloat(), (borderThickness / 2).toFloat())
+        if (shape is OvalShape) {
+            canvas.drawOval(rect, borderPaint)
+        } else if (shape is RoundRectShape) {
+            canvas.drawRoundRect(rect, mRadius, mRadius, borderPaint)
         } else {
-            canvas.drawRect(rect, mBorderPaint)
+            canvas.drawRect(rect, borderPaint)
         }
     }
 
     override fun setAlpha(alpha: Int) {
-        mTextPaint.alpha = alpha
+        textPaint.alpha = alpha
     }
 
     override fun setColorFilter(cf: ColorFilter?) {
-        mTextPaint.colorFilter = cf
+        textPaint.colorFilter = cf
     }
 
     override fun getOpacity(): Int {
@@ -276,7 +286,6 @@ class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder
     init {
 
         // shape properties
-        mShape = builder.mShape
         mHeight = builder.mHeight
         mWidth = builder.mWidth
         mRadius = builder.mRadius
@@ -295,21 +304,21 @@ class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder
 
         // text paint settings
         mFontSize = builder.mFontSize
-        mTextPaint = Paint()
-        mTextPaint.color = builder.mTextColor
-        mTextPaint.isAntiAlias = true
-        mTextPaint.isFakeBoldText = builder.mIsBold
-        mTextPaint.style = Paint.Style.FILL
-        mTextPaint.typeface = builder.mFont
-        mTextPaint.textAlign = Paint.Align.CENTER
-        mTextPaint.strokeWidth = builder.mBorderThickness.toFloat()
+        textPaint = Paint()
+        textPaint.color = builder.mTextColor
+        textPaint.isAntiAlias = true
+        textPaint.isFakeBoldText = builder.mIsBold
+        textPaint.style = Paint.Style.FILL
+        textPaint.typeface = builder.mFont
+        textPaint.textAlign = Paint.Align.CENTER
+        textPaint.strokeWidth = builder.mBorderThickness.toFloat()
 
         // border paint settings
-        mBorderThickness = builder.mBorderThickness
-        mBorderPaint = Paint()
-        mBorderPaint.color = getDarkerShade(mColor)
-        mBorderPaint.style = Paint.Style.STROKE
-        mBorderPaint.strokeWidth = mBorderThickness.toFloat()
+        borderThickness = builder.mBorderThickness
+        borderPaint = Paint()
+        borderPaint.color = getDarkerShade(mColor)
+        borderPaint.style = Paint.Style.STROKE
+        borderPaint.strokeWidth = borderThickness.toFloat()
 
         // drawable paint mColor
         val paint: Paint = getPaint()

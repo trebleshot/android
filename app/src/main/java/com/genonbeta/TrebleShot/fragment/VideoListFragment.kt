@@ -17,34 +17,46 @@
  */
 package com.genonbeta.TrebleShot.fragment
 
-class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder?, GroupViewHolder?, VideoListAdapter?>() {
+import android.content.Context
+import android.os.Bundle
+import android.provider.MediaStore
+import android.view.View
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.VideoListAdapter
+import com.genonbeta.TrebleShot.adapter.VideoListAdapter.VideoHolder
+import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment
+import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
+
+class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder, GroupViewHolder, VideoListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFilteringSupported(true)
-        setDefaultOrderingCriteria(EditableListAdapter.MODE_SORT_ORDER_DESCENDING)
-        setDefaultSortingCriteria(EditableListAdapter.MODE_SORT_BY_DATE)
-        setDefaultViewingGridSize(3, 5)
-        setItemOffsetDecorationEnabled(true)
+        isFilteringSupported = true
+        defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
+        defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
+        defaultViewingGridSize = 3
+        defaultViewingGridSizeLandscape = 5
+        itemOffsetDecorationEnabled = true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setListAdapter(VideoListAdapter(this))
-        setEmptyListImage(R.drawable.ic_video_library_white_24dp)
-        setEmptyListText(getString(R.string.text_listEmptyVideo))
+        adapter = VideoListAdapter(this)
+        emptyListImageView.setImageResource(R.drawable.ic_video_library_white_24dp)
+        emptyListTextView.text = getString(R.string.text_listEmptyVideo)
     }
 
     override fun onResume() {
         super.onResume()
-        requireContext().getContentResolver().registerContentObserver(
+        requireContext().contentResolver.registerContentObserver(
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            true, getDefaultContentObserver()
+            true, defaultContentObserver
         )
     }
 
     override fun onPause() {
         super.onPause()
-        requireContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver())
+        requireContext().contentResolver.unregisterContentObserver(defaultContentObserver)
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
@@ -58,10 +70,7 @@ class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder?, GroupVi
         return context.getString(R.string.text_video)
     }
 
-    override fun performDefaultLayoutClick(
-        holder: GroupViewHolder,
-        item: VideoHolder
-    ): Boolean {
-        return performLayoutClickOpen(holder, item)
+    override fun performDefaultLayoutClick(holder: GroupViewHolder, target: VideoHolder): Boolean {
+        return performLayoutClickOpen(holder, target)
     }
 }

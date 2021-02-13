@@ -101,7 +101,7 @@ class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener,
             val path = adapter.getPath()
             if (path != null && path.canWrite()) {
                 FolderCreationDialog(
-                    context,
+                    requireContext(),
                     path,
                     object : OnFolderCreatedListener {
                         override fun onFolderCreated(directoryFile: DocumentFile?) {

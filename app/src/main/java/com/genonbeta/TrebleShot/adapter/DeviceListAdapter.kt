@@ -49,7 +49,7 @@ class DeviceListAdapter(
 ) : EditableListAdapter<DeviceListAdapter.VirtualDevice, RecyclerViewAdapter.ViewHolder>(fragment) {
     private val iconBuilder: IShapeBuilder = AppUtils.getDefaultIconBuilder(context)
 
-    private val hiddenDeviceTypes: List<Device.Type>
+    private val hiddenDeviceTypes: List<Device.Type> = listOf(*hiddenDeviceTypes)
 
     override fun onLoad(): MutableList<VirtualDevice> {
         val devMode = AppUtils.getDefaultPreferences(context)
@@ -232,9 +232,5 @@ class DeviceListAdapter(
 
             return builder.build()
         }
-    }
-
-    init {
-        this.hiddenDeviceTypes = listOf(*hiddenDeviceTypes)
     }
 }

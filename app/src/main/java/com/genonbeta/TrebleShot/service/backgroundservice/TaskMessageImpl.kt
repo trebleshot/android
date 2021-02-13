@@ -119,7 +119,7 @@ class TaskMessageImpl(
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0
         )
         notification.setSmallIcon(iconFor(tone))
-            .setGroup(task.taskGroup)
+            .setGroup(task.getTaskGroup())
             .setContentTitle(title)
             .setContentText(message)
             .setContentIntent(intent)

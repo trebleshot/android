@@ -22,11 +22,15 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.DeviceLoader
 import java.util.*
 
 /**
@@ -35,44 +39,52 @@ import java.util.*
  */
 class ChooseMemberDialog(
     activity: Activity, memberList: List<LoadedMember>,
-    clickListener: DialogInterface.OnClickListener?
+    clickListener: DialogInterface.OnClickListener?,
 ) : AlertDialog.Builder(activity) {
-    private val mList: MutableList<LoadedMember> = ArrayList<LoadedMember>()
-    private val mInflater: LayoutInflater
-    private val mIconBuilder: IShapeBuilder?
+    private val list: MutableList<LoadedMember> = ArrayList<LoadedMember>(memberList)
+
+    private val inflater: LayoutInflater = LayoutInflater.from(activity)
+
+    private val iconBuilder =  AppUtils.getDefaultIconBuilder(activity)
 
     private inner class ListAdapter : BaseAdapter() {
-        val count: Int
-            get() = mList.size
+        override fun getCount(): Int {
+            return list.size
+        }
 
         override fun getItem(position: Int): Any {
-            return mList[position]
+            return list[position]
         }
 
         override fun getItemId(position: Int): Long {
             return 0
         }
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            var convertView = convertView
-            if (convertView == null) convertView =
-                mInflater.inflate(R.layout.list_transfer_member_selector, parent, false)
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView ?: inflater.inflate(R.layout.list_transfer_member_selector, parent, false)
             val member: LoadedMember = getItem(position) as LoadedMember
-            val image = convertView.findViewById<ImageView>(R.id.image)
-            val actionImage = convertView.findViewById<ImageView>(R.id.actionImage)
-            val text: TextView = convertView.findViewById<TextView>(R.id.text)
-            text.setText(member.device.username)
-            actionImage.setImageResource(if (TransferItem.Type.INCOMING == member.type) R.drawable.ic_arrow_down_white_24dp else R.drawable.ic_arrow_up_white_24dp)
-            DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder)
-            return convertView
+            val image = view.findViewById<ImageView>(R.id.image)
+            val actionImage = view.findViewById<ImageView>(R.id.actionImage)
+            val text: TextView = view.findViewById(R.id.text)
+            text.text = member.device.username
+            actionImage.setImageResource(
+                if (TransferItem.Type.INCOMING == member.type) {
+                    R.drawable.ic_arrow_down_white_24dp
+                } else {
+                    R.drawable.ic_arrow_up_white_24dp
+                }
+            )
+            DeviceLoader.showPictureIntoView(member.device, image, iconBuilder)
+            return view
         }
     }
 
     init {
-        mList.addAll(memberList)
-        mInflater = LayoutInflater.from(activity)
-        mIconBuilder = AppUtils.getDefaultIconBuilder(activity)
-        if (memberList.size > 0) setAdapter(ListAdapter(), clickListener) else setMessage(R.string.text_listEmpty)
+        if (memberList.isNotEmpty()) {
+            setAdapter(ListAdapter(), clickListener)
+        } else {
+            setMessage(R.string.text_listEmpty)
+        }
         setTitle(R.string.butn_useKnownDevice)
         setNegativeButton(R.string.butn_close, null)
     }

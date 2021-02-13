@@ -17,25 +17,44 @@
  */
 package com.genonbeta.TrebleShot.fragment
 
-import android.content.*
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.App
-import com.genonbeta.TrebleShot.GlideApp
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import com.genonbeta.TrebleShot.service.BackgroundService
-import android.os.*
+import android.net.ConnectivityManager
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
+import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.widget.ImageViewCompat
+import com.genonbeta.TrebleShot.App
+import com.genonbeta.TrebleShot.GlideApp
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.Keyword
-import com.genonbeta.TrebleShot.util.*
+import com.genonbeta.TrebleShot.service.BackgroundService
+import com.genonbeta.TrebleShot.ui.callback.IconProvider
+import com.genonbeta.TrebleShot.ui.callback.TitleProvider
+import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.Connections
+import com.genonbeta.TrebleShot.util.HotspotManager
+import com.genonbeta.TrebleShot.util.InetAddresses
 import com.genonbeta.android.framework.app.Fragment
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import org.json.JSONException
-import java.lang.Exception
-import java.lang.IllegalStateException
-import java.lang.StringBuilder
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -44,90 +63,114 @@ import java.net.UnknownHostException
  * date: 11/04/18 20:53
  */
 class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
-    private val mIntentFilter = IntentFilter()
-    private val mStatusReceiver: StatusReceiver = StatusReceiver()
-    private var mConnections: Connections? = null
-    private var mContainerText1: View? = null
-    private var mContainerText2: View? = null
-    private var mContainerText3: View? = null
-    private var mCodeText: TextView? = null
-    private var mText1: TextView? = null
-    private var mText2: TextView? = null
-    private var mText3: TextView? = null
-    private var mImageView2: ImageView? = null
-    private var mImageView3: ImageView? = null
-    private var mCodeView: ImageView? = null
-    private var mToggleButton: Button? = null
-    private var mSecondButton: Button? = null
-    private var mHelpMenuItem: MenuItem? = null
-    private var mColorPassiveState: ColorStateList? = null
-    private var mManager: HotspotManager? = null
-    private var mActiveType: Type? = null
-    private var mToggleButtonDefaultStateList: ColorStateList? = null
-    private var mToggleButtonEnabledStateList: ColorStateList? = null
+    override val iconRes: Int = R.drawable.ic_qrcode_white_24dp
+
+    private val intentFilter = IntentFilter()
+
+    private val statusReceiver: StatusReceiver = StatusReceiver()
+
+    private lateinit var connections: Connections
+
+    private lateinit var containerText1: View
+
+    private lateinit var containerText2: View
+
+    private lateinit var containerText3: View
+
+    private lateinit var codeText: TextView
+
+    private lateinit var text1: TextView
+
+    private lateinit var text2: TextView
+
+    private lateinit var text3: TextView
+
+    private lateinit var imageView2: ImageView
+
+    private lateinit var imageView3: ImageView
+
+    private lateinit var codeView: ImageView
+
+    private lateinit var toggleButton: Button
+
+    private lateinit var secondButton: Button
+
+    private lateinit var helpMenuItem: MenuItem
+
+    private lateinit var colorPassiveState: ColorStateList
+
+    private lateinit var manager: HotspotManager
+
+    private var toggleButtonDefaultStateList: ColorStateList? = null
+
+    private var toggleButtonEnabledStateList: ColorStateList? = null
+
+    private var activeType: Type? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mConnections = Connections(requireContext())
-        mManager = HotspotManager.newInstance(requireContext())
-        mIntentFilter.addAction(App.ACTION_OREO_HOTSPOT_STARTED)
-        mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED)
-        mIntentFilter.addAction(WIFI_AP_STATE_CHANGED)
-        mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-        mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
-        mIntentFilter.addAction(BackgroundService.ACTION_PIN_USED)
+        connections = Connections(requireContext())
+        manager = HotspotManager.newInstance(requireContext())
+        intentFilter.addAction(App.ACTION_OREO_HOTSPOT_STARTED)
+        intentFilter.addAction(BackgroundService.ACTION_PIN_USED)
+        intentFilter.addAction(WIFI_AP_STATE_CHANGED)
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
+        intentFilter.addAction(BackgroundService.ACTION_PIN_USED)
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return layoutInflater.inflate(R.layout.layout_network_manager, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mToggleButtonEnabledStateList = ColorStateList.valueOf(
+        toggleButtonEnabledStateList = ColorStateList.valueOf(
             ContextCompat.getColor(
                 requireContext(),
                 AppUtils.getReference(requireContext(), R.attr.colorError)
             )
         )
-        mColorPassiveState = ColorStateList.valueOf(
+        colorPassiveState = ColorStateList.valueOf(
             ContextCompat.getColor(
                 requireContext(), AppUtils.getReference(
                     requireContext(), R.attr.colorPassive
                 )
             )
         )
-        mCodeView = view.findViewById(R.id.layout_network_manager_qr_image)
-        mCodeText = view.findViewById<TextView>(R.id.layout_network_manager_qr_help_text)
-        mToggleButton = view.findViewById(R.id.layout_network_manager_info_toggle_button)
-        mSecondButton = view.findViewById(R.id.layout_network_manager_info_second_toggle_button)
-        mContainerText1 = view.findViewById(R.id.layout_netowrk_manager_info_container_text1_container)
-        mContainerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container)
-        mContainerText3 = view.findViewById(R.id.layout_network_manager_info_container_text3_container)
-        mText1 = view.findViewById<TextView>(R.id.layout_network_manager_info_container_text1)
-        mText2 = view.findViewById<TextView>(R.id.layout_network_manager_info_container_text2)
-        mText3 = view.findViewById<TextView>(R.id.layout_network_manager_info_container_text3)
-        mImageView2 = view.findViewById(R.id.layout_network_manager_info_container_text2_icon)
-        mImageView3 = view.findViewById(R.id.layout_network_manager_info_container_text3_icon)
-        mToggleButtonDefaultStateList = ViewCompat.getBackgroundTintList(mToggleButton)
-        mToggleButton.setOnClickListener(View.OnClickListener { v: View -> toggle(v) })
-        mSecondButton.setOnClickListener(View.OnClickListener { v: View -> toggle(v) })
+        codeView = view.findViewById(R.id.layout_network_manager_qr_image)
+        codeText = view.findViewById(R.id.layout_network_manager_qr_help_text)
+        toggleButton = view.findViewById(R.id.layout_network_manager_info_toggle_button)
+        secondButton = view.findViewById(R.id.layout_network_manager_info_second_toggle_button)
+        containerText1 = view.findViewById(R.id.layout_netowrk_manager_info_container_text1_container)
+        containerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container)
+        containerText3 = view.findViewById(R.id.layout_network_manager_info_container_text3_container)
+        text1 = view.findViewById(R.id.layout_network_manager_info_container_text1)
+        text2 = view.findViewById(R.id.layout_network_manager_info_container_text2)
+        text3 = view.findViewById(R.id.layout_network_manager_info_container_text3)
+        imageView2 = view.findViewById(R.id.layout_network_manager_info_container_text2_icon)
+        imageView3 = view.findViewById(R.id.layout_network_manager_info_container_text3_icon)
+        toggleButtonDefaultStateList = ViewCompat.getBackgroundTintList(toggleButton)
+        toggleButton.setOnClickListener { v: View -> toggle(v) }
+        secondButton.setOnClickListener { v: View -> toggle(v) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.actions_hotspot_manager, menu)
-        mHelpMenuItem = menu.findItem(R.id.show_help)
+        helpMenuItem = menu.findItem(R.id.show_help)
         showMenu()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == R.id.show_help && mManager.getConfiguration() != null) {
-            val hotspotName: String = mManager.getConfiguration().SSID
+        val configuration = manager.configuration
+        if (id == R.id.show_help && configuration != null) {
+            val hotspotName: String = configuration.SSID
             val friendlyName = AppUtils.getFriendlySSID(hotspotName)
             AlertDialog.Builder(requireActivity())
                 .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, friendlyName))
@@ -144,17 +187,13 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
 
     override fun onResume() {
         super.onResume()
-        requireContext().registerReceiver(mStatusReceiver, mIntentFilter)
+        requireContext().registerReceiver(statusReceiver, intentFilter)
         updateState()
     }
 
     override fun onPause() {
         super.onPause()
-        requireContext().unregisterReceiver(mStatusReceiver)
-    }
-
-    override fun getIconRes(): Int {
-        return R.drawable.ic_qrcode_white_24dp
+        requireContext().unregisterReceiver(statusReceiver)
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {
@@ -162,7 +201,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
     }
 
     fun getWifiConfiguration(): WifiConfiguration? {
-        if (Build.VERSION.SDK_INT < 26) return mManager.getConfiguration()
+        if (Build.VERSION.SDK_INT < 26) return manager.configuration
         try {
             return App.from(requireActivity()).getHotspotConfig()
         } catch (e: IllegalStateException) {
@@ -176,16 +215,16 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
     }
 
     private fun toggleHotspot() {
-        mConnections!!.toggleHotspot(
-            requireActivity(), this, mManager, true,
+        connections.toggleHotspot(
+            requireActivity(), this, manager, true,
             REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT
         )
     }
 
     fun toggle(v: View) {
         if (v.id == R.id.layout_network_manager_info_toggle_button) {
-            when (mActiveType) {
-                Type.LocationPermissionNeeded -> mConnections!!.validateLocationPermission(
+            when (activeType) {
+                Type.LocationPermissionNeeded -> connections.validateLocationPermission(
                     activity!!, REQUEST_LOCATION_PERMISSION
                 )
                 Type.WiFi, Type.HotspotExternal -> openWifiSettings()
@@ -193,7 +232,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
                 else -> toggleHotspot()
             }
         } else if (v.id == R.id.layout_network_manager_info_second_toggle_button) {
-            when (mActiveType) {
+            when (activeType) {
                 Type.LocationPermissionNeeded, Type.WiFi -> toggleHotspot()
                 Type.HotspotExternal, Type.Hotspot, Type.None -> openWifiSettings()
                 else -> openWifiSettings()
@@ -202,8 +241,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
     }
 
     private fun showMenu() {
-        if (mHelpMenuItem != null) mHelpMenuItem!!.isVisible =
-            mManager.getConfiguration() != null && mManager.enabled()
+        helpMenuItem.isVisible = manager.configuration != null && manager.enabled
     }
 
     private fun updateState() {
@@ -222,13 +260,13 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
         val delimiter = ";"
         val code = StringBuilder()
         val config: WifiConfiguration? = getWifiConfiguration()
-        val connectionInfo: WifiInfo = mConnections.getWifiManager().connectionInfo
-        if (mManager.enabled()) {
+        val connectionInfo: WifiInfo = connections.wifiManager.connectionInfo
+        if (manager.enabled) {
             if (config != null) {
-                mActiveType = Type.Hotspot
+                activeType = Type.Hotspot
                 val ssid: String = config.SSID
-                val bssid: String = config.BSSID
-                val key: String = config.preSharedKey
+                val bssid: String? = config.BSSID
+                val key: String? = config.preSharedKey
                 code.append(Keyword.QR_CODE_TYPE_HOTSPOT)
                     .append(delimiter)
                     .append(pin)
@@ -238,27 +276,27 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
                     .append(bssid ?: "")
                     .append(delimiter)
                     .append(key ?: "")
-                mImageView2!!.setImageResource(R.drawable.ic_wifi_tethering_white_24dp)
-                mImageView3!!.setImageResource(R.drawable.ic_vpn_key_white_24dp)
-                mText1.setText(R.string.text_qrCodeAvailableHelp)
-                mText2.setText(ssid)
-                mText3.setText(key)
+                imageView2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp)
+                imageView3.setImageResource(R.drawable.ic_vpn_key_white_24dp)
+                text1.setText(R.string.text_qrCodeAvailableHelp)
+                text2.setText(ssid)
+                text3.setText(key)
             } else {
-                mActiveType = Type.HotspotExternal
-                mText1.setText(R.string.text_hotspotStartedExternallyNotice)
+                activeType = Type.HotspotExternal
+                text1.setText(R.string.text_hotspotStartedExternallyNotice)
             }
-            mToggleButton!!.setText(R.string.butn_stopHotspot)
-            mSecondButton!!.setText(R.string.butn_wifiSettings)
-        } else if (!mConnections!!.canReadWifiInfo() && mConnections.getWifiManager().isWifiEnabled) {
-            mActiveType = Type.LocationPermissionNeeded
-            mText1.setText(R.string.mesg_locationPermissionRequiredAny)
-            mToggleButton!!.setText(R.string.butn_enable)
-            mSecondButton!!.setText(R.string.text_startHotspot)
-        } else if (mConnections!!.isConnectedToAnyNetwork) {
-            mActiveType = Type.WiFi
+            toggleButton.setText(R.string.butn_stopHotspot)
+            secondButton.setText(R.string.butn_wifiSettings)
+        } else if (!connections.canReadWifiInfo() && connections.wifiManager.isWifiEnabled) {
+            activeType = Type.LocationPermissionNeeded
+            text1.setText(R.string.mesg_locationPermissionRequiredAny)
+            toggleButton.setText(R.string.butn_enable)
+            secondButton.setText(R.string.text_startHotspot)
+        } else if (connections.isConnectedToAnyNetwork()) {
+            activeType = Type.WiFi
             val hostAddress: String?
-            val ssid: String = connectionInfo.getSSID()
-            val bssid: String = connectionInfo.getBSSID()
+            val ssid: String? = connectionInfo.getSSID()
+            val bssid: String? = connectionInfo.getBSSID()
             hostAddress = try {
                 InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.getIpAddress()))
                     .hostAddress
@@ -274,35 +312,35 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
                 .append(bssid ?: "")
                 .append(delimiter)
                 .append(hostAddress)
-            mImageView2!!.setImageResource(R.drawable.ic_wifi_white_24dp)
-            mImageView3!!.setImageResource(R.drawable.ic_ip_white_24dp)
-            mText1.setText(R.string.help_scanQRCode)
-            mText2.setText(Connections.getCleanSsid(connectionInfo.getSSID()))
-            mText3.setText(hostAddress)
-            mToggleButton!!.setText(R.string.butn_wifiSettings)
-            mSecondButton!!.setText(R.string.text_startHotspot)
+            imageView2.setImageResource(R.drawable.ic_wifi_white_24dp)
+            imageView3.setImageResource(R.drawable.ic_ip_white_24dp)
+            text1.setText(R.string.help_scanQRCode)
+            text2.setText(Connections.getCleanSsid(connectionInfo.getSSID()))
+            text3.setText(hostAddress)
+            toggleButton.setText(R.string.butn_wifiSettings)
+            secondButton.setText(R.string.text_startHotspot)
         } else {
-            mActiveType = Type.None
-            mText1.setText(R.string.help_setUpNetwork)
-            mToggleButton!!.setText(R.string.text_startHotspot)
-            mSecondButton!!.setText(R.string.butn_wifiSettings)
+            activeType = Type.None
+            text1.setText(R.string.help_setUpNetwork)
+            toggleButton.setText(R.string.text_startHotspot)
+            secondButton.setText(R.string.butn_wifiSettings)
         }
-        when (mActiveType) {
+        when (activeType) {
             Type.Hotspot, Type.WiFi, Type.HotspotExternal -> ViewCompat.setBackgroundTintList(
-                mToggleButton,
-                mToggleButtonEnabledStateList
+                toggleButton,
+                toggleButtonEnabledStateList
             )
-            else -> ViewCompat.setBackgroundTintList(mToggleButton, mToggleButtonDefaultStateList)
+            else -> ViewCompat.setBackgroundTintList(toggleButton, toggleButtonDefaultStateList)
         }
-        when (mActiveType) {
+        when (activeType) {
             Type.LocationPermissionNeeded, Type.None, Type.HotspotExternal -> {
-                mText2.setText(null)
-                mText3.setText(null)
+                text2.setText(null)
+                text3.setText(null)
             }
         }
-        mContainerText1!!.visibility = if (mText1.length() > 0) View.VISIBLE else View.GONE
-        mContainerText2!!.visibility = if (mText2.length() > 0) View.VISIBLE else View.GONE
-        mContainerText3!!.visibility = if (mText3.length() > 0) View.VISIBLE else View.GONE
+        containerText1.visibility = if (text1.length() > 0) View.VISIBLE else View.GONE
+        containerText2.visibility = if (text2.length() > 0) View.VISIBLE else View.GONE
+        containerText3.visibility = if (text3.length() > 0) View.VISIBLE else View.GONE
         val showQRCode = code.length > 0 && context != null
         if (showQRCode) {
             code.append(delimiter)
@@ -314,18 +352,23 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
                 val bitmap: Bitmap = encoder.createBitmap(bitMatrix)
                 GlideApp.with(context!!)
                     .load(bitmap)
-                    .into(mCodeView!!)
+                    .into(codeView)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        } else mCodeView!!.setImageResource(R.drawable.ic_qrcode_white_128dp)
-        mCodeText.setVisibility(if (showQRCode) View.GONE else View.VISIBLE)
-        ImageViewCompat.setImageTintList(mCodeView, if (showQRCode) null else mColorPassiveState)
+        } else codeView.setImageResource(R.drawable.ic_qrcode_white_128dp)
+        codeText.setVisibility(if (showQRCode) View.GONE else View.VISIBLE)
+        ImageViewCompat.setImageTintList(codeView, if (showQRCode) null else colorPassiveState)
     }
 
     private inner class StatusReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (WIFI_AP_STATE_CHANGED == intent.action || BackgroundService.ACTION_PIN_USED == intent.action || WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action || ConnectivityManager.CONNECTIVITY_ACTION == intent.action || BackgroundService.ACTION_PIN_USED == intent.action || App.ACTION_OREO_HOTSPOT_STARTED == intent.action) updateState()
+            if (WIFI_AP_STATE_CHANGED == intent.action || BackgroundService.ACTION_PIN_USED == intent.action
+                || WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
+                || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
+                || BackgroundService.ACTION_PIN_USED == intent.action
+                || App.ACTION_OREO_HOTSPOT_STARTED == intent.action
+            ) updateState()
         }
     }
 

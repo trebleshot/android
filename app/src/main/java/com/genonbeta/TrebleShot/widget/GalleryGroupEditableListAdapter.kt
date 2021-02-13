@@ -50,12 +50,13 @@ abstract class GalleryGroupEditableListAdapter<T : GalleryGroupShareable, V : Gr
     }
 
     open class GalleryGroupShareable : GroupShareable {
-        var albumName: String? = null
+        lateinit var albumName: String
 
-        constructor(viewType: Int, representativeText: String?) : super(viewType, representativeText) {}
+        constructor(viewType: Int, representativeText: String) : super(viewType, representativeText)
+
         constructor(
-            id: Long, friendlyName: String?, fileName: String?, albumName: String?, mimeType: String?,
-            date: Long, size: Long, uri: Uri?
+            id: Long, friendlyName: String, fileName: String, albumName: String, mimeType: String,
+            date: Long, size: Long, uri: Uri
         ) {
             initialize(id, friendlyName, fileName, mimeType, date, size, uri)
             this.albumName = albumName
@@ -63,6 +64,6 @@ abstract class GalleryGroupEditableListAdapter<T : GalleryGroupShareable, V : Gr
     }
 
     companion object {
-        val MODE_GROUP_BY_ALBUM: Int = GroupEditableListAdapter.MODE_GROUP_BY_DATE + 1
+        val MODE_GROUP_BY_ALBUM: Int = MODE_GROUP_BY_DATE + 1
     }
 }

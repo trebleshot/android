@@ -32,8 +32,9 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
 
-class ChooseSharingMethodDialog(activity: Activity, listener: (SharingMethod) -> Unit) : AlertDialog.Builder(activity) {
+class ChooseSharingMethodDialog(activity: Activity, listener: PickListener) : AlertDialog.Builder(activity) {
     private val layoutInflater = LayoutInflater.from(context)
+
     private val sharingMethods = SharingMethod.values()
 
     internal inner class SharingMethodListAdapter : BaseAdapter() {
@@ -87,7 +88,7 @@ class ChooseSharingMethodDialog(activity: Activity, listener: (SharingMethod) ->
 
     init {
         setTitle(R.string.text_chooseSharingMethod)
-        setAdapter(SharingMethodListAdapter()) { _: DialogInterface?, which: Int ->
+        setAdapter(SharingMethodListAdapter()) { dialog: DialogInterface?, which: Int ->
             listener.onShareMethod(sharingMethods[which])
         }
         setNegativeButton(R.string.butn_cancel, null)

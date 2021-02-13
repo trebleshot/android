@@ -69,8 +69,9 @@ class ActiveConnectionListAdapter(
         val item: EditableNetworkInterface = getItem(position)
         val text1: TextView = holder.itemView.findViewById(R.id.text)
         val text2: TextView = holder.itemView.findViewById(R.id.text2)
+        val firstAddress = Networks.getFirstInet4Address(item)
         text1.text = item.getSelectableTitle()
-        text2.text = TextUtils.makeWebShareLink(context, Networks.getFirstInet4Address(item).hostAddress)
+        text2.text = firstAddress?.let { TextUtils.makeWebShareLink(context, it.hostAddress) }
     }
 
     class EditableNetworkInterface(private val netInterface: NetworkInterface, private val name: String) : Editable {

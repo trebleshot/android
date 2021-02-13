@@ -226,7 +226,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 val report = outputStream.toString()
                 val streamObject = TextStreamObject()
                 streamObject.text = report
-                streamObject.dateInternal = logFile.lastModified()
+                streamObject.date = logFile.lastModified()
                 streamObject.id = AppUtils.uniqueNumber.toLong()
                 logFile.delete()
                 val dialogBuilder = AlertDialog.Builder(this)

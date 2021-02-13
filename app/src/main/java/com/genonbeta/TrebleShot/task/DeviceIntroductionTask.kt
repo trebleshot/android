@@ -30,30 +30,32 @@ import com.genonbeta.TrebleShot.util.Connections
 import java.net.InetAddress
 
 class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.ResultListener> {
-    private val mPin: Int
-    private var mDescription: NetworkDescription? = null
-    private var mAddress: InetAddress? = null
+    private val pin: Int
+
+    private var description: NetworkDescription? = null
+
+    private var address: InetAddress? = null
 
     constructor(address: InetAddress, pin: Int) {
-        mAddress = address
-        mPin = pin
+        this.address = address
+        this.pin = pin
     }
 
     constructor(address: DeviceAddress, pin: Int) : this(address.inetAddress, pin)
 
     constructor(description: NetworkDescription, pin: Int) {
-        mDescription = description
-        mPin = pin
+        this.description = description
+        this.pin = pin
     }
 
     @Throws(TaskStoppedException::class)
     public override fun onRun() {
         try {
-            val deviceRoute: DeviceRoute = if (mAddress == null) {
+            val deviceRoute: DeviceRoute = if (address == null) {
                 val connections = Connections(context)
-                connections.connectToNetwork(this, mDescription!!, mPin)
+                connections.connectToNetwork(this, description!!, pin)
             } else
-                Connections.setupConnection(context, mAddress, mPin)
+                Connections.setupConnection(context, address!!, pin)
 
             anchor?.let { post { it.onDeviceReached(deviceRoute) } }
         } catch (e: Exception) {

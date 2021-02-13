@@ -87,12 +87,15 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         if (intent?.hasExtra(EXTRA_CONNECTION_MODE) == true) {
             connectionMode = intent.getSerializableExtra(EXTRA_CONNECTION_MODE) as ConnectionMode
         }
+
         setResult(RESULT_CANCELED)
         setContentView(R.layout.activity_connection_manager)
-        val hiddenDeviceTypes = ArrayList<String>()
-        hiddenDeviceTypes.add(Device.Type.Web.toString())
+
         val deviceListArgs = Bundle()
-        deviceListArgs.putStringArrayList(DeviceListFragment.ARG_HIDDEN_DEVICES_LIST, hiddenDeviceTypes)
+        deviceListArgs.putStringArrayList(
+            DeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
+            arrayListOf(Device.Type.Web.toString())
+        )
         val factory = supportFragmentManager.fragmentFactory
         appBarLayout = findViewById(R.id.app_bar)
         progressBar = findViewById(R.id.activity_connection_establishing_progress_bar)

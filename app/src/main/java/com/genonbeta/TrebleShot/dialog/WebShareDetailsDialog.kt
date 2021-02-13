@@ -17,13 +17,19 @@
  */
 package com.genonbeta.TrebleShot.dialog
 
-import android.content.*
+import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.WriterException
+import com.google.zxing.common.BitMatrix
+import com.journeyapps.barcodescanner.BarcodeEncoder
 
 /**
  * created by: veli
@@ -33,12 +39,13 @@ class WebShareDetailsDialog(context: Context, address: String?) : AlertDialog.Bu
     init {
         val view = LayoutInflater.from(context).inflate(R.layout.layout_web_share_details, null)
         val qrImage = view.findViewById<ImageView>(R.id.image)
-        val addressText: TextView = view.findViewById<TextView>(R.id.text)
+        val addressText = view.findViewById<TextView>(R.id.text)
 
         //setTitle(R.string.text_webShare);
         setView(view)
         setPositiveButton(R.string.butn_close, null)
-        addressText.setText(address)
+        addressText.text = address
+
         try {
             val formatWriter = MultiFormatWriter()
             val bitMatrix: BitMatrix = formatWriter.encode(address, BarcodeFormat.QR_CODE, 400, 400)

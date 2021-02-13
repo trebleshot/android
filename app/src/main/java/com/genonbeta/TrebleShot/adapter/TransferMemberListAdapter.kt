@@ -20,11 +20,15 @@ package com.genonbeta.TrebleShot.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.DeviceLoader
 import com.genonbeta.TrebleShot.util.Transfers
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
@@ -33,26 +37,30 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter
  * created by: veli
  * date: 06.04.2018 12:46
  */
-class TransferMemberListAdapter(fragment: IEditableListFragment<LoadedMember, ViewHolder>, transfer: Transfer) :
-    EditableListAdapter<LoadedMember?, RecyclerViewAdapter.ViewHolder?>(fragment) {
-    private val mTransfer: Transfer
-    private val mIconBuilder: IShapeBuilder?
+class TransferMemberListAdapter(
+    fragment: IEditableListFragment<LoadedMember, ViewHolder>, val transfer: Transfer,
+) : EditableListAdapter<LoadedMember, RecyclerViewAdapter.ViewHolder>(fragment) {
+    private val mIconBuilder: TextDrawable.IShapeBuilder = AppUtils.getDefaultIconBuilder(fragment.requireContext())
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(
-            inflater.inflate(
-                if (isHorizontalOrientation || isGridLayoutRequested) R.layout.list_transfer_member_grid else R.layout.list_transfer_member,
-                parent,
-                false
+            layoutInflater.inflate(
+                if (horizontalOrientation || isGridLayoutRequested()) {
+                    R.layout.list_transfer_member_grid
+                } else {
+                    R.layout.list_transfer_member
+                }, parent, false
             )
         )
-        fragment!!.registerLayoutViewClicks(holder)
-        holder.itemView.findViewById<View>(R.id.menu)
-            .setOnClickListener { v: View? -> fragment!!.performLayoutLongClick(holder) }
+        fragment.registerLayoutViewClicks(holder)
+        holder.itemView.findViewById<View>(R.id.menu).setOnClickListener { v: View? ->
+            fragment.performLayoutLongClick(holder)
+        }
         return holder
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val member: LoadedMember = list[position]
+        val member: LoadedMember = getList()[position]
         val image = holder.itemView.findViewById<ImageView>(R.id.image)
         val text1: TextView = holder.itemView.findViewById<TextView>(R.id.text1)
         val text2: TextView = holder.itemView.findViewById<TextView>(R.id.text2)
@@ -61,12 +69,7 @@ class TransferMemberListAdapter(fragment: IEditableListFragment<LoadedMember, Vi
         DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder)
     }
 
-    override fun onLoad(): List<LoadedMember> {
-        return Transfers.loadMemberList(context, mTransfer.id, null)
-    }
-
-    init {
-        mIconBuilder = AppUtils.getDefaultIconBuilder(fragment.getContext())
-        mTransfer = transfer
+    override fun onLoad(): MutableList<LoadedMember> {
+        return Transfers.loadMemberList(context, transfer.id, null).toMutableList()
     }
 }

@@ -21,13 +21,10 @@ import android.content.Context
 import android.net.Uri
 import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.util.Files.fromUri
 
 class TransferDescriptor(var file: DocumentFile, var directory: String?) {
-    var title: String
+    var title: String = file.getName()
 
-    constructor(context: Context?, uri: Uri?, directory: String?) : this(Files.fromUri(context, uri), directory) {}
-
-    init {
-        title = file.name
-    }
+    constructor(context: Context, uri: Uri, directory: String?) : this(fromUri(context, uri), directory)
 }

@@ -55,7 +55,9 @@ import java.util.concurrent.Executors
 
 class BackgroundService : Service() {
     private val communicationServer = CommunicationServer()
+
     private val binder = LocalBinder()
+
     private lateinit var wifiLock: WifiLock
 
     override fun onBind(intent: Intent): IBinder {

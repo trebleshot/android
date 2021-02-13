@@ -40,7 +40,8 @@ class ImageListFragment : GalleryGroupEditableListFragment<ImageHolder, GroupVie
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         itemOffsetDecorationEnabled = true
 
-        setDefaultViewingGridSize(3, 5)
+        defaultViewingGridSize = 3
+        defaultViewingGridSizeLandscape = 5
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

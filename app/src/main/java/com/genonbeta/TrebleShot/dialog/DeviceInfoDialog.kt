@@ -17,16 +17,23 @@
  */
 package com.genonbeta.TrebleShot.dialog
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SwitchCompat
 import com.genonbeta.TrebleShot.BuildConfig
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dialogimport.RemoveDeviceDialog
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.DeviceLoader
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 
 /**
  * Created by: veli
@@ -58,23 +65,25 @@ class DeviceInfoDialog(activity: Activity, device: Device) : AlertDialog.Builder
             View.VISIBLE
         )
         DeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity))
-        text1.setText(device.username)
-        modelText.setText(String.format("%s %s", device.brand!!.toUpperCase(), device.model!!.toUpperCase()))
-        versionText.setText(device.versionName)
-        accessSwitch.setChecked(!device.isBlocked)
-        trustSwitch.setEnabled(!device.isBlocked)
-        trustSwitch.setChecked(device.isTrusted)
-        accessSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { button: CompoundButton?, isChecked: Boolean ->
+        text1.text = device.username
+        modelText.text = String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase())
+        versionText.text = device.versionName
+        accessSwitch.isChecked = !device.isBlocked
+        trustSwitch.isEnabled = !device.isBlocked
+        trustSwitch.isChecked = device.isTrusted
+        accessSwitch.setOnCheckedChangeListener { button: CompoundButton?, isChecked: Boolean ->
             device.isBlocked = !isChecked
             kuick.publish(device)
             kuick.broadcast()
-            trustSwitch.setEnabled(isChecked)
-        })
-        if (isDeviceNormal) trustSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { button: CompoundButton?, isChecked: Boolean ->
+            trustSwitch.isEnabled = isChecked
+        }
+        if (isDeviceNormal) trustSwitch.setOnCheckedChangeListener { button: CompoundButton?, isChecked: Boolean ->
             device.isTrusted = isChecked
             kuick.publish(device)
             kuick.broadcast()
-        }) else trustSwitch.setVisibility(View.GONE)
+        } else{
+            trustSwitch.visibility = View.GONE
+        }
         setView(rootView)
         setPositiveButton(R.string.butn_close, null)
         setNegativeButton(R.string.butn_remove) { dialog: DialogInterface?, which: Int ->

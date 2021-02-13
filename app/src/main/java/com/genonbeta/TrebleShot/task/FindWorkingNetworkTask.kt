@@ -68,6 +68,6 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
     }
 
     interface CalculationResultListener : AttachedTaskListener {
-        fun onCalculationResult(device: Device?, address: DeviceAddress?)
+        fun onCalculationResult(device: Device, address: DeviceAddress?)
     }
 }

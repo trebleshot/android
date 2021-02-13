@@ -46,7 +46,8 @@ import java.text.NumberFormat
  * date: 26.01.2018 18:29
  */
 class NotificationHelper(val utils: Notifications) {
-    private val mPercentFormat = NumberFormat.getPercentInstance()
+    private val percentFormat = NumberFormat.getPercentInstance()
+
     val foregroundNotification: DynamicNotification
         get() {
             val notification = utils.buildDynamicNotification(
@@ -348,7 +349,7 @@ class NotificationHelper(val utils: Notifications) {
             ) else msg.append(taskName)
             if (progressCurrent > 0 && progressTotal > 0) {
                 msg.append(middleDot)
-                val percentage = mPercentFormat.format(progressCurrent.toDouble() / progressTotal)
+                val percentage = percentFormat.format(progressCurrent.toDouble() / progressTotal)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) msg.append(
                     percentage,
                     StyleSpan(Typeface.ITALIC),

@@ -17,16 +17,20 @@
  */
 package com.genonbeta.TrebleShot.adapter
 
-import android.database.Cursor
 import android.net.Uri
+import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.VideoListAdapter.VideoHolder
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TimeUtils
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.TrebleShot.widgetimport.GalleryGroupEditableListAdapter
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 
@@ -34,27 +38,30 @@ import com.genonbeta.android.framework.util.listing.Merger
  * created by: Veli
  * date: 18.11.2017 13:32
  */
-class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHolder?>?) :
-    GalleryGroupEditableListAdapter<VideoHolder?, GroupViewHolder?>(
-        fragment,
-        GroupEditableListAdapter.MODE_GROUP_BY_DATE
-    ) {
-    private val mResolver: ContentResolver
-    private val mSelectedInset: Int
+class VideoListAdapter(
+    fragment: IEditableListFragment<VideoHolder, GroupViewHolder>,
+) : GalleryGroupEditableListAdapter<VideoHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_DATE) {
+    private val selectedInset: Float = fragment.requireContext().resources.getDimension(R.dimen.space_list_grid)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapter.VIEW_TYPE_DEFAULT) GroupViewHolder(
-            getInflater().inflate(
-                if (isGridLayoutRequested()) R.layout.list_video_grid else R.layout.list_video, parent, false
+        val holder: GroupViewHolder = if (viewType == VIEW_TYPE_DEFAULT) {
+            GroupViewHolder(
+                layoutInflater.inflate(
+                    if (isGridLayoutRequested()) R.layout.list_video_grid else R.layout.list_video, parent, false
+                )
             )
-        ) else createDefaultViews(parent, viewType, true)
+        } else createDefaultViews(parent, viewType, true)
+
         if (!holder.isRepresentative()) {
-            getFragment().registerLayoutViewClicks(holder)
-            val visitView: View = holder.itemView.findViewById<View>(R.id.visitView)
-            visitView.setOnClickListener { v: View? -> getFragment().performLayoutClickOpen(holder) }
-            visitView.setOnLongClickListener { v: View? -> getFragment().performLayoutLongClick(holder) }
-            holder.itemView.findViewById<View>(if (isGridLayoutRequested()) R.id.selectorContainer else R.id.selector)
-                .setOnClickListener(
-                    View.OnClickListener { v: View? -> getFragment().setItemSelected(holder, true) })
+            fragment.registerLayoutViewClicks(holder)
+            val visitView: View = holder.itemView.findViewById(R.id.visitView)
+            visitView.setOnClickListener { v: View? -> fragment.performLayoutClickOpen(holder) }
+            visitView.setOnLongClickListener { v: View? -> fragment.performLayoutLongClick(holder) }
+            holder.itemView.findViewById<View>(
+                if (isGridLayoutRequested()) R.id.selectorContainer else R.id.selector
+            ).setOnClickListener { v: View? ->
+                fragment.setItemSelected(holder, true)
+            }
         }
         return holder
     }
@@ -66,14 +73,14 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
             if (!holder.tryBinding(item)) {
                 val container = parentView.findViewById<ViewGroup>(R.id.container)
                 val image = parentView.findViewById<ImageView>(R.id.image)
-                val text1: TextView = parentView.findViewById<TextView>(R.id.text)
-                val text2: TextView = parentView.findViewById<TextView>(R.id.text2)
-                val text3: TextView = parentView.findViewById<TextView>(R.id.text3)
+                val text1: TextView = parentView.findViewById(R.id.text)
+                val text2: TextView = parentView.findViewById(R.id.text2)
+                val text3: TextView = parentView.findViewById(R.id.text3)
                 text1.setText(item.friendlyName)
                 text2.setText(item.duration)
-                text3.setText(Files.sizeExpression(item.comparableSize, false))
-                parentView.isSelected = item.isSelectableSelected
-                GlideApp.with(getContext())
+                text3.setText(Files.sizeExpression(item.getComparableSize(), false))
+                parentView.isSelected = item.isSelectableSelected()
+                GlideApp.with(context)
                     .load(item.uri)
                     .override(300)
                     .centerCrop()
@@ -84,34 +91,32 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
     }
 
     protected override fun onLoad(lister: GroupLister<VideoHolder>) {
-        val cursor: Cursor = mResolver.query(
+        context.contentResolver.query(
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null,
             null, null
-        )
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                val idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID)
-                val titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE)
-                val displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
-                val albumIndex = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
-                val lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION)
-                val dateIndex = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
-                val sizeIndex = cursor.getColumnIndex(MediaStore.Video.Media.SIZE)
-                val typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE)
-                do {
-                    val holder = VideoHolder(
-                        cursor.getInt(idIndex).toLong(), cursor.getString(titleIndex),
-                        cursor.getString(displayIndex), cursor.getString(albumIndex), cursor.getString(typeIndex),
-                        cursor.getLong(lengthIndex), cursor.getLong(dateIndex) * 1000,
-                        cursor.getLong(sizeIndex), Uri.parse(
-                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString() + "/"
-                                    + cursor.getInt(idIndex)
-                        )
+        )?.use { cursor ->
+            if (!cursor.moveToFirst()) return
+
+            val idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID)
+            val titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE)
+            val displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
+            val albumIndex = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
+            val lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION)
+            val dateIndex = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
+            val sizeIndex = cursor.getColumnIndex(MediaStore.Video.Media.SIZE)
+            val typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE)
+            do {
+                val holder = VideoHolder(
+                    cursor.getInt(idIndex).toLong(), cursor.getString(titleIndex),
+                    cursor.getString(displayIndex), cursor.getString(albumIndex), cursor.getString(typeIndex),
+                    cursor.getLong(lengthIndex), cursor.getLong(dateIndex) * 1000,
+                    cursor.getLong(sizeIndex), Uri.parse(
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString() + "/"
+                                + cursor.getInt(idIndex)
                     )
-                    lister.offerObliged(this, holder)
-                } while (cursor.moveToNext())
-            }
-            cursor.close()
+                )
+                lister.offerObliged(this, holder)
+            } while (cursor.moveToNext())
         }
     }
 
@@ -122,15 +127,11 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
     class VideoHolder : GalleryGroupShareable {
         var duration: String? = null
 
-        constructor(representativeText: String?) : super(
-            GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE,
-            representativeText
-        ) {
-        }
+        constructor(representativeText: String) : super(VIEW_TYPE_REPRESENTATIVE, representativeText)
 
         constructor(
-            id: Long, friendlyName: String?, fileName: String?, albumName: String?, mimeType: String?,
-            duration: Long, date: Long, size: Long, uri: Uri?
+            id: Long, friendlyName: String, fileName: String, albumName: String, mimeType: String,
+            duration: Long, date: Long, size: Long, uri: Uri,
         ) : super(id, friendlyName, fileName, albumName, mimeType, date, size, uri) {
             this.duration = TimeUtils.getDuration(duration)
         }
@@ -138,10 +139,5 @@ class VideoListAdapter(fragment: IEditableListFragment<VideoHolder?, GroupViewHo
 
     companion object {
         const val VIEW_TYPE_TITLE = 1
-    }
-
-    init {
-        mResolver = getContext().getContentResolver()
-        mSelectedInset = getContext().getResources().getDimension(R.dimen.space_list_grid)
     }
 }

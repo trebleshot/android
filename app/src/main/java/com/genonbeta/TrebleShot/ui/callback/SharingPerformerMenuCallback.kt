@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.dataobject.MappedSelectable
 import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
+import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.PickListener
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.SharingMethod
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
@@ -51,12 +52,14 @@ open class SharingPerformerMenuCallback(
         if (id == R.id.action_mode_share_trebleshot) {
             if (shareableList.isNotEmpty()) {
                 localSharingCallback?.onShareLocal(shareableList) ?: run {
-                    ChooseSharingMethodDialog(activity) { method: SharingMethod ->
-                        val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(
-                            method, ArrayList(shareableList)
-                        )
-                        App.run(activity, task)
-                    }.show()
+                    ChooseSharingMethodDialog(activity, object : PickListener {
+                        override fun onShareMethod(sharingMethod: SharingMethod) {
+                            val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(
+                                sharingMethod, ArrayList(shareableList)
+                            )
+                            App.run(activity, task)
+                        }
+                    }).show()
                 }
             }
         } else return super.onPerformerMenuSelected(performerMenu, item)

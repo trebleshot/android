@@ -17,62 +17,81 @@
  */
 package com.genonbeta.TrebleShot.fragment
 
-import android.content.*
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.util.AppUtils
-import android.os.Bundle
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import android.bluetooth.BluetoothA2dp
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.net.Uri
-import com.genonbeta.TrebleShot.app.EditableListFragment
-import android.view.ViewGroup
+import android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION
+import android.net.wifi.p2p.WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION
+import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import androidx.cardview.widget.CardView
 import androidx.transition.TransitionManager
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter.EditableNetworkInterface
+import com.genonbeta.TrebleShot.app.EditableListFragment
+import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog
+import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment.Companion.WIFI_AP_STATE_CHANGED
+import com.genonbeta.TrebleShot.ui.callback.IconProvider
+import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.Networks
 import com.genonbeta.TrebleShot.util.TextUtils
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 
 /**
  * created by: veli
  * date: 4/7/19 10:59 PM
  */
 class ActiveConnectionListFragment :
-    EditableListFragment<EditableNetworkInterface?, RecyclerViewAdapter.ViewHolder?, ActiveConnectionListAdapter?>(),
-    IconProvider {
-    private val mFilter = IntentFilter()
-    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    EditableListFragment<EditableNetworkInterface, ViewHolder, ActiveConnectionListAdapter>(), IconProvider {
+    override val iconRes: Int = R.drawable.ic_web_white_24dp
+
+    private val filter = IntentFilter()
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (NetworkManagerFragmentWIFI_AP_STATE_CHANGED == intent.action || ConnectivityManager.CONNECTIVITY_ACTION == intent.action || WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action || WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION == intent.action || BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED == intent.action) refreshList()
+            if (WIFI_AP_STATE_CHANGED == intent.action || CONNECTIVITY_ACTION == intent.action
+                || WIFI_STATE_CHANGED_ACTION == intent.action || WIFI_P2P_CONNECTION_CHANGED_ACTION == intent.action
+                || BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED == intent.action
+            ) refreshList()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setLayoutResId(R.layout.layout_active_connection)
+        layoutResId = R.layout.layout_active_connection
         isSortingSupported = false
-        setFilteringSupported(true)
-        setItemOffsetDecorationEnabled(true)
-        setItemOffsetForEdgesEnabled(true)
-        setDefaultItemOffsetPadding(resources.getDimension(R.dimen.padding_list_content_parent_layout))
-        mFilter.addAction(NetworkManagerFragment.WIFI_AP_STATE_CHANGED)
-        mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-        mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
-        mFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
-        mFilter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)
+        isFilteringSupported = true
+        itemOffsetDecorationEnabled = true
+        itemOffsetForEdgesEnabled = true
+        defaultItemOffsetPadding = resources.getDimension(R.dimen.padding_list_content_parent_layout)
+        filter.addAction(WIFI_AP_STATE_CHANGED)
+        filter.addAction(CONNECTIVITY_ACTION)
+        filter.addAction(WIFI_STATE_CHANGED_ACTION)
+        filter.addAction(WIFI_P2P_CONNECTION_CHANGED_ACTION)
+        filter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listAdapter = ActiveConnectionListAdapter(this)
-        setEmptyListImage(R.drawable.ic_share_white_24dp)
-        setEmptyListText(getString(R.string.text_listEmptyConnection))
-        val webShareInfo: CardView = view.findViewById(R.id.card_web_share_info)
+        adapter = ActiveConnectionListAdapter(this)
+        emptyListImageView.setImageResource(R.drawable.ic_share_white_24dp)
+        emptyListTextView.text = getString(R.string.text_listEmptyConnection)
+        val webShareInfo = view.findViewById<CardView>(R.id.card_web_share_info)
         val webShareInfoHideButton = view.findViewById<Button>(R.id.card_web_share_info_hide_button)
         val helpWebShareInfo = "help_webShareInfo"
-        if (AppUtils.getDefaultPreferences(context)!!.getBoolean(helpWebShareInfo, true)) {
-            webShareInfo.setVisibility(View.VISIBLE)
+        if (AppUtils.getDefaultPreferences(context).getBoolean(helpWebShareInfo, true)) {
+            webShareInfo.visibility = View.VISIBLE
             webShareInfoHideButton.setOnClickListener { v: View? ->
-                webShareInfo.setVisibility(View.GONE)
+                webShareInfo.visibility = View.GONE
                 TransitionManager.beginDelayedTransition((webShareInfo.getParent() as ViewGroup))
-                AppUtils.getDefaultPreferences(context)!!.edit()
+                AppUtils.getDefaultPreferences(context).edit()
                     .putBoolean(helpWebShareInfo, false)
                     .apply()
             }
@@ -81,16 +100,12 @@ class ActiveConnectionListFragment :
 
     override fun onResume() {
         super.onResume()
-        requireContext().registerReceiver(mReceiver, mFilter)
+        requireContext().registerReceiver(receiver, filter)
     }
 
     override fun onPause() {
         super.onPause()
-        requireContext().unregisterReceiver(mReceiver)
-    }
-
-    override fun getIconRes(): Int {
-        return R.drawable.ic_web_white_24dp
+        requireContext().unregisterReceiver(receiver)
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {
@@ -98,28 +113,28 @@ class ActiveConnectionListFragment :
     }
 
     override fun performDefaultLayoutClick(
-        holder: RecyclerViewAdapter.ViewHolder,
-        target: EditableNetworkInterface
+        holder: ViewHolder,
+        target: EditableNetworkInterface,
     ): Boolean {
         WebShareDetailsDialog(
             requireActivity(), TextUtils.makeWebShareLink(
                 requireContext(),
-                Networks.getFirstInet4Address(target).getHostAddress()
+                Networks.getFirstInet4Address(target)?.hostAddress
             )
         ).show()
         return true
     }
 
     override fun performLayoutClickOpen(
-        holder: RecyclerViewAdapter.ViewHolder?,
-        target: EditableNetworkInterface?
+        holder: ViewHolder,
+        target: EditableNetworkInterface,
     ): Boolean {
         if (!super.performLayoutClickOpen(holder, target)) startActivity(
             Intent(Intent.ACTION_VIEW).setData(
                 Uri.parse(
                     TextUtils.makeWebShareLink(
                         requireContext(),
-                        Networks.getFirstInet4Address(target).getHostAddress()
+                        Networks.getFirstInet4Address(target)?.hostAddress
                     )
                 )
             )

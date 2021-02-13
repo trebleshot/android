@@ -75,7 +75,7 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex, GroupViewH
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         defaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_DATE
         itemOffsetDecorationEnabled = true
-        itemOffsetForEdges = true
+        itemOffsetForEdgesEnabled = true
         defaultItemOffsetPadding = resources.getDimension(R.dimen.padding_list_content_parent_layout)
     }
 

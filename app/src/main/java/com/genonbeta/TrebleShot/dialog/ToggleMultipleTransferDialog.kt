@@ -21,81 +21,85 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.activity.TransferDetailActivity
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
+import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.dataobject.TransferItem
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable.IShapeBuilder
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.DeviceLoader
 import com.genonbeta.TrebleShot.util.Transfers
 
-class ToggleMultipleTransferDialog(activity: TransferDetailActivity, index: TransferIndex) :
-    AlertDialog.Builder(activity) {
-    private val mActivity: TransferDetailActivity
-    private val mMembers: Array<LoadedMember>
-    private val mInflater: LayoutInflater
-    private val mIconBuilder: IShapeBuilder?
-    private fun startTransfer(activity: TransferDetailActivity, index: TransferIndex, member: LoadedMember?) {
-        if (mActivity.isDeviceRunning(member.deviceId)) Transfers.pauseTransfer(
-            activity,
-            member
-        ) else Transfers.startTransferWithTest(activity, index.transfer, member)
+class ToggleMultipleTransferDialog(
+    val activity: TransferDetailActivity, index: TransferIndex,
+) : AlertDialog.Builder(activity) {
+    private val members: Array<LoadedMember> = index.members
+
+    private val inflater: LayoutInflater = LayoutInflater.from(activity)
+
+    private val iconBuilder: IShapeBuilder = AppUtils.getDefaultIconBuilder(activity)
+
+    private fun startTransfer(activity: TransferDetailActivity, index: TransferIndex, member: LoadedMember) {
+        if (activity.isDeviceRunning(member.deviceId)) {
+            Transfers.pauseTransfer(activity, member)
+        } else {
+            Transfers.startTransferWithTest(activity, index.transfer, member)
+        }
     }
 
     private inner class ActiveListAdapter : BaseAdapter() {
         override fun getCount(): Int {
-            return mMembers.size
+            return members.size
         }
 
         override fun getItem(position: Int): Any {
-            return mMembers[position]
+            return members[position]
         }
 
         override fun getItemId(position: Int): Long {
             return 0
         }
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            var convertView = convertView
-            if (convertView == null) convertView = mInflater.inflate(R.layout.list_toggle_transfer, parent, false)
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView ?: inflater.inflate(R.layout.list_toggle_transfer, parent, false)
             val member: LoadedMember = getItem(position) as LoadedMember
-            val image = convertView.findViewById<ImageView>(R.id.image)
-            val text: TextView = convertView.findViewById<TextView>(R.id.text)
-            val actionImage = convertView.findViewById<ImageView>(R.id.actionImage)
-            text.setText(member.device.username)
-            actionImage.setImageResource(if (mActivity.isDeviceRunning(member.deviceId)) R.drawable.ic_pause_white_24dp else if (TransferItem.Type.INCOMING == member.type) R.drawable.ic_arrow_down_white_24dp else R.drawable.ic_arrow_up_white_24dp)
-            DeviceLoader.showPictureIntoView(member.device, image, mIconBuilder)
-            return convertView
+            val image: ImageView = view.findViewById(R.id.image)
+            val text: TextView = view.findViewById(R.id.text)
+            val actionImage: ImageView = view.findViewById(R.id.actionImage)
+            text.text = member.device.username
+            actionImage.setImageResource(
+                when {
+                    activity.isDeviceRunning(member.deviceId) -> R.drawable.ic_pause_white_24dp
+                    TransferItem.Type.INCOMING == member.type -> R.drawable.ic_arrow_down_white_24dp
+                    else -> R.drawable.ic_arrow_up_white_24dp
+                }
+            )
+            DeviceLoader.showPictureIntoView(member.device, image, iconBuilder)
+            return view
         }
     }
 
     init {
-        mActivity = activity
-        mInflater = LayoutInflater.from(activity)
-        mIconBuilder = AppUtils.getDefaultIconBuilder(activity)
-        mMembers = index.members
-        if (mMembers.size > 0) setAdapter(
-            ActiveListAdapter(),
-            DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                startTransfer(
-                    activity,
-                    index,
-                    mMembers[which]
-                )
-            })
+        if (members.isNotEmpty()) setAdapter(ActiveListAdapter()) { dialog: DialogInterface?, which: Int ->
+            startTransfer(activity, index, members[which])
+        }
         setNegativeButton(R.string.butn_close, null)
-        if (index.hasOutgoing()) setNeutralButton(R.string.butn_addDevices) { dialog: DialogInterface?, which: Int -> activity.startDeviceAddingActivity() }
+        if (index.hasOutgoing()) setNeutralButton(R.string.butn_addDevices) { dialog: DialogInterface?, which: Int ->
+            activity.startDeviceAddingActivity()
+        }
         var senderMember: LoadedMember? = null
         for (member in index.members) if (TransferItem.Type.INCOMING == member.type) {
             senderMember = member
             break
         }
         if (index.hasIncoming() && senderMember != null) {
-            val finalSenderMember: LoadedMember? = senderMember
             setPositiveButton(R.string.butn_receive) { dialog: DialogInterface?, which: Int ->
-                startTransfer(
-                    activity, index,
-                    finalSenderMember
-                )
+                startTransfer(activity, index, senderMember)
             }
         }
     }

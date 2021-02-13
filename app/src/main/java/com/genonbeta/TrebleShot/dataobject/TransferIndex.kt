@@ -64,6 +64,14 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
 
     var members = emptyArray<LoadedMember>()
 
+    override var date: Long
+        get() = transfer.dateCreated
+        set(value) {
+            transfer.dateCreated = value
+        }
+
+    override var size: Long = 0
+
     private var isSelected = false
 
     override var id: Long
@@ -186,18 +194,10 @@ class TransferIndex : GroupEditable, DatabaseObject<Device> {
 
     override fun isGroupRepresentative(): Boolean = representativeText != null
 
-    override fun setDate(date: Long) {
-        transfer.dateCreated = date
-    }
-
     override fun setSelectableSelected(selected: Boolean): Boolean {
         if (isGroupRepresentative()) return false
         isSelected = selected
         return true
-    }
-
-    override fun setSize(size: Long) {
-        Log.e(TAG, "setSize: This is not implemented")
     }
 
     override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Device?, progress: Progress.Context?) {

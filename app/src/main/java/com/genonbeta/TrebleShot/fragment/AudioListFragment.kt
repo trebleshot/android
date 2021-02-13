@@ -17,39 +17,44 @@
  */
 package com.genonbeta.TrebleShot.fragment
 
-import android.content.*
-import com.genonbeta.TrebleShot.R
+import android.content.Context
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.AudioListAdapter
+import com.genonbeta.TrebleShot.adapter.AudioListAdapter.AudioItemHolder
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 
-class AudioListFragment : GroupEditableListFragment<AudioItemHolder?, GroupViewHolder?, AudioListAdapter?>() {
+class AudioListFragment : GroupEditableListFragment<AudioItemHolder, GroupViewHolder, AudioListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFilteringSupported(true)
-        setDefaultGroupingCriteria(AudioListAdapter.MODE_GROUP_BY_ALBUM)
+        isFilteringSupported = true
+        defaultGroupingCriteria = AudioListAdapter.MODE_GROUP_BY_ALBUM
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setListAdapter(AudioListAdapter(this))
-        setEmptyListImage(R.drawable.ic_library_music_white_24dp)
-        setEmptyListText(getString(R.string.text_listEmptyMusic))
+        adapter = AudioListAdapter(this)
+        emptyListImageView.setImageResource(R.drawable.ic_library_music_white_24dp)
+        emptyListTextView.text = (getString(R.string.text_listEmptyMusic))
     }
 
     override fun onResume() {
         super.onResume()
-        requireContext().getContentResolver().registerContentObserver(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            true, getDefaultContentObserver()
+        requireContext().contentResolver.registerContentObserver(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, defaultContentObserver
         )
     }
 
     override fun onPause() {
         super.onPause()
-        requireContext().getContentResolver().unregisterContentObserver(getDefaultContentObserver())
+        requireContext().contentResolver.unregisterContentObserver(defaultContentObserver)
     }
 
-    override fun onGroupingOptions(options: MutableMap<String?, Int?>) {
+    override fun onGroupingOptions(options: MutableMap<String, Int>) {
         super.onGroupingOptions(options)
         options[getString(R.string.text_groupByNothing)] = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING
         options[getString(R.string.text_groupByDate)] = GroupEditableListAdapter.MODE_GROUP_BY_DATE
@@ -59,17 +64,15 @@ class AudioListFragment : GroupEditableListFragment<AudioItemHolder?, GroupViewH
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE) currentSpanSize else super.onGridSpanSize(
-            viewType,
+        return if (viewType == GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE) {
             currentSpanSize
-        )
+        } else {
+            super.onGridSpanSize(viewType, currentSpanSize)
+        }
     }
 
-    override fun performDefaultLayoutClick(
-        holder: GroupViewHolder,
-        item: AudioItemHolder
-    ): Boolean {
-        return performLayoutClickOpen(holder, item)
+    override fun performDefaultLayoutClick(holder: GroupViewHolder, target: AudioItemHolder): Boolean {
+        return performLayoutClickOpen(holder, target)
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {

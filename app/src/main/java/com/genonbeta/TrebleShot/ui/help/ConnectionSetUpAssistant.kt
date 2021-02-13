@@ -26,7 +26,8 @@ import com.genonbeta.TrebleShot.activity.AddDeviceActivity
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity.AvailableFragment
 
 class ConnectionSetUpAssistant(activity: Activity) {
-    val context: Context
+    val context: Context = activity.applicationContext
+
     val dialogInstance: AlertDialog.Builder
         get() = AlertDialog.Builder(context)
             .setTitle(R.string.text_connectionWizard)
@@ -96,9 +97,5 @@ class ConnectionSetUpAssistant(activity: Activity) {
             Intent(AddDeviceActivity.ACTION_CHANGE_FRAGMENT)
                 .putExtra(AddDeviceActivity.EXTRA_FRAGMENT_ENUM, fragment)
         )
-    }
-
-    init {
-        context = activity
     }
 }

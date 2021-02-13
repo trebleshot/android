@@ -47,6 +47,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
 import com.genonbeta.android.framework.util.actionperformer.Selectable
@@ -56,11 +57,15 @@ import java.util.*
 open class TransferItemListFragment :
     GroupEditableListFragment<GenericItem, GroupViewHolder, TransferItemListAdapter>(),
     TitleProvider, OnBackPressedListener {
-    private var mTransfer: Transfer? = null
-    private var mIndex: TransferIndex? = null
+    private lateinit var transfer: Transfer
+
+    private lateinit var index: TransferIndex
+
     private var lastKnownPath: String? = null
+
     private val intentFilter = IntentFilter()
-    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: KuickDb.BroadcastData = KuickDb.toData(intent)
@@ -70,7 +75,7 @@ open class TransferItemListFragment :
                 )
             ) {
                 val transfer: Transfer = intent.getParcelableExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER)
-                if (transfer == mTransfer) createSnackbar(R.string.mesg_pathSaved)?.show()
+                if (transfer == this@TransferItemListFragment.transfer) createSnackbar(R.string.mesg_pathSaved)?.show()
             }
         }
     }
@@ -84,6 +89,15 @@ open class TransferItemListFragment :
         defaultGroupingCriteria = TransferItemListAdapter.MODE_GROUP_BY_DEFAULT
         intentFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
         intentFilter.addAction(ChangeSaveDirectoryTask.ACTION_SAVE_PATH_CHANGED)
+
+        transfer = Transfer(arguments?.getLong(ARG_TRANSFER_ID, -1) ?: -1).also {
+            try {
+                AppUtils.getKuick(requireContext())
+            } catch (ignored: ReconstructionFailedException) {
+            }
+        }
+
+        index = TransferIndex(transfer)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,7 +111,6 @@ open class TransferItemListFragment :
                 args.getString(ARG_TYPE)
             )
         }
-
     }
 
     override fun onCreatePerformerMenu(context: Context): PerformerMenu {
@@ -106,12 +119,12 @@ open class TransferItemListFragment :
 
     override fun onResume() {
         super.onResume()
-        requireContext().registerReceiver(mReceiver, intentFilter)
+        requireContext().registerReceiver(receiver, intentFilter)
     }
 
     override fun onPause() {
         super.onPause()
-        requireContext().unregisterReceiver(mReceiver)
+        requireContext().unregisterReceiver(receiver)
     }
 
     override fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
@@ -144,10 +157,10 @@ open class TransferItemListFragment :
             val selectedPath = data.getParcelableExtra<Uri>(FilePickerActivity.EXTRA_CHOSEN_PATH)
             if (selectedPath == null) {
                 createSnackbar(R.string.mesg_somethingWentWrong)?.show()
-            } else if (selectedPath.toString() == getTransfer()!!.savePath) {
+            } else if (selectedPath.toString() == transfer.savePath) {
                 createSnackbar(R.string.mesg_pathSameError)?.show()
             } else {
-                val task = ChangeSaveDirectoryTask(mTransfer, selectedPath)
+                val task = ChangeSaveDirectoryTask(transfer, selectedPath)
                 AlertDialog.Builder(requireActivity())
                     .setTitle(R.string.ques_checkOldFiles)
                     .setMessage(R.string.text_checkOldFiles)
@@ -177,32 +190,12 @@ open class TransferItemListFragment :
         return context.getString(R.string.text_transfers)
     }
 
-    fun getTransfer(): Transfer? {
-        if (mTransfer == null) {
-            arguments?.let { args ->
-                try {
-                    mTransfer = Transfer(args.getLong(ARG_TRANSFER_ID, -1)).also {
-                        AppUtils.getKuick(requireContext()).reconstruct(it)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        return mTransfer
-    }
-
-    fun getIndex(): TransferIndex? {
-        if (mIndex == null) mIndex = TransferIndex(getTransfer())
-        return mIndex
-    }
-
     fun goPath(path: String?, transferId: Long, deviceId: String?, type: String?) {
         if (deviceId != null && type != null) try {
             val member = LoadedMember(transferId, deviceId, TransferItem.Type.valueOf(type))
             AppUtils.getKuick(requireContext()).reconstruct(member)
             Transfers.loadMemberInfo(requireContext(), member)
-            adapter.mMember = member
+            adapter.member = member
         } catch (ignored: Exception) {
         }
         goPath(path, transferId)
@@ -223,15 +216,15 @@ open class TransferItemListFragment :
         item: GenericItem,
     ): Boolean {
         if (item is DetailsTransferFolder) {
-            val list = Transfers.loadMemberList(requireContext(), getTransfer()!!.id, null)
-            if (list!!.isNotEmpty()) {
+            val list = Transfers.loadMemberList(requireContext(), transfer.id, null)
+            if (list.isNotEmpty()) {
                 val listClickListener = DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                    getAdapter().setMember(list[which])
-                    getAdapter().setPath(getAdapter().getPath())
+                    adapter.member = list[which]
+                    adapter.path = adapter.path
                     refreshList()
                 }
                 val noLimitListener = DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-                    adapter.mMember = null
+                    adapter.member = null
                     adapter.path = adapter.path
                     refreshList()
                 }
@@ -251,10 +244,10 @@ open class TransferItemListFragment :
                     .show()
             } else changeSavePath(item.directory)
         } else if (item is TransferFolder) {
-            adapter = item.directory
+            adapter.path = item.directoryLocal
             refreshList()
             AppUtils.showFolderSelectionHelp(this)
-        } else TransferInfoDialog(requireActivity(), getIndex(), item, adapter.getDeviceId()).show()
+        } else TransferInfoDialog(requireActivity(), index, item, adapter.getDeviceId()).show()
         return true
     }
 

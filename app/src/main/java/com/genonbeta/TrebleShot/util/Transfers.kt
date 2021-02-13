@@ -184,9 +184,7 @@ object Transfers {
                     + Kuick.FIELD_TRANSFERMEMBER_TYPE + "=?", transferId.toString(),
             type.toString()
         )
-        return AppUtils.getKuick(context).castQuery(
-            selection,
-            LoadedMember::class.java,
+        return AppUtils.getKuick(context).castQuery(selection, LoadedMember::class.java,
             object : KuickDb.CastQueryListener<LoadedMember> {
                 override fun onObjectReconstructed(manager: KuickDb, values: ContentValues, item: LoadedMember) {
                     loadMemberInfo(manager, item)

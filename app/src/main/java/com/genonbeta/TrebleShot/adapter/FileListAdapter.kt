@@ -98,9 +98,18 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
                 }
             }
             val referencedDirectoryList: MutableList<File> = ArrayList()
-            if (Build.VERSION.SDK_INT >= 21) referencedDirectoryList.addAll(Arrays.asList(*context.getExternalMediaDirs())) else if (Build.VERSION.SDK_INT >= 19) referencedDirectoryList.addAll(
-                Arrays.asList(*context.getExternalFilesDirs(null))
-            ) else referencedDirectoryList.add(Environment.getExternalStorageDirectory())
+            when {
+                Build.VERSION.SDK_INT >= 21 -> {
+                    referencedDirectoryList.addAll(listOf(*context.externalMediaDirs))
+                }
+                Build.VERSION.SDK_INT >= 19 -> {
+                    referencedDirectoryList.addAll(listOf(*context.getExternalFilesDirs(null)))
+                }
+                else -> {
+                    referencedDirectoryList.add(Environment.getExternalStorageDirectory())
+                }
+            }
+
             for (mediaDir in referencedDirectoryList) {
                 if (!mediaDir.canWrite()) continue
                 val fileHolder = FileHolder(context, DocumentFile.fromFile(mediaDir))

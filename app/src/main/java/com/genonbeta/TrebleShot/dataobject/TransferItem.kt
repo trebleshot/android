@@ -45,7 +45,7 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
 
     lateinit var mimeType: String
 
-    var directory: String? = null
+    open var directory: String? = null
 
     override var id: Long = 0
 

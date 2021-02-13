@@ -17,4 +17,6 @@
  */
 package com.genonbeta.TrebleShot.protocol.communication
 
+import com.genonbeta.TrebleShot.dataobject.Device
+
 open class NotAllowedException(var device: Device) : CommunicationException()

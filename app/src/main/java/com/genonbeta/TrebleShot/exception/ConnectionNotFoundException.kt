@@ -23,6 +23,6 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException
  * created by: Veli
  * date: 6.01.2018 22:25
  */
-class ConnectionNotFoundException(val deviceId: String, ) : ReconstructionFailedException(
+class ConnectionNotFoundException(val deviceId: String) : ReconstructionFailedException(
     "No known connection route for the device $deviceId"
 )

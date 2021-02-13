@@ -19,7 +19,6 @@ package com.genonbeta.TrebleShot.service.backgroundservice
 
 import android.os.Handler
 import android.os.Looper
-import com.genonbeta.TrebleShot.service.backgroundserviceimport.TaskStoppedException
 
 abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsyncTask() {
     private var handler = Handler(Looper.myLooper() ?: Looper.getMainLooper())

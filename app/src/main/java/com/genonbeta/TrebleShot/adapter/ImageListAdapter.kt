@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.adapter
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -29,7 +30,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter.ImageHolder
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TimeUtils
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
 import com.genonbeta.TrebleShot.widgetimport.GalleryGroupEditableListAdapter
 import com.genonbeta.android.framework.util.listing.Merger
@@ -38,16 +38,12 @@ import com.genonbeta.android.framework.util.listing.Merger
  * created by: Veli
  * date: 18.11.2017 13:32
  */
-class ImageListAdapter(fragment: IEditableListFragment<ImageHolder, GroupViewHolder>) :
-    GalleryGroupEditableListAdapter<ImageHolder, GroupViewHolder>(
-        fragment,
-        MODE_GROUP_BY_ALBUM
-    ) {
-    private val selectedInset: Int
-
+class ImageListAdapter(
+    fragment: IEditableListFragment<ImageHolder, GroupViewHolder>,
+) : GalleryGroupEditableListAdapter<ImageHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_ALBUM) {
     override fun onLoad(lister: GroupLister<ImageHolder>) {
         context.contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null,
+            EXTERNAL_CONTENT_URI, null, null,
             null, null
         )?.use { cursor: Cursor ->
             if (!cursor.moveToFirst()) return@use
@@ -60,13 +56,13 @@ class ImageListAdapter(fragment: IEditableListFragment<ImageHolder, GroupViewHol
             val sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
             val typeIndex = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
             do {
-
+                val date = cursor.getLong(dateAddedIndex) * 1000
                 val holder = ImageHolder(
                     cursor.getLong(idIndex), cursor.getString(titleIndex),
                     cursor.getString(displayIndex), cursor.getString(albumIndex), cursor.getString(typeIndex),
-                    cursor.getLong(dateAddedIndex) * 1000, cursor.getLong(sizeIndex),
-                    Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString() + "/" + cursor.getInt(idIndex)),
-                    TimeUtils.formatDateTime(context, holder.getComparableDate()).toString()
+                    date, cursor.getLong(sizeIndex),
+                    Uri.parse("$EXTERNAL_CONTENT_URI/${cursor.getInt(idIndex)}"),
+                    TimeUtils.formatDateTime(context, date).toString()
                 )
                 lister.offerObliged(this, holder)
             } while (cursor.moveToNext())
@@ -118,14 +114,13 @@ class ImageListAdapter(fragment: IEditableListFragment<ImageHolder, GroupViewHol
     }
 
     class ImageHolder : GalleryGroupShareable {
-        var dateTakenString: String? = null
+        lateinit var dateTakenString: String
 
-        constructor(representativeText: String?) : super(VIEW_TYPE_REPRESENTATIVE, representativeText
-        )
+        constructor(representativeText: String) : super(VIEW_TYPE_REPRESENTATIVE, representativeText)
 
         constructor(
-            id: Long, title: String?, fileName: String?, albumName: String?, mimeType: String?, date: Long,
-            size: Long, uri: Uri?, dateTakenString: String?,
+            id: Long, title: String, fileName: String, albumName: String, mimeType: String, date: Long,
+            size: Long, uri: Uri, dateTakenString: String,
         ) : super(id, title, fileName, albumName, mimeType, date, size, uri) {
             this.dateTakenString = dateTakenString
         }

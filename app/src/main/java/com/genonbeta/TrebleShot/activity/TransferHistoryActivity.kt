@@ -17,9 +17,9 @@
  */
 package com.genonbeta.TrebleShot.activity
 
-import com.genonbeta.TrebleShot.R
 import android.os.Bundle
 import android.view.MenuItem
+import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 
 class TransferHistoryActivity : Activity() {
@@ -31,7 +31,11 @@ class TransferHistoryActivity : Activity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == android.R.id.home) finish() else return super.onOptionsItemSelected(item)
+        if (id == android.R.id.home) {
+            finish()
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
         return true
     }
 }

@@ -88,7 +88,7 @@ class IndexTransferTask(
                     .putExtra(BackgroundService.EXTRA_DEVICE, device)
             )
             if (noPrompt) try {
-                app.run(FileTransferTask.createFrom(kuick, transfer, device, TransferItem.Type.INCOMING))
+                app.run(FileTransferStarterTask.createFrom(kuick, transfer, device, TransferItem.Type.INCOMING))
             } catch (e: Exception) {
                 e.printStackTrace()
             } else app.notifyFileRequest(device, transfer, itemList)

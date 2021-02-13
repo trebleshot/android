@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
  * created by: veli
  * date: 30.03.2018 16:10
  */
-abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder, E : GroupEditableListAdapter<T, V>>() :
+abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder, E : GroupEditableListAdapter<T, V>> :
     EditableListFragment<T, V, E>() {
     override var adapter: E
         get() = super.adapter

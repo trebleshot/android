@@ -19,6 +19,7 @@ package com.genonbeta.TrebleShot.app
 
 import android.content.Context
 import android.net.Uri
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider
@@ -72,6 +73,8 @@ interface EditableListFragmentBase<T : Editable> : ListFragmentBase<T>, Performe
     fun openUri(uri: Uri): Boolean
 
     fun loadIfRequested(): Boolean
+
+    fun requireActivity(): FragmentActivity
 
     fun requireContext(): Context
 }

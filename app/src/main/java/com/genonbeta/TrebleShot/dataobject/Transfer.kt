@@ -33,34 +33,31 @@ import com.genonbeta.android.database.SQLQuery
  * date: 06.04.2018 09:37
  */
 class Transfer : DatabaseObject<Device?>, Parcelable {
-    @JvmField
     var id: Long = 0
 
-    @JvmField
     var dateCreated: Long = 0
 
-    @JvmField
     var savePath: String? = null
+
     var isPaused = false
 
-    @JvmField
     var isServedOnWeb = false
 
-    @JvmField
     var deleteFilesOnRemoval = false
 
-    constructor() {}
+    constructor()
+
     constructor(id: Long) {
         this.id = id
     }
 
-    protected constructor(`in`: Parcel) {
-        id = `in`.readLong()
-        dateCreated = `in`.readLong()
-        savePath = `in`.readString()
-        isPaused = `in`.readByte().toInt() != 0
-        isServedOnWeb = `in`.readByte().toInt() != 0
-        deleteFilesOnRemoval = `in`.readByte().toInt() != 0
+    protected constructor(parcel: Parcel) {
+        id = parcel.readLong()
+        dateCreated = parcel.readLong()
+        savePath = parcel.readString()
+        isPaused = parcel.readByte().toInt() != 0
+        isServedOnWeb = parcel.readByte().toInt() != 0
+        deleteFilesOnRemoval = parcel.readByte().toInt() != 0
     }
 
     override fun describeContents(): Int {

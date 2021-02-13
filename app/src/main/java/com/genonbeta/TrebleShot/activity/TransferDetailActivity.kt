@@ -58,23 +58,19 @@ import com.google.android.material.snackbar.Snackbar
 class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
     private var backPressedListener: OnBackPressedListener? = null
 
-    private var transferInternal: Transfer? = null
-
-    private var indexInternal: TransferIndex? = null
-
-    private val transfer: Transfer
-        get() {
-
+    private var transfer: Transfer? = null
+        set(value) {
+            index = if (value == null) null else TransferIndex(value)
+            field = value
         }
 
-    private val index: TransferIndex
-        get() {}
+    private var index: TransferIndex? = null
 
     private lateinit var openWebShareButton: Button
 
     private lateinit var noDevicesNoticeText: View
 
-    private var mMember: LoadedMember? = null
+    private var member: LoadedMember? = null
 
     private lateinit var retryMenu: MenuItem
 
@@ -92,7 +88,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     private var dataCruncher: CrunchLatestDataTask? = null
 
-    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private val selfReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
                 val data: KuickDb.BroadcastData = KuickDb.toData(intent)
@@ -110,12 +106,13 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         setContentView(R.layout.activity_view_transfer)
 
         var transferItem: TransferItem? = null
+        var device: Device? = null
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val intentData = intent.data
 
         setSupportActionBar(toolbar)
 
-        transferInternal = savedInstanceState?.getParcelable(EXTRA_TRANSFER)
+        transfer = savedInstanceState?.getParcelable(EXTRA_TRANSFER)
         openWebShareButton = findViewById(R.id.activity_transfer_detail_open_web_share_button)
         noDevicesNoticeText = findViewById(R.id.activity_transfer_detail_no_devices_warning)
 
@@ -127,68 +124,71 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         openWebShareButton.setOnClickListener { v: View? ->
             startActivity(Intent(this, WebShareActivity::class.java))
         }
-        transferInternal?.let {
-            Log.d(TAG, "onCreate: Created transfer instance from the bundle")
 
-        } ?: if (Intent.ACTION_VIEW == intent.action && intentData != null) {
+        if (Intent.ACTION_VIEW == intent.action && intentData != null) {
             try {
-                val streamInfo: StreamInfo = StreamInfo.from(this, intentData)
-                Log.d(TAG, "Requested file is: " + streamInfo.friendlyName)
-                val fileData = database.getFirstFromTable(
-                    SQLQuery.Select(Kuick.TABLE_TRANSFERITEM)
-                        .setWhere(
-                            Kuick.FIELD_TRANSFERITEM_FILE + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
-                            streamInfo.friendlyName, TransferItem.Type.INCOMING.toString()
-                        )
-                ) ?: throw Exception("File is not found in the database")
-                transferItem = TransferItem()
-                transferItem.reconstruct(database.writableDatabase, database, fileData)
-                val transfer = Transfer(transferItem.transferId)
-                database.reconstruct(transfer)
+                val streamInfo = StreamInfo.from(this, intentData)
+                val db = database.writableDatabase
 
-                transferInternal = transfer
-                TransferInfoDialog(this, index, transferItem, null).show()
-                Log.d(
-                    TAG, "Created instance from an file intent. Original has been cleaned " +
-                            "and changed to open intent"
-                )
+                Log.d(TAG, "Requested file is: " + streamInfo.friendlyName)
+
+                val fileData = database.getFirstFromTable(
+                    db,
+                    SQLQuery.Select(Kuick.TABLE_TRANSFERITEM).setWhere(
+                        Kuick.FIELD_TRANSFERITEM_FILE + "=? AND " + Kuick.FIELD_TRANSFERITEM_TYPE + "=?",
+                        streamInfo.friendlyName, TransferItem.Type.INCOMING.toString()
+                    )
+                ) ?: throw Exception("File is not found in the database")
+
+                transferItem = TransferItem().also { it.reconstruct(db, database, fileData) }
+                transfer = Transfer(transferItem.transferId).also { database.reconstruct(it) }
+
+                Log.d(TAG, "Created instance from an file intent.")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this, R.string.mesg_notValidTransfer, Toast.LENGTH_SHORT).show()
             }
         } else if (ACTION_LIST_TRANSFERS == intent.action && intent.hasExtra(EXTRA_TRANSFER)) {
-            transferInternal = intent.getParcelableExtra(EXTRA_TRANSFER)
+            val transfer = (intent.getParcelableExtra(EXTRA_TRANSFER) as Transfer).also { transfer = it }
+
             try {
                 if (intent.hasExtra(EXTRA_TRANSFER_ITEM_ID) && intent.hasExtra(EXTRA_DEVICE)
                     && intent.hasExtra(EXTRA_TRANSFER_TYPE)
                 ) {
                     val requestId = intent.getLongExtra(EXTRA_TRANSFER_ITEM_ID, -1)
-                    val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
                     val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type
+                    device = intent.getParcelableExtra(EXTRA_DEVICE)
                     transferItem = TransferItem(transfer.id, requestId, type)
                     database.reconstruct(transferItem)
-                    TransferInfoDialog(this, index, transferItem, device.uid).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        if (transfer == null) finish() else {
+
+        val transfer = transfer
+        val index = index
+
+        if (transfer == null)
+            finish()
+        else {
+            if (index != null && transferItem != null) {
+                TransferInfoDialog(this, index, transferItem, device?.uid).show()
+            }
+
             val bundle = Bundle()
-            bundle.putLong(TransferItemListFragment.ARG_TRANSFER_ID, transfer!!.id)
+            bundle.putLong(TransferItemListFragment.ARG_TRANSFER_ID, transfer.id)
             bundle.putString(
-                TransferItemListFragment.ARG_PATH, if (transferItem == null
-                    || transferItem.directory == null
-                ) null else transferItem.directory
+                TransferItemListFragment.ARG_PATH,
+                if (transferItem?.directory == null) null else transferItem.directory
             )
             var fragment: TransferItemExplorerFragment? = getExplorerFragment()
             if (fragment == null) {
-                fragment = supportFragmentManager.fragmentFactory
-                    .instantiate(
-                        classLoader,
-                        TransferItemExplorerFragment::class.java.getName()
-                    ) as TransferItemExplorerFragment
-                fragment.setArguments(bundle)
+                fragment = supportFragmentManager.fragmentFactory.instantiate(
+                    classLoader,
+                    TransferItemExplorerFragment::class.java.name
+                ) as TransferItemExplorerFragment
+                fragment.arguments = bundle
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.add(R.id.activity_transaction_content_frame, fragment)
                 transaction.commit()
@@ -199,14 +199,14 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     override fun onResume() {
         super.onResume()
-        registerReceiver(mReceiver, IntentFilter(KuickDb.ACTION_DATABASE_CHANGE))
+        registerReceiver(selfReceiver, IntentFilter(KuickDb.ACTION_DATABASE_CHANGE))
         reconstructGroup()
         updateCalculations()
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(mReceiver)
+        unregisterReceiver(selfReceiver)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -237,44 +237,58 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val devicePosition = findCurrentDevicePosition()
         val thisMenu: Menu = menu.findItem(R.id.actions_transfer_limit_to).subMenu
-        var checkedItem: MenuItem? = null
-        if ((devicePosition < 0 || thisMenu.getItem(devicePosition)
-                .also { checkedItem = it } == null) && thisMenu.size() > 0
-        ) checkedItem = thisMenu.getItem(thisMenu.size() - 1)
-        if (checkedItem != null) checkedItem!!.isChecked = true
+        var checkedItem: MenuItem? = thisMenu.getItem(devicePosition)
+        if ((devicePosition < 0 || checkedItem == null) && thisMenu.size() > 0) {
+            checkedItem = thisMenu.getItem(thisMenu.size() - 1)
+        }
+        checkedItem?.isChecked = true
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        val transfer = transfer
+
         if (id == android.R.id.home) {
             finish()
         } else if (id == R.id.actions_transfer_remove) {
-            DialogUtils.showRemoveDialog(this, transfer)
+            if (transfer != null) {
+                DialogUtils.showRemoveDialog(this, transfer)
+            }
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
-            Transfers.recoverIncomingInterruptions(this@TransferDetailActivity, transfer.id)
-            createSnackbar(R.string.mesg_retryReceivingNotice)?.show()
+            if (transfer != null) {
+                Transfers.recoverIncomingInterruptions(this@TransferDetailActivity, transfer.id)
+                createSnackbar(R.string.mesg_retryReceivingNotice)?.show()
+            }
         } else if (id == R.id.actions_transfer_receiver_show_files) {
-            startActivity(
-                Intent(this, FileExplorerActivity::class.java)
-                    .putExtra(
-                        FileExplorerActivity.EXTRA_FILE_PATH,
-                        Files.getSavePath(this, transfer).getUri()
-                    )
-            )
+            if (transfer != null) {
+                startActivity(
+                    Intent(this, FileExplorerActivity::class.java)
+                        .putExtra(
+                            FileExplorerActivity.EXTRA_FILE_PATH,
+                            Files.getSavePath(this, transfer).getUri()
+                        )
+                )
+            }
         } else if (id == R.id.actions_transfer_sender_add_device) {
             startDeviceAddingActivity()
         } else if (item.itemId == R.id.actions_transfer_toggle_browser_share) {
-            transfer.isServedOnWeb = !transfer.isServedOnWeb
-            database.update(transfer)
-            database.broadcast()
-            showMenus()
+            if (transfer != null) {
+                transfer.isServedOnWeb = !transfer.isServedOnWeb
+                database.update(transfer)
+                database.broadcast()
+                showMenus()
+            }
         } else if (item.groupId == R.id.actions_abs_view_transfer_activity_limit_to) {
-            mMember = if (item.order < index.members.size) index.members[item.order] else null
-            val fragment =
-                supportFragmentManager.findFragmentById(R.id.activity_transaction_content_frame) as TransferItemExplorerFragment?
+            val members = index?.members
+            val fragment = supportFragmentManager.findFragmentById(
+                R.id.activity_transaction_content_frame
+            ) as TransferItemExplorerFragment?
+
+            member = if (members != null && item.order < members.size) members[item.order] else null
+
             if (fragment != null) {
-                fragment.adapter.mMember = mMember
+                fragment.adapter.member = member
                 fragment.refreshList()
             }
         } else return super.onOptionsItemSelected(item)
@@ -316,18 +330,15 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     fun findCurrentDevicePosition(): Int {
-        val members: Array<LoadedMember> = index.members
-        if (mMember != null && members.isNotEmpty()) {
+        val members: Array<LoadedMember> = index?.members ?: return -1
+        val memberLocal = member
+        if (memberLocal != null && members.isNotEmpty()) {
             for (i in members.indices) {
                 val member: LoadedMember = members[i]
-                if (mMember.deviceId == member.device.uid) return i
+                if (memberLocal.deviceId == member.device.uid) return i
             }
         }
         return -1
-    }
-
-    fun getMember(): LoadedMember? {
-        return mMember
     }
 
     fun getExplorerFragment(): TransferItemExplorerFragment? {
@@ -337,17 +348,17 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     fun getToggleButton(): ExtendedFloatingActionButton? {
-        val explorerFragment: TransferItemExplorerFragment? = getExplorerFragment()
-        return explorerFragment?.toggleButton
+        return getExplorerFragment()?.toggleButton
     }
 
     fun isDeviceRunning(deviceId: String?): Boolean {
+        val transfer = transfer ?: return false
         return hasTaskWith(FileTransferTask.identifyWith(transfer.id, deviceId))
     }
 
     fun reconstructGroup() {
         try {
-            database.reconstruct(transfer)
+            transfer?.let { database.reconstruct(it) }
             showMenus()
         } catch (e: Exception) {
             finish()
@@ -355,6 +366,8 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     fun showMenus() {
+        val index = index ?: return
+        val transfer = transfer ?: return
         val hasRunning = hasTaskOf(FileTransferTask::class.java)
         val hasAnyFiles: Boolean = index.numberOfTotal() > 0
         val hasIncoming: Boolean = index.hasIncoming()
@@ -368,7 +381,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
             if (hasAnyFiles || hasRunning) {
                 toggleButton.setIconResource(if (hasRunning) R.drawable.ic_pause_white_24dp else R.drawable.ic_play_arrow_white_24dp)
-                toggleButton.setBackgroundTintList(ColorStateList.valueOf(if (hasRunning) colorActive else colorNormal))
+                toggleButton.backgroundTintList = ColorStateList.valueOf(if (hasRunning) colorActive else colorNormal)
                 if (hasRunning) {
                     toggleButton.setText(R.string.butn_pause)
                 } else {
@@ -386,7 +399,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         addDeviceMenu.isVisible = hasOutgoing
         retryMenu.isVisible = hasIncoming
         showFilesMenu.isVisible = hasIncoming
-        if (hasOutgoing && (index.members.isNotEmpty() || mMember != null)) {
+        if (hasOutgoing && (index.members.isNotEmpty() || member != null)) {
             val dynamicMenu: Menu = limitMenu.setVisible(true).subMenu
             dynamicMenu.clear()
             var i = 0
@@ -413,16 +426,24 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     private fun toggleTask() {
+        val transfer = transfer ?: return
+        val index = index ?: return
         val memberList: List<LoadedMember> = Transfers.loadMemberList(this, transfer.id, null)
         if (memberList.isNotEmpty()) {
             if (memberList.size == 1) {
                 val member: LoadedMember = memberList[0]
                 toggleTaskForMember(member)
-            } else ToggleMultipleTransferDialog(this@TransferDetailActivity, index).show()
-        } else if (index.hasOutgoing()) startDeviceAddingActivity()
+            } else {
+                ToggleMultipleTransferDialog(this@TransferDetailActivity, index).show()
+            }
+        } else if (index.hasOutgoing()) {
+            startDeviceAddingActivity()
+        }
     }
 
     fun toggleTaskForMember(member: LoadedMember) {
+        val transfer = transfer ?: return
+
         if (hasTaskWith(FileTransferTask.identifyWith(transfer.id, member.deviceId))) {
             Transfers.pauseTransfer(this, member)
         } else {
@@ -458,7 +479,8 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             do {
                 restartRequested = false
                 for (activity in activities) {
-                    Transfers.loadTransferInfo(activity, activity.index, activity.getMember())
+                    val index = activity.index ?: continue
+                    Transfers.loadTransferInfo(activity, index, activity.member)
                 }
             } while (restartRequested && !isCancelled)
             return null

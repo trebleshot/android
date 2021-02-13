@@ -18,54 +18,62 @@
 package com.genonbeta.TrebleShot.fragment
 
 import android.content.*
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.database.Kuick
-import com.genonbeta.TrebleShot.util.AppUtils
 import android.os.Bundle
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter
-import com.genonbeta.TrebleShot.app.EditableListFragmentBase
-import com.genonbeta.TrebleShot.app.EditableListFragment
 import android.view.*
 import android.widget.PopupMenu
+import com.genonbeta.TrebleShot.R
+import com.genonbeta.TrebleShot.adapter.TransferMemberListAdapter
+import com.genonbeta.TrebleShot.app.EditableListFragment
+import com.genonbeta.TrebleShot.app.EditableListFragmentBase
+import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Editable
+import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.Transfer
-import java.lang.Exception
+import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog
+import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
 
 /**
  * created by: veli
  * date: 06.04.2018 12:58
  */
 class TransferMemberListFragment :
-    EditableListFragment<LoadedMember, RecyclerViewAdapter.ViewHolder, TransferMemberListAdapter?>() {
-    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    EditableListFragment<LoadedMember, ViewHolder, TransferMemberListAdapter>() {
+    private val transfer: Transfer by lazy {
+        Transfer(arguments?.getLong(ARG_TRANSFER_ID, -1) ?: -1)
+    }
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
-                val data: BroadcastData = KuickDb.toData(intent)
-                if (Kuick.TABLE_TRANSFERMEMBER == data.tableName) refreshList() else if (Kuick.TABLE_TRANSFER == data.tableName) updateTransferGroup()
+                val data: KuickDb.BroadcastData = KuickDb.toData(intent)
+                if (Kuick.TABLE_TRANSFERMEMBER == data.tableName) {
+                    refreshList()
+                } else if (Kuick.TABLE_TRANSFER == data.tableName) {
+                    updateTransferGroup()
+                }
             }
         }
     }
-    private var mHeldGroup: Transfer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        setFilteringSupported(false)
+        isFilteringSupported = false
         isSortingSupported = false
         //setUseDefaultPaddingDecoration(true);
         //setUseDefaultPaddingDecorationSpaceForEdges(true);
-        if (isScreenLarge) setDefaultViewingGridSize(4, 6) else if (isScreenNormal) setDefaultViewingGridSize(
-            3,
-            5
-        ) else setDefaultViewingGridSize(2, 4)
-
+        defaultViewingGridSize = if (isScreenNormal()) 4 else 2
+        defaultViewingGridSizeLandscape = if (isScreenNormal()) 6 else 5
         //setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listAdapter = TransferMemberListAdapter(this, getTransferGroup())
-        setEmptyListImage(R.drawable.ic_device_hub_white_24dp)
-        setEmptyListText(getString(R.string.text_noDeviceForTransfer))
+        adapter = TransferMemberListAdapter(this, transfer)
+        emptyListImageView.setImageResource(R.drawable.ic_device_hub_white_24dp)
+        emptyListTextView.text = getString(R.string.text_noDeviceForTransfer)
         updateTransferGroup()
         val paddingRecyclerView = resources
             .getDimension(R.dimen.padding_list_content_parent_layout).toInt()
@@ -75,77 +83,60 @@ class TransferMemberListFragment :
 
     override fun onResume() {
         super.onResume()
-        requireContext().registerReceiver(mReceiver, IntentFilter(KuickDb.ACTION_DATABASE_CHANGE))
+        requireContext().registerReceiver(receiver, IntentFilter(KuickDb.ACTION_DATABASE_CHANGE))
     }
 
     override fun onPause() {
         super.onPause()
-        requireContext().unregisterReceiver(mReceiver)
+        requireContext().unregisterReceiver(receiver)
     }
 
-    override fun performDefaultLayoutClick(holder: RecyclerViewAdapter.ViewHolder, target: LoadedMember): Boolean {
+    override fun performDefaultLayoutClick(holder: ViewHolder, target: LoadedMember): Boolean {
         DeviceInfoDialog(requireActivity(), target.device).show()
         return true
     }
 
     override fun performDefaultLayoutLongClick(
-        holder: RecyclerViewAdapter.ViewHolder,
-        target: LoadedMember
+        holder: ViewHolder,
+        target: LoadedMember,
     ): Boolean {
-        showPopupMenu<LoadedMember>(this, adapter, getTransferGroup(), holder, holder.itemView, target)
+        showPopupMenu(this, adapter, transfer, holder, holder.itemView, target)
         return true
     }
 
     override fun isHorizontalOrientation(): Boolean {
-        return (arguments != null && arguments!!.getBoolean(ARG_USE_HORIZONTAL_VIEW)
-                || super.isHorizontalOrientation())
+        return arguments?.getBoolean(ARG_USE_HORIZONTAL_VIEW) == true || super.isHorizontalOrientation()
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {
         return context.getString(R.string.text_deviceList)
     }
 
-    fun getTransferGroup(): Transfer {
-        if (mHeldGroup == null) {
-            mHeldGroup = Transfer(
-                if (arguments == null) -1 else arguments!!.getLong(
-                    ARG_TRANSFER_ID,
-                    -1
-                )
-            )
-            updateTransferGroup()
-        }
-        return mHeldGroup!!
-    }
-
-    private fun updateTransferGroup() {
-        try {
-            AppUtils.getKuick(context).reconstruct(mHeldGroup)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    fun updateTransferGroup() {
+        AppUtils.getKuick(requireContext()).reconstruct(transfer)
     }
 
     companion object {
         const val ARG_TRANSFER_ID = "transferId"
         const val ARG_USE_HORIZONTAL_VIEW = "useHorizontalView"
-        fun <T : Editable?> showPopupMenu(
+
+        fun <T : Editable> showPopupMenu(
             fragment: EditableListFragmentBase<T>,
             adapter: TransferMemberListAdapter?, transfer: Transfer?,
-            clazz: RecyclerViewAdapter.ViewHolder?, v: View?,
-            member: LoadedMember
+            clazz: ViewHolder?, v: View?,
+            member: LoadedMember,
         ) {
-            val popupMenu = PopupMenu(fragment.context, v)
+            val popupMenu = PopupMenu(fragment.getContext(), v)
             val menu = popupMenu.menu
             popupMenu.menuInflater.inflate(R.menu.popup_fragment_transfer_member, menu)
             popupMenu.setOnMenuItemClickListener { item: MenuItem ->
                 val id = item.itemId
-                if (id == R.id.popup_device_details) DeviceInfoDialog(
-                    fragment.activity,
-                    member.device
-                ).show() else if (id == R.id.popup_remove) {
-                    AppUtils.getKuick(fragment.context)
-                        .removeAsynchronous<Transfer, LoadedMember>(fragment.activity, member, transfer)
+                if (id == R.id.popup_device_details) {
+                    DeviceInfoDialog(fragment.requireActivity(), member.device).show()
+                } else if (id == R.id.popup_remove) {
+                    AppUtils.getKuick(fragment.requireContext()).removeAsynchronous(
+                        fragment.requireActivity(), member, transfer
+                    )
                 } else return@setOnMenuItemClickListener false
                 true
             }

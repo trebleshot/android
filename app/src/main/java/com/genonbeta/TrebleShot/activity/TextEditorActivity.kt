@@ -213,7 +213,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
 
     fun saveText() {
         val item = dbObject ?: TextStreamObject(AppUtils.uniqueNumber.toLong()).also {
-            it.dateInternal = System.currentTimeMillis()
+            it.date = System.currentTimeMillis()
             dbObject = it
         }
 

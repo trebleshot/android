@@ -38,9 +38,13 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
     var fragment: IEditableListFragment<T, V>,
 ) : RecyclerViewAdapter<T, V>(fragment.getContext()!!), EditableListAdapterBase<T>, SectionTitleProvider {
     private var collator: Collator? = null
+
     private val itemList: MutableList<T> = ArrayList()
+
     var sortingCriteria = MODE_SORT_BY_NAME
+
     var sortingOrder = MODE_SORT_ORDER_ASCENDING
+
     private var gridLayoutRequested = false
 
     override fun onUpdate(passedItem: MutableList<T>) {

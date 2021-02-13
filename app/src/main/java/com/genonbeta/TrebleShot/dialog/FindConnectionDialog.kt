@@ -23,33 +23,38 @@ import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.ProgressDialog
 import com.genonbeta.TrebleShot.dataobject.Device
+import com.genonbeta.TrebleShot.dataobject.DeviceAddress
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.service.backgroundservice.BaseAttachableAsyncTask
+import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
+import com.genonbeta.TrebleShot.task.FindWorkingNetworkTask
+import com.genonbeta.TrebleShot.util.DeviceLoader
 
-class FindConnectionDialog internal constructor(activity: Activity?) : ProgressDialog(activity) {
+class FindConnectionDialog internal constructor(activity: Activity) : ProgressDialog(activity) {
     internal class LocalTaskBinder(
-        var activity: Activity, var dialog: FindConnectionDialog, var device: Device?,
-        listener: OnDeviceResolvedListener?
-    ) : CalculationResultListener {
-        var listener: OnDeviceResolvedListener?
-        override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State?) {
+        var activity: Activity,
+        var dialog: FindConnectionDialog,
+        val device: Device,
+        val listener: DeviceLoader.OnDeviceResolvedListener?,
+    ) : FindWorkingNetworkTask.CalculationResultListener {
+        override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
             if (dialog.isShowing) {
                 if (task.finished) {
                     dialog.dismiss()
                 } else {
                     dialog.setMessage(task.ongoingContent)
-                    dialog.max = task.progress().total
-                    dialog.progress = task.progress().current
+                    dialog.max = task.progress.getTotal()
+                    dialog.progress = task.progress.getProgress()
                 }
             }
         }
 
-        override fun onTaskMessage(message: TaskMessage): Boolean {
-            activity.runOnUiThread { message.toDialogBuilder(activity).show() }
+        override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
+            activity.runOnUiThread { taskMessage.toDialogBuilder(activity).show() }
             return true
         }
 
-        override fun onCalculationResult(device: Device?, address: DeviceAddress?) {
+        override fun onCalculationResult(device: Device, address: DeviceAddress?) {
             if (address == null) {
                 Builder(activity)
                     .setTitle(R.string.text_connectionError)
@@ -63,20 +68,16 @@ class FindConnectionDialog internal constructor(activity: Activity?) : ProgressD
                         )
                     }
                     .show()
-            } else listener.onDeviceResolved(device, address)
-        }
-
-        init {
-            this.listener = listener
+            } else listener?.onDeviceResolved(device, address)
         }
     }
 
     companion object {
-        fun show(activity: Activity, device: Device?, listener: OnDeviceResolvedListener?) {
+        fun show(activity: Activity, device: Device, listener: DeviceLoader.OnDeviceResolvedListener?) {
             val dialog = FindConnectionDialog(activity)
             val binder = LocalTaskBinder(activity, dialog, device, listener)
             val task = FindWorkingNetworkTask(device)
-            task.setAnchor(binder)
+            task.anchor = binder
             val removeOnClose = Runnable {
                 task.removeAnchor()
                 task.interrupt()
@@ -85,11 +86,12 @@ class FindConnectionDialog internal constructor(activity: Activity?) : ProgressD
             dialog.setCancelable(false)
             dialog.setOnDismissListener { dialog1: DialogInterface? -> removeOnClose.run() }
             dialog.setOnCancelListener { dialog1: DialogInterface? -> removeOnClose.run() }
-            dialog.setButton(
-                BUTTON_NEGATIVE, activity.getString(R.string.butn_cancel)
-            ) { dialog12: DialogInterface?, which: Int -> removeOnClose.run() }
+            dialog.setButton(BUTTON_NEGATIVE,
+                activity.getString(R.string.butn_cancel)) { dialog12: DialogInterface?, which: Int ->
+                removeOnClose.run()
+            }
             dialog.show()
-            App.run<FindWorkingNetworkTask>(activity, task)
+            App.run(activity, task)
         }
     }
 }

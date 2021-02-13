@@ -33,10 +33,15 @@ import kotlin.math.min
 class SwipeSelectionListener<T : Editable>(private val listFragment: EditableListFragmentBase<T>) :
     RecyclerView.OnItemTouchListener {
     private var selectionActivated = false
+
     private var activationWaiting = false
+
     private var lastPos = 0
+
     private var startPos = 0
+
     private var initialX = 0
+
     private var initialY = 0
 
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {

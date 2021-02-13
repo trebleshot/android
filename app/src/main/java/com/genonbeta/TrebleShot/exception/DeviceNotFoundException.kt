@@ -25,5 +25,5 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException
  * date: 6.01.2018 22:26
  */
 class DeviceNotFoundException(var device: Device) : ReconstructionFailedException(
-    device.uid + " doesn't point to a device"
+    "${device.uid} doesn't point to a device"
 )

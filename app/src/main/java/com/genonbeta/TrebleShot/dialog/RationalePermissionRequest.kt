@@ -32,7 +32,8 @@ import com.genonbeta.TrebleShot.util.AppUtils
  * date: 18.11.2017 20:16
  */
 class RationalePermissionRequest(
-    activity: Activity, var mPermissionQueue: PermissionRequest,
+    activity: Activity,
+    var permissionQueue: PermissionRequest,
     killActivityOtherwise: Boolean
 ) : AlertDialog.Builder(activity) {
 
@@ -63,11 +64,11 @@ class RationalePermissionRequest(
 
     init {
         setCancelable(false)
-        setTitle(mPermissionQueue.title)
-        setMessage(mPermissionQueue.message)
+        setTitle(permissionQueue.title)
+        setMessage(permissionQueue.message)
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 activity,
-                mPermissionQueue.permission
+                permissionQueue.permission
             )
         ) setNeutralButton(R.string.butn_settings) { dialogInterface: DialogInterface?, _: Int ->
             AppUtils.startApplicationDetails(activity)
@@ -75,7 +76,7 @@ class RationalePermissionRequest(
         setPositiveButton(R.string.butn_ask) { _: DialogInterface?, _: Int ->
             ActivityCompat.requestPermissions(
                 activity,
-                arrayOf(mPermissionQueue.permission),
+                arrayOf(permissionQueue.permission),
                 HomeActivity.REQUEST_PERMISSION_ALL
             )
         }
