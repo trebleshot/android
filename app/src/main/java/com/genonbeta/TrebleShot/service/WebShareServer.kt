@@ -80,230 +80,239 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
     }
 
     override fun serve(session: IHTTPSession): Response {
-        hadClients = true
-        val files: Map<String, String> = ArrayMap()
-        val method: Method = session.method
-        var receiveTimeElapsed = System.currentTimeMillis()
-        val notificationId = AppUtils.uniqueNumber.toLong()
-        val notification = notifications.buildDynamicNotification(notificationId, Notifications.NOTIFICATION_CHANNEL_LOW)
-        val clientAddress: String = session.getHeaders().get("http-client-ip")!!
-        val device = Device(clientAddress)
         try {
-            kuick.reconstruct(device)
-        } catch (e: ReconstructionFailedException) {
-            device.brand = "TrebleShot"
-            device.model = "Web"
-            device.versionCode = thisDevice.versionCode
-            device.versionName = thisDevice.versionName
-            device.username = clientAddress
-            device.type = Device.Type.Web
-        }
-        device.lastUsageTime = System.currentTimeMillis()
-        kuick.publish(device)
-        kuick.broadcast()
-        if (device.isBlocked) return newFixedLengthResponse(
-            Response.Status.ACCEPTED, "text/html",
-            makePage(
-                "arrow-left.svg", R.string.text_send,
-                makeNotFoundTemplate(
-                    R.string.mesg_somethingWentWrong,
-                    R.string.mesg_notAllowed
-                )
-            )
-        )
-        if (Method.PUT == method || Method.POST == method) {
+            hadClients = true
+            val files: Map<String, String> = ArrayMap()
+            val method: Method = session.method
+            var receiveTimeElapsed = System.currentTimeMillis()
+            val notificationId = AppUtils.uniqueNumber.toLong()
+            val notification =
+                notifications.buildDynamicNotification(notificationId, Notifications.NOTIFICATION_CHANNEL_LOW)
+            val clientAddress: String = session.headers["http-client-ip"]!!
+            val device = Device(clientAddress)
             try {
-                notification.setSmallIcon(android.R.drawable.stat_sys_download)
-                    .setContentInfo(context.getString(R.string.text_webShare))
-                    .setContentTitle(context.getString(R.string.text_receiving))
-                    .setContentText(device.username)
-                notification.show()
-                session.parseBody(files)
-                receiveTimeElapsed = System.currentTimeMillis() - receiveTimeElapsed
-            } catch (var5: IOException) {
-                return newFixedLengthResponse(
-                    Response.Status.INTERNAL_ERROR,
-                    "text/plain", "SERVER INTERNAL ERROR: IOException: "
-                            + var5.message
-                )
-            } catch (var6: ResponseException) {
-                return newFixedLengthResponse(
-                    var6.getStatus(), "text/plain",
-                    var6.message
-                )
+                kuick.reconstruct(device)
+            } catch (e: ReconstructionFailedException) {
+                device.brand = "TrebleShot"
+                device.model = "Web"
+                device.versionCode = thisDevice.versionCode
+                device.versionName = thisDevice.versionName
+                device.username = clientAddress
+                device.type = Device.Type.Web
+                device.sendKey = 100
+                device.receiveKey = 100
             }
-        }
-        if (session.parms.containsKey("file")) {
-            val fileName = session.parms.get("file")
-            val filePath = files["file"]
-            if (fileName == null || filePath == null || fileName.isEmpty()) {
-                notification.cancel()
-                return newFixedLengthResponse(
-                    Response.Status.ACCEPTED, "text/html",
-                    makePage(
-                        "arrow-left.svg", R.string.text_send,
-                        makeNotFoundTemplate(
-                            R.string.mesg_somethingWentWrong,
-                            R.string.text_listEmptyFiles
-                        )
+            device.lastUsageTime = System.currentTimeMillis()
+            kuick.publish(device)
+            kuick.broadcast()
+            if (device.isBlocked) return newFixedLengthResponse(
+                Response.Status.ACCEPTED, "text/html",
+                makePage(
+                    "arrow-left.svg", R.string.text_send,
+                    makeNotFoundTemplate(
+                        R.string.mesg_somethingWentWrong,
+                        R.string.mesg_notAllowed
                     )
                 )
-            } else {
-                val tmpFile = File(filePath)
-                val savePath = Files.getApplicationDirectory(context)
-                val stoppable: Stoppable = StoppableImpl()
-                val sourceFile = DocumentFile.fromFile(tmpFile)
-                val destFile = savePath.createFile(
-                    sourceFile.getType(),
-                    com.genonbeta.android.framework.util.Files.getUniqueFileName(savePath, fileName, true)
-                )!!
-                run {
-                    notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
+            )
+            if (Method.PUT == method || Method.POST == method) {
+                try {
+                    notification.setSmallIcon(android.R.drawable.stat_sys_download)
                         .setContentInfo(context.getString(R.string.text_webShare))
-                        .setContentTitle(context.getString(R.string.text_preparingFiles))
-                        .setContentText(fileName)
+                        .setContentTitle(context.getString(R.string.text_receiving))
+                        .setContentText(device.username)
                     notification.show()
-                    try {
-                        val resolver: ContentResolver = context.contentResolver
-                        val inputStream: InputStream = resolver.openInputStream(sourceFile.getUri())!!
-                        val outputStream: OutputStream = resolver.openOutputStream(destFile.getUri())!!
-                        val buffer = ByteArray(AppConfig.BUFFER_LENGTH_DEFAULT)
-                        var len = 0
-                        var lastRead = System.currentTimeMillis()
-                        var lastNotified: Long = 0
-                        var totalRead: Long = 0
-                        while (len != -1) {
-                            if (inputStream.read(buffer).also { len = it } > 0) {
-                                outputStream.write(buffer, 0, len)
-                                outputStream.flush()
-                                lastRead = System.currentTimeMillis()
-                                totalRead += len.toLong()
+                    session.parseBody(files)
+                    receiveTimeElapsed = System.currentTimeMillis() - receiveTimeElapsed
+                } catch (var5: IOException) {
+                    return newFixedLengthResponse(
+                        Response.Status.INTERNAL_ERROR,
+                        "text/plain", "SERVER INTERNAL ERROR: IOException: "
+                                + var5.message
+                    )
+                } catch (var6: ResponseException) {
+                    return newFixedLengthResponse(
+                        var6.getStatus(), "text/plain",
+                        var6.message
+                    )
+                }
+            }
+            if (session.parms.containsKey("file")) {
+                val fileName = session.parms["file"]
+                val filePath = files["file"]
+                if (fileName == null || filePath == null || fileName.isEmpty()) {
+                    notification.cancel()
+                    return newFixedLengthResponse(
+                        Response.Status.ACCEPTED, "text/html",
+                        makePage(
+                            "arrow-left.svg", R.string.text_send,
+                            makeNotFoundTemplate(
+                                R.string.mesg_somethingWentWrong,
+                                R.string.text_listEmptyFiles
+                            )
+                        )
+                    )
+                } else {
+                    val tmpFile = File(filePath)
+                    val savePath = Files.getApplicationDirectory(context)
+                    val stoppable: Stoppable = StoppableImpl()
+                    val sourceFile = DocumentFile.fromFile(tmpFile)
+                    val destFile = savePath.createFile(
+                        sourceFile.getType(),
+                        com.genonbeta.android.framework.util.Files.getUniqueFileName(savePath, fileName, true)
+                    )!!
+                    run {
+                        notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
+                            .setContentInfo(context.getString(R.string.text_webShare))
+                            .setContentTitle(context.getString(R.string.text_preparingFiles))
+                            .setContentText(fileName)
+                        notification.show()
+                        try {
+                            val resolver: ContentResolver = context.contentResolver
+                            val inputStream: InputStream = resolver.openInputStream(sourceFile.getUri())!!
+                            val outputStream: OutputStream = resolver.openOutputStream(destFile.getUri())!!
+                            val buffer = ByteArray(AppConfig.BUFFER_LENGTH_DEFAULT)
+                            var len = 0
+                            var lastRead = System.currentTimeMillis()
+                            var lastNotified: Long = 0
+                            var totalRead: Long = 0
+                            while (len != -1) {
+                                if (inputStream.read(buffer).also { len = it } > 0) {
+                                    outputStream.write(buffer, 0, len)
+                                    outputStream.flush()
+                                    lastRead = System.currentTimeMillis()
+                                    totalRead += len.toLong()
+                                }
+                                if (sourceFile.getLength() > 0 && totalRead > 0 && System.currentTimeMillis() - lastNotified > AppConfig.DELAY_DEFAULT_NOTIFICATION) {
+                                    notification.updateProgress(
+                                        100,
+                                        (totalRead / sourceFile.getLength() * 100).toInt(), false
+                                    )
+                                    lastNotified = System.currentTimeMillis()
+                                }
+                                if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_TIMEOUT_SOCKET
+                                    || stoppable.interrupted()
+                                ) throw Exception("Timed out or interrupted. Exiting!")
                             }
-                            if (sourceFile.getLength() > 0 && totalRead > 0 && System.currentTimeMillis() - lastNotified > AppConfig.DELAY_DEFAULT_NOTIFICATION) {
-                                notification.updateProgress(
-                                    100,
-                                    (totalRead / sourceFile.getLength() * 100).toInt(), false
-                                )
-                                lastNotified = System.currentTimeMillis()
-                            }
-                            if (System.currentTimeMillis() - lastRead > AppConfig.DEFAULT_TIMEOUT_SOCKET
-                                || stoppable.interrupted()
-                            ) throw Exception("Timed out or interrupted. Exiting!")
+                            outputStream.close()
+                            inputStream.close()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-                        outputStream.close()
-                        inputStream.close()
+                    }
+                    try {
+                        destFile.sync()
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
+                    if (destFile.getLength() == tmpFile.length() || tmpFile.length() == 0L) try {
+                        val webTransfer = Transfer(AppConfig.ID_GROUP_WEB_SHARE)
+                        webTransfer.dateCreated = System.currentTimeMillis()
+                        try {
+                            kuick.reconstruct(webTransfer)
+                        } catch (e: ReconstructionFailedException) {
+                            webTransfer.savePath = savePath.getUri().toString()
+                        }
+                        val transferItem = TransferItem(
+                            AppUtils.uniqueNumber.toLong(), webTransfer.id,
+                            destFile.getName(), destFile.getName(), destFile.getType(), destFile.getLength(),
+                            TransferItem.Type.INCOMING
+                        )
+                        transferItem.flag = TransferItem.Flag.DONE
+                        val address = DeviceAddress(
+                            device.uid, InetAddress.getByName(clientAddress),
+                            System.currentTimeMillis()
+                        )
+                        val member = TransferMember(webTransfer, device, TransferItem.Type.INCOMING)
+                        kuick.publish(webTransfer)
+                        kuick.publish(member)
+                        kuick.publish(address)
+                        kuick.publish(transferItem)
+                        kuick.broadcast()
+                        notification
+                            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                            .setContentInfo(context.getString(R.string.text_webShare))
+                            .setAutoCancel(true)
+                            .setContentTitle(fileName)
+                            .setDefaults(notifications.notificationSettings)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setContentText(
+                                context.getString(
+                                    R.string.text_receivedTransfer,
+                                    com.genonbeta.android.framework.util.Files.sizeExpression(destFile.getLength(),
+                                        false),
+                                    TimeUtils.getFriendlyElapsedTime(context, receiveTimeElapsed)
+                                )
+                            )
+                            .addAction(
+                                R.drawable.ic_folder_white_24dp_static,
+                                context.getString(R.string.butn_showFiles), PendingIntent.getActivity(
+                                    context, AppUtils.uniqueNumber,
+                                    Intent(context, FileExplorerActivity::class.java)
+                                        .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
+                                )
+                            )
+                        try {
+                            val openIntent = getOpenIntent(context, destFile)
+                            notification.setContentIntent(
+                                PendingIntent.getActivity(
+                                    context,
+                                    AppUtils.uniqueNumber, openIntent, 0
+                                )
+                            )
+                        } catch (ignored: Exception) {
+                        }
+                        notification.show()
+                        context.sendBroadcast(
+                            Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                                .putExtra(FileListFragment.EXTRA_FILE_PARENT, savePath.getUri())
+                                .putExtra(FileListFragment.EXTRA_FILE_NAME, destFile.getName())
+                        )
+                        if (mediaScanner.isConnected && destFile is LocalDocumentFile) mediaScanner.scanFile(
+                            destFile.file.absolutePath, destFile.getType()
+                        ) else Log.d(
+                            TAG, "Could not save file to the media database: scanner="
+                                    + mediaScanner.isConnected() + " localFile=" + (destFile is LocalDocumentFile)
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    } else notification.cancel()
                 }
-                try {
-                    destFile.sync()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                if (destFile.getLength() == tmpFile.length() || tmpFile.length() == 0L) try {
-                    val webTransfer = Transfer(AppConfig.ID_GROUP_WEB_SHARE)
-                    webTransfer.dateCreated = System.currentTimeMillis()
-                    try {
-                        kuick.reconstruct(webTransfer)
-                    } catch (e: ReconstructionFailedException) {
-                        webTransfer.savePath = savePath.getUri().toString()
-                    }
-                    val transferItem = TransferItem(
-                        AppUtils.uniqueNumber.toLong(), webTransfer.id,
-                        destFile.getName(), destFile.getName(), destFile.getType(), destFile.getLength(),
-                        TransferItem.Type.INCOMING
-                    )
-                    transferItem.flag = TransferItem.Flag.DONE
-                    val address = DeviceAddress(
-                        device.uid, InetAddress.getByName(clientAddress),
-                        System.currentTimeMillis()
-                    )
-                    val member = TransferMember(webTransfer, device, TransferItem.Type.INCOMING)
-                    kuick.publish(webTransfer)
-                    kuick.publish(member)
-                    kuick.publish(address)
-                    kuick.publish(transferItem)
-                    kuick.broadcast()
-                    notification
-                        .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                        .setContentInfo(context.getString(R.string.text_webShare))
-                        .setAutoCancel(true)
-                        .setContentTitle(fileName)
-                        .setDefaults(notifications.notificationSettings)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setContentText(
-                            context.getString(
-                                R.string.text_receivedTransfer,
-                                com.genonbeta.android.framework.util.Files.sizeExpression(destFile.getLength(), false),
-                                TimeUtils.getFriendlyElapsedTime(context, receiveTimeElapsed)
-                            )
-                        )
-                        .addAction(
-                            R.drawable.ic_folder_white_24dp_static,
-                            context.getString(R.string.butn_showFiles), PendingIntent.getActivity(
-                                context, AppUtils.uniqueNumber,
-                                Intent(context, FileExplorerActivity::class.java)
-                                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
-                            )
-                        )
-                    try {
-                        val openIntent = getOpenIntent(context, destFile)
-                        notification.setContentIntent(
-                            PendingIntent.getActivity(
-                                context,
-                                AppUtils.uniqueNumber, openIntent, 0
-                            )
-                        )
-                    } catch (ignored: Exception) {
-                    }
-                    notification.show()
-                    context.sendBroadcast(
-                        Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-                            .putExtra(FileListFragment.EXTRA_FILE_PARENT, savePath.getUri())
-                            .putExtra(FileListFragment.EXTRA_FILE_NAME, destFile.getName())
-                    )
-                    if (mediaScanner.isConnected && destFile is LocalDocumentFile) mediaScanner.scanFile(
-                        destFile.file.absolutePath, destFile.getType()
-                    ) else Log.d(
-                        TAG, "Could not save file to the media database: scanner="
-                                + mediaScanner.isConnected() + " localFile=" + (destFile is LocalDocumentFile)
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } else notification.cancel()
             }
-        }
-        val args: Array<String> = if (session.getUri().length > 1) session.uri.substring(1).split("/".toRegex())
-            .toTypedArray() else emptyArray()
-        return try {
-            when (if (args.size >= 1) args[0] else "") {
-                "download", "download-zip" -> serveFileDownload(args, session)
-                "image" -> serveFile(args)
-                "trebleshot" -> serveAPK()
-                "show" -> newFixedLengthResponse(
-                    Response.Status.ACCEPTED, "text/html",
-                    serveTransferPage(args)
-                )
-                "test" -> newFixedLengthResponse(
-                    Response.Status.ACCEPTED, "text/plain",
-                    "Works"
-                )
-                "help" -> newFixedLengthResponse(
-                    Response.Status.ACCEPTED, "text/html",
-                    serveHelpPage()
-                )
-                else -> newFixedLengthResponse(
-                    Response.Status.ACCEPTED, "text/html",
-                    serveMainPage()
+            val args: Array<String> = if (session.getUri().length > 1) session.uri.substring(1).split("/".toRegex())
+                .toTypedArray() else emptyArray()
+            return try {
+                when (if (args.isNotEmpty()) args[0] else "") {
+                    "download", "download-zip" -> serveFileDownload(args, session)
+                    "image" -> serveFile(args)
+                    "trebleshot" -> serveAPK()
+                    "show" -> newFixedLengthResponse(
+                        Response.Status.ACCEPTED, "text/html",
+                        serveTransferPage(args)
+                    )
+                    "test" -> newFixedLengthResponse(
+                        Response.Status.ACCEPTED, "text/plain",
+                        "Works"
+                    )
+                    "help" -> newFixedLengthResponse(
+                        Response.Status.ACCEPTED, "text/html",
+                        serveHelpPage()
+                    )
+                    else -> newFixedLengthResponse(
+                        Response.Status.ACCEPTED, "text/html",
+                        serveMainPage()
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                newFixedLengthResponse(
+                    Response.Status.NOT_ACCEPTABLE, "text/plain",
+                    e.toString()
                 )
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            newFixedLengthResponse(
-                Response.Status.NOT_ACCEPTABLE, "text/plain",
-                e.toString()
-            )
+            throw e
         }
     }
 
