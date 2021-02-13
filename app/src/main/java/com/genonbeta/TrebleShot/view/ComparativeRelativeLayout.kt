@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.R
  * created by: Veli
  * date: 27.03.2018 22:32
  */
-class ComparativeRelativeLayout(
+class ComparativeRelativeLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

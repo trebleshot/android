@@ -32,7 +32,7 @@ import com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.DefaultScrollViewProvider
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ScrollViewProvider
 
-class FastScroller(
+class FastScroller @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyle: Int = 0,
 ) : LinearLayout(context, attrs, defStyle) {
     var bubbleColor = 0
@@ -103,10 +103,6 @@ class FastScroller(
             }
         }
 
-    fun addScrollerListener(listener: RecyclerViewScrollListener.ScrollerListener) {
-        scrollListener.addScrollerListener(listener)
-    }
-
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         super.onLayout(changed, l, t, r, b)
 
@@ -116,6 +112,10 @@ class FastScroller(
             initHandleMovement(it)
             applyStyling(it)
         }
+    }
+
+    fun addScrollerListener(listener: RecyclerViewScrollListener.ScrollerListener) {
+        scrollListener.addScrollerListener(listener)
     }
 
     private fun applyStyling(viewProvider: ScrollViewProvider) {

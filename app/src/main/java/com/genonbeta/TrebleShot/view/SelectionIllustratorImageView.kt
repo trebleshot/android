@@ -17,7 +17,7 @@
  */
 package com.genonbeta.TrebleShot.viewimport
 
-import android.content.*
+import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 
@@ -25,13 +25,11 @@ import androidx.appcompat.widget.AppCompatImageView
  * created by: veli
  * date: 11.04.2018 00:00
  */
-class SelectionIllustratorImageView : AppCompatImageView {
-    constructor(context: Context) : super(context)
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
+class SelectionIllustratorImageView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+) : AppCompatImageView(context, attrs, defStyleAttr) {
     override fun setSelected(selected: Boolean) {
         super.setSelected(selected)
         if (selected) {
