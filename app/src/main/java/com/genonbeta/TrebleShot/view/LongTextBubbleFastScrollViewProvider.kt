@@ -65,7 +65,7 @@ class LongTextBubbleFastScrollViewProvider : ScrollViewProvider() {
                 ), horizontalInset, verticalInset, horizontalInset, verticalInset
             )
 
-            Utils.setBackground(handleView, handleBackground)
+            Utils.setBackground(it, handleBackground)
 
             val handleWidth = context.resources.getDimensionPixelSize(
                 if (scroller.horizontalLayout) {

@@ -51,6 +51,7 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
     override var listView: RecyclerView
         get() = super.listView
         set(value) {
+            super.listView = value
             value.layoutManager = getLayoutManager()
         }
 

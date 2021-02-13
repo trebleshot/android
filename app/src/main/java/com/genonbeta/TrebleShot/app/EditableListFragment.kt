@@ -178,7 +178,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
         set(value) {
             super.listView = value
 
-            snackbarContainer = listView
+            snackbarContainer = value
             value.addOnItemTouchListener(SwipeSelectionListener(this))
 
             if (hasBottomSpace) {

@@ -19,6 +19,7 @@ package com.genonbeta.android.framework.app
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,9 +77,11 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
 
     protected abstract fun ensureList()
 
-    protected fun findViewDefaultsFrom(view: View?) {
+    private fun findViewDefaultsFrom(view: View?) {
         view?.let {
-            listView = it.findViewById<View?>(R.id.genfw_customListFragment_listView) as Z
+            Log.d("Setttttt", "aafdasdfasdfafsadfasd")
+            listView = it.findViewById(R.id.genfw_customListFragment_listView)
+            Log.d("Setttttt", "Yeahahhahahah")
             emptyListContainerView = it.findViewById<View?>(R.id.genfw_customListFragment_emptyView) as ViewGroup
             emptyListTextView = it.findViewById<View?>(R.id.genfw_customListFragment_emptyTextView) as TextView
             emptyListImageView = it.findViewById<View?>(R.id.genfw_customListFragment_emptyImageView) as ImageView
@@ -87,7 +90,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
         }
     }
 
-    protected fun findViewDefaultsFromMainView() {
+    private fun findViewDefaultsFromMainView() {
         findViewDefaultsFrom(view)
     }
 
