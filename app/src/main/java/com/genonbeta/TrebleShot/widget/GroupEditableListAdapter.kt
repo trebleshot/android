@@ -38,8 +38,7 @@ import java.util.*
  * date: 29.03.2018 08:00
  */
 abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
-    fragment: IEditableListFragment<T, V>,
-    private var groupBy: Int,
+    fragment: IEditableListFragment<T, V>, open var groupBy: Int,
 ) : EditableListAdapter<T, V>(fragment) {
     protected abstract fun onLoad(lister: GroupLister<T>)
 
@@ -47,7 +46,7 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
 
     override fun onLoad(): MutableList<T> {
         val loadedList: MutableList<T> = ArrayList()
-        val groupLister = createLister(loadedList, getGroupBy())
+        val groupLister = createLister(loadedList, groupBy)
         onLoad(groupLister)
         if (groupLister.mergers.isNotEmpty()) {
             groupLister.mergers.sortWith { o1: ComparableMerger<T>, o2: ComparableMerger<T> -> o2.compareTo(o1) }
@@ -80,14 +79,6 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
         throw IllegalArgumentException("$viewType is not defined in defaults")
     }
 
-    open fun getGroupBy(): Int {
-        return groupBy
-    }
-
-    fun setGroupBy(groupBy: Int) {
-        this.groupBy = groupBy
-    }
-
     override fun getItemViewType(position: Int): Int {
         return getItem(position).getViewType()
     }
@@ -103,7 +94,7 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
     override fun getSectionName(position: Int, item: T): String {
         return when {
             item.isGroupRepresentative() -> item.getRepresentativeText()
-            getGroupBy() == MODE_GROUP_BY_DATE -> getSectionNameDate(item.getComparableDate())
+            groupBy == MODE_GROUP_BY_DATE -> getSectionNameDate(item.getComparableDate())
             else -> super.getSectionName(position, item)
         }
     }

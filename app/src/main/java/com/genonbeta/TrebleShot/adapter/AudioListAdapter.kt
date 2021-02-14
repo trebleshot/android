@@ -128,10 +128,9 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
                 val text2: TextView = parentView.findViewById(R.id.text2)
                 val text3: TextView = parentView.findViewById(R.id.text3)
                 val textSeparator1: TextView = parentView.findViewById(R.id.textSeparator1)
-                text1.setText(itemHolder.song)
-                if (getGroupBy() == MODE_GROUP_BY_ALBUM || getGroupBy() == MODE_GROUP_BY_ARTIST) {
-                    text2.text =
-                        if (getGroupBy() == MODE_GROUP_BY_ALBUM) itemHolder.artist else itemHolder.albumHolder.title
+                text1.text = itemHolder.song
+                if (groupBy == MODE_GROUP_BY_ALBUM || groupBy == MODE_GROUP_BY_ARTIST) {
+                    text2.text = if (groupBy == MODE_GROUP_BY_ALBUM) itemHolder.artist else itemHolder.albumHolder.title
                     text3.visibility = View.GONE
                     textSeparator1.setVisibility(View.GONE)
                 } else {
@@ -181,9 +180,9 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
     override fun getSectionName(position: Int, item: AudioItemHolder): String {
         if (!item.isGroupRepresentative()) {
             return when {
-                getGroupBy() == MODE_GROUP_BY_ARTIST -> item.artist
-                getGroupBy() == MODE_GROUP_BY_FOLDER -> item.folder
-                getGroupBy() == MODE_GROUP_BY_ALBUM -> item.albumHolder.title
+                groupBy == MODE_GROUP_BY_ARTIST -> item.artist
+                groupBy == MODE_GROUP_BY_FOLDER -> item.folder
+                groupBy == MODE_GROUP_BY_ALBUM -> item.albumHolder.title
                 else -> item.friendlyName
             }
         }
@@ -192,9 +191,13 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
 
     class AudioItemHolder : GroupShareable {
         lateinit var artist: String
+
         lateinit var song: String
+
         lateinit var folder: String
+
         lateinit var albumHolder: AlbumHolder
+
         var albumId = 0
 
         constructor(representativeText: String) : super(

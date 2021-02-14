@@ -36,7 +36,7 @@ abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder,
         get() = super.adapter
         set(value) {
             super.adapter = value
-            value.setGroupBy(groupingCriteria)
+            value.groupBy = groupingCriteria
         }
 
     private val groupingOptions: MutableMap<String, Int> = ArrayMap()
@@ -93,7 +93,7 @@ abstract class GroupEditableListFragment<T : GroupEditable, V : GroupViewHolder,
             viewPreferences.edit()
                 .putInt(getUniqueSettingKey("GroupBy"), value)
                 .apply()
-            adapter.setGroupBy(value)
+            adapter.groupBy = value
             refreshList()
         }
 }

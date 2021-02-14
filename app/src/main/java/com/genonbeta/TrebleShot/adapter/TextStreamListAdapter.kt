@@ -26,7 +26,6 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.SQLQuery
@@ -36,11 +35,9 @@ import com.genonbeta.android.framework.util.listing.Merger
  * created by: Veli
  * date: 30.12.2017 13:25
  */
-class TextStreamListAdapter(fragment: IEditableListFragment<TextStreamObject, GroupViewHolder>) :
-    GroupEditableListAdapter<TextStreamObject, GroupViewHolder>(
-        fragment,
-        MODE_GROUP_BY_DATE
-    ) {
+class TextStreamListAdapter(
+    fragment: IEditableListFragment<TextStreamObject, GroupViewHolder>,
+) : GroupEditableListAdapter<TextStreamObject, GroupViewHolder>(fragment, MODE_GROUP_BY_DATE) {
     protected override fun onLoad(lister: GroupLister<TextStreamObject>) {
         for (item in AppUtils.getKuick(context).castQuery(
             SQLQuery.Select(Kuick.TABLE_CLIPBOARD), TextStreamObject::class.java
@@ -52,10 +49,8 @@ class TextStreamListAdapter(fragment: IEditableListFragment<TextStreamObject, Gr
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val holder: GroupViewHolder = if (viewType == EditableListAdapter.VIEW_TYPE_DEFAULT) GroupViewHolder(
-            layoutInflater.inflate(
-                R.layout.list_text_stream, parent, false
-            )
+        val holder: GroupViewHolder = if (viewType == VIEW_TYPE_DEFAULT) GroupViewHolder(
+            layoutInflater.inflate(R.layout.list_text_stream, parent, false)
         ) else createDefaultViews(parent, viewType, false)
         if (!holder.isRepresentative()) fragment.registerLayoutViewClicks(holder)
         return holder
@@ -73,8 +68,8 @@ class TextStreamListAdapter(fragment: IEditableListFragment<TextStreamObject, Gr
                 parentView.isSelected = item.isSelectableSelected()
                 text1.text = text
                 text2.text = DateUtils.formatDateTime(context, item.getComparableDate(), DateUtils.FORMAT_SHOW_TIME)
-                text3.visibility = if (getGroupBy() != MODE_GROUP_BY_DATE) View.VISIBLE else View.GONE
-                if (getGroupBy() != MODE_GROUP_BY_DATE) text3.text = getSectionNameDate(item.getComparableDate())
+                text3.visibility = if (groupBy != MODE_GROUP_BY_DATE) View.VISIBLE else View.GONE
+                if (groupBy != MODE_GROUP_BY_DATE) text3.text = getSectionNameDate(item.getComparableDate())
             }
         } catch (ignored: Exception) {
         }

@@ -108,9 +108,9 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
         /*pagerAdapter.add(
             StableItem(1, FileExplorerFragment::class.qualifiedName!!, arguments, getString(R.string.text_files))
         )
-        pagerAdapter.add(StableItem(2, AudioListFragment::class.qualifiedName!!, arguments))
+        pagerAdapter.add(StableItem(2, AudioListFragment::class.qualifiedName!!, arguments))*/
         pagerAdapter.add(StableItem(3, ImageListFragment::class.qualifiedName!!, arguments))
-        pagerAdapter.add(StableItem(4, VideoListFragment::class.qualifiedName!!, arguments))*/
+        pagerAdapter.add(StableItem(4, VideoListFragment::class.qualifiedName!!, arguments))
         pagerAdapter.createTabs(tabLayout, icons = false, text = true)
         viewPager.adapter = pagerAdapter
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))

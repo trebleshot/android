@@ -40,14 +40,17 @@ class ThirdPartyLibrariesActivity : Activity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home) onBackPressed() else if (id == R.id.menu_action_info) {
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(R.string.text_help)
-                .setMessage(R.string.text_thirdPartyLibrariesHelp)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
-        } else return super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            android.R.id.home -> onBackPressed()
+            R.id.menu_action_info -> {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(R.string.text_help)
+                    .setMessage(R.string.text_thirdPartyLibrariesHelp)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
         return true
     }
 }

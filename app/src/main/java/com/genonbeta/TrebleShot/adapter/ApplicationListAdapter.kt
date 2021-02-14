@@ -61,6 +61,7 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
                 e.printStackTrace()
             }
         }
+        val something = 0
     }
 
     override fun onGenerateRepresentative(text: String, merger: Merger<PackageHolder>?): PackageHolder {

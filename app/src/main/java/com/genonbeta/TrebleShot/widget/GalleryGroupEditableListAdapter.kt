@@ -45,7 +45,7 @@ abstract class GalleryGroupEditableListAdapter<T : GalleryGroupShareable, V : Gr
     }
 
     override fun getSectionName(position: Int, item: T): String {
-        if (!item.isGroupRepresentative()) if (getGroupBy() == MODE_GROUP_BY_ALBUM) return item.albumName
+        if (!item.isGroupRepresentative()) if (groupBy == MODE_GROUP_BY_ALBUM) return item.albumName
         return super.getSectionName(position, item)
     }
 

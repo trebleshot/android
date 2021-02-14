@@ -57,9 +57,9 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.*
 
-class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolder>) :
-    GroupEditableListAdapter<FileHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_DEFAULT),
-    CustomGroupLister<FileHolder> {
+class FileListAdapter(
+    fragment: IEditableListFragment<FileHolder, GroupViewHolder>
+) : GroupEditableListAdapter<FileHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_DEFAULT), CustomGroupLister<FileHolder> {
     var path: DocumentFile? = null
 
     private var showDirectories = true
@@ -69,6 +69,16 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
     private var showThumbnails = true
 
     private var searchWord: String? = null
+
+    override var groupBy: Int
+        get() = if (path != null && path == Files.getApplicationDirectory(context)) {
+            MODE_GROUP_FOR_INBOX
+        } else {
+            super.groupBy
+        }
+        set(value) {
+            super.groupBy = value
+        }
 
     protected override fun onLoad(lister: GroupLister<FileHolder>) {
         showThumbnails = AppUtils.getDefaultPreferences(context).getBoolean("load_thumbnails", true)
@@ -318,14 +328,6 @@ class FileListAdapter(fragment: IEditableListFragment<FileHolder, GroupViewHolde
 
     override fun createLister(loadedList: MutableList<FileHolder>, groupBy: Int): GroupLister<FileHolder> {
         return super.createLister(loadedList, groupBy).also { it.customLister = this }
-    }
-
-    override fun getGroupBy(): Int {
-        return if (path != null && path == Files.getApplicationDirectory(context)) {
-            MODE_GROUP_FOR_INBOX
-        } else {
-            super.getGroupBy()
-        }
     }
 
     override fun getSortingCriteria(objectOne: FileHolder, objectTwo: FileHolder): Int {
