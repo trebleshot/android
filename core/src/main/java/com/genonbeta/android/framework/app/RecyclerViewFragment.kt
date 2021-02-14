@@ -55,11 +55,6 @@ abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : R
             value.layoutManager = getLayoutManager()
         }
 
-    override fun onListRefreshed() {
-        super.onListRefreshed()
-        setListShown(adapter.itemCount > 0)
-    }
-
     override fun ensureList() {
         handler.post(requestFocus)
     }

@@ -32,7 +32,7 @@ import com.genonbeta.TrebleShot.util.NsdDaemon
 class OnlineDeviceListFragment : DeviceListFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        setHiddenDeviceTypes(arrayOf(Device.Type.Web, Device.Type.Normal))
+        hiddenDeviceTypes = arrayOf(Device.Type.Web, Device.Type.Normal)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

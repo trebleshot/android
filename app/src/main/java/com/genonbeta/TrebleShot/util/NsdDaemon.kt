@@ -34,49 +34,35 @@ import com.genonbeta.TrebleShot.dataobject.DeviceRoute
  * created by: Veli
  * date: 22.01.2018 15:35
  */
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 class NsdDaemon(val context: Context, val database: Kuick, private val mPreferences: SharedPreferences) {
-    private var mNsdManager: NsdManager? = null
-    private var mNsdDiscoveryListener: NsdManager.DiscoveryListener? = null
-    private var mNsdRegistrationListener: NsdManager.RegistrationListener? = null
     private val onlineDeviceList: MutableMap<String, DeviceRoute> = ArrayMap()
 
-    @get:RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private val discoveryListener: NsdManager.DiscoveryListener?
-        get() {
-            if (mNsdDiscoveryListener == null) mNsdDiscoveryListener = DiscoveryListener()
-            return mNsdDiscoveryListener
-        }
+    private var discoveryListener: NsdManager.DiscoveryListener? = null
 
-    @get:RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private val nsdManager: NsdManager
-        get() {
-            return mNsdManager ?: (context.getSystemService(Context.NSD_SERVICE) as NsdManager).also {
-                mNsdManager = it
-            }
-        }
+    private val nsdManager: NsdManager by lazy {
+        context.getSystemService(Context.NSD_SERVICE) as NsdManager
+    }
 
-    @get:RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private val registrationListener: NsdManager.RegistrationListener?
-        get() {
-            if (mNsdRegistrationListener == null) mNsdRegistrationListener = RegistrationListener()
-            return mNsdRegistrationListener
-        }
+    private var registrationListener: NsdManager.RegistrationListener? = null
 
     fun isDeviceOnline(device: Device): Boolean {
         synchronized(onlineDeviceList) {
-            for (deviceRoute in onlineDeviceList.values) if (deviceRoute.device.equals(device)) return true
+            for (deviceRoute in onlineDeviceList.values) if (deviceRoute.device == device) return true
         }
         return false
     }
 
     val isDiscovering: Boolean
-        get() = mNsdDiscoveryListener != null
+        get() = discoveryListener != null
 
     val isServiceEnabled: Boolean
         get() = mPreferences.getBoolean("nsd_enabled", false)
 
     fun registerService() {
+        if (registrationListener != null) return
         if (isServiceEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            val registrationListener = RegistrationListener().also { registrationListener = it }
             val localServiceInfo = NsdServiceInfo()
             localServiceInfo.serviceName = AppUtils.getLocalDeviceName(context)
             localServiceInfo.serviceType = AppConfig.NSD_SERVICE_TYPE
@@ -90,29 +76,29 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
     }
 
     fun startDiscovering() {
-        try {
-            if (isServiceEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                nsdManager.discoverServices(AppConfig.NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
-            }
+        if (discoveryListener != null) return
+        if (isServiceEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) try {
+            val discoveryListener = DiscoveryListener().also { discoveryListener = it }
+            nsdManager.discoverServices(AppConfig.NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
         } catch (ignored: Exception) {
         }
     }
 
     fun stopDiscovering() {
-        try {
-            if (mNsdDiscoveryListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                nsdManager.stopServiceDiscovery(mNsdDiscoveryListener)
-            }
+        if (discoveryListener != null) try {
+            nsdManager.stopServiceDiscovery(discoveryListener)
         } catch (ignored: Exception) {
+        } finally {
+            discoveryListener = null
         }
     }
 
     fun unregisterService() {
-        try {
-            if (mNsdRegistrationListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                nsdManager.unregisterService(mNsdRegistrationListener)
-            }
+        if (registrationListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) try {
+            nsdManager.unregisterService(registrationListener)
         } catch (ignored: Exception) {
+        } finally {
+            registrationListener = null
         }
     }
 
@@ -137,7 +123,7 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
         }
 
         fun clear() {
-            mNsdRegistrationListener = null
+            registrationListener = null
         }
     }
 
@@ -178,7 +164,7 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
         }
 
         fun clear() {
-            mNsdDiscoveryListener = null
+            discoveryListener = null
             synchronized(onlineDeviceList) { onlineDeviceList.clear() }
         }
     }

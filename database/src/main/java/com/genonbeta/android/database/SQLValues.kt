@@ -19,7 +19,7 @@ class SQLValues {
         var nullable: Boolean = false,
     ) {
         override fun toString(): String {
-            return "`" + name + "` " + type.toString() + " " + (if (nullable) "null" else "not null") + extra ?: ""
+            return "`" + name + "` " + type.toString() + " " + (if (nullable) "null" else "not null") + (extra ?: "")
         }
     }
 

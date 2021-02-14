@@ -157,7 +157,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     override var isSortingSupported: Boolean = true
 
     override var isTwoRowLayout: Boolean = false
-        get() = AppUtils.getDefaultPreferences(context).getBoolean("two_row_layout", true)
+        get() = AppUtils.getDefaultPreferences(requireContext()).getBoolean("two_row_layout", true)
         set(value) {
             field = value
             applyViewingChanges(optimumGridSize, true)

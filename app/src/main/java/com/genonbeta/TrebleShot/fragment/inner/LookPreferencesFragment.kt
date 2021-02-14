@@ -27,7 +27,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.genonbeta.TrebleShot.R
 
 class LookPreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preference_introduction_look)
         loadThemeOptionsTo(requireContext(), findPreference("theme"))
     }

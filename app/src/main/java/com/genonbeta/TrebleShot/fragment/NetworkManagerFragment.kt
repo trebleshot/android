@@ -260,7 +260,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
     @Throws(JSONException::class)
     private fun updateViews() {
         showMenu()
-        val pin = AppUtils.generateNetworkPin(context)
+        val pin = AppUtils.generateNetworkPin(requireContext())
         val delimiter = ";"
         val code = StringBuilder()
         val config: WifiConfiguration? = getWifiConfiguration()
@@ -298,11 +298,10 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
             secondButton.setText(R.string.text_startHotspot)
         } else if (connections.isConnectedToAnyNetwork()) {
             activeType = Type.WiFi
-            val hostAddress: String?
-            val ssid: String? = connectionInfo.getSSID()
-            val bssid: String? = connectionInfo.getBSSID()
-            hostAddress = try {
-                InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.getIpAddress()))
+            val ssid: String? = connectionInfo.ssid
+            val bssid: String? = connectionInfo.bssid
+            val hostAddress: String? = try {
+                InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.ipAddress))
                     .hostAddress
             } catch (e: UnknownHostException) {
                 "0.0.0.0"

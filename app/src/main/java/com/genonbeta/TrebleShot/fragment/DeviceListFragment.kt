@@ -55,9 +55,10 @@ open class DeviceListFragment :
 
     private val statusReceiver: StatusReceiver = StatusReceiver()
 
-    private var connections: Connections? = null
+    private val connections: Connections
+        get() = Connections(requireContext())
 
-    private lateinit var hiddenDeviceTypes: Array<Device.Type>
+    var hiddenDeviceTypes: Array<Device.Type> = emptyArray()
 
     private val p2pDaemon: P2pDaemon? = null
 
@@ -73,12 +74,12 @@ open class DeviceListFragment :
         intentFilter.addAction(SCAN_RESULTS_AVAILABLE_ACTION)
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
 
-        hiddenDeviceTypes = arguments?.getStringArrayList(ARG_HIDDEN_DEVICES_LIST)?.let {
+        arguments?.getStringArrayList(ARG_HIDDEN_DEVICES_LIST)?.let {
             val containerList = ArrayList<Device.Type>()
             for (i in it.indices) containerList.add(Device.Type.valueOf(it[i]))
-            containerList.toTypedArray()
-        } ?: emptyArray()
-        
+            hiddenDeviceTypes = containerList.toTypedArray()
+        }
+
         // TODO: 2/1/21 Wifi Direct daemon? Might not be supported by Android TV.
         //if (Build.VERSION.SDK_INT >= 16)
         //    mP2pDaemon = new P2pDaemon(getConnections());
@@ -87,7 +88,7 @@ open class DeviceListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = DeviceListAdapter(
-            this, getConnections(),
+            this, connections,
             App.from(requireActivity()).nsdDaemon, hiddenDeviceTypes
         )
         emptyListImageView.setImageResource(R.drawable.ic_devices_white_24dp)
@@ -117,18 +118,13 @@ open class DeviceListFragment :
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (REQUEST_LOCATION_PERMISSION == requestCode) getConnections().showConnectionOptions(
-            activity!!, this, REQUEST_LOCATION_PERMISSION
+        if (REQUEST_LOCATION_PERMISSION == requestCode) connections.showConnectionOptions(
+            requireActivity(), this, REQUEST_LOCATION_PERMISSION
         )
     }
 
     override fun onDeviceResolved(device: Device, address: DeviceAddress) {
         AddDeviceActivity.returnResult(requireActivity(), device, address)
-    }
-
-    fun getConnections(): Connections {
-        if (connections == null) connections = Connections(requireContext())
-        return connections!!
     }
 
     override fun getDistinctiveTitle(context: Context): CharSequence {
@@ -138,10 +134,6 @@ open class DeviceListFragment :
     override fun isHorizontalOrientation(): Boolean {
         return (arguments != null && arguments!!.getBoolean(ARG_USE_HORIZONTAL_VIEW)
                 || super.isHorizontalOrientation())
-    }
-
-    fun setHiddenDeviceTypes(types: Array<Device.Type>) {
-        hiddenDeviceTypes = types
     }
 
     override fun performDefaultLayoutClick(holder: ViewHolder, target: VirtualDevice): Boolean {
@@ -156,7 +148,7 @@ open class DeviceListFragment :
                     FindConnectionDialog.show(requireActivity(), device, this)
                 }
             } else return false
-        } else openInfo(requireActivity(), getConnections(), target)
+        } else openInfo(requireActivity(), connections, target)
         return true
     }
 

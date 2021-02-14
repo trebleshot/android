@@ -64,11 +64,11 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.show_system_apps) {
-            val isShowingSystem = !AppUtils.getDefaultPreferences(getContext()).getBoolean(
+            val isShowingSystem = !AppUtils.getDefaultPreferences(requireContext()).getBoolean(
                 "show_system_apps",
                 false
             )
-            AppUtils.getDefaultPreferences(getContext()).edit()
+            AppUtils.getDefaultPreferences(requireContext()).edit()
                 .putBoolean("show_system_apps", isShowingSystem)
                 .apply()
             refreshList()
@@ -80,7 +80,7 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         val menuSystemApps = menu.findItem(R.id.show_system_apps)
-        menuSystemApps.isChecked = AppUtils.getDefaultPreferences(getContext()).getBoolean(
+        menuSystemApps.isChecked = AppUtils.getDefaultPreferences(requireActivity()).getBoolean(
             "show_system_apps",
             false
         )

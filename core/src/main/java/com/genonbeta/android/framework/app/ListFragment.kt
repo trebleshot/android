@@ -19,6 +19,7 @@ package com.genonbeta.android.framework.app
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -124,9 +125,11 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
             )
         }
 
-        if (emptyListContainerView.visibility == View.VISIBLE == shown) {
+        if ((emptyListContainerView.visibility == View.VISIBLE) == shown) {
             emptyListContainerView.visibility = if (shown) View.GONE else View.VISIBLE
         }
+
+        ensureList()
     }
 
     fun showEmptyListActionButton(show: Boolean) {
@@ -161,6 +164,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
                 onPrepareRefreshingList()
                 adapter.onUpdate(data)
                 adapter.onDataSetChanged()
+                setListShown(adapter.getItemCount() > 0)
                 setListLoading(false)
                 onListRefreshed()
             }

@@ -23,7 +23,7 @@ import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import java.util.*
 
-class DynamicViewPagerAdapter : PagerAdapter() {
+class ViewPagerAdapter : PagerAdapter() {
     // This holds all the currently displayable views, in order from left to right.
     private val views: MutableList<View> = ArrayList()
 

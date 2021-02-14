@@ -1,5 +1,12 @@
 package org.monora.uprotocol.client.backend
 
-class OperationBackend {
+import android.content.Context
+import com.genonbeta.TrebleShot.App
+
+interface OperationBackend {
+    val app: App
+
+    val context: Context
+
 
 }

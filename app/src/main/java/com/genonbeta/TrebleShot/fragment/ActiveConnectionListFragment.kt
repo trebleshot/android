@@ -86,12 +86,12 @@ class ActiveConnectionListFragment :
         val webShareInfo = view.findViewById<CardView>(R.id.card_web_share_info)
         val webShareInfoHideButton = view.findViewById<Button>(R.id.card_web_share_info_hide_button)
         val helpWebShareInfo = "help_webShareInfo"
-        if (AppUtils.getDefaultPreferences(context).getBoolean(helpWebShareInfo, true)) {
+        if (AppUtils.getDefaultPreferences(requireContext()).getBoolean(helpWebShareInfo, true)) {
             webShareInfo.visibility = View.VISIBLE
             webShareInfoHideButton.setOnClickListener { v: View? ->
                 webShareInfo.visibility = View.GONE
-                TransitionManager.beginDelayedTransition((webShareInfo.getParent() as ViewGroup))
-                AppUtils.getDefaultPreferences(context).edit()
+                TransitionManager.beginDelayedTransition((webShareInfo.parent as ViewGroup))
+                AppUtils.getDefaultPreferences(requireContext()).edit()
                     .putBoolean(helpWebShareInfo, false)
                     .apply()
             }

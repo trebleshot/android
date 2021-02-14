@@ -18,6 +18,4 @@ interface ContentModel {
     fun length(): Long
 
     fun name(): String
-
-
 }

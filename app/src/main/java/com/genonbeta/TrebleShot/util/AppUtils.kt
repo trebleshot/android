@@ -106,7 +106,7 @@ object AppUtils {
         return (Int.MAX_VALUE * Math.random()).toInt()
     }
 
-    fun generateNetworkPin(context: Context?): Int {
+    fun generateNetworkPin(context: Context): Int {
         val networkPin = generateKey()
         getDefaultPreferences(context).edit()
             .putInt(Keyword.NETWORK_PIN, networkPin)
@@ -136,7 +136,7 @@ object AppUtils {
         return builder
     }
 
-    fun getDefaultPreferences(context: Context?): SharedPreferences {
+    fun getDefaultPreferences(context: Context): SharedPreferences {
         if (mDefaultPreferences == null)
             mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         return mDefaultPreferences as SharedPreferences
@@ -242,14 +242,14 @@ object AppUtils {
         return ssid.replace("_", " ")
     }
 
-    fun getHotspotName(context: Context?): String {
+    fun getHotspotName(context: Context): String {
         return AppConfig.PREFIX_ACCESS_POINT + getLocalDeviceName(context)
             .replace(" ".toRegex(), "_")
     }
 
-    fun getLocalDeviceName(context: Context?): String {
+    fun getLocalDeviceName(context: Context): String {
         val deviceName = getDefaultPreferences(context).getString("device_name", null)
-        return if (deviceName == null || deviceName.length == 0) Build.MODEL.toUpperCase() else deviceName
+        return if (deviceName == null || deviceName.isEmpty()) Build.MODEL.toUpperCase() else deviceName
     }
 
     fun getLocalDevice(context: Context): Device {
