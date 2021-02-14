@@ -95,7 +95,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
 
     private lateinit var secondButton: Button
 
-    private lateinit var helpMenuItem: MenuItem
+    private var helpMenuItem: MenuItem? = null
 
     private lateinit var colorPassiveState: ColorStateList
 
@@ -245,7 +245,7 @@ class NetworkManagerFragment : Fragment(), IconProvider, TitleProvider {
     }
 
     private fun showMenu() {
-        helpMenuItem.isVisible = manager.configuration != null && manager.enabled
+        helpMenuItem?.isVisible = manager.configuration != null && manager.enabled
     }
 
     private fun updateState() {
