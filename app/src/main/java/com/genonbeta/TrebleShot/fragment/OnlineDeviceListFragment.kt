@@ -50,9 +50,9 @@ class OnlineDeviceListFragment : DeviceListFragment() {
         val daemon: NsdDaemon = App.from(requireActivity()).nsdDaemon
         listView.isNestedScrollingEnabled = true
         setDividerVisible(false)
-        emptyListTextView.text = if (!daemon.isServiceEnabled) {
+        emptyListTextView.text = if (!daemon.enabled) {
             getString(R.string.text_nsdDisabled)
-        } else if (!daemon.isDiscovering) {
+        } else if (!daemon.discovering) {
             getString(R.string.text_nsdNotDiscovering)
         } else {
             getString(R.string.text_noOnlineDevices)

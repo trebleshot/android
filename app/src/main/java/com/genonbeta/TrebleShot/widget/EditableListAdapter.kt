@@ -36,7 +36,7 @@ import java.util.*
  */
 abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHolder>(
     var fragment: IEditableListFragment<T, V>,
-) : RecyclerViewAdapter<T, V>(fragment.getContext()!!), EditableListAdapterBase<T>, SectionTitleProvider {
+) : RecyclerViewAdapter<T, V>(fragment.requireContext()), EditableListAdapterBase<T>, SectionTitleProvider {
     private var collator: Collator? = null
 
     private val itemList: MutableList<T> = ArrayList()

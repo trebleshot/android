@@ -154,7 +154,7 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
             reloadRequested = false
             running = true
 
-            setListShown(adapter.getItemCount() == 0)
+            setListShown(adapter.getItemCount() > 0)
             setListLoading(true)
             return createLoader()
         }

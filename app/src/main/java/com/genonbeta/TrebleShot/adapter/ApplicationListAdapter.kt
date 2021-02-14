@@ -48,16 +48,17 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
 
     override fun onLoad(lister: GroupLister<PackageHolder>) {
         val showSystemApps = preferences.getBoolean("show_system_apps", false)
-        for (packageInfo in context.packageManager.getInstalledPackages(
-            PackageManager.GET_META_DATA
-        )) {
-            val appInfo: ApplicationInfo = packageInfo.applicationInfo
-            if (appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 1 || showSystemApps) {
+        for (packageInfo in context.packageManager.getInstalledPackages(PackageManager.GET_META_DATA)) {
+            try {
+                val appInfo: ApplicationInfo = packageInfo.applicationInfo
+                if (appInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1 && showSystemApps) continue
                 val packageHolder = PackageHolder(
                     appInfo.loadLabel(manager).toString(), appInfo,
                     packageInfo.versionName, packageInfo.packageName, File(appInfo.sourceDir)
                 )
                 lister.offerObliged(this, packageHolder)
+            } catch (e: Throwable) {
+                e.printStackTrace()
             }
         }
     }
@@ -109,12 +110,15 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
 
     class PackageHolder : GroupShareable, Container {
         lateinit var appInfo: ApplicationInfo
-        lateinit var version: String
+
+        var version: String? = null
+
         lateinit var packageName: String
 
         constructor(viewType: Int, representativeText: String) : super(viewType, representativeText)
+
         constructor(
-            friendlyName: String, appInfo: ApplicationInfo, version: String, packageName: String,
+            friendlyName: String, appInfo: ApplicationInfo, version: String?, packageName: String,
             executableFile: File,
         ) {
             initialize(
