@@ -97,7 +97,8 @@ object DeviceLoader {
                 CommunicationBridge.connect(kuick, DeviceAddress(address), null, 0).use { bridge ->
                     listener?.onDeviceResolved(bridge.device, bridge.deviceAddress)
                 }
-            } catch (ignored: Exception) {
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }.start()
     }

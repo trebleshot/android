@@ -178,7 +178,7 @@ class CommunicationBridge(
                 exception = IOException(e)
             }
 
-            resultConnection?.let { return@let it }
+            resultConnection?.let { return it }
             exception?.let { throw it }
 
             throw IOException("No connection is handed over after waiting.")
