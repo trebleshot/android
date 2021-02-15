@@ -19,6 +19,7 @@ package com.genonbeta.TrebleShot.service.backgroundservice
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.genonbeta.android.framework.util.Stoppable
 
 abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsyncTask() {
@@ -30,11 +31,6 @@ abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsy
             field = value
             publishStatus(true)
         }
-
-    override fun run(stoppable: Stoppable) {
-        super.run(stoppable)
-        removeAnchor()
-    }
 
     override fun hasAnchor(): Boolean {
         return anchor != null
