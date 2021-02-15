@@ -57,6 +57,7 @@ class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<C
             }
             post { anchor?.onCalculationResult(device, null) }
         } catch (e: Exception) {
+            e.printStackTrace()
             post(CommonErrorHelper.messageOf(context, e))
         }
     }

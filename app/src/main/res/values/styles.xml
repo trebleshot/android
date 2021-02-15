@@ -265,7 +265,7 @@
     <style name="CustomListFragmentEmptyImageStyle">
         <item name="android:background">?rippleBackground</item>
         <item name="android:cropToPadding">true</item>
-        <item name="srcCompat">@drawable/ic_trebleshot_white_24dp_static</item>
+        <item name="srcCompat">@drawable/ic_uprotocol</item>
         <item name="tint">@android:color/white</item>
     </style>
 

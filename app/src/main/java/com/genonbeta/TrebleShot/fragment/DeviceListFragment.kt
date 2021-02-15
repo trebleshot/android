@@ -132,8 +132,7 @@ open class DeviceListFragment :
     }
 
     override fun isHorizontalOrientation(): Boolean {
-        return (arguments != null && arguments!!.getBoolean(ARG_USE_HORIZONTAL_VIEW)
-                || super.isHorizontalOrientation())
+        return arguments?.getBoolean(ARG_USE_HORIZONTAL_VIEW) == true || super.isHorizontalOrientation()
     }
 
     override fun performDefaultLayoutClick(holder: ViewHolder, target: VirtualDevice): Boolean {

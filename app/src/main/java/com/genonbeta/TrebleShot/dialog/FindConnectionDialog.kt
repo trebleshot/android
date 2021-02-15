@@ -19,6 +19,7 @@ package com.genonbeta.TrebleShot.dialog
 
 import android.app.Activity
 import android.content.DialogInterface
+import android.util.Log
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.ProgressDialog

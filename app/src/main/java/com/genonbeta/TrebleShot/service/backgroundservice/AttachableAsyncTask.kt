@@ -19,24 +19,26 @@ package com.genonbeta.TrebleShot.service.backgroundservice
 
 import android.os.Handler
 import android.os.Looper
+import com.genonbeta.android.framework.util.Stoppable
 
 abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsyncTask() {
     private var handler = Handler(Looper.myLooper() ?: Looper.getMainLooper())
 
-    override fun hasAnchor(): Boolean {
-        return anchor != null
-    }
-
     @get:Throws(TaskStoppedException::class)
     var anchor: T? = null
-        get() {
-            throwIfStopped()
-            return field
-        }
         set(value) {
             field = value
             publishStatus(true)
         }
+
+    override fun run(stoppable: Stoppable) {
+        super.run(stoppable)
+        removeAnchor()
+    }
+
+    override fun hasAnchor(): Boolean {
+        return anchor != null
+    }
 
     private fun notifyAnchor(state: State) {
         anchor?.onTaskStateChange(this, state)
@@ -53,7 +55,7 @@ abstract class AttachableAsyncTask<T : AttachedTaskListener> : BaseAttachableAsy
     }
 
     override fun publishStatus(force: Boolean): Boolean {
-        if (!super.publishStatus(force))
+        if (!super.publishStatus(force) && !force)
             return false
         val state = getState()
         handler.post { notifyAnchor(state) }

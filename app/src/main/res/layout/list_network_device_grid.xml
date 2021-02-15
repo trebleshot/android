@@ -29,7 +29,7 @@
     <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:orientation="vertical"
         app:baseOnSmallerLength="false">
 
@@ -63,7 +63,7 @@
 
         <TextView
             android:id="@+id/text1"
-            style="@style/TextAppearance.Primary.SingleLine"
+            style="@style/TextAppearance.Primary.Big.SingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp" />

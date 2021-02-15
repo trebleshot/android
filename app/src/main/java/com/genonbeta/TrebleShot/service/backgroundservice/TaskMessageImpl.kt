@@ -126,8 +126,7 @@ class TaskMessageImpl(
             .setAutoCancel(true)
         for (action in actionList) notification.addAction(
             iconFor(action.tone), action.name, PendingIntent.getActivity(
-                context,
-                0, Intent(context, HomeActivity::class.java), 0
+                context, 0, Intent(context, HomeActivity::class.java), 0
             )
         )
         return notification
@@ -144,17 +143,7 @@ class TaskMessageImpl(
         return snackbar
     }
 
-    override fun toString(): String {
-        val stringBuilder = StringBuilder()
-        stringBuilder.append("Title=")
-            .append(title)
-            .append(" Msg=")
-            .append(message)
-            .append(" Tone=")
-            .append(tone)
-        for (action in actionList) stringBuilder.append(action)
-        return stringBuilder.toString()
-    }
+    override fun toString(): String = "Title=$title Msg=$message Tone=$tone"
 
     companion object {
         @DrawableRes

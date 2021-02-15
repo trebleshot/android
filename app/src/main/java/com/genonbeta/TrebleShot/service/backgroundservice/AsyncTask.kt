@@ -171,12 +171,13 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         startTime = System.currentTimeMillis()
         app = application
 
-        publishStatus(true)
         started = true
+        publishStatus(true)
 
         try {
             run(stoppable)
-        } catch (ignored: TaskStoppedException) {
+        } catch (e: TaskStoppedException) {
+            e.printStackTrace()
         } finally {
             finished = true
             publishStatus(true)

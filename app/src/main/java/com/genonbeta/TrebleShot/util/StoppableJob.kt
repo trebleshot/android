@@ -29,7 +29,7 @@ abstract class StoppableJob {
     protected abstract fun onRun()
 
     @Throws(TaskStoppedException::class)
-    protected fun run(stoppable: Stoppable) {
+    protected open fun run(stoppable: Stoppable) {
         try {
             onRun()
         } finally {
