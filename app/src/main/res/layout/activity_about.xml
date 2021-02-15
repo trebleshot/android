@@ -57,47 +57,30 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
+            <ImageView
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/orgIcon"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:padding="12dp"
+                android:background="?roundSelector"
+                app:srcCompat="@drawable/ic_monora_logo_no_background" />
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/short_content_width_padding"
                 android:layout_marginTop="16dp"
-                android:layout_marginRight="@dimen/short_content_width_padding"
-                android:layout_marginBottom="8dp">
+                android:layout_marginRight="@dimen/short_content_width_padding">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingTop="15dp"
-                    android:paddingBottom="15dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="15dp">
-
-                        <ImageView
-                            android:id="@+id/orgIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="15dp"
-                            android:background="?roundSelector"
-                            android:padding="15dp"
-                            app:srcCompat="@drawable/ic_genonbeta_white_36dp"
-                            app:tint="?colorSecondary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/text_aboutSummary" />
-
-                    </LinearLayout>
+                    android:paddingBottom="15dp"
+                    android:gravity="center_horizontal">
 
                     <LinearLayout
                         android:id="@+id/activity_about_see_source_layout"
@@ -236,68 +219,78 @@
 
             </androidx.cardview.widget.CardView>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingTop="32dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="32dp">
+
+                <TextView
+                    style="@style/CondensedTitleStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_license" />
+
+            </LinearLayout>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/short_content_width_padding"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="@dimen/short_content_width_padding"
-                android:layout_marginBottom="8dp">
+                android:layout_marginRight="@dimen/short_content_width_padding">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="15dp"
+                    android:padding="16dp"
                     android:text="@string/conf_licence"
                     app:fontFamily="monospace" />
 
             </androidx.cardview.widget.CardView>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingTop="32dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="32dp">
+
+                <TextView
+                    style="@style/CondensedTitleStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_contributors" />
+
+            </LinearLayout>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:layout_marginLeft="@dimen/short_content_width_padding"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="@dimen/short_content_width_padding"
-                android:layout_marginBottom="16dp">
+                android:layout_marginRight="@dimen/short_content_width_padding">
 
                 <LinearLayout
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:minHeight="400dp">
 
-                    <LinearLayout
+                    <fragment
+                        android:id="@+id/activity_about_contributors_fragment"
+                        android:name="com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:paddingLeft="10dp"
-                        android:paddingTop="25dp"
-                        android:paddingRight="10dp"
-                        android:paddingBottom="25dp">
+                        android:layout_height="match_parent"
+                        android:tag="contributorsFragment" />
 
-                        <TextView
-                            style="@style/CondensedTitleStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/text_contributors" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="400dp">
-
-                        <fragment
-                            android:id="@+id/activity_about_contributors_fragment"
-                            android:name="com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="10dp"
-                            android:tag="contributorsFragment" />
-
-                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

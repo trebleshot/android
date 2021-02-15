@@ -607,4 +607,5 @@
     <string name="text_hostAddress">Host address</string>
     <string name="text_connectionToRemoteFailed">Could not find the device on the network</string>
     <string name="text_connectionError">Is it under a rock?</string>
+    <string name="text_license">License</string>
 </resources>

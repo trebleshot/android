@@ -26,13 +26,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment.ContributorListAdapter
-import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment.ContributorObject
+import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment.Contributor
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
@@ -43,8 +45,7 @@ import org.json.JSONArray
  * created by: Veli
  * date: 16.03.2018 15:46
  */
-class GitHubContributorsListFragment :
-    DynamicRecyclerViewFragment<ContributorObject, ViewHolder, ContributorListAdapter>() {
+class GitHubContributorsListFragment : DynamicRecyclerViewFragment<Contributor, ViewHolder, ContributorListAdapter>() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -65,10 +66,10 @@ class GitHubContributorsListFragment :
         return GridLayoutManager(context, 1)
     }
 
-    class ContributorObject(var name: String, var url: String, var urlAvatar: String)
+    data class Contributor(var name: String, var url: String, var urlAvatar: String)
 
-    class ContributorListAdapter(context: Context) : RecyclerViewAdapter<ContributorObject, ViewHolder>(context) {
-        private val list: MutableList<ContributorObject> = ArrayList()
+    class ContributorListAdapter(context: Context) : RecyclerViewAdapter<Contributor, ViewHolder>(context) {
+        private val list: MutableList<Contributor> = ArrayList()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val holder = ViewHolder(
@@ -96,8 +97,8 @@ class GitHubContributorsListFragment :
                 .into(imageView)
         }
 
-        override fun onLoad(): MutableList<ContributorObject> {
-            val contributorObjects: MutableList<ContributorObject> = ArrayList()
+        override fun onLoad(): MutableList<Contributor> {
+            val contributors: MutableList<Contributor> = ArrayList()
             val server = RemoteServer(AppConfig.URI_REPO_APP_CONTRIBUTORS)
             try {
                 val result = server.connect(null, null)
@@ -105,8 +106,8 @@ class GitHubContributorsListFragment :
                 if (releases.length() > 0) {
                     for (iterator in 0 until releases.length()) {
                         val currentObject = releases.getJSONObject(iterator)
-                        contributorObjects.add(
-                            ContributorObject(
+                        contributors.add(
+                            Contributor(
                                 currentObject.getString("login"),
                                 currentObject.getString("url"),
                                 currentObject.getString("avatar_url")
@@ -117,10 +118,10 @@ class GitHubContributorsListFragment :
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            return contributorObjects
+            return contributors
         }
 
-        override fun onUpdate(passedItem: MutableList<ContributorObject>) {
+        override fun onUpdate(passedItem: MutableList<Contributor>) {
             synchronized(list) {
                 list.clear()
                 list.addAll(passedItem)
@@ -135,7 +136,7 @@ class GitHubContributorsListFragment :
             return list.size
         }
 
-        override fun getList(): MutableList<ContributorObject> {
+        override fun getList(): MutableList<Contributor> {
             return list
         }
     }

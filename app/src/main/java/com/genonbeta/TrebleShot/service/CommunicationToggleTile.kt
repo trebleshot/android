@@ -25,7 +25,6 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.genonbeta.TrebleShot.service.BackgroundService
 
 /**
  * created by: Veli
@@ -35,37 +34,41 @@ import com.genonbeta.TrebleShot.service.BackgroundService
 class CommunicationToggleTile : TileService() {
     override fun onStartListening() {
         super.onStartListening()
-        updateTileState()
+        update()
     }
 
     override fun onClick() {
         super.onClick()
         val serviceIntent = Intent(applicationContext, BackgroundService::class.java)
-        if (isMyServiceRunning(BackgroundService::class.java)) {
+        if (isRunning(BackgroundService::class.java)) {
             stopService(serviceIntent)
-        } else ContextCompat.startForegroundService(this, serviceIntent)
-        updateTileState()
+        } else {
+            ContextCompat.startForegroundService(this, serviceIntent)
+        }
+        update()
     }
 
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+    private fun isRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
 
         // FIXME: 22.03.2020 Deprecated
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) if (serviceClass.name == service.service.className) return true
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) return true
+        }
         return false
     }
 
-    private fun updateTileState(state: Int = if (isMyServiceRunning(BackgroundService::class.java)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE) {
-        val tile = qsTile
-        if (tile != null) {
-            tile.state = state
-            val icon = tile.icon
-            when (state) {
-                Tile.STATE_ACTIVE -> icon.setTint(Color.WHITE)
-                Tile.STATE_INACTIVE, Tile.STATE_UNAVAILABLE -> icon.setTint(Color.GRAY)
-                else -> icon.setTint(Color.GRAY)
-            }
-            tile.updateTile()
+    private fun update(
+        state: Int = if (isRunning(BackgroundService::class.java)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE,
+    ) {
+        val tile = qsTile ?: return
+        tile.state = state
+        val icon = tile.icon
+        when (state) {
+            Tile.STATE_ACTIVE -> icon.setTint(Color.WHITE)
+            Tile.STATE_INACTIVE, Tile.STATE_UNAVAILABLE -> icon.setTint(Color.GRAY)
+            else -> icon.setTint(Color.GRAY)
         }
+        tile.updateTile()
     }
 }

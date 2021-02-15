@@ -104,7 +104,7 @@ class OrganizeLocalSharingTask(
                     context.getString(R.string.text_errorNoFileSelected)
                 )
             )
-            Log.d(TAG, "onRun: No content is located with uri data")
+            Log.d(TAG, "onRun: No content is located")
             return
         }
         addCloser(object : Stoppable.Closer {

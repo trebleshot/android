@@ -470,8 +470,9 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         }
     }
 
-    class CrunchLatestDataTask(private val mListener: PostExecutionListener) :
-        android.os.AsyncTask<TransferDetailActivity, Void?, Void?>() {
+    class CrunchLatestDataTask(
+        private val listener: PostExecutionListener,
+    ) : android.os.AsyncTask<TransferDetailActivity, Void?, Void?>() {
         private var restartRequested = false
 
         /* "possibility of having more than one ViewTransferActivity" < "sun turning into black hole" */
@@ -480,7 +481,13 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
                 restartRequested = false
                 for (activity in activities) {
                     val index = activity.index ?: continue
-                    Transfers.loadTransferInfo(activity, index, activity.member)
+                    val member = activity.member
+
+                    if (member == null) {
+                        Transfers.loadTransferInfo(activity, index)
+                    } else {
+                        Transfers.loadTransferInfo(activity, index, member)
+                    }
                 }
             } while (restartRequested && !isCancelled)
             return null
@@ -493,7 +500,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
         override fun onPostExecute(aVoid: Void?) {
             super.onPostExecute(aVoid)
-            if (!isCancelled) mListener.onPostExecute()
+            if (!isCancelled) listener.onPostExecute()
         }
 
         /* Should we have used a generic type class for this?
@@ -512,6 +519,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         const val EXTRA_DEVICE = "extraDevice"
         const val EXTRA_TRANSFER_TYPE = "extraTransferType"
         const val REQUEST_ADD_DEVICES = 5045
+
         fun startInstance(context: Context, transfer: Transfer?) {
             context.startActivity(
                 Intent(context, TransferDetailActivity::class.java)

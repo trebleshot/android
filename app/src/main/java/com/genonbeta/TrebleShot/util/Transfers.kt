@@ -193,10 +193,8 @@ object Transfers {
         )
     }
 
-    fun loadTransferInfo(context: Context, transfer: TransferIndex, member: TransferMember? = null) {
-        if (member == null) {
-            loadTransferInfo(context, transfer)
-        } else loadTransferInfo(context, transfer, member.deviceId, member.type)
+    fun loadTransferInfo(context: Context, transfer: TransferIndex, member: TransferMember) {
+        loadTransferInfo(context, transfer, member.deviceId, member.type)
     }
 
     @JvmOverloads

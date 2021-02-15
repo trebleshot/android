@@ -21,7 +21,7 @@
     <color name="ic_launcher_background">#47BF4B</color>
     <!-- Launcher related end -->
 
-    <color name="colorControlNormal">#222</color>
+    <color name="colorControlNormal">#555</color>
     <color name="colorError">#afb42b</color>
     <color name="colorOnPrimary">@color/colorControlNormal</color>
     <color name="colorOnSecondary">@color/colorControlNormal</color>
@@ -45,7 +45,7 @@
     <!-- SEPARATOR -->
 
 
-    <color name="dark_colorControlNormal">#ffffff</color>
+    <color name="dark_colorControlNormal">#dfdfdf</color>
     <color name="dark_colorError">#E6AFB42B</color>
     <color name="dark_colorOnPrimary">@color/dark_colorControlNormal</color>
     <color name="dark_colorOnSecondary">@color/dark_colorControlNormal</color>
