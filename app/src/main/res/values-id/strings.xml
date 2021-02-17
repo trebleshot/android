@@ -9,7 +9,7 @@
     <string name="ques_receiveFile">Terima berkas\?</string>
     <string name="butn_accept">Terima</string>
     <string name="butn_reject">Tolak</string>
-    <string name="butn_stop">Stop</string>
+    <string name="butn_stop">Berhenti</string>
     <string name="text_sending">Mengirim</string>
     <string name="butn_cancelSending">Batalkan pengiriman</string>
     <string name="text_receiving">Menerima</string>
@@ -17,7 +17,7 @@
     <string name="mesg_fileReceived">%s sudah diterima</string>
     <string name="butn_scan">Pindai</string>
     <string name="text_listEmpty">Tidak ada item</string>
-    <string name="text_developerMode">Mode Pengembang</string>
+    <string name="text_developerMode">Mode pengembang</string>
     <string name="text_developerModeSummary">Nonaktifkan konfigurasi pengguna</string>
     <string name="text_deviceName">Nama perangkat</string>
     <string name="text_deviceNameSummary">Nama ini akan terlihat di perangkat lain</string>
