@@ -26,20 +26,31 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.config.AppConfig
-import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment.ContributorListAdapter
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment.Contributor
+import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment.ContributorListAdapter
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
 import com.genonbeta.android.updatewithgithub.RemoteServer
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.json.JSONArray
+import retrofit2.http.GET
+import retrofit2.converter.gson.GsonConverterFactory
+
+import retrofit2.Retrofit
+
+
+
 
 /**
  * created by: Veli

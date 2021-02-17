@@ -20,64 +20,68 @@ package com.genonbeta.android.framework.util.actionperformer
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * The base class for engine connection. This is free of generics for most compatibility.
+ * The base class for engine connection. Items are kept as generics for compatibility.
  */
 interface IBaseEngineConnection {
     /**
-     * Compile the list of available items
+     * Compile the list of available items.
      *
-     * @return the list that is available with [SelectableProvider]
+     * @return The list that is available within [SelectableProvider].
      */
     fun getGenericAvailableList(): MutableList<out Selectable>?
 
     /**
      * Compile the list of selected items.
      *
-     * @return the list that is available with [SelectableHost]
+     * @return The list that is available within [SelectableHost].
      */
     fun getGenericSelectedItemList(): MutableList<out Selectable>?
 
     /**
-     * Titles are only for helping the end-user know the connection in a UX manner.
+     * The human-readable title for this connection.
      *
-     * @return the representing title
+     * @return The title representing this connection.
      */
     fun getDefinitiveTitle(): CharSequence?
 
     /**
-     * Set the engine provider usually an [android.app.Activity] implementing it.
+     * Sets the engine provider.
      *
-     * @param engineProvider the provider
+     * @param engineProvider That will provide the [IPerformerEngine] implementation.
+     * @see [getEngineProvider]
      */
-    fun setEngineProvider(engineProvider: PerformerEngineProvider?)
+    fun setEngineProvider(provider: PerformerEngineProvider?)
 
     /**
-     * @return the provider that will supply us with [IPerformerEngine] that we will operate on.
+     * Queries the [IPerformerEngine] provider.
+     *
+     * @return The provider.
+     * @see [setEngineProvider]
      */
     fun getEngineProvider(): PerformerEngineProvider?
 
     /**
-     * Set the title that may be used by UI elements that need to identify this connection for user.
+     * Sets the human-readable title for this connection.
      *
-     * @param title use to identify this connection
+     * @param title Used to identify this connection.
      */
     fun setDefinitiveTitle(title: CharSequence?)
 
     /**
      * Find the selectable using [RecyclerView.ViewHolder.getAdapterPosition] and toggle its selection state.
      *
-     * @param holder that we will use to find the location
-     * @return true if the given selectable is selected
-     * @throws SelectableNotFoundException when the given position with the holder doesn't point to a selectable
+     * @param holder That will provide the selectable position.
+     * @return True if operation was successful.
+     * @throws SelectableNotFoundException When the given position does not point to a selectable.
      */
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
     fun setSelected(holder: RecyclerView.ViewHolder): Boolean
 
     /**
-     * Find the selectable in the list that is made available by [SelectableProvider]
+     * Find the selectable in the list that is made available by [SelectableProvider].
      *
-     * @throws SelectableNotFoundException when the the given position doesn't point to a selectable
-     * @throws CouldNotAlterException      when the call fails to complete for some reason (see error msg for details)
+     * @throws SelectableNotFoundException When the given position does not point to a selectable.
+     * @throws CouldNotAlterException      If the selectable could not altered.
      */
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
     fun setSelected(position: Int): Boolean

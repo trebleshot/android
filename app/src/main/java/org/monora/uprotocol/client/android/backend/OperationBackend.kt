@@ -1,4 +1,4 @@
-package org.monora.uprotocol.client.backend
+package org.monora.uprotocol.client.android.backend
 
 import android.content.Context
 import com.genonbeta.TrebleShot.App

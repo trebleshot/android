@@ -1,4 +1,4 @@
-package org.monora.uprotocol.client.view.model
+package org.monora.uprotocol.client.android.view.model
 
 interface ContentModel {
     fun canCopy(): Boolean

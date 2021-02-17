@@ -49,6 +49,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.*
 import com.genonbeta.TrebleShot.util.NsdDaemon
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
+import dagger.hilt.android.HiltAndroidApp
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -60,6 +61,7 @@ import java.util.concurrent.Executors
  * created by: Veli
  * date: 25.02.2018 01:23
  */
+@HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     private lateinit var crashLogFile: File
 
@@ -138,7 +140,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     fun findTaskBy(identity: Identity): AsyncTask? {
         val taskList = findTasksBy(identity)
-        return if (taskList.size > 0) taskList[0] else null
+        return if (taskList.isNotEmpty()) taskList[0] else null
     }
 
     @Synchronized
@@ -150,11 +152,11 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         return hotspotManager.configuration
     }
 
-    fun <T : AsyncTask?> getTaskListOf(clazz: Class<T>): List<T> {
+    fun <T : AsyncTask> getTaskListOf(clazz: Class<T>): List<T> {
         synchronized(taskList) { return getTaskListOf(taskList, clazz) }
     }
 
-    fun hasTaskOf(clazz: Class<out AsyncTask?>): Boolean {
+    fun hasTaskOf(clazz: Class<out AsyncTask>): Boolean {
         synchronized(taskList) { return hasTaskOf(taskList, clazz) }
     }
 
@@ -424,7 +426,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             throw IllegalStateException("The app does not have an App instance.")
         }
 
-        fun <T : AsyncTask?> getTaskListOf(taskList: List<AsyncTask>, clazz: Class<T>): List<T> {
+        fun <T : AsyncTask> getTaskListOf(taskList: List<AsyncTask>, clazz: Class<T>): List<T> {
             val foundList: MutableList<T> = ArrayList()
             for (task in taskList)
                 if (clazz.isInstance(task))
@@ -432,7 +434,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             return foundList
         }
 
-        fun hasTaskOf(taskList: List<AsyncTask>, clazz: Class<out AsyncTask?>): Boolean {
+        fun hasTaskOf(taskList: List<AsyncTask>, clazz: Class<out AsyncTask>): Boolean {
             for (task in taskList) if (clazz.isInstance(task)) return true
             return false
         }

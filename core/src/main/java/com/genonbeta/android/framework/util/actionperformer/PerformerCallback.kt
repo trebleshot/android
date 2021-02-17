@@ -24,18 +24,16 @@ package com.genonbeta.android.framework.util.actionperformer
  */
 interface PerformerCallback {
     /**
-     * This method is called when the selection state of a selectable is about to change. By returning false, it can
-     * be stopped from happening. Notice that it shouldn't mean that returning true is enough, which means if any
-     * other listener returns false, they will override and cancel the task.
+     * Invoked when the selection state of a selectable is about to change. By returning false, it can be stopped from
+     * happening. Notice that it shouldn't mean that returning true is enough, which means if any other listener returns
+     * false, they will override and cancel the task.
      *
-     * @param engine     that is holding an instance of this class
-     * @param owner      is the connection that is making the call to alter the selection state of the
-     * [Selectable]
-     * @param selectable is the [Selectable] whose state is being changed
-     * @param isSelected is the new state that is about to be set
-     * @param position   is where the [Selectable] is positioned in
-     * [SelectableProvider.getSelectableList]
-     * @return true when the state of param selectable can be changed
+     * @param engine     That is holding an instance of this class.
+     * @param owner      That is making the call to alter the selection state of the [Selectable].
+     * @param selectable Whose state is being altered.
+     * @param isSelected To be set.
+     * @param position   Of the [Selectable] in [SelectableProvider.getSelectableList].
+     * @return True to approve the change of the change of the state.
      */
     fun onSelection(
         engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
@@ -43,18 +41,16 @@ interface PerformerCallback {
     ): Boolean
 
     /**
-     * This method is called when the selection state of a selectable is about to change. By returning false, it can
-     * be stopped from happening. Notice that it shouldn't mean that returning true is enough, which means if any
-     * other listener returns false, they will override and cancel the task.
+     * Invoked when the selection state of a selectable is about to change. By returning false, it can be stopped from
+     * happening. Notice that it shouldn't mean that returning true is enough, which means if any other listener returns
+     * false, they will override and cancel the task.
      *
-     * @param engine         that is holding an instance of this class
-     * @param owner          is the connection that is making the call to alter the selection state of the
-     * [Selectable]
-     * @param selectableList is the list of [Selectable]s whose states are being changed
-     * @param isSelected     is the new state that is about to be set
-     * @param positions      are where the [Selectable]s are positioned in
-     * [SelectableProvider.getSelectableList]
-     * @return true when you approve the new changes
+     * @param engine     That is holding an instance of this class.
+     * @param owner      That is making the call to alter the selection state of the [Selectable].
+     * @param selectableList Whose states are being altered.
+     * @param isSelected     To be set.
+     * @param positions      Of the [Selectable]s in [SelectableProvider.getSelectableList].
+     * @return True to approve the change of the change of the states.
      */
     fun onSelection(
         engine: IPerformerEngine, owner: IBaseEngineConnection, selectableList: MutableList<out Selectable>,

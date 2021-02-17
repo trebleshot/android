@@ -37,24 +37,21 @@ import java.util.*
 
 @RequiresApi(16)
 class P2pDaemon(val connections: Connections) {
-    private val mPeerListener: PeerListListener = PeerListener()
+    private val peerListener: PeerListListener = PeerListener()
 
-    private val mServiceRequest = WifiP2pDnsSdServiceRequest.newInstance(AppConfig.NSD_SERVICE_TYPE)
+    private val serviceRequest = WifiP2pDnsSdServiceRequest.newInstance(AppConfig.NSD_SERVICE_TYPE)
 
-    private val mDnsSdTxtRecordListener = DnsSdTxtRecordListener()
+    private val dnsSdTxtRecordListener = DnsSdTxtRecordListener()
 
-    private val mDnsSdServiceResponseListener = DnsSdServiceResponseListener()
+    private val dnsSdServiceResponseListener = DnsSdServiceResponseListener()
 
-    private val mChannel = wifiP2pManager.initialize(connections.context, Looper.getMainLooper(), null)
+    private val channel = wifiP2pManager.initialize(connections.context, Looper.getMainLooper(), null)
 
-    private val mIntentFilter = IntentFilter()
+    private val intentFilter = IntentFilter()
 
-    private val mBroadcastReceiver = InternalBroadcastReceiver()
+    private val broadcastReceiver = InternalBroadcastReceiver()
 
-    private var mWifiP2pServiceInfo: WifiP2pDnsSdServiceInfo? = null
-
-    val channel: Channel
-        get() = mChannel
+    private var p2pServiceInfo: WifiP2pDnsSdServiceInfo? = null
 
     val wifiP2pServiceInfo: WifiP2pDnsSdServiceInfo
         get() {
@@ -74,23 +71,117 @@ class P2pDaemon(val connections: Connections) {
     val wifiP2pManager: WifiP2pManager
         get() = connections.p2pManager
 
+    private val clearLocalServicesActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mClearLocalServicesActionListener.onSuccess")
+            p2pServiceInfo = wifiP2pServiceInfo
+            wifiP2pManager.addLocalService(channel, p2pServiceInfo, addLocalServiceActionListener)
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.d(TAG, "mClearLocalServicesActionListener.onFailure: $reason")
+        }
+    }
+
+    private val discoverPeersActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mDiscoverPeersActionListener.onSuccess")
+            wifiP2pManager.requestPeers(channel, peerListener)
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.d(TAG, "mDiscoverPeersActionListener.onFailure: $reason")
+        }
+    }
+
+    private val discoverServicesActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mDiscoverServicesActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.d(TAG, "mDiscoverServicesActionListener.onFailure: $reason")
+        }
+    }
+
+    private val requestServiceInfoActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mRequestServiceInfoActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.e(TAG, "mRequestServiceInfoActionListener.onFailure: $reason")
+        }
+    }
+
+    private val addLocalServiceActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mAddLocalServiceActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.e(TAG, "mAddLocalServiceActionListener.onFailure: $reason")
+        }
+    }
+
+    private val addServiceRequestActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mAddServiceRequestActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.e(TAG, "mAddServiceRequestActionListener.onFailure: $reason")
+        }
+    }
+
+    private val removeServiceRequestActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mRemoveServiceRequestActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.e(TAG, "mRemoveServiceRequestActionListener.onFailure: $reason")
+        }
+    }
+
+    private val stopPeerDiscoveryActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mStopPeerDiscoveryActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.e(TAG, "mStopPeerDiscoveryActionListener.onFailure: $reason")
+        }
+    }
+
+    private val removeLocalServiceActionListener = object : ActionListener {
+        override fun onSuccess() {
+            Log.d(TAG, "mRemoveLocalServiceActionListener.onSuccess")
+        }
+
+        override fun onFailure(reason: Int) {
+            Log.e(TAG, "mRemoveLocalServiceActionListener.onFailure: $reason")
+        }
+    }
+
+
     fun start(context: Context) {
-        wifiP2pManager.setDnsSdResponseListeners(channel, mDnsSdServiceResponseListener, mDnsSdTxtRecordListener)
-        wifiP2pManager.clearLocalServices(channel, mClearLocalServicesActionListener)
-        wifiP2pManager.addServiceRequest(channel, mServiceRequest, mAddServiceRequestActionListener)
+        wifiP2pManager.setDnsSdResponseListeners(channel, dnsSdServiceResponseListener, dnsSdTxtRecordListener)
+        wifiP2pManager.clearLocalServices(channel, clearLocalServicesActionListener)
+        wifiP2pManager.addServiceRequest(channel, serviceRequest, addServiceRequestActionListener)
         //getWifiP2pManager().discoverPeers(getChannel(), mDiscoverPeersActionListener);
-        wifiP2pManager.discoverServices(channel, mDiscoverServicesActionListener)
-        context.registerReceiver(mBroadcastReceiver, mIntentFilter)
+        wifiP2pManager.discoverServices(channel, discoverServicesActionListener)
+        context.registerReceiver(broadcastReceiver, intentFilter)
     }
 
     fun stop(context: Context) {
         //getWifiP2pManager().stopPeerDiscovery(getChannel(), mStopPeerDiscoveryActionListener);
-        wifiP2pManager.removeServiceRequest(channel, mServiceRequest, mRemoveServiceRequestActionListener)
-        if (mWifiP2pServiceInfo != null) {
-            wifiP2pManager.removeLocalService(channel, mWifiP2pServiceInfo, mRemoveLocalServiceActionListener)
-            mWifiP2pServiceInfo = null
+        wifiP2pManager.removeServiceRequest(channel, serviceRequest, removeServiceRequestActionListener)
+        if (p2pServiceInfo != null) {
+            wifiP2pManager.removeLocalService(channel, p2pServiceInfo, removeLocalServiceActionListener)
+            p2pServiceInfo = null
         }
-        context.unregisterReceiver(mBroadcastReceiver)
+        context.unregisterReceiver(broadcastReceiver)
     }
 
     private inner class PeerListener : PeerListListener {
@@ -124,101 +215,8 @@ class P2pDaemon(val connections: Connections) {
                 if (Build.VERSION.SDK_INT >= 18) {
                     val deviceList: WifiP2pDeviceList = intent.getParcelableExtra(EXTRA_P2P_DEVICE_LIST)
                     Log.d(TAG, "onReceive: $deviceList")
-                } else wifiP2pManager.requestPeers(channel, mPeerListener)
+                } else wifiP2pManager.requestPeers(channel, peerListener)
             }
-        }
-    }
-
-    private val mClearLocalServicesActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mClearLocalServicesActionListener.onSuccess")
-            mWifiP2pServiceInfo = wifiP2pServiceInfo
-            wifiP2pManager.addLocalService(channel, mWifiP2pServiceInfo, mAddLocalServiceActionListener)
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.d(TAG, "mClearLocalServicesActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mDiscoverPeersActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mDiscoverPeersActionListener.onSuccess")
-            wifiP2pManager.requestPeers(channel, mPeerListener)
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.d(TAG, "mDiscoverPeersActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mDiscoverServicesActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mDiscoverServicesActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.d(TAG, "mDiscoverServicesActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mRequestServiceInfoActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mRequestServiceInfoActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.e(TAG, "mRequestServiceInfoActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mAddLocalServiceActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mAddLocalServiceActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.e(TAG, "mAddLocalServiceActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mAddServiceRequestActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mAddServiceRequestActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.e(TAG, "mAddServiceRequestActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mRemoveServiceRequestActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mRemoveServiceRequestActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.e(TAG, "mRemoveServiceRequestActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mStopPeerDiscoveryActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mStopPeerDiscoveryActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.e(TAG, "mStopPeerDiscoveryActionListener.onFailure: $reason")
-        }
-    }
-
-    private val mRemoveLocalServiceActionListener = object : ActionListener {
-        override fun onSuccess() {
-            Log.d(TAG, "mRemoveLocalServiceActionListener.onSuccess")
-        }
-
-        override fun onFailure(reason: Int) {
-            Log.e(TAG, "mRemoveLocalServiceActionListener.onFailure: $reason")
         }
     }
 
@@ -227,9 +225,9 @@ class P2pDaemon(val connections: Connections) {
     }
 
     init {
-        mIntentFilter.addAction(WIFI_P2P_STATE_CHANGED_ACTION)
-        mIntentFilter.addAction(WIFI_P2P_PEERS_CHANGED_ACTION)
-        mIntentFilter.addAction(WIFI_P2P_CONNECTION_CHANGED_ACTION)
-        mIntentFilter.addAction(WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
+        intentFilter.addAction(WIFI_P2P_STATE_CHANGED_ACTION)
+        intentFilter.addAction(WIFI_P2P_PEERS_CHANGED_ACTION)
+        intentFilter.addAction(WIFI_P2P_CONNECTION_CHANGED_ACTION)
+        intentFilter.addAction(WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 }

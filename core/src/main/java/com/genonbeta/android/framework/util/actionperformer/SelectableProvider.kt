@@ -18,12 +18,15 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * In order to not limit the list of items that can be provided by the list container to the [EngineConnection],
- * this class is expected to be given to it when the selection process is made with a list position like
- * using the [IEngineConnection.setSelected] method.
+ * This provides [IEngineConnection] with items that are available to work with.
  *
- * @param <T> a derivative of [Selectable]
-</T> */
+ * @param T a derivative of [Selectable].
+ */
 interface SelectableProvider<T : Selectable> {
+    /**
+     * The available items in total.
+     *
+     * @return The list of available items.
+     */
     fun getSelectableList(): MutableList<T>
 }

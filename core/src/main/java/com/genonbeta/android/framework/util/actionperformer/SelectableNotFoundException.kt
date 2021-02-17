@@ -18,10 +18,6 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * When the selectable is not given and it should be located, this exception may be thrown if it cannot be found.
+ * Thrown when the selectable on a given position does not exist.
  */
-class SelectableNotFoundException : Exception {
-    constructor() : super()
-
-    constructor(message: String?) : super(message)
-}
+class SelectableNotFoundException(message: String?) : Exception(message)

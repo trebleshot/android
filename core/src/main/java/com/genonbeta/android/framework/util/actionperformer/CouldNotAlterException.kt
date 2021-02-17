@@ -18,10 +18,6 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * This may be thrown when a given task fails because something denies the job from completing.
+ * Thrown when an operation fails due to unavailability of selectable or providers.
  */
-class CouldNotAlterException : Exception {
-    constructor() : super()
-
-    constructor(message: String?) : super(message)
-}
+class CouldNotAlterException(message: String?) : Exception(message)

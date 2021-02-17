@@ -49,7 +49,6 @@ import com.genonbeta.TrebleShot.protocol.communication.CommunicationException
 import com.genonbeta.TrebleShot.service.backgroundservice.TaskStoppedException
 import com.genonbeta.TrebleShot.task.DeviceIntroductionTask.SuggestNetworkException
 import com.genonbeta.TrebleShot.util.CommunicationBridge.Companion.receiveResult
-import com.genonbeta.TrebleShot.util.InetAddresses
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
 import org.json.JSONException
@@ -62,11 +61,18 @@ import java.util.concurrent.TimeoutException
  * created by: veli
  * date: 15/04/18 18:37
  */
-class Connections(val context: Context) {
-    val wifiManager: WifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-    val p2pManager: WifiP2pManager
-    val locationManager: LocationManager
-    val connectivityManager: ConnectivityManager
+class Connections(contextLocal: Context) {
+    val context: Context = contextLocal.applicationContext
+
+    val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    val p2pManager
+        get() = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+
     var wirelessEnableRequested = false
 
     fun canAccessLocation(): Boolean {
@@ -74,7 +80,7 @@ class Connections(val context: Context) {
     }
 
     fun canReadScanResults(): Boolean {
-        return wifiManager.isWifiEnabled() && (Build.VERSION.SDK_INT < 23 || canAccessLocation())
+        return wifiManager.isWifiEnabled && (Build.VERSION.SDK_INT < 23 || canAccessLocation())
     }
 
     fun canReadWifiInfo(): Boolean {
@@ -133,7 +139,7 @@ class Connections(val context: Context) {
         // This is because we are only allowed to manipulate the networks that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
         return (isConnectedToAnyNetwork() && wifiManager.disconnect()
-                && wifiManager.disableNetwork(wifiManager.getConnectionInfo().getNetworkId()))
+                && wifiManager.disableNetwork(wifiManager.connectionInfo.networkId))
     }
 
     fun enableNetwork(networkId: Int): Boolean {
@@ -232,7 +238,7 @@ class Connections(val context: Context) {
       APIs it makes use of."""
     )
     fun findFromConfigurations(ssid: String, bssid: String?): WifiConfiguration? {
-        val list: List<WifiConfiguration> = wifiManager.getConfiguredNetworks()
+        val list: List<WifiConfiguration> = wifiManager.configuredNetworks
         for (config in list) if (bssid == null) {
             if (ssid.equals(config.SSID, ignoreCase = true)) return config
         } else {
@@ -536,11 +542,4 @@ class Connections(val context: Context) {
         }
     }
 
-    init {
-        p2pManager = context.applicationContext.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
-        this.locationManager = context.applicationContext.getSystemService(
-            Context.LOCATION_SERVICE
-        ) as LocationManager
-        this.connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    }
 }

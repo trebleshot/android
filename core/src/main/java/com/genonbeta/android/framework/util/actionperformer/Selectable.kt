@@ -18,34 +18,35 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * created by: Veli
  * date: 5.01.2018 10:58
- */
-/**
- * @see IPerformerEngine
  *
+ * @see IPerformerEngine
  * @see IEngineConnection
+ * @author Veli Tasalı
  */
 interface Selectable {
     /**
-     * This is used to help humans identify this selectable.
+     * This title is intended for UI purposes.
      *
-     * @return a human readable string usually distinguishing to be used on a given UI element
+     * @return The human-readable title for this selectable.
      */
     fun getSelectableTitle(): String
 
     /**
      * The current state of this selectable.
      *
-     * @return true when it is marked as selected
+     * @return True if marked as selected.
      */
     fun isSelectableSelected(): Boolean
 
     /**
-     * This is called when this state of this selectable needs to be altered by an [IEngineConnection] instance.
+     * Invoked when this state of this selectable needs to be altered by an [IEngineConnection] instance.
      *
-     * @param selected true when it needs to be marked as selected
-     * @return true when it is possible to alter the state
+     * The direct invocation is not recommended since the list may be refreshed from database and the state may be lost
+     * unless one of the [IEngineConnection.setSelected] methods are used.
+     *
+     * @param selected True if the item should be marked as selected or false if otherwise.
+     * @return True if this selectable instance allows altering its selection state.
      * @see IPerformerEngine.check
      */
     fun setSelectableSelected(selected: Boolean): Boolean

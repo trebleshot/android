@@ -39,10 +39,17 @@ import com.genonbeta.TrebleShot.dialog.ShareAppDialog
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Updates
 import com.google.android.material.navigation.NavigationView
+import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.database.AppDatabase
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
+    @Inject
+    lateinit var appDatabase: AppDatabase
+
     private lateinit var navigationView: NavigationView
 
     private lateinit var drawerLayout: DrawerLayout

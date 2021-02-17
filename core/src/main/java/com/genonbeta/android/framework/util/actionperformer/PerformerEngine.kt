@@ -20,15 +20,17 @@ package com.genonbeta.android.framework.util.actionperformer
 import java.util.*
 
 class PerformerEngine : IPerformerEngine {
-    private val mConnectionList: MutableList<IBaseEngineConnection> = ArrayList()
-    private val mPerformerCallbackList: MutableList<PerformerCallback> = ArrayList()
-    private val mPerformerListenerList: MutableList<PerformerListener> = ArrayList()
+    private val connectionList: MutableList<IBaseEngineConnection> = ArrayList()
+
+    private val performerCallbackList: MutableList<PerformerCallback> = ArrayList()
+
+    private val performerListenerList: MutableList<PerformerListener> = ArrayList()
 
     override fun <T : Selectable> check(
         engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
     ): Boolean {
-        synchronized(mPerformerCallbackList) {
-            for (callback in mPerformerCallbackList) if (!callback.onSelection(
+        synchronized(performerCallbackList) {
+            for (callback in performerCallbackList) if (!callback.onSelection(
                     this,
                     engineConnection,
                     selectable,
@@ -44,8 +46,8 @@ class PerformerEngine : IPerformerEngine {
         engineConnection: IEngineConnection<T>, selectableList: MutableList<T>,
         isSelected: Boolean, positions: IntArray,
     ): Boolean {
-        synchronized(mPerformerCallbackList) {
-            for (callback in mPerformerCallbackList) if (!callback.onSelection(
+        synchronized(performerCallbackList) {
+            for (callback in performerCallbackList) if (!callback.onSelection(
                     this,
                     engineConnection,
                     selectableList,
@@ -59,24 +61,24 @@ class PerformerEngine : IPerformerEngine {
 
     override fun getSelectionList(): MutableList<out Selectable> {
         val selectableList: MutableList<Selectable> = ArrayList<Selectable>()
-        synchronized(mConnectionList) {
-            for (baseEngineConnection in mConnectionList)
+        synchronized(connectionList) {
+            for (baseEngineConnection in connectionList)
                 baseEngineConnection.getGenericSelectedItemList()?.let { selectableList.addAll(it) }
         }
         return selectableList
     }
 
     override fun getConnectionList(): MutableList<IBaseEngineConnection> {
-        return ArrayList(mConnectionList)
+        return ArrayList(connectionList)
     }
 
     override fun hasActiveSlots(): Boolean {
-        return mConnectionList.size > 0
+        return connectionList.size > 0
     }
 
     override fun ensureSlot(provider: PerformerEngineProvider, selectionConnection: IBaseEngineConnection): Boolean {
-        synchronized(mConnectionList) {
-            if (mConnectionList.contains(selectionConnection) || mConnectionList.add(selectionConnection)) {
+        synchronized(connectionList) {
+            if (connectionList.contains(selectionConnection) || connectionList.add(selectionConnection)) {
                 if (selectionConnection.getEngineProvider() !== provider) selectionConnection.setEngineProvider(provider)
                 return true
             }
@@ -88,8 +90,8 @@ class PerformerEngine : IPerformerEngine {
         engineConnection: IEngineConnection<T>, selectable: T,
         isSelected: Boolean, position: Int,
     ) {
-        synchronized(mPerformerListenerList) {
-            for (listener in mPerformerListenerList) listener.onSelected(
+        synchronized(performerListenerList) {
+            for (listener in performerListenerList) listener.onSelected(
                 this,
                 engineConnection,
                 selectable,
@@ -103,8 +105,8 @@ class PerformerEngine : IPerformerEngine {
         engineConnection: IEngineConnection<T>, selectableList: MutableList<T>,
         isSelected: Boolean, positions: IntArray,
     ) {
-        synchronized(mPerformerListenerList) {
-            for (listener in mPerformerListenerList) listener.onSelected(
+        synchronized(performerListenerList) {
+            for (listener in performerListenerList) listener.onSelected(
                 this,
                 engineConnection,
                 selectableList,
@@ -115,30 +117,30 @@ class PerformerEngine : IPerformerEngine {
     }
 
     override fun removeSlot(selectionConnection: IBaseEngineConnection): Boolean {
-        synchronized(mConnectionList) { return mConnectionList.remove(selectionConnection) }
+        synchronized(connectionList) { return connectionList.remove(selectionConnection) }
     }
 
     override fun removeSlots() {
-        synchronized(mConnectionList) { mConnectionList.clear() }
+        synchronized(connectionList) { connectionList.clear() }
     }
 
     override fun addPerformerCallback(callback: PerformerCallback): Boolean {
-        synchronized(mPerformerCallbackList) {
-            return mPerformerCallbackList.contains(callback) || mPerformerCallbackList.add(callback)
+        synchronized(performerCallbackList) {
+            return performerCallbackList.contains(callback) || performerCallbackList.add(callback)
         }
     }
 
     override fun addPerformerListener(listener: PerformerListener): Boolean {
-        synchronized(mPerformerListenerList) {
-            return mPerformerListenerList.contains(listener) || mPerformerListenerList.add(listener)
+        synchronized(performerListenerList) {
+            return performerListenerList.contains(listener) || performerListenerList.add(listener)
         }
     }
 
     override fun removePerformerCallback(callback: PerformerCallback): Boolean {
-        synchronized(mPerformerCallbackList) { return mPerformerCallbackList.remove(callback) }
+        synchronized(performerCallbackList) { return performerCallbackList.remove(callback) }
     }
 
     override fun removePerformerListener(listener: PerformerListener): Boolean {
-        synchronized(mPerformerListenerList) { return mPerformerListenerList.remove(listener) }
+        synchronized(performerListenerList) { return performerListenerList.remove(listener) }
     }
 }

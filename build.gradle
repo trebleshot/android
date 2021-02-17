@@ -21,6 +21,7 @@ import com.github.jk1.license.render.JsonReportRenderer
 
 buildscript {
     ext.kotlin_version = '1.4.30'
+    ext.hilt_version = '2.32-alpha'
 
     repositories {
         jcenter()
@@ -32,6 +33,7 @@ buildscript {
         // in the individual module build.gradle files
         classpath 'com.android.tools.build:gradle:4.0.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
     }
 }
 

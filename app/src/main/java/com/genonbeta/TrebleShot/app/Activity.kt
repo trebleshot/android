@@ -317,7 +317,7 @@ abstract class Activity : AppCompatActivity() {
     open val identity: Identity
         get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
 
-    fun <T : BaseAttachableAsyncTask?> getTaskListOf(clazz: Class<T>): List<T> {
+    fun <T : BaseAttachableAsyncTask> getTaskListOf(clazz: Class<T>): List<T> {
         synchronized(attachedTaskList) { return App.getTaskListOf(attachedTaskList, clazz) }
     }
 

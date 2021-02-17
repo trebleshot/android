@@ -23,19 +23,19 @@ import java.util.*
 
 class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: SelectableHost<T>) :
     IEngineConnection<T> {
-    private var mEngineProvider: PerformerEngineProvider? = provider
+    private var engineProvider: PerformerEngineProvider? = provider
 
-    private var mSelectableProvider: SelectableProvider<T>? = null
+    private var selectableProvider: SelectableProvider<T>? = null
 
-    private var mSelectableHost: SelectableHost<T>? = host
+    private var selectableHost: SelectableHost<T>? = host
 
-    private var mDefinitiveTitle: CharSequence? = null
+    private var definitiveTitle: CharSequence? = null
 
-    private val mSelectionListenerList: MutableList<IEngineConnection.SelectionListener<T>> = ArrayList()
+    private val selectionListenerList: MutableList<IEngineConnection.SelectionListener<T>> = ArrayList()
 
     override fun addSelectionListener(listener: IEngineConnection.SelectionListener<T>): Boolean {
-        synchronized(mSelectionListenerList) {
-            return mSelectionListenerList.contains(listener) || mSelectionListenerList.add(listener)
+        synchronized(selectionListenerList) {
+            return selectionListenerList.contains(listener) || selectionListenerList.add(listener)
         }
     }
 
@@ -49,7 +49,7 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
             }
 
             if (engine != null) {
-                for (listener in mSelectionListenerList)
+                for (listener in selectionListenerList)
                     listener.onSelected(
                         engine,
                         this,
@@ -71,7 +71,7 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
                 if (selected) getSelectedItemList()?.add(selectable) else getSelectedItemList()?.remove(selectable)
         }
         if (engine != null) {
-            for (listener in mSelectionListenerList)
+            for (listener in selectionListenerList)
                 listener.onSelected(
                     engine,
                     this,
@@ -84,11 +84,11 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
     }
 
     override fun getDefinitiveTitle(): CharSequence? {
-        return mDefinitiveTitle
+        return definitiveTitle
     }
 
     override fun getEngineProvider(): PerformerEngineProvider? {
-        return mEngineProvider
+        return engineProvider
     }
 
     override fun getGenericSelectedItemList(): MutableList<out Selectable>? {
@@ -108,11 +108,11 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
     }
 
     override fun getSelectableHost(): SelectableHost<T>? {
-        return mSelectableHost
+        return selectableHost
     }
 
     override fun getSelectableProvider(): SelectableProvider<T>? {
-        return mSelectableProvider
+        return selectableProvider
     }
 
     override fun isSelectedOnHost(selectable: T): Boolean {
@@ -120,23 +120,23 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
     }
 
     override fun removeSelectionListener(listener: IEngineConnection.SelectionListener<T>): Boolean {
-        synchronized(mSelectionListenerList) { return mSelectionListenerList.remove(listener) }
+        synchronized(selectionListenerList) { return selectionListenerList.remove(listener) }
     }
 
     override fun setDefinitiveTitle(title: CharSequence?) {
-        mDefinitiveTitle = title
+        definitiveTitle = title
     }
 
-    override fun setEngineProvider(engineProvider: PerformerEngineProvider?) {
-        mEngineProvider = engineProvider
+    override fun setEngineProvider(provider: PerformerEngineProvider?) {
+        engineProvider = provider
     }
 
     override fun setSelectableHost(host: SelectableHost<T>?) {
-        mSelectableHost = host
+        selectableHost = host
     }
 
     override fun setSelectableProvider(provider: SelectableProvider<T>?) {
-        mSelectableProvider = provider
+        selectableProvider = provider
     }
 
     @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
@@ -188,10 +188,10 @@ class EngineConnection<T : Selectable>(provider: PerformerEngineProvider, host: 
     }
 
     private fun setSelected(selectable: T, position: Int, selected: Boolean, checked: Boolean): Boolean {
-        // if it is already the same
+        // Check if it is already the same.
         if (!checked && selected == isSelectedOnHost(selectable)) {
             if (selectable.isSelectableSelected() != selected && !selectable.setSelectableSelected(selected)) {
-                // Selectable was known as selected, but not selected and failed to change the state
+                // Selectable state state should change but reports a failure to do so.
                 getSelectedItemList()?.remove(selectable)
                 return false
             }

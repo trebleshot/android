@@ -18,12 +18,15 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * Any object implementing this should provide an instance of [IPerformerEngine] so that [IEngineConnection]
- * objects can connect it.
+ * This provides the [IPerformerEngine].
+ *
+ * This class helps avoid keeping the actual instance of the engine which may need to change.
  */
 interface PerformerEngineProvider {
     /**
-     * @return the engine
+     * Get the instance of the engine that this class provides.
+     *
+     * @return The engine.
      */
     fun getPerformerEngine(): IPerformerEngine?
 }

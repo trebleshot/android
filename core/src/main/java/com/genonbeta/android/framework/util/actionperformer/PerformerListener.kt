@@ -18,20 +18,19 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * If you want to be informed when [IEngineConnection.setSelected] is invoked you can do so with this listener.
+ * If you want to be informed when [IEngineConnection.setSelected] is invoked, you can do so with this listener.
  * Unlike [PerformerCallback], this doesn't have the ability to manipulate the process. This is informed after
  * the process is done.
  */
 interface PerformerListener {
     /**
-     * This is called when the state of a [Selectable] has changed.
+     * Invoked after the state of a [Selectable] has changed.
      *
-     * @param engine     that is holding an instance of this class
-     * @param owner      is the connection that is making the call
-     * @param selectable is the [Selectable] whose state has been changed
-     * @param isSelected is the new state that has been set
-     * @param position   is where the [Selectable] is positioned in
-     * [SelectableProvider.getSelectableList]
+     * @param engine     Holding an instance of this class.
+     * @param owner      That is making the call.
+     * @param selectable Whose state has been changed.
+     * @param isSelected The new state to be set.
+     * @param position   Of the [Selectable] in [SelectableProvider.getSelectableList].
      */
     fun onSelected(
         engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
@@ -41,12 +40,11 @@ interface PerformerListener {
     /**
      * This method is called after a list of [Selectable]s has changed.
      *
-     * @param engine         that is holding an instance of this class
-     * @param owner          is the connection that is making the call
-     * @param selectableList is the list of [Selectable]s whose states have been changed
-     * @param isSelected     is the new state that has been set
-     * @param positions      are where the [Selectable]s are positioned in
-     * [SelectableProvider.getSelectableList]
+     * @param engine     Holding an instance of this class.
+     * @param owner      That is making the call.
+     * @param selectableList The list of [Selectable]s that are being altered.
+     * @param isSelected     The new state to be set.
+     * @param positions     Of the [Selectable]s in [SelectableProvider.getSelectableList].
      */
     fun onSelected(
         engine: IPerformerEngine, owner: IBaseEngineConnection, selectableList: MutableList<out Selectable>,
