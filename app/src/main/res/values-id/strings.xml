@@ -176,7 +176,7 @@
     <string name="text_permissionRequest">Permintaan Izin</string>
     <string name="text_requestPermissionStorage">Izin penyimpanan</string>
     <string name="text_requestPermissionReadPhoneState">Izin untuk membaca status ponsel</string>
-    <string name="text_error">Error</string>
+    <string name="text_error">Galat</string>
     <string name="mesg_notEnoughSpace">Memori tidak cukup</string>
     <string name="text_savePath">Lokasi penyimpanan</string>
     <string name="text_communicationServiceStop">Tap untuk mengakhiri sesi</string>
