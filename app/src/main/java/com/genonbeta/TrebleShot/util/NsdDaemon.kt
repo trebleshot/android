@@ -189,24 +189,18 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private inner class ResolveListener : NsdManager.ResolveListener {
         override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-            Log.e(TAG, "Could not resolve " + serviceInfo.getServiceName())
+            Log.e(TAG, "Could not resolve " + serviceInfo.serviceName)
         }
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-            Log.v(
-                TAG, "Resolved " + serviceInfo.serviceName + " with success has the IP address of "
-                        + serviceInfo.host.hostAddress
-            )
+            Log.v(TAG, "Resolved '${serviceInfo.serviceName}' on '${serviceInfo.host.hostAddress}'")
             DeviceLoader.load(
                 database,
                 serviceInfo.host,
                 object : DeviceLoader.OnDeviceResolvedListener {
                     override fun onDeviceResolved(device: Device, address: DeviceAddress) {
                         synchronized(onlineDeviceList) {
-                            onlineDeviceList.put(
-                                serviceInfo.getServiceName(),
-                                DeviceRoute(device, address)
-                            )
+                            onlineDeviceList.put(serviceInfo.serviceName, DeviceRoute(device, address))
                         }
                         context.sendBroadcast(Intent(ACTION_DEVICE_STATUS))
                     }

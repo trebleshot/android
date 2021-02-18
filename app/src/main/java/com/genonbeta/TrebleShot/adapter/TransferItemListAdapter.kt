@@ -44,7 +44,7 @@ import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.AppUtils.getReference
-import com.genonbeta.TrebleShot.util.MimeIconUtils
+import com.genonbeta.TrebleShot.util.MimeIcons
 import com.genonbeta.TrebleShot.util.TextUtils
 import com.genonbeta.TrebleShot.util.Transfers
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
@@ -511,7 +511,7 @@ class TransferItemListAdapter(
         }
 
         override fun getIconRes(): Int {
-            return MimeIconUtils.loadMimeIcon(mimeType)
+            return MimeIcons.loadMimeIcon(mimeType)
         }
 
         override fun handleStatusIcon(imageView: ImageView, transfer: Transfer) {

@@ -40,15 +40,20 @@ class ComparativeRelativeLayout @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // Set a proportional layout.
-        var widthMeasureSpec = widthMeasureSpec
-        var heightMeasureSpec = heightMeasureSpec
+        var width = widthMeasureSpec
+        var height = heightMeasureSpec
         if (baseOnSmaller) {
-            if (widthMeasureSpec > heightMeasureSpec) widthMeasureSpec =
-                heightMeasureSpec + tallerExtraLength else if (heightMeasureSpec > widthMeasureSpec) heightMeasureSpec =
-                widthMeasureSpec + tallerExtraLength
-        } else if (alwaysUseWidth) heightMeasureSpec = widthMeasureSpec + tallerExtraLength else widthMeasureSpec =
-            heightMeasureSpec + tallerExtraLength
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            if (width > height) {
+                width = height + tallerExtraLength
+            } else if (height > width) {
+                height = width + tallerExtraLength
+            }
+        } else if (alwaysUseWidth) {
+            height = width + tallerExtraLength
+        } else {
+            width = height + tallerExtraLength
+        }
+        super.onMeasure(width, height)
     }
 
     init {

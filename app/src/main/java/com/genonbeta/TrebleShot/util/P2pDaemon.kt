@@ -17,6 +17,7 @@
  */
 package com.genonbeta.TrebleShot.util
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -31,6 +32,7 @@ import android.os.Build
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.genonbeta.TrebleShot.config.AppConfig
 import com.genonbeta.TrebleShot.config.Keyword
 import java.util.*
@@ -59,8 +61,7 @@ class P2pDaemon(val connections: Connections) {
             val recordMap: MutableMap<String, String?> = HashMap()
             recordMap[Keyword.DEVICE_UID] = thisDevice.uid
             recordMap[Keyword.DEVICE_PROTOCOL_VERSION] = java.lang.String.valueOf(thisDevice.protocolVersion)
-            recordMap[Keyword.DEVICE_PROTOCOL_VERSION_MIN] =
-                java.lang.String.valueOf(thisDevice.protocolVersionMin)
+            recordMap[Keyword.DEVICE_PROTOCOL_VERSION_MIN] = thisDevice.protocolVersionMin.toString()
             recordMap[Keyword.DEVICE_BRAND] = thisDevice.brand
             recordMap[Keyword.DEVICE_MODEL] = thisDevice.model
             recordMap[Keyword.DEVICE_VERSION_CODE] = java.lang.String.valueOf(thisDevice.versionCode)
@@ -75,7 +76,7 @@ class P2pDaemon(val connections: Connections) {
         override fun onSuccess() {
             Log.d(TAG, "mClearLocalServicesActionListener.onSuccess")
             p2pServiceInfo = wifiP2pServiceInfo
-            wifiP2pManager.addLocalService(channel, p2pServiceInfo, addLocalServiceActionListener)
+            //wifiP2pManager.addLocalService(channel, p2pServiceInfo, addLocalServiceActionListener)
         }
 
         override fun onFailure(reason: Int) {
@@ -86,7 +87,7 @@ class P2pDaemon(val connections: Connections) {
     private val discoverPeersActionListener = object : ActionListener {
         override fun onSuccess() {
             Log.d(TAG, "mDiscoverPeersActionListener.onSuccess")
-            wifiP2pManager.requestPeers(channel, peerListener)
+            //wifiP2pManager.requestPeers(channel, peerListener)
         }
 
         override fun onFailure(reason: Int) {
@@ -170,7 +171,7 @@ class P2pDaemon(val connections: Connections) {
         wifiP2pManager.clearLocalServices(channel, clearLocalServicesActionListener)
         wifiP2pManager.addServiceRequest(channel, serviceRequest, addServiceRequestActionListener)
         //getWifiP2pManager().discoverPeers(getChannel(), mDiscoverPeersActionListener);
-        wifiP2pManager.discoverServices(channel, discoverServicesActionListener)
+        //wifiP2pManager.discoverServices(channel, discoverServicesActionListener)
         context.registerReceiver(broadcastReceiver, intentFilter)
     }
 
@@ -213,9 +214,14 @@ class P2pDaemon(val connections: Connections) {
             Log.d(TAG, "onReceive: " + intent.action)
             if (WIFI_P2P_PEERS_CHANGED_ACTION == intent.action) {
                 if (Build.VERSION.SDK_INT >= 18) {
-                    val deviceList: WifiP2pDeviceList = intent.getParcelableExtra(EXTRA_P2P_DEVICE_LIST)
+                    val deviceList: WifiP2pDeviceList? = intent.getParcelableExtra(EXTRA_P2P_DEVICE_LIST)
                     Log.d(TAG, "onReceive: $deviceList")
-                } else wifiP2pManager.requestPeers(channel, peerListener)
+                } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == android.content.pm.PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: 2/18/21 Request fine location permission for wifi direct
+                    wifiP2pManager.requestPeers(channel, peerListener)
+                }
             }
         }
     }

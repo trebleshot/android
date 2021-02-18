@@ -80,12 +80,12 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                 && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val device: Device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
-                val address: DeviceAddress = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val device: Device? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
+                val address: DeviceAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
                 val text: String? = if (editText.text != null) editText.text.toString() else null
 
-                text?.let {
-                    runUiTask(TextShareTask(device, address, it))
+                if (device != null && address != null && text != null) {
+                    runUiTask(TextShareTask(device, address, text))
                 }
             }
         }

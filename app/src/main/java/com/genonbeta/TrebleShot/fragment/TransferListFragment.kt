@@ -40,7 +40,7 @@ import com.genonbeta.TrebleShot.dialog.DialogUtils
 import com.genonbeta.TrebleShot.task.FileTransferTask
 import com.genonbeta.TrebleShot.ui.callback.IconProvider
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.ListUtils
+import com.genonbeta.TrebleShot.util.Lists
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
@@ -155,7 +155,7 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex, GroupViewH
             val kuick = AppUtils.getKuick(activity)
             val engine = getPerformerEngine() ?: return false
             val genericList: List<Selectable> = ArrayList<Selectable>(engine.getSelectionList())
-            val indexList: List<TransferIndex> = ListUtils.typedListOf(genericList, TransferIndex::class.java)
+            val indexList: List<TransferIndex> = Lists.typedListOf(genericList, TransferIndex::class.java)
             if (id == R.id.action_mode_group_delete) {
                 val groupList: MutableList<Transfer> = ArrayList()
                 for (index in indexList) groupList.add(index.transfer)

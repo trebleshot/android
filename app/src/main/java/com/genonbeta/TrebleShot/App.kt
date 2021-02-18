@@ -47,13 +47,12 @@ import com.genonbeta.TrebleShot.service.BackgroundService
 import com.genonbeta.TrebleShot.service.WebShareServer
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask
 import com.genonbeta.TrebleShot.util.*
-import com.genonbeta.TrebleShot.util.NsdDaemon
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
 import dagger.hilt.android.HiltAndroidApp
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -63,7 +62,7 @@ import java.util.concurrent.Executors
  */
 @HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
-    private lateinit var crashLogFile: File
+    private lateinit var crashFile: File
 
     private var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
@@ -94,14 +93,14 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     override fun onCreate() {
         super.onCreate()
-        crashLogFile = applicationContext.getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+        crashFile = applicationContext.getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
         nsdDaemon = NsdDaemon(
             applicationContext, AppUtils.getKuick(this),
             AppUtils.getDefaultPreferences(applicationContext)
         )
-        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         hotspotManager = HotspotManager.newInstance(this)
         mediaScanner = MediaScannerConnection(this, null)
         notificationHelper = NotificationHelper(
@@ -343,50 +342,30 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         try {
-            if ((!crashLogFile.exists() || crashLogFile.delete()) && crashLogFile.createNewFile()
-                && crashLogFile.canWrite()
-            ) {
-                val stringBuilder = StringBuilder()
-                val stackTraceElements = e.stackTrace
-                stringBuilder.append("--TREBLESHOT-CRASH-LOG--\n")
-                    .append("\nException: ")
-                    .append(e.javaClass.simpleName)
-                    .append("\nMessage: ")
-                    .append(e.message)
-                    .append("\nCause: ")
-                    .append(e.cause).append("\nDate: ")
-                    .append(
-                        DateFormat.getLongDateFormat(this).format(
-                            Date(
-                                System.currentTimeMillis()
-                            )
-                        )
-                    )
-                    .append("\n\n")
-                    .append("--STACKTRACE--\n\n")
-                if (stackTraceElements.isNotEmpty()) for (element in stackTraceElements) {
-                    stringBuilder.append(element.className)
-                        .append(".")
-                        .append(element.methodName)
-                        .append(":")
-                        .append(element.lineNumber)
-                        .append("\n")
+            if ((!crashFile.exists() || crashFile.delete()) && crashFile.createNewFile() && crashFile.canWrite()) {
+                return
+            }
+
+            PrintWriter(FileOutputStream(crashFile)).use { printWriter ->
+                val stackTrace = e.stackTrace
+
+                printWriter.append("--TREBLESHOT-CRASH-LOG--\n")
+                    .append("\nException: ${e.javaClass.simpleName}")
+                    .append("\nMessage: ${e.message}")
+                    .append("\nCause: ${e.cause}")
+                    .append("\nDate: ")
+                    .append(DateFormat.getLongDateFormat(this).format(Date()))
+                    .append("\n\n--STACKTRACE--\n\n")
+
+                if (stackTrace.isNotEmpty()) for (element in stackTrace) {
+                    printWriter.append("${element.className}.${element.methodName}:${element.lineNumber}\n")
                 }
-                val outputStream = FileOutputStream(crashLogFile)
-                val inputStream = ByteArrayInputStream(stringBuilder.toString().toByteArray())
-                var len: Int
-                val buffer = ByteArray(8096)
-                while (inputStream.read(buffer).also { len = it } != -1) {
-                    outputStream.write(buffer, 0, len)
-                    outputStream.flush()
-                }
-                outputStream.close()
-                inputStream.close()
             }
         } catch (ex: IOException) {
             ex.printStackTrace()
+        } finally {
+            defaultExceptionHandler?.uncaughtException(t, e)
         }
-        defaultExceptionHandler!!.uncaughtException(t, e)
     }
 
     @Synchronized

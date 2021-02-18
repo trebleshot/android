@@ -63,13 +63,10 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
             if (ACTION_CHANGE_FRAGMENT == intent.action && intent.hasExtra(EXTRA_FRAGMENT_ENUM)) {
                 val fragmentEnum = intent.getSerializableExtra(EXTRA_FRAGMENT_ENUM) as AvailableFragment?
                 setFragment(fragmentEnum)
-            } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE == intent.action
-                && intent.hasExtra(BackgroundService.EXTRA_DEVICE)
-                && intent.hasExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)
-            ) {
-                val device: Device = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE)
-                val address: DeviceAddress = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)
-                handleResult(device, address)
+            } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE == intent.action) {
+                val device: Device? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE)
+                val address: DeviceAddress? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)
+                if (device != null && address != null) handleResult(device, address)
             } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY == intent.action
                 && intent.hasExtra(BackgroundService.EXTRA_TRANSFER)
             ) {
@@ -126,18 +123,29 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && data != null)
-            if (requestCode == REQUEST_BARCODE_SCAN) {
-                val device: Device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE)
-                val address: DeviceAddress = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
+        if (resultCode == RESULT_OK && data != null) {
+            val device: Device?
+            val address: DeviceAddress?
 
-                handleResult(device, address)
-            } else if (requestCode == REQUEST_IP_DISCOVERY) {
-                val device: Device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE)
-                val address: DeviceAddress = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS)
+            when (requestCode) {
+                REQUEST_BARCODE_SCAN -> {
+                    device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE)
+                    address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
+                }
+                REQUEST_IP_DISCOVERY -> {
+                    device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE)
+                    address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS)
+                }
+                else -> {
+                    device = null
+                    address = null
+                }
+            }
 
+            if (device != null && address != null) {
                 handleResult(device, address)
             }
+        }
     }
 
     override fun onBackPressed() {

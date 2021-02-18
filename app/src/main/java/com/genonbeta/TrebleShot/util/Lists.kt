@@ -19,7 +19,7 @@ package com.genonbeta.TrebleShot.util
 
 import java.util.*
 
-object ListUtils {
+object Lists {
     fun <E, T : E?> typedListOf(list: List<E>, klass: Class<T>): List<T> {
         val typedList: MutableList<T> = ArrayList()
         for (item in list) if (klass.isInstance(item)) typedList.add(item as T)

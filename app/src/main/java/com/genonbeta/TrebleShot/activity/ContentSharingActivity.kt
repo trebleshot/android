@@ -47,7 +47,7 @@ import com.genonbeta.TrebleShot.service.backgroundservice.TaskMessage
 import com.genonbeta.TrebleShot.task.OrganizeLocalSharingTask
 import com.genonbeta.TrebleShot.ui.callback.LocalSharingCallback
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback
-import com.genonbeta.TrebleShot.util.SelectionUtils
+import com.genonbeta.TrebleShot.util.Selections
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
@@ -171,7 +171,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
     }
 
     private fun canExit(): Boolean {
-        if (SelectionUtils.getTotalSize(performerEngine) > 0) {
+        if (Selections.getTotalSize(performerEngine) > 0) {
             AlertDialog.Builder(this)
                 .setMessage(R.string.ques_cancelSelection)
                 .setNegativeButton(R.string.butn_no, null)

@@ -59,9 +59,13 @@ import java.util.*
 
 object AppUtils {
     val TAG = AppUtils::class.java.simpleName
+
     private var mUniqueNumber = 0
+
     private var mKuick: Kuick? = null
+
     private var mDefaultPreferences: SharedPreferences? = null
+
     private var mViewingPreferences: SharedPreferences? = null
 
     fun checkRunningConditions(context: Context): Boolean {

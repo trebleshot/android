@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.TrebleShot.ui.callback.IconProvider
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.SelectionUtils
+import com.genonbeta.TrebleShot.util.Selections
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
@@ -202,7 +202,7 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject, Group
         }
 
         private fun updateShareMethods(engine: IPerformerEngine) {
-            val totalSelections = SelectionUtils.getTotalSize(engine)
+            val totalSelections = Selections.getTotalSize(engine)
             shareWithOthers.isEnabled = totalSelections == 1
             shareWithTrebleShot.isEnabled = totalSelections == 1
         }

@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.activity
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -33,14 +34,20 @@ import com.genonbeta.TrebleShot.BuildConfig
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.config.Keyword
-import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog
 import com.genonbeta.TrebleShot.util.AppUtils
+import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.util.Updates
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferTarget
+import org.monora.uprotocol.client.android.protocol.DefaultPersistenceProvider
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import javax.inject.Inject
@@ -49,6 +56,9 @@ import javax.inject.Inject
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
     @Inject
     lateinit var appDatabase: AppDatabase
+
+    @Inject
+    lateinit var persistenceProvider: DefaultPersistenceProvider
 
     private lateinit var navigationView: NavigationView
 
@@ -61,6 +71,31 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val client = persistenceProvider.client
+        GlobalScope.launch {
+            val transfer = Transfer(
+                1,
+                TransferItem.Type.Incoming,
+                Files.getApplicationDirectory(applicationContext).getUri().toString()
+            )
+            val transferTarget = TransferTarget(
+                0,
+                clientUid = persistenceProvider.clientUid,
+                transfer.id,
+                TransferItem.Type.Incoming
+            )
+
+            appDatabase.clientDao().insertAll(persistenceProvider.client)
+            appDatabase.transferDao().insertAll(transfer)
+            appDatabase.transferDao().getAll().forEach {
+                Log.d(TAG, "onCreate: $it")
+            }
+            appDatabase.transferTargetDao().insertAll(transferTarget)
+            appDatabase.transferTargetDao().getAll().forEach {
+                Log.d(TAG, "onCreate: hey $it")
+            }
+        }
 
         navigationView = findViewById(R.id.nav_view)
         drawerLayout = findViewById(R.id.drawer_layout)

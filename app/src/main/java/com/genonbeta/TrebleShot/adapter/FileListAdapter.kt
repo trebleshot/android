@@ -39,7 +39,7 @@ import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.fragment.FileListFragment
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Files
-import com.genonbeta.TrebleShot.util.MimeIconUtils
+import com.genonbeta.TrebleShot.util.MimeIcons
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.*
@@ -438,7 +438,7 @@ class FileListAdapter(
                 if (Type.Pending == type && transferItem == null)
                     R.drawable.ic_block_white_24dp
                 else
-                    MimeIconUtils.loadMimeIcon(mimeType)
+                    MimeIcons.loadMimeIcon(mimeType)
             }
         }
 
@@ -493,7 +493,7 @@ class FileListAdapter(
             ) return false
             GlideApp.with(context)
                 .load(file.getUri())
-                .error(MimeIconUtils.loadMimeIcon(mimeType))
+                .error(MimeIcons.loadMimeIcon(mimeType))
                 .override(160)
                 .circleCrop()
                 .into(imageView)

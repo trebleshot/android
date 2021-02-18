@@ -1,17 +1,17 @@
 package org.monora.uprotocol.client.android.database
 
 import androidx.room.*
-import org.monora.uprotocol.client.android.model.DefaultClient
+import org.monora.uprotocol.client.android.database.model.DefaultClient
 
 @Dao
 interface ClientDao {
     @Delete
     fun delete(client: DefaultClient)
 
-    @Query("SELECT * FROM DefaultClient WHERE uid == :uid LIMIT 1")
+    @Query("SELECT * FROM client WHERE uid == :uid LIMIT 1")
     fun get(uid: String): DefaultClient?
 
-    @Query("SELECT * FROM DefaultClient")
+    @Query("SELECT * FROM client")
     fun getAll(): List<DefaultClient>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -144,10 +144,12 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             } else if (resultCode == RESULT_OK && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                 && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val device = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE) as Device
-                val connection = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS) as DeviceAddress
+                val device: Device? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
+                val address: DeviceAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
 
-                runUiTask(AddDeviceTask(transfer, device, connection))
+                if (device != null && address != null) {
+                    runUiTask(AddDeviceTask(transfer, device, address))
+                }
             }
         }
     }
@@ -174,7 +176,8 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         if (task is AddDeviceTask) {
             when (state) {
                 AsyncTask.State.Starting -> setLoaderShowing(true)
-                AsyncTask.State.Running -> { }
+                AsyncTask.State.Running -> {
+                }
                 AsyncTask.State.Finished -> setLoaderShowing(false)
             }
         }
@@ -191,12 +194,10 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     fun checkTransferIntegrity(): Boolean {
-        try {
-            if (intent == null || !intent.hasExtra(EXTRA_TRANSFER))
-                throw Exception()
-            val testTransfer = intent.getParcelableExtra(EXTRA_TRANSFER) as Transfer
-            database.reconstruct(testTransfer)
+        val testTransfer: Transfer = intent?.getParcelableExtra(EXTRA_TRANSFER) ?: return false
 
+        try {
+            database.reconstruct(testTransfer)
             transfer = testTransfer
             return true
         } catch (e: Exception) {

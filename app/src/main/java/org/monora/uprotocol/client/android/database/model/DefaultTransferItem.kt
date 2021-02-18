@@ -1,22 +1,20 @@
-package org.monora.uprotocol.client.android.model
+package org.monora.uprotocol.client.android.database.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import org.monora.uprotocol.core.transfer.TransferItem
 
-@Entity(primaryKeys = ["groupId", "id"])
+@Entity(tableName = "transferItem", primaryKeys = ["groupId", "id"])
 data class DefaultTransferItem(
-    var directory: String?,
-    var groupId: Long,
     var id: Long,
-    var lastChangeTime: Long,
-    var mimeType: String?,
-    var name: String?,
+    var groupId: Long,
+    var name: String,
+    var mimeType: String,
     var size: Long,
-    var type: TransferItem.Type?,
-    var state: Int
+    var directory: String?,
+    var type: TransferItem.Type,
+    var state: Int,
+    var lastChangeTime: Long,
 ) : TransferItem {
-
     override fun getItemDirectory(): String? = directory
 
     override fun getItemGroupId(): Long = groupId
@@ -25,13 +23,13 @@ data class DefaultTransferItem(
 
     override fun getItemLastChangeTime(): Long = lastChangeTime
 
-    override fun getItemMimeType(): String? = mimeType
+    override fun getItemMimeType(): String = mimeType
 
-    override fun getItemName(): String? = name
+    override fun getItemName(): String = name
 
     override fun getItemSize(): Long = size
 
-    override fun getItemType(): TransferItem.Type? = type
+    override fun getItemType(): TransferItem.Type = type
 
     override fun setItemId(id: Long) {
         this.id = id
@@ -41,7 +39,7 @@ data class DefaultTransferItem(
         this.groupId = groupId
     }
 
-    override fun setItemName(name: String?) {
+    override fun setItemName(name: String) {
         this.name = name
     }
 
@@ -49,7 +47,7 @@ data class DefaultTransferItem(
         this.directory = directory
     }
 
-    override fun setItemMimeType(mimeType: String?) {
+    override fun setItemMimeType(mimeType: String) {
         this.mimeType = mimeType
     }
 

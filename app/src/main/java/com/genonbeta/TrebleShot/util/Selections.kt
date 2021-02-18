@@ -19,7 +19,7 @@ package com.genonbeta.TrebleShot.util
 
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
 
-object SelectionUtils {
+object Selections {
     fun getTotalSize(engine: IPerformerEngine): Int {
         var selectedTotal = 0
         for (connection in engine.getConnectionList())

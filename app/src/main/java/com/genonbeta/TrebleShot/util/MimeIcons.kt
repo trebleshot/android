@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.R
  * Modified-by: veli
  * Date: 16/11/2018 18:57
  */
-object MimeIconUtils {
+object MimeIcons {
     private val mimeIcons: MutableMap<String, Int> = ArrayMap()
 
     private fun add(mimeType: String, resId: Int) {

@@ -22,14 +22,8 @@ object AppConfig {
     const val SERVER_PORT_WEBSHARE = 58732
     const val SERVER_PORT_UPDATE_CHANNEL = 58765
     const val DEFAULT_TIMEOUT_SOCKET = 5000
-
-    // ms
     const val DEFAULT_TIMEOUT_HOTSPOT = 40000
-
-    // ms
     const val DELAY_DEFAULT_NOTIFICATION = 1000
-
-    // ms
     const val NICKNAME_LENGTH_MAX = 32
     const val BUFFER_LENGTH_DEFAULT = 8096
     const val DELAY_UPDATE_CHECK = 21600

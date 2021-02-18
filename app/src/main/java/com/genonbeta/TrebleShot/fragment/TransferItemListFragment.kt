@@ -74,8 +74,10 @@ open class TransferItemListFragment :
                     ChangeSaveDirectoryTask.EXTRA_TRANSFER
                 )
             ) {
-                val transfer: Transfer = intent.getParcelableExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER)
-                if (transfer == this@TransferItemListFragment.transfer) createSnackbar(R.string.mesg_pathSaved)?.show()
+                val transfer: Transfer? = intent.getParcelableExtra(ChangeSaveDirectoryTask.EXTRA_TRANSFER)
+                if (transfer == this@TransferItemListFragment.transfer) {
+                    createSnackbar(R.string.mesg_pathSaved)?.show()
+                }
             }
         }
     }

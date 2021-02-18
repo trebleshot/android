@@ -15,6 +15,8 @@ interface ContentModel {
 
     fun dateModified(): Long
 
+    fun filter(charSequence: CharSequence): Boolean
+
     fun length(): Long
 
     fun name(): String

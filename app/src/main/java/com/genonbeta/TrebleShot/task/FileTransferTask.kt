@@ -49,6 +49,7 @@ import org.json.JSONObject
 import org.monora.coolsocket.core.response.SizeOverflowException
 import org.monora.coolsocket.core.session.ActiveConnection
 import org.monora.coolsocket.core.session.CancelledException
+import org.monora.uprotocol.core.TransportSeat
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.channels.Channels
@@ -77,7 +78,7 @@ class FileTransferTask(
 
     var completedCount = 0
 
-    private var mDatabase: SQLiteDatabase? = null
+    private var db: SQLiteDatabase? = null
 
     @Throws(TaskStoppedException::class)
     override fun onRun() {
@@ -149,7 +150,7 @@ class FileTransferTask(
     }
 
     private val database: SQLiteDatabase
-        get() = mDatabase ?: kuick.writableDatabase.also { mDatabase = it }
+        get() = db ?: kuick.writableDatabase.also { db = it }
 
     override val identity: Identity
         get() = identityOf(this)

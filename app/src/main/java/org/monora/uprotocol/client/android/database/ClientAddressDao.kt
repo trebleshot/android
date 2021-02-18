@@ -1,14 +1,14 @@
 package org.monora.uprotocol.client.android.database
 
 import androidx.room.*
-import org.monora.uprotocol.client.android.model.DefaultClientAddress
+import org.monora.uprotocol.client.android.database.model.DefaultClientAddress
 
 @Dao
 interface ClientAddressDao {
     @Delete
     fun delete(user: DefaultClientAddress)
 
-    @Query("SELECT * FROM DefaultClientAddress")
+    @Query("SELECT * FROM clientAddress")
     fun getAll(): List<DefaultClientAddress>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

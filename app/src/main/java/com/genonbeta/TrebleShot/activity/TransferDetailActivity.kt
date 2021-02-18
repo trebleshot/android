@@ -149,9 +149,9 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
                 Toast.makeText(this, R.string.mesg_notValidTransfer, Toast.LENGTH_SHORT).show()
             }
         } else if (ACTION_LIST_TRANSFERS == intent.action && intent.hasExtra(EXTRA_TRANSFER)) {
-            val transfer = (intent.getParcelableExtra(EXTRA_TRANSFER) as Transfer).also { transfer = it }
+            val transfer = (intent.getParcelableExtra(EXTRA_TRANSFER) as Transfer?)?.also { transfer = it }
 
-            try {
+            if (transfer != null) try {
                 if (intent.hasExtra(EXTRA_TRANSFER_ITEM_ID) && intent.hasExtra(EXTRA_DEVICE)
                     && intent.hasExtra(EXTRA_TRANSFER_TYPE)
                 ) {

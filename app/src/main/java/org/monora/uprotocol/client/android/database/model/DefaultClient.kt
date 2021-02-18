@@ -1,4 +1,4 @@
-package org.monora.uprotocol.client.android.model
+package org.monora.uprotocol.client.android.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -6,7 +6,7 @@ import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientType
 import java.security.cert.X509Certificate
 
-@Entity()
+@Entity(tableName = "client")
 data class DefaultClient(
     @PrimaryKey
     var uid: String,

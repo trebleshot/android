@@ -61,7 +61,8 @@ class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListene
                     val pendingFileUris: List<Uri>? = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
                     if (pendingFileUris != null) fileUris.addAll(pendingFileUris)
                 } else {
-                    fileUris.add(intent.getParcelableExtra(Intent.EXTRA_STREAM))
+                    val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                    if (uri != null) fileUris.add(uri)
                 }
                 if (fileUris.size == 0) {
                     Toast.makeText(this, R.string.mesg_nothingToShare, Toast.LENGTH_SHORT).show()

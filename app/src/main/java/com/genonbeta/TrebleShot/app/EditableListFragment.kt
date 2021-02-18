@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.SelectionUtils
+import com.genonbeta.TrebleShot.util.Selections
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
@@ -626,7 +626,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
             previewSelections = targetMenu.findItem(R.id.action_mode_abs_editable_preview_selections)
 
-            getPerformerEngine()?.let { updateTitle(SelectionUtils.getTotalSize(it)) }
+            getPerformerEngine()?.let { updateTitle(Selections.getTotalSize(it)) }
             return true
         }
 
@@ -663,14 +663,14 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
             owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
             position: Int,
         ) {
-            updateTitle(SelectionUtils.getTotalSize(engine))
+            updateTitle(Selections.getTotalSize(engine))
         }
 
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
             selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
         ) {
-            updateTitle(SelectionUtils.getTotalSize(engine))
+            updateTitle(Selections.getTotalSize(engine))
         }
 
         fun setSelectionState(newState: Boolean, tryForeground: Boolean) {

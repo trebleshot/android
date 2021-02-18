@@ -82,15 +82,15 @@ class BackgroundService : Service() {
         Log.d(TAG, "onStart() : action = " + intent.action)
         if (AppUtils.checkRunningConditions(this)) {
             if (ACTION_FILE_TRANSFER == intent.action) {
-                val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
-                val transfer: Transfer = intent.getParcelableExtra(EXTRA_TRANSFER)
+                val device: Device? = intent.getParcelableExtra(EXTRA_DEVICE)
+                val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
                 val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
                 app.notificationHelper.utils.cancel(notificationId)
-                try {
+
+                if (device != null && transfer != null) try {
                     val task = FileTransferStarterTask.createFrom(
-                        kuick, transfer, device,
-                        TransferItem.Type.INCOMING
+                        kuick, transfer, device, TransferItem.Type.INCOMING
                     )
                     Thread {
                         try {
@@ -101,25 +101,32 @@ class BackgroundService : Service() {
                         } catch (ignored: Exception) {
                         }
                     }.start()
-                    if (isAccepted) app.run(task) else kuick.removeAsynchronous(app, task.transfer, task.device)
+                    if (isAccepted) {
+                        app.run(task)
+                    } else {
+                        kuick.removeAsynchronous(app, task.transfer, task.device)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     if (isAccepted) app.notificationHelper.showToast(R.string.mesg_somethingWentWrong)
                 }
             } else if (ACTION_DEVICE_KEY_CHANGE_APPROVAL == intent.action) {
-                val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
+                val device: Device? = intent.getParcelableExtra(EXTRA_DEVICE)
                 val accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
                 val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
                 val receiveKey = intent.getIntExtra(EXTRA_RECEIVE_KEY, -1)
                 val sendKey = intent.getIntExtra(EXTRA_SEND_KEY, -1)
                 app.notificationHelper.utils.cancel(notificationId)
-                device.isBlocked = !accepted
-                if (accepted) {
-                    device.receiveKey = receiveKey
-                    device.sendKey = sendKey
+
+                if (device != null) {
+                    device.isBlocked = !accepted
+                    if (accepted) {
+                        device.receiveKey = receiveKey
+                        device.sendKey = sendKey
+                    }
+                    kuick.update(device)
+                    kuick.broadcast()
                 }
-                kuick.update(device)
-                kuick.broadcast()
             } else if (ACTION_CLIPBOARD == intent.action && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
                 val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
                 val clipboardId = intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1)
@@ -141,21 +148,16 @@ class BackgroundService : Service() {
             } else if (ACTION_START_TRANSFER == intent.action && intent.hasExtra(EXTRA_TRANSFER)
                 && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)
             ) {
-                val device: Device = intent.getParcelableExtra(EXTRA_DEVICE)
-                val transfer: Transfer = intent.getParcelableExtra(EXTRA_TRANSFER)
+                val device: Device? = intent.getParcelableExtra(EXTRA_DEVICE)
+                val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
                 val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type
-                try {
+                if (device != null && transfer != null) try {
                     val task = app.findTaskBy(
                         FileTransferTask.identifyWith(transfer.id, device.uid, type)
                     ) as FileTransferTask?
 
                     if (task == null) app.run(
-                        FileTransferStarterTask.createFrom(
-                            kuick,
-                            transfer,
-                            device,
-                            type
-                        )
+                        FileTransferStarterTask.createFrom(kuick, transfer, device, type)
                     ) else task.item?.let {
                         Toast.makeText(
                             this, getString(R.string.mesg_groupOngoingNotice, it.name), Toast.LENGTH_SHORT
