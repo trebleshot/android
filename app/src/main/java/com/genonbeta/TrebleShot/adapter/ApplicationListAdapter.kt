@@ -51,7 +51,7 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
         for (packageInfo in context.packageManager.getInstalledPackages(PackageManager.GET_META_DATA)) {
             try {
                 val appInfo: ApplicationInfo = packageInfo.applicationInfo
-                if (appInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1 && showSystemApps) continue
+                if (appInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1 && !showSystemApps) continue
                 val packageHolder = PackageHolder(
                     appInfo.loadLabel(manager).toString(), appInfo,
                     packageInfo.versionName, packageInfo.packageName, File(appInfo.sourceDir)
@@ -61,6 +61,7 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
                 e.printStackTrace()
             }
         }
+        val something = "something thought"
     }
 
     override fun onGenerateRepresentative(text: String, merger: Merger<PackageHolder>?): PackageHolder {

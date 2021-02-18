@@ -24,7 +24,8 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.dataobject.Shareable
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupEditable
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.TrebleShot.widgetimport.EditableListAdapterBase
 import com.genonbeta.android.framework.util.date.DateMerger
 import com.genonbeta.android.framework.util.listing.ComparableMerger
@@ -192,10 +193,12 @@ abstract class GroupEditableListAdapter<T : GroupEditable, V : GroupViewHolder>(
         }
 
         fun offer(item: T) {
-            if (customLister?.onCustomGroupListing(this, mode, item) == false) {
-                if (mode == MODE_GROUP_BY_DATE) offer(
-                    item, DateMerger(item.getComparableDate())
-                ) else noGroupingList.add(item)
+            val customLister = customLister
+
+            if (customLister == null || !customLister.onCustomGroupListing(this, mode, item)) {
+                if (mode == MODE_GROUP_BY_DATE) {
+                    offer(item, DateMerger(item.getComparableDate()))
+                } else noGroupingList.add(item)
             }
         }
 
