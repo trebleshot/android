@@ -21,6 +21,6 @@ package com.genonbeta.android.framework.app
  * created by: veli
  * date: 14/04/18 10:38
  */
-interface ListFragmentBase<T> : FragmentBase {
+interface ListFragmentBase : FragmentBase {
     fun refreshList()
 }

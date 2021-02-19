@@ -17,13 +17,13 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 
 /**
  * created by: Veli
  * date: 18.01.2018 20:57
  */
-interface Editable : Comparable, Selectable {
+interface Editable : Comparable, SelectionModel {
     var id: Long
 
     fun applyFilter(filteringKeywords: Array<String>): Boolean

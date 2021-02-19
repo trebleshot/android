@@ -33,17 +33,15 @@ import com.genonbeta.TrebleShot.activity.ShareActivity
 import com.genonbeta.TrebleShot.activity.TextEditorActivity
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter
 import com.genonbeta.TrebleShot.app.EditableListFragment
-import com.genonbeta.TrebleShot.app.GroupEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.TrebleShot.ui.callback.IconProvider
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Selections
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
@@ -61,14 +59,14 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject, Group
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        hasBottomSpace = true
+        bottomSpaceShown = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         layoutResId = R.layout.layout_text_stream
-        isFilteringSupported = true
+        filteringSupported = true
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         defaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_DATE
@@ -154,11 +152,15 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject, Group
         override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
             val id = item.itemId
             val engine = getPerformerEngine() ?: return false
-            val genericSelectionList: List<Selectable> = ArrayList<Selectable>(engine.getSelectionList())
+            val genericSelectionList: List<SelectionModel> = ArrayList<SelectionModel>(engine.getSelectionList())
             val selectionList: MutableList<TextStreamObject> = ArrayList()
             val kuick = AppUtils.getKuick(activity)
             val context: Context = activity
-            for (selectable in genericSelectionList) if (selectable is TextStreamObject) selectionList.add(selectable as TextStreamObject)
+            for (selectionModel in genericSelectionList) {
+                if (selectionModel is TextStreamObject) {
+                    selectionList.add(selectionModel as TextStreamObject)
+                }
+            }
             if (id == R.id.action_mode_text_stream_delete) {
                 kuick.remove(selectionList)
                 kuick.broadcast()
@@ -185,19 +187,19 @@ class TextStreamListFragment : GroupEditableListFragment<TextStreamObject, Group
 
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
-            owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
+            owner: IBaseEngineConnection, selectionModel: SelectionModel, isSelected: Boolean,
             position: Int,
         ) {
-            super.onPerformerMenuItemSelected(performerMenu, engine, owner, selectable, isSelected, position)
+            super.onPerformerMenuItemSelected(performerMenu, engine, owner, selectionModel, isSelected, position)
             updateShareMethods(engine)
         }
 
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
-            owner: IBaseEngineConnection, selectableList: MutableList<out Selectable>,
+            owner: IBaseEngineConnection, selectionModelList: MutableList<out SelectionModel>,
             isSelected: Boolean, positions: IntArray,
         ) {
-            super.onPerformerMenuItemSelected(performerMenu, engine, owner, selectableList, isSelected, positions)
+            super.onPerformerMenuItemSelected(performerMenu, engine, owner, selectionModelList, isSelected, positions)
             updateShareMethods(engine)
         }
 

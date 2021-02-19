@@ -27,15 +27,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter.*
-import com.genonbeta.TrebleShot.app.GroupEditableListFragment
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import java.lang.Exception
 
 class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupViewHolder, ApplicationListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isFilteringSupported = true
+        filteringSupported = true
         setHasOptionsMenu(true)
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
@@ -104,7 +102,7 @@ class ApplicationListFragment : GroupEditableListFragment<PackageHolder, GroupVi
                     }
                     .show()
 
-            } ?: Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show()
+            } ?: Toast.makeText(activity, R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show()
             return true
         } catch (ignore: Exception) {
         }

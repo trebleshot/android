@@ -24,7 +24,6 @@ import android.view.View
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter.ImageHolder
-import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 
@@ -35,7 +34,7 @@ class ImageListFragment : GalleryGroupEditableListFragment<ImageHolder, GroupVie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isFilteringSupported = true
+        filteringSupported = true
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         itemOffsetDecorationEnabled = true

@@ -18,15 +18,6 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * This provides [IEngineConnection] with items that are available to work with.
- *
- * @param T a derivative of [Selectable].
+ * Thrown when no model on a given position exists.
  */
-interface SelectableProvider<T : Selectable> {
-    /**
-     * The available items in total.
-     *
-     * @return The list of available items.
-     */
-    fun getSelectableList(): MutableList<T>
-}
+class SelectionModelNotFoundException(message: String?) : Exception(message)

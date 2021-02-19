@@ -18,19 +18,22 @@
 package com.genonbeta.TrebleShot.app
 
 import android.app.Activity
-import android.content.*
+import android.content.Context
+import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.collection.ArrayMap
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.TrebleShot.BuildConfig
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.dataobject.Editable
-import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Selections
@@ -39,12 +42,11 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.recyclerview.ItemOffsetDecoration
 import com.genonbeta.TrebleShot.widget.recyclerview.SwipeSelectionListener
 import com.genonbeta.TrebleShot.widgetimport.EditableListAdapterBase
-import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.*
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller
 import java.util.*
 
@@ -59,7 +61,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
         set(value) {
             super.adapter = value
             fastScroller?.recyclerView = listView
-            engineConnection.setSelectableProvider(adapter)
+            engineConnection.setSelectionModelProvider(adapter)
 
             adapter.fragment = this
             adapter.notifyGridSizeUpdate(gridSize, isScreenLarge())
@@ -68,6 +70,8 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     override val adapterImpl: EditableListAdapterBase<T>
         get() = adapter
+
+    var bottomSpaceShown = false
 
     val defaultContentObserver: ContentObserver
         get() = observer ?: object : ContentObserver(Handler(Looper.getMainLooper())) {
@@ -108,6 +112,8 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
         }
     }
 
+    override var filteringSupported: Boolean = false
+
     override var gridSize: Int
         get() {
             return if (isScreenLandscape()) viewPreferences.getInt(
@@ -125,49 +131,23 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
             applyViewingChanges(value)
         }
 
-    var hasBottomSpace = false
+    override var gridSupported: Boolean = false
 
     var itemOffsetDecorationEnabled = false
 
     var itemOffsetForEdgesEnabled = true
 
-    override var isFilteringSupported: Boolean = false
-
-    override var isGridSupported: Boolean = false
-
-    override var isLocalSelectionActivated: Boolean = false
+    override var localSelectionActivated: Boolean = false
         set(value) {
             field = value
-            if (value) {
-                val selectedItems: MutableList<T> = ArrayList(engineConnection.getSelectedItemList() ?: emptyList())
-                if (selectedItems.isNotEmpty()) engineConnection.setSelected(
-                    selectedItems,
-                    IntArray(selectedItems.size),
-                    false
-                )
+            if (!value) engineConnection.getSelectionList()?.let {
+                if (it.isNotEmpty()) engineConnection.setSelected(it, IntArray(it.size), false)
             }
             activity?.invalidateOptionsMenu()
         }
 
-    override var isRefreshRequested: Boolean = false
-
-    override var isSelectByClick: Boolean = false
-        get() = field || isUsingLocalSelection
-
-    override var isSortingSupported: Boolean = true
-
-    override var isTwoRowLayout: Boolean = false
-        get() = AppUtils.getDefaultPreferences(requireContext()).getBoolean("two_row_layout", true)
-        set(value) {
-            field = value
-            applyViewingChanges(optimumGridSize, true)
-        }
-
-    override var isUsingLocalSelection: Boolean
+    override val localSelectionMode: Boolean
         get() = activity !is PerformerEngineProvider && performerMenu != null
-        set(value) {
-
-        }
 
     var layoutResId = R.layout.abstract_layout_editable_list_fragment
 
@@ -181,7 +161,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
             snackbarContainer = value
             value.addOnItemTouchListener(SwipeSelectionListener(this))
 
-            if (hasBottomSpace) {
+            if (bottomSpaceShown) {
                 value.clipToPadding = false
                 value.setPadding(0, 0, 0, (resources.getDimension(R.dimen.fab_margin) * 12).toInt())
             }
@@ -192,7 +172,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     private val optimumGridSize: Int
         get() {
             val preferredGridSize = gridSize
-            return if (preferredGridSize > 1) preferredGridSize else if (canShowWideView() && isTwoRowLayout) 2 else 1
+            return if (preferredGridSize > 1) preferredGridSize else if (canShowWideView() && twoRowLayoutEnabled) 2 else 1
         }
 
     override var orderingCriteria: Int
@@ -211,9 +191,14 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     private var performerMenu: PerformerMenu? = null
 
+    override var refreshRequested: Boolean = false
+
     private var searchText: String? = null
 
-    private val selectableList: MutableList<T> = ArrayList()
+    private val selectionList: MutableList<T> = ArrayList()
+
+    override var selectByClickEnabled: Boolean = false
+        get() = field || localSelectionMode
 
     override var sortingCriteria: Int
         get() = viewPreferences.getInt(getUniqueSettingKey("SortBy"), defaultSortingCriteria)
@@ -227,6 +212,15 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     private val sortingOptions: MutableMap<String, Int> = ArrayMap()
 
+    override var sortingSupported: Boolean = true
+
+    override var twoRowLayoutEnabled: Boolean = false
+        get() = AppUtils.getDefaultPreferences(requireContext()).getBoolean("two_row_layout", true)
+        set(value) {
+            field = value
+            applyViewingChanges(optimumGridSize, true)
+        }
+
     var twoRowLayoutState: Boolean = false
 
     val viewPreferences: SharedPreferences
@@ -238,11 +232,11 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        twoRowLayoutState = isTwoRowLayout
+        twoRowLayoutState = twoRowLayoutEnabled
 
         arguments?.let {
-            isSelectByClick = it.getBoolean(ARG_SELECT_BY_CLICK, isSelectByClick)
-            hasBottomSpace = it.getBoolean(ARG_HAS_BOTTOM_SPACE, hasBottomSpace)
+            selectByClickEnabled = it.getBoolean(ARG_SELECT_BY_CLICK, selectByClickEnabled)
+            bottomSpaceShown = it.getBoolean(ARG_HAS_BOTTOM_SPACE, bottomSpaceShown)
         }
 
         performerMenu?.setUp(performerEngine)
@@ -269,7 +263,8 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
                 defaultItemOffsetPadding
             else
                 resources.getDimension(R.dimen.padding_list_content_parent_layout)
-            val offsetDecoration = ItemOffsetDecoration(padding.toInt(), itemOffsetForEdgesEnabled, isHorizontalOrientation())
+            val offsetDecoration =
+                ItemOffsetDecoration(padding.toInt(), itemOffsetForEdgesEnabled, isHorizontalOrientation())
 
             offsetDecoration.prepare(listView)
             listView.addItemDecoration(offsetDecoration)
@@ -279,7 +274,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     override fun onResume() {
         super.onResume()
         refreshList()
-        if (twoRowLayoutState != isTwoRowLayout) toggleTwoRowLayout()
+        if (twoRowLayoutState != twoRowLayoutEnabled) toggleTwoRowLayout()
     }
 
     override fun onAttach(context: Context) {
@@ -296,7 +291,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     override fun onSelected(
-        engine: IPerformerEngine, owner: IEngineConnection<T>, selectable: T, isSelected: Boolean,
+        engine: IPerformerEngine, owner: IEngineConnection<T>, model: T, isSelected: Boolean,
         position: Int,
     ) {
         if (position >= 0) adapter.syncAndNotify(position) else adapter.syncAllAndNotify()
@@ -304,7 +299,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     override fun onSelected(
-        engine: IPerformerEngine, owner: IEngineConnection<T>, selectableList: MutableList<T>,
+        engine: IPerformerEngine, owner: IEngineConnection<T>, modelList: MutableList<T>,
         isSelected: Boolean, positions: IntArray,
     ) {
         adapter.syncAllAndNotify()
@@ -313,12 +308,12 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (isUsingLocalSelection && isLocalSelectionActivated) performerMenu!!.populateMenu(menu) else {
+        if (localSelectionMode && localSelectionActivated) performerMenu!!.populateMenu(menu) else {
             inflater.inflate(R.menu.actions_abs_editable_list, menu)
             val filterItem = menu.findItem(R.id.actions_abs_editable_filter)
             if (filterItem != null) {
-                filterItem.isVisible = isFilteringSupported
-                if (isFilteringSupported) {
+                filterItem.isVisible = filteringSupported
+                if (filteringSupported) {
                     val view = filterItem.actionView
                     if (view is SearchView) {
                         view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -370,12 +365,12 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        if (!isLocalSelectionActivated) {
-            menu.findItem(R.id.actions_abs_editable_sort_by).isEnabled = isSortingSupported
+        if (!localSelectionActivated) {
+            menu.findItem(R.id.actions_abs_editable_sort_by).isEnabled = sortingSupported
             menu.findItem(R.id.actions_abs_editable_multi_select).isVisible = performerMenu != null
-            menu.findItem(R.id.actions_abs_editable_grid_size).isVisible = isGridSupported
+            menu.findItem(R.id.actions_abs_editable_grid_size).isVisible = gridSupported
             menu.findItem(R.id.actions_abs_editable_sort_by)?.also { sortingItem: MenuItem ->
-                sortingItem.isVisible = isSortingSupported
+                sortingItem.isVisible = sortingSupported
                 if (sortingItem.isVisible) {
                     checkPreferredDynamicItem(sortingItem, sortingCriteria, sortingOptions)
                     val orderingItem = menu.findItem(R.id.actions_abs_editable_order_by)
@@ -401,9 +396,9 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
         else if (groupId == R.id.actions_abs_editable_group_grid_size)
             gridSize = item.order
         else if (id == R.id.actions_abs_editable_multi_select && performerMenu != null && activity != null)
-            isLocalSelectionActivated = !isLocalSelectionActivated
+            localSelectionActivated = !localSelectionActivated
         else if (performerMenu?.onMenuItemClick(item) == true)
-            isLocalSelectionActivated = false
+            localSelectionActivated = false
         else
             super.onOptionsItemSelected(item)
 
@@ -442,7 +437,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     fun applyViewingChanges(gridSize: Int, override: Boolean) {
-        if (!isGridSupported && !override)
+        if (!gridSupported && !override)
             return
 
         adapter.notifyGridSizeUpdate(gridSize, isScreenLarge())
@@ -452,7 +447,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     fun canShowWideView(): Boolean {
-        return !isGridSupported && isScreenLarge() && !isHorizontalOrientation()
+        return !gridSupported && isScreenLarge() && !isHorizontalOrientation()
     }
 
     fun checkPreferredDynamicItem(dynamicItem: MenuItem?, preferredItemId: Int, options: Map<String, Int>) {
@@ -478,11 +473,15 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     protected fun ensureLocalSelection() {
-        val shouldBeEnabled = engineConnection.getSelectedItemList()?.let { it.size > 0 } ?: false
+        val shouldActivate = engineConnection.getSelectionList()?.isNotEmpty() ?: false
 
-        if (isLocalSelectionActivated != shouldBeEnabled) {
-            Log.d(TAG, "ensureLocalSelection: Altering local selection state to '$shouldBeEnabled'")
-            isLocalSelectionActivated = shouldBeEnabled
+        if (!shouldActivate) {
+            Log.d(TAG, "ensureLocalSelection: $localSelectionActivated")
+        }
+
+        if (localSelectionActivated != shouldActivate) {
+            Log.d(TAG, "ensureLocalSelection: Altering local selection state to '$shouldActivate'")
+            localSelectionActivated = shouldActivate
         }
     }
 
@@ -507,8 +506,12 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
         return performerEngine
     }
 
-    override fun getSelectableList(): MutableList<T> {
-        return selectableList
+    override fun getAvailableList(): MutableList<T> {
+        return adapter.getList()
+    }
+
+    override fun getSelectionList(): MutableList<T> {
+        return selectionList
     }
 
     override fun getUniqueSettingKey(setting: String): String {
@@ -520,8 +523,8 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     override fun loadIfRequested(): Boolean {
-        val refreshed = isRefreshRequested
-        isRefreshRequested = false
+        val refreshed = refreshRequested
+        refreshRequested = false
         if (refreshed)
             refreshList()
         return refreshed
@@ -571,18 +574,20 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
     }
 
     override fun setItemSelected(holder: V): Boolean {
-        return setItemSelected(holder, isSelectByClick)
+        return setItemSelected(holder, selectByClickEnabled)
     }
 
     override fun setItemSelected(holder: V, force: Boolean): Boolean {
-        if (engineConnection.getSelectedItemList()?.let { it.size <= 0 } == true && !force)
+        Log.d(TAG, "setItemSelected: $selectByClickEnabled $force")
+        if (engineConnection.getSelectionList()?.let { it.size <= 0 } == true && !force)
             return false
         try {
             engineConnection.setSelected(holder)
             return true
-        } catch (e: SelectableNotFoundException) {
+        } catch (e: SelectionModelNotFoundException) {
             e.printStackTrace()
-        } catch (ignored: CouldNotAlterException) {
+        } catch (e: CouldNotAlterException) {
+            if (BuildConfig.DEBUG) e.printStackTrace()
         }
         return false
     }
@@ -645,7 +650,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
         override fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
-            owner: IBaseEngineConnection, selectable: Selectable,
+            owner: IBaseEngineConnection, selectionModel: SelectionModel,
             isSelected: Boolean, position: Int,
         ): Boolean {
             return true
@@ -653,14 +658,14 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
         override fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
-            selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
+            selectionModelList: MutableList<out SelectionModel>, isSelected: Boolean, positions: IntArray,
         ): Boolean {
             return true
         }
 
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
-            owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
+            owner: IBaseEngineConnection, selectionModel: SelectionModel, isSelected: Boolean,
             position: Int,
         ) {
             updateTitle(Selections.getTotalSize(engine))
@@ -668,7 +673,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
 
         override fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
-            selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
+            selectionModelList: MutableList<out SelectionModel>, isSelected: Boolean, positions: IntArray,
         ) {
             updateTitle(Selections.getTotalSize(engine))
         }
@@ -686,7 +691,7 @@ abstract class EditableListFragment<T : Editable, V : ViewHolder, E : EditableLi
             }
         }
 
-        private fun <T : Selectable> setSelectionState(connection: IEngineConnection<T>, newState: Boolean) {
+        private fun <T : SelectionModel> setSelectionState(connection: IEngineConnection<T>, newState: Boolean) {
             connection.getAvailableList()?.let {
                 if (it.size > 0) {
                     val positions = IntArray(it.size)

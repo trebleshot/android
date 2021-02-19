@@ -67,7 +67,7 @@
                 android:background="?roundSelector"
                 app:srcCompat="@drawable/ic_monora_logo_no_background" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/short_content_width_padding"
@@ -217,7 +217,7 @@
                     <include layout="@layout/include_activity_about_option_fourth" />
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -237,7 +237,7 @@
 
             </LinearLayout>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/short_content_width_padding"
@@ -250,7 +250,7 @@
                     android:text="@string/conf_licence"
                     app:fontFamily="monospace" />
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -42,7 +42,7 @@ class TransferItemExplorerFragment : TransferItemListFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        hasBottomSpace = true
+        bottomSpaceShown = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

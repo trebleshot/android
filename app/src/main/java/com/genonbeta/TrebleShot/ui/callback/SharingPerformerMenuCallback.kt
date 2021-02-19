@@ -24,9 +24,8 @@ import android.view.MenuItem
 import com.genonbeta.TrebleShot.App
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.EditableListFragment
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
-import com.genonbeta.TrebleShot.dataobject.Shareable
+import com.genonbeta.TrebleShot.dataobject.MappedSelectionModel
+import com.genonbeta.TrebleShot.dataobject.MappedSelectionModel.Companion.compileFrom
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.PickListener
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog.SharingMethod
@@ -70,11 +69,11 @@ open class SharingPerformerMenuCallback(
     }
 
     companion object {
-        private fun compileShareableListFrom(mappedSelectableList: List<MappedSelectable<*>>): List<Shareable> {
+        private fun compileShareableListFrom(mappedSelectableList: List<MappedSelectionModel<*>>): List<Shareable> {
             val shareableList: MutableList<Shareable> = ArrayList()
-            for (mappedSelectable in mappedSelectableList) if (mappedSelectable.selectable is Shareable) shareableList.add(
-                mappedSelectable.selectable as Shareable
-            )
+            for (mappedSelectable in mappedSelectableList) if (mappedSelectable.selectionModel is Shareable) {
+                shareableList.add(mappedSelectable.selectionModel as Shareable)
+            }
             return shareableList
         }
     }

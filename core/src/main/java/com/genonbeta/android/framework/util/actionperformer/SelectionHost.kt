@@ -20,13 +20,13 @@ package com.genonbeta.android.framework.util.actionperformer
 /**
  * This stores the items selected and provides [IEngineConnection] with that functionality.
  *
- * @param T The derivative of the [Selectable] class.
+ * @param T The derivative of the [SelectionModel] class.
  */
-interface SelectableHost<T : Selectable?> {
+interface SelectionHost<T : SelectionModel?> {
     /**
      * Only the selected items will be stored in this list.
      *
      * @return The list of items that are selected.
      */
-    fun getSelectableList(): MutableList<T>
+    fun getSelectionList(): MutableList<T>
 }

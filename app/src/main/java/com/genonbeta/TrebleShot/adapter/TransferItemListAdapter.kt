@@ -47,7 +47,6 @@ import com.genonbeta.TrebleShot.util.AppUtils.getReference
 import com.genonbeta.TrebleShot.util.MimeIcons
 import com.genonbeta.TrebleShot.util.TextUtils
 import com.genonbeta.TrebleShot.util.Transfers
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.CustomGroupLister
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.SQLQuery
@@ -239,10 +238,6 @@ class TransferItemListAdapter(
         }
     }
 
-    protected override fun onGenerateRepresentative(text: String, merger: Merger<GenericItem>?): GenericTransferItem {
-        return GenericTransferItem(text)
-    }
-
     override fun onCustomGroupListing(lister: GroupLister<GenericItem>, mode: Int, holder: GenericItem): Boolean {
         if (mode == MODE_GROUP_BY_DEFAULT) lister.offer(
             holder,
@@ -381,7 +376,7 @@ class TransferItemListAdapter(
                 val firstText: TextView = parentView.findViewById(R.id.text2)
                 val secondText: TextView = parentView.findViewById(R.id.text3)
                 val thirdText: TextView = parentView.findViewById(R.id.text4)
-                parentView.isSelected = item.isSelectableSelected()
+                parentView.isSelected = item.selected()
                 appliedColor =
                     if (item.hasIssues(this)) colorError else if (item.isComplete(this)) colorDone else colorPending
                 titleText.setText(item.name)
@@ -488,8 +483,8 @@ class TransferItemListAdapter(
             return viewType == VIEW_TYPE_REPRESENTATIVE
         }
 
-        override fun setSelectableSelected(selected: Boolean): Boolean {
-            return !isGroupRepresentative() && super.setSelectableSelected(selected)
+        override fun select(selected: Boolean): Boolean {
+            return !isGroupRepresentative() && super.select(selected)
         }
     }
 
@@ -703,11 +698,11 @@ class TransferItemListAdapter(
             return R.drawable.ic_device_hub_white_24dp
         }
 
-        override fun isSelectableSelected(): Boolean {
+        override fun selected(): Boolean {
             return false
         }
 
-        override fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun select(selected: Boolean): Boolean {
             return false
         }
     }
@@ -733,7 +728,7 @@ class TransferItemListAdapter(
             return false
         }
 
-        override fun isSelectableSelected(): Boolean {
+        override fun selected(): Boolean {
             return false
         }
 
@@ -772,7 +767,7 @@ class TransferItemListAdapter(
             return false
         }
 
-        override fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun select(selected: Boolean): Boolean {
             return false
         }
     }

@@ -31,7 +31,7 @@
         android:layout_gravity="end"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:orientation="vertical" />
+        android:orientation="horizontal" />
 
     <View
         android:id="@+id/abstract_layout_fast_scroll_recyclerview_bottom_divider"

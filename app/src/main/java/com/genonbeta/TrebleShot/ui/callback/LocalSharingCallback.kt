@@ -17,8 +17,6 @@
  */
 package com.genonbeta.TrebleShot.ui.callback
 
-import com.genonbeta.TrebleShot.dataobject.Shareable
-
 interface LocalSharingCallback {
     fun onShareLocal(shareableList: List<Shareable>)
 }

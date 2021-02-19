@@ -36,7 +36,6 @@ import com.genonbeta.TrebleShot.dataobject.TransferIndex
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.AppUtils.getReference
 import com.genonbeta.TrebleShot.util.Transfers.loadTransferInfo
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.util.Files
@@ -73,10 +72,6 @@ class TransferListAdapter(
             index.isRunning = activeList.contains(index.transfer.id)
             lister.offerObliged(this, index)
         }
-    }
-
-    override fun onGenerateRepresentative(text: String, merger: Merger<TransferIndex>?): TransferIndex {
-        return TransferIndex(text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {

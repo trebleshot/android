@@ -38,7 +38,7 @@ class OnlineDeviceListFragment : DeviceListFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(false)
-        isFilteringSupported = false
+        filteringSupported = false
         itemOffsetDecorationEnabled = false
         itemOffsetForEdgesEnabled = false
         defaultViewingGridSize = if (isScreenNormal()) 3 else 2

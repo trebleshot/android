@@ -18,6 +18,6 @@
 package com.genonbeta.android.framework.util.actionperformer
 
 /**
- * Thrown when an operation fails due to unavailability of selectable or providers.
+ * Thrown when an operation fails due to unavailability of models or providers.
  */
 class CouldNotAlterException(message: String?) : Exception(message)

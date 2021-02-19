@@ -26,16 +26,16 @@ interface IBaseEngineConnection {
     /**
      * Compile the list of available items.
      *
-     * @return The list that is available within [SelectableProvider].
+     * @return The list that is available within [SelectionModelProvider].
      */
-    fun getGenericAvailableList(): MutableList<out Selectable>?
+    fun getGenericAvailableList(): MutableList<out SelectionModel>?
 
     /**
      * Compile the list of selected items.
      *
-     * @return The list that is available within [SelectableHost].
+     * @return The list that is available within [SelectionHost].
      */
-    fun getGenericSelectedItemList(): MutableList<out Selectable>?
+    fun getGenericSelectedList(): MutableList<out SelectionModel>?
 
     /**
      * The human-readable title for this connection.
@@ -68,21 +68,21 @@ interface IBaseEngineConnection {
     fun setDefinitiveTitle(title: CharSequence?)
 
     /**
-     * Find the selectable using [RecyclerView.ViewHolder.getAdapterPosition] and toggle its selection state.
+     * Find the model using [RecyclerView.ViewHolder.getAdapterPosition] and toggle its selection state.
      *
-     * @param holder That will provide the selectable position.
+     * @param holder That will provide the model position.
      * @return True if operation was successful.
-     * @throws SelectableNotFoundException When the given position does not point to a selectable.
+     * @throws SelectionModelNotFoundException When the given position does not point to a model.
      */
-    @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
+    @Throws(SelectionModelNotFoundException::class, CouldNotAlterException::class)
     fun setSelected(holder: RecyclerView.ViewHolder): Boolean
 
     /**
-     * Find the selectable in the list that is made available by [SelectableProvider].
+     * Find the model in the list that is made available by [SelectionModelProvider].
      *
-     * @throws SelectableNotFoundException When the given position does not point to a selectable.
-     * @throws CouldNotAlterException      If the selectable could not altered.
+     * @throws SelectionModelNotFoundException When the given position does not point to a model.
+     * @throws CouldNotAlterException      If the model could not altered.
      */
-    @Throws(SelectableNotFoundException::class, CouldNotAlterException::class)
+    @Throws(SelectionModelNotFoundException::class, CouldNotAlterException::class)
     fun setSelected(position: Int): Boolean
 }

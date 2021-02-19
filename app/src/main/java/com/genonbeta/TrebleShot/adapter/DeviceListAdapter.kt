@@ -139,15 +139,11 @@ class DeviceListAdapter(
 
         override fun getComparableName(): String = name()
 
-        override fun getSelectableTitle(): String = name()
-
         abstract fun isOnline(): Boolean
 
-        override fun isSelectableSelected(): Boolean {
+        override fun selected(): Boolean {
             return isSelected
         }
-
-        abstract fun name(): String
     }
 
     class DbVirtualDevice(val device: Device) : VirtualDevice() {
@@ -177,7 +173,7 @@ class DeviceListAdapter(
             return device.username
         }
 
-        override fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun select(selected: Boolean): Boolean {
             isSelected = selected
             return true
         }
@@ -210,7 +206,7 @@ class DeviceListAdapter(
             return description.ssid
         }
 
-        override fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun select(selected: Boolean): Boolean {
             return false
         }
     }

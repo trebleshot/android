@@ -32,13 +32,16 @@ import java.text.NumberFormat
 object TextUtils {
     fun getAdapterName(adapterName: String): Int {
         val associatedNames: MutableMap<String, Int> = ArrayMap()
+        val unknownInterface = R.string.text_interfaceUnknown
         associatedNames["wlan"] = R.string.text_interfaceWireless
         associatedNames["p2p"] = R.string.text_interfaceWifiDirect
         associatedNames["bt-pan"] = R.string.text_interfaceBluetooth
         associatedNames["eth"] = R.string.text_interfaceEthernet
         associatedNames["tun"] = R.string.text_interfaceVPN
-        associatedNames["unk"] = R.string.text_interfaceUnknown
-        for (displayName in associatedNames.keys) if (adapterName.startsWith(displayName)) return associatedNames[displayName]!!
+        associatedNames["unk"] = unknownInterface
+        for (displayName in associatedNames.keys) if (adapterName.startsWith(displayName)) {
+            return associatedNames[displayName] ?: unknownInterface
+        }
         return -1
     }
 

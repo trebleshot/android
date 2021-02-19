@@ -24,14 +24,13 @@ import android.view.View
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter.VideoHolder
-import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 
 class VideoListFragment : GalleryGroupEditableListFragment<VideoHolder, GroupViewHolder, VideoListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isFilteringSupported = true
+        filteringSupported = true
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         defaultViewingGridSize = 3

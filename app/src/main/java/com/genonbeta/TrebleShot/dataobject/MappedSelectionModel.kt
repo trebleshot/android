@@ -17,36 +17,39 @@
  */
 package com.genonbeta.TrebleShot.dataobject
 
-import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 
-class MappedSelectable<T : Selectable>(var selectable: T, val engineConnection: IEngineConnection<T>) : Selectable {
-    override fun getSelectableTitle(): String = selectable.getSelectableTitle()
+class MappedSelectionModel<T : SelectionModel>(
+    var selectionModel: T, private val engineConnection: IEngineConnection<T>,
+) : SelectionModel {
+    override fun canSelect(): Boolean = selectionModel.canSelect()
 
-    override fun isSelectableSelected(): Boolean = selectable.isSelectableSelected()
+    override fun name(): String = selectionModel.name()
 
-    override fun setSelectableSelected(selected: Boolean): Boolean {
-        return engineConnection.setSelected(selectable, selected)
+    override fun selected(): Boolean = selectionModel.selected()
+
+    override fun select(selected: Boolean) {
+        engineConnection.setSelected(selectionModel, selected)
     }
 
     companion object {
-        private fun <T : Selectable> addToMappedObjectList(
-            list: MutableList<MappedSelectable<*>>,
+        private fun <T : SelectionModel> addToMappedObjectList(
+            list: MutableList<MappedSelectionModel<*>>,
             connection: IEngineConnection<T>,
         ) {
-            val selectedItemList = connection.getSelectedItemList() ?: return
-            for (selectable in selectedItemList) list.add(MappedSelectable(selectable, connection))
+            val selectedItemList = connection.getSelectionList() ?: return
+            for (selectionModel in selectedItemList) list.add(MappedSelectionModel(selectionModel, connection))
         }
 
         @JvmStatic
-        fun compileFrom(engine: IPerformerEngine?): List<MappedSelectable<*>> {
-            val list: MutableList<MappedSelectable<*>> = ArrayList()
+        fun compileFrom(engine: IPerformerEngine?): List<MappedSelectionModel<*>> {
+            val list: MutableList<MappedSelectionModel<*>> = ArrayList()
             if (engine != null) for (baseEngineConnection in engine.getConnectionList()) {
-                if (baseEngineConnection is IEngineConnection<*>) addToMappedObjectList(
-                    list,
-                    baseEngineConnection
-                )
+                if (baseEngineConnection is IEngineConnection<*>) {
+                    addToMappedObjectList(list, baseEngineConnection)
+                }
             }
             return list
         }

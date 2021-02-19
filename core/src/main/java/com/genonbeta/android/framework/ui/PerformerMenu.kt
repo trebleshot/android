@@ -22,23 +22,17 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.view.SupportMenuInflater
-import com.genonbeta.android.framework.util.actionperformer.Selectable
 import com.genonbeta.android.framework.ui.PerformerMenu.Callback
-import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.PerformerCallback
-import com.genonbeta.android.framework.util.actionperformer.PerformerListener
+import com.genonbeta.android.framework.util.actionperformer.*
 
 /**
  * The idea here is that this class bridges one or more menus with a [IEngineConnection] to perform a specific
- * task whenever a new selectable is adder or removed and whenever the any item on a menu is clicked.
- *
+ * task whenever a new item is added or removed and whenever the any item on a menu is clicked.
  *
  * The class that is responsible for the performer menu should also provide the [IPerformerEngine]
  * to which this will add callbacks and listeners.
  *
- *
- * Because [Selectable] is referred to as the base class, the [Callback] methods shouldn't be used to
+ * Because [SelectionModel] is referred to as the base class, the [Callback] methods shouldn't be used to
  * identify the derivatives. Instead, you should use the engine connection to identify the objects.
  */
 class PerformerMenu(val context: Context, val callback: Callback) : PerformerCallback, PerformerListener,
@@ -52,8 +46,8 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
     /**
      * Load the given menu by calling [Callback.onPerformerMenuList].
      *
-     * @param targetMenu to populate
-     * @return true when the given menu is populated
+     * @param targetMenu To populate.
+     * @return True when the given menu is populated.
      */
     fun load(targetMenu: Menu): Boolean {
         if (!populateMenu(targetMenu))
@@ -69,8 +63,7 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
      * This is a call similar to [android.app.Activity.onCreateOptionsMenu]. This creates the menu list
      * which will be provided by [Callback.onPerformerMenuList]. If you
      * are not willing to make the [.invokeMenuItemSelected] calls manually, use
-     * [.load] so that menu item selection calls will be handled directly by the [Callback].
-     *
+     * [load] so that menu item selection calls will be handled directly by the [Callback].
      *
      * The main difference is that when you want to work with more than one [IEngineConnection], the best is to
      * avoid using this, because you will often will not able to treat each [IEngineConnection] individually.
@@ -80,7 +73,7 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
      * that goes 'selectionActivated' which will be used to assess whether the menu items will represent the selection.
      * And to reset the menus you can use [Activity.invalidateOptionsMenu] method.
      *
-     * @param targetMenu to be populated.
+     * @param targetMenu To be populated.
      */
     fun populateMenu(targetMenu: Menu): Boolean {
         return callback.onPerformerMenuList(this, menuInflater, targetMenu)
@@ -99,7 +92,7 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
     /**
      * Unregister the previously registered callbacks of this instance.
      *
-     * @param engine that we are no longer to be informed about
+     * @param engine To no longer be informed about.
      */
     fun dismantle(engine: IPerformerEngine) {
         engine.removePerformerCallback(this)
@@ -107,33 +100,33 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
     }
 
     override fun onSelection(
-        engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable,
+        engine: IPerformerEngine, owner: IBaseEngineConnection, selectionModel: SelectionModel,
         isSelected: Boolean, position: Int,
     ): Boolean {
-        return callback.onPerformerMenuItemSelection(this, engine, owner, selectable, isSelected, position)
+        return callback.onPerformerMenuItemSelection(this, engine, owner, selectionModel, isSelected, position)
     }
 
     override fun onSelection(
         engine: IPerformerEngine, owner: IBaseEngineConnection,
-        selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
+        selectionModelList: MutableList<out SelectionModel>, isSelected: Boolean, positions: IntArray,
     ): Boolean {
         return callback.onPerformerMenuItemSelection(
-            this, engine, owner, selectableList, isSelected, positions
+            this, engine, owner, selectionModelList, isSelected, positions
         )
     }
 
     override fun onSelected(
-        engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable,
+        engine: IPerformerEngine, owner: IBaseEngineConnection, selectionModel: SelectionModel,
         isSelected: Boolean, position: Int,
     ) {
-        callback.onPerformerMenuItemSelected(this, engine, owner, selectable, isSelected, position)
+        callback.onPerformerMenuItemSelected(this, engine, owner, selectionModel, isSelected, position)
     }
 
     override fun onSelected(
         engine: IPerformerEngine, owner: IBaseEngineConnection,
-        selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
+        selectionModelList: MutableList<out SelectionModel>, isSelected: Boolean, positions: IntArray,
     ) {
-        callback.onPerformerMenuItemSelected(this, engine, owner, selectableList, isSelected, positions)
+        callback.onPerformerMenuItemSelected(this, engine, owner, selectionModelList, isSelected, positions)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -147,84 +140,84 @@ class PerformerMenu(val context: Context, val callback: Callback) : PerformerCal
         /**
          * Called when [PerformerMenu.load] is invoked to populate the menu.
          *
-         * @param performerMenu instance that redirects the call
-         * @param inflater      to inflate the menus with
-         * @param targetMenu    to populate
-         * @return true when there was not problem populating the menu
+         * @param performerMenu That redirects the call.
+         * @param inflater      To inflate the menus with.
+         * @param targetMenu    To populate.
+         * @return True when there was not problem populating the menu.
          */
         fun onPerformerMenuList(performerMenu: PerformerMenu, inflater: MenuInflater, targetMenu: Menu): Boolean
 
         /**
          * Called when a menu item on a populated menu (with callbacks registered) was clicked.
          *
-         * @param performerMenu instance that redirects the call
-         * @param item          that was clicked.
-         * @return true when the input is known and the descendant is not needed the perform any other action
+         * @param performerMenu That redirects the call.
+         * @param item          That was clicked.
+         * @return True when the input is known and the descendant is not needed the perform any other action.
          */
         fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean
 
         /**
-         * Called when a [Selectable] is being altered. This is called during the process which is not still
+         * Called when a [SelectionModel] is being altered. This is called during the process which is not still
          * finished.
          *
-         * @param performerMenu instance that redirects the call
-         * @param engine        owning the [IBaseEngineConnection]
-         * @param owner         that is managing the selection list and informing the [IPerformerEngine]
-         * @param selectable    that is being altered
-         * @param isSelected    is true when the new state is selected or false if otherwise
-         * @param position      where the selectable is at on [SelectableProvider]
-         * @return true if there is no problem with altering the state of selection of the selectable
+         * @param performerMenu Instance that redirects the call.
+         * @param engine        Owning the [IBaseEngineConnection].
+         * @param owner         That is managing the selection list and informing the [IPerformerEngine].
+         * @param selectionModel    Being altered.
+         * @param isSelected    True when selected.
+         * @param position      Of model on [SelectionModelProvider].
+         * @return True if there is no problem with altering the state of selection of the item.
          */
         fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
-            selectable: Selectable, isSelected: Boolean, position: Int,
+            selectionModel: SelectionModel, isSelected: Boolean, position: Int,
         ): Boolean
 
         /**
-         * Called when a [Selectable] is being altered. This is called during the process which is not still
+         * Called when a [SelectionModel] is being altered. This is called during the process which is not still
          * finished.
          *
-         * @param performerMenu  instance that redirects the call
-         * @param engine         owning the [IBaseEngineConnection]
-         * @param owner          that is managing the selection list and informing the [IPerformerEngine]
-         * @param selectableList that is being altered
-         * @param isSelected     is true when the new state is selected or false if otherwise
-         * @param positions      where the selectables are at on [SelectableProvider]
-         * @return true if there is no problem with altering the state of selection of the selectable
+         * @param performerMenu  That redirects the call.
+         * @param engine         Owning the [IBaseEngineConnection].
+         * @param owner          Managing the selection list and informing the [IPerformerEngine].
+         * @param selectionModelList To alter.
+         * @param isSelected     True if selecting.
+         * @param positions      Of the items on [SelectionModelProvider].
+         * @return True if there is no problem with altering the state of selection of the item.
          */
         fun onPerformerMenuItemSelection(
             performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
-            selectableList: MutableList<out Selectable>, isSelected: Boolean, positions: IntArray,
+            selectionModelList: MutableList<out SelectionModel>, isSelected: Boolean, positions: IntArray,
         ): Boolean
 
         /**
-         * Called after the [.onPerformerMenuItemSelection] to inform about the new state of the selectable.
+         * Called after the [onPerformerMenuItemSelection] to inform about the new state of the model.
          *
-         * @param performerMenu instance that redirects the call
-         * @param engine        owning the [IBaseEngineConnection]
-         * @param owner         that is managing the selection list and informing the [IPerformerEngine]
-         * @param selectable    that is being altered
-         * @param isSelected    is true when the new state is selected or false if otherwise
-         * @param position      where the selectable is at on [SelectableProvider]
+         * @param performerMenu That redirects the call.
+         * @param engine        Owning the [IBaseEngineConnection].
+         * @param owner         That is managing the selection list and informing the [IPerformerEngine].
+         * @param selectionModel To alter.
+         * @param isSelected    True if selecting.
+         * @param position      Of the item on [SelectionModelProvider].
          */
         fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine, owner: IBaseEngineConnection,
-            selectable: Selectable, isSelected: Boolean, position: Int,
+            selectionModel: SelectionModel, isSelected: Boolean, position: Int,
         )
 
         /**
-         * Called after the [.onPerformerMenuItemSelection] to inform about the new state of the list of selectables.
+         * Called after the [onPerformerMenuItemSelection] to inform about the new state of the list of items.
          *
-         * @param performerMenu  instance that redirects the call
-         * @param engine         owning the [IBaseEngineConnection]
-         * @param owner          that is managing the selection list and informing the [IPerformerEngine]
-         * @param selectableList that is being altered
-         * @param isSelected     is true when the new state is selected or false if otherwise
-         * @param positions      where the selectables are at on [SelectableProvider]
+         * @param performerMenu  That redirects the call.
+         * @param engine         Owning the [IBaseEngineConnection].
+         * @param owner          That is managing the selection list and informing the [IPerformerEngine].
+         * @param selectionModelList To alter.
+         * @param isSelected     True if selecting.
+         * @param positions      Of the items on [SelectionModelProvider].
          */
         fun onPerformerMenuItemSelected(
             performerMenu: PerformerMenu, engine: IPerformerEngine,
-            owner: IBaseEngineConnection, selectableList: MutableList<out Selectable>,
+            owner: IBaseEngineConnection, selectionModelList: MutableList<out SelectionModel>,
             isSelected: Boolean, positions: IntArray,
         )
     }

@@ -117,7 +117,7 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
         return itemList
     }
 
-    override fun getSelectableList(): MutableList<T> {
+    override fun getAvailableList(): MutableList<T> {
         return getList()
     }
 
@@ -172,13 +172,13 @@ abstract class EditableListAdapter<T : Editable, V : RecyclerViewAdapter.ViewHol
     @Synchronized
     fun syncSelection(adapterPosition: Int) {
         val item = getItem(adapterPosition)
-        item.setSelectableSelected(fragment.engineConnection.isSelectedOnHost(item))
+        item.select(fragment.engineConnection.isSelectedOnHost(item))
     }
 
     @Synchronized
     fun syncSelectionList() {
         val itemList: List<T> = ArrayList(getList())
-        for (item in itemList) item.setSelectableSelected(fragment.engineConnection.isSelectedOnHost(item))
+        for (item in itemList) item.select(fragment.engineConnection.isSelectedOnHost(item))
     }
 
     companion object {

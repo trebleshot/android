@@ -23,7 +23,7 @@ object Selections {
     fun getTotalSize(engine: IPerformerEngine): Int {
         var selectedTotal = 0
         for (connection in engine.getConnectionList())
-            selectedTotal += connection.getGenericAvailableList()?.size ?: 0
+            selectedTotal += connection.getGenericSelectedList()?.size ?: 0
         return selectedTotal
     }
 }

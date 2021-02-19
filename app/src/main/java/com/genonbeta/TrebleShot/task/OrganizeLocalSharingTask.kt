@@ -29,7 +29,6 @@ import com.genonbeta.TrebleShot.activity.TransferMemberActivity
 import com.genonbeta.TrebleShot.activityimport.WebShareActivity
 import com.genonbeta.TrebleShot.adapter.FileListAdapter
 import com.genonbeta.TrebleShot.dataobject.Container
-import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferItem
 import com.genonbeta.TrebleShot.dataobject.TransferItem.Companion.from

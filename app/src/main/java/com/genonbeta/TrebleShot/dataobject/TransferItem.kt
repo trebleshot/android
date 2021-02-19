@@ -277,11 +277,11 @@ open class TransferItem : DatabaseObject<Transfer>, Editable {
 
     override fun getComparableSize(): Long = length
 
-    override fun getSelectableTitle(): String = name
+    override fun name(): String = name
 
-    override fun isSelectableSelected(): Boolean = isSelected
+    override fun selected(): Boolean = isSelected
 
-    override fun setSelectableSelected(selected: Boolean): Boolean {
+    override fun select(selected: Boolean): Boolean {
         isSelected = selected
         return true
     }

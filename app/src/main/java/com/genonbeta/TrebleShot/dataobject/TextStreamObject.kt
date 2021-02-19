@@ -25,7 +25,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import java.util.*
 
 /**

@@ -27,44 +27,44 @@ import com.genonbeta.TrebleShot.widgetimport.EditableListAdapterBase
 import com.genonbeta.android.framework.app.ListFragmentBase
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.android.framework.util.actionperformer.SelectableHost
-import com.genonbeta.android.framework.util.actionperformer.SelectableProvider
+import com.genonbeta.android.framework.util.actionperformer.SelectionHost
+import com.genonbeta.android.framework.util.actionperformer.SelectionModelProvider
 
 /**
  * created by: veli
  * date: 14/04/18 10:35
  */
-interface EditableListFragmentBase<T : Editable> : ListFragmentBase<T>, PerformerEngineProvider,
-    IEngineConnection.SelectionListener<T>, SelectableProvider<T>, SelectableHost<T>, TitleProvider {
+interface EditableListFragmentBase<T : Editable> : ListFragmentBase, PerformerEngineProvider,
+    IEngineConnection.SelectionListener<T>, SelectionModelProvider<T>, SelectionHost<T>, TitleProvider {
     val adapterImpl: EditableListAdapterBase<T>
 
     val engineConnection: IEngineConnection<T>
 
     var filteringDelegate: EditableListFragment.FilteringDelegate<T>
 
+    var filteringSupported: Boolean
+
     var gridSize: Int
 
-    var isGridSupported: Boolean
-
-    var isFilteringSupported: Boolean
-
-    var isLocalSelectionActivated: Boolean
-
-    var isRefreshRequested: Boolean
-
-    var isSelectByClick: Boolean
-
-    var isSortingSupported: Boolean
-
-    var isTwoRowLayout: Boolean
-
-    var isUsingLocalSelection: Boolean
+    var gridSupported: Boolean
 
     val listView: RecyclerView
 
+    var localSelectionActivated: Boolean
+
+    val localSelectionMode: Boolean
+
     var orderingCriteria: Int
 
+    var selectByClickEnabled: Boolean
+
+    var refreshRequested: Boolean
+
     var sortingCriteria: Int
+
+    var sortingSupported: Boolean
+
+    var twoRowLayoutEnabled: Boolean
 
     fun applyViewingChanges(gridSize: Int)
 

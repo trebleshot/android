@@ -24,30 +24,30 @@ package com.genonbeta.android.framework.util.actionperformer
  */
 interface PerformerListener {
     /**
-     * Invoked after the state of a [Selectable] has changed.
+     * Invoked after the state of a [SelectionModel] has changed.
      *
      * @param engine     Holding an instance of this class.
      * @param owner      That is making the call.
-     * @param selectable Whose state has been changed.
+     * @param selectionModel Whose state has been changed.
      * @param isSelected The new state to be set.
-     * @param position   Of the [Selectable] in [SelectableProvider.getSelectableList].
+     * @param position   Of the [SelectionModel] in [SelectionModelProvider.getAvailableList].
      */
     fun onSelected(
-        engine: IPerformerEngine, owner: IBaseEngineConnection, selectable: Selectable, isSelected: Boolean,
+        engine: IPerformerEngine, owner: IBaseEngineConnection, selectionModel: SelectionModel, isSelected: Boolean,
         position: Int,
     )
 
     /**
-     * This method is called after a list of [Selectable]s has changed.
+     * This method is called after a list of [SelectionModel]s has changed.
      *
      * @param engine     Holding an instance of this class.
      * @param owner      That is making the call.
-     * @param selectableList The list of [Selectable]s that are being altered.
+     * @param selectionModelList The list of [SelectionModel]s that are being altered.
      * @param isSelected     The new state to be set.
-     * @param positions     Of the [Selectable]s in [SelectableProvider.getSelectableList].
+     * @param positions     Of the [SelectionModel]s in [SelectionModelProvider.getAvailableList].
      */
     fun onSelected(
-        engine: IPerformerEngine, owner: IBaseEngineConnection, selectableList: MutableList<out Selectable>,
+        engine: IPerformerEngine, owner: IBaseEngineConnection, selectionModelList: MutableList<out SelectionModel>,
         isSelected: Boolean, positions: IntArray,
     )
 }

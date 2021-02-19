@@ -33,7 +33,6 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.dataobject.Container
 import com.genonbeta.TrebleShot.io.Containable
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
@@ -61,11 +60,6 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
                 e.printStackTrace()
             }
         }
-        val something = "something thought"
-    }
-
-    override fun onGenerateRepresentative(text: String, merger: Merger<PackageHolder>?): PackageHolder {
-        return PackageHolder(VIEW_TYPE_REPRESENTATIVE, text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
@@ -147,5 +141,4 @@ class ApplicationListAdapter(fragment: IEditableListFragment<PackageHolder, Grou
             val MIME_TYPE = Files.getFileContentType(FORMAT)
         }
     }
-
 }

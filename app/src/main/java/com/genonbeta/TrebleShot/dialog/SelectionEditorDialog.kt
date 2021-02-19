@@ -26,13 +26,11 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable
-import com.genonbeta.TrebleShot.dataobject.MappedSelectable.Companion.compileFrom
+import com.genonbeta.TrebleShot.dataobject.MappedSelectionModel
+import com.genonbeta.TrebleShot.dataobject.MappedSelectionModel.Companion.compileFrom
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.android.framework.util.actionperformer.Selectable
-import java.util.*
-import kotlin.collections.ArrayList
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 
 /**
  * created by: Veli
@@ -45,17 +43,17 @@ class SelectionEditorDialog(activity: Activity, provider: PerformerEngineProvide
 
     private val engine = provider.getPerformerEngine()
 
-    private val mappedList: List<MappedSelectable<*>> = compileFrom(engine)
+    private val mappedList: List<MappedSelectionModel<*>> = compileFrom(engine)
 
     private val mappedConnectionList: MutableList<MappedConnection<*>> = ArrayList()
 
-    fun checkReversed(textView: TextView, removeSign: View, selectable: Selectable) {
-        selectable.setSelectableSelected(!selectable.isSelectableSelected())
-        mark(textView, removeSign, selectable)
+    fun checkReversed(textView: TextView, removeSign: View, selectionModel: SelectionModel) {
+        selectionModel.select(!selectionModel.selected())
+        mark(textView, removeSign, selectionModel)
     }
 
-    fun mark(textView: TextView, removeSign: View, selectable: Selectable) {
-        val selected: Boolean = selectable.isSelectableSelected()
+    fun mark(textView: TextView, removeSign: View, selectionModel: SelectionModel) {
+        val selected: Boolean = selectionModel.selected()
         textView.setEnabled(selected)
         removeSign.visibility = if (selected) View.GONE else View.VISIBLE
     }
@@ -65,7 +63,7 @@ class SelectionEditorDialog(activity: Activity, provider: PerformerEngineProvide
         adapter.notifyDataSetChanged()
     }
 
-    private fun <T : Selectable> massCheck(check: Boolean, mappedConnection: MappedConnection<T>) {
+    private fun <T : SelectionModel> massCheck(check: Boolean, mappedConnection: MappedConnection<T>) {
         mappedConnection.connection.setSelected(mappedConnection.list, IntArray(mappedConnection.list.size), check)
     }
 
@@ -91,22 +89,22 @@ class SelectionEditorDialog(activity: Activity, provider: PerformerEngineProvide
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = convertView ?: inflater.inflate(R.layout.list_selection, parent, false)
-            val selectable = getItem(position) as MappedSelectable<*>
+            val selectionModel = getItem(position) as MappedSelectionModel<*>
             val textView1: TextView = view.findViewById(R.id.text)
             val removalSignView = view.findViewById<View>(R.id.removalSign)
-            textView1.text = selectable.getSelectableTitle()
-            mark(textView1, removalSignView, selectable)
+            textView1.text = selectionModel.name()
+            mark(textView1, removalSignView, selectionModel)
             view.isClickable = true
-            view.setOnClickListener { v: View? -> checkReversed(textView1, removalSignView, selectable) }
+            view.setOnClickListener { v: View? -> checkReversed(textView1, removalSignView, selectionModel) }
             return view
         }
     }
 
-    private fun <T : Selectable> addToMappedObjectList(connection: IEngineConnection<T>) {
-        mappedConnectionList.add(MappedConnection(connection, connection.getSelectedItemList()))
+    private fun <T : SelectionModel> addToMappedObjectList(connection: IEngineConnection<T>) {
+        mappedConnectionList.add(MappedConnection(connection, connection.getSelectionList()))
     }
 
-    private class MappedConnection<T : Selectable>(var connection: IEngineConnection<T>, list: List<T>?) {
+    private class MappedConnection<T : SelectionModel>(var connection: IEngineConnection<T>, list: List<T>?) {
         var list: MutableList<T> = if (list == null) ArrayList() else ArrayList(list)
     }
 

@@ -44,11 +44,11 @@ class LoadedMember : TransferMember, Editable {
 
     override fun getComparableSize(): Long = 0
 
-    override fun getSelectableTitle(): String = getComparableName()
+    override fun name(): String = getComparableName()
 
-    override fun isSelectableSelected(): Boolean = false
+    override fun selected(): Boolean = false
 
-    override fun setSelectableSelected(selected: Boolean): Boolean {
+    override fun select(selected: Boolean): Boolean {
         return false
     }
 }

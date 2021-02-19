@@ -28,19 +28,19 @@ import android.widget.TextView
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter.ImageHolder
+import com.genonbeta.TrebleShot.app.EditableListFragment
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TimeUtils
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
-import com.genonbeta.TrebleShot.widgetimport.GalleryGroupEditableListAdapter
 import com.genonbeta.android.framework.util.listing.Merger
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 
 /**
  * created by: Veli
  * date: 18.11.2017 13:32
  */
 class ImageListAdapter(
-    fragment: IEditableListFragment<ImageHolder, GroupViewHolder>,
-) : GalleryGroupEditableListAdapter<ImageHolder, GroupViewHolder>(fragment, MODE_GROUP_BY_ALBUM) {
+    fragment: IEditableListFragment<ImageHolder, RecyclerViewAdapter.ViewHolder>,
+) : EditableListFragment<ImageHolder, RecyclerViewAdapter.ViewHolder>(fragment) {
     override fun onLoad(lister: GroupLister<ImageHolder>) {
         context.contentResolver.query(
             EXTERNAL_CONTENT_URI, null, null,
@@ -97,7 +97,7 @@ class ImageListAdapter(
                 val text1: TextView = parentView.findViewById(R.id.text)
                 val text2: TextView = parentView.findViewById(R.id.text2)
                 text1.setText(item.friendlyName)
-                text2.setText(item.dateTakenString)
+                text2.text = item.dateTakenString
                 parentView.isSelected = item.isSelectableSelected()
                 GlideApp.with(context)
                     .load(item.uri)
@@ -107,10 +107,6 @@ class ImageListAdapter(
             }
         } catch (ignored: Exception) {
         }
-    }
-
-    override fun onGenerateRepresentative(text: String, merger: Merger<ImageHolder>?): ImageHolder {
-        return ImageHolder(text)
     }
 
     class ImageHolder : GalleryGroupShareable {

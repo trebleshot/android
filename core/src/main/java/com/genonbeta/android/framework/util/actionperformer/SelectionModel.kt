@@ -17,6 +17,8 @@
  */
 package com.genonbeta.android.framework.util.actionperformer
 
+import com.genonbeta.android.framework.model.BaseModel
+
 /**
  * date: 5.01.2018 10:58
  *
@@ -24,30 +26,31 @@ package com.genonbeta.android.framework.util.actionperformer
  * @see IEngineConnection
  * @author Veli Tasalı
  */
-interface Selectable {
+interface SelectionModel : BaseModel {
     /**
-     * This title is intended for UI purposes.
+     * Ensures whether this model accepts selection.
      *
-     * @return The human-readable title for this selectable.
+     * This method is in-place because the selection engine may need to accept non-selectable objects at times.
+     *
+     * @return True if this model accepts selection.
      */
-    fun getSelectableTitle(): String
+    fun canSelect(): Boolean
 
     /**
-     * The current state of this selectable.
+     * The current state of this selection model.
      *
      * @return True if marked as selected.
      */
-    fun isSelectableSelected(): Boolean
+    fun selected(): Boolean
 
     /**
-     * Invoked when this state of this selectable needs to be altered by an [IEngineConnection] instance.
+     * Invoked when this state of this selection model needs to be altered by an [IEngineConnection] instance.
      *
      * The direct invocation is not recommended since the list may be refreshed from database and the state may be lost
      * unless one of the [IEngineConnection.setSelected] methods are used.
      *
      * @param selected True if the item should be marked as selected or false if otherwise.
-     * @return True if this selectable instance allows altering its selection state.
      * @see IPerformerEngine.check
      */
-    fun setSelectableSelected(selected: Boolean): Boolean
+    fun select(selected: Boolean)
 }

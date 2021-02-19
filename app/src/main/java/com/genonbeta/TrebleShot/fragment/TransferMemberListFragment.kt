@@ -60,8 +60,8 @@ class TransferMemberListFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        isFilteringSupported = false
-        isSortingSupported = false
+        filteringSupported = false
+        sortingSupported = false
         //setUseDefaultPaddingDecoration(true);
         //setUseDefaultPaddingDecorationSpaceForEdges(true);
         defaultViewingGridSize = if (isScreenNormal()) 4 else 2

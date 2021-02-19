@@ -1,6 +1,11 @@
 package org.monora.uprotocol.client.android.view.model
 
-interface ContentModel {
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
+import org.monora.uprotocol.client.android.backend.Destination
+import org.monora.uprotocol.client.android.backend.OperationBackend
+import org.monora.uprotocol.client.android.backend.SharingBackend
+
+interface ContentModel : SelectionModel {
     fun canCopy(): Boolean
 
     fun canMove(): Boolean
@@ -11,6 +16,8 @@ interface ContentModel {
 
     fun canRename(): Boolean
 
+    fun copy(operationBackend: OperationBackend, destination: Destination): Boolean
+
     fun dateCreated(): Long
 
     fun dateModified(): Long
@@ -19,5 +26,11 @@ interface ContentModel {
 
     fun length(): Long
 
+    fun move(operationBackend: OperationBackend, destination: Destination): Boolean
+
     fun name(): String
+
+    fun remove(operationBackend: OperationBackend): Boolean
+
+    fun share(operationBackend: OperationBackend, sharingBackend: SharingBackend): Boolean
 }

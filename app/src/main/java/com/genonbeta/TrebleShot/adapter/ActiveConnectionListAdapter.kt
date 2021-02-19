@@ -70,7 +70,7 @@ class ActiveConnectionListAdapter(
         val text1: TextView = holder.itemView.findViewById(R.id.text)
         val text2: TextView = holder.itemView.findViewById(R.id.text2)
         val firstAddress = Networks.getFirstInet4Address(item)
-        text1.text = item.getSelectableTitle()
+        text1.text = item.name()
         text2.text = firstAddress?.let { TextUtils.makeWebShareLink(context, it.hostAddress) }
     }
 
@@ -110,15 +110,15 @@ class ActiveConnectionListAdapter(
             return name
         }
 
-        override fun getSelectableTitle(): String {
+        override fun name(): String {
             return name
         }
 
-        override fun isSelectableSelected(): Boolean {
+        override fun selected(): Boolean {
             return false
         }
 
-        override fun setSelectableSelected(selected: Boolean): Boolean {
+        override fun select(selected: Boolean): Boolean {
             return false
         }
     }

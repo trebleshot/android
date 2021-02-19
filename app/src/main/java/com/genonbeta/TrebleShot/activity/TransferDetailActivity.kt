@@ -513,11 +513,17 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     companion object {
         val TAG = TransferDetailActivity::class.java.simpleName
+        
         const val ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS"
+
         const val EXTRA_TRANSFER = "extraTransfer"
+
         const val EXTRA_TRANSFER_ITEM_ID = "extraTransferItemId"
+
         const val EXTRA_DEVICE = "extraDevice"
+
         const val EXTRA_TRANSFER_TYPE = "extraTransferType"
+
         const val REQUEST_ADD_DEVICES = 5045
 
         fun startInstance(context: Context, transfer: Transfer?) {

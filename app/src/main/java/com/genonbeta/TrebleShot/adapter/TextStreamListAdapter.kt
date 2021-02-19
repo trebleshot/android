@@ -26,7 +26,6 @@ import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.TextStreamObject
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.SQLQuery
 import com.genonbeta.android.framework.util.listing.Merger
@@ -42,10 +41,6 @@ class TextStreamListAdapter(
         for (item in AppUtils.getKuick(context).castQuery(
             SQLQuery.Select(Kuick.TABLE_CLIPBOARD), TextStreamObject::class.java
         )) lister.offerObliged(this, item)
-    }
-
-    override fun onGenerateRepresentative(text: String, merger: Merger<TextStreamObject>?): TextStreamObject {
-        return TextStreamObject(text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {

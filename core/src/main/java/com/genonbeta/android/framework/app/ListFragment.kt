@@ -39,7 +39,7 @@ import com.genonbeta.android.framework.widget.ListAdapterBase
  * Created by: veli
  * Date: 12/3/16 9:57 AM
  */
-abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment(), ListFragmentBase<T> {
+abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment(), ListFragmentBase {
     abstract var adapter: E
 
     open lateinit var listView: Z

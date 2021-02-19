@@ -37,7 +37,6 @@ import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter.StableItem
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.app.EditableListFragment
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
-import com.genonbeta.TrebleShot.dataobject.Shareable
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog
 import com.genonbeta.TrebleShot.fragment.*
 import com.genonbeta.TrebleShot.service.backgroundservice.AsyncTask

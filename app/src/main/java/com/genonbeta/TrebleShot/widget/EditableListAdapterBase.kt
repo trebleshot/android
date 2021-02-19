@@ -18,7 +18,7 @@
 package com.genonbeta.TrebleShot.widgetimport
 
 import com.genonbeta.TrebleShot.dataobject.Editable
-import com.genonbeta.android.framework.util.actionperformer.SelectableProvider
+import com.genonbeta.android.framework.util.actionperformer.SelectionModelProvider
 import com.genonbeta.android.framework.widget.ListAdapterBase
 import java.util.*
 
@@ -26,7 +26,7 @@ import java.util.*
  * created by: veli
  * date: 14/04/18 00:51
  */
-interface EditableListAdapterBase<T : Editable> : ListAdapterBase<T>, SelectableProvider<T>, Comparator<T> {
+interface EditableListAdapterBase<T : Editable> : ListAdapterBase<T>, SelectionModelProvider<T>, Comparator<T> {
     fun filterItem(item: T): Boolean
 
     fun getItem(position: Int): T

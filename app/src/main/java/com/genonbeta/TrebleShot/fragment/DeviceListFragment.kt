@@ -64,8 +64,8 @@ open class DeviceListFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isFilteringSupported = true
-        isSortingSupported = false
+        filteringSupported = true
+        sortingSupported = false
         itemOffsetDecorationEnabled = true
         itemOffsetForEdgesEnabled = true
         defaultItemOffsetPadding = resources.getDimension(R.dimen.padding_list_content_parent_layout)

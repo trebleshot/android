@@ -30,7 +30,6 @@ import com.genonbeta.TrebleShot.adapter.TransferItemListAdapter
 import com.genonbeta.TrebleShot.adapter.TransferItemListAdapter.*
 import com.genonbeta.TrebleShot.app.Activity.OnBackPressedListener
 import com.genonbeta.TrebleShot.app.EditableListFragment
-import com.genonbeta.TrebleShot.app.GroupEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.LoadedMember
 import com.genonbeta.TrebleShot.dataobject.Transfer
@@ -44,13 +43,12 @@ import com.genonbeta.TrebleShot.ui.callback.TitleProvider
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Transfers
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import java.io.File
 import java.util.*
 
@@ -85,7 +83,7 @@ open class TransferItemListFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isFilteringSupported = true
+        filteringSupported = true
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME
         defaultGroupingCriteria = TransferItemListAdapter.MODE_GROUP_BY_DEFAULT
@@ -274,10 +272,10 @@ open class TransferItemListFragment :
         override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
             val id = item.itemId
             val engine = getPerformerEngine() ?: return false
-            val genericList: List<Selectable> = ArrayList(engine.getSelectionList())
+            val genericList: List<SelectionModel> = ArrayList(engine.getSelectionList())
             val selectionList: MutableList<GenericItem> = ArrayList<GenericItem>()
-            for (selectable in genericList) {
-                if (selectable is GenericItem) selectionList.add(selectable)
+            for (selectionModel in genericList) {
+                if (selectionModel is GenericItem) selectionList.add(selectionModel)
             }
             return if (id == R.id.action_mode_transfer_delete) {
                 DialogUtils.showRemoveTransferObjectListDialog(activity, selectionList)

@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.fragment.inner.SelectionListFragment.MyAdapter
 import com.genonbeta.TrebleShot.ui.callback.IconProvider
 import com.genonbeta.TrebleShot.ui.callback.TitleProvider
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment
-import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 
@@ -35,7 +35,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
  * created by: veli
  * date: 9/3/18 10:17 PM
  */
-class SelectionListFragment : DynamicRecyclerViewFragment<Selectable, ViewHolder, MyAdapter>(), IconProvider,
+class SelectionListFragment : DynamicRecyclerViewFragment<SelectionModel, ViewHolder, MyAdapter>(), IconProvider,
     TitleProvider {
     override val iconRes: Int = R.drawable.ic_insert_drive_file_white_24dp
 
@@ -77,15 +77,15 @@ class SelectionListFragment : DynamicRecyclerViewFragment<Selectable, ViewHolder
 
     fun updateSelection(selectAll: Boolean) {
         synchronized(adapter.getList()) {
-            for (selectable in adapter.getList()) selectable.setSelectableSelected(selectAll)
+            for (selectionModel in adapter.getList()) selectionModel.select(selectAll)
         }
         adapter.notifyDataSetChanged()
     }
 
-    class MyAdapter(context: Context) : RecyclerViewAdapter<Selectable, ViewHolder>(context) {
-        private val list: ArrayList<Selectable> = ArrayList()
+    class MyAdapter(context: Context) : RecyclerViewAdapter<SelectionModel, ViewHolder>(context) {
+        private val list: ArrayList<SelectionModel> = ArrayList()
 
-        private val pendingList: ArrayList<Selectable> = ArrayList()
+        private val pendingList: ArrayList<SelectionModel> = ArrayList()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val holder = ViewHolder(layoutInflater.inflate(R.layout.list_selection, parent, false))
@@ -96,46 +96,47 @@ class SelectionListFragment : DynamicRecyclerViewFragment<Selectable, ViewHolder
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val selectable: Selectable = list[position]
+            val selectionModel: SelectionModel = list[position]
             val checkBox: AppCompatCheckBox = holder.itemView.findViewById(R.id.checkbox)
             val text1: TextView = holder.itemView.findViewById<TextView>(R.id.text)
 
-            text1.text = selectable.getSelectableTitle()
-            checkBox.isChecked = selectable.isSelectableSelected()
+            text1.text = selectionModel.name()
+            checkBox.isChecked = selectionModel.selected()
         }
 
         override fun getItemCount(): Int {
             return list.size
         }
 
-        override fun onLoad(): MutableList<Selectable> {
-            val selectableList: MutableList<Selectable> = ArrayList(pendingList)
+        override fun onLoad(): MutableList<SelectionModel> {
+            val selectionModelList: MutableList<SelectionModel> = ArrayList(pendingList)
             pendingList.clear()
-            return selectableList
+            return selectionModelList
         }
 
-        override fun onUpdate(passedItem: MutableList<Selectable>) {
+        override fun onUpdate(passedItem: MutableList<SelectionModel>) {
             synchronized(list) {
                 list.clear()
                 list.addAll(passedItem)
             }
         }
 
-        override fun getList(): ArrayList<Selectable> {
+        override fun getList(): ArrayList<SelectionModel> {
             return list
         }
 
-        fun checkReversed(checkBox: AppCompatCheckBox, selectable: Selectable) {
-            if (selectable.setSelectableSelected(!selectable.isSelectableSelected())) {
-                checkBox.isChecked = selectable.isSelectableSelected()
+        fun checkReversed(checkBox: AppCompatCheckBox, selectionModel: SelectionModel) {
+            if (selectionModel.canSelect()) {
+                selectionModel.select(!selectionModel.selected())
+                checkBox.isChecked = selectionModel.selected()
             }
         }
 
-        protected fun load(selectableList: ArrayList<out Selectable>?) {
-            if (selectableList == null) return
+        protected fun load(selectionModelList: ArrayList<out SelectionModel>?) {
+            if (selectionModelList == null) return
             synchronized(pendingList) {
                 pendingList.clear()
-                pendingList.addAll(selectableList)
+                pendingList.addAll(selectionModelList)
             }
         }
     }

@@ -40,8 +40,6 @@ import com.genonbeta.TrebleShot.fragment.FileListFragment
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.util.MimeIcons
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.*
 import com.genonbeta.android.database.DatabaseObject
 import com.genonbeta.android.database.KuickDb

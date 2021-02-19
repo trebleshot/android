@@ -26,14 +26,14 @@ class PerformerEngine : IPerformerEngine {
 
     private val performerListenerList: MutableList<PerformerListener> = ArrayList()
 
-    override fun <T : Selectable> check(
-        engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
+    override fun <T : SelectionModel> check(
+        engineConnection: IEngineConnection<T>, model: T, isSelected: Boolean, position: Int,
     ): Boolean {
         synchronized(performerCallbackList) {
             for (callback in performerCallbackList) if (!callback.onSelection(
                     this,
                     engineConnection,
-                    selectable,
+                    model,
                     isSelected,
                     position
                 )
@@ -42,15 +42,15 @@ class PerformerEngine : IPerformerEngine {
         return true
     }
 
-    override fun <T : Selectable> check(
-        engineConnection: IEngineConnection<T>, selectableList: MutableList<T>,
+    override fun <T : SelectionModel> check(
+        engineConnection: IEngineConnection<T>, modelList: MutableList<T>,
         isSelected: Boolean, positions: IntArray,
     ): Boolean {
         synchronized(performerCallbackList) {
             for (callback in performerCallbackList) if (!callback.onSelection(
                     this,
                     engineConnection,
-                    selectableList,
+                    modelList,
                     isSelected,
                     positions
                 )
@@ -59,13 +59,13 @@ class PerformerEngine : IPerformerEngine {
         return true
     }
 
-    override fun getSelectionList(): MutableList<out Selectable> {
-        val selectableList: MutableList<Selectable> = ArrayList<Selectable>()
+    override fun getSelectionList(): MutableList<out SelectionModel> {
+        val selectionModelList: MutableList<SelectionModel> = ArrayList<SelectionModel>()
         synchronized(connectionList) {
             for (baseEngineConnection in connectionList)
-                baseEngineConnection.getGenericSelectedItemList()?.let { selectableList.addAll(it) }
+                baseEngineConnection.getGenericSelectedList()?.let { selectionModelList.addAll(it) }
         }
-        return selectableList
+        return selectionModelList
     }
 
     override fun getConnectionList(): MutableList<IBaseEngineConnection> {
@@ -86,30 +86,30 @@ class PerformerEngine : IPerformerEngine {
         return false
     }
 
-    override fun <T : Selectable> informListeners(
-        engineConnection: IEngineConnection<T>, selectable: T,
+    override fun <T : SelectionModel> informListeners(
+        engineConnection: IEngineConnection<T>, model: T,
         isSelected: Boolean, position: Int,
     ) {
         synchronized(performerListenerList) {
             for (listener in performerListenerList) listener.onSelected(
                 this,
                 engineConnection,
-                selectable,
+                model,
                 isSelected,
                 position
             )
         }
     }
 
-    override fun <T : Selectable> informListeners(
-        engineConnection: IEngineConnection<T>, selectableList: MutableList<T>,
+    override fun <T : SelectionModel> informListeners(
+        engineConnection: IEngineConnection<T>, modelList: MutableList<T>,
         isSelected: Boolean, positions: IntArray,
     ) {
         synchronized(performerListenerList) {
             for (listener in performerListenerList) listener.onSelected(
                 this,
                 engineConnection,
-                selectableList,
+                modelList,
                 isSelected,
                 positions
             )

@@ -66,8 +66,8 @@ class ActiveConnectionListFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         layoutResId = R.layout.layout_active_connection
-        isSortingSupported = false
-        isFilteringSupported = true
+        sortingSupported = false
+        filteringSupported = true
         itemOffsetDecorationEnabled = true
         itemOffsetForEdgesEnabled = true
         defaultItemOffsetPadding = resources.getDimension(R.dimen.padding_list_content_parent_layout)

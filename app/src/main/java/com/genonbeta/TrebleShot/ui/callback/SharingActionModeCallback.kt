@@ -17,8 +17,6 @@
  */
 package com.genonbeta.TrebleShot.ui.callbackimport
 
-import com.genonbeta.TrebleShot.dataobject.Shareable
-
 /**
  * created by: veli
  * date: 14/04/18 15:59

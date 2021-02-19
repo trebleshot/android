@@ -34,7 +34,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.FileListAdapter
 import com.genonbeta.TrebleShot.adapter.FileListAdapter.FileHolder
 import com.genonbeta.TrebleShot.app.EditableListFragmentBase
-import com.genonbeta.TrebleShot.app.GroupEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Editable
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog
@@ -42,14 +41,13 @@ import com.genonbeta.TrebleShot.dialogimport.FileDeletionDialog
 import com.genonbeta.TrebleShot.ui.callback.SharingPerformerMenuCallback
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import com.google.android.material.snackbar.Snackbar
 import java.io.FileNotFoundException
 
@@ -102,7 +100,7 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isFilteringSupported = true
+        filteringSupported = true
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME
         defaultGroupingCriteria = FileListAdapter.MODE_GROUP_BY_DEFAULT
@@ -288,12 +286,12 @@ abstract class FileListFragment : GroupEditableListFragment<FileHolder, GroupVie
 
         override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
             val performerEngine = getPerformerEngine() ?: return false
-            val selectableList: List<Selectable> = ArrayList<Selectable>(performerEngine.getSelectionList())
+            val selectionModelList: List<SelectionModel> = ArrayList<SelectionModel>(performerEngine.getSelectionList())
             val fileList: MutableList<FileHolder> = ArrayList()
 
-            for (selectable in selectableList)
-                if (selectable is FileHolder)
-                    fileList.add(selectable)
+            for (selectionModel in selectionModelList)
+                if (selectionModel is FileHolder)
+                    fileList.add(selectionModel)
 
             return if (fileList.size <= 0 || !handleEditingAction(item, fragment, fileList))
                 super.onPerformerMenuSelected(performerMenu, item)

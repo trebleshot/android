@@ -28,9 +28,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter.VideoHolder
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TimeUtils
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.*
-import com.genonbeta.TrebleShot.widgetimport.GalleryGroupEditableListAdapter
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.listing.Merger
 
@@ -118,10 +115,6 @@ class VideoListAdapter(
                 lister.offerObliged(this, holder)
             } while (cursor.moveToNext())
         }
-    }
-
-    protected override fun onGenerateRepresentative(text: String, merger: Merger<VideoHolder>?): VideoHolder {
-        return VideoHolder(text)
     }
 
     class VideoHolder : GalleryGroupShareable {

@@ -24,14 +24,12 @@ import android.view.View
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.AudioListAdapter
 import com.genonbeta.TrebleShot.adapter.AudioListAdapter.AudioItemHolder
-import com.genonbeta.TrebleShot.app.GroupEditableListFragment
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 
 class AudioListFragment : GroupEditableListFragment<AudioItemHolder, GroupViewHolder, AudioListAdapter>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isFilteringSupported = true
+        filteringSupported = true
         defaultGroupingCriteria = AudioListAdapter.MODE_GROUP_BY_ALBUM
     }
 

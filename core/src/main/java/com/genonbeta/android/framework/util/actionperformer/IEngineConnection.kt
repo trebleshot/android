@@ -20,17 +20,17 @@ package com.genonbeta.android.framework.util.actionperformer
 /**
  * This class takes care of connecting [IPerformerEngine] to an UI element.
  *
- * UI element showing the selection operation doesn't need to know what [T] is other than it is a selectable.
+ * UI element showing the selection operation doesn't need to know what [T] is other than it is a model.
  *
  * The term "connection" is used loosely and doesn't mean that there is an IPC connection or similar.
  *
- * @param T The derivative of the [Selectable] class.
+ * @param T The derivative of the [SelectionModel] class.
  */
-interface IEngineConnection<T : Selectable> : IBaseEngineConnection {
+interface IEngineConnection<T : SelectionModel> : IBaseEngineConnection {
     /**
      * Add a listener that will only be called by this specific connection or more connections with same T parameter.
      *
-     * @param listener To be called when the selection state of a selectable changes.
+     * @param listener To be called when the selection state of a model changes.
      * @return True when the listener is added or already exist.
      */
     fun addSelectionListener(listener: SelectionListener<T>): Boolean
@@ -38,57 +38,57 @@ interface IEngineConnection<T : Selectable> : IBaseEngineConnection {
     /**
      * Queries the selected item list.
      *
-     * @return A shortcut to [SelectableHost.getSelectableList].
+     * @return A shortcut to [SelectionHost.getSelectionList].
      * @see [getSelectableHost]
      */
-    fun getSelectedItemList(): MutableList<T>?
+    fun getSelectionList(): MutableList<T>?
 
     /**
      * Queries the items that are available for selection.
      *
-     * @return A shortcut to [SelectableProvider.getSelectableList].
+     * @return A shortcut to [SelectionModelProvider.getAvailableList].
      * @see [getSelectableProvider]
      */
     fun getAvailableList(): MutableList<T>?
 
     /**
-     * The host that keeps the selectable items that are marked as selected.
+     * The host that keeps the model items that are marked as selected.
      *
      * @return The host.
-     * @see SelectableHost
+     * @see SelectionHost
      */
-    fun getSelectableHost(): SelectableHost<T>?
+    fun getSelectableHost(): SelectionHost<T>?
 
     /**
      * The provider of the items available for selection.
      *
      * @return The provider.
-     * @see SelectableProvider
+     * @see SelectionModelProvider
      */
-    fun getSelectableProvider(): SelectableProvider<T>?
+    fun getSelectableProvider(): SelectionModelProvider<T>?
 
     /**
-     * Ensure that the given selectable object is stored in [SelectableHost].
+     * Ensure that the given model object is stored in [SelectionHost].
      *
-     * @param selectable To check.
-     * @return True if the selectable is on the host.
+     * @param model To check.
+     * @return True if the model is on the host.
      */
-    fun isSelectedOnHost(selectable: T): Boolean
+    fun isSelectedOnHost(model: T): Boolean
 
     /**
      * Remove a previously added listener.
      *
      * @param listener To remove.
-     * @return True when the listener was on the list and now remoeved.
+     * @return True when the listener was on the list and now removed.
      */
     fun removeSelectionListener(listener: SelectionListener<T>): Boolean
 
     /**
-     * Sets the selectable host that keeps the selectable items that are marked as selected.
+     * Sets the selection host that keeps the model items that are marked as selected.
      *
      * @param host That keeps the selected items.
      */
-    fun setSelectableHost(host: SelectableHost<T>?)
+    fun setSelectionHost(host: SelectionHost<T>?)
 
     /**
      * Sets the provider for available items.
@@ -96,69 +96,69 @@ interface IEngineConnection<T : Selectable> : IBaseEngineConnection {
      * @param provider That provides the items available for selection.
      * @see getSelectableProvider
      */
-    fun setSelectableProvider(provider: SelectableProvider<T>?)
+    fun setSelectionModelProvider(provider: SelectionModelProvider<T>?)
 
     /**
-     * Alter the state of the selectable without specifying its location in [getAvailableList].
+     * Alter the state of the model without specifying its location in [getAvailableList].
      *
      * Even though it shouldn't be important to have the position, it may later be required to use with
      * [IPerformerEngine.check].
      *
      * Also, because the new state is not specified, it will be the opposite what it previously was.
      *
-     * @return True when the state of the given selectable has been successfully altered.
+     * @return True when the state of the given model has been successfully altered.
      * @throws CouldNotAlterException If selection state could not be altered.
      */
     @Throws(CouldNotAlterException::class)
-    fun setSelected(selectable: T): Boolean
+    fun setSelected(model: T): Boolean
 
     /**
-     * Alter the state of the selectable without specifying its location in [getAvailableList].
+     * Alter the state of the models without specifying its location in [getAvailableList].
      *
      * Even though it shouldn't be important to have the position, it may later be required to use with
      * [IPerformerEngine.check].
      *
-     * @return True when the state of the given selectable has been successfully altered.
+     * @return True when the state of the given model has been successfully altered.
      */
-    fun setSelected(selectable: T, selected: Boolean): Boolean
+    fun setSelected(model: T, selected: Boolean): Boolean
 
     /**
-     * Change the selection state of a selectable.
+     * Change the selection state of a model.
      *
      * The position will help avoid looking for the position of the item in the list.
      *
      * The new state will be the opposite of what it previously was.
      *
-     * @param selectable To alter.
-     * @return True when the state of the given selectable has been successfully altered.
+     * @param model To alter.
+     * @return True when the state of the given model has been successfully altered.
      * @throws CouldNotAlterException If selection state could not be altered.
      */
     @Throws(CouldNotAlterException::class)
-    fun setSelected(selectable: T, position: Int): Boolean
+    fun setSelected(model: T, position: Int): Boolean
 
     /**
-     * Mark the given selectable with the given state 'selected'.
+     * Mark the given model with the given state 'selected'.
      *
      * If it is already in that state return true and don't call [IPerformerEngine.check].
      *
-     * @param selectable To alter
-     * @param position   Of the selectable in [getAvailableList].
+     * @param model To alter
+     * @param position   Of the model in [getAvailableList].
      * @param selected   That will be new state.
      * @return True if the requested state has been applied or was already the same.
      */
-    fun setSelected(selectable: T, position: Int, selected: Boolean): Boolean
+    fun setSelected(model: T, position: Int, selected: Boolean): Boolean
 
     /**
-     * Mark all the selectables in the list.
+     * Mark all the models in the list.
      *
      * The listeners for individual items won't be invoked.
      *
-     * @param selectableList To alter.
-     * @param positions      Of the selectables in [getAvailableList] in the same size and order of selectable list.
+     * @param modelList To alter.
+     * @param positions      Of the models in [getAvailableList] in the same size and order of model list.
      * @param selected       To apply as the state.
-     * @return True when, other than some selectables rejecting to alter state, everything was okay.
+     * @return True when, other than some models rejecting to alter state, everything was okay.
      */
-    fun setSelected(selectableList: MutableList<T>, positions: IntArray, selected: Boolean): Boolean
+    fun setSelected(modelList: MutableList<T>, positions: IntArray, selected: Boolean): Boolean
 
     /**
      * Invoked only by the [IEngineConnection] owning it.
@@ -169,33 +169,33 @@ interface IEngineConnection<T : Selectable> : IBaseEngineConnection {
      *
      * @param T Type that this listener will be called from.
      */
-    interface SelectionListener<T : Selectable> {
+    interface SelectionListener<T : SelectionModel> {
         /**
-         * Invoked upon altering an individual [Selectable].
+         * Invoked upon altering an individual [SelectionModel].
          *
          * @param engine     Bound to this class.
          * @param owner      Making the call.
-         * @param selectable Being altered.
+         * @param model Being altered.
          * @param isSelected State to set.
-         * @param position   of the [Selectable] in [SelectableProvider.getSelectableList].
+         * @param position   of the [SelectionModel] in [SelectionModelProvider.getAvailableList].
          */
         fun onSelected(
-            engine: IPerformerEngine, owner: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
+            engine: IPerformerEngine, owner: IEngineConnection<T>, model: T, isSelected: Boolean, position: Int,
         )
 
         /**
-         * When a list of [Selectable]s have been changed, this is called.
+         * When a list of [SelectionModel]s have been changed, this is called.
          *
          * @param engine         Bound to this class.
          * @param owner          Making the call.
-         * @param selectableList Being altered.
+         * @param modelList Being altered.
          * @param isSelected     State to set.
-         * @param positions      Of [Selectable]s in [SelectableProvider.getSelectableList]ç
+         * @param positions      Of [SelectionModel]s in [SelectionModelProvider.getAvailableList]ç
          */
         fun onSelected(
             engine: IPerformerEngine,
             owner: IEngineConnection<T>,
-            selectableList: MutableList<T>,
+            modelList: MutableList<T>,
             isSelected: Boolean,
             positions: IntArray,
         )

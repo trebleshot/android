@@ -32,7 +32,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.activity.TransferDetailActivity
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter
 import com.genonbeta.TrebleShot.app.EditableListFragment
-import com.genonbeta.TrebleShot.app.GroupEditableListFragment
 import com.genonbeta.TrebleShot.database.Kuick
 import com.genonbeta.TrebleShot.dataobject.Transfer
 import com.genonbeta.TrebleShot.dataobject.TransferIndex
@@ -42,10 +41,9 @@ import com.genonbeta.TrebleShot.ui.callback.IconProvider
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Lists
 import com.genonbeta.TrebleShot.widget.EditableListAdapter
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.framework.util.actionperformer.Selectable
+import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
 
@@ -70,7 +68,7 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex, GroupViewH
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isFilteringSupported = true
+        filteringSupported = true
         defaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_DESCENDING
         defaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_DATE
         defaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_DATE
@@ -154,7 +152,7 @@ class TransferListFragment : GroupEditableListFragment<TransferIndex, GroupViewH
             val id = item.itemId
             val kuick = AppUtils.getKuick(activity)
             val engine = getPerformerEngine() ?: return false
-            val genericList: List<Selectable> = ArrayList<Selectable>(engine.getSelectionList())
+            val genericList: List<SelectionModel> = ArrayList<SelectionModel>(engine.getSelectionList())
             val indexList: List<TransferIndex> = Lists.typedListOf(genericList, TransferIndex::class.java)
             if (id == R.id.action_mode_group_delete) {
                 val groupList: MutableList<Transfer> = ArrayList()

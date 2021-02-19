@@ -197,7 +197,7 @@ object AppUtils {
     fun <T : Editable> showFolderSelectionHelp(fragment: EditableListFragmentBase<T>) {
         val connection = fragment.engineConnection
         val preferences = getDefaultPreferences(fragment.requireContext())
-        val selectedItemList = connection.getSelectedItemList() ?: return
+        val selectedItemList = connection.getSelectionList() ?: return
 
         if (selectedItemList.isNotEmpty() && !preferences.getBoolean("helpFolderSelection", false))
             fragment.createSnackbar(R.string.mesg_helpFolderSelection)

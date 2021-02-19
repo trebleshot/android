@@ -31,7 +31,6 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.AudioListAdapter.AudioItemHolder
 import com.genonbeta.TrebleShot.app.IEditableListFragment
 import com.genonbeta.TrebleShot.util.TextUtils
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupLister.CustomGroupLister
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter.GroupViewHolder
 import com.genonbeta.android.framework.util.listing.Merger
@@ -96,10 +95,6 @@ class AudioListAdapter(fragment: IEditableListFragment<AudioItemHolder, GroupVie
                 )
             } while (songCursor.moveToNext())
         }
-    }
-
-    override fun onGenerateRepresentative(text: String, merger: Merger<AudioItemHolder>?): AudioItemHolder {
-        return AudioItemHolder(text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {

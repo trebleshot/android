@@ -45,13 +45,13 @@ interface IPerformerEngine {
      * Unlike that method, this doesn't have any ability to manipulate the task.
      *
      * @param engineConnection That is making the call.
-     * @param selectable       Item that is being updated.
-     * @param isSelected       True when [Selectable] is being marked as selected.
-     * @param position         Of the [Selectable] which will be [RecyclerView.NO_POSITION] if not yet known.
-     * @param T                Type of selectable expected to be received and used with [IEngineConnection].
+     * @param model       Item that is being updated.
+     * @param isSelected       True when [SelectionModel] is being marked as selected.
+     * @param position         Of the [SelectionModel] which will be [RecyclerView.NO_POSITION] if not yet known.
+     * @param T                Type of model expected to be received and used with [IEngineConnection].
      */
-    fun <T : Selectable> informListeners(
-        engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
+    fun <T : SelectionModel> informListeners(
+        engineConnection: IEngineConnection<T>, model: T, isSelected: Boolean, position: Int,
     )
 
     /**
@@ -60,14 +60,14 @@ interface IPerformerEngine {
      * Unlike that method, this doesn't have any ability to manipulate the task.
      *
      * @param engineConnection That is making the call.
-     * @param selectableList   Of items that are being updated.
+     * @param modelList   Of items that are being updated.
      * @param isSelected       True when being marked as selected.
-     * @param positions        Of the [Selectable] list.
-     * @param T                Type of selectable expected to be received and used over [IEngineConnection].
+     * @param positions        Of the [SelectionModel] list.
+     * @param T                Type of model expected to be received and used over [IEngineConnection].
      */
-    fun <T : Selectable> informListeners(
+    fun <T : SelectionModel> informListeners(
         engineConnection: IEngineConnection<T>,
-        selectableList: MutableList<T>,
+        modelList: MutableList<T>,
         isSelected: Boolean,
         positions: IntArray,
     )
@@ -89,42 +89,42 @@ interface IPerformerEngine {
      * Usually invoked by [IEngineConnection.setSelected] to notify the [PerformerCallback] instances.
      *
      * @param engineConnection That is making the call.
-     * @param selectable       That is being updated.
-     * @param isSelected       True when [Selectable] is being marked as selected.
-     * @param position         Of the [Selectable] which will be [RecyclerView.NO_POSITION] if not yet known.
-     * @param T                Type of selectable expected to be received and used with [IEngineConnection].
+     * @param model       That is being updated.
+     * @param isSelected       True when [SelectionModel] is being marked as selected.
+     * @param position         Of the [SelectionModel] which will be [RecyclerView.NO_POSITION] if not yet known.
+     * @param T                Type of model expected to be received and used with [IEngineConnection].
      * @return True if all the listeners agreed to perform the selection operation.
      */
-    fun <T : Selectable> check(
-        engineConnection: IEngineConnection<T>, selectable: T, isSelected: Boolean, position: Int,
+    fun <T : SelectionModel> check(
+        engineConnection: IEngineConnection<T>, model: T, isSelected: Boolean, position: Int,
     ): Boolean
 
     /**
      * This is a call that is usually made by [IEngineConnection.setSelected] to notify the [PerformerCallback] classes.
      *
      * @param engineConnection That is making the call.
-     * @param selectableList   Of items that are being updated.
-     * @param isSelected       True when the individual [Selectable] objects is intended to be marked as selected.
-     * @param positions        Of the individual [Selectable] objects.
-     * @param T                Type of selectable expected to be received and used with [IEngineConnection].
+     * @param modelList   Of items that are being updated.
+     * @param isSelected       True when the individual [SelectionModel] objects is intended to be marked as selected.
+     * @param positions        Of the individual [SelectionModel] objects.
+     * @param T                Type of model expected to be received and used with [IEngineConnection].
      * @return True if all the listeners agreed to perform the selection operation.
      */
-    fun <T : Selectable> check(
+    fun <T : SelectionModel> check(
         engineConnection: IEngineConnection<T>,
-        selectableList: MutableList<T>,
+        modelList: MutableList<T>,
         isSelected: Boolean,
         positions: IntArray,
     ): Boolean
 
     /**
-     * Compile the list of selectables that are held in the host of their owners, in other words, make a list of
-     * selectables that are marked as selected from all connections. The problem is, though it is easier to
+     * Compile the list of models that are held in the host of their owners, in other words, make a list of
+     * models that are marked as selected from all connections. The problem is, though it is easier to
      * access each element, it isn't easy to refer to their owners after they are referred to as generic
-     * [Selectable]. A better approach is to never mention them outside of their context.
+     * [SelectionModel]. A better approach is to never mention them outside of their context.
      *
-     * @return The compiled list of selectable that are selected.
+     * @return The compiled list of models that are selected.
      */
-    fun getSelectionList(): MutableList<out Selectable>
+    fun getSelectionList(): MutableList<out SelectionModel>
 
     /**
      * If you need to individually refer to the list elements without losing their identity in the process, you can
