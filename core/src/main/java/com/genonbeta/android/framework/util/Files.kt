@@ -15,6 +15,7 @@ import java.net.URI
 import java.net.URLConnection
 import java.util.*
 import kotlin.math.ln
+import kotlin.math.pow
 
 /**
  * created by: veli
@@ -115,6 +116,16 @@ object Files {
         ) else DocumentFile.fromUri(context, uri, false)
     }
 
+    fun formatLength(length: Long, kilo: Boolean): String {
+        val unit = if (kilo) 1000 else 1024
+        if (length < unit) return "$length B"
+        val expression = (ln(length.toDouble()) / ln(unit.toDouble())).toInt()
+        val prefix = (if (kilo) "kMGTPE" else "KMGTPE")[expression - 1] + if (kilo) "" else "i"
+        return String.format(
+            Locale.getDefault(), "%.1f %sB", length / unit.toDouble().pow(expression.toDouble()), prefix
+        )
+    }
+
     fun geActionTypeToView(type: String?): String {
         return if ("application/vnd.android.package-archive" == type && Build.VERSION.SDK_INT >= 14)
             Intent.ACTION_INSTALL_PACKAGE
@@ -129,10 +140,10 @@ object Files {
     }
 
     fun getFileExtension(fileName: String): String {
-        val lastDot = fileName.lastIndexOf('.')
+        val dotIndex = fileName.lastIndexOf('.')
 
-        if (lastDot >= 0) {
-            val extension = fileName.substring(lastDot + 1).toLowerCase(Locale.ROOT)
+        if (dotIndex >= 0) {
+            val extension = fileName.substring(dotIndex + 1).toLowerCase(Locale.ROOT)
             val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
             if (mime != null) return ".$extension"
         }
@@ -242,19 +253,5 @@ object Files {
             Log.d(TAG, String.format(Locale.US, "Open uri request failed with error message '%s'", e.message))
         }
         return false
-    }
-
-    fun sizeExpression(bytes: Long, notUseByte: Boolean): String {
-        val unit = if (notUseByte) 1000 else 1024
-        if (bytes < unit) return "$bytes B"
-        val expression = (ln(bytes.toDouble()) / ln(unit.toDouble())).toInt()
-        val prefix =
-            (if (notUseByte) "kMGTPE" else "KMGTPE")[expression - 1].toString() + if (notUseByte) "i" else ""
-        return String.format(
-            Locale.getDefault(),
-            "%.1f %sB",
-            bytes / Math.pow(unit.toDouble(), expression.toDouble()),
-            prefix
-        )
     }
 }

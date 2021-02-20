@@ -21,8 +21,9 @@ import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-class EngineConnection<T : SelectionModel>(provider: PerformerEngineProvider, host: SelectionHost<T>) :
-    IEngineConnection<T> {
+class EngineConnection<T : SelectionModel>(
+    val provider: PerformerEngineProvider, val host: SelectionHost<T>,
+) : IEngineConnection<T> {
     private var engineProvider: PerformerEngineProvider? = provider
 
     private var selectionModelProvider: SelectionModelProvider<T>? = null
@@ -91,7 +92,7 @@ class EngineConnection<T : SelectionModel>(provider: PerformerEngineProvider, ho
         return engineProvider
     }
 
-    override fun getGenericSelectedList(): MutableList<out SelectionModel>? {
+    override fun getGenericSelectionList(): MutableList<out SelectionModel>? {
         return getSelectionList()
     }
 

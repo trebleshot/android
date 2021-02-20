@@ -35,7 +35,7 @@ interface IBaseEngineConnection {
      *
      * @return The list that is available within [SelectionHost].
      */
-    fun getGenericSelectedList(): MutableList<out SelectionModel>?
+    fun getGenericSelectionList(): MutableList<out SelectionModel>?
 
     /**
      * The human-readable title for this connection.
