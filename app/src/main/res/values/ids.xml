@@ -17,7 +17,6 @@
   -->
 
 <resources>
-    <item name="actions_abs_editable_group_grid_size" type="id" />
     <item name="actions_abs_group_shareable_group_grouping" type="id" />
     <item name="actions_abs_editable_group_sorting" type="id" />
     <item name="actions_abs_view_transfer_activity_limit_to" type="id" />

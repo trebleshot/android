@@ -26,12 +26,10 @@ import androidx.recyclerview.widget.RecyclerView
  * created by: veli
  * date: 26.03.2018 11:46
  */
-abstract class RecyclerViewAdapter<T, V : RecyclerViewAdapter.ViewHolder>(final override val context: Context) :
-    RecyclerView.Adapter<V>(), ListAdapterBase<T> {
-
+abstract class RecyclerViewAdapter<T, V : RecyclerViewAdapter.ViewHolder>(
+    final override val context: Context,
+) : RecyclerView.Adapter<V>(), ListAdapterBase<T> {
     override val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-
-    var horizontalOrientation = false
 
     override fun onDataSetChanged() {
         notifyDataSetChanged()

@@ -33,14 +33,7 @@
         android:icon="@drawable/ic_format_list_checks_white_24dp"
         android:orderInCategory="10"
         android:title="@string/butn_multiSelect" />
-
-    <item
-        android:id="@+id/actions_abs_editable_grid_size"
-        android:orderInCategory="90"
-        android:title="@string/butn_gridSize">
-        <menu />
-    </item>
-
+    
     <item
         android:id="@+id/actions_abs_editable_sort_by"
         android:orderInCategory="100"

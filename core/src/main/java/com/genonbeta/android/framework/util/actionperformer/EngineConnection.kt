@@ -30,8 +30,6 @@ class EngineConnection<T : SelectionModel>(
 
     private var selectionHost: SelectionHost<T>? = host
 
-    private var definitiveTitle: CharSequence? = null
-
     private val selectionListenerList: MutableList<IEngineConnection.SelectionListener<T>> = ArrayList()
 
     override fun addSelectionListener(listener: IEngineConnection.SelectionListener<T>): Boolean {
@@ -84,10 +82,6 @@ class EngineConnection<T : SelectionModel>(
         } else Log.d(TAG, "changeSelectionState: Engine is empty. Skipping the call for listeners!")
     }
 
-    override fun getDefinitiveTitle(): CharSequence? {
-        return definitiveTitle
-    }
-
     override fun getEngineProvider(): PerformerEngineProvider? {
         return engineProvider
     }
@@ -122,10 +116,6 @@ class EngineConnection<T : SelectionModel>(
 
     override fun removeSelectionListener(listener: IEngineConnection.SelectionListener<T>): Boolean {
         synchronized(selectionListenerList) { return selectionListenerList.remove(listener) }
-    }
-
-    override fun setDefinitiveTitle(title: CharSequence?) {
-        definitiveTitle = title
     }
 
     override fun setEngineProvider(provider: PerformerEngineProvider?) {

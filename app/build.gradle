@@ -35,7 +35,6 @@ if (useLocalSigning) {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '29.0.3'
 
     buildFeatures {
         dataBinding true
@@ -107,12 +106,6 @@ android {
             dimension 'mode'
             signingConfig signingConfigs.gbDistribution
         }
-    }
-
-    packagingOptions {
-        exclude 'META-INF/maven/*'
-        exclude 'META-INF/plexus/*'
-        pickFirst 'META-INF/*'
     }
 }
 

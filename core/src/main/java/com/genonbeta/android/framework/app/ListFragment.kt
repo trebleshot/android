@@ -19,7 +19,6 @@ package com.genonbeta.android.framework.app
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +38,7 @@ import com.genonbeta.android.framework.widget.ListAdapterBase
  * Created by: veli
  * Date: 12/3/16 9:57 AM
  */
-abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment(), ListFragmentBase {
+abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment(), ListingFragmentBase {
     abstract var adapter: E
 
     open lateinit var listView: Z

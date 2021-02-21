@@ -38,13 +38,6 @@ interface IBaseEngineConnection {
     fun getGenericSelectionList(): MutableList<out SelectionModel>?
 
     /**
-     * The human-readable title for this connection.
-     *
-     * @return The title representing this connection.
-     */
-    fun getDefinitiveTitle(): CharSequence?
-
-    /**
      * Sets the engine provider.
      *
      * @param engineProvider That will provide the [IPerformerEngine] implementation.
@@ -59,13 +52,6 @@ interface IBaseEngineConnection {
      * @see [setEngineProvider]
      */
     fun getEngineProvider(): PerformerEngineProvider?
-
-    /**
-     * Sets the human-readable title for this connection.
-     *
-     * @param title Used to identify this connection.
-     */
-    fun setDefinitiveTitle(title: CharSequence?)
 
     /**
      * Find the model using [RecyclerView.ViewHolder.getAdapterPosition] and toggle its selection state.
