@@ -290,7 +290,7 @@
     <string name="text_dayCountShort">%d hr</string>
     <string name="text_monthCountShort">%d bln</string>
     <string name="text_yearCountShort">%d thn</string>
-    <string name="text_receivedTransfer">Menerima %s dalam $s</string>
+    <string name="text_receivedTransfer">Menerima %s dalam %s</string>
     <string name="text_translateTrebleshot">Bantu kami menerjemahkan</string>
     <string name="text_qrAllowTrustZoneSummary">Izinkan ZonaDipercaya untuk koneksi kode QR</string>
     <string name="text_qrAllowTrustZone">ZonaDipercaya untuk kode QR</string>
