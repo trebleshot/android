@@ -77,7 +77,7 @@ abstract class KuickDb(
     fun append(db: SQLiteDatabase, tableName: String, changeType: String, affectedRows: Long) {
         // If no row were affected, we shouldn't add the changelog.
         if (affectedRows <= 0) {
-            Log.e(TAG, "No changelog to update in: $tableName ; change: $changeType; affected rows: $affectedRows")
+            Log.e(TAG, "No changelog to update on='$tableName' change='$changeType' affected rows=$affectedRows")
             return
         }
 

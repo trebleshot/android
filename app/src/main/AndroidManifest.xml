@@ -86,7 +86,7 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.TextStreamActivity"
+            android:name=".activity.SharedTextActivity"
             android:label="@string/text_textStream"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 

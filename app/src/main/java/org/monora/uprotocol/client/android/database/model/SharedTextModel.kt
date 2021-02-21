@@ -14,7 +14,7 @@ import org.monora.uprotocol.client.android.model.ContentModel
 import retrofit2.http.Field
 
 @Parcelize
-@Entity(tableName = "shared_text")
+@Entity(tableName = "sharedText")
 data class SharedTextModel(
     @PrimaryKey(autoGenerate = true)
     val id: Int,

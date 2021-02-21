@@ -34,9 +34,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 class SharedTextListAdapter(
     fragment: IListingFragment<SharedTextModel, ViewHolder>,
 ) : ListingAdapter<SharedTextModel, ViewHolder>(fragment) {
-    override fun onLoad(): MutableList<SharedTextModel> {
-        TODO("Not yet implemented")
-    }
+    override fun onLoad(): MutableList<SharedTextModel> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(layoutInflater.inflate(R.layout.list_text_stream, parent, false))

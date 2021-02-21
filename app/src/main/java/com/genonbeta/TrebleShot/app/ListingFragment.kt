@@ -58,9 +58,8 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
         get() = super.adapter
         set(value) {
             super.adapter = value
-            fastScroller?.recyclerView = listView
             engineConnection.setSelectionModelProvider(adapter)
-
+            fastScroller?.recyclerView = listView
             adapter.fragment = this
             adapter.setSortingCriteria(sortingCriteria, orderingCriteria)
         }

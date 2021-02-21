@@ -12,5 +12,8 @@ interface SharedTextDao {
     fun delete(sharedTextModel: SharedTextModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(sharedTextModel: SharedTextModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg sharedTextModel: SharedTextModel)
 }

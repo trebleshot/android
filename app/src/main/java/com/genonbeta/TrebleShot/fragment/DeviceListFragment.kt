@@ -148,7 +148,7 @@ open class DeviceListFragment : ListingFragment<VirtualDevice, ViewHolder, Devic
 
     companion object {
         const val REQUEST_LOCATION_PERMISSION = 643
-        const val ARG_USE_HORIZONTAL_VIEW = "useHorizontalView"
+
         const val ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList"
 
         fun openInfo(activity: Activity, utils: Connections, virtualDevice: VirtualDevice) {

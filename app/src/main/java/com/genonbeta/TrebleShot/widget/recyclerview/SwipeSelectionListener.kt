@@ -30,8 +30,9 @@ import kotlin.math.min
  * created by: veli
  * date: 3/11/19 1:02 AM
  */
-class SwipeSelectionListener<T : ContentModel>(private val listFragment: ListingFragmentBase<T>) :
-    RecyclerView.OnItemTouchListener {
+class SwipeSelectionListener<T : ContentModel>(
+    private val listFragment: ListingFragmentBase<T>,
+) : RecyclerView.OnItemTouchListener {
     private var selectionActivated = false
 
     private var activationWaiting = false
@@ -139,11 +140,11 @@ class SwipeSelectionListener<T : ContentModel>(private val listFragment: Listing
 
     private fun initialize() {
         activationWaiting = false
-        selectionActivated = activationWaiting
+        selectionActivated = false
         lastPos = -1
-        startPos = lastPos
+        startPos = -1
         initialY = 0
-        initialX = initialY
+        initialX = 0
     }
 
     companion object {

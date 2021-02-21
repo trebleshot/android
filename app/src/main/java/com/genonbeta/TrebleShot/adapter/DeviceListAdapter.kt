@@ -79,7 +79,8 @@ class DeviceListAdapter(
                 list.add(DbVirtualDevice(device))
         }
         val filteredList: MutableList<VirtualDevice> = ArrayList()
-        for (virtualDevice in list) if (fragment.filteringDelegate.filter(fragment, virtualDevice)) {
+        val delegate = fragment.filteringDelegate
+        for (virtualDevice in list) if (delegate.disabled() || delegate.filter(fragment, virtualDevice)) {
             filteredList.add(virtualDevice)
         }
         return filteredList

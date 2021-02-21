@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.activity
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -36,19 +35,13 @@ import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.config.Keyword
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog
 import com.genonbeta.TrebleShot.util.AppUtils
-import com.genonbeta.TrebleShot.util.Files
 import com.genonbeta.TrebleShot.util.Updates
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.TransferTarget
+import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
-import org.monora.uprotocol.core.transfer.TransferItem
-import java.io.ByteArrayOutputStream
-import java.io.IOException
+import java.io.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -63,38 +56,11 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     private lateinit var drawerLayout: DrawerLayout
 
-    private var exitPressTime: Long = 0
-
     private var chosenMenuItemId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val client = persistenceProvider.client
-        GlobalScope.launch {
-            val transfer = Transfer(
-                1,
-                TransferItem.Type.Incoming,
-                Files.getApplicationDirectory(applicationContext).getUri().toString()
-            )
-            val transferTarget = TransferTarget(
-                0,
-                clientUid = persistenceProvider.clientUid,
-                transfer.id,
-                TransferItem.Type.Incoming
-            )
-
-            appDatabase.clientDao().insertAll(persistenceProvider.client)
-            appDatabase.transferDao().insertAll(transfer)
-            appDatabase.transferDao().getAll().forEach {
-                Log.d(TAG, "onCreate: $it")
-            }
-            appDatabase.transferTargetDao().insertAll(transferTarget)
-            appDatabase.transferTargetDao().getAll().forEach {
-                Log.d(TAG, "onCreate: hey $it")
-            }
-        }
 
         navigationView = findViewById(R.id.nav_view)
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -113,7 +79,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
         })
         navigationView.setNavigationItemSelectedListener(this)
-        navigationView.menu.setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG)
         if (Updates.hasNewVersion(this))
             highlightUpdate()
         if (Keyword.Flavor.googlePlay == AppUtils.buildFlavor) {
@@ -155,7 +120,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.actions_home_transfer_history) {
-            startActivity(Intent(this, TransferHistoryActivity::class.java))
+            startActivity(Intent(this, SharedTextActivity::class.java))
         } else return super.onOptionsItemSelected(item)
         return true
     }
@@ -164,18 +129,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         chosenMenuItemId = item.itemId
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
-    }
-
-    override fun onBackPressed() {
-        val pressTime = System.nanoTime()
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawer(GravityCompat.START)
-        else if (pressTime - exitPressTime < 2e9)
-            super.onBackPressed()
-        else {
-            exitPressTime = pressTime
-            Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onUserProfileUpdated() {
@@ -197,8 +150,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 startActivity(Intent(this, AboutActivity::class.java))
             }
             R.id.menu_activity_main_send_application == chosenMenuItemId -> {
-                ShareAppDialog(this@HomeActivity)
-                    .show()
+                ShareAppDialog(this@HomeActivity).show()
             }
             R.id.menu_activity_main_preferences == chosenMenuItemId -> {
                 startActivity(Intent(this, PreferencesActivity::class.java))
@@ -246,9 +198,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             R.id.menu_activity_feedback == chosenMenuItemId -> {
                 AppUtils.startFeedbackActivity(this@HomeActivity)
             }
-            R.id.menu_activity_main_crash_test == chosenMenuItemId -> {
-                throw NullPointerException("The crash was intentional, since 'Crash now' was called")
-            }
         }
         chosenMenuItemId = 0
     }
@@ -256,41 +205,26 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     private fun checkAndShowCrashReport() {
         try {
             openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG).use { inputStream ->
-                val logFile = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
-                val outputStream = ByteArrayOutputStream()
-                var len: Int
-                val buffer = ByteArray(8096)
-                while (inputStream.read(buffer).also { len = it } != -1) {
-                    outputStream.write(buffer, 0, len)
-                    outputStream.flush()
-                }
-                val report = outputStream.toString()
-                // FIXME: 2/20/21 Save the crash log
-                /*val streamObject = TextStreamObject()
-                streamObject.text = report
-                streamObject.date = logFile.lastModified()
-                streamObject.id = AppUtils.uniqueNumber.toLong()*/
-                logFile.delete()
-                val dialogBuilder = AlertDialog.Builder(this)
-                dialogBuilder.setTitle(R.string.text_crashReport)
-                dialogBuilder.setMessage(R.string.text_crashInfo)
-                dialogBuilder.setNegativeButton(R.string.butn_dismiss, null)
-                dialogBuilder.setNeutralButton(android.R.string.copy) { dialog: DialogInterface?, which: Int ->
-                    val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                    clipboardManager.setPrimaryClip(
-                        ClipData.newPlainText(
-                            getString(R.string.text_crashReport),
-                            outputStream.toString()
+                val log = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+                val report = FileReader(log).use { it.readText()  }
+                val streamObject = SharedTextModel(0, report, log.lastModified())
+
+                log.delete()
+
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.text_crashReport)
+                    .setMessage(R.string.text_crashInfo)
+                    .setNegativeButton(R.string.butn_dismiss, null)
+                    .setNeutralButton(android.R.string.copy) { dialog: DialogInterface?, which: Int ->
+                        val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboardManager.setPrimaryClip(
+                            ClipData.newPlainText(getString(R.string.text_crashReport), report)
                         )
-                    )
-                    Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-                }
-                dialogBuilder.setPositiveButton(R.string.butn_save) { dialog: DialogInterface?, which: Int ->
-                    // FIXME: 2/20/21 Save the crash log to the database
-                    //database.insert(streamObject)
-                    Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
-                }
-                dialogBuilder.show()
+                        Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
+                    }.setPositiveButton(R.string.butn_save) { dialog: DialogInterface?, which: Int ->
+                        appDatabase.sharedTextDao().insertAll(streamObject)
+                        Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
+                    }.show()
             }
         } catch (ignored: IOException) {
         }
@@ -321,7 +255,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     private fun createHeaderView() {
-        val headerView: View = navigationView.getHeaderView(0)
+        val headerView = navigationView.getHeaderView(0)
         val localDevice = AppUtils.getLocalDevice(applicationContext)
         val imageView = headerView.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
         val editImageView = headerView.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)

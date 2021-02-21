@@ -37,6 +37,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.coroutineScope
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.adapter.DeviceListAdapter.NetworkDescription
 import com.genonbeta.TrebleShot.app.Activity
@@ -56,6 +57,7 @@ import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.database.AppDatabase
 import java.net.InetAddress
 import java.net.UnknownHostException

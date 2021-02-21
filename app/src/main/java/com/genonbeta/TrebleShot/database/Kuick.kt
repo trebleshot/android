@@ -95,10 +95,6 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
         const val DATABASE_VERSION = 13
         val TAG = Kuick::class.java.simpleName
         val DATABASE_NAME = Kuick::class.java.simpleName + ".db"
-        const val TABLE_CLIPBOARD = "clipboard"
-        const val FIELD_CLIPBOARD_ID = "id"
-        const val FIELD_CLIPBOARD_TEXT = "text"
-        const val FIELD_CLIPBOARD_TIME = "time"
         const val TABLE_DEVICES = "devices"
         const val FIELD_DEVICES_ID = "deviceId"
         const val FIELD_DEVICES_USER = "user"
@@ -147,11 +143,6 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
 
         fun tables(): SQLValues {
             val values = SQLValues()
-            values.defineTable(TABLE_CLIPBOARD).also {
-                it += SQLValues.Column(FIELD_CLIPBOARD_ID, type = SQLType.Integer, nullable = false)
-                it += SQLValues.Column(FIELD_CLIPBOARD_TEXT, type = SQLType.Text, nullable = false)
-                it += SQLValues.Column(FIELD_CLIPBOARD_TIME, type = SQLType.Long, nullable = false)
-            }
 
             values.defineTable(TABLE_DEVICES).also {
                 it += SQLValues.Column(FIELD_DEVICES_ID, type = SQLType.Text, nullable = false)

@@ -18,10 +18,8 @@
 package com.genonbeta.TrebleShot.fragment
 
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -32,26 +30,22 @@ import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.activity.TextEditorActivity
 import com.genonbeta.TrebleShot.adapter.SharedTextListAdapter
 import com.genonbeta.TrebleShot.app.ListingFragment
-import com.genonbeta.TrebleShot.database.Kuick
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import com.genonbeta.TrebleShot.util.AppUtils
 import com.genonbeta.TrebleShot.util.Selections
 import com.genonbeta.TrebleShot.widget.ListingAdapter
-import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.IBaseEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
 import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
+import org.monora.uprotocol.client.android.database.model.SharedTextModel
 
 /**
  * created by: Veli
  * date: 30.12.2017 13:25
  */
 class SharedTextListFragment : ListingFragment<SharedTextModel, ViewHolder, SharedTextListAdapter>() {
-    private val statusReceiver: StatusReceiver = StatusReceiver()
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         bottomSpaceShown = true
@@ -82,16 +76,6 @@ class SharedTextListFragment : ListingFragment<SharedTextModel, ViewHolder, Shar
         return PerformerMenu(context, SelectionCallback(requireActivity(), this))
     }
 
-    override fun onResume() {
-        super.onResume()
-        requireContext().registerReceiver(statusReceiver, IntentFilter(KuickDb.ACTION_DATABASE_CHANGE))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        requireContext().unregisterReceiver(statusReceiver)
-    }
-
     override fun performDefaultLayoutClick(holder: ViewHolder, target: SharedTextModel): Boolean {
         startActivity(
             Intent(context, TextEditorActivity::class.java)
@@ -103,8 +87,7 @@ class SharedTextListFragment : ListingFragment<SharedTextModel, ViewHolder, Shar
     }
 
     private class SelectionCallback(
-        activity: Activity,
-        provider: PerformerEngineProvider,
+        activity: Activity, provider: PerformerEngineProvider,
     ) : ListingFragment.SelectionCallback(activity, provider) {
         private lateinit var shareWithTrebleShot: MenuItem
 
@@ -190,15 +173,6 @@ class SharedTextListFragment : ListingFragment<SharedTextModel, ViewHolder, Shar
             val totalSelections = Selections.getTotalSize(engine)
             shareWithOthers.isEnabled = totalSelections == 1
             shareWithTrebleShot.isEnabled = totalSelections == 1
-        }
-    }
-
-    private inner class StatusReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
-                val data: KuickDb.BroadcastData = KuickDb.toData(intent)
-                if (Kuick.TABLE_CLIPBOARD == data.tableName) refreshList()
-            }
         }
     }
 }

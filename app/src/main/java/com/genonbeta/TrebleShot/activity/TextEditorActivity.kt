@@ -24,12 +24,12 @@ import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.lifecycle.coroutineScope
 import com.genonbeta.TrebleShot.GlideApp
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 import com.genonbeta.TrebleShot.model.Device
 import com.genonbeta.TrebleShot.model.DeviceAddress
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import com.genonbeta.TrebleShot.taskimport.TextShareTask
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -39,13 +39,17 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import javax.inject.Inject
 
 /**
  * Created by: veli
  * Date: 1/19/17 5:05 PM
  */
+@AndroidEntryPoint
 class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     @Inject
     lateinit var appDatabase: AppDatabase
@@ -102,18 +106,23 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         val hasObject = textModel != null
         val deletionNeeded = checkDeletionNeeded()
         val saveNeeded = checkSaveNeeded()
-        if (!saveNeeded && !deletionNeeded || System.nanoTime() - backPressTime < 2e9) // 2secs to stay in interval
-            super.onBackPressed() else if (deletionNeeded) createSnackbar(R.string.ques_deleteEmptiedText)
-            .setAction(R.string.butn_delete) {
-                removeText()
-                finish()
-            }
-            .show() else createSnackbar(if (hasObject) R.string.mesg_clipboardUpdateNotice else R.string.mesg_textSaveNotice)
-            .setAction(if (hasObject) R.string.butn_update else R.string.butn_save) {
-                saveText()
-                finish()
-            }
-            .show()
+        if (!saveNeeded && !deletionNeeded || System.nanoTime() - backPressTime < 2e9) {
+            super.onBackPressed()
+        } else if (deletionNeeded) {
+            createSnackbar(R.string.ques_deleteEmptiedText)
+                .setAction(R.string.butn_delete) {
+                    removeText()
+                    finish()
+                }
+                .show()
+        } else {
+            createSnackbar(if (hasObject) R.string.mesg_clipboardUpdateNotice else R.string.mesg_textSaveNotice)
+                .setAction(if (hasObject) R.string.butn_update else R.string.butn_save) {
+                    saveText()
+                    finish()
+                }
+                .show()
+        }
         backPressTime = System.nanoTime()
     }
 
@@ -218,7 +227,9 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             it.modified = date
         } ?: SharedTextModel(0, text, date).also { textModel = it }
 
-        appDatabase.sharedTextDao().insertAll(item)
+        lifecycle.coroutineScope.launch {
+            appDatabase.sharedTextDao().insert(item)
+        }
     }
 
     companion object {

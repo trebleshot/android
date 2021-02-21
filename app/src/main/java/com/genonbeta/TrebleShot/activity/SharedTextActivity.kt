@@ -23,7 +23,7 @@ import androidx.appcompat.widget.Toolbar
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
 
-class TextStreamActivity : Activity() {
+class SharedTextActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_text_stream)
@@ -35,11 +35,11 @@ class TextStreamActivity : Activity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home)
+        if (item.itemId == android.R.id.home) {
             finish()
-        else
+        } else {
             return super.onOptionsItemSelected(item)
+        }
         return true
     }
 }

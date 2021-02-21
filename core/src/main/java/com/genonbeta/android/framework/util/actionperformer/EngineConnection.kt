@@ -38,30 +38,29 @@ class EngineConnection<T : SelectionModel>(
         }
     }
 
-    protected fun changeSelectionState(selectionModel: T, selected: Boolean, position: Int): Boolean {
-        if (selected != selectionModel.selected() && selectionModel.canSelect()) {
-            selectionModel.select(selected)
+    private fun changeSelectionState(model: T, selected: Boolean, position: Int): Boolean {
+        if (selected != model.selected() && model.canSelect()) {
+            model.select(selected)
 
             val engine = getEngineProvider()?.getPerformerEngine()
             val selectionList = getSelectionList()
 
-            if (selectionList != null) {
-                val value = if (selected) selectionList.add(selectionModel) else selectionList.remove(selectionModel)
-                Log.d(TAG, "changeSelectionState: Added? $value ${selectionList.hashCode()}")
+            selectionList?.let {
+                if (selected) it.add(model) else it.remove(model)
             }
 
             if (engine != null) {
                 for (listener in selectionListenerList) listener.onSelected(
-                    engine, this, selectionModel, selected, position
+                    engine, this, model, selected, position
                 )
-                engine.informListeners(this, selectionModel, selected, position)
+                engine.informListeners(this, model, selected, position)
             } else Log.d(TAG, "changeSelectionState: Engine is empty. Skipping listener invocation!")
             return true
         }
         return false
     }
 
-    protected fun changeSelectionState(modelList: MutableList<T>, selected: Boolean, positions: IntArray) {
+    private fun changeSelectionState(modelList: MutableList<T>, selected: Boolean, positions: IntArray) {
         val engine = getEngineProvider()?.getPerformerEngine()
         for (selectionModel in modelList) {
             if (selected != selectionModel.selected() && selectionModel.canSelect()) {
@@ -70,14 +69,9 @@ class EngineConnection<T : SelectionModel>(
             }
         }
         if (engine != null) {
-            for (listener in selectionListenerList)
-                listener.onSelected(
-                    engine,
-                    this,
-                    modelList,
-                    selected,
-                    positions
-                )
+            for (listener in selectionListenerList) {
+                listener.onSelected(engine, this, modelList, selected, positions)
+            }
             engine.informListeners(this, modelList, selected, positions)
         } else Log.d(TAG, "changeSelectionState: Engine is empty. Skipping the call for listeners!")
     }
@@ -142,8 +136,6 @@ class EngineConnection<T : SelectionModel>(
             setSelected(item, position)
         } catch (e: ArrayIndexOutOfBoundsException) {
             throw SelectionModelNotFoundException("The model at the given position $position could not be found. ")
-        } finally {
-            Log.d("engineConnection", "Has items selected ${getSelectionList()}")
         }
     }
 

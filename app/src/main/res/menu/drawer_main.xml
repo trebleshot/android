@@ -61,15 +61,6 @@
 
     </group>
 
-    <group android:id="@+id/nav_group_dev_options">
-        <item
-            android:id="@+id/menu_activity_main_crash_test"
-            android:icon="@drawable/ic_refresh_white_24dp"
-            android:orderInCategory="15"
-            android:title="Crash now" />
-
-    </group>
-
     <group android:id="@+id/nav_group_support">
         <item
             android:id="@+id/menu_activity_feedback"
