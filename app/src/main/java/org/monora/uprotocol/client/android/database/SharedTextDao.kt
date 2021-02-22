@@ -1,5 +1,6 @@
 package org.monora.uprotocol.client.android.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
 
@@ -9,7 +10,7 @@ interface SharedTextDao {
     fun delete(sharedTextModel: SharedTextModel)
 
     @Query("SELECT * FROM sharedText")
-    fun getAll(): List<SharedTextModel>
+    fun getAll(): LiveData<List<SharedTextModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(sharedTextModel: SharedTextModel)

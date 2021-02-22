@@ -9,6 +9,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.SharedTextDao
 import javax.inject.Singleton
 
 @Module
@@ -19,5 +20,10 @@ class RoomModule {
     fun provideRoomDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "Main.db")
             .build()
+    }
+
+    @Provides
+    fun provideSharedTextDao(appDatabase: AppDatabase): SharedTextDao {
+        return appDatabase.sharedTextDao()
     }
 }

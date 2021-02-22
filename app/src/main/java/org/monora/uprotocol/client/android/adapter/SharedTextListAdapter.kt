@@ -24,18 +24,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
-import org.monora.uprotocol.client.android.databinding.ListSharedTextBinding
-import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.databinding.ListSharedTextBinding
 import org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel
 
 /**
  * created by: Veli
  * date: 30.12.2017 13:25
  */
-class SharedTextListAdapter(
-    val appDatabase: AppDatabase,
-) : ListAdapter<SharedTextModel, ViewHolder>(SharedTextDiffCallback()) {
+class SharedTextListAdapter : ListAdapter<SharedTextModel, ViewHolder>(SharedTextDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = SharedTextViewHolder(
         ListSharedTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
