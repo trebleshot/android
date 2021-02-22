@@ -25,12 +25,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.coroutineScope
-import org.monora.uprotocol.client.android.GlideApp
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
-import org.monora.uprotocol.client.android.taskimport.TextShareTask
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -41,8 +35,14 @@ import com.google.zxing.common.BitMatrix
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.model.Device
+import org.monora.uprotocol.client.android.model.DeviceAddress
+import org.monora.uprotocol.client.android.taskimport.TextShareTask
 import javax.inject.Inject
 
 /**
@@ -215,20 +215,27 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
 
     private fun removeText() {
         textModel?.let {
-            appDatabase.sharedTextDao().delete(it)
-            textModel = null
+            lifecycle.coroutineScope.launch {
+                appDatabase.sharedTextDao().delete(it)
+                textModel = null
+            }
         }
     }
 
     private fun saveText() {
         val text = editText.text.toString()
         val date = System.currentTimeMillis()
+        var update = false
         val item = textModel?.also {
             it.modified = date
-        } ?: SharedTextModel(0, text, date).also { textModel = it }
+            it.text = text
+            update = true
+        } ?: SharedTextModel(0, text, date).also {
+            textModel = it
+        }
 
         lifecycle.coroutineScope.launch {
-            appDatabase.sharedTextDao().insert(item)
+            if (update) appDatabase.sharedTextDao().update(item) else appDatabase.sharedTextDao().insert(item)
         }
     }
 
