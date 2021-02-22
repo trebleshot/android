@@ -43,9 +43,6 @@ import javax.inject.Inject
 class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
     private val viewModel: SharedTextDataViewModel by viewModels()
 
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
@@ -62,7 +59,7 @@ class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
             )
         }
 
-        appDatabase.sharedTextDao().getAll().observe(viewLifecycleOwner) { result ->
+        viewModel.sharedTexts.asLiveData().observe(viewLifecycleOwner) { result ->
             adapter.submitList(result)
         }
     }

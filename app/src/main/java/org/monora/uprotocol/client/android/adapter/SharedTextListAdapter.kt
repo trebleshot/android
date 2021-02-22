@@ -41,7 +41,7 @@ class SharedTextListAdapter : ListAdapter<SharedTextModel, ViewHolder>(SharedTex
         (holder as SharedTextViewHolder).bind(getItem(position))
     }
 
-    class SharedTextViewHolder(val binding: ListSharedTextBinding) : ViewHolder(binding.root) {
+    class SharedTextViewHolder(private val binding: ListSharedTextBinding) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener { view ->
                 binding.viewModel?.sharedText?.let {
