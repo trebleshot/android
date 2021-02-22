@@ -22,7 +22,9 @@ import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.genonbeta.TrebleShot.R
 import com.genonbeta.TrebleShot.app.Activity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SharedTextActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

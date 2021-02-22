@@ -100,15 +100,11 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         filteringSupported = true
-        defaultOrderingCriteria = ListingAdapter.MODE_SORT_ORDER_ASCENDING
-        defaultSortingCriteria = ListingAdapter.MODE_SORT_BY_NAME
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         adapter = FileListAdapter(this)
         emptyListImageView.setImageResource(R.drawable.ic_folder_white_24dp)
         emptyListTextView.text = getString(R.string.text_listEmptyFiles)

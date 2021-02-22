@@ -38,8 +38,7 @@ import org.monora.uprotocol.client.android.model.ContentModel
  * created by: veli
  * date: 06.04.2018 12:58
  */
-class TransferMemberListFragment :
-    ListingFragment<LoadedMember, ViewHolder, TransferMemberListAdapter>() {
+class TransferMemberListFragment : ListingFragment<LoadedMember, ViewHolder, TransferMemberListAdapter>() {
     private val transfer: Transfer by lazy {
         Transfer(arguments?.getLong(ARG_TRANSFER_ID, -1) ?: -1)
     }
@@ -61,12 +60,6 @@ class TransferMemberListFragment :
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         filteringSupported = false
-        sortingSupported = false
-        //setUseDefaultPaddingDecoration(true);
-        //setUseDefaultPaddingDecorationSpaceForEdges(true);
-        defaultViewingGridSize = if (isScreenNormal()) 4 else 2
-        defaultViewingGridSizeLandscape = if (isScreenNormal()) 6 else 5
-        //setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

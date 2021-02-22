@@ -187,12 +187,6 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         if (defaultPreferences.contains("migrated_version")) {
             val migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionCode)
             if (migratedVersion < localDevice.versionCode) {
-                // migrating to a new version
-                if (migratedVersion <= 67)
-                    AppUtils.getViewingPreferences(applicationContext).edit()
-                        .clear()
-                        .apply()
-
                 defaultPreferences.edit()
                     .putInt("migrated_version", localDevice.versionCode)
                     .putInt("previously_migrated_version", migratedVersion)

@@ -67,8 +67,6 @@ object AppUtils {
 
     private var mDefaultPreferences: SharedPreferences? = null
 
-    private var mViewingPreferences: SharedPreferences? = null
-
     fun checkRunningConditions(context: Context): Boolean {
         for (request in getRequiredPermissions(context))
             if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
@@ -313,11 +311,6 @@ object AppUtils {
     val uniqueNumber: Int
         get() = (System.currentTimeMillis() / 1000).toInt() + ++mUniqueNumber
 
-    fun getViewingPreferences(context: Context): SharedPreferences {
-        if (mViewingPreferences == null) mViewingPreferences =
-            context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE)
-        return mViewingPreferences as SharedPreferences
-    }
 
     fun isLatestChangeLogSeen(context: Context): Boolean {
         val preferences = getDefaultPreferences(context)

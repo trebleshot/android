@@ -49,15 +49,9 @@ interface ListingFragmentBase<T : ContentModel> : ListingFragmentBase, Performer
 
     val localSelectionMode: Boolean
 
-    var orderingCriteria: Int
-
     var selectByClickEnabled: Boolean
 
     var refreshRequested: Boolean
-
-    var sortingCriteria: Int
-
-    var sortingSupported: Boolean
 
     fun getUniqueSettingKey(setting: String): String
 

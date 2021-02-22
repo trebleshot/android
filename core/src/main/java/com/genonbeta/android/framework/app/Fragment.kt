@@ -35,24 +35,4 @@ open class Fragment : Fragment(), FragmentBase {
         val target = if (snackbarContainer == null) view else snackbarContainer
         return if (target != null) Snackbar.make(target, getString(resId, *objects), snackbarLength) else null
     }
-
-    fun isScreenLandscape(): Boolean {
-        return resources.getBoolean(R.bool.genfw_screen_isLandscape)
-    }
-
-    fun isScreenSmall(): Boolean {
-        return resources.getBoolean(R.bool.genfw_screen_isSmall)
-    }
-
-    fun isScreenNormal(): Boolean {
-        return resources.getBoolean(R.bool.genfw_screen_isNormal)
-    }
-
-    fun isScreenLarge(): Boolean {
-        return resources.getBoolean(R.bool.genfw_screen_isLarge)
-    }
-
-    fun isXScreenLarge(): Boolean {
-        return resources.getBoolean(R.bool.genfw_screen_isXLarge)
-    }
 }

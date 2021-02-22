@@ -1,15 +1,15 @@
 package org.monora.uprotocol.client.android.database
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
+import androidx.room.*
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
 
 @Dao
 interface SharedTextDao {
     @Delete
     fun delete(sharedTextModel: SharedTextModel)
+
+    @Query("SELECT * FROM sharedText")
+    fun getAll(): List<SharedTextModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(sharedTextModel: SharedTextModel)

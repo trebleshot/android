@@ -41,34 +41,12 @@ abstract class ListingAdapter<T : ContentModel, V : RecyclerViewAdapter.ViewHold
 
     private val itemList: MutableList<T> = ArrayList()
 
-    var sortingCriteria = MODE_SORT_BY_NAME
-
-    var sortingOrder = MODE_SORT_ORDER_ASCENDING
-
     override fun onUpdate(passedItem: MutableList<T>) {
         synchronized(itemList) {
             itemList.clear()
             itemList.addAll(passedItem)
             syncSelectionList()
         }
-    }
-
-    override fun compare(compare: T, compareTo: T): Int {
-        val sortingAscending = getSortingOrder(compare, compareTo) == MODE_SORT_ORDER_ASCENDING
-        return compareItems(
-            getSortingCriteria(compare, compareTo),
-            if (sortingAscending) compare else compareTo,
-            if (sortingAscending) compareTo else compare
-        )
-    }
-
-    fun compareItems(sortingCriteria: Int, obj1: T, obj2: T): Int {
-        when (sortingCriteria) {
-            MODE_SORT_BY_DATE -> return MathUtils.compare(obj1.dateModified(), obj2.dateModified())
-            MODE_SORT_BY_SIZE -> return MathUtils.compare(obj1.length(), obj2.length())
-            MODE_SORT_BY_NAME -> return getDefaultCollator().compare(obj1.name(), obj2.name())
-        }
-        throw IllegalStateException("Asked for $sortingCriteria which isn't known.")
     }
 
     fun getDefaultCollator(): Collator = collator ?: Collator.getInstance().also {
@@ -106,38 +84,9 @@ abstract class ListingAdapter<T : ContentModel, V : RecyclerViewAdapter.ViewHold
         return getList()
     }
 
-    open fun getSectionName(position: Int, item: T): String {
-        when (sortingCriteria) {
-            MODE_SORT_BY_NAME -> return getSectionNameTrimmedText(item.name())
-            MODE_SORT_BY_DATE -> return getSectionNameDate(item.dateModified())
-            MODE_SORT_BY_SIZE -> return Files.formatLength(item.length(), false)
-        }
-        return position.toString()
-    }
-
-    fun getSectionNameDate(date: Long): String {
-        return DateUtils.formatDateTime(context, date, DateUtils.FORMAT_SHOW_DATE).toString()
-    }
-
-    fun getSectionNameTrimmedText(text: String): String {
-        return TextUtils.trimText(text, 1).toUpperCase(Locale.getDefault())
-    }
-
     override fun getSectionTitle(position: Int): String {
-        return getSectionName(position, getItem(position))
-    }
-
-    open fun getSortingCriteria(objectOne: T, objectTwo: T): Int {
-        return sortingCriteria
-    }
-
-    open fun getSortingOrder(objectOne: T, objectTwo: T): Int {
-        return sortingCriteria
-    }
-
-    fun setSortingCriteria(sortingCriteria: Int, sortingOrder: Int) {
-        this.sortingCriteria = sortingCriteria
-        this.sortingOrder = sortingOrder
+        val name = getItem(position).name()
+        return if (name.length > 1) name.substring(0, 1) else name
     }
 
     override fun syncAndNotify(adapterPosition: Int) {
@@ -164,11 +113,6 @@ abstract class ListingAdapter<T : ContentModel, V : RecyclerViewAdapter.ViewHold
 
     companion object {
         const val VIEW_TYPE_DEFAULT = 0
-        const val MODE_SORT_BY_NAME = 100
-        const val MODE_SORT_BY_DATE = 110
-        const val MODE_SORT_BY_SIZE = 120
-        const val MODE_SORT_ORDER_ASCENDING = 100
-        const val MODE_SORT_ORDER_DESCENDING = 110
     }
 
     init {

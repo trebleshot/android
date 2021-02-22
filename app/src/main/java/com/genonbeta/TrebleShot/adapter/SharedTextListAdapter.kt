@@ -26,6 +26,9 @@ import com.genonbeta.TrebleShot.app.IListingFragment
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import com.genonbeta.TrebleShot.widget.ListingAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
+import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.database.AppDatabase
+import javax.inject.Inject
 
 /**
  * created by: Veli
@@ -33,8 +36,11 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
  */
 class SharedTextListAdapter(
     fragment: IListingFragment<SharedTextModel, ViewHolder>,
+    val appDatabase: AppDatabase
 ) : ListingAdapter<SharedTextModel, ViewHolder>(fragment) {
-    override fun onLoad(): MutableList<SharedTextModel> = ArrayList()
+    override fun onLoad(): MutableList<SharedTextModel> {
+        return appDatabase.sharedTextDao().getAll().toMutableList()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(layoutInflater.inflate(R.layout.list_text_stream, parent, false))

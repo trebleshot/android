@@ -57,7 +57,9 @@ class AddDeviceTask(
             )
             if (objectList.isEmpty()) throw ContentException(ContentException.Error.NotFound)
             val filesArray = JSONArray()
+
             progress.increaseTotalBy(objectList.size)
+
             for (transferItem in objectList) {
                 throwIfStopped()
                 ongoingContent = transferItem.name
@@ -76,7 +78,10 @@ class AddDeviceTask(
                     progress.increaseBy(1)
                 }
             }
-            if (filesArray.length() < 1) throw IOException("There is no file in the JSON array.")
+
+            if (filesArray.length() < 1) {
+                throw IOException("There is no file in the JSON array.")
+            }
             var successful: Boolean
             CommunicationBridge.connect(kuick, address, device, 0).use { bridge ->
                 bridge.requestFileTransfer(transfer.id, filesArray)

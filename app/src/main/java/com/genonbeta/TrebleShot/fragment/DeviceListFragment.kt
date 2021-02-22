@@ -60,7 +60,6 @@ open class DeviceListFragment : ListingFragment<VirtualDevice, ViewHolder, Devic
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         filteringSupported = true
-        sortingSupported = false
         intentFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
         intentFilter.addAction(ACTION_DEVICE_STATUS)
         intentFilter.addAction(SCAN_RESULTS_AVAILABLE_ACTION)

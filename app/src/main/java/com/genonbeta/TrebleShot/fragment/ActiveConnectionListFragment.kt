@@ -63,7 +63,6 @@ class ActiveConnectionListFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         layoutResId = R.layout.layout_active_connection
-        sortingSupported = false
         filteringSupported = true
         filter.addAction(WIFI_AP_STATE_CHANGED)
         filter.addAction(CONNECTIVITY_ACTION)

@@ -26,13 +26,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.R
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 
 /**
  * created by: veli
  * date: 26.03.2018 11:45
  */
-abstract class RecyclerViewFragment<T, V : RecyclerViewAdapter.ViewHolder, E : RecyclerViewAdapter<T, V>> :
-    ListFragment<RecyclerView, T, E>() {
+abstract class RecyclerViewFragment<T, V : ViewHolder, E : RecyclerViewAdapter<T, V>> : ListFragment<RecyclerView, T, E>() {
     override var adapter: E
         get() = adapterPrivate
         set(value) {

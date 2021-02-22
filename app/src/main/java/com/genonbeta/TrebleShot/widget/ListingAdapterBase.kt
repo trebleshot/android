@@ -26,7 +26,7 @@ import java.util.*
  * created by: veli
  * date: 14/04/18 00:51
  */
-interface ListingAdapterBase<T : ContentModel> : ListAdapterBase<T>, SelectionModelProvider<T>, Comparator<T> {
+interface ListingAdapterBase<T : ContentModel> : ListAdapterBase<T>, SelectionModelProvider<T> {
     fun getItem(position: Int): T
 
     fun syncAndNotify(adapterPosition: Int)

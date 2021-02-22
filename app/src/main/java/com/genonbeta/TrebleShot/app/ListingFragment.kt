@@ -61,32 +61,12 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
             engineConnection.setSelectionModelProvider(adapter)
             fastScroller?.recyclerView = listView
             adapter.fragment = this
-            adapter.setSortingCriteria(sortingCriteria, orderingCriteria)
         }
 
     override val adapterImpl: ListingAdapterBase<T>
         get() = adapter
 
     var bottomSpaceShown = false
-
-    val defaultContentObserver: ContentObserver
-        get() = observer ?: object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun deliverSelfNotifications(): Boolean {
-                return true
-            }
-
-            override fun onChange(selfChange: Boolean) {
-                refreshList()
-            }
-        }.also { observer = it }
-
-    var defaultOrderingCriteria: Int = ListingAdapter.MODE_SORT_ORDER_ASCENDING
-
-    var defaultSortingCriteria: Int = ListingAdapter.MODE_SORT_BY_NAME
-
-    var defaultViewingGridSize = 1
-
-    var defaultViewingGridSizeLandscape = 1
 
     var dividerResId = R.id.abstract_layout_fast_scroll_recyclerview_bottom_divider
 
@@ -147,20 +127,6 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
             }
         }
 
-    private var observer: ContentObserver? = null
-
-    override var orderingCriteria: Int
-        get() = viewPreferences.getInt(getUniqueSettingKey("SortOrder"), defaultOrderingCriteria)
-        set(value) {
-            viewPreferences.edit()
-                .putInt(getUniqueSettingKey("SortOrder"), value)
-                .apply()
-            adapter.setSortingCriteria(sortingCriteria, value)
-            refreshList()
-        }
-
-    private val orderingOptions: MutableMap<String, Int> = ArrayMap()
-
     private val performerEngine: IPerformerEngine = PerformerEngine()
 
     private var performerMenu: PerformerMenu? = null
@@ -171,23 +137,6 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
 
     override var selectByClickEnabled: Boolean = false
         get() = field || localSelectionMode
-
-    override var sortingCriteria: Int
-        get() = viewPreferences.getInt(getUniqueSettingKey("SortBy"), defaultSortingCriteria)
-        set(value) {
-            viewPreferences.edit()
-                .putInt(getUniqueSettingKey("SortBy"), value)
-                .apply()
-            adapter.setSortingCriteria(value, orderingCriteria)
-            refreshList()
-        }
-
-    private val sortingOptions: MutableMap<String, Int> = ArrayMap()
-
-    override var sortingSupported: Boolean = true
-
-    val viewPreferences: SharedPreferences
-        get() = AppUtils.getViewingPreferences(requireContext())
 
     open fun onCreatePerformerMenu(context: Context): PerformerMenu? {
         return null
@@ -273,43 +222,6 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
                     }
                 }
             }
-
-            val sortingOptions: MutableMap<String, Int> = ArrayMap()
-            onSortingOptions(sortingOptions)
-            if (sortingOptions.isNotEmpty()) {
-                this.sortingOptions.clear()
-                this.sortingOptions.putAll(sortingOptions)
-                applyDynamicMenuItems(
-                    menu.findItem(R.id.actions_abs_editable_sort_by),
-                    R.id.actions_abs_editable_group_sorting, this.sortingOptions
-                )
-                val orderingOptions: MutableMap<String, Int> = ArrayMap()
-                onOrderingOptions(orderingOptions)
-                if (orderingOptions.isNotEmpty()) {
-                    this.orderingOptions.clear()
-                    this.orderingOptions.putAll(orderingOptions)
-                    applyDynamicMenuItems(
-                        menu.findItem(R.id.actions_abs_editable_order_by),
-                        R.id.actions_abs_editable_group_sort_order, this.orderingOptions
-                    )
-                }
-            }
-        }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        if (!localSelectionActivated) {
-            menu.findItem(R.id.actions_abs_editable_sort_by).isEnabled = sortingSupported
-            menu.findItem(R.id.actions_abs_editable_multi_select).isVisible = performerMenu != null
-            menu.findItem(R.id.actions_abs_editable_sort_by)?.also { sortingItem: MenuItem ->
-                sortingItem.isVisible = sortingSupported
-                if (sortingItem.isVisible) {
-                    checkPreferredDynamicItem(sortingItem, sortingCriteria, sortingOptions)
-                    val orderingItem = menu.findItem(R.id.actions_abs_editable_order_by)
-                    orderingItem?.let { checkPreferredDynamicItem(it, orderingCriteria, orderingOptions) }
-                }
-            }
         }
     }
 
@@ -317,11 +229,7 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
         val id = item.itemId
         val groupId = item.groupId
 
-        if (groupId == R.id.actions_abs_editable_group_sorting)
-            sortingCriteria = item.order
-        else if (groupId == R.id.actions_abs_editable_group_sort_order)
-            orderingCriteria = item.order
-       else if (id == R.id.actions_abs_editable_multi_select && performerMenu != null && activity != null)
+       if (id == R.id.actions_abs_editable_multi_select && performerMenu != null && activity != null)
             localSelectionActivated = !localSelectionActivated
         else if (performerMenu?.onMenuItemClick(item) == true)
             localSelectionActivated = false
@@ -329,55 +237,6 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
             super.onOptionsItemSelected(item)
 
         return true
-    }
-
-    open fun onSortingOptions(options: MutableMap<String, Int>) {
-        options[getString(R.string.text_sortByName)] = ListingAdapter.MODE_SORT_BY_NAME
-        options[getString(R.string.text_sortByDate)] = ListingAdapter.MODE_SORT_BY_DATE
-        options[getString(R.string.text_sortBySize)] = ListingAdapter.MODE_SORT_BY_SIZE
-    }
-
-    fun onOrderingOptions(options: MutableMap<String, Int>) {
-        options[getString(R.string.text_sortOrderAscending)] = ListingAdapter.MODE_SORT_ORDER_ASCENDING
-        options[getString(R.string.text_sortOrderDescending)] = ListingAdapter.MODE_SORT_ORDER_DESCENDING
-    }
-
-    open fun onGridSpanSize(viewType: Int, currentSpanSize: Int): Int {
-        return 1
-    }
-
-    protected fun applyDynamicMenuItems(mainItem: MenuItem?, transferId: Int, options: Map<String, Int>) {
-        if (mainItem == null)
-            return
-        mainItem.isVisible = true
-        val dynamicMenu = mainItem.subMenu
-
-        for (currentKey in options.keys) options[currentKey]?.let { modeId ->
-            dynamicMenu.add(transferId, 0, modeId, currentKey)
-        }
-        dynamicMenu.setGroupCheckable(transferId, true, true)
-    }
-
-    fun checkPreferredDynamicItem(dynamicItem: MenuItem?, preferredItemId: Int, options: Map<String, Int>) {
-        if (dynamicItem != null) {
-            val gridSizeMenu: Menu = dynamicItem.subMenu
-            for (title in options.keys) {
-                if (options[title] == preferredItemId) {
-                    var menuItem: MenuItem
-                    var iterator = 0
-                    while (gridSizeMenu.getItem(iterator).also { menuItem = it } != null) {
-                        if (title == menuItem.title.toString()) {
-                            menuItem.isChecked = true
-                            return
-                        }
-                        iterator++
-                    }
-
-                    // normally we should not be here
-                    return
-                }
-            }
-        }
     }
 
     private fun ensureLocalSelection() {
