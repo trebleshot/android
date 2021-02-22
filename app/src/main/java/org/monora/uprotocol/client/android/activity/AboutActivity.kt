@@ -24,7 +24,7 @@ import android.view.*
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword

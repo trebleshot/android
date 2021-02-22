@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.model
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import com.genonbeta.android.database.DatabaseObject
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.database.Progress

@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.dialog
 import android.app.Activity
 import android.content.DialogInterface
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ProgressDialog
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.model.DeviceAddress

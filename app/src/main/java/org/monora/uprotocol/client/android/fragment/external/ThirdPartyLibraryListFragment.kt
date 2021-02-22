@@ -27,7 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.TextView
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLibraryListFragment.LicencesAdapter
 import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLibraryListFragment.ModuleItem
 import com.genonbeta.android.framework.app.RecyclerViewFragment

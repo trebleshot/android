@@ -22,7 +22,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.model.Transfer
 import org.monora.uprotocol.client.android.model.TransferItem

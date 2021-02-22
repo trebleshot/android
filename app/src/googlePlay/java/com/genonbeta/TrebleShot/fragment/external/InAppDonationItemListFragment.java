@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
-import com.genonbeta.TrebleShot.R;
+import org.monora.uprotocol.client.android.R;
 import org.monora.uprotocol.client.android.config.AppConfig;
 import org.monora.uprotocol.client.android.util.AppUtils;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;

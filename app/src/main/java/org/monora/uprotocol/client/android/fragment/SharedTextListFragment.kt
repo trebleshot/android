@@ -21,7 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.database.AppDatabase

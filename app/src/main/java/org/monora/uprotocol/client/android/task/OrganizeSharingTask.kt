@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.task
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TransferMemberActivity
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.model.Transfer

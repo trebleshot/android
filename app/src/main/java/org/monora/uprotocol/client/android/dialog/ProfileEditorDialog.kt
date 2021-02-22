@@ -22,7 +22,7 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.util.AppUtils
 

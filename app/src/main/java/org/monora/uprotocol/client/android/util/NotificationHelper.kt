@@ -27,7 +27,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.*
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.model.Transfer

@@ -26,8 +26,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.BuildConfig
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity
 import org.monora.uprotocol.client.android.adapter.DeviceListAdapter
 import org.monora.uprotocol.client.android.adapter.DeviceListAdapter.*

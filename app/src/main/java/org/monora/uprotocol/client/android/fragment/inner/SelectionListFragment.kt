@@ -22,7 +22,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.fragment.inner.SelectionListFragment.MyAdapter
 import com.genonbeta.android.framework.app.RecyclerViewFragment
 import com.genonbeta.android.framework.util.actionperformer.SelectionModel

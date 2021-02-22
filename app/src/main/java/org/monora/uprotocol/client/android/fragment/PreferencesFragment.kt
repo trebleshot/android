@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.fragment.inner.LookPreferencesFragment
 
 class PreferencesFragment : PreferenceFragmentCompat() {

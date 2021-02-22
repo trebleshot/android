@@ -18,7 +18,7 @@
 package org.monora.uprotocol.client.android.adapter
 
 import android.view.ViewGroup
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.TransferItemListAdapter.GenericItem
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.widget.ListingAdapter

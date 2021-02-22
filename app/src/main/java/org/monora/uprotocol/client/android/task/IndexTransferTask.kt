@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.task
 
 import android.content.*
 import android.database.sqlite.SQLiteDatabase
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.service.BackgroundService

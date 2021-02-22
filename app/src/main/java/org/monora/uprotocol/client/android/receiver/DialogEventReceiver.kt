@@ -26,7 +26,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.view.WindowManager
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 
 class DialogEventReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -69,7 +69,7 @@ class DialogEventReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACTION_DIALOG = "com.genonbeta.TrebleShot.action.makeDialog"
+        const val ACTION_DIALOG = "org.monora.uprotocol.client.android.action.makeDialog"
         const val EXTRA_TITLE = "title"
         const val EXTRA_MESSAGE = "message"
         const val EXTRA_POSITIVE_INTENT = "positive"

@@ -30,14 +30,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileListAdapter
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.dialog.FileRenameDialog
-import com.genonbeta.TrebleShot.dialogimport.FileDeletionDialog
+import org.monora.uprotocol.client.android.dialogimport.FileDeletionDialog
 import org.monora.uprotocol.client.android.ui.callback.SharingPerformerMenuCallback
 import org.monora.uprotocol.client.android.util.AppUtils
 import com.genonbeta.android.database.KuickDb
@@ -285,8 +285,8 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
     companion object {
         val TAG = FileListFragment::class.java.simpleName
         const val REQUEST_WRITE_ACCESS = 264
-        const val ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED"
-        const val ACTION_FILE_RENAME_COMPLETED = "com.genonbeta.TrebleShot.action.FILE_RENAME_COMPLETED"
+        const val ACTION_FILE_LIST_CHANGED = "org.monora.uprotocol.client.android.action.FILE_LIST_CHANGED"
+        const val ACTION_FILE_RENAME_COMPLETED = "org.monora.uprotocol.client.android.action.FILE_RENAME_COMPLETED"
         const val EXTRA_FILE_PARENT = "extraPath"
         const val EXTRA_FILE_NAME = "extraFile"
         const val EXTRA_FILE_LOCATION = "extraFileLocation"

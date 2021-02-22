@@ -18,5 +18,5 @@
   -->
 
 <resources>
-    <string name="conf_packageName" translatable="false">com.genonbeta.TrebleShot.debug</string>
+    <string name="conf_packageName" translatable="false">org.monora.uprotocol.client.android.debug</string>
 </resources>

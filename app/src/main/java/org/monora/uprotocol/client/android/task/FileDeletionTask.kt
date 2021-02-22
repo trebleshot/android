@@ -18,7 +18,7 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException

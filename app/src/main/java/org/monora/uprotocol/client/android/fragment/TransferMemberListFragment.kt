@@ -21,7 +21,7 @@ import android.content.*
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.TransferMemberListAdapter
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase

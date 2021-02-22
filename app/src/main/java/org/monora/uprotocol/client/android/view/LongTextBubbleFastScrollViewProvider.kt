@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import com.genonbeta.android.framework.R.dimen
 import com.genonbeta.android.framework.R.drawable
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils

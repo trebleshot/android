@@ -21,7 +21,7 @@ import android.app.Activity
 import android.view.LayoutInflater
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 

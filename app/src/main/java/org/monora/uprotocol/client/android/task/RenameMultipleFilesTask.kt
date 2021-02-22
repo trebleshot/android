@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.task
 import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.fragment.FileListFragment

@@ -25,8 +25,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.genonbeta.TrebleShot.GlideApp
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.model.AppPackageModel
 import org.monora.uprotocol.client.android.util.AppUtils

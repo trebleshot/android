@@ -21,7 +21,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity.AvailableFragment
 

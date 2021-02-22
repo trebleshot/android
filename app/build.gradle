@@ -63,7 +63,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.genonbeta.TrebleShot"
+        applicationId "org.monora.uprotocol.client.android"
         minSdkVersion 14
         targetSdkVersion 30
         versionCode 99

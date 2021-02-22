@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.genonbeta.TrebleShot",
+  "applicationId": "org.monora.uprotocol.client.android",
   "variantName": "fossReliantRelease",
   "elements": [
     {

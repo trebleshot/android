@@ -27,10 +27,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
-import com.genonbeta.TrebleShot.BuildConfig
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.Device
-import com.genonbeta.TrebleShot.dialogimport.RemoveDeviceDialog
+import org.monora.uprotocol.client.android.dialogimport.RemoveDeviceDialog
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.DeviceLoader
 import com.genonbeta.android.database.exception.ReconstructionFailedException

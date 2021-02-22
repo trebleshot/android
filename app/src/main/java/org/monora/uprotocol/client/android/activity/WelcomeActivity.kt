@@ -36,7 +36,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.transition.TransitionManager
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.widget.ViewPagerAdapter

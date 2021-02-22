@@ -22,7 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.ViewPager
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.MainFragmentPagerAdapter
 import org.monora.uprotocol.client.android.app.Activity.OnBackPressedListener
 import com.genonbeta.android.framework.app.Fragment

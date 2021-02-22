@@ -22,7 +22,7 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Log
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.model.Identifier.Companion.from
 import org.monora.uprotocol.client.android.model.Identity.Companion.withANDs

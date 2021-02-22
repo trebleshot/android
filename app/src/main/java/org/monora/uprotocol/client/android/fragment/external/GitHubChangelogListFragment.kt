@@ -24,7 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionListAdapter
 import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionObject

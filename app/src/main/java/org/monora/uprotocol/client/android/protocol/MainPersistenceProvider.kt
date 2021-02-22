@@ -6,7 +6,7 @@ import android.os.Build
 import android.util.Base64
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.genonbeta.TrebleShot.BuildConfig
+import org.monora.uprotocol.client.android.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.io.FileStreamDescriptor

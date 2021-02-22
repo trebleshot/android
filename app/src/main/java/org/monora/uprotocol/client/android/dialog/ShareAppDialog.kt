@@ -22,7 +22,7 @@ import android.content.pm.PackageInfo
 import android.os.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.util.Files
 import com.genonbeta.android.framework.io.DocumentFile

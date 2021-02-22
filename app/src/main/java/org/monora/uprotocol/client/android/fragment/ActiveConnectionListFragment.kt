@@ -32,7 +32,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.cardview.widget.CardView
 import androidx.transition.TransitionManager
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.ActiveConnectionListAdapter
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.dialog.WebShareDetailsDialog

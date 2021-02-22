@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.widget
 
 import androidx.recyclerview.widget.RecyclerView
 import org.monora.uprotocol.client.android.app.IListingFragment
-import com.genonbeta.TrebleShot.widgetimport.ListingAdapterBase
+import org.monora.uprotocol.client.android.widget.ListingAdapterBase
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTitleProvider
 import org.monora.uprotocol.client.android.model.ContentModel

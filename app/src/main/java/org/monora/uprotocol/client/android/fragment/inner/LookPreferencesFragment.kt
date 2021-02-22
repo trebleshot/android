@@ -24,7 +24,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 
 class LookPreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

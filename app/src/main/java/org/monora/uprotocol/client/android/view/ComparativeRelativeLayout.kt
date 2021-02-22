@@ -21,7 +21,7 @@ import android.content.*
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.widget.RelativeLayout
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 
 /**
  * created by: Veli

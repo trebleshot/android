@@ -22,7 +22,7 @@ import android.graphics.drawable.Drawable
 import android.provider.DocumentsContract
 import androidx.collection.ArrayMap
 import androidx.core.content.ContextCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 
 /*
  * Modified-by: veli

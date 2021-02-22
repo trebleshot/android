@@ -22,8 +22,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.dialogimport.AbstractFailureAwareDialog
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.dialogimport.AbstractFailureAwareDialog
 
 /**
  * created by: Veli

@@ -25,7 +25,7 @@ import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.MappedSelectionModel
 import org.monora.uprotocol.client.android.model.MappedSelectionModel.Companion.compileFrom
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection

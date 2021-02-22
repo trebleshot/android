@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
 import android.view.MenuItem
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 
 class TransferHistoryActivity : Activity() {

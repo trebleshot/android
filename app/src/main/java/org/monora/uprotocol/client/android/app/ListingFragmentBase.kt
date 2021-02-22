@@ -21,7 +21,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.TrebleShot.widgetimport.ListingAdapterBase
+import org.monora.uprotocol.client.android.widget.ListingAdapterBase
 import com.genonbeta.android.framework.app.ListingFragmentBase
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider

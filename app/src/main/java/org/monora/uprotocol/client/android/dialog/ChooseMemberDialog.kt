@@ -26,7 +26,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.LoadedMember
 import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.util.AppUtils

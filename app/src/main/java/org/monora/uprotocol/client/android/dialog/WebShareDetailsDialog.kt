@@ -23,8 +23,8 @@ import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.GlideApp
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException

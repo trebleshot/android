@@ -18,7 +18,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.genonbeta.TrebleShot">
+          package="org.monora.uprotocol.client.android">
 
     <!--Only Google Play version will require this permission for donation implementation-->
     <uses-permission android:name="com.android.vending.BILLING" />

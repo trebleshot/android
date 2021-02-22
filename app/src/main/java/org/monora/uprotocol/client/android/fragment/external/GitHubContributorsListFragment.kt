@@ -28,8 +28,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.TrebleShot.GlideApp
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.fragment.external.GitHubContributorsListFragment.Contributor
 import org.monora.uprotocol.client.android.fragment.external.GitHubContributorsListFragment.ContributorListAdapter

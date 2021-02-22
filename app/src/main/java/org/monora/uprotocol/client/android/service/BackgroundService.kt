@@ -27,12 +27,12 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Service
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.database.Kuick
-import com.genonbeta.TrebleShot.model.*
+import org.monora.uprotocol.client.android.model.*
 import org.monora.uprotocol.client.android.protocol.DeviceVerificationException
 import org.monora.uprotocol.client.android.protocol.communication.CommunicationException
 import org.monora.uprotocol.client.android.protocol.communication.ContentException
@@ -390,15 +390,15 @@ class BackgroundService : Service() {
 
     companion object {
         val TAG = BackgroundService::class.java.simpleName
-        const val ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD"
-        const val ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE"
-        const val ACTION_DEVICE_KEY_CHANGE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL"
-        const val ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION"
-        const val ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER"
-        const val ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY"
-        const val ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED"
+        const val ACTION_CLIPBOARD = "org.monora.uprotocol.client.android.action.CLIPBOARD"
+        const val ACTION_DEVICE_ACQUAINTANCE = "org.monora.uprotocol.client.android.transaction.action.DEVICE_ACQUAINTANCE"
+        const val ACTION_DEVICE_KEY_CHANGE_APPROVAL = "org.monora.uprotocol.client.android.action.DEVICE_APPROVAL"
+        const val ACTION_END_SESSION = "org.monora.uprotocol.client.android.action.END_SESSION"
+        const val ACTION_FILE_TRANSFER = "org.monora.uprotocol.client.android.action.FILE_TRANSFER"
+        const val ACTION_INCOMING_TRANSFER_READY = "org.monora.uprotocol.client.android.transaction.action.INCOMING_TRANSFER_READY"
+        const val ACTION_PIN_USED = "org.monora.uprotocol.client.android.transaction.action.PIN_USED"
         const val ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER"
-        const val ACTION_STOP_ALL_TASKS = "com.genonbeta.TrebleShot.transaction.action.STOP_ALL_TASKS"
+        const val ACTION_STOP_ALL_TASKS = "org.monora.uprotocol.client.android.transaction.action.STOP_ALL_TASKS"
         const val EXTRA_TEXT_ACCEPTED = "extraTextAccepted"
         const val EXTRA_TEXT_MODEL = "extraText"
         const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"

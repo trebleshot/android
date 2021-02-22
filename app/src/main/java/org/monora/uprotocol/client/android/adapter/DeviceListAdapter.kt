@@ -27,7 +27,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.util.ObjectsCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.fragment.DeviceListFragment

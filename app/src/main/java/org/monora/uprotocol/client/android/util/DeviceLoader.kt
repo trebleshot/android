@@ -22,7 +22,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.widget.ImageView
-import com.genonbeta.TrebleShot.GlideApp
+import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.database.Kuick

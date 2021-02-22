@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.task
 
 import android.content.*
 import android.net.Uri
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.Transfer
 import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask

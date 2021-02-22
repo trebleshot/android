@@ -25,7 +25,7 @@ import android.content.Intent
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.client.android.util.DynamicNotification

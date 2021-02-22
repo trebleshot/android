@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package com.genonbeta.TrebleShot.dialogimport
+package org.monora.uprotocol.client.android.dialogimport
 
 import android.app.Activity
 import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.util.AppUtils
 

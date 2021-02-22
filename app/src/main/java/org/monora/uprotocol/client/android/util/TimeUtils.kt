@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.util
 
 import android.content.Context
 import android.text.format.DateUtils
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import com.genonbeta.android.framework.util.date.ElapsedTime
 import java.util.*
 

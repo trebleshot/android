@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.fragment.inner
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import com.genonbeta.android.framework.app.Fragment
 
 /**

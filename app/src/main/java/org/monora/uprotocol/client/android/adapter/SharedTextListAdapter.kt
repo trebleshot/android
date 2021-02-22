@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
-import com.genonbeta.TrebleShot.databinding.ListSharedTextBinding
+import org.monora.uprotocol.client.android.databinding.ListSharedTextBinding
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel

@@ -15,11 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package com.genonbeta.TrebleShot.activityimport
+package org.monora.uprotocol.client.android.activityimport
 
 import android.os.Bundle
 import android.view.MenuItem
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 
 class WebShareActivity : Activity() {

@@ -22,7 +22,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.model.MappedSelectionModel
 import org.monora.uprotocol.client.android.model.MappedSelectionModel.Companion.compileFrom

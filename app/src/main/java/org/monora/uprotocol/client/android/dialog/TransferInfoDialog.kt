@@ -26,7 +26,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.TransferIndex
 import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.util.AppUtils

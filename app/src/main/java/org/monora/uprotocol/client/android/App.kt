@@ -34,7 +34,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.app.Activity
@@ -383,7 +383,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     companion object {
         val TAG = App::class.java.simpleName
         const val ACTION_OREO_HOTSPOT_STARTED = "org.monora.trebleshot.intent.action.HOTSPOT_STARTED"
-        const val ACTION_TASK_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE"
+        const val ACTION_TASK_CHANGE = "org.monora.uprotocol.client.android.transaction.action.TASK_STATUS_CHANGE"
         const val EXTRA_HOTSPOT_CONFIG = "hotspotConfig"
 
         fun <T : AsyncTask> findTasksBy(taskList: List<T>, identity: Identity): List<T> {

@@ -31,7 +31,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionManager
 import androidx.viewpager.widget.ViewPager
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.MainFragmentPagerAdapter
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.app.ListingFragment

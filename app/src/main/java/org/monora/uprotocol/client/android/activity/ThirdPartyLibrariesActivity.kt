@@ -17,7 +17,7 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog

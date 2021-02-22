@@ -18,7 +18,7 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.*
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.model.DeviceAddress
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask

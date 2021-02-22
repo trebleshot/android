@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.util
 
 import android.content.Context
 import androidx.collection.ArrayMap
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.model.TransferItem
 import java.net.NetworkInterface

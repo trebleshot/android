@@ -21,7 +21,7 @@ import android.app.Activity
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import com.genonbeta.android.database.*
 

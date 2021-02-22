@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.activity
 import android.content.Intent
 import android.os.Parcelable
 import android.widget.Toast
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.util.Files
 

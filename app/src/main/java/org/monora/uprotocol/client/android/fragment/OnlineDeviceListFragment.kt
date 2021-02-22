@@ -21,7 +21,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.util.NsdDaemon
 

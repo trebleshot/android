@@ -29,7 +29,7 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.ImageViewCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.model.TransferIndex
 import org.monora.uprotocol.client.android.util.AppUtils.getReference

@@ -29,7 +29,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.model.DeviceAddress

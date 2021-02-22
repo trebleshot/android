@@ -37,8 +37,8 @@ import androidx.annotation.AttrRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
-import com.genonbeta.TrebleShot.BuildConfig
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword

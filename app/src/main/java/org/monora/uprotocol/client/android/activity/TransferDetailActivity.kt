@@ -27,11 +27,11 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.genonbeta.TrebleShot.R
-import com.genonbeta.TrebleShot.activityimport.WebShareActivity
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activityimport.WebShareActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.Kuick
-import com.genonbeta.TrebleShot.model.*
+import org.monora.uprotocol.client.android.model.*
 import org.monora.uprotocol.client.android.dialog.DialogUtils
 import org.monora.uprotocol.client.android.dialog.ToggleMultipleTransferDialog
 import org.monora.uprotocol.client.android.dialog.TransferInfoDialog
@@ -516,7 +516,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     companion object {
         val TAG = TransferDetailActivity::class.java.simpleName
         
-        const val ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS"
+        const val ACTION_LIST_TRANSFERS = "org.monora.uprotocol.client.android.action.LIST_TRANSFERS"
 
         const val EXTRA_TRANSFER = "extraTransfer"
 

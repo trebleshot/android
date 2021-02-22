@@ -18,7 +18,7 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.DeviceListAdapter.NetworkDescription
 import org.monora.uprotocol.client.android.model.DeviceAddress
 import org.monora.uprotocol.client.android.model.DeviceRoute

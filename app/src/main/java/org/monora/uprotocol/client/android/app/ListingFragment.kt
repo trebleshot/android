@@ -25,14 +25,14 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.TrebleShot.BuildConfig
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.dialog.SelectionEditorDialog
 import org.monora.uprotocol.client.android.util.Selections
 import org.monora.uprotocol.client.android.view.LongTextBubbleFastScrollViewProvider
 import org.monora.uprotocol.client.android.widget.ListingAdapter
 import org.monora.uprotocol.client.android.widget.recyclerview.SwipeSelectionListener
-import com.genonbeta.TrebleShot.widgetimport.ListingAdapterBase
+import org.monora.uprotocol.client.android.widget.ListingAdapterBase
 import com.genonbeta.android.framework.app.RecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files

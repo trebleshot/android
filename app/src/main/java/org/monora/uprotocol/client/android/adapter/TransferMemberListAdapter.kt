@@ -21,7 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.drawable.TextDrawable
 import org.monora.uprotocol.client.android.model.LoadedMember

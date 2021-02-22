@@ -23,7 +23,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 
 open class ProgressDialog : AlertDialog {
     private var progressBar: ProgressBar? = null

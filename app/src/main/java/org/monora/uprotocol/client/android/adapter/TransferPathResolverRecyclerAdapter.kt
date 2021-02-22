@@ -18,7 +18,7 @@
 package org.monora.uprotocol.client.android.adapter
 
 import android.content.*
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.LoadedMember
 import java.io.File
 

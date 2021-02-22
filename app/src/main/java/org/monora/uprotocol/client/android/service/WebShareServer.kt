@@ -30,7 +30,7 @@ import android.util.Log
 import androidx.annotation.StringRes
 import androidx.collection.ArrayMap
 import androidx.core.app.NotificationCompat
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.FileExplorerActivity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.Kuick

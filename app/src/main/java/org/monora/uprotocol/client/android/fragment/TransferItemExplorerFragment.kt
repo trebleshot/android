@@ -22,7 +22,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.adapter.PathResolverRecyclerAdapter
 import org.monora.uprotocol.client.android.adapter.TransferPathResolverRecyclerAdapter

@@ -39,8 +39,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.GlideApp
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.util.AppUtils

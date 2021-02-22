@@ -7,7 +7,7 @@ import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import androidx.core.util.ObjectsCompat
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.dialog.FindConnectionDialog

@@ -35,8 +35,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import org.monora.uprotocol.client.android.App
-import com.genonbeta.TrebleShot.GlideApp
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.Kuick

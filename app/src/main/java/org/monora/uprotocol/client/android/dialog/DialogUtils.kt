@@ -25,7 +25,7 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.Transfer
 import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.util.AppUtils

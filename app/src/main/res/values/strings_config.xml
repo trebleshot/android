@@ -17,7 +17,7 @@
   -->
 
 <resources>
-    <string name="conf_packageName" translatable="false">com.genonbeta.TrebleShot</string>
+    <string name="conf_packageName" translatable="false">org.monora.uprotocol.client.android</string>
     <string name="conf_licence" formatted="false" translatable="false">
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by

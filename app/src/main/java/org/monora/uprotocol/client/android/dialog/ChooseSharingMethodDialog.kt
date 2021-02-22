@@ -28,7 +28,7 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.task.OrganizeLocalSharingTask
 import org.monora.uprotocol.client.android.model.ContentModel
 

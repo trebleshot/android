@@ -20,7 +20,7 @@ package org.monora.uprotocol.client.android.util
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.protocol.communication.*
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone

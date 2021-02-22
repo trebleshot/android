@@ -25,12 +25,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.coroutineScope
-import com.genonbeta.TrebleShot.GlideApp
-import com.genonbeta.TrebleShot.R
+import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.model.DeviceAddress
-import com.genonbeta.TrebleShot.taskimport.TextShareTask
+import org.monora.uprotocol.client.android.taskimport.TextShareTask
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
