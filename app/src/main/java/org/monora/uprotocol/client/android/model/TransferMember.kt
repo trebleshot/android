@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) 2019 Veli Tasalı
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+package org.monora.uprotocol.client.android.model
+
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import org.monora.uprotocol.client.android.database.Kuick
+import org.monora.uprotocol.client.android.util.Transfers
+import com.genonbeta.android.database.DatabaseObject
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.database.Progress
+import com.genonbeta.android.database.SQLQuery
+import com.genonbeta.android.database.exception.ReconstructionFailedException
+
+/**
+ * created by: veli
+ * date: 8/3/19 1:35 PM
+ */
+open class TransferMember : DatabaseObject<Transfer> {
+    var transferId: Long = 0
+
+    lateinit var deviceId: String
+
+    lateinit var type: TransferItem.Type
+
+    constructor()
+
+    constructor(transferId: Long, deviceId: String, type: TransferItem.Type) {
+        this.transferId = transferId
+        this.deviceId = deviceId
+        this.type = type
+    }
+
+    constructor(transfer: Transfer, device: Device, type: TransferItem.Type) : this(transfer.id, device.uid, type)
+
+    override fun equals(other: Any?): Boolean {
+        if (other is TransferMember) {
+            return other.transferId == transferId && deviceId == other.deviceId && type == other.type
+        }
+        return super.equals(other)
+    }
+
+    override fun getWhere(): SQLQuery.Select {
+        return SQLQuery.Select(Kuick.TABLE_TRANSFERMEMBER).setWhere(
+            Kuick.FIELD_TRANSFERMEMBER_DEVICEID + "=? AND "
+                    + Kuick.FIELD_TRANSFERMEMBER_TRANSFERID + "=? AND "
+                    + Kuick.FIELD_TRANSFERMEMBER_TYPE + "=?", deviceId, transferId.toString(), type.toString()
+        )
+    }
+
+    override fun getValues(): ContentValues {
+        val values = ContentValues()
+        values.put(Kuick.FIELD_TRANSFERMEMBER_DEVICEID, deviceId)
+        values.put(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID, transferId)
+        values.put(Kuick.FIELD_TRANSFERMEMBER_TYPE, type.toString())
+        return values
+    }
+
+    override fun reconstruct(db: SQLiteDatabase, kuick: KuickDb, values: ContentValues) {
+        deviceId = values.getAsString(Kuick.FIELD_TRANSFERMEMBER_DEVICEID)
+        transferId = values.getAsLong(Kuick.FIELD_TRANSFERMEMBER_TRANSFERID)
+
+        // Added in DB version 13 and might be null and may throw an error since ContentValues doesn't like it when
+        // when the requested column name doesn't exist or has type different than requested.
+        if (values.containsKey(Kuick.FIELD_TRANSFERMEMBER_TYPE)) type =
+            TransferItem.Type.valueOf(values.getAsString(Kuick.FIELD_TRANSFERMEMBER_TYPE))
+    }
+
+    override fun onCreateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {}
+
+    override fun onUpdateObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {}
+
+    override fun onRemoveObject(db: SQLiteDatabase, kuick: KuickDb, parent: Transfer?, progress: Progress.Context?) {
+        if (TransferItem.Type.INCOMING != type) return
+
+        try {
+            val actualParent = parent ?: Transfer(transferId).also { kuick.reconstruct(db, it) }
+            val selection = Transfers.createIncomingSelection(transferId, TransferItem.Flag.INTERRUPTED, true)
+            kuick.removeAsObject(db, selection, TransferItem::class.java, actualParent, progress, null)
+        } catch (e: ReconstructionFailedException) {
+            e.printStackTrace()
+        }
+    }
+}

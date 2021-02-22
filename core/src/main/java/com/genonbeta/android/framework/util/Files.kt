@@ -33,8 +33,9 @@ object Files {
         val resolver = context.contentResolver
         val inputStream = resolver.openInputStream(source.getUri())
         val outputStream = resolver.openOutputStream(destination.getUri())
-        if (inputStream == null || outputStream == null)
+        if (inputStream == null || outputStream == null) {
             throw IOException("Failed to open streams to start copying")
+        }
 
         val buffer = ByteArray(bufferLength)
         var len = 0
@@ -70,8 +71,9 @@ object Files {
             val existing = current.findFile(currentPath)
 
             existing?.let {
-                if (!existing.isDirectory())
+                if (!it.isDirectory()) {
                     throw IOException("A file exists for of directory name: $currentPath ; $path")
+                }
             }
 
             current = if (existing == null && createIfNeeded) current.createDirectory(currentPath) else existing
@@ -97,8 +99,9 @@ object Files {
             return existing
         } else if (createIfNeeded) {
             val createdFile = documentFile.createFile(mimeType, fileName)
-            if (createdFile != null)
+            if (createdFile != null) {
                 return createdFile
+            }
         }
 
         throw IOException("Failed to create file: $path")

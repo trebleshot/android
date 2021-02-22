@@ -24,7 +24,7 @@
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.genonbeta.TrebleShot.fragment.TransferListFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.TransferListFragment"
         android:id="@+id/transfer_history_fragment" />
 
 </LinearLayout>

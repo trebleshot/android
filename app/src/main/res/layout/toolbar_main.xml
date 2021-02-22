@@ -22,7 +22,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="false"
-    tools:context=".activity.HomeActivity">
+    tools:context="org.monora.uprotocol.client.android.activity.HomeActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"

@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activity.DonationActivity">
+    tools:context="org.monora.uprotocol.client.android.activity.DonationActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -69,7 +69,7 @@
 
         <fragment
             android:id="@+id/activity_donation_fragment_list"
-            android:name="com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment"
+            android:name="org.monora.uprotocol.client.android.fragment.external.InAppDonationItemListFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

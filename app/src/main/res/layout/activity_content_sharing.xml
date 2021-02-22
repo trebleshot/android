@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.ContentSharingActivity"
+        tools:context="org.monora.uprotocol.client.android.activity.ContentSharingActivity"
         tools:showIn="@layout/activity_content_sharing">
 
         <FrameLayout

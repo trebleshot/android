@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/activity_changelog_fragment_changelog"
-        android:name="com.genonbeta.TrebleShot.fragment.external.GitHubChangelogListFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="changeLogFragment" />

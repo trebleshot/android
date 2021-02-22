@@ -37,11 +37,11 @@
 
     <fragment
         android:id="@+id/activity_text_stream_fragment"
-        android:name="com.genonbeta.TrebleShot.fragment.SharedTextListFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.SharedTextListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.SharedTextActivity"
+        tools:context="org.monora.uprotocol.client.android.activity.SharedTextActivity"
         tools:showIn="@layout/activity_text_stream" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

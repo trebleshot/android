@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.activity;
+package org.monora.uprotocol.client.android.activity;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -7,8 +7,8 @@ import android.view.animation.Animation;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment;
+import org.monora.uprotocol.client.android.app.Activity;
+import org.monora.uprotocol.client.android.fragment.external.InAppDonationItemListFragment;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;

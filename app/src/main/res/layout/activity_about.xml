@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context=".activity.AboutActivity">
+    tools:context="org.monora.uprotocol.client.android.activity.AboutActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -286,7 +286,7 @@
 
                     <fragment
                         android:id="@+id/activity_about_contributors_fragment"
-                        android:name="com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment"
+                        android:name="org.monora.uprotocol.client.android.fragment.external.GitHubContributorsListFragment"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:tag="contributorsFragment" />

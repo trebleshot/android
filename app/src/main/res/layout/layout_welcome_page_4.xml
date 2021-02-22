@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/mainContainer"
-        android:name="com.genonbeta.TrebleShot.fragment.inner.LookPreferencesFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.inner.LookPreferencesFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />

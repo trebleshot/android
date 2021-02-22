@@ -26,7 +26,7 @@
     android:background="?rectSelector"
     android:orientation="vertical">
 
-    <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
+    <org.monora.uprotocol.client.android.view.ComparativeRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -51,7 +51,7 @@
             android:visibility="gone"
             app:tint="?colorControlNormal" />
 
-    </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>
+    </org.monora.uprotocol.client.android.view.ComparativeRelativeLayout>
 
     <LinearLayout
         android:id="@+id/infoContainer"

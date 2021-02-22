@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.fragment.external;
+package org.monora.uprotocol.client.android.fragment.external;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,8 +19,8 @@ import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import org.monora.uprotocol.client.android.config.AppConfig;
+import org.monora.uprotocol.client.android.util.AppUtils;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;

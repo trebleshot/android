@@ -36,7 +36,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".App"
+        android:name="org.monora.uprotocol.client.android.App"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -46,7 +46,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".activity.HomeActivity"
+            android:name="org.monora.uprotocol.client.android.activity.HomeActivity"
             android:label="@string/text_appName"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar">
@@ -56,7 +56,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.ShareActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ShareActivity"
             android:label="@string/text_appName"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>
@@ -76,37 +76,37 @@
         </activity>
 
         <activity
-            android:name=".activity.TransferMemberActivity"
+            android:name="org.monora.uprotocol.client.android.activity.TransferMemberActivity"
             android:label="@string/text_addDevicesToTransfer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.FileExplorerActivity"
+            android:name="org.monora.uprotocol.client.android.activity.FileExplorerActivity"
             android:label="@string/text_fileExplorer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.SharedTextActivity"
+            android:name="org.monora.uprotocol.client.android.activity.SharedTextActivity"
             android:label="@string/text_textStream"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.AddDeviceActivity"
+            android:name="org.monora.uprotocol.client.android.activity.AddDeviceActivity"
             android:label="@string/text_connectDevices"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.ContentSharingActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ContentSharingActivity"
             android:label="@string/text_send"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.FilePickerActivity"
+            android:name="org.monora.uprotocol.client.android.activity.FilePickerActivity"
             android:label="@string/text_fileExplorer" />
 
         <activity
-            android:name=".activity.TransferDetailActivity"
+            android:name="org.monora.uprotocol.client.android.activity.TransferDetailActivity"
             android:label="@string/text_transactionViewer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>
@@ -127,23 +127,23 @@
         </activity>
 
         <activity
-            android:name=".activity.ManageDevicesActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ManageDevicesActivity"
             android:label="@string/text_manageDevices" />
 
         <activity
-            android:name=".activity.SearchActivity"
+            android:name="org.monora.uprotocol.client.android.activity.SearchActivity"
             android:label="@string/butn_search" />
 
         <activity
-            android:name=".activity.PreferencesActivity"
+            android:name="org.monora.uprotocol.client.android.activity.PreferencesActivity"
             android:label="@string/text_preferences" />
 
         <activity
-            android:name=".activity.TextEditorActivity"
+            android:name="org.monora.uprotocol.client.android.activity.TextEditorActivity"
             android:label="@string/text_textEditor" />
 
         <activity
-            android:name=".activity.ChangeStoragePathActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ChangeStoragePathActivity"
             android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
                 <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
@@ -152,41 +152,41 @@
         </activity>
 
         <activity
-            android:name=".activity.AboutActivity"
+            android:name="org.monora.uprotocol.client.android.activity.AboutActivity"
             android:label="@string/text_about"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.ThirdPartyLibrariesActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ThirdPartyLibrariesActivity"
             android:label="@string/text_thirdPartyLibraries" />
 
         <activity
-            android:name=".activity.ChangelogActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ChangelogActivity"
             android:label="@string/text_changelog" />
 
         <activity
-            android:name=".activity.BarcodeScannerActivity"
+            android:name="org.monora.uprotocol.client.android.activity.BarcodeScannerActivity"
             android:label="@string/text_scanQrCode"
             android:theme="@style/Theme.TrebleShot.BarcodeScannerActivity" />
 
         <activity
-            android:name=".activity.WelcomeActivity"
+            android:name="org.monora.uprotocol.client.android.activity.WelcomeActivity"
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
         <activity
-            android:name=".activity.WebShareActivity"
+            android:name="org.monora.uprotocol.client.android.activity.WebShareActivity"
             android:label="@string/text_webShare" />
 
         <activity
-            android:name=".activity.ManualConnectionActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ManualConnectionActivity"
             android:label="@string/text_enterAddress"
             android:windowSoftInputMode="stateVisible" />
 
-        <activity android:name=".activity.PickBestConnectionActivity" />
+        <activity android:name="org.monora.uprotocol.client.android.activity.PickBestConnectionActivity" />
 
         <activity
-            android:name=".activity.TransferHistoryActivity"
+            android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"
             android:label="@string/transfer_history"
             android:launchMode="singleTask"/>
 
@@ -200,17 +200,17 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <receiver android:name=".receiver.DialogEventReceiver" />
+        <receiver android:name="org.monora.uprotocol.client.android.receiver.DialogEventReceiver" />
         <!-- android:process=":transfer"-->
 
         <service
-            android:name=".service.BackgroundService"
+            android:name="org.monora.uprotocol.client.android.service.BackgroundService"
             android:enabled="true"
             android:label="@string/text_communicationService" />
         <!-- android:process=":transfer"-->
 
         <service
-            android:name=".service.DeviceChooserService"
+            android:name="org.monora.uprotocol.client.android.service.DeviceChooserService"
             android:label="@string/text_chooserTargetService"
             android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
             <intent-filter>
@@ -219,7 +219,7 @@
         </service>
 
         <service
-            android:name=".service.CommunicationToggleTile"
+            android:name="org.monora.uprotocol.client.android.service.CommunicationToggleTile"
             android:icon="@drawable/ic_uprotocol"
             android:label="@string/text_shareFiles"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

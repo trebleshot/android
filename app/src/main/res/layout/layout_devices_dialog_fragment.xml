@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/devices_fragment"
-        android:name="com.genonbeta.TrebleShot.fragment.DeviceListFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.DeviceListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="devicesFragment" />
