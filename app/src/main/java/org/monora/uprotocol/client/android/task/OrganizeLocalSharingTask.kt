@@ -26,7 +26,7 @@ import android.util.Log
 import android.widget.Toast
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TransferMemberActivity
-import org.monora.uprotocol.client.android.activityimport.WebShareActivity
+import org.monora.uprotocol.client.android.activity.WebShareActivity
 import org.monora.uprotocol.client.android.model.Transfer
 import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask

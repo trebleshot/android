@@ -87,7 +87,7 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.SharedTextActivity"
-            android:label="@string/text_textStream"
+            android:label="@string/text_sharedTexts"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
@@ -129,10 +129,6 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ManageDevicesActivity"
             android:label="@string/text_manageDevices" />
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.SearchActivity"
-            android:label="@string/butn_search" />
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.PreferencesActivity"
@@ -182,8 +178,6 @@
             android:name="org.monora.uprotocol.client.android.activity.ManualConnectionActivity"
             android:label="@string/text_enterAddress"
             android:windowSoftInputMode="stateVisible" />
-
-        <activity android:name="org.monora.uprotocol.client.android.activity.PickBestConnectionActivity" />
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"

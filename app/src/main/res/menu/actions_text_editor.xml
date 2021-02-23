@@ -26,12 +26,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/menu_action_done"
-        android:icon="@drawable/ic_done_white_24dp"
-        android:title="@string/butn_done"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/menu_action_save"
         android:icon="@drawable/ic_save_white_24dp"
         android:title="@string/butn_save" />

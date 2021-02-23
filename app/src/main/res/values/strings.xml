@@ -118,7 +118,7 @@
     <string name="butn_checkForUpdates">Check for new version</string>
     <string name="butn_seeSourceCode">See source code</string>
     <string name="text_typeText">Write something to send…</string>
-    <string name="text_textEditor">Text editor</string>
+    <string name="text_textEditor">Text Editor</string>
     <string name="butn_done">Done</string>
     <string name="text_empty">(empty)</string>
     <string name="text_textStream">Text stream</string>
@@ -445,9 +445,9 @@
     </string>
     <string name="butn_yes">Yes</string>
     <string name="butn_no">No</string>
-    <string name="text_loadThumbnails">Load thumbnails</string>
+    <string name="text_loadThumbnails">Load Thumbnails</string>
     <string name="text_loadThumbnailsSummary">Show thumbnails for files</string>
-    <string name="text_manageDevices">Manage devices</string>
+    <string name="text_manageDevices">Manage Devices</string>
     <string name="text_search">Search</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi won\'t turn on.</string>
     <string name="mesg_turningWiFiOn">Turning Wi-Fi on</string>
@@ -462,22 +462,20 @@
         start it here.
     </string>
     <string name="text_shortcut">Shortcut</string>
-    <string name="butn_addShortcut">Add shortcut</string>
-    <string name="butn_removeShortcut">Remove shortcut</string>
+    <string name="butn_addShortcut">Add Shortcut</string>
+    <string name="butn_removeShortcut">Remove Shortcut</string>
     <string name="mesg_removed">Removed</string>
     <string name="mesg_added">Added</string>
     <string name="butn_change">Change</string>
     <string name="text_welcome">Welcome</string>
-    <string name="text_introMakeItYours">Make it yours</string>
-    <string name="text_introSetUpPermissions">Set up permissions</string>
+    <string name="text_introMakeItYours">Make it Yours</string>
+    <string name="text_introSetUpPermissions">Set up Permissions</string>
     <string name="text_introAllSet">All set!</string>
-    <string name="text_introSetUpProfile">Set up your profile</string>
+    <string name="text_introSetUpProfile">Set up Your Profile</string>
     <string name="mesg_openFailure">Can not view \"%s\"</string>
-    <string name="text_connectionTest">Connection test - %s</string>
-    <string name="butn_connectionTest">Connection test</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Revoke PIN</string>
-    <string name="const_text_useAppFonts">Apply the recommended font</string>
+    <string name="const_text_useAppFonts">Apply the Recommended Font</string>
     <string name="const_text_useAppFontsSummary">Use the supplied custom font</string>
     <string name="mesg_waiting">Waiting</string>
     <string name="text_amoledOptimizedBlackTheme">Optimize for AMOLED Screens</string>
@@ -489,9 +487,9 @@
     <string name="butn_webShare">Web Share</string>
     <string name="text_webShare" translatable="false">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">Use \'Share on browser\' option to see transfers here!</string>
-    <string name="butn_shareOnBrowser">Share on browser</string>
-    <string name="butn_hideOnBrowser">Hide on browser</string>
-    <string name="text_transferSharedOnBrowser">Shared on browser</string>
+    <string name="butn_shareOnBrowser">Share on Browser</string>
+    <string name="butn_hideOnBrowser">Hide from Browser</string>
+    <string name="text_transferSharedOnBrowser">Sharing on Browser</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
@@ -508,7 +506,7 @@
     <string name="text_interfaceVPN">VPN Server</string>
     <string name="text_unrecognizedQrCode">Unrecognized code</string>
     <string name="mesg_textStreamSaved">Text saved</string>
-    <string name="butn_changeMode">Change mode</string>
+    <string name="butn_changeMode">Change Mode</string>
     <string name="mesg_qrScannerTextMode">QR codes will be shown as text</string>
     <string name="mesg_qrScannerDefaultMode">Back to the default actions for QR codes</string>
     <string name="butn_showAsQrCode">Show as QR code</string>
@@ -526,7 +524,7 @@
         crash log?
     </string>
     <string name="butn_dismiss">Dismiss</string>
-    <string name="text_twoRowLayout">Two-row layout</string>
+    <string name="text_twoRowLayout">Two-row Layout</string>
     <string name="text_twoRowLayoutSummary">Display two rows next to each other</string>
     <string name="text_chooseSharingMethod">Choose sharing method</string>
     <string name="mesg_noActivityFound">Found no activity that can do this action</string>
@@ -608,4 +606,5 @@
     <string name="text_connectionToRemoteFailed">Could not find the device on the network</string>
     <string name="text_connectionError">Is it under a rock?</string>
     <string name="text_license">License</string>
+    <string name="text_sharedTexts">Shared Texts</string>
 </resources>

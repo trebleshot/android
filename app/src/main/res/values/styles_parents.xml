@@ -19,7 +19,7 @@
 <resources>
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
-        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.ActionBar.Primary</item>
+        <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Primary</item>
         <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>

@@ -127,13 +127,8 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val applySupported = (intent != null && intent.hasExtra(EXTRA_SUPPORT_APPLY)
-                && intent.getBooleanExtra(EXTRA_SUPPORT_APPLY, false))
         menu.findItem(R.id.menu_action_save)
             .setVisible(!checkDeletionNeeded()).isEnabled = checkSaveNeeded()
-        menu.findItem(R.id.menu_action_done).isVisible = applySupported
-        menu.findItem(R.id.menu_action_share).isVisible = !applySupported
-        menu.findItem(R.id.menu_action_share_trebleshot).isVisible = !applySupported
         menu.findItem(R.id.menu_action_remove).isVisible = textModel != null
         menu.findItem(R.id.menu_action_show_as_qr_code).isEnabled = (editText.length() in 1..1200)
         return super.onPrepareOptionsMenu(menu)
@@ -145,11 +140,6 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             saveText()
             Snackbar.make(findViewById(android.R.id.content), R.string.mesg_textStreamSaved, Snackbar.LENGTH_LONG)
                 .show()
-        } else if (id == R.id.menu_action_done) {
-            val intent: Intent = Intent()
-                .putExtra(EXTRA_TEXT, editText.getText().toString())
-            setResult(RESULT_OK, intent)
-            finish()
         } else if (id == R.id.menu_action_copy) {
             (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
                 .setPrimaryClip(ClipData.newPlainText("copiedText", editText.getText().toString()))
@@ -243,8 +233,6 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         val TAG = TextEditorActivity::class.java.simpleName
 
         const val ACTION_EDIT_TEXT = "genonbeta.intent.action.EDIT_TEXT"
-
-        const val EXTRA_SUPPORT_APPLY = "extraSupportApply"
 
         const val EXTRA_TEXT = "extraText"
 

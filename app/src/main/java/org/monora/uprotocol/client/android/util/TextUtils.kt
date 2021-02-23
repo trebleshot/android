@@ -123,12 +123,4 @@ object TextUtils {
     fun makeWebShareLink(context: Context, address: String?): String {
         return context.getString(R.string.mode_webShareAddress, address, AppConfig.SERVER_PORT_WEBSHARE)
     }
-
-    fun searchWord(word: String, searchThis: String?): Boolean {
-        return searchThis == null || searchThis.isEmpty() || word.toLowerCase().contains(searchThis.toLowerCase())
-    }
-
-    fun trimText(text: String, length: Int): String {
-        return if (text.length <= length) text else text.substring(0, length)
-    }
 }

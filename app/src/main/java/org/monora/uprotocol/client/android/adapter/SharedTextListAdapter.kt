@@ -38,13 +38,14 @@ class SharedTextListAdapter : ListAdapter<SharedTextModel, ViewHolder>(SharedTex
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        (holder as SharedTextViewHolder).bind(getItem(position))
+        val previous = if (position > 0) getItem(position -1 ) else null
+        (holder as SharedTextViewHolder).bind(getItem(position), previous)
     }
 
     class SharedTextViewHolder(private val binding: ListSharedTextBinding) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener { view ->
-                binding.viewModel?.sharedText?.let {
+                binding.viewModel?.sharedTextModel?.let {
                     view.context.startActivity(
                         Intent(view.context, TextEditorActivity::class.java)
                             .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
@@ -55,8 +56,8 @@ class SharedTextListAdapter : ListAdapter<SharedTextModel, ViewHolder>(SharedTex
             }
         }
 
-        fun bind(sharedTextModel: SharedTextModel) = with(binding) {
-            viewModel = SharedTextViewModel(sharedTextModel)
+        fun bind(sharedTextModel: SharedTextModel, prevSharedTextModel: SharedTextModel?) = with(binding) {
+            viewModel = SharedTextViewModel(sharedTextModel, prevSharedTextModel)
             executePendingBindings()
         }
     }

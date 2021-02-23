@@ -28,7 +28,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activityimport.WebShareActivity
+import org.monora.uprotocol.client.android.activity.WebShareActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.model.*
