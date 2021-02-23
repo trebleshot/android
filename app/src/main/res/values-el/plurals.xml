@@ -5,8 +5,8 @@
         <item quantity="other">Θέλετε να διαγράψετε %d αρχεία\?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">"λήφθηκε %d αρχείο  "</item>
-        <item quantity="other">"λήφθηκαν %d αρχεία  "</item>
+        <item quantity="one">λήφθηκε %d αρχείο</item>
+        <item quantity="other">λήφθηκαν %d αρχεία</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d αρχείο επιλέχθηκε</item>
@@ -46,6 +46,6 @@
     </plurals>
     <plurals name="text_devicesShared">
         <item quantity="one">μεμονομένη κοινή χρήση</item>
-        <item quantity="other">"κοινή χρήση με %d συσκευές "</item>
+        <item quantity="other">κοινή χρήση με %d συσκευές</item>
     </plurals>
 </resources>
