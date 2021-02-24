@@ -49,6 +49,7 @@ class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val adapter = SharedTextListAdapter()
 
+        adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
 
         //adapter = SharedTextListAdapter(appDatabase)

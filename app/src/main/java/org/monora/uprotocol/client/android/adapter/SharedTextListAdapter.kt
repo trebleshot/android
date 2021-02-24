@@ -42,6 +42,10 @@ class SharedTextListAdapter : ListAdapter<SharedTextModel, ViewHolder>(SharedTex
         (holder as SharedTextViewHolder).bind(getItem(position), previous)
     }
 
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id()
+    }
+
     class SharedTextViewHolder(private val binding: ListSharedTextBinding) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener { view ->
