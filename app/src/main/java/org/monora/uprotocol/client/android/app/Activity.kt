@@ -28,6 +28,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import android.view.MenuItem
 import android.widget.ImageView
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
@@ -104,24 +105,34 @@ abstract class Activity : AppCompatActivity() {
 
         if (darkThemeRequested) try {
             @StyleRes var currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme
-            Log.d(Activity::class.java.simpleName, "Activity theme id: $currentThemeRes")
-            if (currentThemeRes == 0) currentThemeRes = applicationInfo.theme
-            Log.d(Activity::class.java.simpleName, "After change theme: $currentThemeRes")
             @StyleRes var appliedRes = 0
+
+            Log.d(Activity::class.java.simpleName, "Activity theme id: $currentThemeRes")
+
+            if (currentThemeRes == 0) {
+                currentThemeRes = applicationInfo.theme
+            }
+
+            Log.d(Activity::class.java.simpleName, "After change theme: $currentThemeRes")
+
             when (currentThemeRes) {
                 R.style.Theme_TrebleShot -> appliedRes = R.style.Theme_TrebleShot_Dark
                 R.style.Theme_TrebleShot_NoActionBar -> appliedRes = R.style.Theme_TrebleShot_Dark_NoActionBar
                 R.style.Theme_TrebleShot_NoActionBar_StaticStatusBar -> appliedRes =
                     R.style.Theme_TrebleShot_Dark_NoActionBar_StaticStatusBar
                 else -> Log.e(
-                    Activity::class.java.simpleName, "The theme in use for " + javaClass.simpleName
-                            + " is unknown. To change the theme to what user requested, it needs to be defined."
+                    Activity::class.java.simpleName, "The requested theme ${javaClass.simpleName} is unknown."
                 )
             }
+
             themeLoadingFailed = appliedRes == 0
+
             if (!themeLoadingFailed) {
                 setTheme(appliedRes)
-                if (amoledDarkThemeRequested) theme.applyStyle(R.style.BlackPatch, true)
+
+                if (amoledDarkThemeRequested) {
+                    theme.applyStyle(R.style.BlackPatch, true)
+                }
             }
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()

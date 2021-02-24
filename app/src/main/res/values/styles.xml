@@ -57,6 +57,24 @@
         <!-- Later handle this -->
     </style>
 
+    <style name="Widget.TrebleShot.ActionBar" parent="Widget.MaterialComponents.ActionBar.Primary">
+        <item name="titleTextStyle">@style/TextAppearance.TrebleShot.ActionBar.Title</item>
+        <item name="homeAsUpIndicator">@drawable/ic_round_arrow_back_24</item>
+    </style>
+
+    <style name="TextAppearance.TrebleShot.ActionBar.Title" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.TrebleShot.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextAppearance">@style/TextAppearance.TrebleShot.Toolbar.Title</item>
+        <item name="homeAsUpIndicator">@drawable/ic_round_arrow_back_24</item>
+    </style>
+
+    <style name="TextAppearance.TrebleShot.Toolbar.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Widget.TrebleShot.FloatingActionButtonStyle" parent="@style/Widget.MaterialComponents.FloatingActionButton">
         <item name="tint">@android:color/white</item>
     </style>
@@ -102,10 +120,6 @@
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:elevation" tools:targetApi="21">5dp</item>
-    </style>
-
-    <style name="Widget.TrebleShot.Toolbar" parent="Widget.MaterialComponents.Toolbar">
-        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">

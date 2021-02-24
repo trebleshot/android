@@ -29,16 +29,16 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
-import org.monora.uprotocol.client.android.fragment.DeviceListFragment
-import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
-import org.monora.uprotocol.client.android.service.BackgroundService
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.fragment.DeviceListFragment
+import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
+import org.monora.uprotocol.client.android.model.Device
+import org.monora.uprotocol.client.android.model.DeviceAddress
+import org.monora.uprotocol.client.android.service.BackgroundService
 
 class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     private val filter = IntentFilter()
@@ -85,7 +85,12 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         }
 
         setResult(RESULT_CANCELED)
-        setContentView(R.layout.activity_connection_manager)
+        setContentView(R.layout.activity_add_device)
+
+        toolbar = findViewById(R.id.toolbar)
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val deviceListArgs = Bundle()
         deviceListArgs.putStringArrayList(
@@ -93,9 +98,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
             arrayListOf(Device.Type.Web.toString())
         )
         val factory = supportFragmentManager.fragmentFactory
-        appBarLayout = findViewById(R.id.app_bar)
         progressBar = findViewById(R.id.activity_connection_establishing_progress_bar)
-        toolbar = findViewById(R.id.toolbar)
         optionsFragment = factory.instantiate(classLoader, OptionsFragment::class.java.name) as OptionsFragment
         networkManagerFragment = factory.instantiate(
             classLoader, NetworkManagerFragment::class.java.name
@@ -105,8 +108,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         filter.addAction(ACTION_CHANGE_FRAGMENT)
         filter.addAction(BackgroundService.ACTION_DEVICE_ACQUAINTANCE)
         filter.addAction(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
     override fun onResume() {
@@ -148,26 +150,31 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     }
 
     override fun onBackPressed() {
-        if (getShowingFragment() is OptionsFragment) super.onBackPressed() else setFragment(AvailableFragment.Options)
+        if (getShowingFragment() is OptionsFragment) {
+            super.onBackPressed()
+        } else {
+            setFragment(AvailableFragment.Options)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home) onBackPressed() else return super.onOptionsItemSelected(item)
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
         return true
     }
 
     fun applyViewChanges(fragment: Fragment) {
-        val isOptions = fragment is OptionsFragment
         if (supportActionBar != null) {
-            // FIXME: 2/21/21 Removed titleproviders are needed here
-            toolbar.title =
-               // if (fragment is TitleProvider)
-               //     fragment.getDistinctiveTitle(this@AddDeviceActivity)
-               // else
-                    getString(R.string.text_chooseDevice)
+            val titleRes = when (fragment) {
+                is NetworkManagerFragment -> R.string.butn_generateQrCode
+                else -> R.string.text_chooseDevice
+            }
+
+            toolbar.title = getString(titleRes)
         }
-        appBarLayout.setExpanded(isOptions, true)
     }
 
     private fun checkFragment() {
@@ -198,11 +205,11 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     }
 
     private fun handleResult(device: Device, address: DeviceAddress?) {
-        if (ConnectionMode.Return == connectionMode) returnResult(
-            this,
-            device,
-            address
-        ) else if (ConnectionMode.WaitForRequests == connectionMode) createSnackbar(R.string.mesg_completing).show()
+        if (ConnectionMode.Return == connectionMode) {
+            returnResult(this, device, address)
+        } else if (ConnectionMode.WaitForRequests == connectionMode) {
+            createSnackbar(R.string.mesg_completing).show()
+        }
     }
 
     fun setFragment(fragment: AvailableFragment?) {
@@ -279,12 +286,19 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
     companion object {
         const val ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CHANGE_FRAGMENT"
+
         const val EXTRA_FRAGMENT_ENUM = "extraFragmentEnum"
+
         const val EXTRA_DEVICE = "extraDevice"
+
         const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
-        const val EXTRA_CONNECTION_MODE = "exraConnectionMode"
+
+        const val EXTRA_CONNECTION_MODE = "extraConnectionMode"
+
         const val REQUEST_BARCODE_SCAN = 100
+
         const val REQUEST_IP_DISCOVERY = 110
+
         fun returnResult(activity: android.app.Activity, device: Device?, address: DeviceAddress?) {
             activity.setResult(
                 RESULT_OK, Intent()

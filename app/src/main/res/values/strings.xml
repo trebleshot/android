@@ -143,7 +143,7 @@
     <string name="text_folder">Folder</string>
     <string name="mesg_organizingFiles">Organising your files</string>
     <string name="mesg_communicating">Communicating</string>
-    <string name="text_communicationService">Communication service</string>
+    <string name="text_communicationService">Communication Service</string>
     <string name="text_chooserTargetService">Device choice provider</string>
     <string name="text_transactionViewer">View transaction</string>
     <string name="text_error">Error</string>
@@ -162,11 +162,11 @@
     </string>
     <string name="butn_settings">Settings</string>
     <string name="butn_selectThis">Select this</string>
-    <string name="butn_newFile">New file</string>
+    <string name="butn_newFile">New File</string>
     <string name="mesg_currentPathUnavailable">This folder cannot be used</string>
     <string name="text_defaultFolder">Default Folder</string>
     <string name="text_storage">Storage</string>
-    <string name="text_shareFiles">Share files</string>
+    <string name="text_shareFiles">Share Files</string>
     <string name="mesg_pathSaved">The directory has been saved</string>
     <string name="butn_search">Search</string>
     <string name="butn_changeConnection">Change connection</string>
@@ -176,10 +176,10 @@
     <string name="text_fileStatus">File status</string>
     <string name="butn_resume">Resume</string>
     <string name="text_transactionDetails">Details</string>
-    <string name="text_fileExplorer">File explorer</string>
-    <string name="butn_createFolder">Create folder</string>
-    <string name="text_chooseFolder">Choose folder</string>
-    <string name="text_chooseFile">Choose file</string>
+    <string name="text_fileExplorer">File Explorer</string>
+    <string name="butn_createFolder">Create Folder</string>
+    <string name="text_chooseFolder">Choose Folder</string>
+    <string name="text_chooseFile">Choose File</string>
     <string name="mesg_pathSameError">You can not select the old folder</string>
     <string name="ques_checkOldFiles">Move files?</string>
     <string name="text_checkOldFiles">Already saved files can be moved to this folder. You will not see them in the see
@@ -187,8 +187,8 @@
     </string>
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>
-    <string name="text_preparingFiles">Preparing files</string>
-    <string name="text_savingDetails">Saving details</string>
+    <string name="text_preparingFiles">Preparing Files</string>
+    <string name="text_savingDetails">Saving Details</string>
     <string name="text_version">Version</string>
     <string name="text_flagPending">Pending</string>
     <string name="text_flagRunning">Running</string>
@@ -200,7 +200,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">Unknown connection</string>
+    <string name="text_interfaceUnknown">Unknown Connection</string>
     <string name="text_shareTextShort">Text</string>
     <string name="butn_connectionList">Connections</string>
     <string name="text_automaticNetworkConnectionFailed">Could not connect the device. Its address may have changed. Try
@@ -215,7 +215,7 @@
     <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot needs to access your device\'s serial number
         to create a long-term identity number, helping other devices recognize you
     </string>
-    <string name="text_mediaDirectory">Media directory</string>
+    <string name="text_mediaDirectory">Media Directory</string>
     <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
     <string name="mesg_notEnoughSpace">Not enough space</string>
     <string name="text_savePath">Save path</string>
@@ -324,7 +324,7 @@
     <string name="text_internalStorage">Internal storage</string>
     <string name="text_emptySearchResult">No result for \"%s\"</string>
     <string name="mesg_errorReadFolder">Can not access \"%s\"</string>
-    <string name="butn_mountDirectory">Mount folder</string>
+    <string name="butn_mountDirectory">Mount Folder</string>
     <string name="mesg_mountDirectoryHelp">Select the folder you want to access</string>
     <string name="butn_ejectDirectory">Unmount folder</string>
     <string name="text_movedCacheFiles">Cache files moved</string>
@@ -356,20 +356,20 @@
     <string name="text_default">Default</string>
     <string name="text_files">Files</string>
     <string name="mesg_noReceiverOrSender">You should add devices first</string>
-    <string name="butn_addDevices">Add devices</string>
+    <string name="butn_addDevices">Add Devices</string>
     <string name="text_addDevices" translatable="false">@string/butn_addDevices</string>
-    <string name="text_connectDevices">Connect devices</string>
+    <string name="text_connectDevices">Connect Devices</string>
     <string name="text_network">Network</string>
     <string name="text_connect">Connect</string>
     <string name="butn_shareWithOtherApps">Share with other apps</string>
-    <string name="butn_startHotspot">Set up hotspot</string>
-    <string name="butn_stopHotspot">Stop hotspot</string>
+    <string name="butn_startHotspot">Set Up Hotspot</string>
+    <string name="butn_stopHotspot">Stop Hotspot</string>
     <string name="text_easyDiscoveryHelp">Scan this if both devices are on the same network</string>
     <string name="text_scanQRWifiRequired">To connect to devices, Wi-Fi should be turned on</string>
     <string name="mesg_completing">Completing</string>
     <string name="mesg_errorNotSameNetwork">The devices may not be on the same network</string>
     <string name="text_cameraPermissionRequired">Camera permission required</string>
-    <string name="text_addDevicesToTransfer">Add devices to transfer</string>
+    <string name="text_addDevicesToTransfer">Add Devices to Transfer</string>
     <string name="text_file">File</string>
     <string name="text_noDeviceForTransfer">No device added for this transfer</string>
     <string name="text_thirdPartyLibraries">Third party libraries</string>
@@ -468,10 +468,10 @@
     <string name="mesg_added">Added</string>
     <string name="butn_change">Change</string>
     <string name="text_welcome">Welcome</string>
-    <string name="text_introMakeItYours">Make it Yours</string>
-    <string name="text_introSetUpPermissions">Set up Permissions</string>
+    <string name="text_introMakeItYours">Make It Yours</string>
+    <string name="text_introSetUpPermissions">Set Up Permissions</string>
     <string name="text_introAllSet">All set!</string>
-    <string name="text_introSetUpProfile">Set up Your Profile</string>
+    <string name="text_introSetUpProfile">Set Up Your Profile</string>
     <string name="mesg_openFailure">Can not view \"%s\"</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Revoke PIN</string>
@@ -607,4 +607,5 @@
     <string name="text_connectionError">Is it under a rock?</string>
     <string name="text_license">License</string>
     <string name="text_sharedTexts">Shared Texts</string>
+    <string name="text_thirdPartyLicenses">Third Party Licenses</string>
 </resources>

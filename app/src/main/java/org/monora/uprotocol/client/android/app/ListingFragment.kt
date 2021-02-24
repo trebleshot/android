@@ -228,7 +228,7 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
         else if (performerMenu?.onMenuItemClick(item) == true)
             localSelectionActivated = false
         else
-            super.onOptionsItemSelected(item)
+            return super.onOptionsItemSelected(item)
 
         return true
     }

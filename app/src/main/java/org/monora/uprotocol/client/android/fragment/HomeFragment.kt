@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.ViewPager
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.adapter.MainFragmentPagerAdapter
+import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter
 import org.monora.uprotocol.client.android.app.Activity.OnBackPressedListener
 import com.genonbeta.android.framework.app.Fragment
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
@@ -32,7 +32,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class HomeFragment : Fragment(), SnackbarPlacementProvider, OnBackPressedListener {
     private lateinit var viewPager: ViewPager
 
-    private lateinit var pagerAdapter: MainFragmentPagerAdapter
+    private lateinit var stateAdapter: MainFragmentStateAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +41,7 @@ class HomeFragment : Fragment(), SnackbarPlacementProvider, OnBackPressedListene
         val view = inflater.inflate(R.layout.layout_home_fragment, container, false)
         val bottomNavigationView: BottomNavigationView = view.findViewById(R.id.layout_home_bottom_navigation_view)
         viewPager = view.findViewById(R.id.layout_home_view_pager)
-        pagerAdapter = MainFragmentPagerAdapter(requireContext(), childFragmentManager)
+        stateAdapter = MainFragmentStateAdapter(requireContext(), childFragmentManager, lifecycle)
         /*pagerAdapter.add(
             StableItem(
                 0, TransferListFragment::class.qualifiedName!!,
@@ -74,7 +74,7 @@ class HomeFragment : Fragment(), SnackbarPlacementProvider, OnBackPressedListene
     }
 
     override fun onBackPressed(): Boolean {
-        val activeItem: Any = pagerAdapter.getItem(viewPager.currentItem)
+        val activeItem: Any = stateAdapter.getItem(viewPager.currentItem)
         if (activeItem is OnBackPressedListener && activeItem.onBackPressed()) return true
         if (viewPager.currentItem > 0) {
             viewPager.setCurrentItem(0, true)

@@ -30,14 +30,22 @@ import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionManager
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
+import com.genonbeta.android.framework.ui.PerformerMenu
+import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
+import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
+import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.adapter.MainFragmentPagerAdapter
+import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter
+import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter.PageItem
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.dialog.ChooseSharingMethodDialog
 import org.monora.uprotocol.client.android.fragment.*
+import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
@@ -46,17 +54,12 @@ import org.monora.uprotocol.client.android.task.OrganizeLocalSharingTask
 import org.monora.uprotocol.client.android.ui.callback.LocalSharingCallback
 import org.monora.uprotocol.client.android.ui.callback.SharingPerformerMenuCallback
 import org.monora.uprotocol.client.android.util.Selections
-import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.google.android.material.tabs.TabLayout
-import org.monora.uprotocol.client.android.model.ContentModel
 
 /**
  * created by: veli
  * date: 13/04/18 19:45
  */
+@AndroidEntryPoint
 class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharingCallback, AttachedTaskListener {
     private var backPressedListener: OnBackPressedListener? = null
 
@@ -87,16 +90,16 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
         performerMenu.load(actionMenuView.menu)
         performerMenu.setUp(performerEngine)
         val tabLayout: TabLayout = findViewById(R.id.activity_content_sharing_tab_layout)
-        val viewPager: ViewPager = findViewById(R.id.activity_content_sharing_view_pager)
-        val pagerAdapter: MainFragmentPagerAdapter = object : MainFragmentPagerAdapter(
-            this, supportFragmentManager
+        val viewPager: ViewPager2 = findViewById(R.id.activity_content_sharing_view_pager)
+        val pagerAdapter: MainFragmentStateAdapter = object : MainFragmentStateAdapter(
+            this, supportFragmentManager, lifecycle
         ) {
             override fun onItemInstantiated(item: PageItem) {
-                val fragment: Fragment? = item.initiatedItem
+                val fragment: Fragment? = item.fragment
                 if (fragment is ListingFragmentBase<*>) {
-                    val fragmentImpl = fragment as ListingFragmentBase<*>
-                    if (viewPager.currentItem == item.currentPosition)
-                        attachListeners(fragmentImpl)
+                    if (viewPager.currentItem == item.currentPosition) {
+                        attachListeners(fragment)
+                    }
                 }
             }
         }
@@ -104,6 +107,24 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
         arguments.putBoolean(ListingFragment.ARG_SELECT_BY_CLICK, true)
         arguments.putBoolean(ListingFragment.ARG_HAS_BOTTOM_SPACE, false)
         // FIXME: 2/21/21 Sharing fragments were here
+        pagerAdapter.add(
+            PageItem(
+                0,
+                R.drawable.ic_short_text_white_24dp,
+                getString(R.string.text_sharedTexts),
+                SharedTextListFragment::class.qualifiedName!!,
+                arguments
+            )
+        )
+        pagerAdapter.add(
+            PageItem(
+                1,
+                R.drawable.ic_short_text_white_24dp,
+                getString(R.string.text_files),
+                SharedTextListFragment::class.qualifiedName!!,
+                arguments
+            )
+        )
         /*pagerAdapter.add(StableItem(0, ApplicationListFragment::class.qualifiedName!!, arguments))
         pagerAdapter.add(
             StableItem(1, FileExplorerFragment::class.qualifiedName!!, arguments, getString(R.string.text_files))
@@ -113,32 +134,50 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
         pagerAdapter.add(StableItem(4, VideoListFragment::class.qualifiedName!!, arguments))*/
         pagerAdapter.createTabs(tabLayout, withIcon = false, withText = true)
         viewPager.adapter = pagerAdapter
-        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                viewPager.currentItem = tab.position
-                val fragment = pagerAdapter.getItem(tab.position)
 
-                if (fragment is ListingFragmentBase<*>) {
-                    val editableListFragment = fragment as ListingFragmentBase<*>
-                    attachListeners(editableListFragment)
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        { editableListFragment.adapterImpl.syncAllAndNotify() }, 200
-                    )
+        tabLayout.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        viewPager.setCurrentItem(tab.position, true)
+                    }
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+
                 }
             }
+        )
 
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+        viewPager.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    tabLayout.getTabAt(position)?.select()
+                    val fragment = pagerAdapter.getItem(position).fragment
+                    if (fragment is ListingFragmentBase<*>) {
+                        val editableListFragment = fragment as ListingFragmentBase<*>
+                        attachListeners(editableListFragment)
+                        Handler(Looper.getMainLooper()).postDelayed(
+                            { editableListFragment.adapterImpl.syncAllAndNotify() }, 200
+                        )
+                    }
+                }
+            }
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == android.R.id.home) {
             if (canExit()) finish()
-        } else
+        } else {
             return super.onOptionsItemSelected(item)
+        }
         return true
     }
 
@@ -160,7 +199,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
     }
 
     override fun onBackPressed() {
-        if ((backPressedListener == null || !backPressedListener!!.onBackPressed()) && canExit()) {
+        if (backPressedListener?.onBackPressed() != true && canExit()) {
             super.onBackPressed()
         }
     }

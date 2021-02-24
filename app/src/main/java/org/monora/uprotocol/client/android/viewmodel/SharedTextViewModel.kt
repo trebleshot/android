@@ -7,15 +7,14 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.ViewModel
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
 
-class SharedTextViewModel(
-    val sharedTextModel: SharedTextModel, val prevSharedTextModel: SharedTextModel?,
-) : ViewModel()
+class SharedTextViewModel(val sharedTextModel: SharedTextModel) : ViewModel()
 
 @BindingAdapter("clock")
 fun toClock(textView: TextView, time: Long) {
     textView.text = DateUtils.formatDateTime(textView.context, time, DateUtils.FORMAT_SHOW_TIME)
 }
 
+/*
 @BindingAdapter("visibleIfSameDate")
 fun visibleIfSameDate(textView: TextView, sharedTextViewModel: SharedTextViewModel) {
     val date = DateUtils.formatDateTime(
@@ -28,3 +27,4 @@ fun visibleIfSameDate(textView: TextView, sharedTextViewModel: SharedTextViewMod
     textView.visibility = if (datePrev == null || date != datePrev) View.VISIBLE else View.GONE
     textView.text = date
 }
+*/

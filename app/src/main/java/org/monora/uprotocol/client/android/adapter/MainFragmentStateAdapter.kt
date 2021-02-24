@@ -21,11 +21,11 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.parcelize.IgnoredOnParcel
@@ -36,9 +36,9 @@ import java.util.*
  * created by: veli
  * date: 11/04/18 21:53
  */
-open class MainFragmentPagerAdapter(
-    val context: Context, fm: FragmentManager,
-) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+open class MainFragmentStateAdapter(
+    val context: Context, fm: FragmentManager, lifecycle: Lifecycle,
+) : FragmentStateAdapter(fm, lifecycle) {
     private val fragments: MutableList<PageItem> = ArrayList()
 
     private val fragmentFactory: FragmentFactory = fm.fragmentFactory
@@ -55,8 +55,8 @@ open class MainFragmentPagerAdapter(
 
     @JvmOverloads
     fun createTabs(tabLayout: TabLayout, withIcon: Boolean = true, withText: Boolean = true) {
-        if (count > 0) for (iterator in 0 until count) {
-            val item = getPagerItem(iterator)
+        if (itemCount > 0) for (iterator in 0 until itemCount) {
+            val item = getItem(iterator)
             val tab: TabLayout.Tab = tabLayout.newTab()
             if (withIcon) tab.setIcon(item.iconRes)
             if (withText || !item.iconOnly) tab.text = item.title
@@ -66,40 +66,32 @@ open class MainFragmentPagerAdapter(
     }
 
     fun createTabs(bottomNavigationView: BottomNavigationView) {
-        if (count > 0) for (iterator in 0 until count) {
-            val item = getPagerItem(iterator)
+        if (itemCount > 0) for (iterator in 0 until itemCount) {
+            val item = getItem(iterator)
             bottomNavigationView.menu.add(0, iterator, iterator, item.title).setIcon(item.iconRes)
         }
     }
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val fragment = super.instantiateItem(container, position) as Fragment
-        Log.d(MainFragmentPagerAdapter::class.java.simpleName, "instantiateItem: " + fragment.javaClass.name)
-        val item = getPagerItem(position)
-        item.initiatedItem = fragment
-        item.currentPosition = position
+    override fun createFragment(position: Int): Fragment {
+        val item = getItem(position).apply {
+            currentPosition = position
+        }
+        val fragment = item.fragment ?: fragmentFactory.instantiate(context.classLoader, item.clazz).apply {
+            arguments = item.arguments
+        }
+        Log.d(MainFragmentStateAdapter::class.java.simpleName, "createFragment: " + fragment.javaClass.name)
         onItemInstantiated(item)
+
         return fragment
     }
 
-    override fun getCount(): Int {
-        return fragments.size
-    }
+    override fun getItemCount(): Int = fragments.size
 
     override fun getItemId(position: Int): Long {
-        return getPagerItem(position).id.toLong()
+        return getItem(position).id.toLong()
     }
 
-    override fun getItem(position: Int): Fragment {
-        val item = getPagerItem(position)
-        val instantiatedItem = item.initiatedItem ?: fragmentFactory.instantiate(context.classLoader, item.clazz)
-        instantiatedItem.arguments = item.arguments
-        return instantiatedItem
-    }
-
-    override fun getPageTitle(position: Int): CharSequence = getPagerItem(position).title
-
-    private fun getPagerItem(position: Int): PageItem = synchronized(fragments) { fragments[position] }
+    fun getItem(position: Int): PageItem = synchronized(fragments) { fragments[position] }
 
     @Parcelize
     class PageItem(
@@ -111,7 +103,7 @@ open class MainFragmentPagerAdapter(
         var iconOnly: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
-        var initiatedItem: Fragment? = null
+        var fragment: Fragment? = null
 
         @IgnoredOnParcel
         var currentPosition = -1

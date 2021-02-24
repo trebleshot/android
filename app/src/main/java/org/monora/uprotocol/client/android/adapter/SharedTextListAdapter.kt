@@ -17,62 +17,55 @@
  */
 package org.monora.uprotocol.client.android.adapter
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.databinding.ListSectionDateBinding
 import org.monora.uprotocol.client.android.databinding.ListSharedTextBinding
-import org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel
+import org.monora.uprotocol.client.android.itemcallback.ContentModelItemCallback
+import org.monora.uprotocol.client.android.model.ContentModel
+import org.monora.uprotocol.client.android.model.DateSectionContentModel
+import org.monora.uprotocol.client.android.viewholder.DateSectionViewHolder
+import org.monora.uprotocol.client.android.viewholder.SharedTextViewHolder
 
 /**
  * created by: Veli
  * date: 30.12.2017 13:25
  */
-class SharedTextListAdapter : ListAdapter<SharedTextModel, ViewHolder>(SharedTextDiffCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = SharedTextViewHolder(
-        ListSharedTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    )
+class SharedTextListAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
+        VIEW_TYPE_SHARED_TEXT -> SharedTextViewHolder(
+            ListSharedTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
+        VIEW_TYPE_SECTION -> DateSectionViewHolder(
+            ListSectionDateBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
+        else -> throw UnsupportedOperationException()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is SharedTextModel -> VIEW_TYPE_SHARED_TEXT
+            is DateSectionContentModel -> VIEW_TYPE_SECTION
+            else -> throw UnsupportedOperationException()
+        }
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val previous = if (position > 0) getItem(position -1 ) else null
-        (holder as SharedTextViewHolder).bind(getItem(position), previous)
+        when (val item = getItem(position)) {
+            is SharedTextModel -> if (holder is SharedTextViewHolder) holder.bind(item)
+            is DateSectionContentModel -> if (holder is DateSectionViewHolder) holder.bind(item)
+        }
     }
 
     override fun getItemId(position: Int): Long {
         return getItem(position).id()
     }
 
-    class SharedTextViewHolder(private val binding: ListSharedTextBinding) : ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener { view ->
-                binding.viewModel?.sharedTextModel?.let {
-                    view.context.startActivity(
-                        Intent(view.context, TextEditorActivity::class.java)
-                            .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-                            .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, it)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                }
-            }
-        }
-
-        fun bind(sharedTextModel: SharedTextModel, prevSharedTextModel: SharedTextModel?) = with(binding) {
-            viewModel = SharedTextViewModel(sharedTextModel, prevSharedTextModel)
-            executePendingBindings()
-        }
-    }
-}
-
-private class SharedTextDiffCallback : DiffUtil.ItemCallback<SharedTextModel>() {
-    override fun areItemsTheSame(oldItem: SharedTextModel, newItem: SharedTextModel): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: SharedTextModel, newItem: SharedTextModel): Boolean {
-        return oldItem == newItem
+    companion object {
+        const val VIEW_TYPE_SECTION = 0
+        const val VIEW_TYPE_SHARED_TEXT = 1
     }
 }

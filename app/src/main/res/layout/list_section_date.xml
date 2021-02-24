@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="model"
+            type="org.monora.uprotocol.client.android.model.DateSectionContentModel" />
+    </data>
+
+    <TextView
+        android:id="@+id/layout_list_title_text"
+        style="@style/CondensedTitleStyle"
+        android:text="@{model.name()}"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_list_content_parent_layout"
+        android:paddingEnd="@dimen/padding_list_content_icon_main_margin_left"
+        android:paddingLeft="@dimen/padding_list_content_icon_main_margin_left"
+        android:paddingRight="@dimen/padding_list_content_icon_main_margin_left"
+        android:paddingStart="@dimen/padding_list_content_icon_main_margin_left" />
+</layout>

@@ -38,7 +38,6 @@ class AboutActivity : Activity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         findViewById<View>(R.id.orgIcon).setOnClickListener {

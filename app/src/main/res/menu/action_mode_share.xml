@@ -20,8 +20,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_mode_share_trebleshot"
-        android:icon="@drawable/ic_send_white_24dp"
+        android:icon="@drawable/ic_round_send_24"
         android:title="@string/butn_shareWithTrebleshot"
-        app:showAsAction="always"
-        app:iconTint="?colorSecondary" />
+        app:showAsAction="always" />
 </menu>

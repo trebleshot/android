@@ -27,55 +27,37 @@
     </data>
 
     <LinearLayout
+        style="@style/ListContentLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="?rectSelector"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/layout_list_title_text"
-            style="@style/CondensedTitleStyle"
-            visibleIfSameDate="@{viewModel}"
+        <FrameLayout
+            style="@style/ListContentIconStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/padding_list_content_parent_layout"
-            android:paddingEnd="@dimen/padding_list_content_icon_main_margin_left"
-            android:paddingLeft="@dimen/padding_list_content_icon_main_margin_left"
-            android:paddingRight="@dimen/padding_list_content_icon_main_margin_left"
-            android:paddingStart="@dimen/padding_list_content_icon_main_margin_left" />
-
-        <LinearLayout
-            style="@style/ListContentLayoutStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?rectSelector"
-            android:orientation="horizontal">
-
-            <FrameLayout
-                style="@style/ListContentIconStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/text2"
-                    style="@style/TextAppearance.Secondary"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    app:clock="@{viewModel.sharedTextModel.dateCreated()}" />
-
-            </FrameLayout>
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/text"
-                android:text="@{viewModel.sharedTextModel.name()}"
-                style="@style/TextAppearance.Primary"
-                android:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="3" />
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                app:clock="@{viewModel.sharedTextModel.dateCreated()}" />
 
-        </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/text"
+            android:text="@{viewModel.sharedTextModel.name()}"
+            style="@style/TextAppearance.Primary"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3" />
+
     </LinearLayout>
 </layout>

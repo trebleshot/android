@@ -19,7 +19,7 @@
 <resources>
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
-        <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Primary</item>
+        <item name="actionBarStyle">@style/Widget.TrebleShot.ActionBar</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Primary</item>
         <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
@@ -94,7 +94,7 @@
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
-        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
+        <item name="actionBarStyle">@style/Widget.TrebleShot.ActionBar</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Primary</item>
         <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>

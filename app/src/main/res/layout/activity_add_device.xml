@@ -33,8 +33,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            app:layout_collapseMode="pin" />
+            android:layout_height="?actionBarSize" />
 
         <View style="@style/DividerStyle" />
 
@@ -48,6 +47,7 @@
             android:layout_marginBottom="-4dp"
             android:indeterminate="true"
             android:visibility="gone" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

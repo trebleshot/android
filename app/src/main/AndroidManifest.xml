@@ -88,18 +88,35 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.SharedTextActivity"
             android:label="@string/text_sharedTexts"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.AddDeviceActivity"
             android:label="@string/text_connectDevices"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ContentSharingActivity"
             android:label="@string/text_send"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.FilePickerActivity"
@@ -128,11 +145,23 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ManageDevicesActivity"
-            android:label="@string/text_manageDevices" />
+            android:label="@string/text_manageDevices"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.PreferencesActivity"
-            android:label="@string/text_preferences" />
+            android:label="@string/text_preferences"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TextEditorActivity"
@@ -140,7 +169,8 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ChangeStoragePathActivity"
-            android:theme="@style/Base.Theme.AppCompat.Dialog">
+            android:theme="@style/Base.Theme.AppCompat.Dialog"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -150,11 +180,17 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.AboutActivity"
             android:label="@string/text_about"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ThirdPartyLibrariesActivity"
-            android:label="@string/text_thirdPartyLibraries" />
+            android:label="@string/text_thirdPartyLicenses" />
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ChangelogActivity"
@@ -182,7 +218,7 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"
             android:label="@string/transfer_history"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
