@@ -165,7 +165,13 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TextEditorActivity"
-            android:label="@string/text_textEditor" />
+            android:label="@string/text_textEditor"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ChangeStoragePathActivity"

@@ -21,7 +21,7 @@
 
     <item
         android:id="@+id/menu_action_share_trebleshot"
-        android:icon="@drawable/ic_send_white_24dp"
+        android:icon="@drawable/ic_round_send_24"
         android:title="@string/butn_shareWithTrebleshot"
         app:showAsAction="always" />
 

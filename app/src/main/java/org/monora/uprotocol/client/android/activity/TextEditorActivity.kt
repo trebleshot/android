@@ -64,7 +64,6 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         super.onCreate(savedInstanceState)
         if (intent == null || ACTION_EDIT_TEXT != intent.action) finish() else {
             setContentView(R.layout.layout_text_editor_activity)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
             editText = findViewById(R.id.layout_text_editor_activity_text_text_box)
 
             if (intent.hasExtra(EXTRA_TEXT_MODEL)) {
