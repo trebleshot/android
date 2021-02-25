@@ -6,13 +6,14 @@ import android.os.Build
 import android.util.Base64
 import android.util.Log
 import androidx.preference.PreferenceManager
-import org.monora.uprotocol.client.android.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.FileStreamDescriptor
-import org.monora.uprotocol.client.android.database.model.DefaultClient
-import org.monora.uprotocol.client.android.database.model.DefaultClientAddress
-import org.monora.uprotocol.client.android.database.model.DefaultTransferItem
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.persistence.PersistenceProvider.STATE_PENDING
@@ -130,7 +131,7 @@ class MainPersistenceProvider @Inject constructor(
             return cert
         }
 
-    override fun approveInvalidationOfCredentials(client: Client?): Boolean {
+    override fun approveInvalidationOfCredentials(client: Client): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -140,7 +141,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun containsTransfer(groupId: Long): Boolean = db.transferItemDao().contains(groupId)
 
-    override fun createClientAddressFor(address: InetAddress, clientUid: String) = DefaultClientAddress(
+    override fun createClientAddressFor(address: InetAddress, clientUid: String) = UClientAddress(
         address, clientUid, System.currentTimeMillis()
     )
 
@@ -154,7 +155,7 @@ class MainPersistenceProvider @Inject constructor(
         versionCode: Int,
         protocolVersion: Int,
         protocolVersionMin: Int,
-    ) = DefaultClient(
+    ) = UClient(
         uid, nickname, manufacturer, product, type, versionName, versionCode, protocolVersion, protocolVersionMin,
         System.currentTimeMillis(), blocked = false, local = false, trusted = false, certificate = null
     )
@@ -167,24 +168,25 @@ class MainPersistenceProvider @Inject constructor(
         size: Long,
         directory: String?,
         type: TransferItem.Type,
-    ): TransferItem = DefaultTransferItem(
-        groupId, id, name, mimeType, size, directory, type, STATE_PENDING, System.currentTimeMillis()
+    ): TransferItem = UTransferItem(
+        groupId, id, name, mimeType, size, directory, uniqueFileName(), type, STATE_PENDING, System.currentTimeMillis()
     )
 
     override fun getCertificate(): X509Certificate = _certificate
 
-    override fun getClient() = DefaultClient(
+    override fun getClient() = UClient(
         clientUid, clientNickname, Build.MANUFACTURER, Build.PRODUCT, ClientType.Portable, BuildConfig.VERSION_NAME,
         BuildConfig.VERSION_CODE, Config.VERSION_UPROTOCOL, Config.VERSION_UPROTOCOL_MIN, System.currentTimeMillis(),
         blocked = false, local = true, trusted = true, certificate
     )
 
-    override fun getClientFor(uid: String?): DefaultClient? {
+    override fun getClientFor(uid: String): UClient? {
         return db.clientDao().get(client.uid)
     }
 
+    // TODO: 2/21/21 Can we get the device name programmatically, on Android TV for instance?
     override fun getClientNickname(): String = PreferenceManager.getDefaultSharedPreferences(context)
-        .getString("nickname", null) ?: Build.PRODUCT
+        .getString("nickname", null) ?: Build.MODEL.toUpperCase(Locale.getDefault())
 
     override fun getClientPicture(): ByteArray = getClientPictureFor(client)
 
@@ -273,61 +275,67 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun save(client: Client) {
-        if (client is DefaultClient)
+        if (client is UClient) {
             db.clientDao().insertAll(client)
-        else
+        } else {
             throw UnsupportedOperationException()
+        }
     }
 
     override fun save(clientAddress: ClientAddress) {
-        if (clientAddress is DefaultClientAddress)
+        if (clientAddress is UClientAddress) {
             db.clientAddressDao().insertAll(clientAddress)
-        else
+        } else {
             throw UnsupportedOperationException()
+        }
     }
 
     override fun save(clientUid: String, item: TransferItem) {
-        if (item is DefaultTransferItem)
+        if (item is UTransferItem) {
             db.transferItemDao().insertAll(item)
-        else
+        } else {
             throw UnsupportedOperationException()
+        }
     }
 
-    override fun save(clientUid: String, itemList: MutableList<out TransferItem>?) {
-        val usableItemList: ArrayList<in TransferItem> = ArrayList()
+    override fun save(clientUid: String, itemList: MutableList<out TransferItem>) {
+        val usableItemList = ArrayList<UTransferItem>()
 
-        itemList?.forEach {
-            if (it is DefaultTransferItem)
+        itemList.forEach {
+            if (it is UTransferItem) {
                 usableItemList.add(it)
+            }
         }
 
-        db.transferItemDao().insertAll(*usableItemList.toArray(arrayOf<DefaultTransferItem>()))
+        db.transferItemDao().insertAll(usableItemList)
     }
 
     override fun saveClientPicture(clientUid: String, bitmap: ByteArray?) {
         val fileName = "photo-" + clientUid.hashCode()
 
-        if (bitmap == null)
+        if (bitmap == null) {
             context.deleteFile(fileName)
-        else
-            context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
-                it.write(bitmap)
-            }
+        } else context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
+            it.write(bitmap)
+        }
     }
 
     override fun saveRequestForInvalidationOfCredentials(clientUid: String?) {
         TODO("Not yet implemented")
     }
 
-    override fun setState(clientUid: String?, item: TransferItem, state: Int, e: Exception?) {
-        if (item is DefaultTransferItem) {
+    override fun setState(clientUid: String, item: TransferItem, state: Int, e: Exception?) {
+        if (item is UTransferItem) {
             item.state = state
             db.transferItemDao().insertAll(item)
-        } else
+        } else {
             throw UnsupportedOperationException()
+        }
     }
 
     companion object {
         val TAG = MainPersistenceProvider::class.simpleName
     }
 }
+
+fun uniqueFileName() = UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART

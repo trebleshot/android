@@ -26,9 +26,8 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.Transfer
-import org.monora.uprotocol.client.android.model.TransferItem
-import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.util.*
 
 /**
@@ -73,27 +72,33 @@ object DialogUtils {
             R.string.text_alsoDeleteReceivedFiles,
             object : ClickListener {
                 override fun onClick(dialog: DialogInterface, which: Int, checkBox: CheckBox) {
+                    // FIXME: 2/25/21 Transfer removal
+                    /*
                     transfer.deleteFilesOnRemoval = checkBox.isChecked == true
                     AppUtils.getKuick(activity).removeAsynchronous(activity, transfer, null)
+
+                     */
                 }
             }
         )
     }
 
     fun showRemoveDialog(activity: Activity, item: TransferItem) {
-        val checkBox = if (TransferItem.Type.INCOMING == item.type) R.string.text_alsoDeleteReceivedFiles else 0
+        val checkBox = if (TransferItem.Type.Incoming == item.itemType) R.string.text_alsoDeleteReceivedFiles else 0
         showGenericCheckBoxDialog(
             activity,
             R.string.ques_removeTransfer,
-            activity.getString(
-                R.string.text_removeTransferSummary, item.name
-            ),
+            activity.getString(R.string.text_removeTransferSummary, item.itemName),
             R.string.butn_remove,
             checkBox,
             object : ClickListener {
                 override fun onClick(dialog: DialogInterface, which: Int, checkBox: CheckBox) {
+                    // FIXME: 2/25/21 TransferItem removal
+                    /*
                     item.setDeleteOnRemoval(checkBox.isChecked)
                     AppUtils.getKuick(activity).removeAsynchronous(activity, item, null)
+
+                     */
                 }
             }
         )
@@ -111,9 +116,12 @@ object DialogUtils {
             R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
             object : ClickListener {
                 override fun onClick(dialog: DialogInterface, which: Int, checkBox: CheckBox) {
+                    // FIXME: 2/25/21 Transfer item list removal
+                    /**
                     val isChecked = checkBox.isChecked
                     for (item in copiedObjects) item.setDeleteOnRemoval(isChecked)
                     AppUtils.getKuick(activity).removeAsynchronous(activity, copiedObjects, null)
+                     */
                 }
             }
         )
@@ -133,8 +141,12 @@ object DialogUtils {
             object : ClickListener {
                 override fun onClick(dialog: DialogInterface, which: Int, checkBox: CheckBox) {
                     val isChecked = checkBox.isChecked
+                    // FIXME: 2/25/21 Transfer list removal
+                    /*
                     for (transfer in copiedTransfers) transfer.deleteFilesOnRemoval = isChecked
                     AppUtils.getKuick(activity).removeAsynchronous(activity, copiedTransfers, null)
+
+                     */
                 }
             }
         )

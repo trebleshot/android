@@ -29,9 +29,6 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.*
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.Transfer
-import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.receiver.DialogEventReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
@@ -39,6 +36,9 @@ import org.monora.uprotocol.client.android.task.FileTransferTask
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.text.NumberFormat
 
 /**
@@ -46,6 +46,9 @@ import java.text.NumberFormat
  * date: 26.01.2018 18:29
  */
 class NotificationHelper(val utils: Notifications) {
+    val context: Context
+        get() = utils.context
+
     private val percentFormat = NumberFormat.getPercentInstance()
 
     val foregroundNotification: DynamicNotification
@@ -78,13 +81,13 @@ class NotificationHelper(val utils: Notifications) {
             return notification.show()
         }
 
-    fun generateHomePendingIntent(): PendingIntent {
+    private fun generateHomePendingIntent(): PendingIntent {
         return PendingIntent.getActivity(context, 0, Intent(context, HomeActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0
         )
     }
 
-    fun generateStopAllTasksAction(): NotificationCompat.Action {
+    private fun generateStopAllTasksAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_close_white_24dp_static, context.getString(
                 R.string.butn_stopAll
@@ -96,7 +99,7 @@ class NotificationHelper(val utils: Notifications) {
         )
     }
 
-    fun generateExitNotificationAction(): NotificationCompat.Action {
+    private fun generateExitNotificationAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_close_white_24dp_static, context.getString(
                 R.string.butn_exit
@@ -108,10 +111,7 @@ class NotificationHelper(val utils: Notifications) {
         )
     }
 
-    val context: Context
-        get() = utils.context
-
-    fun notifyKeyChanged(device: Device, receiveKey: Int, sendKey: Int) {
+    fun notifyKeyChanged(client: UClient) {
         val notification = utils.buildDynamicNotification(
             AppUtils.uniqueNumber,
             Notifications.NOTIFICATION_CHANNEL_HIGH
@@ -119,11 +119,9 @@ class NotificationHelper(val utils: Notifications) {
         val acceptIntent = Intent(context, BackgroundService::class.java)
         val dialogIntent = Intent(context, DialogEventReceiver::class.java)
         acceptIntent.setAction(BackgroundService.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
-            .putExtra(BackgroundService.EXTRA_DEVICE, device)
+            .putExtra(BackgroundService.EXTRA_DEVICE, client)
             .putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
             .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
-            .putExtra(BackgroundService.EXTRA_RECEIVE_KEY, receiveKey)
-            .putExtra(BackgroundService.EXTRA_SEND_KEY, sendKey)
         val rejectIntent = (acceptIntent.clone() as Intent)
             .putExtra(BackgroundService.EXTRA_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getService(
@@ -136,8 +134,8 @@ class NotificationHelper(val utils: Notifications) {
         )
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
             .setContentTitle(context.getString(R.string.text_deviceKeyChanged))
-            .setContentText(context.getString(R.string.ques_acceptNewDeviceKey, device.username))
-            .setContentInfo(device.username)
+            .setContentText(context.getString(R.string.ques_acceptNewDeviceKey, client.clientNickname))
+            .setContentInfo(client.clientNickname)
             .setContentIntent(
                 PendingIntent.getBroadcast(
                     context, AppUtils.uniqueNumber, dialogIntent,
@@ -153,11 +151,11 @@ class NotificationHelper(val utils: Notifications) {
     }
 
     fun notifyTransferRequest(
-        device: Device, transfer: Transfer, acceptIntent: Intent, rejectIntent: Intent,
+        client: UClient, transfer: Transfer, acceptIntent: Intent, rejectIntent: Intent,
         transferDetail: Intent?, message: String?,
     ) {
         val notification = utils.buildDynamicNotification(
-            Transfers.createUniqueTransferId(transfer.id, device.uid, TransferItem.Type.INCOMING),
+            Transfers.createUniqueTransferId(transfer.id, client.uid, TransferItem.Type.Incoming),
             Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         acceptIntent.putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
@@ -173,7 +171,7 @@ class NotificationHelper(val utils: Notifications) {
         notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setContentTitle(context.getString(R.string.ques_receiveFile))
             .setContentText(message)
-            .setContentInfo(device.username)
+            .setContentInfo(client.clientNickname)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context, AppUtils.uniqueNumber, transferDetail,
@@ -192,7 +190,7 @@ class NotificationHelper(val utils: Notifications) {
         notification.show()
     }
 
-    fun notifyClipboardRequest(device: Device, item: SharedTextModel) {
+    fun notifyClipboardRequest(client: UClient, item: SharedTextModel) {
         val notification = utils.buildDynamicNotification(item.id, Notifications.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_CLIPBOARD)
@@ -223,7 +221,7 @@ class NotificationHelper(val utils: Notifications) {
                     .bigText(item.text)
                     .setBigContentTitle(context.getString(R.string.ques_copyToClipboard))
             )
-            .setContentInfo(device.username)
+            .setContentInfo(client.clientNickname)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context, AppUtils.uniqueNumber, activityIntent,
@@ -245,30 +243,31 @@ class NotificationHelper(val utils: Notifications) {
         notification.show()
     }
 
-    fun notifyFileReceived(task: FileTransferTask, savePath: DocumentFile) {
+    fun notifyFileReceived(task: FileTransferTask, saveLocation: DocumentFile) {
+        // FIXME: 2/25/21 We no longer have the file and lastItem attributes to generate a notification.
+        /*
         val file = task.file ?: return
         val lastItem = task.lastItem ?: return
-
         val notification = utils.buildDynamicNotification(
-            Transfers.createUniqueTransferId(task.transfer.id, task.device.uid, task.type),
+            Transfers.createUniqueTransferId(task.transfer.id, task.client.clientUid, task.type),
             Notifications.NOTIFICATION_CHANNEL_HIGH
         )
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentInfo(task.device.username)
+            .setContentInfo(task.client.clientNickname)
             .setAutoCancel(true)
             .setDefaults(utils.notificationSettings)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentText(
                 context.getString(
                     R.string.text_receivedTransfer,
-                    Files.formatLength(task.completedBytes, false),
+                    Files.formatLength(task.transferOperation.bytesTotal, false),
                     TimeUtils.getFriendlyElapsedTime(
                         context, System.currentTimeMillis() - task.startTime
                     )
                 )
             )
-        if (task.completedCount == 1) {
+        if (task.transferOperation.count == 1) {
             try {
                 val openIntent = Files.getOpenIntent(context, file)
                 notification.setContentIntent(
@@ -285,33 +284,36 @@ class NotificationHelper(val utils: Notifications) {
                     PendingIntent.getActivity(
                         context, AppUtils.uniqueNumber,
                         Intent(context, FileExplorerActivity::class.java)
-                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
+                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, saveLocation.getUri()), 0
                     )
                 )
         } else {
             notification
                 .setContentTitle(
                     context.resources.getQuantityString(
-                        R.plurals.text_fileReceiveCompletedSummary, task.completedCount,
-                        task.completedCount
+                        R.plurals.text_fileReceiveCompletedSummary,
+                        task.transferOperation.count,
+                        task.transferOperation.count
                     )
                 )
                 .setContentIntent(
                     PendingIntent.getActivity(
                         context, AppUtils.uniqueNumber,
                         Intent(context, FileExplorerActivity::class.java)
-                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0
+                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, saveLocation.getUri()), 0
                     )
                 )
         }
         notification.show()
+
+         */
     }
 
     fun notifyTasksNotification(
         taskList: List<AsyncTask>,
         notification: DynamicNotification?,
     ): DynamicNotification {
-        var notificationLocal = notification ?: utils.buildDynamicNotification(
+        val notificationLocal = notification ?: utils.buildDynamicNotification(
             ID_BG_SERVICE,
             Notifications.NOTIFICATION_CHANNEL_LOW
         ).also {

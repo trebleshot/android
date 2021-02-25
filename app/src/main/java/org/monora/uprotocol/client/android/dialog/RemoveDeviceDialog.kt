@@ -21,16 +21,16 @@ import android.app.Activity
 import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.Device
+import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.util.AppUtils
 
-class RemoveDeviceDialog(activity: Activity, device: Device) : AlertDialog.Builder(activity) {
+class RemoveDeviceDialog(activity: Activity, client: UClient) : AlertDialog.Builder(activity) {
     init {
         setTitle(R.string.ques_removeDevice)
         setMessage(R.string.text_removeDeviceNotice)
         setNegativeButton(R.string.butn_cancel, null)
         setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
-            AppUtils.getKuick(context).removeAsynchronous(activity, device, null)
+            // TODO: 2/25/21 remove the device
         }
     }
 }

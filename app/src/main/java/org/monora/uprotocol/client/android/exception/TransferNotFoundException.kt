@@ -17,11 +17,12 @@
  */
 package org.monora.uprotocol.client.android.exception
 
-import org.monora.uprotocol.client.android.model.Transfer
 import com.genonbeta.android.database.exception.ReconstructionFailedException
 
 /**
  * created by: Veli
  * date: 6.01.2018 22:26
  */
-class TransferNotFoundException(val transfer: Transfer) : ReconstructionFailedException("Transfer group not found")
+class TransferNotFoundException(val transferId: Long) : ReconstructionFailedException(
+    "Transfer for $transferId group not found"
+)

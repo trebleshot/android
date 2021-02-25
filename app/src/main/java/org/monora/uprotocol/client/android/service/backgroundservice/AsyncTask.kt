@@ -20,19 +20,17 @@ package org.monora.uprotocol.client.android.service.backgroundservice
 import android.app.PendingIntent
 import android.content.*
 import android.media.MediaScannerConnection
+import com.genonbeta.android.database.Progress
+import com.genonbeta.android.framework.util.Stoppable
+import com.genonbeta.android.framework.util.StoppableImpl
 import org.monora.uprotocol.client.android.App
-import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.model.Identifiable
 import org.monora.uprotocol.client.android.model.Identifier.Companion.from
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.DynamicNotification
 import org.monora.uprotocol.client.android.util.NotificationHelper
 import org.monora.uprotocol.client.android.util.StoppableJob
-import com.genonbeta.android.database.Progress
-import com.genonbeta.android.framework.util.Stoppable
-import com.genonbeta.android.framework.util.StoppableImpl
 
 abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     var activityIntent: PendingIntent? = null
@@ -57,9 +55,6 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
 
     override val identity: Identity
         get() = withORs(from(Id.HashCode, hashCode()))
-
-    val kuick: Kuick
-        get() = AppUtils.getKuick(context)
 
     val mediaScanner: MediaScannerConnection
         get() = app.mediaScanner

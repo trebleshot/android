@@ -18,86 +18,56 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
-import android.net.Uri
-import android.util.Log
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.config.Keyword
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferTarget
 import org.monora.uprotocol.client.android.model.Identifier.Companion.from
+import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withANDs
-import org.monora.uprotocol.client.android.fragment.FileListFragment
-import org.monora.uprotocol.client.android.protocol.communication.ContentException
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.util.CommunicationBridge
-import org.monora.uprotocol.client.android.util.CommunicationBridge.Companion.receiveResult
-import org.monora.uprotocol.client.android.util.Files.getIncomingFile
-import org.monora.uprotocol.client.android.util.Files.getSavePath
-import org.monora.uprotocol.client.android.util.Files.saveReceivedFile
-import org.monora.uprotocol.client.android.util.TimeUtils
-import org.monora.uprotocol.client.android.util.Transfers
-import com.genonbeta.android.database.exception.ReconstructionFailedException
-import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.util.Files
-import org.json.JSONObject
-import org.monora.coolsocket.core.response.SizeOverflowException
-import org.monora.coolsocket.core.session.ActiveConnection
-import org.monora.coolsocket.core.session.CancelledException
-import org.monora.uprotocol.client.android.model.*
-import java.io.FileNotFoundException
+import org.monora.uprotocol.client.android.task.transfer.MainTransferOperation
+import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.protocol.Client
+import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.TransferOperation
+import org.monora.uprotocol.core.transfer.Transfers
 import java.io.IOException
-import java.nio.channels.Channels
-import java.nio.channels.WritableByteChannel
 
 class FileTransferTask(
-    private val activeConnection: ActiveConnection,
+    private val bridge: CommunicationBridge,
     val transfer: Transfer,
-    val device: Device,
-    val member: TransferMember,
-    val index: TransferIndex,
+    val client: Client,
+    val target: TransferTarget,
     val type: TransferItem.Type,
 ) : AttachableAsyncTask<AttachedTaskListener>() {
-    // Changing objects
-    var item: TransferItem? = null
-
-    var lastItem: TransferItem? = null
-
-    var file: DocumentFile? = null
-
-    var lastMovedBytes: Long = 0
-
-    var currentBytes: Long = 0
-
-    var completedBytes: Long = 0
-
-    var completedCount = 0
-
-    private var db: SQLiteDatabase? = null
+    // TODO: 2/25/21 Generate via dependency injection
+    var operation: MainTransferOperation = MainTransferOperation(this)
 
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        if (TransferItem.Type.OUTGOING == type)
-            handleTransferAsSender()
-        else if (TransferItem.Type.INCOMING == type)
-            handleTransferAsReceiver()
+        if (TransferItem.Type.Outgoing == type) {
+            Transfers.receive(bridge, operation, transfer.id)
+        } else if (TransferItem.Type.Incoming == type) {
+            Transfers.send(bridge, operation, transfer.id)
+        }
     }
 
     override fun onPublishStatus() {
         super.onPublishStatus()
         if (interrupted() || finished) {
-            if (interrupted()) ongoingContent = context.getString(R.string.text_cancellingTransfer)
-            kuick.broadcast()
+            if (interrupted()) {
+                ongoingContent = context.getString(R.string.text_cancellingTransfer)
+            }
             return
         }
-        val bytesTransferred = completedBytes + currentBytes
+        val bytesTransferred = operation.bytesTotal + operation.bytesOngoing
         val text = StringBuilder()
         progress.progress?.total = 100
 
+        // FIXME: 2/25/21 Show the eta
+        /*
         if (bytesTransferred > 0 && index.bytesPending() > 0) {
             progress.progress?.progress = (100 * (bytesTransferred.toDouble() / index.bytesPending())).toInt()
         }
@@ -116,11 +86,11 @@ class FileTransferTask(
                 text.append(")")
             }
         }
-        lastMovedBytes = bytesTransferred
-        item?.let {
+        lastMovedBytes = bytesTransferred*/
+        operation.ongoing?.also {
             if (text.isNotEmpty()) text.append(" ").append(context.getString(R.string.mode_middleDot)).append(" ")
-            text.append(it.name)
-            try {
+            text.append(it.itemName)
+            /*try {
                 val flag = TransferItem.Flag.IN_PROGRESS
                 flag.bytesValue = currentBytes
 
@@ -133,23 +103,19 @@ class FileTransferTask(
                 kuick.update(database, it, transfer, null)
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
+            }*/
         }
         ongoingContent = text.toString()
-        kuick.broadcast()
     }
 
     override fun forceQuit() {
         super.forceQuit()
         try {
-            if (activeConnection.socket != null) activeConnection.socket.close()
+            bridge.activeConnection.socket?.close()
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
-
-    private val database: SQLiteDatabase
-        get() = db ?: kuick.writableDatabase.also { db = it }
 
     override val identity: Identity
         get() = identityOf(this)
@@ -158,218 +124,9 @@ class FileTransferTask(
         return context.getString(R.string.text_transfer)
     }
 
-    private fun handleTransferAsReceiver() {
-        try {
-            Transfers.loadTransferInfo(context, index, member)
-
-            while (Transfers.fetchFirstValidIncomingTransferItem(context, transfer.id)?.also { item = it } != null) {
-                val itemLocal = item ?: break
-
-                publishStatus()
-
-                // We don't handle IO errors on the receiver side.
-                // An IO error for this side means there is a permission/storage issue.
-                var fileLocal = getIncomingFile(context, itemLocal, transfer).also { file = it }
-                val streamInfo = StreamInfo.from(context, fileLocal.getUri())
-
-                currentBytes = fileLocal.getLength()
-                try {
-                    streamInfo.openOutputStream(context)?.use { outputStream ->
-                        CommunicationBridge.sendSecure(
-                            activeConnection, true, JSONObject()
-                                .put(Keyword.TRANSFER_REQUEST_ID, itemLocal.id)
-                                .put(Keyword.SKIPPED_BYTES, currentBytes)
-                        )
-                        if (receiveResult(activeConnection, device)) {
-                            var len = 0
-                            val description: ActiveConnection.Description = activeConnection.readBegin()
-                            val writableByteChannel: WritableByteChannel = Channels.newChannel(outputStream)
-                            while (description.hasAvailable() && activeConnection.read(description)
-                                    .also { len = it } != -1
-                            ) {
-                                publishStatus()
-                                currentBytes += len.toLong()
-                                writableByteChannel.write(description.byteBuffer)
-                            }
-                            outputStream.flush()
-                            itemLocal.flag = TransferItem.Flag.DONE
-                            completedBytes += currentBytes
-                            completedCount++
-                            lastItem = item
-
-                            fileLocal.getParentFile()?.let { parentFile ->
-                                saveReceivedFile(parentFile, fileLocal, itemLocal).also {
-                                    fileLocal = it
-                                    file = it
-                                }
-
-                                Log.d(TAG, "handleTransferAsReceiver(): Saved file is " + fileLocal.getUri())
-
-                                context.sendBroadcast(
-                                    Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-                                        .putExtra(FileListFragment.EXTRA_FILE_PARENT, parentFile.getUri())
-                                        .putExtra(FileListFragment.EXTRA_FILE_NAME, fileLocal.getName())
-                                )
-                            }
-
-                            fileLocal.also {
-                                if (it is LocalDocumentFile && mediaScanner.isConnected) {
-                                    mediaScanner.scanFile(it.file.absolutePath, itemLocal.mimeType)
-                                    Log.d(TAG, "handleTransferAsReceiver(): File received " + itemLocal.name)
-                                }
-                            }
-                        }
-                    }
-                } catch (e: CancelledException) {
-                    itemLocal.flag = TransferItem.Flag.PENDING
-                    throw e
-                } catch (e: FileNotFoundException) {
-                    throw e
-                } catch (e: ContentException) {
-                    when (e.error) {
-                        ContentException.Error.NotFound -> itemLocal.flag = TransferItem.Flag.REMOVED
-                        ContentException.Error.AlreadyExists, ContentException.Error.NotAccessible -> {
-                            itemLocal.flag = TransferItem.Flag.INTERRUPTED
-                        }
-                        else -> itemLocal.flag = TransferItem.Flag.INTERRUPTED
-                    }
-                } catch (e: Exception) {
-                    itemLocal.flag = TransferItem.Flag.INTERRUPTED
-                    throw e
-                } finally {
-                    kuick.update(database, itemLocal, transfer, null)
-                    item = null
-                }
-            }
-            CommunicationBridge.sendResult(activeConnection, false)
-            if (completedCount > 0) {
-                notificationHelper.notifyFileReceived(this, getSavePath(context, transfer))
-                Log.d(TAG, "handleTransferAsReceiver(): Notify user")
-            }
-        } catch (ignored: TaskStoppedException) {
-        } catch (ignored: CancelledException) {
-        } catch (e: Exception) {
-            e.printStackTrace()
-            try {
-                CommunicationBridge.sendError(activeConnection, e)
-            } catch (e1: Exception) {
-                try {
-                    post(
-                        TaskMessage.newInstance(
-                            context.getString(R.string.text_communicationError),
-                            context.getString(R.string.mesg_errorDuringTransfer, device.username),
-                            TaskMessage.Tone.Negative
-                        )
-                    )
-                } catch (ignored: TaskStoppedException) {
-                }
-            }
-        }
-    }
-
-    private fun handleTransferAsSender() {
-        try {
-            Transfers.loadTransferInfo(context, index, member)
-            while (activeConnection.socket.isConnected) {
-                publishStatus()
-                val request: JSONObject = CommunicationBridge.receiveSecure(activeConnection, device)
-                if (!CommunicationBridge.resultOf(request)) break
-                try {
-                    val requestId = request.getLong(Keyword.TRANSFER_REQUEST_ID)
-                    val itemLocal = TransferItem(transfer.id, requestId, type).also {
-                        kuick.reconstruct(it)
-                        item = it
-                    }
-
-                    try {
-                        val fileLocal = Files.fromUri(context, Uri.parse(itemLocal.file)).also { file = it }
-
-                        if (itemLocal.length != fileLocal.getLength()) {
-                            throw FileNotFoundException("File size has changed. Probably it is a different file.")
-                        }
-
-                        currentBytes = request.getLong(Keyword.SKIPPED_BYTES)
-                        val length = itemLocal.length - currentBytes
-
-                        context.contentResolver.openInputStream(fileLocal.getUri()).use { inputStream ->
-                            if (inputStream == null) {
-                                throw FileNotFoundException("The input stream for the file has failed to open.")
-                            }
-
-                            if (currentBytes > 0 && inputStream.skip(currentBytes) != currentBytes) {
-                                throw IOException("Failed to skip " + currentBytes + "bytes")
-                            }
-
-                            CommunicationBridge.sendResult(activeConnection, true)
-
-                            itemLocal.putFlag(device.uid, TransferItem.Flag.IN_PROGRESS)
-                            kuick.update(database, itemLocal, transfer, null)
-
-                            val description = activeConnection.writeBegin(0, length)
-                            val bytes = ByteArray(8096)
-                            var readLength: Int
-
-                            try {
-                                while (inputStream.read(bytes).also { readLength = it } != -1) {
-                                    publishStatus()
-                                    if (readLength > 0) {
-                                        currentBytes += readLength.toLong()
-                                        activeConnection.write(description, bytes, 0, readLength)
-                                    }
-                                }
-                                activeConnection.writeEnd(description)
-                            } catch (ignored: SizeOverflowException) {
-                            }
-
-                            completedBytes += currentBytes
-                            completedCount++
-                            itemLocal.putFlag(device.uid, TransferItem.Flag.DONE)
-                            Log.d(TAG, "handleTransferAsSender(): File sent " + itemLocal.name)
-                        }
-                    } catch (e: CancelledException) {
-                        itemLocal.putFlag(device.uid, TransferItem.Flag.PENDING)
-                        throw e
-                    } catch (e: FileNotFoundException) {
-                        itemLocal.putFlag(device.uid, TransferItem.Flag.REMOVED)
-                        throw e
-                    } catch (e: Exception) {
-                        itemLocal.putFlag(device.uid, TransferItem.Flag.INTERRUPTED)
-                        throw e
-                    } finally {
-                        kuick.update(database, itemLocal, transfer, null)
-                        item = null
-                    }
-                } catch (e: CancelledException) {
-                    throw e
-                } catch (e: FileNotFoundException) {
-                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND)
-                } catch (e: ReconstructionFailedException) {
-                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_FOUND)
-                } catch (e: IOException) {
-                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_NOT_ACCESSIBLE)
-                } catch (e: Exception) {
-                    CommunicationBridge.sendError(activeConnection, Keyword.ERROR_UNKNOWN)
-                }
-            }
-        } catch (ignored: CancelledException) {
-        } catch (e: Exception) {
-            e.printStackTrace()
-            try {
-                post(
-                    TaskMessage.newInstance(
-                        context.getString(R.string.text_communicationError),
-                        context.getString(R.string.mesg_errorDuringTransfer, device.username),
-                        TaskMessage.Tone.Negative
-                    )
-                )
-            } catch (ignored: TaskStoppedException) {
-            }
-        }
-    }
-
     override fun interrupt(userAction: Boolean): Boolean {
         try {
-            activeConnection.closeSafely()
+            bridge.close()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -377,14 +134,14 @@ class FileTransferTask(
     }
 
     enum class Id {
-        TransferId, DeviceId, Type
+        TransferId, ClientUid, Type
     }
 
     companion object {
         val TAG = FileTransferTask::class.java.simpleName
 
         fun identityOf(task: FileTransferTask): Identity {
-            return identifyWith(task.transfer.id, task.device.uid, task.type)
+            return identifyWith(task.transfer.id, task.client.clientUid, task.type)
         }
 
         fun identifyWith(transferId: Long): Identity {
@@ -396,13 +153,13 @@ class FileTransferTask(
         }
 
         fun identifyWith(transferId: Long, deviceId: String?): Identity {
-            return withANDs(from(Id.TransferId, transferId), from(Id.DeviceId, deviceId))
+            return withANDs(from(Id.TransferId, transferId), from(Id.ClientUid, deviceId))
         }
 
-        fun identifyWith(transferId: Long, deviceId: String?, type: TransferItem.Type?): Identity {
+        fun identifyWith(transferId: Long, clientUid: String?, type: TransferItem.Type?): Identity {
             return withANDs(
                 from(Id.TransferId, transferId),
-                from(Id.DeviceId, deviceId),
+                from(Id.ClientUid, clientUid),
                 from(Id.Type, type)
             )
         }

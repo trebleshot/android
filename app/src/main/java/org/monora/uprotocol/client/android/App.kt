@@ -34,22 +34,21 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.model.Identity
-import org.monora.uprotocol.client.android.model.Transfer
-import org.monora.uprotocol.client.android.model.TransferItem
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.WebShareServer
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.util.*
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
 import dagger.hilt.android.HiltAndroidApp
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -98,19 +97,10 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
-        nsdDaemon = NsdDaemon(
-            applicationContext, AppUtils.getKuick(this),
-            AppUtils.getDefaultPreferences(applicationContext)
-        )
+
         hotspotManager = HotspotManager.newInstance(this)
         mediaScanner = MediaScannerConnection(this, null)
-        notificationHelper = NotificationHelper(
-            Notifications(
-                applicationContext,
-                AppUtils.getKuick(applicationContext),
-                AppUtils.getDefaultPreferences(applicationContext)
-            )
-        )
+        notificationHelper = NotificationHelper(Notifications(applicationContext))
         webShareServer = WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE)
 
         mediaScanner.connect()
@@ -167,7 +157,6 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     private fun initializeSettings() {
         //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
         val defaultPreferences = AppUtils.getDefaultPreferences(this)
-        val localDevice = AppUtils.getLocalDevice(applicationContext)
         val nsdDefined = defaultPreferences.contains("nsd_enabled")
         val refVersion = defaultPreferences.contains("referral_version")
 
@@ -175,7 +164,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
         if (!refVersion)
             defaultPreferences.edit()
-                .putInt("referral_version", localDevice.versionCode)
+                .putInt("referral_version", BuildConfig.VERSION_CODE)
                 .apply()
 
         // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
@@ -186,16 +175,16 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
                 .apply()
 
         if (defaultPreferences.contains("migrated_version")) {
-            val migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionCode)
-            if (migratedVersion < localDevice.versionCode) {
+            val migratedVersion = defaultPreferences.getInt("migrated_version", BuildConfig.VERSION_CODE)
+            if (migratedVersion < BuildConfig.VERSION_CODE) {
                 defaultPreferences.edit()
-                    .putInt("migrated_version", localDevice.versionCode)
+                    .putInt("migrated_version", BuildConfig.VERSION_CODE)
                     .putInt("previously_migrated_version", migratedVersion)
                     .apply()
             }
         } else
             defaultPreferences.edit()
-                .putInt("migrated_version", localDevice.versionCode)
+                .putInt("migrated_version", BuildConfig.VERSION_CODE)
                 .apply()
     }
 
@@ -229,7 +218,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         Log.d(TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
     }
 
-    fun notifyFileRequest(device: Device, transfer: Transfer, itemList: List<TransferItem>) {
+    fun notifyFileRequest(device: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
         // Don't show when in the Add Device activity
         if (foregroundActivity is AddDeviceActivity) return
         val activity = foregroundActivity
@@ -255,7 +244,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
                 device, transfer, acceptIntent, rejectIntent, transferDetail, message
             ) else {
             val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-                .setTitle(getString(R.string.text_deviceFileTransferRequest, device.username))
+                .setTitle(getString(R.string.text_deviceFileTransferRequest, device.clientNickname))
                 .setMessage(message)
                 .setCancelable(false)
                 .setNeutralButton(R.string.butn_show) { _: DialogInterface?, _: Int ->
@@ -399,6 +388,13 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             if (activity.application is App) return activity.application as App
             throw IllegalStateException("The app does not have an App instance.")
         }
+
+        @Throws(IllegalStateException::class)
+        fun from(service: android.app.Service): App {
+            if (service.application is App) return service.application as App
+            throw IllegalStateException("The app does not have an App instance.")
+        }
+
 
         fun <T : AsyncTask> getTaskListOf(taskList: List<AsyncTask>, clazz: Class<T>): List<T> {
             val foundList: MutableList<T> = ArrayList()

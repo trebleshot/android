@@ -20,8 +20,7 @@ package org.monora.uprotocol.client.android.task
 import android.content.*
 import android.net.Uri
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.Transfer
-import org.monora.uprotocol.client.android.model.TransferItem
+import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.util.*
@@ -29,9 +28,11 @@ import java.io.IOException
 import java.util.*
 
 class ChangeSaveDirectoryTask(
-    private val transfer: Transfer, private val newSavePath: Uri, var skipMoving: Boolean = false,
+    private val transfer: Transfer, private val newLocation: Uri, private var skipMoving: Boolean = false,
 ) : AsyncTask() {
     override fun onRun() {
+        // TODO: 2/26/21 Fix moving transfer location
+        /*
         app.interruptTasksBy(FileTransferTask.identifyWith(transfer.id, TransferItem.Type.INCOMING), true)
         val checkList = AppUtils.getKuick(context).castQuery(
             Transfers.createIncomingSelection(transfer.id), TransferItem::class.java
@@ -44,7 +45,7 @@ class ChangeSaveDirectoryTask(
             if (!skipMoving) {
                 // Illustrate new change to build the structure accordingly
                 kuick.reconstruct(pseudoGroup)
-                pseudoGroup.savePath = newSavePath.toString()
+                pseudoGroup.savePath = newLocation.toString()
                 val erredFiles: MutableList<TransferItem> = ArrayList()
                 for (transferItem in checkList) {
                     throwIfStopped()
@@ -75,7 +76,7 @@ class ChangeSaveDirectoryTask(
                     post(TaskMessage.newInstance(name, context.getString(R.string.mesg_errorMoveFile, fileNames)))
                 }
             }
-            transfer.savePath = newSavePath.toString()
+            transfer.savePath = newLocation.toString()
             kuick.publish(transfer)
             kuick.broadcast()
             context.sendBroadcast(
@@ -84,7 +85,7 @@ class ChangeSaveDirectoryTask(
             )
         } catch (e: Exception) {
             e.printStackTrace()
-        }
+        }*/
     }
 
     override fun getName(context: Context): String {

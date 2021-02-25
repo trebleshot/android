@@ -22,10 +22,9 @@ data class SharedTextModel(
     val created: Long = System.currentTimeMillis(),
     var modified: Long = created,
 ) : ContentModel, Parcelable {
-    // TODO: 2/21/21 Should selection be serialized?
-    @Ignore
     @IgnoredOnParcel
-    private var selected = false
+    @Ignore
+    var selected: Boolean = false
 
     override fun canCopy(): Boolean = false
 

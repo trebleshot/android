@@ -1,17 +1,20 @@
 package org.monora.uprotocol.client.android.database.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.protocol.ClientAddress
 import java.net.InetAddress
 
+@Parcelize
 @Entity(tableName = "clientAddress")
-data class DefaultClientAddress(
+data class UClientAddress(
     @PrimaryKey
     var inetAddress: InetAddress,
     var clientUid: String,
-    var lastUsageTime: Long,
-) : ClientAddress {
+    var lastUsageTime: Long = System.currentTimeMillis(),
+) : ClientAddress, Parcelable {
     override fun getClientAddress(): InetAddress = inetAddress
 
     override fun getClientAddressLastUsageTime(): Long = lastUsageTime

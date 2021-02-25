@@ -19,28 +19,22 @@ package org.monora.uprotocol.client.android.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.*
-import android.os.*
+import android.content.Context
+import android.content.SharedPreferences
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.Kuick
 
 /**
  * Created by: veli
  * Date: 4/28/17 2:00 AM
  */
-class Notifications(val context: Context, val database: Kuick, val preferences: SharedPreferences) {
+class Notifications(val context: Context) {
     val manager = NotificationManagerCompat.from(context)
 
-    fun buildDynamicNotification(notificationId: Int, channelId: String): DynamicNotification {
-        // Let's hope it will turn out to be less painful
-        return DynamicNotification(context, manager, channelId, notificationId)
-    }
-
-    fun cancel(notificationId: Int) {
-        manager.cancel(notificationId)
-    }
+    val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     val notificationSettings: Int
         get() {
@@ -53,6 +47,14 @@ class Notifications(val context: Context, val database: Kuick, val preferences: 
             return makeSound or vibrate or light
         }
 
+    fun buildDynamicNotification(notificationId: Int, channelId: String): DynamicNotification {
+        return DynamicNotification(context, manager, channelId, notificationId)
+    }
+
+    fun cancel(notificationId: Int) {
+        manager.cancel(notificationId)
+    }
+
     companion object {
         const val TAG = "NotificationUtils"
         const val NOTIFICATION_CHANNEL_HIGH = "tsHighPriority"
@@ -61,6 +63,7 @@ class Notifications(val context: Context, val database: Kuick, val preferences: 
     }
 
     init {
+        // TODO: 2/25/21 Add more channels
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelHigh = NotificationChannel(
                 NOTIFICATION_CHANNEL_HIGH,

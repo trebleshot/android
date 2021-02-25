@@ -88,10 +88,6 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            } else if (adapter.path == null && KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
-                val data: KuickDb.BroadcastData = KuickDb.toData(intent)
-                if (Kuick.TABLE_FILEBOOKMARK == data.tableName)
-                    refreshList()
             } else if (ACTION_FILE_RENAME_COMPLETED == intent.action)
                 refreshList()
         }
@@ -127,17 +123,7 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
 
-                    try {
-                        val kuick = AppUtils.getKuick(requireContext())
-                        val file = DocumentFile.fromUri(requireContext(), pathUri, true)
-                        // FIXME: 2/20/21 Publish file holder
-                        //kuick.publish(FileHolder(requireContext(), file))
-                        kuick.broadcast()
-                        goPath(null)
-                    } catch (e: FileNotFoundException) {
-                        e.printStackTrace()
-                        Toast.makeText(context, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show()
-                    }
+                    // TODO: 2/25/21 Save the mounted dir
                 }
             }
     }
@@ -344,19 +330,7 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
         }
 
         fun <T : ContentModel> shortcutItem(fragment: ListingFragmentBase<T>, holder: FileHolder) {
-            val kuick = AppUtils.getKuick(fragment.requireContext())
-            try {
-                // FIXME: 2/20/21 Fix shortcut removal
-                //kuick.reconstruct(holder)
-                //kuick.remove(holder)
-                fragment.createSnackbar(R.string.mesg_removed)?.show()
-            } catch (e: Exception) {
-                // FIXME: 2/20/21 Fix shortcut insertion
-                //kuick.insert(holder)
-                fragment.createSnackbar(R.string.mesg_added)?.show()
-            } finally {
-                kuick.broadcast()
-            }
+            // TODO: 2/25/21 Shortcut item
         }
     }
 }

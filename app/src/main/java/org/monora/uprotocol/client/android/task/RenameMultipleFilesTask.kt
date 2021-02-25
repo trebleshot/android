@@ -77,7 +77,7 @@ class RenameMultipleFilesTask(val fileList: List<FileHolder>, val renameTo: Stri
         }
 
         fun renameFile(
-            kuick: Kuick, holder: FileHolder, renameTo: String, scannerList: MutableList<DocumentFile>,
+            holder: FileHolder, renameTo: String, scannerList: MutableList<DocumentFile>,
         ): Boolean {
             try {
                 // FIXME: 2/21/21 File renaming

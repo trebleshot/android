@@ -41,8 +41,15 @@ import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.widget.ViewPagerAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class WelcomeActivity : Activity() {
+    @Inject
+    lateinit var persistenceProvider: PersistenceProvider
+
     private lateinit var splashView: ViewGroup
 
     private lateinit var profileView: ViewGroup
@@ -182,14 +189,14 @@ class WelcomeActivity : Activity() {
     }
 
     private fun setUserProfile() {
-        val localDevice = AppUtils.getLocalDevice(applicationContext)
+        val localDevice = persistenceProvider.client
         val imageView = profileView.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
         val editImageView = profileView.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
         val deviceNameText: TextView = profileView.findViewById(R.id.header_default_device_name_text)
         val versionText: TextView = profileView.findViewById(R.id.header_default_device_version_text)
-        deviceNameText.text = localDevice.username
-        versionText.text = localDevice.versionName
-        loadProfilePictureInto(localDevice.username, imageView)
+        deviceNameText.text = localDevice.clientNickname
+        versionText.text = localDevice.clientVersionName
+        loadProfilePictureInto(localDevice.clientNickname, imageView)
         editImageView.setOnClickListener { startProfileEditor() }
         TransitionManager.beginDelayedTransition(profileView)
     }

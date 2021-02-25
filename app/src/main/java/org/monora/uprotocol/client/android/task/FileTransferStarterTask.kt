@@ -1,39 +1,43 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.Kuick
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferTarget
+import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.exception.ConnectionNotFoundException
 import org.monora.uprotocol.client.android.exception.DeviceNotFoundException
-import org.monora.uprotocol.client.android.exception.MemberNotFoundException
+import org.monora.uprotocol.client.android.exception.TargetNotFoundException
 import org.monora.uprotocol.client.android.exception.TransferNotFoundException
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
-import org.monora.uprotocol.client.android.util.CommunicationBridge
-import org.monora.uprotocol.client.android.util.CommunicationBridge.Companion.receiveResult
-import org.monora.uprotocol.client.android.util.Transfers
-import com.genonbeta.android.database.exception.ReconstructionFailedException
-import org.monora.uprotocol.client.android.model.*
+import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.transfer.TransferItem
+import java.net.InetAddress
 
 class FileTransferStarterTask(
+    val connectionFactory: ConnectionFactory,
+    val persistenceProvider: PersistenceProvider,
+    val appDatabase: AppDatabase,
     val transfer: Transfer,
-    val device: Device,
-    val member: TransferMember,
-    val index: TransferIndex,
+    val client: UClient,
+    val target: TransferTarget,
     val type: TransferItem.Type,
-    val addressList: List<DeviceAddress>,
+    val addressList: List<InetAddress>,
 ) : AttachableAsyncTask<AttachedTaskListener>() {
     override fun onRun() {
         try {
-            CommunicationBridge.connect(kuick, addressList, device, 0).use { bridge ->
+            CommunicationBridge.connect(
+                connectionFactory, persistenceProvider, addressList, client.clientUid, 0
+            ).use { bridge ->
                 bridge.requestFileTransferStart(transfer.id, type)
                 if (bridge.receiveResult()) {
-                    app.attach(
-                        FileTransferTask(bridge.activeConnection, transfer, device, member, index, type)
-                    )
+                    app.attach(FileTransferTask(bridge, transfer, client, target, type))
                 }
             }
         } catch (e: Exception) {
@@ -51,42 +55,42 @@ class FileTransferStarterTask(
             TransferNotFoundException::class,
             DeviceNotFoundException::class,
             ConnectionNotFoundException::class,
-            MemberNotFoundException::class
+            TargetNotFoundException::class
         )
-        fun createFrom(
-            kuick: Kuick, transferId: Long, deviceId: String, type: TransferItem.Type,
+
+        suspend fun createFrom(
+            connectionFactory: ConnectionFactory,
+            persistenceProvider: PersistenceProvider,
+            appDatabase: AppDatabase,
+            transferId: Long,
+            clientUid: String,
+            type: TransferItem.Type,
         ): FileTransferStarterTask {
-            val db: SQLiteDatabase = kuick.readableDatabase
-            val device = Device(deviceId)
-            try {
-                kuick.reconstruct(db, device)
-            } catch (e: ReconstructionFailedException) {
-                throw DeviceNotFoundException(device)
-            }
-            val transfer = Transfer(transferId)
-            try {
-                kuick.reconstruct(db, transfer)
-            } catch (e: ReconstructionFailedException) {
-                throw TransferNotFoundException(transfer)
-            }
-            return createFrom(kuick, transfer, device, type)
+            val client = appDatabase.clientDao().get(clientUid) ?: throw DeviceNotFoundException(clientUid)
+            val transfer = appDatabase.transferDao().get(transferId) ?: throw TransferNotFoundException(transferId)
+            return createFrom(connectionFactory, persistenceProvider, appDatabase, transfer, client, type)
         }
 
-        @Throws(MemberNotFoundException::class, ConnectionNotFoundException::class)
-        fun createFrom(
-            kuick: Kuick, transfer: Transfer, device: Device, type: TransferItem.Type,
+        @Throws(TargetNotFoundException::class, ConnectionNotFoundException::class)
+        suspend fun createFrom(
+            connectionFactory: ConnectionFactory,
+            persistenceProvider: PersistenceProvider,
+            appDatabase: AppDatabase,
+            transfer: Transfer,
+            client: UClient,
+            type: TransferItem.Type,
         ): FileTransferStarterTask {
-            val db: SQLiteDatabase = kuick.readableDatabase
-            val member = TransferMember(transfer, device, type)
-            try {
-                kuick.reconstruct(db, member)
-            } catch (e: ReconstructionFailedException) {
-                throw MemberNotFoundException(member)
-            }
-            val addressList: List<DeviceAddress> = Transfers.getAddressListFor(kuick, device.uid)
-            Log.d(FileTransferTask.TAG, "createFrom: deviceId=" + device.uid + " transferId=" + transfer.id)
+            val target = appDatabase.transferTargetDao().get(
+                client.clientUid, transfer.id
+            ) ?: throw TargetNotFoundException(client.clientUid, transfer.id)
 
-            return FileTransferStarterTask(transfer, device, member, TransferIndex(transfer), type, addressList)
+            Log.d(FileTransferTask.TAG, "createFrom: deviceId=" + client.uid + " transferId=" + transfer.id)
+
+            val inetAddresses = appDatabase.clientAddressDao().getAll(client.clientUid).map { it.clientAddress }
+
+            return FileTransferStarterTask(
+                connectionFactory, persistenceProvider, appDatabase, transfer, client, target, type, inetAddresses
+            )
         }
     }
 }

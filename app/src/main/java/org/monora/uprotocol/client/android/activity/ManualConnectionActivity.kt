@@ -27,7 +27,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.transition.TransitionManager
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.model.DeviceRoute
+import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
@@ -89,11 +89,11 @@ class ManualConnectionActivity : Activity(), DeviceIntroductionTask.ResultListen
         return true
     }
 
-    override fun onDeviceReached(deviceRoute: DeviceRoute) {
+    override fun onDeviceReached(clientRoute: ClientRoute) {
         setResult(
             RESULT_OK, Intent()
-                .putExtra(EXTRA_DEVICE, deviceRoute.device)
-                .putExtra(EXTRA_DEVICE_ADDRESS, deviceRoute.address)
+                .putExtra(EXTRA_DEVICE, clientRoute.device)
+                .putExtra(EXTRA_DEVICE_ADDRESS, clientRoute.address)
         )
         finish()
     }

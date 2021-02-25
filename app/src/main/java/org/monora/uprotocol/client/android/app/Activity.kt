@@ -28,7 +28,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
-import android.view.MenuItem
 import android.widget.ImageView
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
@@ -40,12 +39,11 @@ import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.database.Kuick
+import org.monora.uprotocol.client.android.dialog.ProfileEditorDialog
+import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
 import org.monora.uprotocol.client.android.model.Identifier
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
-import org.monora.uprotocol.client.android.dialog.ProfileEditorDialog
-import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
@@ -64,7 +62,34 @@ abstract class Activity : AppCompatActivity() {
 
     private var darkThemeRequested = false
 
+    protected val defaultPreferences: SharedPreferences
+        get() = AppUtils.getDefaultPreferences(this)
+
+    open val identity: Identity
+        get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
+
     private val intentFilter = IntentFilter()
+
+    private val isAmoledDarkThemeRequested: Boolean
+        get() = defaultPreferences.getBoolean("amoled_theme", false)
+
+    private val isDarkThemeRequested: Boolean
+        get() {
+            val value = defaultPreferences.getString("theme", "light")
+            val systemWideTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            return ("dark" == value || "system" == value && systemWideTheme == Configuration.UI_MODE_NIGHT_YES
+                    || "battery" == value && isPowerSaveMode)
+        }
+
+    private val isUsingCustomFonts: Boolean
+        get() = defaultPreferences.getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16
+
+    private val isPowerSaveMode: Boolean
+        get() {
+            if (Build.VERSION.SDK_INT < 23) return false
+            val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+            return powerManager.isPowerSaveMode
+        }
 
     private var ongoingRequest: AlertDialog? = null
 
@@ -302,9 +327,6 @@ abstract class Activity : AppCompatActivity() {
         for (task in taskList) detachTask(task)
     }
 
-    /**
-     * Exits app closing all the active services and connections.
-     */
     fun exitApp() {
         stopService(Intent(this, BackgroundService::class.java))
         finish()
@@ -318,15 +340,6 @@ abstract class Activity : AppCompatActivity() {
             )
         }
     }
-
-    val database: Kuick
-        get() = AppUtils.getKuick(this)
-
-    protected val defaultPreferences: SharedPreferences
-        get() = AppUtils.getDefaultPreferences(this)
-
-    open val identity: Identity
-        get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
 
     fun <T : BaseAttachableAsyncTask> getTaskListOf(clazz: Class<T>): List<T> {
         synchronized(attachedTaskList) { return App.getTaskListOf(attachedTaskList, clazz) }
@@ -344,30 +357,10 @@ abstract class Activity : AppCompatActivity() {
         synchronized(attachedTaskList) { return App.hasTaskWith(attachedTaskList, identity) }
     }
 
-    val isPowerSaveMode: Boolean
-        get() {
-            if (Build.VERSION.SDK_INT < 23) return false
-            val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-            return powerManager.isPowerSaveMode
-        }
-
     fun interruptAllTasks(userAction: Boolean) {
         if (attachedTaskList.size <= 0) return
         synchronized(attachedTaskList) { for (task in attachedTaskList) task.interrupt(userAction) }
     }
-
-    val isAmoledDarkThemeRequested: Boolean
-        get() = defaultPreferences.getBoolean("amoled_theme", false)
-
-    val isDarkThemeRequested: Boolean
-        get() {
-            val value = defaultPreferences.getString("theme", "light")
-            val systemWideTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-            return ("dark" == value || "system" == value && systemWideTheme == Configuration.UI_MODE_NIGHT_YES
-                    || "battery" == value && isPowerSaveMode)
-        }
-    val isUsingCustomFonts: Boolean
-        get() = defaultPreferences.getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16
 
     fun loadProfilePictureInto(deviceName: String, imageView: ImageView) {
         try {

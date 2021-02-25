@@ -1,27 +1,33 @@
 package org.monora.uprotocol.client.android.database.model
 
+import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.transfer.TransferItem
 
+@Parcelize
 @Entity(tableName = "transferItem", primaryKeys = ["groupId", "id"])
-data class DefaultTransferItem(
+data class UTransferItem(
     var id: Long,
     var groupId: Long,
     var name: String,
     var mimeType: String,
     var size: Long,
     var directory: String?,
+    var location: String,
     var type: TransferItem.Type,
     var state: Int,
-    var lastChangeTime: Long,
-) : TransferItem {
+    var dateCreated: Long = System.currentTimeMillis(),
+    var dateModified: Long = dateCreated,
+) : TransferItem, Parcelable {
     override fun getItemDirectory(): String? = directory
 
     override fun getItemGroupId(): Long = groupId
 
     override fun getItemId(): Long = id
 
-    override fun getItemLastChangeTime(): Long = lastChangeTime
+    override fun getItemLastChangeTime(): Long = dateModified
 
     override fun getItemMimeType(): String = mimeType
 
@@ -56,7 +62,7 @@ data class DefaultTransferItem(
     }
 
     override fun setItemLastChangeTime(lastChangeTime: Long) {
-        this.lastChangeTime = lastChangeTime
+        this.dateModified = lastChangeTime
     }
 
     override fun setItemType(type: TransferItem.Type) {

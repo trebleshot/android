@@ -66,11 +66,9 @@ import java.util.zip.ZipOutputStream
 class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) {
     private val assetManager = context.assets
 
-    private val kuick = AppUtils.getKuick(context)
-
     private val preferences = AppUtils.getDefaultPreferences(context)
 
-    private val notifications: Notifications = Notifications(context, kuick, preferences)
+    private val notifications: Notifications = Notifications(context)
 
     private val mediaScanner = MediaScannerConnection(context, null)
 

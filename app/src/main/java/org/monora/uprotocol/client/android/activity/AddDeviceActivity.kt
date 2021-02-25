@@ -34,11 +34,12 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.fragment.DeviceListFragment
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
 import org.monora.uprotocol.client.android.service.BackgroundService
+import org.monora.uprotocol.core.protocol.ClientType
 
 class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     private val filter = IntentFilter()
@@ -48,8 +49,6 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     private lateinit var deviceListFragment: DeviceListFragment
 
     private lateinit var optionsFragment: OptionsFragment
-
-    private lateinit var appBarLayout: AppBarLayout
 
     private lateinit var toolbar: Toolbar
 
@@ -63,8 +62,8 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
                 val fragmentEnum = intent.getSerializableExtra(EXTRA_FRAGMENT_ENUM) as AvailableFragment?
                 setFragment(fragmentEnum)
             } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE == intent.action) {
-                val device: Device? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE)
-                val address: DeviceAddress? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)
+                val device: UClient? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE)
+                val address: UClientAddress? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)
                 if (device != null && address != null) handleResult(device, address)
             } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY == intent.action
                 && intent.hasExtra(BackgroundService.EXTRA_TRANSFER)
@@ -95,7 +94,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         val deviceListArgs = Bundle()
         deviceListArgs.putStringArrayList(
             DeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
-            arrayListOf(Device.Type.Web.toString())
+            arrayListOf(ClientType.Web.toString())
         )
         val factory = supportFragmentManager.fragmentFactory
         progressBar = findViewById(R.id.activity_connection_establishing_progress_bar)
@@ -108,7 +107,6 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         filter.addAction(ACTION_CHANGE_FRAGMENT)
         filter.addAction(BackgroundService.ACTION_DEVICE_ACQUAINTANCE)
         filter.addAction(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
-
     }
 
     override fun onResume() {
@@ -125,26 +123,26 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && data != null) {
-            val device: Device?
-            val address: DeviceAddress?
+            val client: UClient?
+            val address: UClientAddress?
 
             when (requestCode) {
                 REQUEST_BARCODE_SCAN -> {
-                    device = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE)
+                    client = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE)
                     address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
                 }
                 REQUEST_IP_DISCOVERY -> {
-                    device = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE)
+                    client = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE)
                     address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS)
                 }
                 else -> {
-                    device = null
+                    client = null
                     address = null
                 }
             }
 
-            if (device != null && address != null) {
-                handleResult(device, address)
+            if (client != null && address != null) {
+                handleResult(client, address)
             }
         }
     }
@@ -204,9 +202,9 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         return supportFragmentManager.findFragmentById(R.id.activity_connection_establishing_content_view)
     }
 
-    private fun handleResult(device: Device, address: DeviceAddress?) {
+    private fun handleResult(client: UClient, address: UClientAddress?) {
         if (ConnectionMode.Return == connectionMode) {
-            returnResult(this, device, address)
+            returnResult(this, client, address)
         } else if (ConnectionMode.WaitForRequests == connectionMode) {
             createSnackbar(R.string.mesg_completing).show()
         }
@@ -299,10 +297,10 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
         const val REQUEST_IP_DISCOVERY = 110
 
-        fun returnResult(activity: android.app.Activity, device: Device?, address: DeviceAddress?) {
+        fun returnResult(activity: android.app.Activity, client: UClient?, address: UClientAddress?) {
             activity.setResult(
                 RESULT_OK, Intent()
-                    .putExtra(EXTRA_DEVICE, device)
+                    .putExtra(EXTRA_DEVICE, client)
                     .putExtra(EXTRA_DEVICE_ADDRESS, address)
             )
             activity.finish()

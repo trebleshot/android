@@ -17,7 +17,6 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -30,12 +29,15 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import com.genonbeta.android.database.KuickDb
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.database.Kuick
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
-import org.monora.uprotocol.client.android.model.Transfer
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.fragment.TransferMemberListFragment
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
@@ -44,19 +46,19 @@ import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.task.AddDeviceTask
 import org.monora.uprotocol.client.android.task.OrganizeLocalSharingTask
 import org.monora.uprotocol.client.android.util.AppUtils
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 
 class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
-    private lateinit var transfer: Transfer
+    private val transfer: Transfer? by lazy {
+        intent?.getParcelableExtra(EXTRA_TRANSFER)
+    }
+
+    private val addingInitialDevice by lazy {
+        intent?.getBooleanExtra(EXTRA_ADDING_FIRST_DEVICE, false) ?: false
+    }
 
     private lateinit var actionButton: ExtendedFloatingActionButton
 
     private lateinit var progressBar: ProgressBar
-
-    var addingInitialDevice = false
 
     private var colorActive = 0
 
@@ -64,33 +66,17 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     private val filter: IntentFilter = IntentFilter(KuickDb.ACTION_DATABASE_CHANGE)
 
-    private val selfReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (KuickDb.ACTION_DATABASE_CHANGE == intent.action) {
-                val data: KuickDb.BroadcastData = KuickDb.toData(intent)
-                if (Kuick.TABLE_TRANSFER == data.tableName && !checkTransferIntegrity())
-                    finish()
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_devices_to_transfer)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        if (checkTransferIntegrity()) {
-            addingInitialDevice = intent.getBooleanExtra(EXTRA_ADDING_FIRST_DEVICE, false)
-            if (addingInitialDevice)
-                startConnectionManagerActivity()
-        } else
-            return
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val memberFragmentArgs = Bundle()
-        memberFragmentArgs.putLong(TransferMemberListFragment.ARG_TRANSFER_ID, transfer.id)
-        memberFragmentArgs.putBoolean(TransferMemberListFragment.ARG_USE_HORIZONTAL_VIEW, false)
+
+        if (addingInitialDevice) {
+            startConnectionManagerActivity()
+        }
+
         colorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError))
         colorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent))
         progressBar = findViewById(R.id.progressBar)
@@ -107,7 +93,7 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             val memberListFragment = supportFragmentManager.fragmentFactory.instantiate(
                 this.classLoader, TransferMemberListFragment::class.java.name
             ) as TransferMemberListFragment
-            memberListFragment.arguments = memberFragmentArgs
+
             val transaction = supportFragmentManager.beginTransaction()
             transaction.add(R.id.membersListFragment, memberListFragment)
             transaction.commit()
@@ -140,15 +126,16 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_CHOOSE_DEVICE) {
             if (resultCode == RESULT_CANCELED && addingInitialDevice) {
-                database.removeAsynchronous(this, transfer, null)
+                // TODO: 2/25/21 Because the user cancelled choosing the initial device, we assume the task is cancelled, so remove it.
             } else if (resultCode == RESULT_OK && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                 && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val device: Device? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
-                val address: DeviceAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val client: UClient? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
+                val address: UClientAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val transfer = transfer
 
-                if (device != null && address != null) {
-                    runUiTask(AddDeviceTask(transfer, device, address))
+                if (client != null && address != null && transfer != null) {
+                    runUiTask(AddDeviceTask(transfer, client, address))
                 }
             }
         }
@@ -156,21 +143,9 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
         super.onAttachTasks(taskList)
-        for (task in taskList)
-            if (task is AddDeviceTask)
-                task.anchor = this
+        for (task in taskList) if (task is AddDeviceTask) task.anchor = this
     }
 
-    override fun onResume() {
-        super.onResume()
-        registerReceiver(selfReceiver, filter)
-        if (!checkTransferIntegrity()) finish()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        unregisterReceiver(selfReceiver)
-    }
 
     override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
         if (task is AddDeviceTask) {
@@ -191,19 +166,6 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         } else
             return false
         return true
-    }
-
-    fun checkTransferIntegrity(): Boolean {
-        val testTransfer: Transfer = intent?.getParcelableExtra(EXTRA_TRANSFER) ?: return false
-
-        try {
-            database.reconstruct(testTransfer)
-            transfer = testTransfer
-            return true
-        } catch (e: Exception) {
-            finish()
-        }
-        return false
     }
 
     override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar {

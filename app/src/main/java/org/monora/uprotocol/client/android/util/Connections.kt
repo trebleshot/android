@@ -18,6 +18,8 @@
 package org.monora.uprotocol.client.android.util
 
 import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACCESS_WIFI_STATE
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -34,24 +36,23 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresPermission
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import org.monora.uprotocol.client.android.App
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.adapter.DeviceListAdapter.NetworkDescription
-import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.model.DeviceAddress
-import org.monora.uprotocol.client.android.model.DeviceRoute
-import org.monora.uprotocol.client.android.protocol.communication.CommunicationException
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException
-import org.monora.uprotocol.client.android.util.CommunicationBridge.Companion.receiveResult
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
 import org.json.JSONException
+import org.monora.uprotocol.client.android.App
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.model.ClientRoute
+import org.monora.uprotocol.client.android.model.NetworkDescription
+import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
+import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException
+import org.monora.uprotocol.core.protocol.communication.CommunicationException
 import java.io.IOException
 import java.net.InetAddress
 import java.util.*
@@ -97,7 +98,7 @@ class Connections(contextLocal: Context) {
         TaskStoppedException::class,
         JSONException::class
     )
-    fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int): DeviceRoute {
+    fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int): ClientRoute {
         if (Build.VERSION.SDK_INT >= 29) {
             val suggestionList: MutableList<WifiNetworkSuggestion> = ArrayList<WifiNetworkSuggestion>()
             suggestionList.add(description.toNetworkSuggestion())
@@ -159,7 +160,7 @@ class Connections(contextLocal: Context) {
         InterruptedException::class,
         JSONException::class
     )
-    fun establishHotspotConnection(stoppable: Stoppable, description: NetworkDescription, pin: Int): DeviceRoute {
+    fun establishHotspotConnection(stoppable: Stoppable, description: NetworkDescription, pin: Int): ClientRoute {
         val timeout = (System.nanoTime() + AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6).toLong()
         var connectionToggled = Build.VERSION.SDK_INT >= 29
         var connectionReset = false
@@ -201,7 +202,7 @@ class Connections(contextLocal: Context) {
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     val address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway))
-                    return setupConnection(context, address, pin)
+                    return setUpConnection(context, address, pin)
                 } catch (e: Exception) {
                     Log.d(TAG, "establishHotspotConnection(): Connection failed.", e)
                     if (timedOut) throw e
@@ -221,9 +222,13 @@ class Connections(contextLocal: Context) {
     /**
      * @param configuration The configuration that contains network SSID, BSSID, other fields required to filter the
      * network
-     * @see .findFromConfigurations
+     * @see findFromConfigurations
      */
-    @Deprecated("")
+    @Deprecated(
+        "The use of this method is limited to Android version 9 and below due to the deprecation of the "
+                + "APIs it makes use of."
+    )
+    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_WIFI_STATE])
     fun findFromConfigurations(configuration: WifiConfiguration): WifiConfiguration? {
         return findFromConfigurations(configuration.SSID, configuration.BSSID)
     }
@@ -237,12 +242,15 @@ class Connections(contextLocal: Context) {
         """The use of this method is limited to Android version 9 and below due to the deprecation of the
       APIs it makes use of."""
     )
+    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_WIFI_STATE])
     fun findFromConfigurations(ssid: String, bssid: String?): WifiConfiguration? {
         val list: List<WifiConfiguration> = wifiManager.configuredNetworks
-        for (config in list) if (bssid == null) {
-            if (ssid.equals(config.SSID, ignoreCase = true)) return config
-        } else {
-            if (bssid.equals(config.BSSID, ignoreCase = true)) return config
+        for (config in list) {
+            if (bssid == null) {
+                if (ssid.equals(config.SSID, ignoreCase = true)) return config
+            } else {
+                if (bssid.equals(config.BSSID, ignoreCase = true)) return config
+            }
         }
         return null
     }
@@ -272,8 +280,10 @@ class Connections(contextLocal: Context) {
     }
 
     fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(context,
-            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun isConnectionToHotspotNetwork(): Boolean {
@@ -527,18 +537,17 @@ class Connections(contextLocal: Context) {
 
         @WorkerThread
         @Throws(CommunicationException::class, IOException::class, JSONException::class)
-        fun setupConnection(context: Context, inetAddress: InetAddress, pin: Int): DeviceRoute {
-            val kuick = AppUtils.getKuick(context)
-            val deviceAddress = DeviceAddress(inetAddress)
-            val bridge: CommunicationBridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)
+        fun setUpConnection(context: Context, inetAddress: InetAddress, pin: Int): ClientRoute {
+            // TODO: 2/26/21 Fix set up connection
+            /*val bridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)
             val device = bridge.device
             bridge.requestAcquaintance()
             if (bridge.receiveResult()) {
                 Log.d(TAG, "setupConnection(): AP has been reached. Returning OK state.")
                 DeviceLoader.processConnection(kuick, device, deviceAddress)
-                return DeviceRoute(device, deviceAddress)
-            }
-            throw CommunicationException("Didn't have the result and the errors were unknown")
+                return ClientRoute(device, deviceAddress)
+            }*/
+            throw IOException("Didn't have the result and the errors were unknown")
         }
     }
 

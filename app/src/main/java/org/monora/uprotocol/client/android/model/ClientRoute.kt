@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.protocol
+package org.monora.uprotocol.client.android.model
 
-import org.monora.uprotocol.client.android.model.Device
-import com.genonbeta.android.database.exception.ReconstructionFailedException
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
 
-/**
- * Thrown when a known device connects with a different key.
- */
-open class DeviceInsecureException(message: String?, val device: Device?) : ReconstructionFailedException(message)
+@Parcelize
+class ClientRoute(var device: UClient, var address: UClientAddress) : Parcelable

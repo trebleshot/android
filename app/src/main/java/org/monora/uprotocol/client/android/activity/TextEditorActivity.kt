@@ -40,8 +40,8 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.taskimport.TextShareTask
 import javax.inject.Inject
 
@@ -84,12 +84,12 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                 && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val device: Device? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
-                val address: DeviceAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val client: UClient? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
+                val address: UClientAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
                 val text: String? = if (editText.text != null) editText.text.toString() else null
 
-                if (device != null && address != null && text != null) {
-                    runUiTask(TextShareTask(device, address, text))
+                if (client != null && address != null && text != null) {
+                    runUiTask(TextShareTask(client, address, text))
                 }
             }
         }

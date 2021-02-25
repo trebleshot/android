@@ -24,16 +24,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionListAdapter
-import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionObject
-import org.monora.uprotocol.client.android.util.AppUtils
 import com.genonbeta.android.framework.app.RecyclerViewFragment
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import com.genonbeta.android.updatewithgithub.RemoteServer
 import org.json.JSONArray
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionListAdapter
+import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionObject
+import org.monora.uprotocol.client.android.util.AppUtils
 
 /**
  * created by: veli
@@ -64,8 +65,6 @@ class GitHubChangelogListFragment : RecyclerViewFragment<VersionObject, ViewHold
     class VersionListAdapter(context: Context) : RecyclerViewAdapter<VersionObject, ViewHolder>(context) {
         private val list: MutableList<VersionObject> = ArrayList()
 
-        private val currentVersion = AppUtils.getLocalDevice(context).versionName
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(layoutInflater.inflate(R.layout.list_changelog, parent, false))
         }
@@ -77,7 +76,7 @@ class GitHubChangelogListFragment : RecyclerViewFragment<VersionObject, ViewHold
             val text2 = holder.itemView.findViewById<TextView>(R.id.text2)
             text1.text = versionObject.name
             text2.text = versionObject.changes
-            imageCheck.visibility = if (currentVersion == versionObject.tag) View.VISIBLE else View.GONE
+            imageCheck.visibility = if (BuildConfig.VERSION_NAME == versionObject.tag) View.VISIBLE else View.GONE
         }
 
         override fun onLoad(): MutableList<VersionObject> {

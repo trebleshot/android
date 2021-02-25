@@ -22,23 +22,25 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.model.Transfer
-import org.monora.uprotocol.client.android.model.TransferItem
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.Files.fetchFile
 import com.genonbeta.android.framework.util.Files.fromUri
 import com.genonbeta.android.framework.util.Files.getUniqueFileName
 import com.genonbeta.android.framework.util.Stoppable
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.config.AppConfig.BUFFER_LENGTH_DEFAULT
+import org.monora.uprotocol.client.android.config.AppConfig.DEFAULT_TIMEOUT_SOCKET
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.io.File
 import java.io.IOException
 
 object Files {
     @Throws(Exception::class)
     fun copy(context: Context, source: DocumentFile, destination: DocumentFile, stoppable: Stoppable) = Files.copy(
-        context, source, destination, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_TIMEOUT_SOCKET
+        context, source, destination, stoppable, BUFFER_LENGTH_DEFAULT, DEFAULT_TIMEOUT_SOCKET
     )
 
     fun getApplicationDirectory(context: Context): DocumentFile {
@@ -71,7 +73,7 @@ object Files {
         var primaryDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         if (!primaryDir.isDirectory && !primaryDir.mkdirs() || !primaryDir.canWrite()) primaryDir =
             Environment.getExternalStorageDirectory()
-        return File(primaryDir.toString() + File.separator + context!!.getString(R.string.text_appName))
+        return File(primaryDir.toString() + File.separator + context.getString(R.string.text_appName))
     }
 
     fun getFileFormat(fileName: String): String? {
@@ -81,15 +83,17 @@ object Files {
 
     @Throws(IOException::class)
     fun getIncomingPseudoFile(
-        context: Context, item: TransferItem, transfer: Transfer, createIfNeeded: Boolean,
-    ): DocumentFile {
-        return fetchFile(getSavePath(context, transfer), item.directory, item.mimeType, item.file, createIfNeeded)
-    }
+        context: Context, item: UTransferItem, transfer: Transfer, createIfNeeded: Boolean,
+    ): DocumentFile = fetchFile(
+        getSavePath(context, transfer), item.itemDirectory, item.itemMimeType, item.location, createIfNeeded
+    )
 
     @Throws(IOException::class)
-    fun getIncomingFile(context: Context, transferItem: TransferItem, transfer: Transfer): DocumentFile {
+    fun getIncomingFile(context: Context, transferItem: UTransferItem, transfer: Transfer): DocumentFile {
         val pseudoFile = getIncomingPseudoFile(context, transferItem, transfer, true)
-        if (!pseudoFile.canWrite()) throw IOException("File cannot be created or you don't have permission write on it")
+        if (!pseudoFile.canWrite()) {
+            throw IOException("File cannot be created or you don't have permission write to it")
+        }
         return pseudoFile
     }
 
@@ -107,25 +111,21 @@ object Files {
 
     @Throws(Exception::class)
     fun move(
-        context: Context, targetFile: DocumentFile, destinationFile: DocumentFile,
-        stoppable: Stoppable?,
+        context: Context, targetFile: DocumentFile, destinationFile: DocumentFile, stoppable: Stoppable?,
     ): Boolean = Files.move(
-        context, targetFile, destinationFile, stoppable, AppConfig.BUFFER_LENGTH_DEFAULT,
-        AppConfig.DEFAULT_TIMEOUT_SOCKET
+        context, targetFile, destinationFile, stoppable, BUFFER_LENGTH_DEFAULT, DEFAULT_TIMEOUT_SOCKET
     )
 
     fun getSavePath(context: Context, transfer: Transfer): DocumentFile {
         val defaultFolder = getApplicationDirectory(context)
-        if (transfer.savePath != null) {
-            try {
-                val savePath = fromUri(context, Uri.parse(transfer.savePath))
-                if (savePath.isDirectory() && savePath.canWrite()) return savePath
-            } catch (e: Exception) {
-                e.printStackTrace()
+
+        try {
+            val saveLocation = fromUri(context, Uri.parse(transfer.location))
+            if (saveLocation.isDirectory() && saveLocation.canWrite()) {
+                return saveLocation
             }
-        } else {
-            transfer.savePath = defaultFolder.getUri().toString()
-            AppUtils.getKuick(context).publish(transfer)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return defaultFolder
     }
@@ -140,28 +140,20 @@ object Files {
         return true
     }
 
-    /**
-     * When the transfer is done, this saves the uniquely named file to its actual name held in [TransferItem].
-     *
-     * @param savePath     The save path that contains currentFile
-     * @param currentFile  The file that should be renamed
-     * @param transferItem The transfer request
-     * @return File moved to its actual name
-     * @throws IOException Thrown when rename fails
-     */
     @Throws(Exception::class)
     fun saveReceivedFile(
         savePath: DocumentFile,
         currentFile: DocumentFile,
         transferItem: TransferItem,
     ): DocumentFile {
-        val uniqueName = getUniqueFileName(savePath, transferItem.name, true)
-        val renamedFile = currentFile.renameTo(uniqueName) ?: throw IOException("Failed to rename object: $currentFile")
+        val name = getUniqueFileName(savePath, transferItem.itemName, true)
+        val renamedFile = currentFile.renameTo(name) ?: throw IOException("Failed to rename object: $currentFile")
 
         // FIXME: 7/30/19 The rename always fails when renaming TreeDocumentFile (changed the rename method, did it fix?)
         // also don't forget to use moveDocument functions.
-
-        transferItem.file = uniqueName
+        if (transferItem is UTransferItem) {
+            transferItem.location = name
+        }
         return renamedFile
     }
 }

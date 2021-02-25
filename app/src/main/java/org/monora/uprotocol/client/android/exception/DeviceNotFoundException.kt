@@ -17,13 +17,12 @@
  */
 package org.monora.uprotocol.client.android.exception
 
-import org.monora.uprotocol.client.android.model.Device
 import com.genonbeta.android.database.exception.ReconstructionFailedException
 
 /**
  * created by: Veli
  * date: 6.01.2018 22:26
  */
-class DeviceNotFoundException(var device: Device) : ReconstructionFailedException(
-    "${device.uid} doesn't point to a device"
+class DeviceNotFoundException(var uid: String) : ReconstructionFailedException(
+    "$uid doesn't point to a device"
 )

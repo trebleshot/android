@@ -21,7 +21,6 @@ import android.content.Context
 import androidx.collection.ArrayMap
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.model.TransferItem
 import java.net.NetworkInterface
 import java.text.NumberFormat
 

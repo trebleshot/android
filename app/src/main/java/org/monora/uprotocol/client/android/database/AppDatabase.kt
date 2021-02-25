@@ -7,9 +7,9 @@ import org.monora.uprotocol.client.android.database.model.*
 
 @Database(
     entities = [
-        DefaultClient::class,
-        DefaultClientAddress::class,
-        DefaultTransferItem::class,
+        UClient::class,
+        UClientAddress::class,
+        UTransferItem::class,
         SharedTextModel:: class,
         Transfer::class,
         TransferTarget::class

@@ -45,7 +45,6 @@ import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
 import org.monora.uprotocol.client.android.drawable.TextDrawable
-import org.monora.uprotocol.client.android.model.Device
 import com.genonbeta.android.database.exception.ReconstructionFailedException
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files.getSecureUri
@@ -62,8 +61,6 @@ object AppUtils {
     val TAG = AppUtils::class.java.simpleName
 
     private var mUniqueNumber = 0
-
-    private var mKuick: Kuick? = null
 
     private var mDefaultPreferences: SharedPreferences? = null
 
@@ -145,54 +142,6 @@ object AppUtils {
         return mDefaultPreferences as SharedPreferences
     }
 
-    fun getDeviceId(context: Context): String {
-        // The ANDROID_ID is unique to the user it is representing. That's why we don't store this. Because the
-        // app will not have the data and settings that corresponds to that user anyway.
-        /*
-        SharedPreferences preferences = getDefaultPreferences(context);
-        String uuid = preferences.getString("uuid", null);
-
-        if (uuid == null) {
-            preferences.edit()
-                    .putString("uuid", Settings.Secure.ANDROID_ID)
-                    .apply();
-        }
-
-        return uid;
-         */
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-    }
-
-    fun getKuick(context: Context): Kuick {
-        if (mKuick == null)
-            mKuick = Kuick(context)
-        return mKuick as Kuick
-    }
-
-    @Throws(JSONException::class)
-    fun getLocalDeviceAsJson(context: Context, sendKey: Int, pin: Int): JSONObject {
-        val device = getLocalDevice(context)
-        val item = JSONObject()
-            .put(Keyword.DEVICE_UID, device.uid)
-            .put(Keyword.DEVICE_BRAND, device.brand)
-            .put(Keyword.DEVICE_MODEL, device.model)
-            .put(Keyword.DEVICE_USERNAME, device.username)
-            .put(Keyword.DEVICE_VERSION_CODE, device.versionCode)
-            .put(Keyword.DEVICE_VERSION_NAME, device.versionName)
-            .put(Keyword.DEVICE_PROTOCOL_VERSION, device.protocolVersion)
-            .put(Keyword.DEVICE_PROTOCOL_VERSION_MIN, device.protocolVersionMin)
-            .put(Keyword.DEVICE_KEY, sendKey)
-        if (pin != 0) item.put(Keyword.DEVICE_PIN, pin)
-        try {
-            val imageBytes = ByteArrayOutputStream()
-            val bitmap = BitmapFactory.decodeStream(context.openFileInput("profilePicture"))
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageBytes)
-            item.put(Keyword.DEVICE_AVATAR, Base64.encodeToString(imageBytes.toByteArray(), 0))
-        } catch (ignored: Exception) {
-        }
-        return item
-    }
-
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
         val connection = fragment.engineConnection
         val preferences = getDefaultPreferences(fragment.requireContext())
@@ -246,36 +195,6 @@ object AppUtils {
             .replace(" ".toRegex(), "_")
     }
 
-    // TODO: 2/21/21 Can we get the device name programmatically?
-    fun getLocalDeviceName(context: Context): String {
-        val deviceName = getDefaultPreferences(context).getString("device_name", null)
-        return if (deviceName == null || deviceName.isEmpty()) Build.MODEL.toUpperCase() else deviceName
-    }
-
-    fun getLocalDevice(context: Context): Device {
-        val device = Device(getDeviceId(context))
-        var publishNeeded = false
-        try {
-            getKuick(context).reconstruct(device)
-            if (device.sendKey != device.receiveKey || device.sendKey == 0)
-                throw ReconstructionFailedException("The keys need a reset.")
-        } catch (e: ReconstructionFailedException) {
-            device.sendKey = generateKey()
-            device.receiveKey = device.sendKey
-            publishNeeded = true
-        }
-        device.brand = Build.BRAND
-        device.model = Build.MODEL
-        device.username = getLocalDeviceName(context)
-        device.protocolVersion = BuildConfig.PROTOCOL_VERSION
-        device.protocolVersionMin = BuildConfig.PROTOCOL_VERSION_MIN
-        device.versionCode = BuildConfig.VERSION_CODE
-        device.versionName = BuildConfig.VERSION_NAME
-        device.isLocal = true
-        if (publishNeeded) getKuick(context).publish(device)
-        return device
-    }
-
     @AnyRes
     fun getReference(context: Context, @AttrRes refId: Int): Int {
         val typedValue = TypedValue()
@@ -314,17 +233,16 @@ object AppUtils {
 
     fun isLatestChangeLogSeen(context: Context): Boolean {
         val preferences = getDefaultPreferences(context)
-        val device = getLocalDevice(context)
         val lastSeenChangelog = preferences.getInt("changelog_seen_version", -1)
         val dialogAllowed = preferences.getBoolean("show_changelog_dialog", true)
-        return !preferences.contains("previously_migrated_version") || device.versionCode == lastSeenChangelog
+        return !preferences.contains("previously_migrated_version")
+                || BuildConfig.VERSION_CODE == lastSeenChangelog
                 || !dialogAllowed
     }
 
     fun publishLatestChangelogSeen(context: Context) {
-        val device = getLocalDevice(context)
         getDefaultPreferences(context).edit()
-            .putInt("changelog_seen_version", device.versionCode)
+            .putInt("changelog_seen_version", BuildConfig.VERSION_CODE)
             .apply()
     }
 }

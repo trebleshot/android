@@ -254,16 +254,16 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     private fun createHeaderView() {
+        val client = persistenceProvider.client
         val headerView = navigationView.getHeaderView(0)
-        val localDevice = AppUtils.getLocalDevice(applicationContext)
         val imageView = headerView.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
         val editImageView = headerView.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
         val deviceNameText: TextView = headerView.findViewById(R.id.header_default_device_name_text)
         val versionText: TextView = headerView.findViewById(R.id.header_default_device_version_text)
-        deviceNameText.text = localDevice.username
-        versionText.text = localDevice.versionName
-        loadProfilePictureInto(localDevice.username, imageView)
-        editImageView.setOnClickListener { v: View? -> startProfileEditor() }
+        deviceNameText.text = client.clientNickname
+        versionText.text = client.versionName
+        loadProfilePictureInto(client.clientNickname, imageView)
+        editImageView.setOnClickListener { startProfileEditor() }
     }
 
     private fun highlightUpdate() {

@@ -19,14 +19,14 @@ package org.monora.uprotocol.client.android.task
 
 import android.content.Context
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.adapter.DeviceListAdapter.NetworkDescription
-import org.monora.uprotocol.client.android.model.DeviceAddress
-import org.monora.uprotocol.client.android.model.DeviceRoute
+import org.monora.uprotocol.client.android.model.ClientRoute
+import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.client.android.util.Connections
+import org.monora.uprotocol.core.protocol.ClientAddress
 import java.net.InetAddress
 
 class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.ResultListener> {
@@ -41,7 +41,7 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
         this.pin = pin
     }
 
-    constructor(address: DeviceAddress, pin: Int) : this(address.inetAddress, pin)
+    constructor(address: ClientAddress, pin: Int) : this(address.clientAddress, pin)
 
     constructor(description: NetworkDescription, pin: Int) {
         this.description = description
@@ -51,13 +51,13 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
     @Throws(TaskStoppedException::class)
     public override fun onRun() {
         try {
-            val deviceRoute: DeviceRoute = if (address == null) {
+            val clientRoute: ClientRoute = if (address == null) {
                 val connections = Connections(context)
                 connections.connectToNetwork(this, description!!, pin)
             } else
-                Connections.setupConnection(context, address!!, pin)
+                Connections.setUpConnection(context, address!!, pin)
 
-            anchor?.let { post { it.onDeviceReached(deviceRoute) } }
+            anchor?.let { post { it.onDeviceReached(clientRoute) } }
         } catch (e: Exception) {
             e.printStackTrace()
             post(CommonErrorHelper.messageOf(context, e))
@@ -69,7 +69,7 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
     }
 
     interface ResultListener : AttachedTaskListener {
-        fun onDeviceReached(deviceRoute: DeviceRoute)
+        fun onDeviceReached(clientRoute: ClientRoute)
     }
 
     class SuggestNetworkException(val description: NetworkDescription, val type: Type) : Exception() {

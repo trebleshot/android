@@ -53,7 +53,6 @@ class FileRenameDialog(val activity: Activity, val list: List<FileHolder>) : Abs
                     val scannerList: MutableList<DocumentFile> = ArrayList()
 
                     RenameMultipleFilesTask.renameFile(
-                        AppUtils.getKuick(activity),
                         fileHolder,
                         renameTo,
                         scannerList

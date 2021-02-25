@@ -19,28 +19,33 @@ package org.monora.uprotocol.client.android.util
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
+import androidx.preference.PreferenceManager
+import kotlinx.coroutines.*
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.database.Kuick
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
-import org.monora.uprotocol.client.android.model.DeviceRoute
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.client.android.model.ClientRoute
+import org.monora.uprotocol.core.ClientLoader
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.ConnectionFactory
 
 /**
  * created by: Veli
  * date: 22.01.2018 15:35
  */
-class NsdDaemon(val context: Context, val database: Kuick, private val mPreferences: SharedPreferences) {
-    private val onlineDeviceList: MutableMap<String, DeviceRoute> = ArrayMap()
-
-    private var discoveryListener: NsdManager.DiscoveryListener? = null
-
+class NsdDaemon(
+    val context: Context,
+    val appDatabase: AppDatabase,
+    val persistenceProvider: PersistenceProvider,
+    val connectionFactory: ConnectionFactory
+) {
     private val nsdManager: NsdManager by lazy {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             throw UnsupportedOperationException("This field shouldn't have been invoked on this version of OS");
@@ -49,17 +54,24 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
         context.getSystemService(Context.NSD_SERVICE) as NsdManager
     }
 
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+    // TODO: 2/25/21 Can this become a live data
+    private val onlineClientList: MutableMap<String, ClientRoute> = ArrayMap()
+
+    private var discoveryListener: NsdManager.DiscoveryListener? = null
+
     private var registrationListener: NsdManager.RegistrationListener? = null
 
     val discovering: Boolean
         get() = discoveryListener != null
 
     val enabled: Boolean
-        get() = mPreferences.getBoolean("nsd_enabled", false)
+        get() = preferences.getBoolean("nsd_enabled", false)
 
-    fun isDeviceOnline(device: Device): Boolean {
-        synchronized(onlineDeviceList) {
-            for (deviceRoute in onlineDeviceList.values) if (deviceRoute.device == device) return true
+    fun isDeviceOnline(client: UClient): Boolean {
+        synchronized(onlineClientList) {
+            for (deviceRoute in onlineClientList.values) if (deviceRoute.device == client) return true
         }
         return false
     }
@@ -71,7 +83,7 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
 
         val registrationListener = RegistrationListener().also { registrationListener = it }
         val localServiceInfo = NsdServiceInfo()
-        localServiceInfo.serviceName = AppUtils.getLocalDeviceName(context)
+        localServiceInfo.serviceName = persistenceProvider.clientNickname
         localServiceInfo.serviceType = AppConfig.NSD_SERVICE_TYPE
         localServiceInfo.port = AppConfig.SERVER_PORT_COMMUNICATION
         try {
@@ -173,16 +185,14 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
 
         override fun onServiceLost(serviceInfo: NsdServiceInfo) {
             Log.i(TAG, "'" + serviceInfo.serviceName + "' service is now lost.")
-            synchronized(onlineDeviceList) {
-                if (onlineDeviceList.remove(serviceInfo.serviceName) != null) {
-                    context.sendBroadcast(Intent(ACTION_DEVICE_STATUS))
-                }
+            synchronized(onlineClientList) {
+                onlineClientList.remove(serviceInfo.serviceName)
             }
         }
 
         fun clear() {
             discoveryListener = null
-            synchronized(onlineDeviceList) { onlineDeviceList.clear() }
+            synchronized(onlineClientList) { onlineClientList.clear() }
         }
     }
 
@@ -193,24 +203,33 @@ class NsdDaemon(val context: Context, val database: Kuick, private val mPreferen
         }
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-            Log.v(TAG, "Resolved '${serviceInfo.serviceName}' on '${serviceInfo.host.hostAddress}'")
-            DeviceLoader.load(
-                database,
-                serviceInfo.host,
-                object : DeviceLoader.OnResolvedListener {
-                    override fun onDeviceResolved(device: Device, address: DeviceAddress) {
-                        synchronized(onlineDeviceList) {
-                            onlineDeviceList.put(serviceInfo.serviceName, DeviceRoute(device, address))
+            with (serviceInfo) {
+                Log.v(TAG, "Resolved '$serviceName' on '${host.hostAddress}'")
+            }
+
+            CoroutineScope(Dispatchers.Main).launch(Dispatchers.IO) {
+                try {
+                    val client = ClientLoader.load(
+                        connectionFactory, persistenceProvider, serviceInfo.host
+                    )
+
+                    if (client is UClient) {
+                        val address = UClientAddress(serviceInfo.host, client.clientUid)
+
+                        synchronized(onlineClientList) {
+                            onlineClientList.put(serviceInfo.serviceName, ClientRoute(client, address))
                         }
-                        context.sendBroadcast(Intent(ACTION_DEVICE_STATUS))
+                    } else {
+                        Log.d(TAG, "onServiceResolved: Not a " + UClient::class.simpleName + " derivative.")
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            )
+            }
         }
     }
 
     companion object {
-        val TAG = NsdDaemon::class.java.simpleName
-        const val ACTION_DEVICE_STATUS = "org.monora.trebleshot.android.intent.action.DEVICE_STATUS"
+        val TAG = NsdDaemon::class.simpleName
     }
 }

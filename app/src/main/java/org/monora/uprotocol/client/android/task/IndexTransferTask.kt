@@ -27,10 +27,6 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.json.JSONArray
 import org.json.JSONException
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.Transfer
-import org.monora.uprotocol.client.android.model.TransferItem
-import org.monora.uprotocol.client.android.model.TransferMember
 import java.util.*
 
 class IndexTransferTask(

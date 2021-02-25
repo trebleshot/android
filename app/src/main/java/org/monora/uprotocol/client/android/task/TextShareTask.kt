@@ -19,11 +19,7 @@ package org.monora.uprotocol.client.android.taskimport
 
 import android.content.*
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.util.CommunicationBridge
-import org.monora.uprotocol.client.android.util.CommunicationBridge.Companion.receiveResult
 
 class TextShareTask(
     private val device: Device,

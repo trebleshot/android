@@ -21,10 +21,15 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.protocol.communication.*
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
+import org.monora.uprotocol.core.protocol.communication.CommunicationException
+import org.monora.uprotocol.core.protocol.communication.ContentException
+import org.monora.uprotocol.core.protocol.communication.UndefinedErrorCodeException
+import org.monora.uprotocol.core.protocol.communication.client.DifferentRemoteClientException
+import org.monora.uprotocol.core.protocol.communication.client.UnauthorizedClientException
+import org.monora.uprotocol.core.protocol.communication.client.UntrustedClientException
 import java.net.ConnectException
 import java.net.NoRouteToHostException
 
@@ -38,10 +43,10 @@ object CommonErrorHelper {
             is CommunicationException -> {
                 title = context.getString(R.string.text_communicationError)
                 message = when (exception) {
-                    is DifferentClientException -> context.getString(R.string.mesg_errorDifferentDevice)
-                    is NotAllowedException -> context.getString(R.string.mesg_notAllowed)
-                    is NotTrustedException -> context.getString(R.string.mesg_errorNotTrusted)
-                    is UnknownCommunicationErrorException -> context.getString(
+                    is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
+                    is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
+                    is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
+                    is UndefinedErrorCodeException -> context.getString(
                         R.string.mesg_unknownErrorOccurredWithCode,
                         exception.errorCode
                     )

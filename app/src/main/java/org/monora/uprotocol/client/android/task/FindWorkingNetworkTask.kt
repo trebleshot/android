@@ -19,14 +19,11 @@ package org.monora.uprotocol.client.android.task
 
 import android.content.*
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.Device
-import org.monora.uprotocol.client.android.model.DeviceAddress
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.task.FindWorkingNetworkTask.CalculationResultListener
 import org.monora.uprotocol.client.android.util.*
-import org.monora.uprotocol.client.android.util.CommunicationBridge.Companion.receiveResult
 import java.io.IOException
 
 class FindWorkingNetworkTask(private val device: Device) : AttachableAsyncTask<CalculationResultListener>() {

@@ -1,13 +1,16 @@
 package org.monora.uprotocol.client.android.database.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientType
 import java.security.cert.X509Certificate
 
+@Parcelize
 @Entity(tableName = "client")
-data class DefaultClient(
+data class UClient(
     @PrimaryKey
     var uid: String,
     var nickname: String,
@@ -23,7 +26,7 @@ data class DefaultClient(
     var local: Boolean,
     var trusted: Boolean,
     var certificate: X509Certificate?,
-) : Client {
+) : Client, Parcelable {
     override fun getClientCertificate(): X509Certificate? = certificate
 
     override fun getClientLastUsageTime(): Long = lastUsageTime

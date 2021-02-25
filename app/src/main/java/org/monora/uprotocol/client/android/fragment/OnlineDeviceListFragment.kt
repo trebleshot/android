@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.view.View
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.Device
 import org.monora.uprotocol.client.android.util.NsdDaemon
 
 /**
@@ -30,32 +29,5 @@ import org.monora.uprotocol.client.android.util.NsdDaemon
  * date: 3/11/19 7:43 PM
  */
 class OnlineDeviceListFragment : DeviceListFragment() {
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        hiddenDeviceTypes = arrayOf(Device.Type.Web, Device.Type.Normal)
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(false)
-        filteringSupported = false
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val daemon: NsdDaemon = App.from(requireActivity()).nsdDaemon
-        listView.isNestedScrollingEnabled = true
-        setDividerVisible(false)
-        emptyListTextView.text = if (!daemon.enabled) {
-            getString(R.string.text_nsdDisabled)
-        } else if (!daemon.discovering) {
-            getString(R.string.text_nsdNotDiscovering)
-        } else {
-            getString(R.string.text_noOnlineDevices)
-        }
-
-        val padding = requireContext().resources.getDimension(R.dimen.short_content_width_padding)
-        listView.clipToPadding = false
-        listView.setPadding(padding.toInt(), 0, padding.toInt(), 0)
-    }
 }

@@ -38,10 +38,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.adapter.DeviceListAdapter.NetworkDescription
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.model.DeviceRoute
+import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.database.model.SharedTextModel
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
@@ -57,6 +56,7 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.model.NetworkDescription
 import java.net.InetAddress
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -365,11 +365,11 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         conductContainer.visibility = if (showing) View.VISIBLE else View.GONE
     }
 
-    override fun onDeviceReached(deviceRoute: DeviceRoute) {
+    override fun onDeviceReached(clientRoute: ClientRoute) {
         setResult(
             RESULT_OK, Intent()
-                .putExtra(EXTRA_DEVICE, deviceRoute.device)
-                .putExtra(EXTRA_DEVICE_ADDRESS, deviceRoute.address)
+                .putExtra(EXTRA_DEVICE, clientRoute.device)
+                .putExtra(EXTRA_DEVICE_ADDRESS, clientRoute.address)
         )
         finish()
     }
