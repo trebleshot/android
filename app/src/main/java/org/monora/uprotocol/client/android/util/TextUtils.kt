@@ -21,6 +21,7 @@ import android.content.Context
 import androidx.collection.ArrayMap
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.net.NetworkInterface
 import java.text.NumberFormat
 
@@ -62,61 +63,6 @@ object TextUtils {
             stringBuilder.append(letter[0])
         }
         return stringBuilder.toString().toUpperCase()
-    }
-
-    fun getTransactionFlagString(
-        context: Context, transferItem: TransferItem, percentFormat: NumberFormat,
-        deviceId: String?,
-    ): String {
-        // Because it takes more arguments when the 'object' is 'Type.OUTGOING', it will be
-        // chosen by the appropriate value that it may contain.
-        var flag: TransferItem.Flag?
-        if (TransferItem.Type.OUTGOING == transferItem.type) {
-            val flags = transferItem.flags
-            when {
-                deviceId != null -> flag = transferItem.getFlag(deviceId)
-                flags.isEmpty() -> flag = TransferItem.Flag.PENDING
-                flags.size == 1 -> flag = flags[0]
-                else -> {
-                    flag = TransferItem.Flag.PENDING
-                    var pos = 0
-                    for (flagTesting in flags) {
-                        val relativeOrdinal: Int = when (flagTesting) {
-                            TransferItem.Flag.DONE -> 0
-                            TransferItem.Flag.PENDING -> 1
-                            TransferItem.Flag.REMOVED -> 2
-                            TransferItem.Flag.INTERRUPTED -> 3
-                            TransferItem.Flag.IN_PROGRESS -> 4
-                            else -> 0
-                        }
-                        if (pos <= relativeOrdinal) {
-                            pos = relativeOrdinal
-                            flag = flagTesting
-                        }
-                    }
-                }
-            }
-        } else flag = transferItem.flag
-        return when (flag) {
-            TransferItem.Flag.DONE -> percentFormat.format(1.0)
-            TransferItem.Flag.IN_PROGRESS -> percentFormat.format(
-                if (transferItem.length == 0L || flag.bytesValue == 0L) 0 else {
-                    flag.bytesValue.toDouble() / transferItem.length.toDouble()
-                }
-            )
-            else -> context.getString(getTransactionFlagString(flag))
-        }
-    }
-
-    fun getTransactionFlagString(flag: TransferItem.Flag?): Int {
-        return when (flag) {
-            TransferItem.Flag.PENDING -> R.string.text_flagPending
-            TransferItem.Flag.DONE -> R.string.text_taskCompleted
-            TransferItem.Flag.INTERRUPTED -> R.string.text_flagInterrupted
-            TransferItem.Flag.IN_PROGRESS -> R.string.text_flagRunning
-            TransferItem.Flag.REMOVED -> R.string.text_flagRemoved
-            else -> R.string.text_unknown
-        }
     }
 
     fun makeWebShareLink(context: Context, address: String?): String {

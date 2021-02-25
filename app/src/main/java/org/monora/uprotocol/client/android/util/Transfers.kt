@@ -44,6 +44,7 @@ object Transfers {
                         file.getType(),
                         file.getLength(),
                         directory,
+                        file.getUri().toString(),
                         TransferItem.Type.Outgoing,
                         PersistenceProvider.STATE_PENDING,
                     )
@@ -58,7 +59,7 @@ object Transfers {
     }
 
     fun pauseTransfer(activity: Activity, target: TransferTarget) {
-        pauseTransfer(activity, target.transferId, target.clientUid, target.type)
+        pauseTransfer(activity, target.groupId, target.clientUid, target.type)
     }
 
     fun pauseTransfer(activity: Activity, transferId: Long, deviceId: String, type: TransferItem.Type) {

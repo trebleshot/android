@@ -18,55 +18,63 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.*
-import android.database.sqlite.SQLiteDatabase
+import org.json.JSONArray
+import org.json.JSONException
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferTarget
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.json.JSONArray
-import org.json.JSONException
+import org.monora.uprotocol.client.android.util.Files
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.util.*
 
 class IndexTransferTask(
+    private val appDatabase: AppDatabase,
     private val transferId: Long,
     private val jsonIndex: String,
-    private val device: Device,
+    private val client: UClient,
     private val noPrompt: Boolean
 ) : AsyncTask() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
-        val db: SQLiteDatabase = kuick.writableDatabase
-        val transfer = Transfer(transferId)
-        val member = TransferMember(transfer, device, TransferItem.Type.INCOMING)
+        // Do not let it add the same transfer id again.
+        appDatabase.transferDao().get(transferId)?.run { return }
+
+        val transfer = Transfer(
+            transferId, TransferItem.Type.Incoming, Files.getApplicationDirectory(context).toString()
+        )
+        val target = TransferTarget(0, client.clientUid, transferId, TransferItem.Type.Incoming)
         val jsonArray: JSONArray = try {
             JSONArray(jsonIndex)
         } catch (e: Exception) {
             return
         }
 
+
+
         progress.increaseTotalBy(jsonArray.length())
-
-        try {
-            kuick.reconstruct(transfer)
-            return
-        } catch (ignored: Exception) {
-        }
-
-        kuick.publish(transfer)
-        kuick.publish(member)
+        appDatabase.transferDao().insertAll(transfer)
+        appDatabase.transferTargetDao().insertAll(target)
 
         var uniqueId = System.currentTimeMillis() // The uniqueIds
         val itemList: MutableList<TransferItem> = ArrayList()
 
+        // FIXME: 2/26/21 This should be done with the uprotocol methods.
         for (i in 0 until jsonArray.length()) {
             throwIfStopped()
             progress.increaseBy(1)
             try {
                 val index = jsonArray.getJSONObject(i)
-                val transferItem = TransferItem(
-                    index.getLong(Keyword.TRANSFER_REQUEST_ID), transferId,
+                val transferItem = UTransferItem(
+                    index.getLong(Keyword.TRANSFER_REQUEST_ID),
+                    transferId,
                     index.getString(Keyword.INDEX_FILE_NAME), "." + uniqueId++ + "." + AppConfig.EXT_FILE_PART,
                     index.getString(Keyword.INDEX_FILE_MIME), index.getLong(Keyword.INDEX_FILE_SIZE),
                     TransferItem.Type.INCOMING
@@ -84,13 +92,13 @@ class IndexTransferTask(
             context.sendBroadcast(
                 Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
-                    .putExtra(BackgroundService.EXTRA_DEVICE, device)
+                    .putExtra(BackgroundService.EXTRA_DEVICE, client)
             )
             if (noPrompt) try {
-                app.run(FileTransferStarterTask.createFrom(kuick, transfer, device, TransferItem.Type.INCOMING))
+                app.run(FileTransferStarterTask.createFrom(kuick, transfer, client, TransferItem.Type.INCOMING))
             } catch (e: Exception) {
                 e.printStackTrace()
-            } else app.notifyFileRequest(device, transfer, itemList)
+            } else app.notifyFileRequest(client, transfer, itemList)
         }
         kuick.broadcast()
     }

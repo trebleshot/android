@@ -35,10 +35,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
+import org.monora.uprotocol.core.persistence.PersistenceProvider
 import java.util.*
 
 @RequiresApi(16)
-class P2pDaemon(val connections: Connections) {
+class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: Connections) {
     private val peerListener: PeerListListener = PeerListener()
 
     private val serviceRequest = WifiP2pDnsSdServiceRequest.newInstance(AppConfig.NSD_SERVICE_TYPE)
@@ -57,16 +58,16 @@ class P2pDaemon(val connections: Connections) {
 
     val wifiP2pServiceInfo: WifiP2pDnsSdServiceInfo
         get() {
-            val thisDevice = AppUtils.getLocalDevice(connections.context)
+            val client = persistenceProvider.client
             val recordMap: MutableMap<String, String?> = HashMap()
-            recordMap[Keyword.DEVICE_UID] = thisDevice.uid
-            recordMap[Keyword.DEVICE_PROTOCOL_VERSION] = java.lang.String.valueOf(thisDevice.protocolVersion)
-            recordMap[Keyword.DEVICE_PROTOCOL_VERSION_MIN] = thisDevice.protocolVersionMin.toString()
-            recordMap[Keyword.DEVICE_BRAND] = thisDevice.brand
-            recordMap[Keyword.DEVICE_MODEL] = thisDevice.model
-            recordMap[Keyword.DEVICE_VERSION_CODE] = java.lang.String.valueOf(thisDevice.versionCode)
-            recordMap[Keyword.DEVICE_VERSION_NAME] = thisDevice.versionName
-            return WifiP2pDnsSdServiceInfo.newInstance(thisDevice.username, AppConfig.NSD_SERVICE_TYPE, recordMap)
+            recordMap[Keyword.DEVICE_UID] = client.clientUid
+            recordMap[Keyword.DEVICE_PROTOCOL_VERSION] = client.clientProtocolVersion.toString()
+            recordMap[Keyword.DEVICE_PROTOCOL_VERSION_MIN] = client.clientProtocolVersionMin.toString()
+            recordMap[Keyword.DEVICE_BRAND] = client.clientManufacturer
+            recordMap[Keyword.DEVICE_MODEL] = client.clientProduct
+            recordMap[Keyword.DEVICE_VERSION_CODE] = client.clientVersionCode.toString()
+            recordMap[Keyword.DEVICE_VERSION_NAME] = client.clientVersionName
+            return WifiP2pDnsSdServiceInfo.newInstance(client.clientNickname, AppConfig.NSD_SERVICE_TYPE, recordMap)
         }
 
     val wifiP2pManager: WifiP2pManager
