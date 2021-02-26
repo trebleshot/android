@@ -18,8 +18,6 @@
 package org.monora.uprotocol.client.android.util
 
 import android.Manifest
-import android.app.ActivityManager
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -27,13 +25,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
-import androidx.annotation.AnyRes
-import androidx.annotation.AttrRes
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
-import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files.getSecureUri
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
@@ -43,52 +36,13 @@ import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
 import org.monora.uprotocol.client.android.drawable.TextDrawable
 import org.monora.uprotocol.client.android.model.ContentModel
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import org.monora.uprotocol.client.android.util.Resources.resToColor
+import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import java.util.*
 
 object AppUtils {
     val TAG = AppUtils::class.java.simpleName
 
-    private var mUniqueNumber = 0
-
-    fun checkRunningConditions(context: Context): Boolean {
-        for (request in getRequiredPermissions(context))
-            if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
-                return false
-        return true
-    }
-
-    fun createLog(context: Context): DocumentFile? {
-        val saveDirectory = Files.getApplicationDirectory(context)
-        val logFile = saveDirectory.createFile("text/plain", "trebleshot_log") ?: return null
-        val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
-
-        if (logFile.exists()) logFile.delete()
-
-        try {
-            val processList = activityManager.runningAppProcesses
-            val command = "logcat -d -v threadtime *:*"
-            val process = Runtime.getRuntime().exec(command)
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            val outputStream = context.contentResolver
-                .openOutputStream(logFile.getUri(), "w") ?: throw IOException("Open failed " + logFile.getName())
-            var readLine: String
-            while (reader.readLine().also { readLine = it } != null)
-                for (processInfo in processList) if (readLine.contains(processInfo.pid.toString())) {
-                    outputStream.write(readLine.toByteArray())
-                    outputStream.flush()
-                    break
-                }
-            outputStream.close()
-            reader.close()
-            return logFile
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
 
     fun generateKey(): Int {
         return (Int.MAX_VALUE * Math.random()).toInt()
@@ -119,8 +73,8 @@ object AppUtils {
             .firstLettersOnly(true)
             .textMaxLength(1)
             .bold()
-            .textColor(ContextCompat.getColor(context, getReference(context, R.attr.colorControlNormal)))
-            .shapeColor(ContextCompat.getColor(context, getReference(context, R.attr.colorPassive)))
+            .textColor(R.attr.colorControlNormal.attrToRes(context).resToColor(context))
+            .shapeColor(R.attr.colorPassive.attrToRes(context).resToColor(context))
         return builder
     }
 
@@ -154,15 +108,14 @@ object AppUtils {
             .putExtra(Intent.EXTRA_EMAIL, arrayOf(AppConfig.EMAIL_DEVELOPER))
             .putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.text_appName))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val logFile = createLog(context)
-        if (logFile != null) {
-            try {
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    .putExtra(Intent.EXTRA_STREAM, getSecureUri(context, logFile))
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        val logFile = Files.createLog(context)
+        if (logFile != null) try {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra(Intent.EXTRA_STREAM, getSecureUri(context, logFile))
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.butn_feedbackContact)))
     }
 
@@ -172,54 +125,5 @@ object AppUtils {
         else it
     }.replace("_", " ")
 
-    @AnyRes
-    fun getReference(context: Context, @AttrRes refId: Int): Int {
-        val typedValue = TypedValue()
-        if (!context.theme.resolveAttribute(refId, typedValue, true)) {
-            val values = context.theme.obtainStyledAttributes(context.applicationInfo.theme, intArrayOf(refId))
-            return if (values.length() > 0) values.getResourceId(0, 0) else 0
-        }
-        return typedValue.resourceId
-    }
 
-    fun getRequiredPermissions(context: Context): List<RationalePermissionRequest.PermissionRequest> {
-        val permissionRequests: MutableList<RationalePermissionRequest.PermissionRequest> = ArrayList()
-        if (Build.VERSION.SDK_INT >= 16) {
-            permissionRequests.add(
-                RationalePermissionRequest.PermissionRequest(
-                    context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.text_requestPermissionStorage,
-                    R.string.text_requestPermissionStorageSummary
-                )
-            )
-        }
-        return permissionRequests
-    }
-
-    /**
-     * This method returns a number unique to the application session. One of the reasons it is not deprecated is that
-     * it is heavily used for the [android.app.PendingIntent] who asks for unique operation or unique request code
-     * to function. In order to get rid of this, first, the notification should be shown in a merged manner meaning each
-     * notification should not create an individual notification so that notification actions don't create a collision.
-     *
-     * @return A unique integer number that does not mix with the current session.
-     */
-    val uniqueNumber: Int
-        get() = (System.currentTimeMillis() / 1000).toInt() + ++mUniqueNumber
-
-
-    fun isLatestChangeLogSeen(context: Context): Boolean {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val lastSeenChangelog = preferences.getInt("changelog_seen_version", -1)
-        val dialogAllowed = preferences.getBoolean("show_changelog_dialog", true)
-        return !preferences.contains("previously_migrated_version")
-                || BuildConfig.VERSION_CODE == lastSeenChangelog
-                || !dialogAllowed
-    }
-
-    fun publishLatestChangelogSeen(context: Context) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putInt("changelog_seen_version", BuildConfig.VERSION_CODE)
-            .apply()
-    }
 }

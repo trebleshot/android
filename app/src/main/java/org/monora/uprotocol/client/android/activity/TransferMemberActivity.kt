@@ -28,7 +28,6 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -45,7 +44,8 @@ import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttacha
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.task.AddDeviceTask
 import org.monora.uprotocol.client.android.task.OrganizeLocalSharingTask
-import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Resources.attrToRes
+import org.monora.uprotocol.client.android.util.Resources.resToColor
 
 class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
     private val transfer: Transfer? by lazy {
@@ -77,16 +77,17 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             startConnectionManagerActivity()
         }
 
-        colorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError))
-        colorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent))
+        colorActive = R.attr.colorError.attrToRes(this).resToColor(this)
+        colorNormal = R.attr.colorAccent.attrToRes(this).resToColor(this)
         progressBar = findViewById(R.id.progressBar)
         actionButton = findViewById(R.id.content_fab)
 
         actionButton.setOnClickListener {
-            if (hasTaskOf(OrganizeLocalSharingTask::class.java))
+            if (hasTaskOf(OrganizeLocalSharingTask::class.java)) {
                 interruptAllTasks(true)
-            else
+            } else {
                 startConnectionManagerActivity()
+            }
         }
 
         supportFragmentManager.findFragmentById(R.id.membersListFragment) ?: run {

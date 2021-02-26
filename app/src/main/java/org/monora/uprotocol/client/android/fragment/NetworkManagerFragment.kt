@@ -55,6 +55,8 @@ import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
+import org.monora.uprotocol.client.android.util.Resources.attrToRes
+import org.monora.uprotocol.client.android.util.Resources.resToColor
 import java.net.InetAddress
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -133,17 +135,10 @@ class NetworkManagerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         toggleButtonEnabledStateList = ColorStateList.valueOf(
-            ContextCompat.getColor(
-                requireContext(),
-                AppUtils.getReference(requireContext(), R.attr.colorError)
-            )
+            R.attr.colorError.attrToRes(requireContext()).resToColor(requireContext())
         )
         colorPassiveState = ColorStateList.valueOf(
-            ContextCompat.getColor(
-                requireContext(), AppUtils.getReference(
-                    requireContext(), R.attr.colorPassive
-                )
-            )
+            R.attr.colorPassive.attrToRes(requireContext()).resToColor(requireContext())
         )
         codeView = view.findViewById(R.id.layout_network_manager_qr_image)
         codeText = view.findViewById(R.id.layout_network_manager_qr_help_text)

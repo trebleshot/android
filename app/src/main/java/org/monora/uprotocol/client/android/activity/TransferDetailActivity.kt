@@ -26,12 +26,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.genonbeta.android.framework.io.StreamInfo
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -50,8 +48,9 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTas
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.task.FileTransferTask
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Files
+import org.monora.uprotocol.client.android.util.Resources.attrToRes
+import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
 
@@ -90,7 +89,6 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         setContentView(R.layout.activity_view_transfer)
 
         var transferItem: UTransferItem? = null
-        var client: UClient? = null
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val intentData = intent.data
 
@@ -102,10 +100,10 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        colorActive = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorError))
-        colorNormal = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent))
+        colorActive = R.attr.colorError.attrToRes(this).resToColor(this)
+        colorNormal = R.attr.colorAccent.attrToRes(this).resToColor(this)
 
-        openWebShareButton.setOnClickListener { v: View? ->
+        openWebShareButton.setOnClickListener {
             startActivity(Intent(this, WebShareActivity::class.java))
         }
 

@@ -17,6 +17,8 @@
  */
 package org.monora.uprotocol.client.android.util
 
+import android.app.ActivityManager
+import android.app.Service
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -35,14 +37,46 @@ import org.monora.uprotocol.client.android.config.AppConfig.DEFAULT_TIMEOUT_SOCK
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.transfer.TransferItem
+import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
+import java.io.InputStreamReader
 
 object Files {
     @Throws(Exception::class)
     fun copy(context: Context, source: DocumentFile, destination: DocumentFile, stoppable: Stoppable) = Files.copy(
         context, source, destination, stoppable, BUFFER_LENGTH_DEFAULT, DEFAULT_TIMEOUT_SOCKET
     )
+
+    fun createLog(context: Context): DocumentFile? {
+        val saveDirectory = org.monora.uprotocol.client.android.util.Files.getApplicationDirectory(context)
+        val logFile = saveDirectory.createFile("text/plain", "trebleshot_log") ?: return null
+        val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
+
+        if (logFile.exists()) logFile.delete()
+
+        try {
+            val processList = activityManager.runningAppProcesses
+            val command = "logcat -d -v threadtime *:*"
+            val process = Runtime.getRuntime().exec(command)
+            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            val outputStream = context.contentResolver
+                .openOutputStream(logFile.getUri(), "w") ?: throw IOException("Open failed " + logFile.getName())
+            var readLine: String
+            while (reader.readLine().also { readLine = it } != null)
+                for (processInfo in processList) if (readLine.contains(processInfo.pid.toString())) {
+                    outputStream.write(readLine.toByteArray())
+                    outputStream.flush()
+                    break
+                }
+            outputStream.close()
+            reader.close()
+            return logFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
 
     fun getApplicationDirectory(context: Context): DocumentFile {
         val defaultPath = getDefaultApplicationDirectoryPath(context)

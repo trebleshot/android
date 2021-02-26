@@ -34,13 +34,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.model.*
-import org.monora.uprotocol.client.android.service.WebShareServer.BoundRunner
 import org.monora.uprotocol.client.android.task.FileTransferStarterTask
 import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.client.android.util.*
@@ -49,7 +47,6 @@ import org.monora.uprotocol.core.TransportSession
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -95,7 +92,7 @@ class BackgroundService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         Log.d(TAG, "onStart() : action = " + intent?.action)
 
-        if (!AppUtils.checkRunningConditions(this) || intent == null) {
+        if (!Permissions.checkRunningConditions(this) || intent == null) {
             return START_NOT_STICKY
         }
 
@@ -238,7 +235,7 @@ class BackgroundService : LifecycleService() {
         val commServerRunning = transportSession.isListening
         if (webServerRunning && commServerRunning) return
         try {
-            if (!AppUtils.checkRunningConditions(this)) throw Exception(
+            if (!Permissions.checkRunningConditions(this)) throw Exception(
                 "The app doesn't have the satisfactory permissions to start the services."
             )
 
@@ -247,9 +244,10 @@ class BackgroundService : LifecycleService() {
             }
 
             if (!webServerRunning) {
-                backend.webShareServer.setAsyncRunner(
+                // TODO: 2/26/21 Fix bound runner
+                /*backend.webShareServer.setAsyncRunner(
                     BoundRunner(Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX))
-                )
+                )*/
                 backend.webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
             }
         } catch (e: Exception) {

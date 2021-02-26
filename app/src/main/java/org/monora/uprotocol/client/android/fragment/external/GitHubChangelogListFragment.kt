@@ -34,7 +34,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionListAdapter
 import org.monora.uprotocol.client.android.fragment.external.GitHubChangelogListFragment.VersionObject
-import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Updates
 
 /**
  * created by: veli
@@ -57,7 +57,7 @@ class GitHubChangelogListFragment : RecyclerViewFragment<VersionObject, ViewHold
 
     override fun onResume() {
         super.onResume()
-        AppUtils.publishLatestChangelogSeen(requireActivity())
+        Updates.declareLatestChangelogAsShown(requireActivity())
     }
 
     class VersionObject(var tag: String, var name: String, var changes: String)

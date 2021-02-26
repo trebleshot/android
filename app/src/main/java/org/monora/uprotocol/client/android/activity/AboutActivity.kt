@@ -29,6 +29,8 @@ import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Resources.attrToRes
+import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.client.android.util.Updates
 
 class AboutActivity : Activity() {
@@ -106,11 +108,7 @@ class AboutActivity : Activity() {
     }
 
     private fun highlightUpdater(textView: TextView) {
-        textView.setTextColor(
-            ContextCompat.getColor(
-                applicationContext, AppUtils.getReference(this@AboutActivity, R.attr.colorAccent)
-            )
-        )
+        textView.setTextColor(R.attr.colorAccent.attrToRes(applicationContext).resToColor(applicationContext))
         textView.setText(R.string.text_newVersionAvailable)
     }
 }

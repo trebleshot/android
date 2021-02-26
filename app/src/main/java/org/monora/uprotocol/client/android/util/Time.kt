@@ -19,24 +19,24 @@ package org.monora.uprotocol.client.android.util
 
 import android.content.Context
 import android.text.format.DateUtils
-import org.monora.uprotocol.client.android.R
 import com.genonbeta.android.framework.util.date.ElapsedTime
+import org.monora.uprotocol.client.android.R
 import java.util.*
 
 /**
  * created by: Veli
  * date: 12.11.2017 10:53
  */
-object TimeUtils {
+object Time {
     fun formatDateTime(context: Context, millis: Long): CharSequence {
-        return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_DATE)
+        return DateUtils.formatDateTime(
+            context,
+            millis,
+            DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_DATE
+        )
     }
 
-    fun getDuration(milliseconds: Long): String {
-        return getDuration(milliseconds, true)
-    }
-
-    fun getDuration(time: Long, divideMilliseconds: Boolean): String {
+    fun formatDuration(time: Long, divideMilliseconds: Boolean = true): String {
         val string = StringBuilder()
         val calculator = ElapsedTime.Calculator(if (divideMilliseconds) time / 1000 else time)
         val hours: Long = calculator.crop(3600)
@@ -57,7 +57,20 @@ object TimeUtils {
         return string.toString()
     }
 
-    fun getFriendlyElapsedTime(context: Context, estimatedTime: Long): String {
+    fun formatRelativeTime(context: Context, time: Long): String {
+        val differ = ((System.currentTimeMillis() - time) / 1000).toInt()
+        return when {
+            differ == 0 -> context.getString(R.string.text_timeJustNow)
+            differ < 60 -> context.resources.getQuantityString(R.plurals.text_secondsAgo, differ, differ)
+            differ < 3600 -> {
+                val minutes = differ / 60
+                return context.resources.getQuantityString(R.plurals.text_minutesAgo, minutes, minutes)
+            }
+            else -> context.getString(R.string.text_longAgo)
+        }
+    }
+
+    fun formatElapsedTime(context: Context, estimatedTime: Long): String {
         val elapsedTime = ElapsedTime.from(estimatedTime)
         val list: MutableList<String> = ArrayList()
         if (elapsedTime.years > 0) list.add(context.getString(R.string.text_yearCountShort, elapsedTime.years))
@@ -85,18 +98,5 @@ object TimeUtils {
             stringBuilder.append(appendItem)
         }
         return stringBuilder.toString()
-    }
-
-    fun getTimeAgo(context: Context, time: Long): String {
-        val differ = ((System.currentTimeMillis() - time) / 1000).toInt()
-        if (differ == 0) {
-            return context.getString(R.string.text_timeJustNow)
-        } else if (differ < 60) {
-            return context.resources.getQuantityString(R.plurals.text_secondsAgo, differ, differ)
-        } else if (differ < 3600) {
-            val minutes = differ / 60
-            return context.resources.getQuantityString(R.plurals.text_minutesAgo, minutes, minutes)
-        }
-        return context.getString(R.string.text_longAgo)
     }
 }

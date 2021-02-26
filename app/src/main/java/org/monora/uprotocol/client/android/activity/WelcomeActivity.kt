@@ -42,6 +42,9 @@ import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.widget.ViewPagerAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.util.Permissions
+import org.monora.uprotocol.client.android.util.Resources.attrToRes
+import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import javax.inject.Inject
 
@@ -69,10 +72,8 @@ class WelcomeActivity : Activity() {
         val progressBar = findViewById<ProgressBar>(R.id.activity_welcome_progress_bar)
         val viewPager: ViewPager = findViewById(R.id.activity_welcome_view_pager)
         val pagerAdapter = ViewPagerAdapter()
+        val appliedColor: Int = R.attr.colorSecondary.attrToRes(this).resToColor(this)
 
-        @ColorInt val appliedColor: Int = ContextCompat.getColor(
-            this, AppUtils.getReference(this, R.attr.colorSecondary)
-        )
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             val wrapDrawable: Drawable = DrawableCompat.wrap(progressBar.progressDrawable)
             DrawableCompat.setTint(wrapDrawable, appliedColor)
@@ -181,7 +182,7 @@ class WelcomeActivity : Activity() {
 
     private fun checkPermissionsState() {
         if (Build.VERSION.SDK_INT < 23) return
-        val permissionsOk = AppUtils.checkRunningConditions(this)
+        val permissionsOk = Permissions.checkRunningConditions(this)
         permissionsView.findViewById<View>(R.id.layout_welcome_page_3_perm_ok_image).visibility =
             if (permissionsOk) View.VISIBLE else View.GONE
         permissionsView.findViewById<View>(R.id.layout_welcome_page_3_request_button).visibility =

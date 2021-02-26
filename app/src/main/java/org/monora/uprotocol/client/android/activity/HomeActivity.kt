@@ -29,17 +29,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.dialog.ShareAppDialog
-import org.monora.uprotocol.client.android.util.AppUtils
-import org.monora.uprotocol.client.android.util.Updates
-import com.google.android.material.navigation.NavigationView
-import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
+import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Updates
 import java.io.*
 import javax.inject.Inject
 
@@ -85,12 +85,10 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 .findItem(R.id.menu_activity_main_donate)
             donateItem.isVisible = true
         }
-        findViewById<View>(R.id.sendLayoutButton).setOnClickListener { v: View? ->
-            startActivity(
-                Intent(this, ContentSharingActivity::class.java)
-            )
+        findViewById<View>(R.id.sendLayoutButton).setOnClickListener {
+            startActivity(Intent(this, ContentSharingActivity::class.java))
         }
-        findViewById<View>(R.id.receiveLayoutButton).setOnClickListener { v: View? ->
+        findViewById<View>(R.id.receiveLayoutButton).setOnClickListener {
             startActivity(
                 Intent(this, AddDeviceActivity::class.java)
                     .putExtra(
@@ -120,7 +118,9 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.actions_home_transfer_history) {
             startActivity(Intent(this, SharedTextActivity::class.java))
-        } else return super.onOptionsItemSelected(item)
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
         return true
     }
 
@@ -160,7 +160,8 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             R.id.menu_activity_main_donate == chosenMenuItemId -> {
                 try {
                     startActivity(
-                        Intent(this,
+                        Intent(
+                            this,
                             Class.forName(
                                 "org.monora.uprotocol.client.android.activity.DonationActivity"
                             )
@@ -175,7 +176,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 builder.setTitle(R.string.text_developmentSurvey)
                 builder.setMessage(R.string.text_developmentSurveySummary)
                 builder.setNegativeButton(R.string.genfw_uwg_later, null)
-                builder.setPositiveButton(R.string.butn_temp_doIt) { dialog: DialogInterface?, which: Int ->
+                builder.setPositiveButton(R.string.butn_temp_doIt) { _: DialogInterface?, _: Int ->
                     try {
                         startActivity(
                             Intent(Intent.ACTION_VIEW).setData(
@@ -203,47 +204,45 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     private fun checkAndShowCrashReport() {
         try {
-            openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG).use { inputStream ->
-                val log = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
-                val report = FileReader(log).use { it.readText()  }
-                val streamObject = SharedText(0, report, log.lastModified())
+            val log = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+            val report = FileReader(log).use { it.readText() }
+            val streamObject = SharedText(0, report, log.lastModified())
 
-                log.delete()
+            log.delete()
 
-                AlertDialog.Builder(this)
-                    .setTitle(R.string.text_crashReport)
-                    .setMessage(R.string.text_crashInfo)
-                    .setNegativeButton(R.string.butn_dismiss, null)
-                    .setNeutralButton(android.R.string.copy) { dialog: DialogInterface?, which: Int ->
-                        val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboardManager.setPrimaryClip(
-                            ClipData.newPlainText(getString(R.string.text_crashReport), report)
-                        )
-                        Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-                    }.setPositiveButton(R.string.butn_save) { dialog: DialogInterface?, which: Int ->
-                        appDatabase.sharedTextDao().insertAll(streamObject)
-                        Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
-                    }.show()
-            }
+            AlertDialog.Builder(this)
+                .setTitle(R.string.text_crashReport)
+                .setMessage(R.string.text_crashInfo)
+                .setNegativeButton(R.string.butn_dismiss, null)
+                .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
+                    val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboardManager.setPrimaryClip(
+                        ClipData.newPlainText(getString(R.string.text_crashReport), report)
+                    )
+                    Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
+                }.setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
+                    appDatabase.sharedTextDao().insertAll(streamObject)
+                    Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
+                }.show()
         } catch (ignored: IOException) {
         }
     }
 
     private fun checkAndShowChangelog() {
-        if (!AppUtils.isLatestChangeLogSeen(this)) {
+        if (!Updates.isLatestChangelogShown(this)) {
             AlertDialog.Builder(this)
                 .setMessage(R.string.mesg_versionUpdatedChangelog)
-                .setPositiveButton(R.string.butn_yes) { dialog: DialogInterface?, which: Int ->
-                    AppUtils.publishLatestChangelogSeen(this@HomeActivity)
+                .setPositiveButton(R.string.butn_yes) { _: DialogInterface?, _: Int ->
+                    Updates.declareLatestChangelogAsShown(this@HomeActivity)
                     startActivity(Intent(this@HomeActivity, ChangelogActivity::class.java))
                 }
-                .setNeutralButton(R.string.butn_never) { dialog: DialogInterface?, which: Int ->
+                .setNeutralButton(R.string.butn_never) { _: DialogInterface?, _: Int ->
                     defaultPreferences.edit()
                         .putBoolean("show_changelog_dialog", false)
                         .apply()
                 }
-                .setNegativeButton(R.string.butn_no) { dialog: DialogInterface?, which: Int ->
-                    AppUtils.publishLatestChangelogSeen(this@HomeActivity)
+                .setNegativeButton(R.string.butn_no) { _: DialogInterface?, _: Int ->
+                    Updates.declareLatestChangelogAsShown(this@HomeActivity)
                     Toast.makeText(
                         this@HomeActivity, R.string.mesg_versionUpdatedChangelogRejected,
                         Toast.LENGTH_SHORT

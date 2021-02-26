@@ -47,7 +47,7 @@ import org.monora.uprotocol.client.android.fragment.FileListFragment
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Notifications
-import org.monora.uprotocol.client.android.util.TimeUtils
+import org.monora.uprotocol.client.android.util.Time
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
@@ -88,6 +88,8 @@ class WebShareServer @Inject constructor(
         mediaScanner.disconnect()
     }
 
+    // TODO: 2/26/21 Fix web server
+    /**
     override fun serve(session: IHTTPSession): Response {
         try {
             hadClients = true
@@ -95,8 +97,9 @@ class WebShareServer @Inject constructor(
             val method: Method = session.method
             var receiveTimeElapsed = System.currentTimeMillis()
             val notificationId = AppUtils.uniqueNumber
-            val notification =
-                notifications.buildDynamicNotification(notificationId, Notifications.NOTIFICATION_CHANNEL_LOW)
+            val notification = notifications.buildDynamicNotification(
+                notificationId, Notifications.NOTIFICATION_CHANNEL_LOW
+            )
             val address: String = session.headers["http-client-ip"]!!
             val webClient = appDatabase.webClientDao().get(address) ?: WebClient(address, address).also {
                 appDatabase.webClientDao().insert(it)
@@ -238,7 +241,7 @@ class WebShareServer @Inject constructor(
                                         destFile.getLength(),
                                         false
                                     ),
-                                    TimeUtils.getFriendlyElapsedTime(context, receiveTimeElapsed)
+                                    Time.formatElapsedTime(context, receiveTimeElapsed)
                                 )
                             )
                             .addAction(
@@ -857,5 +860,5 @@ class WebShareServer @Inject constructor(
             for (headerName in header.keys) alreadySent = alreadySent or headerName.equals(name, ignoreCase = true)
             return alreadySent
         }
-    }
+    }**/
 }

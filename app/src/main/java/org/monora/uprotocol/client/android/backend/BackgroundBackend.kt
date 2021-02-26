@@ -65,7 +65,7 @@ class BackgroundBackend @Inject constructor(
     }
 
     fun canStopService(): Boolean {
-        return !hasTasks() && !hotspotManager.started && !webShareServer.hadClients()
+        return !hasTasks() && !hotspotManager.started && !webShareServer.hadClients
     }
 
     fun findTaskBy(identity: Identity): AsyncTask? {
@@ -114,7 +114,7 @@ class BackgroundBackend @Inject constructor(
         val inBg = foregroundActivitiesCount == 0
         val newlyInFg = foregroundActivitiesCount == 1
         val intent = Intent(context, BackgroundService::class.java)
-        if (AppUtils.checkRunningConditions(context)) {
+        if (Permissions.checkRunningConditions(context)) {
             if (newlyInFg) {
                 ContextCompat.startForegroundService(context, intent)
             } else if (inBg) {

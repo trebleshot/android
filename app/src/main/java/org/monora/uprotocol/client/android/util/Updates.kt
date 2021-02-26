@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android.util
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
+import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.config.AppConfig
 
 /**
@@ -49,6 +50,12 @@ object Updates {
         })
     }
 
+    fun declareLatestChangelogAsShown(context: Context) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putInt("changelog_seen_version", BuildConfig.VERSION_CODE)
+            .apply()
+    }
+
     private fun getAvailableVersion(context: Context): String? {
         return PreferenceManager.getDefaultSharedPreferences(context).getString("availableVersion", null)
     }
@@ -64,5 +71,14 @@ object Updates {
     fun hasNewVersion(context: Context): Boolean {
         val availableVersion = getAvailableVersion(context)
         return availableVersion != null && GitHubUpdater.isNewVersion(context, availableVersion)
+    }
+
+    fun isLatestChangelogShown(context: Context): Boolean {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val lastSeenChangelog = preferences.getInt("changelog_seen_version", -1)
+        val dialogAllowed = preferences.getBoolean("show_changelog_dialog", true)
+        return !preferences.contains("previously_migrated_version")
+                || BuildConfig.VERSION_CODE == lastSeenChangelog
+                || !dialogAllowed
     }
 }

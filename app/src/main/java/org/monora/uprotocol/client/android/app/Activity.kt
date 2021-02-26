@@ -36,7 +36,6 @@ import androidx.preference.PreferenceManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import dagger.hilt.android.AndroidEntryPoint
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
@@ -53,6 +52,7 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachableA
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Permissions
 import java.io.FileNotFoundException
 import java.util.*
 import javax.inject.Inject
@@ -178,7 +178,7 @@ abstract class Activity : AppCompatActivity() {
         if (!hasIntroductionShown() && !welcomePageDisallowed) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
-        } else if (!AppUtils.checkRunningConditions(this) && !skipPermissionRequest) {
+        } else if (!Permissions.checkRunningConditions(this) && !skipPermissionRequest) {
             requestRequiredPermissions(true)
         }
     }
@@ -208,8 +208,9 @@ abstract class Activity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (!AppUtils.checkRunningConditions(this))
+        if (!Permissions.checkRunningConditions(this)) {
             requestRequiredPermissions(!skipPermissionRequest)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -386,12 +387,13 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun requestRequiredPermissions(finishIfOtherwise: Boolean) {
-        if (ongoingRequest != null && ongoingRequest!!.isShowing) return
-        for (request in AppUtils.getRequiredPermissions(this))
+        if (ongoingRequest?.isShowing == true) return
+        for (request in Permissions.getRequiredPermissions(this)) {
             if (RationalePermissionRequest.requestIfNecessary(this, request, finishIfOtherwise).also {
                     ongoingRequest = it
                 } != null
             ) break
+        }
     }
 
     fun run(task: AsyncTask) {
