@@ -18,7 +18,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/ListContentLayoutStyle"
+    style="@style/ListContentLayoutStyle.Narrow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -26,7 +26,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/padding_list_content_narrow_parent_layout">
 
         <ImageView
             android:id="@+id/image_check"
@@ -46,19 +47,11 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="7dp"
-        android:background="?colorDivider" />
-
     <TextView
         android:id="@+id/text2"
         style="@style/TextAppearance.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:lineSpacingExtra="1dp"
         android:maxLines="30" />
 
 </LinearLayout>

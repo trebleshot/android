@@ -95,41 +95,26 @@
             android:paddingLeft="@dimen/short_content_width_padding"
             android:paddingRight="@dimen/short_content_width_padding">
 
-            <LinearLayout
+            <Button
+                android:id="@+id/connection_option_generate_qr_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <Button
-                    android:id="@+id/connection_option_generate_qr_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    app:srcCompat="@drawable/ic_qrcode_white_24dp"
-                    android:paddingRight="15dp"
-                    android:text="@string/butn_generateQrCode" />
-
-            </LinearLayout>
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_qrcode_white_24dp"
+                android:text="@string/butn_generateQrCode" />
 
             <View
-                android:layout_width="8dp"
+                android:layout_width="@dimen/short_content_width_padding"
                 android:layout_height="match_parent" />
 
-            <LinearLayout
+            <Button
+                android:id="@+id/connection_option_scan"
+                style="@style/Widget.TrebleShot.ButtonStyle.Outlined"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:text="@string/text_scanQrCode" />
 
-                <Button
-                    android:id="@+id/connection_option_scan"
-                    style="@style/Widget.TrebleShot.ButtonStyle.Outlined"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:text="@string/text_scanQrCode" />
-
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

@@ -74,10 +74,6 @@ object Keyword {
     const val QR_CODE_TYPE_HOTSPOT = "hs"
     const val QR_CODE_TYPE_WIFI = "wf"
 
-    enum class Flavor {
-        unknown, fossReliant, googlePlay
-    }
-
     object Local {
         const val FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt"
         const val SETTINGS_VIEWING = "sorting_settings"

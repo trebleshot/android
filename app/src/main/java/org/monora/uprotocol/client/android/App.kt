@@ -74,7 +74,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
 
-        if (Keyword.Flavor.googlePlay != AppUtils.buildFlavor && !Updates.hasNewVersion(applicationContext)
+        if (BuildConfig.FLAVOR != "googlePlay" && !Updates.hasNewVersion(applicationContext)
             && System.currentTimeMillis() - Updates.getCheckTime(applicationContext) >= AppConfig.DELAY_UPDATE_CHECK
         ) {
             val updater: GitHubUpdater = Updates.getDefaultUpdater(applicationContext)

@@ -16,12 +16,21 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/actions_about_feedback"
-        android:icon="@drawable/ic_email_white_24dp"
-        android:title="@string/butn_feedbackContact"
-        app:showAsAction="always" />
+        android:title="@string/butn_feedbackContact" />
+
+    <item
+        android:id="@+id/actions_about_changelog"
+        android:title="@string/butn_changelog" />
+
+    <item
+        android:id="@+id/actions_about_third_party_licenses"
+        android:title="@string/text_thirdPartyLicenses" />
+
+    <item
+        android:id="@+id/actions_about_check_for_updates"
+        android:title="@string/butn_checkForUpdates" />
 
 </menu>

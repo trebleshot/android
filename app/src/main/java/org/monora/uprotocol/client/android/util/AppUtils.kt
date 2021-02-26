@@ -17,42 +17,16 @@
  */
 package org.monora.uprotocol.client.android.util
 
-import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
-import com.genonbeta.android.framework.util.Files.getSecureUri
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
-import org.monora.uprotocol.client.android.drawable.TextDrawable
 import org.monora.uprotocol.client.android.model.ContentModel
-import org.monora.uprotocol.client.android.util.Resources.resToColor
-import org.monora.uprotocol.client.android.util.Resources.attrToRes
-import java.util.*
 
 object AppUtils {
     val TAG = AppUtils::class.java.simpleName
-
-    val buildFlavor: Keyword.Flavor
-        get() = try {
-            Keyword.Flavor.valueOf(BuildConfig.FLAVOR)
-        } catch (e: Exception) {
-            Log.e(
-                TAG, "Current build flavor " + BuildConfig.FLAVOR + " is not specified in " +
-                        "the vocab. Is this a custom build?"
-            )
-            Keyword.Flavor.unknown
-        }
 
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
         val connection = fragment.engineConnection

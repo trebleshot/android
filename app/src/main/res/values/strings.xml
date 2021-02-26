@@ -115,7 +115,7 @@
     <string name="ques_copyToClipboard">Copy to clipboard?</string>
     <string name="text_textReceived">Text received</string>
     <string name="text_receivedTextSummary">Received clipboard text</string>
-    <string name="butn_checkForUpdates">Check for new version</string>
+    <string name="butn_checkForUpdates">Check For Updates</string>
     <string name="butn_seeSourceCode">See source code</string>
     <string name="text_typeText">Write something to send…</string>
     <string name="text_textEditor">Text Editor</string>
@@ -409,7 +409,7 @@
     <string name="butn_useKnownDevice">Use known devices</string>
     <string name="butn_scanQrCode">Scan QR Code</string>
     <string name="butn_useExistingNetwork">Use existing networks</string>
-    <string name="butn_feedbackContact">Feedback &amp; contact</string>
+    <string name="butn_feedbackContact">Feedback &amp; Contact</string>
     <string name="text_startHotspot" translatable="false">@string/butn_startHotspot</string>
     <string name="text_useExistingNetwork" translatable="false">@string/butn_useExistingNetwork</string>
     <string name="text_scanQrCode" translatable="false">@string/butn_scanQrCode</string>

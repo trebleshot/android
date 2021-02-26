@@ -24,6 +24,7 @@ import android.view.*
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
@@ -35,6 +36,8 @@ import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.client.android.util.Updates
 
 class AboutActivity : Activity() {
+    val googlePlayFlavor = BuildConfig.FLAVOR == "googlePlay"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
@@ -52,60 +55,62 @@ class AboutActivity : Activity() {
         findViewById<View>(R.id.activity_about_translate_layout).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TRANSLATE)))
         }
-        findViewById<View>(R.id.activity_about_changelog_layout).setOnClickListener {
-            startActivity(Intent(this@AboutActivity, ChangelogActivity::class.java))
-        }
         findViewById<View>(R.id.activity_about_telegram_layout).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)))
         }
-        findViewById<View>(R.id.activity_about_option_fourth_layout).setOnClickListener {
-            if (Keyword.Flavor.googlePlay == AppUtils.buildFlavor) {
+        /*findViewById<View>(R.id.activity_about_option_fourth_layout).setOnClickListener {
+            if (BuildConfig.FLAVOR == "googlePlay") {
                 try {
                     startActivity(
                         Intent(
-                            this@AboutActivity, Class.forName(
-                                "org.monora.uprotocol.client.android.activity.DonationActivity"
-                            )
+                            this@AboutActivity,
+                            Class.forName("org.monora.uprotocol.client.android.activity.DonationActivity")
                         )
                     )
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                 }
             } else
+          */
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.actions_about, menu)
+        menu.findItem(R.id.actions_about_check_for_updates).isVisible = !googlePlayFlavor
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.actions_about_feedback -> {
+                Activities.startFeedbackActivity(this@AboutActivity)
+            }
+            R.id.actions_about_changelog -> {
+                startActivity(Intent(this@AboutActivity, ChangelogActivity::class.java))
+            }
+            R.id.actions_about_third_party_licenses -> {
+                startActivity(Intent(this@AboutActivity, ThirdPartyLibrariesActivity::class.java))
+            }
+            R.id.actions_about_check_for_updates -> {
                 Updates.checkForUpdates(
                     this@AboutActivity,
                     Updates.getDefaultUpdater(this@AboutActivity),
                     true,
                     null
                 )
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
-        findViewById<View>(R.id.activity_about_third_party_libraries_layout).setOnClickListener {
-            startActivity(Intent(this@AboutActivity, ThirdPartyLibrariesActivity::class.java))
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.actions_about, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home) {
-            finish()
-        } else if (id == R.id.actions_about_feedback) {
-            Activities.startFeedbackActivity(this@AboutActivity)
-        } else
-            return super.onOptionsItemSelected(item)
         return true
     }
 
     override fun onResume() {
         super.onResume()
-
         // calling this in the onCreate sequence causes theming issues
-        if (Keyword.Flavor.googlePlay != AppUtils.buildFlavor && Updates.hasNewVersion(applicationContext))
-            highlightUpdater(findViewById(R.id.activity_about_option_fourth_text))
+        if (!googlePlayFlavor && Updates.hasNewVersion(applicationContext)) {
+            //highlightUpdater(findViewById(R.id.activity_about_option_fourth_text))
+        }
     }
 
     private fun highlightUpdater(textView: TextView) {

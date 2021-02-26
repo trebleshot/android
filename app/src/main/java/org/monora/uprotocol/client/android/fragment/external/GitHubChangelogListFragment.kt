@@ -92,7 +92,7 @@ class GitHubChangelogListFragment : RecyclerViewFragment<VersionObject, ViewHold
                             VersionObject(
                                 currentObject.getString("tag_name"),
                                 currentObject.getString("name"),
-                                currentObject.getString("body")
+                                currentObject.getString("body").trim()
                             )
                         )
                     }

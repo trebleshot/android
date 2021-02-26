@@ -77,7 +77,6 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
 
     private lateinit var addDeviceMenu: MenuItem
 
-
     private lateinit var toggleBrowserShare: MenuItem
 
     private var colorActive = 0

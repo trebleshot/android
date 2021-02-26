@@ -31,6 +31,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.Keyword
@@ -68,8 +69,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
         setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar,
-            R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose
+            this, drawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -79,12 +79,11 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
         })
         navigationView.setNavigationItemSelectedListener(this)
-        if (Updates.hasNewVersion(this))
+        if (Updates.hasNewVersion(this)) {
             highlightUpdate()
-        if (Keyword.Flavor.googlePlay == AppUtils.buildFlavor) {
-            val donateItem: MenuItem = navigationView.menu
-                .findItem(R.id.menu_activity_main_donate)
-            donateItem.isVisible = true
+        }
+        if (BuildConfig.FLAVOR == "googlePlay") {
+            navigationView.menu.findItem(R.id.menu_activity_main_donate).isVisible = true
         }
         findViewById<View>(R.id.sendLayoutButton).setOnClickListener {
             startActivity(Intent(this, ContentSharingActivity::class.java))
@@ -135,9 +134,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         createHeaderView()
     }
 
-    /**
-     * Do not load the chosen item immediately. Wait for the drawer to close.
-     */
     private fun applyAwaitingDrawerAction() {
         if (chosenMenuItemId == 0) // drawer was opened, but nothing was clicked.
             return
@@ -171,30 +167,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                 }
-            }
-            R.id.menu_activity_main_dev_survey == chosenMenuItemId -> {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.text_developmentSurvey)
-                builder.setMessage(R.string.text_developmentSurveySummary)
-                builder.setNegativeButton(R.string.genfw_uwg_later, null)
-                builder.setPositiveButton(R.string.butn_temp_doIt) { _: DialogInterface?, _: Int ->
-                    try {
-                        startActivity(
-                            Intent(Intent.ACTION_VIEW).setData(
-                                Uri.parse(
-                                    "https://docs.google.com/forms/d/e/1FAIpQLScmwX923MACmHvZTpEyZMDCxRQj" +
-                                            "rd8b67u9p9MOjV1qFVp-_A/viewform?usp=sf_link"
-                                )
-                            )
-                        )
-                    } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(
-                            this@HomeActivity, R.string.mesg_temp_noBrowser,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-                builder.show()
             }
             R.id.menu_activity_feedback == chosenMenuItemId -> {
                 Activities.startFeedbackActivity(this@HomeActivity)
@@ -267,8 +239,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     private fun highlightUpdate() {
-        val item: MenuItem = navigationView.menu.findItem(R.id.menu_activity_main_about)
-        item.setTitle(R.string.text_newVersionAvailable)
+        navigationView.menu.findItem(R.id.menu_activity_main_about).setTitle(R.string.text_newVersionAvailable)
     }
 
     companion object {
