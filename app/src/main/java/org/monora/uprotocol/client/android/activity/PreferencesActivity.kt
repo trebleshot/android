@@ -23,6 +23,7 @@ import org.monora.uprotocol.client.android.util.AppUtils
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.app.Activity
 
 class PreferencesActivity : Activity() {
@@ -40,7 +41,7 @@ class PreferencesActivity : Activity() {
                     .setMessage(R.string.text_resetPreferencesToDefaultSummary)
                     .setNegativeButton(R.string.butn_cancel, null)
                     .setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
-                        AppUtils.getDefaultPreferences(applicationContext).edit()
+                        PreferenceManager.getDefaultSharedPreferences(applicationContext).edit()
                             .clear()
                             .apply()
                         finish()

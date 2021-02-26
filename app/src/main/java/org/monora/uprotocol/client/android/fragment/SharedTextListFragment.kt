@@ -29,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.adapter.SharedTextListAdapter
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.DateSectionContentModel
 import org.monora.uprotocol.client.android.viewmodel.SharedTextDataViewModel
@@ -65,7 +65,7 @@ class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
     }
 
     @Synchronized
-    private fun withDateSections(list: List<SharedTextModel>): List<ContentModel> {
+    private fun withDateSections(list: List<SharedText>): List<ContentModel> {
         val newList = ArrayList<ContentModel>()
         var previous: DateSectionContentModel? = null
 

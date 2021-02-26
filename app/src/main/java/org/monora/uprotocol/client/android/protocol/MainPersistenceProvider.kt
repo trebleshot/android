@@ -13,10 +13,10 @@ import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.io.FileStreamDescriptor
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.persistence.PersistenceProvider
-import org.monora.uprotocol.core.persistence.PersistenceProvider.STATE_PENDING
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ClientType
@@ -168,9 +168,7 @@ class MainPersistenceProvider @Inject constructor(
         size: Long,
         directory: String?,
         type: TransferItem.Type,
-    ): TransferItem = UTransferItem(
-        groupId, id, name, mimeType, size, directory, uniqueFileName(), type, STATE_PENDING, System.currentTimeMillis()
-    )
+    ): TransferItem = UTransferItem(groupId, id, name, mimeType, size, directory, uniqueFileName(), type)
 
     override fun getCertificate(): X509Certificate = _certificate
 
@@ -255,15 +253,25 @@ class MainPersistenceProvider @Inject constructor(
     ): TransferItem? = db.transferItemDao().get(groupId, id, type)
 
     override fun openInputStream(descriptor: StreamDescriptor?): InputStream {
-        if (descriptor is FileStreamDescriptor)
+        if (descriptor is FileStreamDescriptor) {
             return FileInputStream(descriptor.file)
+        } else if (descriptor is DocumentFileStreamDescriptor) {
+            return context.contentResolver.openInputStream(descriptor.documentFile.getUri()) ?: kotlin.run {
+                throw IOException("Supported resource did not open")
+            }
+        }
 
         throw RuntimeException("Unsupported descriptor.")
     }
 
     override fun openOutputStream(descriptor: StreamDescriptor?): OutputStream {
-        if (descriptor is FileStreamDescriptor)
+        if (descriptor is FileStreamDescriptor) {
             return FileOutputStream(descriptor.file)
+        } else if (descriptor is DocumentFileStreamDescriptor) {
+            return context.contentResolver.openOutputStream(descriptor.documentFile.getUri()) ?: kotlin.run {
+                throw IOException("Supported resource did not open")
+            }
+        }
 
         throw RuntimeException("Unsupported descriptor.")
     }
@@ -338,4 +346,4 @@ class MainPersistenceProvider @Inject constructor(
     }
 }
 
-fun uniqueFileName() = UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART
+fun uniqueFileName() = "." + UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART

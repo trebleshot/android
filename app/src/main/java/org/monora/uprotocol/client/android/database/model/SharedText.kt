@@ -15,7 +15,7 @@ import retrofit2.http.Field
 
 @Parcelize
 @Entity(tableName = "sharedText")
-data class SharedTextModel(
+data class SharedText(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     var text: String,

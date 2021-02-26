@@ -45,13 +45,13 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                app:clock="@{viewModel.sharedTextModel.dateCreated()}" />
+                app:clock="@{viewModel.sharedText.dateCreated()}" />
 
         </FrameLayout>
 
         <TextView
             android:id="@+id/text"
-            android:text="@{viewModel.sharedTextModel.name()}"
+            android:text="@{viewModel.sharedText.name()}"
             style="@style/TextAppearance.Primary"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"

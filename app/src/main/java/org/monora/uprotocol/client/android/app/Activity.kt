@@ -32,12 +32,15 @@ import android.widget.ImageView
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
+import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.dialog.ProfileEditorDialog
 import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
@@ -52,8 +55,13 @@ import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttacha
 import org.monora.uprotocol.client.android.util.AppUtils
 import java.io.FileNotFoundException
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 abstract class Activity : AppCompatActivity() {
+    @Inject
+    lateinit var backgroundBackend: BackgroundBackend
+
     private var amoledDarkThemeRequested = false
 
     private val attachedTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList()
@@ -63,7 +71,7 @@ abstract class Activity : AppCompatActivity() {
     private var darkThemeRequested = false
 
     protected val defaultPreferences: SharedPreferences
-        get() = AppUtils.getDefaultPreferences(this)
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
 
     open val identity: Identity
         get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
@@ -97,13 +105,10 @@ abstract class Activity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED == intent.action)
                 checkForThemeChange()
-            else if (App.ACTION_TASK_CHANGE == intent.action)
+            else if (BackgroundBackend.ACTION_TASK_CHANGE == intent.action)
                 attachTasks()
         }
     }
-
-    lateinit var selfApplication: App
-        private set
 
     var skipPermissionRequest = false
         protected set
@@ -116,17 +121,12 @@ abstract class Activity : AppCompatActivity() {
         protected set
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (application is App)
-            selfApplication = application as App
-        else
-            throw IllegalStateException("This activity cannot run a different Application class.")
-
         darkThemeRequested = isDarkThemeRequested
         amoledDarkThemeRequested = isAmoledDarkThemeRequested
         customFontsEnabled = isUsingCustomFonts
 
         intentFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED)
-        intentFilter.addAction(App.ACTION_TASK_CHANGE)
+        intentFilter.addAction(BackgroundBackend.ACTION_TASK_CHANGE)
 
         if (darkThemeRequested) try {
             @StyleRes var currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme
@@ -187,13 +187,13 @@ abstract class Activity : AppCompatActivity() {
         super.onStart()
         attachTasks()
         registerReceiver(receiver, intentFilter)
-        selfApplication.notifyActivityInForeground(this, true)
+        backgroundBackend.notifyActivityInForeground(this, true)
     }
 
     override fun onStop() {
         super.onStop()
         unregisterReceiver(receiver)
-        selfApplication.notifyActivityInForeground(this, false)
+        backgroundBackend.notifyActivityInForeground(this, false)
     }
 
     override fun onDestroy() {
@@ -258,7 +258,7 @@ abstract class Activity : AppCompatActivity() {
 
     @Synchronized
     private fun attachTasks() {
-        val concurrentTaskList = selfApplication.findTasksBy(identity)
+        val concurrentTaskList = backgroundBackend.findTasksBy(identity)
         val attachableBgTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList(attachedTaskList)
         val checkIfExists = attachableBgTaskList.size > 0
 
@@ -334,7 +334,7 @@ abstract class Activity : AppCompatActivity() {
 
     fun findTasksWith(identity: Identity): List<BaseAttachableAsyncTask> {
         synchronized(attachedTaskList) {
-            return App.findTasksBy(
+            return BackgroundBackend.findTasksBy(
                 attachedTaskList,
                 identity
             )
@@ -342,7 +342,7 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun <T : BaseAttachableAsyncTask> getTaskListOf(clazz: Class<T>): List<T> {
-        synchronized(attachedTaskList) { return App.getTaskListOf(attachedTaskList, clazz) }
+        synchronized(attachedTaskList) { return BackgroundBackend.getTaskListOf(attachedTaskList, clazz) }
     }
 
     fun hasIntroductionShown(): Boolean {
@@ -350,11 +350,11 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun hasTaskOf(clazz: Class<out AsyncTask?>): Boolean {
-        synchronized(attachedTaskList) { return App.hasTaskOf(attachedTaskList, clazz) }
+        synchronized(attachedTaskList) { return BackgroundBackend.hasTaskOf(attachedTaskList, clazz) }
     }
 
     fun hasTaskWith(identity: Identity): Boolean {
-        synchronized(attachedTaskList) { return App.hasTaskWith(attachedTaskList, identity) }
+        synchronized(attachedTaskList) { return BackgroundBackend.hasTaskWith(attachedTaskList, identity) }
     }
 
     fun interruptAllTasks(userAction: Boolean) {
@@ -396,7 +396,7 @@ abstract class Activity : AppCompatActivity() {
 
     fun run(task: AsyncTask) {
         task.setContentIntent(this, intent)
-        App.run(this, task)
+        backgroundBackend.run(task)
     }
 
     /**

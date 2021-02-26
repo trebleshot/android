@@ -26,6 +26,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.AppDatabase
@@ -35,13 +36,16 @@ import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.core.ClientLoader
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * created by: Veli
  * date: 22.01.2018 15:35
  */
-class NsdDaemon(
-    val context: Context,
+@Singleton
+class NsdDaemon @Inject constructor(
+    @ApplicationContext val context: Context,
     val appDatabase: AppDatabase,
     val persistenceProvider: PersistenceProvider,
     val connectionFactory: ConnectionFactory

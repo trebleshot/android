@@ -32,11 +32,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.model.*
@@ -54,11 +54,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BackgroundService : LifecycleService() {
-    private val app: App
-        get() = App.from(this)
-
     @Inject
     lateinit var appDatabase: AppDatabase
+
+    @Inject
+    lateinit var backend: BackgroundBackend
 
     private val binder = LocalBinder()
 
@@ -81,13 +81,13 @@ class BackgroundService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
 
-        wifiLock = app.wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG)
+        wifiLock = backend.wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG)
 
-        app.nsdDaemon.registerService()
-        app.nsdDaemon.startDiscovering()
+        backend.nsdDaemon.registerService()
+        backend.nsdDaemon.startDiscovering()
         wifiLock.acquire()
 
-        startForeground(NotificationHelper.ID_BG_SERVICE, app.notificationHelper.foregroundNotification.build())
+        startForeground(NotificationHelper.ID_BG_SERVICE, backend.notificationHelper.foregroundNotification.build())
         tryStartingOrStopSelf()
     }
 
@@ -105,7 +105,7 @@ class BackgroundService : LifecycleService() {
             val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
             val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
 
-            app.notificationHelper.utils.cancel(notificationId)
+            backend.notificationHelper.utils.cancel(notificationId)
 
             if (device != null && transfer != null) try {
                 lifecycle.coroutineScope.launch(Dispatchers.IO) {
@@ -128,7 +128,7 @@ class BackgroundService : LifecycleService() {
                     }
 
                     if (isAccepted) {
-                        app.run(task)
+                        backend.run(task)
                     } else {
                         // TODO: 2/25/21 Remove the transfer and its items altogether
                         //kuick.removeAsynchronous(app, task.transfer, task.device)
@@ -137,28 +137,28 @@ class BackgroundService : LifecycleService() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 if (isAccepted) {
-                    app.notificationHelper.showToast(R.string.mesg_somethingWentWrong)
+                    backend.notificationHelper.showToast(R.string.mesg_somethingWentWrong)
                 }
             }
         } else if (ACTION_DEVICE_KEY_CHANGE_APPROVAL == intent.action) {
             val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
             val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
 
-            app.notificationHelper.utils.cancel(notificationId)
+            backend.notificationHelper.utils.cancel(notificationId)
 
             if (client != null && intent.getBooleanExtra(EXTRA_ACCEPTED, false)) {
                 persistenceProvider.approveInvalidationOfCredentials(client)
             }
         } else if (ACTION_CLIPBOARD == intent.action && intent.hasExtra(EXTRA_TEXT_ACCEPTED)) {
             val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
-            val sharedTextModel: SharedTextModel? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
+            val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
             val accepted = intent.getBooleanExtra(EXTRA_TEXT_ACCEPTED, false)
 
-            app.notificationHelper.utils.cancel(notificationId)
+            backend.notificationHelper.utils.cancel(notificationId)
 
-            if (accepted && sharedTextModel != null) {
+            if (accepted && sharedText != null) {
                 val cbManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", sharedTextModel.text))
+                cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", sharedText.text))
                 Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
             }
         } else if (ACTION_END_SESSION == intent.action) {
@@ -170,12 +170,12 @@ class BackgroundService : LifecycleService() {
             val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
             val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type
             if (client != null && transfer != null) try {
-                val task = app.findTaskBy(
+                val task = backend.findTaskBy(
                     FileTransferTask.identifyWith(transfer.id, client.uid, type)
                 ) as FileTransferTask?
 
                 if (task == null) lifecycle.coroutineScope.launch {
-                    app.run(
+                    backend.run(
                         FileTransferStarterTask.createFrom(
                             connectionFactory, persistenceProvider, appDatabase, transfer, client, type
                         )
@@ -189,7 +189,7 @@ class BackgroundService : LifecycleService() {
                 e.printStackTrace()
             }
         } else if (ACTION_STOP_ALL_TASKS == intent.action) {
-            app.interruptAllTasks()
+            backend.interruptAllTasks()
         }
 
         return START_STICKY
@@ -203,19 +203,19 @@ class BackgroundService : LifecycleService() {
         } catch (ignored: Exception) {
         }
 
-        app.nsdDaemon.unregisterService()
-        app.nsdDaemon.stopDiscovering()
-        app.webShareServer.stop()
+        backend.nsdDaemon.unregisterService()
+        backend.nsdDaemon.stopDiscovering()
+        backend.webShareServer.stop()
 
         lifecycle.coroutineScope.launch {
             appDatabase.transferDao().hideTransfersFromWeb()
         }
 
-        if (app.hotspotManager.unloadPreviousConfig()) {
-            Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + app.hotspotManager.disable())
+        if (backend.hotspotManager.unloadPreviousConfig()) {
+            Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + backend.hotspotManager.disable())
         }
 
-        app.interruptAllTasks()
+        backend.interruptAllTasks()
 
         if (wifiLock.isHeld) {
             wifiLock.release()
@@ -226,7 +226,7 @@ class BackgroundService : LifecycleService() {
     }
 
     private fun isProcessRunning(transferId: Long, deviceId: String, type: TransferItem.Type): Boolean {
-        return app.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
+        return backend.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
     }
 
     /**
@@ -234,7 +234,7 @@ class BackgroundService : LifecycleService() {
      * So, it is best to avoid starting them when the app doesn't have the right permissions.
      */
     fun tryStartingOrStopSelf() {
-        val webServerRunning = app.webShareServer.isAlive
+        val webServerRunning = backend.webShareServer.isAlive
         val commServerRunning = transportSession.isListening
         if (webServerRunning && commServerRunning) return
         try {
@@ -247,10 +247,10 @@ class BackgroundService : LifecycleService() {
             }
 
             if (!webServerRunning) {
-                app.webShareServer.setAsyncRunner(
+                backend.webShareServer.setAsyncRunner(
                     BoundRunner(Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX))
                 )
-                app.webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
+                backend.webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
             }
         } catch (e: Exception) {
             e.printStackTrace()

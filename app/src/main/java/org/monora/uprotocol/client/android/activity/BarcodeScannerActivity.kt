@@ -41,7 +41,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
@@ -243,7 +243,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
                     .setPositiveButton(R.string.butn_show) { dialog: DialogInterface?, which: Int ->
-                        val textModel = SharedTextModel(0, code)
+                        val textModel = SharedText(0, code)
                         appDatabase.sharedTextDao().insertAll(textModel)
                         Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
                         startActivity(

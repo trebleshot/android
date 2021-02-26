@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.transfer.TransferItem
 
 @Parcelize
@@ -17,7 +18,7 @@ data class UTransferItem(
     var directory: String?,
     var location: String,
     var type: TransferItem.Type,
-    var state: Int,
+    var state: Int = PersistenceProvider.STATE_PENDING,
     var dateCreated: Long = System.currentTimeMillis(),
     var dateModified: Long = dateCreated,
 ) : TransferItem, Parcelable {

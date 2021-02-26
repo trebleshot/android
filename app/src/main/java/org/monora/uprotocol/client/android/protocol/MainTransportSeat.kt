@@ -30,7 +30,7 @@ class MainTransportSeat @Inject constructor(
     }
 
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
-        TODO("Not yet implemented")
+
     }
 
     override fun handleFileTransferState(client: Client, groupId: Long, isAccepted: Boolean) {

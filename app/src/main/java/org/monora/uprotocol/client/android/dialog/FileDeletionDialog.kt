@@ -35,7 +35,8 @@ class FileDeletionDialog(activity: Activity, items: List<FileListAdapter.FileHol
         setMessage(context.resources.getQuantityString(R.plurals.ques_deleteFile, items.size, items.size))
         setNegativeButton(R.string.butn_cancel, null)
         setPositiveButton(R.string.butn_delete) { dialog: DialogInterface?, p2: Int ->
-            App.from(activity).run(FileDeletionTask(items))
+            // TODO: 2/26/21 Give this backend, please?
+            //App.from(activity).run(FileDeletionTask(items))
         }
     }
 }

@@ -2,22 +2,22 @@ package org.monora.uprotocol.client.android.database
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 
 @Dao
 interface SharedTextDao {
     @Delete
-    suspend fun delete(sharedTextModel: SharedTextModel)
+    suspend fun delete(sharedText: SharedText)
 
     @Query("SELECT * FROM sharedText ORDER BY created DESC")
-    fun getAll(): Flow<List<SharedTextModel>>
+    fun getAll(): Flow<List<SharedText>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(sharedTextModel: SharedTextModel)
+    suspend fun insert(sharedText: SharedText)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg sharedTextModel: SharedTextModel)
+    fun insertAll(vararg sharedText: SharedText)
 
     @Update
-    suspend fun update(sharedTextModel: SharedTextModel)
+    suspend fun update(sharedText: SharedText)
 }

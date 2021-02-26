@@ -3,13 +3,11 @@ package org.monora.uprotocol.client.android.util
 import android.annotation.SuppressLint
 import androidx.core.util.ObjectsCompat
 import com.genonbeta.android.framework.io.DocumentFile
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.model.TransferTarget
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.io.File.separator
@@ -63,8 +61,9 @@ object Transfers {
     }
 
     fun pauseTransfer(activity: Activity, transferId: Long, deviceId: String, type: TransferItem.Type) {
-        App.interruptTasksBy(
+        // TODO: 2/26/21 Give this backend, please
+        /*App.interruptTasksBy(
             activity, FileTransferTask.identifyWith(transferId, deviceId, type), true
-        )
+        )*/
     }
 }

@@ -44,7 +44,8 @@ class FileRenameDialog(val activity: Activity, val list: List<FileHolder>) : Abs
                 val renameTo = editText.text.toString()
                 if (multiple) try {
                     String.format(renameTo, itemList.size)
-                    App.from(activity).run(RenameMultipleFilesTask(itemList, renameTo))
+                    // TODO: 2/26/21 Give this backend, please
+                    //App.from(activity).run(RenameMultipleFilesTask(itemList, renameTo))
                 } catch (e: Exception) {
                     editText.error = activity.getString(R.string.text_errorIncludePrintfPlaceholder)
                     return false

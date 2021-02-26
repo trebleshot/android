@@ -45,8 +45,8 @@ import androidx.fragment.app.FragmentActivity
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
 import org.json.JSONException
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
@@ -397,8 +397,12 @@ class Connections(contextLocal: Context) {
     }
 
     fun toggleHotspot(
-        activity: FragmentActivity, provider: SnackbarPlacementProvider, manager: HotspotManager,
-        suggestActions: Boolean, locationPermRequestId: Int,
+        backend: BackgroundBackend,
+        activity: FragmentActivity,
+        provider: SnackbarPlacementProvider,
+        manager: HotspotManager,
+        suggestActions: Boolean,
+        locationPermRequestId: Int,
     ) {
         if (!HotspotManager.isSupported || Build.VERSION.SDK_INT >= 26
             && !validateLocationPermission(activity, locationPermRequestId)
@@ -423,32 +427,25 @@ class Connections(contextLocal: Context) {
                 .setNegativeButton(R.string.butn_cancel, null)
                 .setPositiveButton(R.string.butn_skip) { dialog: DialogInterface?, which: Int ->
                     // no need to call watcher due to recycle
-                    toggleHotspot(activity, provider, manager, false, locationPermRequestId)
+                    toggleHotspot(backend, activity, provider, manager, false, locationPermRequestId)
                 }
                 .show()
         } else {
             val config: WifiConfiguration? = manager.configuration
-            if (!manager.enabled || config != null && AppUtils.getHotspotName(activity) == config.SSID)
+            if (!manager.enabled || config != null) {
                 provider.createSnackbar(
                     if (manager.enabled) R.string.mesg_stoppingSelfHotspot else R.string.mesg_startingSelfHotspot
                 )?.show()
-            toggleHotspot(activity)
-        }
-    }
+            }
 
-    private fun toggleHotspot(activity: Activity) {
-        try {
-            App.from(activity).toggleHotspot()
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
+            backend.toggleHotspot()
         }
     }
 
     fun turnOnWiFi(activity: Activity, provider: SnackbarPlacementProvider) {
-        if (Build.VERSION.SDK_INT >= 29) activity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS)) else if (wifiManager.setWifiEnabled(
-                true
-            )
-        ) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            activity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+        } else if (wifiManager.setWifiEnabled(true)) {
             provider.createSnackbar(R.string.mesg_turningWiFiOn)?.show()
         } else
             AlertDialog.Builder(activity)
@@ -550,5 +547,4 @@ class Connections(contextLocal: Context) {
             throw IOException("Didn't have the result and the errors were unknown")
         }
     }
-
 }

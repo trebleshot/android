@@ -18,6 +18,9 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.monora.uprotocol.client.android.R
@@ -28,14 +31,18 @@ import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.TransferTarget
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.Files
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import java.util.*
 
 class IndexTransferTask(
+    private val connectionFactory: ConnectionFactory,
+    private val persistenceProvider: MainPersistenceProvider,
     private val appDatabase: AppDatabase,
     private val transferId: Long,
     private val jsonIndex: String,
@@ -47,37 +54,37 @@ class IndexTransferTask(
         // Do not let it add the same transfer id again.
         appDatabase.transferDao().get(transferId)?.run { return }
 
-        val transfer = Transfer(
-            transferId, TransferItem.Type.Incoming, Files.getApplicationDirectory(context).toString()
-        )
-        val target = TransferTarget(0, client.clientUid, transferId, TransferItem.Type.Incoming)
+        val saveLocation = Files.getApplicationDirectory(context).toString()
+        val transfer = Transfer(transferId, Incoming, saveLocation)
+        val target = TransferTarget(0, client.clientUid, transferId, Incoming)
         val jsonArray: JSONArray = try {
             JSONArray(jsonIndex)
         } catch (e: Exception) {
             return
         }
 
-
-
         progress.increaseTotalBy(jsonArray.length())
         appDatabase.transferDao().insertAll(transfer)
         appDatabase.transferTargetDao().insertAll(target)
 
-        var uniqueId = System.currentTimeMillis() // The uniqueIds
-        val itemList: MutableList<TransferItem> = ArrayList()
+        val itemList: MutableList<UTransferItem> = ArrayList()
 
-        // FIXME: 2/26/21 This should be done with the uprotocol methods.
         for (i in 0 until jsonArray.length()) {
             throwIfStopped()
             progress.increaseBy(1)
             try {
                 val index = jsonArray.getJSONObject(i)
+                val uniqueName = "." + UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART
+                val directory = index.optString(Keyword.INDEX_DIRECTORY).takeIf { it.isNotEmpty() }
                 val transferItem = UTransferItem(
                     index.getLong(Keyword.TRANSFER_REQUEST_ID),
                     transferId,
-                    index.getString(Keyword.INDEX_FILE_NAME), "." + uniqueId++ + "." + AppConfig.EXT_FILE_PART,
-                    index.getString(Keyword.INDEX_FILE_MIME), index.getLong(Keyword.INDEX_FILE_SIZE),
-                    TransferItem.Type.INCOMING
+                    index.getString(Keyword.INDEX_FILE_NAME),
+                    index.getString(Keyword.INDEX_FILE_MIME),
+                    index.getLong(Keyword.INDEX_FILE_SIZE),
+                    directory,
+                    uniqueName,
+                    Incoming,
                 )
                 ongoingContent = transferItem.name
                 if (index.has(Keyword.INDEX_DIRECTORY)) transferItem.directory =
@@ -87,20 +94,28 @@ class IndexTransferTask(
                 e.printStackTrace()
             }
         }
-        if (itemList.size > 0) {
-            kuick.insert(db, itemList, transfer, progress)
+        if (itemList.size > 0) CoroutineScope(Dispatchers.Main).launch {
+            appDatabase.transferItemDao().insertAll(itemList)
+
             context.sendBroadcast(
                 Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
                     .putExtra(BackgroundService.EXTRA_DEVICE, client)
             )
-            if (noPrompt) try {
-                app.run(FileTransferStarterTask.createFrom(kuick, transfer, client, TransferItem.Type.INCOMING))
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } else app.notifyFileRequest(client, transfer, itemList)
+            if (noPrompt) {
+                try {
+                    backend.run(
+                        FileTransferStarterTask.createFrom(
+                            connectionFactory, persistenceProvider, appDatabase, transfer, client, Incoming
+                        )
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
+                backend.notifyFileRequest(client, transfer, itemList)
+            }
         }
-        kuick.broadcast()
     }
 
     override fun getName(context: Context): String {

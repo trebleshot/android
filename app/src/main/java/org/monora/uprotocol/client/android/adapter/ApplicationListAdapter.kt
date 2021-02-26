@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
@@ -36,7 +37,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 class ApplicationListAdapter(
     fragment: IListingFragment<AppPackageModel, ViewHolder>,
 ) : ListingAdapter<AppPackageModel, RecyclerViewAdapter.ViewHolder>(fragment) {
-    private val preferences = AppUtils.getDefaultPreferences(context)
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     private val manager = context.packageManager
 

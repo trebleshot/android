@@ -25,54 +25,60 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.collection.ArrayMap
 import androidx.core.app.NotificationCompat
+import androidx.preference.PreferenceManager
+import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.LocalDocumentFile
+import com.genonbeta.android.framework.util.Files.getOpenIntent
+import com.genonbeta.android.framework.util.Stoppable
+import com.genonbeta.android.framework.util.StoppableImpl
+import dagger.hilt.android.qualifiers.ApplicationContext
+import fi.iki.elonen.NanoHTTPD
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.FileExplorerActivity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.database.Kuick
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.WebClient
 import org.monora.uprotocol.client.android.fragment.FileListFragment
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Notifications
 import org.monora.uprotocol.client.android.util.TimeUtils
-import org.monora.uprotocol.client.android.util.Transfers.loadTransferInfo
-import com.genonbeta.android.database.SQLQuery
-import com.genonbeta.android.database.exception.ReconstructionFailedException
-import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.util.Files.getOpenIntent
-import com.genonbeta.android.framework.util.Stoppable
-import com.genonbeta.android.framework.util.StoppableImpl
-import fi.iki.elonen.NanoHTTPD
-import org.monora.uprotocol.client.android.model.*
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import java.io.*
-import java.net.InetAddress
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.regex.Pattern
-import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * created by: veli
  * date: 4/7/19 12:41 AM
  */
-class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) {
+@Singleton
+class WebShareServer @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val appDatabase: AppDatabase,
+    private val persistenceProvider: PersistenceProvider
+) : NanoHTTPD(AppConfig.SERVER_PORT_WEBSHARE) {
     private val assetManager = context.assets
 
-    private val preferences = AppUtils.getDefaultPreferences(context)
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     private val notifications: Notifications = Notifications(context)
 
     private val mediaScanner = MediaScannerConnection(context, null)
 
-    private val thisDevice: Device = AppUtils.getLocalDevice(context)
+    private val client = persistenceProvider.client
 
     var hadClients = false
         private set
@@ -91,24 +97,12 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
             val notificationId = AppUtils.uniqueNumber
             val notification =
                 notifications.buildDynamicNotification(notificationId, Notifications.NOTIFICATION_CHANNEL_LOW)
-            val clientAddress: String = session.headers["http-client-ip"]!!
-            val device = Device(clientAddress)
-            try {
-                kuick.reconstruct(device)
-            } catch (e: ReconstructionFailedException) {
-                device.brand = "TrebleShot"
-                device.model = "Web"
-                device.versionCode = thisDevice.versionCode
-                device.versionName = thisDevice.versionName
-                device.username = clientAddress
-                device.type = Device.Type.Web
-                device.sendKey = 100
-                device.receiveKey = 100
+            val address: String = session.headers["http-client-ip"]!!
+            val webClient = appDatabase.webClientDao().get(address) ?: WebClient(address, address).also {
+                appDatabase.webClientDao().insert(it)
             }
-            device.lastUsageTime = System.currentTimeMillis()
-            kuick.publish(device)
-            kuick.broadcast()
-            if (device.isBlocked) return newFixedLengthResponse(
+
+            if (webClient.blocked) return newFixedLengthResponse(
                 Response.Status.ACCEPTED, "text/html",
                 makePage(
                     "arrow-left.svg", R.string.text_send,
@@ -123,7 +117,7 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                     notification.setSmallIcon(android.R.drawable.stat_sys_download)
                         .setContentInfo(context.getString(R.string.text_webShare))
                         .setContentTitle(context.getString(R.string.text_receiving))
-                        .setContentText(device.username)
+                        .setContentText(webClient.title)
                     notification.show()
                     session.parseBody(files)
                     receiveTimeElapsed = System.currentTimeMillis() - receiveTimeElapsed
@@ -209,29 +203,27 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                         e.printStackTrace()
                     }
                     if (destFile.getLength() == tmpFile.length() || tmpFile.length() == 0L) try {
-                        val webTransfer = Transfer(AppConfig.ID_GROUP_WEB_SHARE)
-                        webTransfer.dateCreated = System.currentTimeMillis()
-                        try {
-                            kuick.reconstruct(webTransfer)
-                        } catch (e: ReconstructionFailedException) {
-                            webTransfer.savePath = savePath.getUri().toString()
-                        }
-                        val transferItem = TransferItem(
+                        val webTransfer = appDatabase.transferDao().get(AppConfig.ID_GROUP_WEB_SHARE) ?: Transfer(
+                            AppConfig.ID_GROUP_WEB_SHARE, Incoming, savePath.getUri().toString(),
+                        ).also { appDatabase.transferDao().insertAll(it) }
+
+                        // TODO: 2/26/21 Save in to the database
+                        /*val transferItem = TransferItem(
                             AppUtils.uniqueNumber.toLong(), webTransfer.id,
                             destFile.getName(), destFile.getName(), destFile.getType(), destFile.getLength(),
                             TransferItem.Type.INCOMING
                         )
                         transferItem.flag = TransferItem.Flag.DONE
                         val address = DeviceAddress(
-                            device.uid, InetAddress.getByName(clientAddress),
+                            webClient.uid, InetAddress.getByName(address),
                             System.currentTimeMillis()
                         )
-                        val member = TransferMember(webTransfer, device, TransferItem.Type.INCOMING)
+                        val member = TransferMember(webTransfer, webClient, TransferItem.Type.INCOMING)
                         kuick.publish(webTransfer)
                         kuick.publish(member)
                         kuick.publish(address)
                         kuick.publish(transferItem)
-                        kuick.broadcast()
+                        kuick.broadcast()*/
                         notification
                             .setSmallIcon(android.R.drawable.stat_sys_download_done)
                             .setContentInfo(context.getString(R.string.text_webShare))
@@ -242,8 +234,10 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                             .setContentText(
                                 context.getString(
                                     R.string.text_receivedTransfer,
-                                    com.genonbeta.android.framework.util.Files.formatLength(destFile.getLength(),
-                                        false),
+                                    com.genonbeta.android.framework.util.Files.formatLength(
+                                        destFile.getLength(),
+                                        false
+                                    ),
                                     TimeUtils.getFriendlyElapsedTime(context, receiveTimeElapsed)
                                 )
                             )
@@ -362,8 +356,10 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
 
     private fun serveFileDownload(args: Array<String>, session: IHTTPSession): Response {
         try {
-            if ("download" == args[0]) {
+            // TODO: 2/26/21 Reimplement download
+            /*if ("download" == args[0]) {
                 if (args.size < 3) throw Exception("Expected 3 args, " + args.size + " given")
+
                 val transfer = Transfer(args[1].toLong())
                 val item = TransferItem(
                     transfer.id, args[2].toLong(),
@@ -403,7 +399,7 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                     )
                 if (transferList.isEmpty()) throw Exception("No files to send")
                 return ZipBundleResponse(Response.Status.ACCEPTED, "application/force-download", transferList)
-            }
+            }*/
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -421,6 +417,8 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
 
     private fun serveMainPage(): String {
         val contentBuilder = StringBuilder()
+        // TODO: 2/26/21 Serve main page
+        /*
         val groupList: List<TransferIndex> = kuick.castQuery<Device, TransferIndex>(
             SQLQuery.Select(Kuick.TABLE_TRANSFER)
                 .setOrderBy(Kuick.FIELD_TRANSFER_DATECREATED + " DESC"), TransferIndex::class.java
@@ -446,13 +444,14 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                 R.string.text_listEmptyTransfer,
                 R.string.text_webShareNoContentNotice
             )
-        )
+        )*/
         return makePage("icon.png", R.string.text_transfers, contentBuilder.toString())
     }
 
     private fun serveTransferPage(args: Array<String>): String {
         try {
             if (args.size < 2) throw Exception("Expected 2 args, " + args.size + " given")
+            /*
             val transfer = Transfer(args[1].toLong())
             kuick.reconstruct(transfer)
             if (!transfer.isServedOnWeb) throw Exception("The group is not checked as served on the Web")
@@ -491,6 +490,9 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                     )
                 )
             }
+
+             */
+            val contentBuilder = StringBuilder()
             return makePage("arrow-left.svg", R.string.text_files, contentBuilder.toString())
         } catch (e: Exception) {
             e.printStackTrace()
@@ -565,7 +567,7 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
         values["main_content"] = content
         values["help_icon"] = "/image/help-circle.svg"
         values["help_alt"] = context.getString(R.string.butn_help)
-        values["username"] = AppUtils.getLocalDeviceName(context)
+        values["username"] = persistenceProvider.clientNickname
         values["footer_text"] = context.getString(R.string.text_aboutSummary)
         return applyPattern(getFieldPattern(), readPage("home.html"), values)
     }
@@ -742,9 +744,11 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
             val zipOutputStream = ZipOutputStream(chunkedOutputStream)
             zipOutputStream.setLevel(0)
             //zipOutputStream.setMethod(ZipEntry.STORED);
+            // TODO: 2/26/21 Fix zipped download 3
+            /*
             for (item in mFiles) {
                 try {
-                    val streamInfo = StreamInfo.from(context, Uri.parse(item.file))
+                    val streamInfo = StreamInfo.from(context, Uri.parse(item.loc))
                     val inputStream: InputStream = streamInfo.openInputStream(context)!!
                     val thisEntry =
                         ZipEntry((if (item.directory != null) item.directory + File.pathSeparator else "") + item.name)
@@ -763,6 +767,8 @@ class WebShareServer(private val context: Context, port: Int) : NanoHTTPD(port) 
                     e.printStackTrace()
                 }
             }
+
+             */
             zipOutputStream.finish()
             zipOutputStream.flush()
             chunkedOutputStream.finish()

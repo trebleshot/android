@@ -57,7 +57,8 @@ open class SharingPerformerMenuCallback(
                             val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(
                                 sharingMethod, ArrayList(shareableList)
                             )
-                            App.run(activity, task)
+                            // TODO: 2/26/21 Give this backend, please
+                            //App.run(activity, task)
                         }
                     }).show()
                 }

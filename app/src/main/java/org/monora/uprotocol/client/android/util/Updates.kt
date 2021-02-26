@@ -18,8 +18,9 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
-import org.monora.uprotocol.client.android.config.AppConfig
+import androidx.preference.PreferenceManager
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
+import org.monora.uprotocol.client.android.config.AppConfig
 
 /**
  * created by: Veli
@@ -38,7 +39,7 @@ object Updates {
                 description: String?,
                 releaseDate: String?,
             ) {
-                AppUtils.getDefaultPreferences(context).edit()
+                PreferenceManager.getDefaultSharedPreferences(context).edit()
                     .putString("availableVersion", versionName)
                     .putLong("checkedForUpdatesTime", System.currentTimeMillis())
                     .apply()
@@ -49,11 +50,11 @@ object Updates {
     }
 
     private fun getAvailableVersion(context: Context): String? {
-        return AppUtils.getDefaultPreferences(context).getString("availableVersion", null)
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("availableVersion", null)
     }
 
     fun getCheckTime(context: Context): Long {
-        return AppUtils.getDefaultPreferences(context).getLong("checkedForUpdatesTime", 0)
+        return PreferenceManager.getDefaultSharedPreferences(context).getLong("checkedForUpdatesTime", 0)
     }
 
     fun getDefaultUpdater(context: Context): GitHubUpdater {

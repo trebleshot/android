@@ -22,14 +22,10 @@ import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Base64
 import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.AnyRes
@@ -37,22 +33,17 @@ import androidx.annotation.AttrRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
+import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.util.Files.getSecureUri
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
 import org.monora.uprotocol.client.android.drawable.TextDrawable
-import com.genonbeta.android.database.exception.ReconstructionFailedException
-import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.Files.getSecureUri
-import org.json.JSONException
-import org.json.JSONObject
 import org.monora.uprotocol.client.android.model.ContentModel
 import java.io.BufferedReader
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
@@ -61,8 +52,6 @@ object AppUtils {
     val TAG = AppUtils::class.java.simpleName
 
     private var mUniqueNumber = 0
-
-    private var mDefaultPreferences: SharedPreferences? = null
 
     fun checkRunningConditions(context: Context): Boolean {
         for (request in getRequiredPermissions(context))
@@ -76,8 +65,7 @@ object AppUtils {
         val logFile = saveDirectory.createFile("text/plain", "trebleshot_log") ?: return null
         val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
 
-        if (logFile.exists())
-            logFile.delete()
+        if (logFile.exists()) logFile.delete()
 
         try {
             val processList = activityManager.runningAppProcesses
@@ -108,7 +96,7 @@ object AppUtils {
 
     fun generateNetworkPin(context: Context): Int {
         val networkPin = generateKey()
-        getDefaultPreferences(context).edit()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
             .putInt(Keyword.NETWORK_PIN, networkPin)
             .apply()
         return networkPin
@@ -136,15 +124,9 @@ object AppUtils {
         return builder
     }
 
-    fun getDefaultPreferences(context: Context): SharedPreferences {
-        if (mDefaultPreferences == null)
-            mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        return mDefaultPreferences as SharedPreferences
-    }
-
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
         val connection = fragment.engineConnection
-        val preferences = getDefaultPreferences(fragment.requireContext())
+        val preferences = PreferenceManager.getDefaultSharedPreferences(fragment.requireContext())
         val selectedItemList = connection.getSelectionList() ?: return
 
         if (selectedItemList.isNotEmpty() && !preferences.getBoolean("helpFolderSelection", false))
@@ -190,11 +172,6 @@ object AppUtils {
         else it
     }.replace("_", " ")
 
-    fun getHotspotName(context: Context): String {
-        return AppConfig.PREFIX_ACCESS_POINT + getLocalDeviceName(context)
-            .replace(" ".toRegex(), "_")
-    }
-
     @AnyRes
     fun getReference(context: Context, @AttrRes refId: Int): Int {
         val typedValue = TypedValue()
@@ -232,7 +209,7 @@ object AppUtils {
 
 
     fun isLatestChangeLogSeen(context: Context): Boolean {
-        val preferences = getDefaultPreferences(context)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         val lastSeenChangelog = preferences.getInt("changelog_seen_version", -1)
         val dialogAllowed = preferences.getBoolean("show_changelog_dialog", true)
         return !preferences.contains("previously_migrated_version")
@@ -241,7 +218,7 @@ object AppUtils {
     }
 
     fun publishLatestChangelogSeen(context: Context) {
-        getDefaultPreferences(context).edit()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
             .putInt("changelog_seen_version", BuildConfig.VERSION_CODE)
             .apply()
     }

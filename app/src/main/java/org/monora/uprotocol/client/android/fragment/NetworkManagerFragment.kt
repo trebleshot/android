@@ -38,29 +38,36 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
+import com.genonbeta.android.framework.app.Fragment
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONException
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
-import com.genonbeta.android.framework.app.Fragment
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
-import com.journeyapps.barcodescanner.BarcodeEncoder
-import org.json.JSONException
 import java.net.InetAddress
 import java.net.UnknownHostException
+import javax.inject.Inject
 
 /**
  * created by: veli
  * date: 11/04/18 20:53
  */
-class NetworkManagerFragment : Fragment(){
+@AndroidEntryPoint
+class NetworkManagerFragment : Fragment() {
+    @Inject
+    lateinit var backgroundBackend: BackgroundBackend
+
     private val intentFilter = IntentFilter()
 
     private val statusReceiver: StatusReceiver = StatusReceiver()
@@ -107,7 +114,7 @@ class NetworkManagerFragment : Fragment(){
         super.onCreate(savedInstanceState)
         connections = Connections(requireContext())
         manager = HotspotManager.newInstance(requireContext())
-        intentFilter.addAction(App.ACTION_OREO_HOTSPOT_STARTED)
+        intentFilter.addAction(BackgroundBackend.ACTION_OREO_HOTSPOT_STARTED)
         intentFilter.addAction(BackgroundService.ACTION_PIN_USED)
         intentFilter.addAction(WIFI_AP_STATE_CHANGED)
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -199,7 +206,7 @@ class NetworkManagerFragment : Fragment(){
     fun getWifiConfiguration(): WifiConfiguration? {
         if (Build.VERSION.SDK_INT < 26) return manager.configuration
         try {
-            return App.from(requireActivity()).getHotspotConfig()
+            return backgroundBackend.getHotspotConfig()
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
@@ -212,8 +219,7 @@ class NetworkManagerFragment : Fragment(){
 
     private fun toggleHotspot() {
         connections.toggleHotspot(
-            requireActivity(), this, manager, true,
-            REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT
+            backgroundBackend, requireActivity(), this, manager, true, REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT
         )
     }
 
@@ -362,7 +368,7 @@ class NetworkManagerFragment : Fragment(){
                 || WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
                 || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
                 || BackgroundService.ACTION_PIN_USED == intent.action
-                || App.ACTION_OREO_HOTSPOT_STARTED == intent.action
+                || BackgroundBackend.ACTION_OREO_HOTSPOT_STARTED == intent.action
             ) updateState()
         }
     }

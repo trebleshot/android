@@ -21,7 +21,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.ListSectionDateBinding
 import org.monora.uprotocol.client.android.databinding.ListSharedTextBinding
 import org.monora.uprotocol.client.android.itemcallback.ContentModelItemCallback
@@ -47,7 +47,7 @@ class SharedTextListAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModel
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is SharedTextModel -> VIEW_TYPE_SHARED_TEXT
+            is SharedText -> VIEW_TYPE_SHARED_TEXT
             is DateSectionContentModel -> VIEW_TYPE_SECTION
             else -> throw UnsupportedOperationException()
         }
@@ -55,7 +55,7 @@ class SharedTextListAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModel
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (val item = getItem(position)) {
-            is SharedTextModel -> if (holder is SharedTextViewHolder) holder.bind(item)
+            is SharedText -> if (holder is SharedTextViewHolder) holder.bind(item)
             is DateSectionContentModel -> if (holder is DateSectionViewHolder) holder.bind(item)
         }
     }

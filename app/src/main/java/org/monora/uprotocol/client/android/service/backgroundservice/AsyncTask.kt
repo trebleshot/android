@@ -20,10 +20,15 @@ package org.monora.uprotocol.client.android.service.backgroundservice
 import android.app.PendingIntent
 import android.content.*
 import android.media.MediaScannerConnection
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
 import com.genonbeta.android.database.Progress
 import com.genonbeta.android.framework.util.Stoppable
 import com.genonbeta.android.framework.util.StoppableImpl
 import org.monora.uprotocol.client.android.App
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.model.Identifiable
 import org.monora.uprotocol.client.android.model.Identifier.Companion.from
 import org.monora.uprotocol.client.android.model.Identity
@@ -36,14 +41,14 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     var activityIntent: PendingIntent? = null
         private set
 
-    protected lateinit var app: App
+    protected lateinit var backend: BackgroundBackend
         private set
 
     override val closers: MutableList<Stoppable.Closer>
         get() = stoppable.closers
 
     val context: Context
-        get() = app.applicationContext
+        get() = backend.context
 
     private var customHashCode = 0
 
@@ -57,13 +62,13 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         get() = withORs(from(Id.HashCode, hashCode()))
 
     val mediaScanner: MediaScannerConnection
-        get() = app.mediaScanner
+        get() = backend.mediaScanner
 
     val name: String
         get() = getName(context)
 
     val notificationHelper: NotificationHelper
-        get() = app.notificationHelper
+        get() = backend.notificationHelper
 
     var ongoingContent: String? = null
 
@@ -132,7 +137,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     }
 
     protected open fun publishStatus(force: Boolean): Boolean {
-        return started && !finished && app.publishTaskNotifications(force)
+        return started && !finished && backend.publishTaskNotifications(force)
     }
 
     override fun removeCloser(closer: Stoppable.Closer): Boolean {
@@ -160,11 +165,11 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
         stoppable.removeClosers()
     }
 
-    fun run(application: App) {
+    fun run(backgroundBackend: BackgroundBackend) {
         check(!(started || finished || interrupted())) { javaClass.name + " isStarted" }
 
         startTime = System.currentTimeMillis()
-        app = application
+        backend = backgroundBackend
 
         started = true
         publishStatus(true)

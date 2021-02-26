@@ -39,10 +39,9 @@ import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
-import org.monora.uprotocol.client.android.taskimport.TextShareTask
 import javax.inject.Inject
 
 /**
@@ -56,7 +55,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
 
     private lateinit var editText: EditText
 
-    private var textModel: SharedTextModel? = null
+    private var text: SharedText? = null
 
     private var backPressTime: Long = 0
 
@@ -67,8 +66,8 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             editText = findViewById(R.id.layout_text_editor_activity_text_text_box)
 
             if (intent.hasExtra(EXTRA_TEXT_MODEL)) {
-                textModel = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
-                textModel?.let {
+                text = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
+                text?.let {
                     editText.text.clear()
                     editText.text.append(it.text)
                 }
@@ -89,7 +88,8 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
                 val text: String? = if (editText.text != null) editText.text.toString() else null
 
                 if (client != null && address != null && text != null) {
-                    runUiTask(TextShareTask(client, address, text))
+                    // FIXME: 2/26/21 Improve text sharing task with coroutines
+                    //runUiTask(TextShareTask(client, address, text))
                 }
             }
         }
@@ -102,7 +102,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     }
 
     override fun onBackPressed() {
-        val hasObject = textModel != null
+        val hasObject = text != null
         val deletionNeeded = checkDeletionNeeded()
         val saveNeeded = checkSaveNeeded()
         if (!saveNeeded && !deletionNeeded || System.nanoTime() - backPressTime < 2e9) {
@@ -128,7 +128,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         menu.findItem(R.id.menu_action_save)
             .setVisible(!checkDeletionNeeded()).isEnabled = checkSaveNeeded()
-        menu.findItem(R.id.menu_action_remove).isVisible = textModel != null
+        menu.findItem(R.id.menu_action_remove).isVisible = text != null
         menu.findItem(R.id.menu_action_show_as_qr_code).isEnabled = (editText.length() in 1..1200)
         return super.onPrepareOptionsMenu(menu)
     }
@@ -190,12 +190,12 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
 
     protected fun checkDeletionNeeded(): Boolean {
         val editorText: String = editText.text.toString()
-        return editorText.isEmpty() && !textModel?.text.isNullOrEmpty()
+        return editorText.isEmpty() && !text?.text.isNullOrEmpty()
     }
 
     protected fun checkSaveNeeded(): Boolean {
         val editorText: String = editText.text.toString()
-        return editorText.isNotEmpty() && editorText != textModel?.text
+        return editorText.isNotEmpty() && editorText != text?.text
     }
 
     override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar {
@@ -203,10 +203,10 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     }
 
     private fun removeText() {
-        textModel?.let {
+        text?.let {
             lifecycle.coroutineScope.launch {
                 appDatabase.sharedTextDao().delete(it)
-                textModel = null
+                text = null
             }
         }
     }
@@ -215,12 +215,12 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         val text = editText.text.toString()
         val date = System.currentTimeMillis()
         var update = false
-        val item = textModel?.also {
+        val item = this.text?.also {
             it.modified = date
             it.text = text
             update = true
-        } ?: SharedTextModel(0, text, date).also {
-            textModel = it
+        } ?: SharedText(0, text, date).also {
+            this.text = it
         }
 
         lifecycle.coroutineScope.launch {

@@ -6,14 +6,20 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.core.ClientLoader
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.spec.v1.Config
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-class NsdDaemon(
-    val context: Context,
-    val connectionFactory: MainConnectionFactory,
-    val persistenceProvider: MainPersistenceProvider,
+@Singleton
+class NsdDaemon @Inject constructor(
+    @ApplicationContext val context: Context,
+    val connectionFactory: ConnectionFactory,
+    val persistenceProvider: PersistenceProvider,
 ) {
     private val nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 

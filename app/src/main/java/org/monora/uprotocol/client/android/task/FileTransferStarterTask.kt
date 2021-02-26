@@ -37,7 +37,7 @@ class FileTransferStarterTask(
             ).use { bridge ->
                 bridge.requestFileTransferStart(transfer.id, type)
                 if (bridge.receiveResult()) {
-                    app.attach(FileTransferTask(bridge, transfer, client, target, type))
+                    backend.attach(FileTransferTask(bridge, transfer, client, target, type))
                 }
             }
         } catch (e: Exception) {

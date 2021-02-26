@@ -10,9 +10,10 @@ import org.monora.uprotocol.client.android.database.model.*
         UClient::class,
         UClientAddress::class,
         UTransferItem::class,
-        SharedTextModel:: class,
+        SharedText::class,
         Transfer::class,
-        TransferTarget::class
+        TransferTarget::class,
+        WebClient::class
     ],
     version = 1
 )
@@ -29,4 +30,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun transferItemDao(): TransferItemDao
 
     abstract fun transferTargetDao(): TransferTargetDao
+
+    abstract fun webClientDao(): WebClientDao
 }

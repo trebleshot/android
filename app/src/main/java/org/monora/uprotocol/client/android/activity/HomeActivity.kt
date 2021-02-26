@@ -38,7 +38,7 @@ import org.monora.uprotocol.client.android.util.Updates
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
 import java.io.*
 import javax.inject.Inject
@@ -206,7 +206,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG).use { inputStream ->
                 val log = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
                 val report = FileReader(log).use { it.readText()  }
-                val streamObject = SharedTextModel(0, report, log.lastModified())
+                val streamObject = SharedText(0, report, log.lastModified())
 
                 log.delete()
 

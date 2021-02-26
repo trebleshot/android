@@ -31,17 +31,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.cardview.widget.CardView
+import androidx.preference.PreferenceManager
 import androidx.transition.TransitionManager
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.ActiveConnectionListAdapter
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.dialog.WebShareDetailsDialog
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment.Companion.WIFI_AP_STATE_CHANGED
 import org.monora.uprotocol.client.android.model.NetworkInterfaceModel
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Networks
 import org.monora.uprotocol.client.android.util.TextUtils
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 
 /**
  * created by: veli
@@ -50,6 +50,10 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 class ActiveConnectionListFragment :
     ListingFragment<NetworkInterfaceModel, ViewHolder, ActiveConnectionListAdapter>() {
     private val filter = IntentFilter()
+
+    private val preferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+    }
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -79,12 +83,12 @@ class ActiveConnectionListFragment :
         val webShareInfo = view.findViewById<CardView>(R.id.card_web_share_info)
         val webShareInfoHideButton = view.findViewById<Button>(R.id.card_web_share_info_hide_button)
         val helpWebShareInfo = "help_webShareInfo"
-        if (AppUtils.getDefaultPreferences(requireContext()).getBoolean(helpWebShareInfo, true)) {
+        if (preferences.getBoolean(helpWebShareInfo, true)) {
             webShareInfo.visibility = View.VISIBLE
             webShareInfoHideButton.setOnClickListener { v: View? ->
                 webShareInfo.visibility = View.GONE
                 TransitionManager.beginDelayedTransition((webShareInfo.parent as ViewGroup))
-                AppUtils.getDefaultPreferences(requireContext()).edit()
+                preferences.edit()
                     .putBoolean(helpWebShareInfo, false)
                     .apply()
             }
@@ -101,7 +105,7 @@ class ActiveConnectionListFragment :
         requireContext().unregisterReceiver(receiver)
     }
 
-    override fun performDefaultLayoutClick(holder: ViewHolder, target: NetworkInterfaceModel, ): Boolean {
+    override fun performDefaultLayoutClick(holder: ViewHolder, target: NetworkInterfaceModel): Boolean {
         WebShareDetailsDialog(
             requireActivity(), TextUtils.makeWebShareLink(
                 requireContext(),

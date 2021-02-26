@@ -22,6 +22,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.Files.fetchFile
@@ -45,16 +46,11 @@ object Files {
 
     fun getApplicationDirectory(context: Context): DocumentFile {
         val defaultPath = getDefaultApplicationDirectoryPath(context)
-        val defaultPreferences = AppUtils.getDefaultPreferences(context)
+        val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         if (defaultPreferences.contains("storage_path")) {
             try {
                 val savePath = fromUri(
-                    context, Uri.parse(
-                        defaultPreferences.getString(
-                            "storage_path",
-                            null
-                        )
-                    )
+                    context, Uri.parse(defaultPreferences.getString("storage_path", null))
                 )
                 if (savePath.isDirectory() && savePath.canWrite()) return savePath
             } catch (e: Exception) {

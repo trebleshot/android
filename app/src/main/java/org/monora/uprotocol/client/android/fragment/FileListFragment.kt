@@ -48,9 +48,11 @@ import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvi
 import com.genonbeta.android.framework.util.actionperformer.SelectionModel
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.model.ContentModel
 import java.io.FileNotFoundException
 
+@AndroidEntryPoint
 abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileListAdapter>() {
     private var lastKnownPath: DocumentFile? = null
 

@@ -1,13 +1,12 @@
 package org.monora.uprotocol.client.android.viewmodel
 
 import android.text.format.DateUtils
-import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.ViewModel
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 
-class SharedTextViewModel(val sharedTextModel: SharedTextModel) : ViewModel()
+class SharedTextViewModel(val sharedText: SharedText) : ViewModel()
 
 @BindingAdapter("clock")
 fun toClock(textView: TextView, time: Long) {

@@ -34,8 +34,7 @@ import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.task.FileTransferTask
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.Files
-import org.monora.uprotocol.client.android.database.model.SharedTextModel
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -190,7 +189,7 @@ class NotificationHelper(val utils: Notifications) {
         notification.show()
     }
 
-    fun notifyClipboardRequest(client: UClient, item: SharedTextModel) {
+    fun notifyClipboardRequest(client: UClient, item: SharedText) {
         val notification = utils.buildDynamicNotification(item.id, Notifications.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BackgroundService.ACTION_CLIPBOARD)

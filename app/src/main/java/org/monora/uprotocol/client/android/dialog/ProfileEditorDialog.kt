@@ -22,6 +22,8 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.util.AppUtils
@@ -41,7 +43,7 @@ class ProfileEditorDialog(activity: Activity) : AlertDialog.Builder(activity) {
     }
 
     fun saveNickname(activity: Activity, editText: EditText) {
-        AppUtils.getDefaultPreferences(context).edit()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
             .putString("device_name", editText.text.toString())
             .apply()
         activity.notifyUserProfileChanged()
@@ -52,6 +54,8 @@ class ProfileEditorDialog(activity: Activity) : AlertDialog.Builder(activity) {
         val image = view.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
         val editImage = view.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
         val editText: EditText = view.findViewById(R.id.editText)
+        // TODO: 2/26/21 Fix profile editor
+        /*
         val deviceName = AppUtils.getLocalDeviceName(context)
         editText.text.clear()
         editText.text.append(deviceName)
@@ -71,5 +75,7 @@ class ProfileEditorDialog(activity: Activity) : AlertDialog.Builder(activity) {
             saveNickname(activity, editText)
         }
         setNeutralButton(R.string.butn_close, null)
+
+         */
     }
 }

@@ -38,61 +38,6 @@ class Kuick(context: Context) : KuickDb(context, DATABASE_NAME, null, DATABASE_V
 
     }
 
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, item: V, parent: T?) {
-        removeAsynchronous(App.from(activity), item, parent)
-    }
-
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, item: V, parent: T?) {
-        app.run(SingleRemovalTask(app.applicationContext, writableDatabase, item, parent))
-    }
-
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(activity: Activity, objects: List<V>, parent: T?) {
-        removeAsynchronous(App.from(activity), objects, parent)
-    }
-
-    fun <T, V : DatabaseObject<T>> removeAsynchronous(app: App, objects: List<V>, parent: T?) {
-        app.run(MultipleRemovalTask(app.applicationContext, writableDatabase, objects, parent))
-    }
-
-    private abstract class BgTaskImpl(context: Context, titleRes: Int, val db: SQLiteDatabase) : AsyncTask() {
-        private val title = context.getString(titleRes)
-
-        override fun onProgressChange(progress: Progress) {
-            super.onProgressChange(progress)
-            ongoingContent = context.getString(R.string.text_transferStatusFiles, progress.progress, progress.total)
-        }
-
-        override fun getName(context: Context): String {
-            return title
-        }
-    }
-
-    private class SingleRemovalTask<T, V : DatabaseObject<T>>(
-        context: Context,
-        db: SQLiteDatabase,
-        private val targetObject: V,
-        private val parent: T?,
-    ) : BgTaskImpl(context, R.string.mesg_removing, db) {
-        override fun onRun() {
-            // TODO: 2/25/21 Remove Kuick altogether
-            //kuick.remove(db, targetObject, parent, progress)
-            //kuick.broadcast()
-        }
-    }
-
-    private class MultipleRemovalTask<T, V : DatabaseObject<T>>(
-        context: Context,
-        db: SQLiteDatabase,
-        private val targetObjectList: List<V>,
-        private val parent: T?,
-    ) : BgTaskImpl(context, R.string.mesg_removing, db) {
-        override fun onRun() {
-            // TODO: 2/25/21 Remove Kuick altogether
-            //kuick.remove(db, targetObjectList, parent, progress)
-            //kuick.broadcast()
-        }
-    }
-
     companion object {
         const val DATABASE_VERSION = 13
         val TAG = Kuick::class.java.simpleName
