@@ -22,7 +22,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RectShape
 import android.graphics.drawable.shapes.RoundRectShape
-import org.monora.uprotocol.client.android.util.TextUtils
+import org.monora.uprotocol.client.android.util.TextManipulators
 
 class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder.mShape) {
     private val textPaint: Paint
@@ -294,7 +294,7 @@ class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder
         var processedText: String = if (builder.mToUpperCase) builder.mText.toUpperCase() else builder.mText
         if (builder.mTextMaxLength >= 0) {
             processedText = when {
-                builder.mFirstLetters -> TextUtils.getLetters(processedText, builder.mTextMaxLength)
+                builder.mFirstLetters -> TextManipulators.getLetters(processedText, builder.mTextMaxLength)
                 processedText.length > builder.mTextMaxLength -> processedText.substring(0, builder.mTextMaxLength)
                 else -> processedText
             }

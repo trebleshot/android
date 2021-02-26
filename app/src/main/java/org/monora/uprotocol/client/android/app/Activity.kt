@@ -52,6 +52,7 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachableA
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.Permissions
 import java.io.FileNotFoundException
 import java.util.*
@@ -372,7 +373,7 @@ abstract class Activity : AppCompatActivity() {
                 .circleCrop()
                 .into(imageView)
         } catch (e: FileNotFoundException) {
-            imageView.setImageDrawable(AppUtils.getDefaultIconBuilder(this).buildRound(deviceName))
+            imageView.setImageDrawable(Graphics.getDefaultIconBuilder(this).buildRound(deviceName))
         } catch (e: Exception) {
             e.printStackTrace()
         }

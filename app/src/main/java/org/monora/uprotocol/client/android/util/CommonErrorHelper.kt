@@ -82,7 +82,7 @@ object CommonErrorHelper {
                             Tone.Positive,
                             object : TaskMessage.Callback {
                                 override fun call(context: Context) {
-                                    AppUtils.startApplicationDetails(context)
+                                    Activities.startApplicationDetails(context)
                                 }
                             }
                         )
@@ -94,7 +94,7 @@ object CommonErrorHelper {
                             Tone.Positive,
                             object : TaskMessage.Callback {
                                 override fun call(context: Context) {
-                                    AppUtils.startFeedbackActivity(context)
+                                    Activities.startFeedbackActivity(context)
                                 }
                             }
                         )

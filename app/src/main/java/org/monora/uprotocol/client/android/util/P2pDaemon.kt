@@ -36,13 +36,14 @@ import androidx.core.content.ContextCompat
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.spec.v1.Config
 import java.util.*
 
 @RequiresApi(16)
 class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: Connections) {
     private val peerListener: PeerListListener = PeerListener()
 
-    private val serviceRequest = WifiP2pDnsSdServiceRequest.newInstance(AppConfig.NSD_SERVICE_TYPE)
+    private val serviceRequest = WifiP2pDnsSdServiceRequest.newInstance(Config.SERVICE_UPROTOCOL_DNS_SD)
 
     private val dnsSdTxtRecordListener = DnsSdTxtRecordListener()
 
@@ -67,7 +68,7 @@ class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: C
             recordMap[Keyword.DEVICE_MODEL] = client.clientProduct
             recordMap[Keyword.DEVICE_VERSION_CODE] = client.clientVersionCode.toString()
             recordMap[Keyword.DEVICE_VERSION_NAME] = client.clientVersionName
-            return WifiP2pDnsSdServiceInfo.newInstance(client.clientNickname, AppConfig.NSD_SERVICE_TYPE, recordMap)
+            return WifiP2pDnsSdServiceInfo.newInstance(client.clientNickname, Config.SERVICE_UPROTOCOL_DNS_SD, recordMap)
         }
 
     val wifiP2pManager: WifiP2pManager

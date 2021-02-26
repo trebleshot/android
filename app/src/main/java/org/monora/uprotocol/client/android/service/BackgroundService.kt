@@ -218,8 +218,6 @@ class BackgroundService : LifecycleService() {
             wifiLock.release()
             Log.d(TAG, "onDestroy: Releasing Wi-Fi lock")
         }
-
-        AppUtils.generateNetworkPin(this)
     }
 
     private fun isProcessRunning(transferId: Long, deviceId: String, type: TransferItem.Type): Boolean {

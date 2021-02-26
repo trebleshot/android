@@ -21,37 +21,15 @@ import android.content.Context
 import androidx.collection.ArrayMap
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.core.transfer.TransferItem
 import java.net.NetworkInterface
-import java.text.NumberFormat
 
 /**
  * created by: Veli
  * date: 12.11.2017 11:14
  */
-object TextUtils {
-    fun getAdapterName(adapterName: String): Int {
-        val associatedNames: MutableMap<String, Int> = ArrayMap()
-        val unknownInterface = R.string.text_interfaceUnknown
-        associatedNames["wlan"] = R.string.text_interfaceWireless
-        associatedNames["p2p"] = R.string.text_interfaceWifiDirect
-        associatedNames["bt-pan"] = R.string.text_interfaceBluetooth
-        associatedNames["eth"] = R.string.text_interfaceEthernet
-        associatedNames["tun"] = R.string.text_interfaceVPN
-        associatedNames["unk"] = unknownInterface
-        for (displayName in associatedNames.keys) if (adapterName.startsWith(displayName)) {
-            return associatedNames[displayName] ?: unknownInterface
-        }
-        return -1
-    }
-
-    fun getAdapterName(context: Context, networkInterface: NetworkInterface): String {
-        return getAdapterName(context, networkInterface.displayName)
-    }
-
-    fun getAdapterName(context: Context, adapterName: String): String {
-        val adapterNameResource = getAdapterName(adapterName)
-        return if (adapterNameResource == -1) adapterName else context.getString(adapterNameResource)
+object TextManipulators {
+    fun makeWebShareLink(context: Context, address: String?): String {
+        return context.getString(R.string.mode_webShareAddress, address, AppConfig.SERVER_PORT_WEBSHARE)
     }
 
     fun getLetters(text: String = "?", length: Int): String {
@@ -65,7 +43,33 @@ object TextUtils {
         return stringBuilder.toString().toUpperCase()
     }
 
-    fun makeWebShareLink(context: Context, address: String?): String {
-        return context.getString(R.string.mode_webShareAddress, address, AppConfig.SERVER_PORT_WEBSHARE)
+    fun String.toFriendlySsid() = this.replace("\"", "").let {
+        if (it.startsWith(AppConfig.PREFIX_ACCESS_POINT))
+            it.substring((AppConfig.PREFIX_ACCESS_POINT.length))
+        else it
+    }.replace("_", " ")
+
+    fun toNetworkTitle(adapterName: String): Int {
+        val unknownInterface = R.string.text_interfaceUnknown
+        val associatedNames: MutableMap<String, Int> = ArrayMap()
+        associatedNames["wlan"] = R.string.text_interfaceWireless
+        associatedNames["p2p"] = R.string.text_interfaceWifiDirect
+        associatedNames["bt-pan"] = R.string.text_interfaceBluetooth
+        associatedNames["eth"] = R.string.text_interfaceEthernet
+        associatedNames["tun"] = R.string.text_interfaceVPN
+        associatedNames["unk"] = unknownInterface
+        for (displayName in associatedNames.keys) if (adapterName.startsWith(displayName)) {
+            return associatedNames[displayName] ?: unknownInterface
+        }
+        return -1
+    }
+
+    fun String.toNetworkTitle(context: Context): String {
+        val adapterNameResource = toNetworkTitle(this)
+        return if (adapterNameResource == -1) this else context.getString(adapterNameResource)
+    }
+
+    fun NetworkInterface.toNetworkTitle(context: Context): String {
+        return this.displayName.toNetworkTitle(context)
     }
 }

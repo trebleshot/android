@@ -57,6 +57,8 @@ import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
+import org.monora.uprotocol.client.android.util.TextManipulators.toFriendlySsid
+import org.monora.uprotocol.core.persistence.PersistenceProvider
 import java.net.InetAddress
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -69,6 +71,9 @@ import javax.inject.Inject
 class NetworkManagerFragment : Fragment() {
     @Inject
     lateinit var backgroundBackend: BackgroundBackend
+
+    @Inject
+    lateinit var persistenceProvider: PersistenceProvider
 
     private val intentFilter = IntentFilter()
 
@@ -169,9 +174,8 @@ class NetworkManagerFragment : Fragment() {
         val configuration = manager.configuration
         if (id == R.id.show_help && configuration != null) {
             val hotspotName: String = configuration.SSID
-            val friendlyName = AppUtils.getFriendlySSID(hotspotName)
             AlertDialog.Builder(requireActivity())
-                .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, friendlyName))
+                .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, hotspotName.toFriendlySsid()))
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
         } else return super.onOptionsItemSelected(item)
@@ -253,7 +257,7 @@ class NetworkManagerFragment : Fragment() {
     @Throws(JSONException::class)
     private fun updateViews() {
         showMenu()
-        val pin = AppUtils.generateNetworkPin(requireContext())
+        val pin = persistenceProvider.networkPin
         val delimiter = ";"
         val code = StringBuilder()
         val config: WifiConfiguration? = getWifiConfiguration()

@@ -38,6 +38,7 @@ import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Updates
 import java.io.*
@@ -196,7 +197,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 builder.show()
             }
             R.id.menu_activity_feedback == chosenMenuItemId -> {
-                AppUtils.startFeedbackActivity(this@HomeActivity)
+                Activities.startFeedbackActivity(this@HomeActivity)
             }
         }
         chosenMenuItemId = 0

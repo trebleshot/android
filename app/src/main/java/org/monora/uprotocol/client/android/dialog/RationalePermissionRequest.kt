@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.HomeActivity
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.AppUtils
 
 /**
@@ -66,12 +67,10 @@ class RationalePermissionRequest(
         setCancelable(false)
         setTitle(permissionQueue.title)
         setMessage(permissionQueue.message)
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                activity,
-                permissionQueue.permission
-            )
-        ) setNeutralButton(R.string.butn_settings) { dialogInterface: DialogInterface?, _: Int ->
-            AppUtils.startApplicationDetails(activity)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permissionQueue.permission)) {
+            setNeutralButton(R.string.butn_settings) { _: DialogInterface?, _: Int ->
+                Activities.startApplicationDetails(activity)
+            }
         }
         setPositiveButton(R.string.butn_ask) { _: DialogInterface?, _: Int ->
             ActivityCompat.requestPermissions(
@@ -80,9 +79,10 @@ class RationalePermissionRequest(
                 HomeActivity.REQUEST_PERMISSION_ALL
             )
         }
-        if (killActivityOtherwise)
+        if (killActivityOtherwise) {
             setNegativeButton(R.string.butn_reject) { _: DialogInterface?, _: Int -> activity.finish() }
-        else
+        } else {
             setNegativeButton(R.string.butn_close, null)
+        }
     }
 }

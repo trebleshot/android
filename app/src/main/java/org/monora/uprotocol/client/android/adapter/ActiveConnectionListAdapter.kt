@@ -20,14 +20,15 @@ package org.monora.uprotocol.client.android.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.model.NetworkInterfaceModel
 import org.monora.uprotocol.client.android.util.Networks
-import org.monora.uprotocol.client.android.util.TextUtils
+import org.monora.uprotocol.client.android.util.TextManipulators
+import org.monora.uprotocol.client.android.util.TextManipulators.toNetworkTitle
 import org.monora.uprotocol.client.android.widget.ListingAdapter
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import java.net.NetworkInterface
 import java.util.*
 
@@ -45,10 +46,9 @@ class ActiveConnectionListAdapter(
             AppConfig.DEFAULT_DISABLED_INTERFACES
         )
         val filteringDelegate = fragment.filteringDelegate
-        for (addressedInterface in interfaceList) {
+        for (networkInterface in interfaceList) {
             val editableInterface = NetworkInterfaceModel(
-                addressedInterface,
-                TextUtils.getAdapterName(context, addressedInterface)
+                networkInterface, networkInterface.toNetworkTitle(context)
             )
             if (filteringDelegate.disabled() || filteringDelegate.filter(fragment, editableInterface)) {
                 resultList.add(editableInterface)
@@ -73,6 +73,6 @@ class ActiveConnectionListAdapter(
         val text2: TextView = holder.itemView.findViewById(R.id.text2)
         val firstAddress = Networks.getFirstInet4Address(item)
         text1.text = item.name()
-        text2.text = firstAddress?.let { TextUtils.makeWebShareLink(context, it.hostAddress) }
+        text2.text = firstAddress?.let { TextManipulators.makeWebShareLink(context, it.hostAddress) }
     }
 }

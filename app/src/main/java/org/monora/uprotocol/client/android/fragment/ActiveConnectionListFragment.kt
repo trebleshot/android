@@ -41,7 +41,7 @@ import org.monora.uprotocol.client.android.dialog.WebShareDetailsDialog
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment.Companion.WIFI_AP_STATE_CHANGED
 import org.monora.uprotocol.client.android.model.NetworkInterfaceModel
 import org.monora.uprotocol.client.android.util.Networks
-import org.monora.uprotocol.client.android.util.TextUtils
+import org.monora.uprotocol.client.android.util.TextManipulators
 
 /**
  * created by: veli
@@ -107,7 +107,7 @@ class ActiveConnectionListFragment :
 
     override fun performDefaultLayoutClick(holder: ViewHolder, target: NetworkInterfaceModel): Boolean {
         WebShareDetailsDialog(
-            requireActivity(), TextUtils.makeWebShareLink(
+            requireActivity(), TextManipulators.makeWebShareLink(
                 requireContext(),
                 Networks.getFirstInet4Address(target)?.hostAddress
             )
@@ -122,7 +122,7 @@ class ActiveConnectionListFragment :
         if (!super.performLayoutClickOpen(holder, target)) startActivity(
             Intent(Intent.ACTION_VIEW).setData(
                 Uri.parse(
-                    TextUtils.makeWebShareLink(
+                    TextManipulators.makeWebShareLink(
                         requireContext(),
                         Networks.getFirstInet4Address(target)?.hostAddress
                     )

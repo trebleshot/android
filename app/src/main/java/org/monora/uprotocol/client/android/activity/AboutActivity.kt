@@ -28,6 +28,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
@@ -93,7 +94,7 @@ class AboutActivity : Activity() {
         if (id == android.R.id.home) {
             finish()
         } else if (id == R.id.actions_about_feedback) {
-            AppUtils.startFeedbackActivity(this@AboutActivity)
+            Activities.startFeedbackActivity(this@AboutActivity)
         } else
             return super.onOptionsItemSelected(item)
         return true

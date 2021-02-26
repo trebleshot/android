@@ -18,7 +18,6 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
-import android.content.Intent
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
@@ -27,8 +26,9 @@ import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
-import org.monora.uprotocol.client.android.config.AppConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
@@ -36,6 +36,7 @@ import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.core.ClientLoader
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.spec.v1.Config
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -88,8 +89,8 @@ class NsdDaemon @Inject constructor(
         val registrationListener = RegistrationListener().also { registrationListener = it }
         val localServiceInfo = NsdServiceInfo()
         localServiceInfo.serviceName = persistenceProvider.clientNickname
-        localServiceInfo.serviceType = AppConfig.NSD_SERVICE_TYPE
-        localServiceInfo.port = AppConfig.SERVER_PORT_COMMUNICATION
+        localServiceInfo.serviceType = Config.SERVICE_UPROTOCOL_DNS_SD
+        localServiceInfo.port = Config.PORT_UPROTOCOL
         try {
             nsdManager.registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
         } catch (e: Exception) {
@@ -104,7 +105,7 @@ class NsdDaemon @Inject constructor(
 
         try {
             val discoveryListener = DiscoveryListener().also { discoveryListener = it }
-            nsdManager.discoverServices(AppConfig.NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+            nsdManager.discoverServices(Config.SERVICE_UPROTOCOL_DNS_SD, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
         } catch (ignored: Exception) {
         }
     }
@@ -182,7 +183,7 @@ class NsdDaemon @Inject constructor(
 
         override fun onServiceFound(serviceInfo: NsdServiceInfo) {
             Log.v(TAG, "'" + serviceInfo.getServiceName() + "' service has been discovered.")
-            if (serviceInfo.serviceType == AppConfig.NSD_SERVICE_TYPE) nsdManager.resolveService(
+            if (serviceInfo.serviceType == Config.SERVICE_UPROTOCOL_DNS_SD) nsdManager.resolveService(
                 serviceInfo, ResolveListener()
             )
         }
@@ -207,7 +208,7 @@ class NsdDaemon @Inject constructor(
         }
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-            with (serviceInfo) {
+            with(serviceInfo) {
                 Log.v(TAG, "Resolved '$serviceName' on '${host.hostAddress}'")
             }
 

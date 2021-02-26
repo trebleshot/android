@@ -43,19 +43,6 @@ import java.util.*
 object AppUtils {
     val TAG = AppUtils::class.java.simpleName
 
-
-    fun generateKey(): Int {
-        return (Int.MAX_VALUE * Math.random()).toInt()
-    }
-
-    fun generateNetworkPin(context: Context): Int {
-        val networkPin = generateKey()
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putInt(Keyword.NETWORK_PIN, networkPin)
-            .apply()
-        return networkPin
-    }
-
     val buildFlavor: Keyword.Flavor
         get() = try {
             Keyword.Flavor.valueOf(BuildConfig.FLAVOR)
@@ -66,17 +53,6 @@ object AppUtils {
             )
             Keyword.Flavor.unknown
         }
-
-    fun getDefaultIconBuilder(context: Context): TextDrawable.IShapeBuilder {
-        val builder: TextDrawable.IShapeBuilder = TextDrawable.builder()
-        builder.beginConfig()
-            .firstLettersOnly(true)
-            .textMaxLength(1)
-            .bold()
-            .textColor(R.attr.colorControlNormal.attrToRes(context).resToColor(context))
-            .shapeColor(R.attr.colorPassive.attrToRes(context).resToColor(context))
-        return builder
-    }
 
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
         val connection = fragment.engineConnection
@@ -93,37 +69,4 @@ object AppUtils {
                 }
                 ?.show()
     }
-
-    fun startApplicationDetails(context: Context) {
-        context.startActivity(
-            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                .setData(Uri.fromParts("package", context.packageName, null))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
-    }
-
-    fun startFeedbackActivity(context: Context) {
-        val intent = Intent(Intent.ACTION_SEND)
-            .setType("text/plain")
-            .putExtra(Intent.EXTRA_EMAIL, arrayOf(AppConfig.EMAIL_DEVELOPER))
-            .putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.text_appName))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val logFile = Files.createLog(context)
-        if (logFile != null) try {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .putExtra(Intent.EXTRA_STREAM, getSecureUri(context, logFile))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        context.startActivity(Intent.createChooser(intent, context.getString(R.string.butn_feedbackContact)))
-    }
-
-    fun getFriendlySSID(ssid: String) = ssid.replace("\"", "").let {
-        if (it.startsWith(AppConfig.PREFIX_ACCESS_POINT))
-            it.substring((AppConfig.PREFIX_ACCESS_POINT.length))
-        else it
-    }.replace("_", " ")
-
-
 }
