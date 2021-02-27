@@ -413,7 +413,7 @@
     <string name="text_applyDarkTheme">Modo escuro</string>
     <string name="text_applyDarkThemeSummary">Usar o tema de estilo escuro</string>
     <string name="butn_allow">Permitir</string>
-    <string name="butn_telegram_channel">Canal do Telegram</string>
+    <string name="butn_telegram">Canal do Telegram</string>
     <string name="text_listEmptyTransfer">Todas as transferências aparecem aqui</string>
     <string name="text_transfers">Transferências</string>
     <string name="butn_connectionDetails">Detalhes de conexões</string>

@@ -406,7 +406,7 @@
     <string name="text_applyDarkTheme">Koyu görünüm</string>
     <string name="butn_allow">İzin ver</string>
     <string name="text_applyDarkThemeSummary">Koyu biçimli temayı kullan</string>
-    <string name="butn_telegram_channel">Telegram kanalı</string>
+    <string name="butn_telegram">Telegram kanalı</string>
     <string name="butn_choose">Seç</string>
     <string name="butn_connectionDetails">Bağlantı detayları</string>
     <string name="butn_changeSavePath">Kayıt yerini değiştir</string>

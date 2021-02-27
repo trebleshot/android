@@ -419,7 +419,7 @@
     <string name="text_applyDarkTheme">Ciemny motyw</string>
     <string name="text_applyDarkThemeSummary">Użyj motywu ciemnego</string>
     <string name="butn_allow">Zezwól</string>
-    <string name="butn_telegram_channel">Kanał Telegram</string>
+    <string name="butn_telegram">Kanał Telegram</string>
     <string name="text_listEmptyTransfer">Wszystkie transfery pojawiają się tutaj</string>
     <string name="text_transfers">Transfery</string>
     <string name="butn_connectionDetails">Szczegóły połączenia</string>

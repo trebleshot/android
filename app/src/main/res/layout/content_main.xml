@@ -33,45 +33,30 @@
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingLeft="@dimen/short_content_width_padding"
-        android:paddingRight="@dimen/short_content_width_padding">
+        android:paddingLeft="@dimen/short_content_width_padding_border"
+        android:paddingRight="@dimen/short_content_width_padding_border">
 
-        <LinearLayout
+        <Button
+            android:id="@+id/sendLayoutButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <Button
-                android:id="@+id/sendLayoutButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:text="@string/butn_send" />
-
-        </LinearLayout>
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            android:text="@string/butn_send" />
 
         <View
-            android:layout_width="@dimen/short_content_width_padding"
+            android:layout_width="@dimen/short_content_width_padding_between"
             android:layout_height="match_parent" />
 
-        <LinearLayout
+        <Button
+            android:id="@+id/receiveLayoutButton"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            android:text="@string/butn_receive" />
 
-            <Button
-                android:id="@+id/receiveLayoutButton"
-                style="@style/Widget.TrebleShot.ButtonStyle.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:text="@string/butn_receive" />
-
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

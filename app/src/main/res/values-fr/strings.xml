@@ -438,7 +438,7 @@
     </string>
     <string name="text_applyDarkThemeSummary">Utilisez le thème sombre</string>
     <string name="butn_allow">Autoriser</string>
-    <string name="butn_telegram_channel">Canal Télégram</string>
+    <string name="butn_telegram">Canal Télégram</string>
     <string name="text_transfers">Transferts</string>
     <string name="butn_connectionDetails">Détails des connexions</string>
     <string name="mesg_sent">Envoyé</string>

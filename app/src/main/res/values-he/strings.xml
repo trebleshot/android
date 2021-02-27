@@ -412,7 +412,7 @@
     <string name="text_applyDarkTheme">מצב כהה</string>
     <string name="text_applyDarkThemeSummary">שימוש בערכת עיצוב כהה</string>
     <string name="butn_allow">לאפשר</string>
-    <string name="butn_telegram_channel">ערוץ טלגרם</string>
+    <string name="butn_telegram">ערוץ טלגרם</string>
     <string name="text_listEmptyTransfer">כל ההעברות מופיעות כאן</string>
     <string name="text_transfers">העברות</string>
     <string name="butn_connectionDetails">פרטי חיבורים</string>

@@ -433,7 +433,7 @@
     <string name="text_applyDarkTheme">Dunkler Modus</string>
     <string name="text_applyDarkThemeSummary">Verwenden Sie das dunkle Stil-Thema</string>
     <string name="butn_allow">Erlauben</string>
-    <string name="butn_telegram_channel">Telegram-Kanal</string>
+    <string name="butn_telegram">Telegram-Kanal</string>
     <string name="text_listEmptyTransfer">Alle Übertragungen werden hier angezeigt</string>
     <string name="text_transfers">Übertragungen</string>
     <string name="butn_connectionDetails">Verbindungsdetails</string>

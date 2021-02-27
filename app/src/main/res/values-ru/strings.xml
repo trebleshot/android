@@ -412,7 +412,7 @@
     <string name="text_applyDarkTheme">Тёмная тема</string>
     <string name="text_applyDarkThemeSummary">"Использовать тёмную тему "</string>
     <string name="butn_allow">Разрешить</string>
-    <string name="butn_telegram_channel">Канал в Telegram</string>
+    <string name="butn_telegram">Канал в Telegram</string>
     <string name="text_listEmptyTransfer">Все трансферы появляются здесь</string>
     <string name="text_transfers">Трансферы</string>
     <string name="butn_connectionDetails">Детали соединения</string>

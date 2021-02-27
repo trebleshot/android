@@ -141,7 +141,7 @@
     </string>
     <string name="text_removeTransferSummary">Isto irá remover %s da fila</string>
     <string name="ques_removeAll">Remover tudo\?</string>
-    <string name="butn_telegram_channel">Canal do Telegram</string>
+    <string name="butn_telegram">Canal do Telegram</string>
     <string name="text_removeTransferGroupSummary">Isso removerá todas as transferências pendentes que você vê aqui
     </string>
     <string name="text_availableNetworks">Escolha a rede - %s</string>

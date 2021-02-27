@@ -90,29 +90,29 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="@dimen/short_content_width_padding"
-            android:paddingRight="@dimen/short_content_width_padding">
+            android:paddingLeft="@dimen/short_content_width_padding_border"
+            android:paddingRight="@dimen/short_content_width_padding_border">
 
             <Button
                 android:id="@+id/connection_option_generate_qr_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_qrcode_white_24dp"
                 android:text="@string/butn_generateQrCode" />
 
             <View
-                android:layout_width="@dimen/short_content_width_padding"
+                android:layout_width="@dimen/short_content_width_padding_between"
                 android:layout_height="match_parent" />
 
             <Button
                 android:id="@+id/connection_option_scan"
-                style="@style/Widget.TrebleShot.ButtonStyle.Outlined"
+                style="?materialButtonOutlinedStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_margin="8dp"
                 android:text="@string/text_scanQrCode" />
 
         </LinearLayout>
@@ -134,9 +134,9 @@
                 android:text="@string/help_addDeviceUsingIpAddressHelp"
                 android:layout_marginBottom="8dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/connection_option_manual_ip"
-                style="@style/Widget.TrebleShot.ButtonStyle.Outlined"
+                style="?materialButtonOutlinedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/butn_enterAddress" />

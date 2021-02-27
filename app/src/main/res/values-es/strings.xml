@@ -443,7 +443,7 @@
         \'Acerca de\'
     </string>
     <string name="text_applyDarkThemeSummary">Usar el tema oscuro</string>
-    <string name="butn_telegram_channel">Canal de Telegram</string>
+    <string name="butn_telegram">Canal de Telegram</string>
     <string name="butn_connectionDetails">Detalles de las conexiones</string>
     <string name="text_addDeviceHelp">Al agregar dispositivos, compartes los mismos archivos con más dispositivos.
         Volverás a la transferencia cuando haya terminado.

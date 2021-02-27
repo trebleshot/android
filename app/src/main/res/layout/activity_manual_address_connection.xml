@@ -21,23 +21,28 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp"
     android:gravity="center_horizontal"
-    android:layout_marginLeft="@dimen/short_content_width_padding"
-    android:layout_marginRight="@dimen/short_content_width_padding">
+    android:layout_margin="@dimen/short_content_width_padding">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/editText"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:hint="@string/text_hostAddress" />
+        android:layout_margin="8dp"
+        android:layout_height="wrap_content">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="@string/text_hostAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:text="@string/butn_connect"
+        android:layout_margin="8dp"
         android:id="@+id/confirm_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

@@ -472,7 +472,7 @@
     <string name="text_applyDarkTheme">Donker thema</string>
     <string name="text_applyDarkThemeSummary">Donker thema gebruiken</string>
     <string name="butn_allow">Toestaan</string>
-    <string name="butn_telegram_channel">Telegram-kanaal</string>
+    <string name="butn_telegram">Telegram-kanaal</string>
     <string name="text_listEmptyTransfer">Alle overdrachten verschijnen hier</string>
     <string name="text_transfers">Overdrachten</string>
     <string name="butn_connectionDetails">Verbindingsgegevens</string>

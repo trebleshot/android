@@ -35,7 +35,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
 import com.genonbeta.android.framework.app.Fragment
@@ -45,13 +44,11 @@ import com.google.zxing.common.BitMatrix
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.service.BackgroundService
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
@@ -131,8 +128,7 @@ class NetworkManagerFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View? {
         return layoutInflater.inflate(R.layout.layout_network_manager, container, false)
     }

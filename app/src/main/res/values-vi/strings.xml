@@ -393,7 +393,7 @@
     <string name="butn_never">Không bao giờ</string>
     <string name="text_groupByFolder">Thư mục</string>
     <string name="text_receivedTransfer">Đã nhận %s trong %s</string>
-    <string name="butn_telegram_channel">Kênh Telegram</string>
+    <string name="butn_telegram">Kênh Telegram</string>
     <string name="text_introAllSet">Xong!</string>
     <string name="butn_sortBy">Sắp xếp theo</string>
     <string name="text_version">Phiên bản</string>

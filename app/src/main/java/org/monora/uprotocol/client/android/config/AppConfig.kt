@@ -44,9 +44,11 @@ object AppConfig {
 
     const val URI_GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=org.monora.uprotocol.client.android"
 
+    const val URI_ORG_HOME = "https://monora.org"
+
     const val URI_REPO_APP = "http://github.com/genonbeta/TrebleShot"
 
-    const val URI_REPO_ORG = "http://github.com/genonbeta"
+    const val URI_REPO_ORG = "http://github.com/monoraorg"
 
     const val URI_GITHUB_PROFILE = "https://github.com/%s"
 

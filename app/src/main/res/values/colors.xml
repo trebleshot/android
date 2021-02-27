@@ -29,7 +29,7 @@
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorPrimaryDark23">#ffffffff</color>
     <color name="colorSecondary">#66bb6a</color>
-    <color name="colorSurface">#fefefe</color>
+    <color name="colorSurface">#ffffff</color>
     <color name="windowBackground">#ffffff</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>

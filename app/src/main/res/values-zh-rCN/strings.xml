@@ -403,7 +403,7 @@
     <string name="text_applyDarkTheme">暗黑风格</string>
     <string name="text_applyDarkThemeSummary">使用黑色风格的主题</string>
     <string name="butn_allow">允许</string>
-    <string name="butn_telegram_channel">Telegram频道</string>
+    <string name="butn_telegram">Telegram频道</string>
     <string name="text_listEmptyTransfer">所有的传输在此出现</string>
     <string name="text_transfers">传输</string>
     <string name="butn_connectionDetails">连接详情</string>

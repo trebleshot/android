@@ -23,20 +23,17 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.client.android.util.Updates
 
 class AboutActivity : Activity() {
-    val googlePlayFlavor = BuildConfig.FLAVOR == "googlePlay"
+    private val googlePlayFlavor = BuildConfig.FLAVOR == "googlePlay"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,16 +43,16 @@ class AboutActivity : Activity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        findViewById<View>(R.id.orgIcon).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_ORG)))
+        findViewById<View>(R.id.activity_about_home_button).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_ORG_HOME)))
         }
-        findViewById<View>(R.id.activity_about_see_source_layout).setOnClickListener {
+        findViewById<View>(R.id.activity_about_github_button).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_APP)))
         }
-        findViewById<View>(R.id.activity_about_translate_layout).setOnClickListener {
+        findViewById<View>(R.id.activity_about_localize_button).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TRANSLATE)))
         }
-        findViewById<View>(R.id.activity_about_telegram_layout).setOnClickListener {
+        findViewById<View>(R.id.activity_about_telegram_button).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)))
         }
         /*findViewById<View>(R.id.activity_about_option_fourth_layout).setOnClickListener {
@@ -100,14 +97,13 @@ class AboutActivity : Activity() {
                     null
                 )
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> return false
         }
         return true
     }
 
     override fun onResume() {
         super.onResume()
-        // calling this in the onCreate sequence causes theming issues
         if (!googlePlayFlavor && Updates.hasNewVersion(applicationContext)) {
             //highlightUpdater(findViewById(R.id.activity_about_option_fourth_text))
         }

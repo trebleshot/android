@@ -425,7 +425,7 @@
     <string name="text_applyDarkTheme">Modu iluna</string>
     <string name="text_applyDarkThemeSummary">Erabili gai iluna estiloa</string>
     <string name="butn_allow">Baimendu</string>
-    <string name="butn_telegram_channel">Telegram kanala</string>
+    <string name="butn_telegram">Telegram kanala</string>
     <string name="text_listEmptyTransfer">Transferentzia guztiak hemen agertzen dira</string>
     <string name="text_transfers">Transferentziak</string>
     <string name="butn_connectionDetails">Konexioaren xehetasunak</string>

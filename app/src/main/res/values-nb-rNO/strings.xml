@@ -456,7 +456,7 @@
     <string name="text_applyDarkTheme">Mørk drakt</string>
     <string name="text_applyDarkThemeSummary">Bruk mørkt stilsett</string>
     <string name="butn_allow">Tillat</string>
-    <string name="butn_telegram_channel">Telegram-kanal</string>
+    <string name="butn_telegram">Telegram-kanal</string>
     <string name="text_listEmptyTransfer">Alle overføringer vises her</string>
     <string name="text_transfers">Overføringer</string>
     <string name="butn_connectionDetails">Tilkoblingsdetaljer</string>

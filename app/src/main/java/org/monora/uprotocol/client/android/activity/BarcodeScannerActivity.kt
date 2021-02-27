@@ -18,7 +18,6 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.LocationManager
@@ -34,6 +33,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -180,8 +180,12 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
             R.id.change_mode -> {
                 showAsText = !showAsText
                 textModeIndicator.visibility = if (showAsText) View.VISIBLE else View.GONE
-                item.setIcon(if (showAsText) R.drawable.ic_qrcode_white_24dp else R.drawable.ic_short_text_white_24dp)
-                createSnackbar(if (showAsText) R.string.mesg_qrScannerTextMode else R.string.mesg_qrScannerDefaultMode).show()
+                item.setIcon(
+                    if (showAsText) R.drawable.ic_qrcode_white_24dp else R.drawable.ic_short_text_white_24dp
+                )
+                createSnackbar(
+                    if (showAsText) R.string.mesg_qrScannerTextMode else R.string.mesg_qrScannerDefaultMode
+                ).show()
                 updateState()
             }
             else -> return super.onOptionsItemSelected(item)

@@ -348,7 +348,7 @@
     <string name="mesg_noInternetConnection">این کار، به اتصال اینترنت نیاز دارد</string>
     <string name="text_applyDarkTheme">حالت تاریک</string>
     <string name="text_applyDarkThemeSummary">استفاده از پوسته تیره</string>
-    <string name="butn_telegram_channel">کانال تلگرام</string>
+    <string name="butn_telegram">کانال تلگرام</string>
     <string name="text_useLights">روشنایی</string>
     <string name="text_useVibration">لرزش و اعلان‌ها</string>
     <string name="text_useVibrationSummary">استفاده از لرزش و نمایش اعلان‌ها</string>

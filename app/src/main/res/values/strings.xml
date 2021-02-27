@@ -341,8 +341,8 @@
     <string name="text_rename">Rename</string>
     <string name="butn_rename">Rename</string>
     <string name="butn_copyHere">Copy here</string>
-    <string name="text_translateTrebleshot">Help us translate</string>
-    <string name="text_contributors">Made possible by</string>
+    <string name="text_translateTrebleshot">Help s translate</string>
+    <string name="text_contributors">Made Possible By</string>
     <string name="butn_gridSize">Grid size</string>
     <string name="butn_singleRow">Single row</string>
     <string name="butn_groupBy">Group by</string>
@@ -401,7 +401,7 @@
     <string name="text_applyDarkTheme">Dark mode</string>
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
     <string name="butn_allow">Allow</string>
-    <string name="butn_telegram_channel">Telegram channel</string>
+    <string name="butn_telegram">Telegram</string>
     <string name="mode_middleDot" translatable="false">·</string>
     <string name="text_listEmptyTransfer">All transfers appear here</string>
     <string name="text_transfers">Transfers</string>
@@ -608,4 +608,7 @@
     <string name="text_license">License</string>
     <string name="text_sharedTexts">Shared Texts</string>
     <string name="text_thirdPartyLicenses">Third Party Licenses</string>
+    <string name="butn_github">GitHub</string>
+    <string name="butn_helpLocalize">Help Us Localize</string>
+    <string name="text_joinUs">Join Us</string>
 </resources>

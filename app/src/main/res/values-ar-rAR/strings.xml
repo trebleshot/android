@@ -410,7 +410,7 @@
     </string>
     <string name="text_applyDarkTheme">الوضع الداكن</string>
     <string name="butn_allow">السماح</string>
-    <string name="butn_telegram_channel">قناة تلغرام</string>
+    <string name="butn_telegram">قناة تلغرام</string>
     <string name="mesg_noPendingTransferObjectExists">لم يتبقى اي نقل معلق. لاستئناف الملفات التي تمت مقاطعتها ، استخدم
         الخيار \"أعاده محاولة التلقي\".
     </string>

@@ -35,8 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize" />
 
-        <View style="@style/DividerStyle" />
-
         <ProgressBar
             android:id="@+id/activity_connection_establishing_progress_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"

@@ -453,7 +453,7 @@
     <string name="text_applyDarkTheme">Dark mode</string>
     <string name="text_applyDarkThemeSummary">Dark Style Theme-ஐ பயன்படுத்தவும்</string>
     <string name="butn_allow">அனுமதி</string>
-    <string name="butn_telegram_channel">Telegram குழு</string>
+    <string name="butn_telegram">Telegram குழு</string>
     <string name="text_listEmptyTransfer">பரிமாற்றங்களை இங்கே காணலாம்</string>
     <string name="text_transfers">பரிமாற்றங்கள்</string>
     <string name="butn_connectionDetails">இணைப்பு விவரங்கள்</string>
