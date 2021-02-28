@@ -55,12 +55,8 @@ class GitHubContributorsListFragment : RecyclerViewFragment<Contributor, ViewHol
         adapter = ContributorListAdapter(requireContext())
         emptyListImageView.setImageResource(R.drawable.ic_github_circle_white_24dp)
         emptyListTextView.text = getString(R.string.mesg_noInternetConnection)
-        useEmptyListActionButton(getString(R.string.butn_refresh)) { v: View? -> refreshList() }
+        useEmptyListActionButton(getString(R.string.butn_refresh)) { refreshList() }
         listView.isNestedScrollingEnabled = true
-    }
-
-    override fun getLayoutManager(): RecyclerView.LayoutManager {
-        return GridLayoutManager(context, 1)
     }
 
     data class Contributor(var name: String, var url: String, var urlAvatar: String)

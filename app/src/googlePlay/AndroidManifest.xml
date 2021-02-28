@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -18,16 +17,22 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="org.monora.uprotocol.client.android">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.monora.uprotocol.client.android">
 
-    <!--Only Google Play version will require this permission for donation implementation-->
     <uses-permission android:name="com.android.vending.BILLING" />
 
-    <application>
+    <application android:name=".App">
         <activity
             android:label="@string/text_donate"
             android:name="org.monora.uprotocol.client.android.activity.DonationActivity"
-            android:theme="@style/Theme.TrebleShot.NoActionBar"/>
+            android:theme="@style/Theme.TrebleShot.NoActionBar"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>

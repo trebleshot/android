@@ -19,7 +19,6 @@ package com.genonbeta.android.framework.util.date
 
 
 import androidx.core.util.ObjectsCompat
-import com.genonbeta.android.framework.util.MathUtils
 import com.genonbeta.android.framework.util.listing.ComparableMerger
 import java.util.*
 
@@ -34,12 +33,13 @@ class DateMerger<T>(val time: Long) : ComparableMerger<T>() {
     private val dayOfYear: Int
 
     override operator fun compareTo(other: ComparableMerger<T>): Int {
-        return if (other !is DateMerger<*> || year < other.year)
+        return if (other !is DateMerger<*> || year < other.year) {
             -1
-        else if (year > other.year)
+        } else if (year > other.year) {
             1
-        else
-            MathUtils.compare(dayOfYear, other.dayOfYear)
+        } else {
+            dayOfYear.compareTo(other.dayOfYear)
+        }
     }
 
     override fun equals(other: Any?): Boolean = other is DateMerger<*> && hashCode() == other.hashCode()
