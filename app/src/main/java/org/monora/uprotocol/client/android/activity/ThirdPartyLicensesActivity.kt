@@ -27,7 +27,7 @@ import org.monora.uprotocol.client.android.app.Activity
  * created by: veli
  * date: 7/20/18 10:19 PM
  */
-class ThirdPartyLibrariesActivity : Activity() {
+class ThirdPartyLicensesActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_third_party_libraries)

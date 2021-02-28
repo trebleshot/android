@@ -530,16 +530,15 @@
     <string name="mesg_noActivityFound">Found no activity that can do this action</string>
     <string name="text_devicesWithAppInstalled">TrebleShot to TrebleShot</string>
     <string name="mesg_unknownHostError">Could not resolve this host address!</string>
-    <string name="text_thirdPartyLibrariesHelp">The libraries shown here may not be directly involved in the final
-        product. For more details, please refer to the source code.
-    </string>
+    <string name="text_thirdPartyLibrariesHelp">This include both runtime and compile libraries and may not reflect
+        what is used in the final product!</string>
     <string name="text_uiTheme">Theme</string>
     <string name="text_darkTheme">Dark</string>
     <string name="text_lightTheme">Light</string>
     <string name="text_followSystemTheme">Follow system theme</string>
     <string name="text_batterySaverTheme">Battery Saver decides</string>
     <string name="text_errorExceededMaximumSuggestions">The maximum number of networks that can be added by TrebleShot
-        exceeded. Please remove previously added unused networks to continue.
+        exceeded. Please remove previously unused networks to continue.
     </string>
     <string name="butn_openSettings">Open settings</string>
     <string name="text_errorNetworkSuggestionsDisallowed">TrebleShot was disallowed to suggest networks. For this
@@ -611,4 +610,6 @@
     <string name="butn_github">GitHub</string>
     <string name="butn_helpLocalize">Help Us Localize</string>
     <string name="text_joinUs">Join Us</string>
+    <string name="butn_visitLicenseUrl">Visit License URL</string>
+    <string name="butn_visitWebPage">Visit Web Page</string>
 </resources>

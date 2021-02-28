@@ -35,7 +35,6 @@ import org.monora.uprotocol.client.android.adapter.FileListAdapter
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.dialog.FileRenameDialog
 import org.monora.uprotocol.client.android.dialogimport.FileDeletionDialog
 import org.monora.uprotocol.client.android.ui.callback.SharingPerformerMenuCallback

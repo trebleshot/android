@@ -25,8 +25,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLibraryListFragment.LicencesAdapter
 import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLibraryListFragment.ModuleItem
@@ -59,23 +59,23 @@ class ThirdPartyLibraryListFragment : RecyclerViewFragment<ModuleItem, ViewHolde
             val holder = ViewHolder(
                 layoutInflater.inflate(R.layout.list_third_party_library, parent, false)
             )
-            holder.itemView.findViewById<View>(R.id.menu).setOnClickListener { v: View? ->
+            holder.itemView.findViewById<View>(R.id.menu).setOnClickListener { v: View ->
                 val moduleItem = list[holder.adapterPosition]
                 val popupMenu = PopupMenu(context, v)
                 popupMenu.menuInflater.inflate(R.menu.popup_third_party_library_item, popupMenu.menu)
-                popupMenu.menu
-                    .findItem(R.id.popup_visitWebPage).isEnabled = moduleItem.moduleUrl != null
-                popupMenu.menu
-                    .findItem(R.id.popup_goToLicenceURL).isEnabled = moduleItem.licenceUrl != null
+                popupMenu.menu.findItem(R.id.popup_visitWebPage).isEnabled = moduleItem.moduleUrl != null
+                popupMenu.menu.findItem(R.id.popup_goToLicenceURL).isEnabled = moduleItem.licenceUrl != null
                 popupMenu.setOnMenuItemClickListener { item: MenuItem ->
                     val id = item.itemId
-                    if (id == R.id.popup_goToLicenceURL) context.startActivity(
-                        Intent(Intent.ACTION_VIEW)
-                            .setData(Uri.parse(moduleItem.licenceUrl))
-                    ) else if (id == R.id.popup_visitWebPage) context.startActivity(
-                        Intent(Intent.ACTION_VIEW)
-                            .setData(Uri.parse(moduleItem.moduleUrl))
-                    ) else return@setOnMenuItemClickListener false
+                    when (id) {
+                        R.id.popup_goToLicenceURL -> context.startActivity(
+                            Intent(Intent.ACTION_VIEW).setData(Uri.parse(moduleItem.licenceUrl))
+                        )
+                        R.id.popup_visitWebPage -> context.startActivity(
+                            Intent(Intent.ACTION_VIEW).setData(Uri.parse(moduleItem.moduleUrl))
+                        )
+                        else -> return@setOnMenuItemClickListener false
+                    }
                     true
                 }
                 popupMenu.show()
@@ -91,7 +91,7 @@ class ThirdPartyLibraryListFragment : RecyclerViewFragment<ModuleItem, ViewHolde
             val stringBuilder = StringBuilder()
             if (item.moduleVersion != null) stringBuilder.append(item.moduleVersion)
             if (item.licence != null) {
-                if (stringBuilder.length > 0) stringBuilder.append(", ")
+                if (stringBuilder.isNotEmpty()) stringBuilder.append(", ")
                 stringBuilder.append(item.licence)
             }
             text2.text = stringBuilder.toString()
@@ -110,13 +110,9 @@ class ThirdPartyLibraryListFragment : RecyclerViewFragment<ModuleItem, ViewHolde
                 val jsonObject = JSONObject(outputStream.toString())
                 val dependenciesArray = jsonObject.getJSONArray("dependencies")
                 val returnedList: MutableList<ModuleItem> = ArrayList()
-                for (i in 0 until dependenciesArray.length()) returnedList.add(
-                    ModuleItem(
-                        dependenciesArray.getJSONObject(
-                            i
-                        )
-                    )
-                )
+                for (i in 0 until dependenciesArray.length()) {
+                    returnedList.add(ModuleItem(dependenciesArray.getJSONObject(i)))
+                }
                 return returnedList
             } catch (ignored: Exception) {
             }

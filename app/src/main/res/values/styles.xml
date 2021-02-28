@@ -43,13 +43,18 @@
 
     <!-- generalization end -->
 
-    <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">
+    <style name="Theme.TrebleShot.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog">
         <item name="android:windowBackground">?backgroundDialog</item>
+    </style>
+
+    <style name="Widget.TrebleShot.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="background">@android:color/transparent</item>
     </style>
 
     <style name="Widget.TrebleShot.ActionBar" parent="Widget.MaterialComponents.ActionBar.Surface">
         <item name="titleTextStyle">@style/TextAppearance.TrebleShot.ActionBar.Title</item>
         <item name="homeAsUpIndicator">@drawable/ic_round_arrow_back_24</item>
+        <item name="background">@android:color/transparent</item>
     </style>
 
     <style name="TextAppearance.TrebleShot.ActionBar.Title" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
@@ -59,6 +64,7 @@
     <style name="Widget.TrebleShot.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="titleTextAppearance">@style/TextAppearance.TrebleShot.Toolbar.Title</item>
         <item name="homeAsUpIndicator">@drawable/ic_round_arrow_back_24</item>
+        <item name="background">@android:color/transparent</item>
     </style>
 
     <style name="TextAppearance.TrebleShot.Toolbar.Title" parent="TextAppearance.MaterialComponents.Headline6">
@@ -76,10 +82,6 @@
 
     <style name="Widget.TrebleShot.Snackbar" parent="Widget.MaterialComponents.Snackbar">
         <!--<item name="android:background">?snackbarBackground</item>-->
-    </style>
-
-    <style name="Widget.TrebleShot.PopupMenuStyle" parent="Widget.MaterialComponents.PopupMenu">
-        <item name="android:popupBackground">?backgroundPopupMenu</item>
     </style>
 
     <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
@@ -107,9 +109,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout">
-
-    </style>
+    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout" />
 
     <style name="TextAppearance.Primary" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>

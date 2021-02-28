@@ -18,7 +18,6 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.content.*
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -40,7 +39,6 @@ import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Updates
 import java.io.*
 import javax.inject.Inject

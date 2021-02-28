@@ -22,7 +22,6 @@ import android.content.Intent
 import android.media.MediaScannerConnection
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
-import org.monora.uprotocol.client.android.database.Kuick
 import org.monora.uprotocol.client.android.fragment.FileListFragment
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException

@@ -195,7 +195,7 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.ThirdPartyLibrariesActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ThirdPartyLicensesActivity"
             android:label="@string/text_thirdPartyLicenses" />
 
         <activity

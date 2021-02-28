@@ -20,19 +20,17 @@
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
         <item name="actionBarStyle">@style/Widget.TrebleShot.ActionBar</item>
-        <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
-        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+        <item name="alertDialogTheme">@style/Theme.TrebleShot.Dialog</item>
+        <item name="appBarLayoutStyle">@style/Widget.TrebleShot.AppBarLayout</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
-        <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.TrebleShot.ExtendedFloatingActionButtonStyle</item>
         <item name="floatingActionButtonStyle">@style/Widget.TrebleShot.FloatingActionButtonStyle</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
-        <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
+        <item name="popupMenuBackground">?backgroundPopupMenu</item>
         <!--<item name="snackbarStyle">@style/Widget.TrebleShot.Snackbar</item>-->
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
-        <!--<item name="android:textColorPrimary">@color/colorControlNormal</item>-->
         <item name="toolbarStyle">@style/Widget.TrebleShot.Toolbar</item>
         <item name="android:windowBackground">@color/windowBackground</item>
 
@@ -81,15 +79,14 @@
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
         <item name="actionBarStyle">@style/Widget.TrebleShot.ActionBar</item>
-        <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
-        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+        <item name="alertDialogTheme">@style/Theme.TrebleShot.Dialog</item>
+        <item name="appBarLayoutStyle">@style/Widget.TrebleShot.AppBarLayout</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
-        <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.TrebleShot.ExtendedFloatingActionButtonStyle</item>
         <item name="floatingActionButtonStyle">@style/Widget.TrebleShot.FloatingActionButtonStyle</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
-        <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
+        <item name="popupMenuBackground">?backgroundPopupMenu</item>
         <!--<item name="snackbarStyle">@style/Widget.TrebleShot.Snackbar</item>-->
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
