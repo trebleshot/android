@@ -2,13 +2,19 @@ package org.monora.uprotocol.client.android.database.model
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.protocol.ClientAddress
 import java.net.InetAddress
 
 @Parcelize
-@Entity(tableName = "clientAddress")
+@Entity(
+    tableName = "clientAddress",
+    foreignKeys = [
+        ForeignKey(entity = UClient::class, parentColumns = ["uid"], childColumns = ["clientUid"]),
+    ]
+)
 data class UClientAddress(
     @PrimaryKey
     var inetAddress: InetAddress,

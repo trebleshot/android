@@ -17,7 +17,8 @@
  */
 package org.monora.uprotocol.client.android.task
 
-import android.content.*
+import android.content.Context
+import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,18 +31,18 @@ import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.Files
+import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import java.util.*
 
 class IndexTransferTask(
     private val connectionFactory: ConnectionFactory,
-    private val persistenceProvider: MainPersistenceProvider,
+    private val persistenceProvider: PersistenceProvider,
     private val appDatabase: AppDatabase,
     private val transferId: Long,
     private val jsonIndex: String,

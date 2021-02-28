@@ -2,13 +2,19 @@ package org.monora.uprotocol.client.android.database.model
 
 import android.os.Parcelable
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.ForeignKey
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.transfer.TransferItem
 
 @Parcelize
-@Entity(tableName = "transferItem", primaryKeys = ["groupId", "id"])
+@Entity(
+    tableName = "transferItem",
+    primaryKeys = ["groupId", "id"],
+    foreignKeys = [
+        ForeignKey(entity = Transfer::class, parentColumns = ["id"], childColumns = ["groupId"]),
+    ]
+)
 data class UTransferItem(
     var id: Long,
     var groupId: Long,
