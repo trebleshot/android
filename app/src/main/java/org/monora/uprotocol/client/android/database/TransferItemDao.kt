@@ -22,10 +22,10 @@ interface TransferItemDao {
     @Query("SELECT * FROM transferItem WHERE location = :location AND type = :type")
     fun get(location: String, type: TransferItem.Type): UTransferItem?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertAll(vararg transfers: UTransferItem)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertAll(list: List<UTransferItem>)
 
     @Query("UPDATE transferItem SET state = $STATE_PENDING WHERE groupId = :groupId")

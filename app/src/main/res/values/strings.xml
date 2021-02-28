@@ -222,7 +222,7 @@
     <string name="text_transactionGroupDetails">Transaction group details</string>
     <string name="text_usedConnection">Used connection</string>
     <string name="text_flagRemoved">Removed</string>
-    <string name="butn_copyToClipboard">Copy to clipboard</string>
+    <string name="butn_copyToClipboard">Copy To Clipboard</string>
     <string name="text_communicationServiceRunning">TrebleShot can share files now</string>
     <string name="text_communicationServiceStop">Tap to end session</string>
     <string name="text_remainingTime">ETA %s</string>
@@ -332,7 +332,7 @@
     <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
     <string name="text_qrCodeAvailableHelp">Scan this code to share and connect devices</string>
     <string name="text_qrCodeHotspotDisabledHelp">Set up a hotspot so that others can connect to you</string>
-    <string name="help_scanQRCode">Scan the QR code on the screen of the host device</string>
+    <string name="help_scanQRCode">Align the QR Code with the box</string>
     <string name="butn_qrScanToSend">Scan QR code to send</string>
     <string name="butn_qrToggle">Toggle QR code visibility</string>
     <string name="text_notificationSettingsSummary">Open notification settings</string>
@@ -341,7 +341,7 @@
     <string name="text_rename">Rename</string>
     <string name="butn_rename">Rename</string>
     <string name="butn_copyHere">Copy here</string>
-    <string name="text_translateTrebleshot">Help s translate</string>
+    <string name="text_translateTrebleshot">Help us translate</string>
     <string name="text_contributors">Made Possible By</string>
     <string name="butn_gridSize">Grid size</string>
     <string name="butn_singleRow">Single row</string>

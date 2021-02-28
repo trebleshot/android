@@ -43,7 +43,6 @@
         <item name="backgroundPopupMenu">@drawable/background_popup_menu</item>
         <item name="backgroundTextOverImage">@drawable/background_text_over_image</item>
         <item name="backgroundTopBar">@drawable/background_top_bar</item>
-        <item name="colorDonation">@color/colorDonation</item>
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorPassive">@color/colorPassive</item>
         <item name="colorSelection">@color/colorSelection</item>
@@ -104,7 +103,6 @@
         <item name="backgroundPopupMenu">@drawable/background_popup_menu_dark</item>
         <item name="backgroundTextOverImage">@drawable/background_text_over_image_dark</item>
         <item name="backgroundTopBar">@drawable/background_top_bar_dark</item>
-        <item name="colorDonation">@color/dark_colorDonation</item>
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorPassive">@color/dark_colorPassive</item>
         <item name="colorSelection">@color/dark_colorSelection</item>

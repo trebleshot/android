@@ -23,30 +23,22 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingTop="8dp"
+    android:paddingTop="4dp"
     android:paddingBottom="15dp">
 
-    <LinearLayout
-        android:id="@+id/layout_netowrk_manager_info_container_text1_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
+    <TextView
         android:paddingLeft="30dp"
         android:paddingTop="15dp"
         android:paddingRight="30dp"
-        android:paddingBottom="15dp">
-
-        <TextView
-            android:id="@+id/layout_network_manager_info_container_text1"
-            style="@style/TextAppearance.Primary.Normal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:maxLines="5"
-            android:text="@string/text_help" />
-
-    </LinearLayout>
+        android:paddingBottom="15dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/layout_network_manager_info_container_text1"
+        style="@style/TextAppearance.Primary.Normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="5"
+        android:text="@string/text_help" />
 
     <Button
         android:id="@+id/layout_network_manager_info_toggle_button"

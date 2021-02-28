@@ -145,12 +145,12 @@ class NetworkManagerFragment : Fragment() {
         codeText = view.findViewById(R.id.layout_network_manager_qr_help_text)
         toggleButton = view.findViewById(R.id.layout_network_manager_info_toggle_button)
         secondButton = view.findViewById(R.id.layout_network_manager_info_second_toggle_button)
-        containerText1 = view.findViewById(R.id.layout_netowrk_manager_info_container_text1_container)
-        containerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container)
-        containerText3 = view.findViewById(R.id.layout_network_manager_info_container_text3_container)
         text1 = view.findViewById(R.id.layout_network_manager_info_container_text1)
         text2 = view.findViewById(R.id.layout_network_manager_info_container_text2)
         text3 = view.findViewById(R.id.layout_network_manager_info_container_text3)
+        containerText1 = text1
+        containerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container)
+        containerText3 = view.findViewById(R.id.layout_network_manager_info_container_text3_container)
         imageView2 = view.findViewById(R.id.layout_network_manager_info_container_text2_icon)
         imageView3 = view.findViewById(R.id.layout_network_manager_info_container_text3_icon)
         toggleButtonDefaultStateList = ViewCompat.getBackgroundTintList(toggleButton)
@@ -311,8 +311,8 @@ class NetworkManagerFragment : Fragment() {
             imageView2.setImageResource(R.drawable.ic_wifi_white_24dp)
             imageView3.setImageResource(R.drawable.ic_ip_white_24dp)
             text1.setText(R.string.help_scanQRCode)
-            text2.setText(Connections.getCleanSsid(connectionInfo.getSSID()))
-            text3.setText(hostAddress)
+            text2.text = Connections.getCleanSsid(connectionInfo.getSSID())
+            text3.text = hostAddress
             toggleButton.setText(R.string.butn_wifiSettings)
             secondButton.setText(R.string.text_startHotspot)
         } else {
@@ -323,8 +323,7 @@ class NetworkManagerFragment : Fragment() {
         }
         when (activeType) {
             Type.Hotspot, Type.WiFi, Type.HotspotExternal -> ViewCompat.setBackgroundTintList(
-                toggleButton,
-                toggleButtonEnabledStateList
+                toggleButton, toggleButtonEnabledStateList
             )
             else -> ViewCompat.setBackgroundTintList(toggleButton, toggleButtonDefaultStateList)
         }

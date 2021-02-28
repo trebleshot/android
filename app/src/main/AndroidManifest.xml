@@ -205,7 +205,13 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.BarcodeScannerActivity"
             android:label="@string/text_scanQrCode"
-            android:theme="@style/Theme.TrebleShot.BarcodeScannerActivity" />
+            android:theme="@style/Theme.TrebleShot.BarcodeScannerActivity"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.WelcomeActivity"

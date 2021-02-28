@@ -23,7 +23,7 @@
     android:background="?rectSelector"
     android:orientation="horizontal">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/text"
         style="?borderlessButtonStyle"
         android:layout_width="wrap_content"

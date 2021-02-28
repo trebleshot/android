@@ -45,7 +45,7 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/activity_web_share_info_toggle_button"
         style="?borderlessButtonStyle"
         android:layout_width="wrap_content"

@@ -31,7 +31,7 @@
         app:srcCompat="@drawable/ic_keyboard_arrow_right_white_24dp"
         app:tint="?colorSecondary" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/list_pathresolver_text"
         style="?borderlessButtonStyle"
         android:layout_width="wrap_content"

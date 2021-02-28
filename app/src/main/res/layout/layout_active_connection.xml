@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_webShareInfo" />
 
-                <androidx.appcompat.widget.AppCompatButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/card_web_share_info_hide_button"
                     style="?borderlessButtonStyle"
                     android:layout_width="wrap_content"

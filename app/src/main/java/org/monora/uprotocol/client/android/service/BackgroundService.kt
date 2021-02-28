@@ -126,9 +126,6 @@ class BackgroundService : LifecycleService() {
 
                     if (isAccepted) {
                         backend.run(task)
-                    } else {
-                        // TODO: 2/25/21 Remove the transfer and its items altogether
-                        //kuick.removeAsynchronous(app, task.transfer, task.device)
                     }
                 }
             } catch (e: Exception) {

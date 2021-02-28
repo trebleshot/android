@@ -18,15 +18,14 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.Manifest
+import android.Manifest.permission.CAMERA
 import android.content.*
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -68,7 +67,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
     @Inject
     lateinit var appDatabase: AppDatabase
 
-    private val dismissListener = DialogInterface.OnDismissListener { dialog: DialogInterface? -> updateState() }
+    private val dismissListener = DialogInterface.OnDismissListener { updateState() }
 
     private lateinit var barcodeView: DecoratedBarcodeView
 
@@ -79,8 +78,6 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
     private lateinit var conductText: TextView
 
     private lateinit var conductImage: ImageView
-
-    private lateinit var textModeIndicator: ImageView
 
     private lateinit var conductButton: Button
 
@@ -94,15 +91,14 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     private var permissionRequestedLocation = false
 
-    private var showAsText = false
-
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
                 || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
                 || LocationManager.PROVIDERS_CHANGED_ACTION == intent.action
-            )
+            ) {
                 updateState()
+            }
         }
     }
 
@@ -117,20 +113,24 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION)
         conductContainer = findViewById(R.id.layout_barcode_connect_conduct_container)
-        textModeIndicator = findViewById(R.id.layout_barcode_connect_mode_text_indicator)
         conductButton = findViewById(R.id.layout_barcode_connect_conduct_button)
         barcodeView = findViewById(R.id.layout_barcode_connect_barcode_view)
         conductText = findViewById(R.id.layout_barcode_connect_conduct_text)
         conductImage = findViewById(R.id.layout_barcode_connect_conduct_image)
         taskContainer = findViewById(R.id.container_task)
         taskInterruptButton = findViewById(R.id.task_interrupter_button)
-        barcodeView.decodeContinuous(object : BarcodeCallback {
-            override fun barcodeResult(result: BarcodeResult) {
-                handleBarcode(result.result.text)
-            }
 
-            override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
-        })
+        barcodeView.decodeContinuous(
+            object : BarcodeCallback {
+                override fun barcodeResult(result: BarcodeResult) {
+                    handleBarcode(result.result.text)
+                }
+
+                override fun possibleResultPoints(resultPoints: List<ResultPoint>) {
+
+                }
+            }
+        )
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -156,9 +156,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (permissions.isNotEmpty()) {
             for (i in permissions.indices) {
-                if (Manifest.permission.CAMERA == permissions[i] &&
-                    grantResults[i] == PackageManager.PERMISSION_GRANTED
-                ) {
+                if (CAMERA == permissions[i] && grantResults[i] == PERMISSION_GRANTED) {
                     updateState()
                     permissionRequestedCamera = false
                 }
@@ -166,40 +164,9 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.actions_barcode_scanner, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when (id) {
-            android.R.id.home -> onBackPressed()
-            R.id.show_help -> AlertDialog.Builder(this)
-                .setMessage(R.string.help_scanQRCode)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
-            R.id.change_mode -> {
-                showAsText = !showAsText
-                textModeIndicator.visibility = if (showAsText) View.VISIBLE else View.GONE
-                item.setIcon(
-                    if (showAsText) R.drawable.ic_qrcode_white_24dp else R.drawable.ic_short_text_white_24dp
-                )
-                createSnackbar(
-                    if (showAsText) R.string.mesg_qrScannerTextMode else R.string.mesg_qrScannerDefaultMode
-                ).show()
-                updateState()
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-        return true
-    }
-
     override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
         super.onAttachTasks(taskList)
-        for (task in taskList)
-            if (task is DeviceIntroductionTask)
-                task.anchor = this
+        for (task in taskList) if (task is DeviceIntroductionTask) task.anchor = this
 
         updateState(hasTaskOf(DeviceIntroductionTask::class.java))
     }
@@ -210,9 +177,6 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     protected fun handleBarcode(code: String) {
         try {
-            if (showAsText)
-                throw Exception("Showing as text.")
-
             val values: Array<String> = code.split(";".toRegex()).toTypedArray()
             val type = values[0]
 
@@ -248,7 +212,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     .setTitle(R.string.text_unrecognizedQrCode)
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
-                    .setPositiveButton(R.string.butn_show) { dialog: DialogInterface?, which: Int ->
+                    .setPositiveButton(R.string.butn_show) { _: DialogInterface?, which: Int ->
                         val sharedText = SharedText(0, code)
 
                         lifecycleScope.launch {
@@ -262,10 +226,10 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                                 .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, sharedText)
                         )
                     }
-                    .setNeutralButton(R.string.butn_copyToClipboard) { dialog: DialogInterface?, which: Int ->
+                    .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
                         val manager = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                         manager.setPrimaryClip(ClipData.newPlainText("copiedText", code))
-                        Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
+                        createSnackbar(R.string.mesg_textCopiedToClipboard).show()
                     }
             )
         }
@@ -320,33 +284,32 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     fun updateState() {
         val wifiEnabled = connections.wifiManager.isWifiEnabled
-        val hasCameraPermission = (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED)
+        val hasCameraPermission = ContextCompat.checkSelfPermission(this, CAMERA) == PERMISSION_GRANTED
         // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
         val hasLocationPermission = Build.VERSION.SDK_INT < 23 || connections.canAccessLocation()
-        val state = hasCameraPermission && (showAsText || wifiEnabled && hasLocationPermission)
+        val state = hasCameraPermission && (wifiEnabled && hasLocationPermission)
         if (hasTaskOf(DeviceIntroductionTask::class.java)) return
         if (!state) {
             barcodeView.pauseAndWait()
+
             if (!hasCameraPermission) {
                 conductImage.setImageResource(R.drawable.ic_camera_white_144dp)
                 conductText.setText(R.string.text_cameraPermissionRequired)
                 conductButton.setText(R.string.butn_ask)
-                conductButton.setOnClickListener { v: View? ->
+                conductButton.setOnClickListener {
                     ActivityCompat.requestPermissions(
-                        this, arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION_CAMERA
+                        this, arrayOf(CAMERA), REQUEST_PERMISSION_CAMERA
                     )
                 }
                 if (!permissionRequestedCamera) ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.CAMERA),
-                    REQUEST_PERMISSION_CAMERA
+                    this, arrayOf(CAMERA), REQUEST_PERMISSION_CAMERA
                 )
                 permissionRequestedCamera = true
             } else if (!hasLocationPermission) {
                 conductImage.setImageResource(R.drawable.ic_perm_device_information_white_144dp)
                 conductText.setText(R.string.mesg_locationPermissionRequiredAny)
                 conductButton.setText(R.string.butn_enable)
-                conductButton.setOnClickListener { v: View? ->
+                conductButton.setOnClickListener {
                     connections.validateLocationPermission(
                         this,
                         REQUEST_PERMISSION_LOCATION
@@ -396,11 +359,15 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
     }
 
     override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
-        if (taskMessage.sizeOfActions() > 1) runOnUiThread {
-            taskMessage.toDialogBuilder(this).show()
-        } else if (taskMessage.sizeOfActions() <= 1) runOnUiThread {
-            taskMessage.toSnackbar(taskInterruptButton).show()
-        } else return false
+        when {
+            taskMessage.sizeOfActions() > 1 -> runOnUiThread {
+                taskMessage.toDialogBuilder(this).show()
+            }
+            taskMessage.sizeOfActions() <= 1 -> runOnUiThread {
+                taskMessage.toSnackbar(taskInterruptButton).show()
+            }
+            else -> return false
+        }
         return true
     }
 
