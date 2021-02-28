@@ -49,7 +49,7 @@ object Files {
     )
 
     fun createLog(context: Context): DocumentFile? {
-        val saveDirectory = org.monora.uprotocol.client.android.util.Files.getApplicationDirectory(context)
+        val saveDirectory = getApplicationDirectory(context)
         val logFile = saveDirectory.createFile("text/plain", "trebleshot_log") ?: return null
         val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
 

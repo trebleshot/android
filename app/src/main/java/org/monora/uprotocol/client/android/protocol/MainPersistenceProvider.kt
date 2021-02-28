@@ -139,7 +139,7 @@ class MainPersistenceProvider @Inject constructor(
         Log.d(TAG, "broadcast: Requested")
     }
 
-    override fun containsTransfer(groupId: Long): Boolean = db.transferItemDao().contains(groupId)
+    override fun containsTransfer(groupId: Long): Boolean = db.transferDao().contains(groupId)
 
     override fun createClientAddressFor(address: InetAddress, clientUid: String) = UClientAddress(
         address, clientUid, System.currentTimeMillis()

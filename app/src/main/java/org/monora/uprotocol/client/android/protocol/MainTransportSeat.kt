@@ -25,9 +25,7 @@ class MainTransportSeat @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun handleAcquaintanceRequest(client: Client, clientAddress: ClientAddress): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun handleAcquaintanceRequest(client: Client, clientAddress: ClientAddress): Boolean = true
 
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
 

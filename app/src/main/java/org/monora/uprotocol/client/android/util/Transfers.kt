@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import androidx.core.util.ObjectsCompat
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.database.model.TransferTarget
+import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
@@ -56,8 +56,8 @@ object Transfers {
         return ObjectsCompat.hash(transferId, deviceId, type)
     }
 
-    fun pauseTransfer(activity: Activity, target: TransferTarget) {
-        pauseTransfer(activity, target.groupId, target.clientUid, target.type)
+    fun pauseTransfer(activity: Activity, transfer: Transfer) {
+        pauseTransfer(activity, transfer.id, transfer.clientUid, transfer.type)
     }
 
     fun pauseTransfer(activity: Activity, transferId: Long, deviceId: String, type: TransferItem.Type) {

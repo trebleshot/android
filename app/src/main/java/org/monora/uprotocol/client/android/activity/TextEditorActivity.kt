@@ -80,7 +80,8 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
+            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
+                && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
                 && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
             ) {
                 val client: UClient? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)

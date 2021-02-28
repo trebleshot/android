@@ -25,6 +25,7 @@
     <attr name="backgroundGradientTop" format="reference" />
     <attr name="backgroundPopupMenu" format="reference" />
     <attr name="backgroundTextOverImage" format="reference" />
+    <attr name="backgroundTopBar" format="reference" />
     <attr name="colorDonation" format="reference" />
     <attr name="colorTranslucent" format="reference" />
     <attr name="colorDivider" format="reference" />

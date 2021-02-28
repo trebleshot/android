@@ -30,7 +30,6 @@ import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
@@ -132,8 +131,8 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
                     address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
                 }
                 REQUEST_IP_DISCOVERY -> {
-                    client = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE)
-                    address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_DEVICE_ADDRESS)
+                    client = data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT)
+                    address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT_ADDRESS)
                 }
                 else -> {
                     client = null

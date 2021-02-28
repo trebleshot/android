@@ -15,9 +15,6 @@ interface SharedTextDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(sharedText: SharedText)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg sharedText: SharedText)
-
     @Update
     suspend fun update(sharedText: SharedText)
 }

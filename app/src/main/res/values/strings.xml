@@ -518,7 +518,7 @@
     <string name="text_limitTo" translatable="false">@string/butn_limitTo</string>
     <string name="butn_none">None</string>
     <string name="text_none" translatable="false">@string/butn_none</string>
-    <string name="text_crashReport">Crash report</string>
+    <string name="text_crashReport">Crash Report</string>
     <string name="text_crashInfo">
         TrebleShot experienced a crash in a previous session. What would you like to do with the
         crash log?

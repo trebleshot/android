@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/dark_colorDivider" /> <!-- border color -->
+        </shape>
+    </item>
+
+    <item android:bottom="1dp">   <!-- adjust borders width here -->
+        <shape android:shape="rectangle">
+            <solid android:color="@color/dark_windowBackground" />  <!-- background color -->
+        </shape>
+    </item>
+</layer-list>

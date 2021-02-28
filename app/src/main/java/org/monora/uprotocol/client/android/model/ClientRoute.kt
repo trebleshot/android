@@ -23,4 +23,4 @@ import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 
 @Parcelize
-class ClientRoute(var device: UClient, var address: UClientAddress) : Parcelable
+class ClientRoute(var client: UClient, var address: UClientAddress) : Parcelable

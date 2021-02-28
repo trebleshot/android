@@ -1,11 +1,9 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import android.util.Log
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.TransferTarget
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.exception.ConnectionNotFoundException
 import org.monora.uprotocol.client.android.exception.DeviceNotFoundException
@@ -26,7 +24,6 @@ class FileTransferStarterTask(
     val appDatabase: AppDatabase,
     val transfer: Transfer,
     val client: UClient,
-    val target: TransferTarget,
     val type: TransferItem.Type,
     val addressList: List<InetAddress>,
 ) : AttachableAsyncTask<AttachedTaskListener>() {
@@ -37,7 +34,7 @@ class FileTransferStarterTask(
             ).use { bridge ->
                 bridge.requestFileTransferStart(transfer.id, type)
                 if (bridge.receiveResult()) {
-                    backend.attach(FileTransferTask(bridge, transfer, client, target, type))
+                    backend.attach(FileTransferTask(bridge, transfer, client, type))
                 }
             }
         } catch (e: Exception) {
@@ -67,7 +64,9 @@ class FileTransferStarterTask(
             type: TransferItem.Type,
         ): FileTransferStarterTask {
             val client = appDatabase.clientDao().get(clientUid) ?: throw DeviceNotFoundException(clientUid)
-            val transfer = appDatabase.transferDao().get(transferId) ?: throw TransferNotFoundException(transferId)
+            val transfer = appDatabase.transferDao().get(
+                transferId, client.clientUid, type
+            ) ?: throw TransferNotFoundException(transferId)
             return createFrom(connectionFactory, persistenceProvider, appDatabase, transfer, client, type)
         }
 
@@ -80,16 +79,10 @@ class FileTransferStarterTask(
             client: UClient,
             type: TransferItem.Type,
         ): FileTransferStarterTask {
-            val target = appDatabase.transferTargetDao().get(
-                client.clientUid, transfer.id
-            ) ?: throw TargetNotFoundException(client.clientUid, transfer.id)
-
-            Log.d(FileTransferTask.TAG, "createFrom: deviceId=" + client.uid + " transferId=" + transfer.id)
-
             val inetAddresses = appDatabase.clientAddressDao().getAll(client.clientUid).map { it.clientAddress }
 
             return FileTransferStarterTask(
-                connectionFactory, persistenceProvider, appDatabase, transfer, client, target, type, inetAddresses
+                connectionFactory, persistenceProvider, appDatabase, transfer, client, type, inetAddresses
             )
         }
     }

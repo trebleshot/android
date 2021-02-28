@@ -118,7 +118,8 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         try {
-            if ((!crashFile.exists() || crashFile.delete()) && crashFile.createNewFile() && crashFile.canWrite()) {
+            if (crashFile.canWrite()) {
+                Log.d(TAG, "uncaughtException: Check failed")
                 return
             }
 

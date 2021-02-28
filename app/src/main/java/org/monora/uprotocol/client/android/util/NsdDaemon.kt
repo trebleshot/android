@@ -76,7 +76,7 @@ class NsdDaemon @Inject constructor(
 
     fun isDeviceOnline(client: UClient): Boolean {
         synchronized(onlineClientList) {
-            for (deviceRoute in onlineClientList.values) if (deviceRoute.device == client) return true
+            for (deviceRoute in onlineClientList.values) if (deviceRoute.client == client) return true
         }
         return false
     }

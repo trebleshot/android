@@ -20,7 +20,6 @@ package org.monora.uprotocol.client.android.task
 import android.content.Context
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.TransferTarget
 import org.monora.uprotocol.client.android.model.Identifier.Companion.from
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withANDs
@@ -31,7 +30,6 @@ import org.monora.uprotocol.client.android.task.transfer.MainTransferOperation
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.transfer.TransferItem
-import org.monora.uprotocol.core.transfer.TransferOperation
 import org.monora.uprotocol.core.transfer.Transfers
 import java.io.IOException
 
@@ -39,7 +37,6 @@ class FileTransferTask(
     private val bridge: CommunicationBridge,
     val transfer: Transfer,
     val client: Client,
-    val target: TransferTarget,
     val type: TransferItem.Type,
 ) : AttachableAsyncTask<AttachedTaskListener>() {
     // TODO: 2/25/21 Generate via dependency injection

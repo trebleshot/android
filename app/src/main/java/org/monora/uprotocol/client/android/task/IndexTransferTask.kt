@@ -28,7 +28,6 @@ import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.TransferTarget
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
@@ -55,8 +54,7 @@ class IndexTransferTask(
         appDatabase.transferDao().get(transferId)?.run { return }
 
         val saveLocation = Files.getApplicationDirectory(context).toString()
-        val transfer = Transfer(transferId, Incoming, saveLocation)
-        val target = TransferTarget(0, client.clientUid, transferId, Incoming)
+        val transfer = Transfer(transferId, client.clientUid, Incoming, saveLocation)
         val jsonArray: JSONArray = try {
             JSONArray(jsonIndex)
         } catch (e: Exception) {
@@ -65,7 +63,6 @@ class IndexTransferTask(
 
         progress.increaseTotalBy(jsonArray.length())
         appDatabase.transferDao().insertAll(transfer)
-        appDatabase.transferTargetDao().insertAll(target)
 
         val itemList: MutableList<UTransferItem> = ArrayList()
 

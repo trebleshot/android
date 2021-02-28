@@ -19,46 +19,127 @@ package org.monora.uprotocol.client.android.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.ConnectionFactory
 import java.net.InetAddress
+import java.net.ProtocolException
 import java.net.UnknownHostException
-import android.os.AsyncTask as UiTask
+import javax.inject.Inject
 
-class ManualConnectionActivity : Activity(), DeviceIntroductionTask.ResultListener {
-    private val hostnameListener = CheckHostnameListener()
+@AndroidEntryPoint
+class ManualConnectionActivity : Activity() {
+    @Inject
+    lateinit var connectionFactory: ConnectionFactory
+
+    @Inject
+    lateinit var persistenceProvider: PersistenceProvider
+
+    @Inject
+    lateinit var appDatabase: AppDatabase
+
+    private val editText: AppCompatEditText by lazy {
+        findViewById(R.id.editText)
+    }
+
+    private val button: Button by lazy {
+        findViewById(R.id.confirm_button)
+    }
+
+    private val progressBar: ProgressBar by lazy {
+        findViewById(R.id.progressBar)
+    }
+
+    private val layoutMain: ViewGroup by lazy {
+        findViewById(R.id.layout_main)
+    }
+
+    private var progress: Boolean
+        get() = progressBar.visibility == View.VISIBLE
+        set(value) {
+            if (progress != value) {
+                progressBar.visibility = if (value) View.VISIBLE else View.GONE
+                TransitionManager.beginDelayedTransition(layoutMain)
+            }
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manual_address_connection)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        findViewById<View>(R.id.confirm_button).setOnClickListener { v: View? ->
-            val editText: AppCompatEditText = getEditText()
-            val editable = editText.text
+        findViewById<View>(R.id.confirm_button).setOnClickListener {
+            val address = editText.text?.trim()?.toString()
 
-            if (editable.isNullOrEmpty())
+            if (address.isNullOrEmpty())
                 editText.error = getString(R.string.mesg_enterValidHostAddress)
             else {
-                val asyncTask = CheckAddressAsyncTask(hostnameListener)
-                asyncTask.execute(editable.toString())
+                lifecycle.coroutineScope.launch {
+                    button.isEnabled = false
+                    progress = true
+
+                    try {
+                        val inetAddress = withContext(Dispatchers.IO) { InetAddress.getByName(address) }
+                        val bridge = withContext(Dispatchers.IO) {
+                            val bridge = CommunicationBridge.connect(
+                                connectionFactory, persistenceProvider, inetAddress, null, 0
+                            )
+
+                            if (!bridge.requestAcquaintance()) {
+                                throw ProtocolException("Should not have returned this")
+                            }
+
+                            bridge
+                        }
+
+                        val client = bridge.remoteClient
+                        val clientAddress = bridge.remoteClientAddress
+
+                        if (client !is UClient || clientAddress !is UClientAddress) {
+                            throw UnsupportedOperationException("Hello dear")
+                        }
+
+                        setResult(
+                            RESULT_OK, Intent()
+                                .putExtra(EXTRA_CLIENT, client)
+                                .putExtra(EXTRA_CLIENT_ADDRESS, clientAddress)
+                        )
+                        finish()
+                    } catch (e: UnknownHostException) {
+                        editText.error = getString(R.string.mesg_unknownHostError)
+                    } catch (e: Exception) {
+                        editText.error = e.message
+                        e.printStackTrace()
+                    } finally {
+                        progress = false
+                        button.isEnabled = true
+                    }
+                }
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        getEditText().requestFocus()
+        editText.requestFocus()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -70,80 +151,11 @@ class ManualConnectionActivity : Activity(), DeviceIntroductionTask.ResultListen
         return true
     }
 
-    override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
-        super.onAttachTasks(taskList)
-        for (task in taskList)
-            if (task is DeviceIntroductionTask)
-                task.anchor = this
-    }
-
-    override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
-        val running = task is DeviceIntroductionTask && !task.finished
-        setShowProgress(running)
-        getButton().isEnabled = !running
-    }
-
-    override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
-        Log.d(TAG, taskMessage.message)
-        runOnUiThread { getEditText().error = taskMessage.message }
-        return true
-    }
-
-    override fun onDeviceReached(clientRoute: ClientRoute) {
-        setResult(
-            RESULT_OK, Intent()
-                .putExtra(EXTRA_DEVICE, clientRoute.device)
-                .putExtra(EXTRA_DEVICE_ADDRESS, clientRoute.address)
-        )
-        finish()
-    }
-
-    private fun getButton(): Button {
-        return findViewById(R.id.confirm_button)
-    }
-
-    private fun getEditText(): AppCompatEditText {
-        return findViewById(R.id.editText)
-    }
-
-    private fun setShowProgress(show: Boolean) {
-        findViewById<View>(R.id.progressBar).visibility = if (show) View.VISIBLE else View.GONE
-        TransitionManager.beginDelayedTransition(findViewById(R.id.layout_main))
-    }
-
-    class CheckAddressAsyncTask(private val listener: CheckHostnameListener) : UiTask<String, Void, InetAddress?>() {
-        override fun doInBackground(vararg address: String): InetAddress? {
-            try {
-                if (address.isNotEmpty())
-                    return InetAddress.getByName(address[0])
-            } catch (e: UnknownHostException) {
-                e.printStackTrace()
-            }
-            return null
-        }
-
-        override fun onPostExecute(address: InetAddress?) {
-            super.onPostExecute(address)
-            if (address == null)
-                listener.onHostnameError()
-            else
-                listener.onConnect(address)
-        }
-    }
-
-    inner class CheckHostnameListener {
-        fun onConnect(address: InetAddress) {
-            runUiTask(DeviceIntroductionTask(address, 0), this@ManualConnectionActivity)
-        }
-
-        fun onHostnameError() {
-            getEditText().error = getString(R.string.mesg_unknownHostError)
-        }
-    }
-
     companion object {
         val TAG = ManualConnectionActivity::class.java.simpleName
-        const val EXTRA_DEVICE = "extraDevice"
-        const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
+
+        const val EXTRA_CLIENT = "extraClient"
+
+        const val EXTRA_CLIENT_ADDRESS = "extraClientAddress"
     }
 }

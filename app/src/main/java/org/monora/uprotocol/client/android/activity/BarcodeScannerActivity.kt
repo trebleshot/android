@@ -37,17 +37,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.client.android.database.model.SharedText
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.ResultListener
-import org.monora.uprotocol.client.android.util.Connections
+import androidx.lifecycle.lifecycleScope
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.ResultPoint
@@ -55,8 +45,20 @@ import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
+import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
+import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
+import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
+import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
+import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.ResultListener
+import org.monora.uprotocol.client.android.util.Connections
 import java.net.InetAddress
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -247,20 +249,25 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
                     .setPositiveButton(R.string.butn_show) { dialog: DialogInterface?, which: Int ->
-                        val textModel = SharedText(0, code)
-                        appDatabase.sharedTextDao().insertAll(textModel)
+                        val sharedText = SharedText(0, code)
+
+                        lifecycleScope.launch {
+                            appDatabase.sharedTextDao().insert(sharedText)
+                        }
+
                         Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
                         startActivity(
                             Intent(this, TextEditorActivity::class.java)
                                 .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-                                .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, textModel.id)
+                                .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, sharedText)
                         )
                     }
                     .setNeutralButton(R.string.butn_copyToClipboard) { dialog: DialogInterface?, which: Int ->
                         val manager = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                         manager.setPrimaryClip(ClipData.newPlainText("copiedText", code))
                         Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-                    })
+                    }
+            )
         }
     }
 
@@ -278,7 +285,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                 AlertDialog.Builder(this)
                     .setMessage(R.string.mesg_errorNotSameNetwork)
                     .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_gotIt) { dialog: DialogInterface?, which: Int -> runnable.run() }
+                    .setPositiveButton(R.string.butn_gotIt) { _: DialogInterface?, which: Int -> runnable.run() }
                     .setOnDismissListener(dismissListener)
             )
         }
@@ -372,7 +379,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
     override fun onDeviceReached(clientRoute: ClientRoute) {
         setResult(
             RESULT_OK, Intent()
-                .putExtra(EXTRA_DEVICE, clientRoute.device)
+                .putExtra(EXTRA_DEVICE, clientRoute.client)
                 .putExtra(EXTRA_DEVICE_ADDRESS, clientRoute.address)
         )
         finish()

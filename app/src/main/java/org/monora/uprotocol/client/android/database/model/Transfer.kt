@@ -1,18 +1,26 @@
 package org.monora.uprotocol.client.android.database.model
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.transfer.TransferItem
 
 @Parcelize
-@Entity(tableName = "transfer")
+@Entity(
+    tableName = "transfer",
+    foreignKeys = [
+        ForeignKey(entity = UClient::class, parentColumns = ["uid"], childColumns = ["clientUid"]),
+    ]
+)
 data class Transfer(
     @PrimaryKey
     val id: Long,
+    val clientUid: String,
     val type: TransferItem.Type,
     var location: String,
     var web: Boolean = false,
-    var dateCreated: Long = System.currentTimeMillis(),
+    val dateCreated: Long = System.currentTimeMillis(),
 ) : Parcelable

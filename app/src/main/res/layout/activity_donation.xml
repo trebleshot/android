@@ -53,7 +53,7 @@
                 android:paddingLeft="@dimen/short_content_width_padding"
                 android:paddingRight="@dimen/short_content_width_padding" />
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"

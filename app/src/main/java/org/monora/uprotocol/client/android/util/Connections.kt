@@ -18,13 +18,12 @@
 package org.monora.uprotocol.client.android.util
 
 import android.Manifest
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.ACCESS_WIFI_STATE
+import android.Manifest.permission.*
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.DhcpInfo
@@ -35,7 +34,6 @@ import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import android.view.View
 import androidx.annotation.RequiresPermission
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
@@ -263,13 +261,13 @@ class Connections(contextLocal: Context) {
     @Throws(SecurityException::class)
     fun findFromScanResults(ssid: String, bssid: String?): ScanResult? {
         if (canReadScanResults()) {
-            for (result in wifiManager.getScanResults()) if (result.SSID.equals(
-                    ssid,
-                    ignoreCase = true
-                ) && (bssid == null || result.BSSID.equals(bssid, ignoreCase = true))
-            ) {
-                Log.d(TAG, "findFromScanResults: Found the network with capabilities: " + result.capabilities)
-                return result
+            for (result in wifiManager.scanResults) {
+                if (result.SSID.equals(ssid, ignoreCase = true)
+                    && (bssid == null || result.BSSID.equals(bssid, ignoreCase = true))
+                ) {
+                    Log.d(TAG, "findFromScanResults: Found the network with capabilities: " + result.capabilities)
+                    return result
+                }
             }
         } else {
             Log.e(TAG, "findFromScanResults: Cannot read scan results")
@@ -280,10 +278,7 @@ class Connections(contextLocal: Context) {
     }
 
     fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
     }
 
     fun isConnectionToHotspotNetwork(): Boolean {
@@ -309,16 +304,18 @@ class Connections(contextLocal: Context) {
 
     fun isConnectedToNetwork(ssid: String, bssid: String?): Boolean {
         if (!isConnectedToAnyNetwork()) return false
-        val wifiInfo: WifiInfo = wifiManager.getConnectionInfo()
-        val tgSsid = getCleanSsid(wifiInfo.getSSID())
-        Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + ":" + bssid + "=" + wifiInfo.getBSSID())
-        return bssid?.equals(wifiInfo.getBSSID(), ignoreCase = true) ?: (ssid == tgSsid)
+        val wifiInfo: WifiInfo = wifiManager.connectionInfo
+        val tgSsid = getCleanSsid(wifiInfo.ssid)
+        Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + ":" + bssid + "=" + wifiInfo.bssid)
+        return bssid?.equals(wifiInfo.bssid, ignoreCase = true) ?: (ssid == tgSsid)
     }
 
     val isLocationServiceEnabled: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) this.locationManager.isLocationEnabled() else this.locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            this.locationManager.isLocationEnabled
+        } else {
+            this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        }
 
     /**
      * @return True if the mobile data connection is active.
@@ -338,13 +335,13 @@ class Connections(contextLocal: Context) {
     fun showConnectionOptions(activity: Activity, provider: SnackbarPlacementProvider, locationPermRequestId: Int) {
         if (!wifiManager.isWifiEnabled)
             provider.createSnackbar(R.string.mesg_suggestSelfHotspot)
-                ?.setAction(R.string.butn_enable) { view: View? ->
+                ?.setAction(R.string.butn_enable) {
                     wirelessEnableRequested = true
                     turnOnWiFi(activity, provider)
                 }?.show()
         else if (validateLocationPermission(activity, locationPermRequestId)) {
             provider.createSnackbar(R.string.mesg_scanningSelfHotspot)
-                ?.setAction(R.string.butn_wifiSettings) { view: View? ->
+                ?.setAction(R.string.butn_wifiSettings) {
                     activity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }?.show()
         }
@@ -469,7 +466,7 @@ class Connections(contextLocal: Context) {
                     activity.requestPermissions(
                         arrayOf(
                             Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+                            ACCESS_COARSE_LOCATION
                         ), permRequestId
                     )
                 }

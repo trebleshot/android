@@ -34,7 +34,7 @@ import java.net.ConnectException
 import java.net.NoRouteToHostException
 
 object CommonErrorHelper {
-    fun messageOf(context: Context, exception: Exception?): TaskMessage {
+    fun messageOf(context: Context, exception: Exception): TaskMessage {
         val title: String
         val message: String
         var action: TaskMessage.Action? = null

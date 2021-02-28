@@ -19,6 +19,7 @@ package org.monora.uprotocol.client.android.activity
 
 import android.content.*
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -28,8 +29,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
@@ -179,6 +186,8 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             val report = FileReader(log).use { it.readText() }
             val streamObject = SharedText(0, report, log.lastModified())
 
+            Log.d(TAG, "checkAndShowCrashReport: $report")
+
             log.delete()
 
             AlertDialog.Builder(this)
@@ -192,7 +201,10 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                     )
                     Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
                 }.setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
-                    appDatabase.sharedTextDao().insertAll(streamObject)
+                    lifecycleScope.launch {
+                        appDatabase.sharedTextDao().insert(streamObject)
+                    }
+
                     Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
                 }.show()
         } catch (ignored: IOException) {

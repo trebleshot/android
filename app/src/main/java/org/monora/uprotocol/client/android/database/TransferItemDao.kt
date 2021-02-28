@@ -7,9 +7,6 @@ import org.monora.uprotocol.core.transfer.TransferItem
 
 @Dao
 interface TransferItemDao {
-    @Query("SELECT EXISTS(SELECT * FROM transferItem WHERE groupId == :groupId)")
-    fun contains(groupId: Long): Boolean
-
     @Delete
     fun delete(transferItem: UTransferItem)
 
