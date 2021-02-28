@@ -22,7 +22,7 @@ interface TransferDao {
     fun getAll(): List<Transfer>
 
     @Insert
-    fun insertAll(vararg transfers: Transfer)
+    fun insert(transfers: Transfer)
 
     @Update
     suspend fun update(transfer: Transfer)

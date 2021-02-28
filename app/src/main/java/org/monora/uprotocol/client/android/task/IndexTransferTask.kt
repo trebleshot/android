@@ -63,7 +63,7 @@ class IndexTransferTask(
         }
 
         progress.increaseTotalBy(jsonArray.length())
-        appDatabase.transferDao().insertAll(transfer)
+        appDatabase.transferDao().insert(transfer)
 
         val itemList: MutableList<UTransferItem> = ArrayList()
 

@@ -14,9 +14,9 @@ interface ClientDao {
     @Query("SELECT * FROM client")
     fun getAll(): List<UClient>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg clients: UClient)
+    @Insert
+    fun insert(clients: UClient)
 
     @Update
-    fun updateAll(vararg clients: UClient)
+    fun update(clients: UClient)
 }

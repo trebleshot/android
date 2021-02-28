@@ -281,7 +281,11 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun persist(client: Client, updating: Boolean) {
         if (client is UClient) {
-            db.clientDao().insertAll(client)
+            if (updating) {
+                db.clientDao().update(client)
+            } else {
+                db.clientDao().insert(client)
+            }
         } else {
             throw UnsupportedOperationException()
         }
@@ -289,7 +293,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun persist(clientAddress: ClientAddress) {
         if (clientAddress is UClientAddress) {
-            db.clientAddressDao().insertAll(clientAddress)
+            db.clientAddressDao().insert(clientAddress)
         } else {
             throw UnsupportedOperationException()
         }

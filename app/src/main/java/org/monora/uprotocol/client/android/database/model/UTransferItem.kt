@@ -3,6 +3,7 @@ package org.monora.uprotocol.client.android.database.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -12,7 +13,9 @@ import org.monora.uprotocol.core.transfer.TransferItem
     tableName = "transferItem",
     primaryKeys = ["groupId", "id"],
     foreignKeys = [
-        ForeignKey(entity = Transfer::class, parentColumns = ["id"], childColumns = ["groupId"]),
+        ForeignKey(
+            entity = Transfer::class, parentColumns = ["id"], childColumns = ["groupId"], onDelete = CASCADE
+        ),
     ]
 )
 data class UTransferItem(

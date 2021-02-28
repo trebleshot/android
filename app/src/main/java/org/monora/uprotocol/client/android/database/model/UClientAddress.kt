@@ -3,6 +3,7 @@ package org.monora.uprotocol.client.android.database.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.protocol.ClientAddress
@@ -12,7 +13,8 @@ import java.net.InetAddress
 @Entity(
     tableName = "clientAddress",
     foreignKeys = [
-        ForeignKey(entity = UClient::class, parentColumns = ["uid"], childColumns = ["clientUid"]),
+        ForeignKey(
+            entity = UClient::class, parentColumns = ["uid"], childColumns = ["clientUid"], onDelete = CASCADE),
     ]
 )
 data class UClientAddress(
