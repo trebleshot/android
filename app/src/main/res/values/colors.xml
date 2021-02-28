@@ -61,8 +61,8 @@
     <color name="dark_colorDivider">#1A808080</color>
     <color name="dark_colorPassive">#229e9e9e</color>
     <color name="dark_colorSelection">#229e9e9e</color>
-    <color name="dark_colorShadowBeginning">#00000000</color>
-    <color name="dark_colorShadowEnd">#80000000</color>
+    <color name="dark_colorShadowBeginning">#001E1E1E</color>
+    <color name="dark_colorShadowEnd">#801E1E1E</color>
     <color name="dark_colorTranslucent">#b000</color>
     <color name="dark_contentShowingBackground">#616161</color>
 
@@ -73,4 +73,6 @@
     <color name="black_dominant">#000</color>
     <color name="black_surface">#1a1a1a</color>
     <color name="black_colorDivider">#1A808080</color>
+    <color name="black_colorShadowBeginning">#00000000</color>
+    <color name="black_colorShadowEnd">#80000000</color>
 </resources>

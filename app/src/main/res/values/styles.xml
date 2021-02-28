@@ -39,6 +39,9 @@
         <item name="backgroundPopupMenu">@drawable/background_popup_menu_black</item>
         <item name="android:windowBackground">@color/black_dominant</item>
         <!--own values-->
+        <item name="backgroundGradient">@drawable/background_gradient_black</item>
+        <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_black</item>
+        <item name="backgroundGradientTop">@drawable/background_gradient_top_black</item>
         <item name="backgroundTopBar">@drawable/background_top_bar_black</item>
         <item name="colorDivider">@color/black_colorDivider</item>
 
