@@ -16,6 +16,7 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.io.FileStreamDescriptor
 import org.monora.uprotocol.core.io.StreamDescriptor
+import org.monora.uprotocol.core.persistence.PersistenceException
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
@@ -135,10 +136,6 @@ class MainPersistenceProvider @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun broadcast() {
-        Log.d(TAG, "broadcast: Requested")
-    }
-
     override fun containsTransfer(groupId: Long): Boolean = db.transferDao().contains(groupId)
 
     override fun createClientAddressFor(address: InetAddress, clientUid: String) = UClientAddress(
@@ -188,7 +185,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getClientPicture(): ByteArray = getClientPictureFor(client)
 
-    override fun getClientPictureFor(client: Client?): ByteArray {
+    override fun getClientPictureFor(client: Client): ByteArray {
         try {
             return context.openFileInput("photo-" + client?.clientUid.hashCode()).use {
                 return@use it.readBytes()
@@ -241,7 +238,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getPublicKey(): PublicKey = keyFactory.generatePublic(X509EncodedKeySpec(keyPair.public.encoded))
 
-    override fun hasRequestForInvalidationOfCredentials(clientUid: String?): Boolean {
+    override fun hasRequestForInvalidationOfCredentials(clientUid: String): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -250,9 +247,9 @@ class MainPersistenceProvider @Inject constructor(
         groupId: Long,
         id: Long,
         type: TransferItem.Type,
-    ): TransferItem? = db.transferItemDao().get(groupId, id, type)
+    ): TransferItem = db.transferItemDao().get(groupId, id, type) ?: throw PersistenceException("Item does not exist")
 
-    override fun openInputStream(descriptor: StreamDescriptor?): InputStream {
+    override fun openInputStream(descriptor: StreamDescriptor): InputStream {
         if (descriptor is FileStreamDescriptor) {
             return FileInputStream(descriptor.file)
         } else if (descriptor is DocumentFileStreamDescriptor) {
@@ -264,7 +261,7 @@ class MainPersistenceProvider @Inject constructor(
         throw RuntimeException("Unsupported descriptor.")
     }
 
-    override fun openOutputStream(descriptor: StreamDescriptor?): OutputStream {
+    override fun openOutputStream(descriptor: StreamDescriptor): OutputStream {
         if (descriptor is FileStreamDescriptor) {
             return FileOutputStream(descriptor.file)
         } else if (descriptor is DocumentFileStreamDescriptor) {
@@ -282,7 +279,7 @@ class MainPersistenceProvider @Inject constructor(
             .apply()
     }
 
-    override fun save(client: Client) {
+    override fun persist(client: Client, updating: Boolean) {
         if (client is UClient) {
             db.clientDao().insertAll(client)
         } else {
@@ -290,7 +287,7 @@ class MainPersistenceProvider @Inject constructor(
         }
     }
 
-    override fun save(clientAddress: ClientAddress) {
+    override fun persist(clientAddress: ClientAddress) {
         if (clientAddress is UClientAddress) {
             db.clientAddressDao().insertAll(clientAddress)
         } else {
@@ -298,15 +295,15 @@ class MainPersistenceProvider @Inject constructor(
         }
     }
 
-    override fun save(clientUid: String, item: TransferItem) {
+    override fun persist(clientUid: String, item: TransferItem) {
         if (item is UTransferItem) {
-            db.transferItemDao().insertAll(item)
+            db.transferItemDao().update(item)
         } else {
             throw UnsupportedOperationException()
         }
     }
 
-    override fun save(clientUid: String, itemList: MutableList<out TransferItem>) {
+    override fun persist(clientUid: String, itemList: MutableList<out TransferItem>) {
         val usableItemList = ArrayList<UTransferItem>()
 
         itemList.forEach {
@@ -318,7 +315,7 @@ class MainPersistenceProvider @Inject constructor(
         db.transferItemDao().insertAll(usableItemList)
     }
 
-    override fun saveClientPicture(clientUid: String, bitmap: ByteArray?) {
+    override fun persistClientPicture(clientUid: String, bitmap: ByteArray?) {
         val fileName = "photo-" + clientUid.hashCode()
 
         if (bitmap == null) {
@@ -328,7 +325,7 @@ class MainPersistenceProvider @Inject constructor(
         }
     }
 
-    override fun saveRequestForInvalidationOfCredentials(clientUid: String?) {
+    override fun saveRequestForInvalidationOfCredentials(clientUid: String) {
         TODO("Not yet implemented")
     }
 

@@ -28,6 +28,9 @@ interface TransferItemDao {
     @Insert
     fun insertAll(list: List<UTransferItem>)
 
+    @Update
+    fun update(transferItem: UTransferItem)
+
     @Query("UPDATE transferItem SET state = $STATE_PENDING WHERE groupId = :groupId")
     fun updateTemporaryFailuresAsPending(groupId: Long)
 }
