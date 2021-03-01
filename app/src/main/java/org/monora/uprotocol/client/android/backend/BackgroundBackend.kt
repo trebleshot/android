@@ -31,7 +31,9 @@ import org.monora.uprotocol.client.android.util.*
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class BackgroundBackend @Inject constructor(
     @ApplicationContext val context: Context,
     val nsdDaemon: NsdDaemon,

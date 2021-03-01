@@ -187,7 +187,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getClientPictureFor(client: Client): ByteArray {
         try {
-            return context.openFileInput("photo-" + client?.clientUid.hashCode()).use {
+            return context.openFileInput("photo-" + client.clientUid.hashCode()).use {
                 return@use it.readBytes()
             }
         } catch (e: Exception) {
@@ -199,21 +199,17 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getClientUid(): String {
         val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        var uuid = sharedPreferences.getString("uuid", null)
-
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString()
+        return sharedPreferences.getString("uuid", null) ?: UUID.randomUUID().toString().also {
             sharedPreferences.edit()
-                .putString("uuid", uuid)
+                .putString("uuid", it)
                 .apply()
         }
-
-        return uuid
     }
 
     override fun getDescriptorFor(transferItem: TransferItem): StreamDescriptor = FileStreamDescriptor(
         File(
-            context.filesDir, transferItem.itemGroupId.toString() + File.separator + transferItem.itemDirectory
+            context.filesDir,
+            transferItem.itemGroupId.toString() + File.separator + transferItem.itemDirectory
                     + File.separator + transferItem.itemName
         )
     )
@@ -273,12 +269,6 @@ class MainPersistenceProvider @Inject constructor(
         throw RuntimeException("Unsupported descriptor.")
     }
 
-    override fun revokeNetworkPin() {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putInt("pin", 0)
-            .apply()
-    }
-
     override fun persist(client: Client, updating: Boolean) {
         if (client is UClient) {
             if (updating) {
@@ -327,6 +317,12 @@ class MainPersistenceProvider @Inject constructor(
         } else context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
             it.write(bitmap)
         }
+    }
+
+    override fun revokeNetworkPin() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putInt("pin", 0)
+            .apply()
     }
 
     override fun saveRequestForInvalidationOfCredentials(clientUid: String) {

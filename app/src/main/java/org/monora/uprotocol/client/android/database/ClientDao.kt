@@ -15,8 +15,8 @@ interface ClientDao {
     fun getAll(): List<UClient>
 
     @Insert
-    fun insert(clients: UClient)
+    fun insert(client: UClient)
 
     @Update
-    fun update(clients: UClient)
+    fun update(client: UClient)
 }

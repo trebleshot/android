@@ -15,5 +15,5 @@ interface ClientAddressDao {
     suspend fun getAll(clientUid: String): List<UClientAddress>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(users: UClientAddress)
+    fun insert(address: UClientAddress)
 }
