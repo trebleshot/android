@@ -92,7 +92,7 @@ class ManualConnectionActivity : Activity() {
             if (address.isNullOrEmpty())
                 editText.error = getString(R.string.mesg_enterValidHostAddress)
             else {
-                lifecycle.coroutineScope.launch {
+                lifecycleScope.launch {
                     button.isEnabled = false
                     progress = true
 

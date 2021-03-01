@@ -99,7 +99,8 @@ abstract class HotspotManager internal constructor(context: Context) {
                     }
                 }, Handler(Looper.getMainLooper()))
                 return true
-            } catch (ignored: Throwable) {
+            } catch (e: Throwable) {
+                e.printStackTrace()
             }
             return false
         }

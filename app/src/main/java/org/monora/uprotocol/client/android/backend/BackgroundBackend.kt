@@ -208,12 +208,12 @@ class BackgroundBackend @Inject constructor(
     }
 
     fun toggleHotspot() {
-        if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(context)) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && !Settings.System.canWrite(context)) return
 
         if (hotspotManager.enabled) {
             hotspotManager.disable()
         } else {
-            val result = hotspotManager.enableConfigured(context.getString(R.string.app_name), null)
+            val result = hotspotManager.enableConfigured(context.getString(R.string.text_appName), null)
             Log.d(App.TAG, "toggleHotspot: Enabling=$result")
         }
     }
