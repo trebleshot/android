@@ -23,12 +23,12 @@ class MainConnectionFactory @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : ConnectionFactory {
     override fun enableCipherSuites(
-        supportedCipherSuites: Array<out String>?,
-        enabledCipherSuiteList: MutableList<String>?,
+        supportedCipherSuites: Array<out String>,
+        enabledCipherSuiteList: MutableList<String>,
     ) {
         if (Build.VERSION.SDK_INT >= 20) {
-            enabledCipherSuiteList?.add("TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384")
-            enabledCipherSuiteList?.add("TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256")
+            enabledCipherSuiteList.add("TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384")
+            enabledCipherSuiteList.add("TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256")
         }
     }
 
@@ -53,41 +53,30 @@ private class NetworkBinderCallback(
     val connectivityManager: ConnectivityManager, val inetAddress: InetAddress,
 ) : ConnectivityManager.NetworkCallback() {
     private val lock = Object()
+
+    private var bound = false
+
     private var exception: IOException? = null
+
     private var resultConnection: ActiveConnection? = null
 
     override fun onAvailable(network: Network) {
         super.onAvailable(network)
         if (!bindNetwork(network)) {
-            Log.d(TAG, "onAvailable: Failed to bind network $network. Proceeding to connect anyway.")
+            Log.d(TAG, "onAvailable: Failed to bind network $network.")
+            return
         }
 
+        bound = true
+
         try {
-            resultConnection = CommunicationBridge.openConnection(inetAddress)
-        } catch (e: IOException) {
-            exception = e
+            resultConnection = openConnection(inetAddress)
         } catch (e: Exception) {
-            e.printStackTrace()
             exception = IOException(e)
         } finally {
             synchronized(lock) { lock.notifyAll() }
             connectivityManager.unregisterNetworkCallback(this)
             bindNetwork(null)
-        }
-    }
-
-    override fun onUnavailable() {
-        super.onUnavailable()
-        Log.d(
-            TAG, "onUnavailable: No network was available for the requested network type. Opening by the " +
-                    "default network"
-        )
-        try {
-            resultConnection = openConnection(inetAddress)
-        } catch (e: IOException) {
-            exception = e
-        } finally {
-            synchronized(lock) { lock.notifyAll() }
         }
     }
 
@@ -110,6 +99,11 @@ private class NetworkBinderCallback(
 
         resultConnection?.let { return it }
         exception?.let { throw it }
+
+        if (!bound) {
+            Log.d(TAG, "waitForConnection: The network was not available, trying without binding.")
+            return openConnection(inetAddress)
+        }
 
         throw IOException("No connection is handed over after waiting.")
     }

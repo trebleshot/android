@@ -68,8 +68,6 @@ android {
         targetSdkVersion 30
         versionCode 99
         versionName "2.0"
-        buildConfigField "int", "PROTOCOL_VERSION", "1"
-        buildConfigField "int", "PROTOCOL_VERSION_MIN", "1"
         multiDexEnabled true
 
         vectorDrawables {

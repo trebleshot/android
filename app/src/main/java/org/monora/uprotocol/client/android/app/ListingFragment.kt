@@ -25,21 +25,21 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
-import org.monora.uprotocol.client.android.BuildConfig
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.dialog.SelectionEditorDialog
-import org.monora.uprotocol.client.android.util.Selections
-import org.monora.uprotocol.client.android.view.LongTextBubbleFastScrollViewProvider
-import org.monora.uprotocol.client.android.widget.ListingAdapter
-import org.monora.uprotocol.client.android.widget.recyclerview.SwipeSelectionListener
-import org.monora.uprotocol.client.android.widget.ListingAdapterBase
 import com.genonbeta.android.framework.app.RecyclerViewFragment
 import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.actionperformer.*
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller
+import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.dialog.SelectionEditorDialog
 import org.monora.uprotocol.client.android.model.ContentModel
+import org.monora.uprotocol.client.android.util.Selections
+import org.monora.uprotocol.client.android.view.LongTextBubbleFastScrollViewProvider
+import org.monora.uprotocol.client.android.widget.ListingAdapter
+import org.monora.uprotocol.client.android.widget.ListingAdapterBase
+import org.monora.uprotocol.client.android.widget.recyclerview.SwipeSelectionListener
 import java.util.*
 
 /**
@@ -193,7 +193,9 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (localSelectionMode && localSelectionActivated) performerMenu!!.populateMenu(menu) else {
+        if (localSelectionMode && localSelectionActivated) {
+            performerMenu?.populateMenu(menu)
+        } else {
             inflater.inflate(R.menu.actions_abs_editable_list, menu)
             val filterItem = menu.findItem(R.id.actions_abs_editable_filter)
             if (filterItem != null) {
@@ -201,18 +203,20 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
                 if (filteringSupported) {
                     val view = filterItem.actionView
                     if (view is SearchView) {
-                        view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                            override fun onQueryTextSubmit(query: String): Boolean {
-                                refreshList()
-                                return true
-                            }
+                        view.setOnQueryTextListener(
+                            object : SearchView.OnQueryTextListener {
+                                override fun onQueryTextSubmit(query: String): Boolean {
+                                    refreshList()
+                                    return true
+                                }
 
-                            override fun onQueryTextChange(newText: String): Boolean {
-                                filteringDelegate.keyword = newText
-                                refreshList()
-                                return true
+                                override fun onQueryTextChange(newText: String): Boolean {
+                                    filteringDelegate.keyword = newText
+                                    refreshList()
+                                    return true
+                                }
                             }
-                        })
+                        )
                     }
                 }
             }
@@ -221,9 +225,8 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        val groupId = item.groupId
 
-       if (id == R.id.actions_abs_editable_multi_select && performerMenu != null && activity != null)
+        if (id == R.id.actions_abs_editable_multi_select && performerMenu != null && activity != null)
             localSelectionActivated = !localSelectionActivated
         else if (performerMenu?.onMenuItemClick(item) == true)
             localSelectionActivated = false
@@ -244,8 +247,7 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
 
     override fun getPerformerEngine(): IPerformerEngine? {
         activity?.let {
-            if (it is PerformerEngineProvider)
-                return it.getPerformerEngine()
+            if (it is PerformerEngineProvider) return it.getPerformerEngine()
         }
 
         return performerEngine
@@ -270,8 +272,11 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
     override fun loadIfRequested(): Boolean {
         val refreshed = refreshRequested
         refreshRequested = false
-        if (refreshed)
+
+        if (refreshed) {
             refreshList()
+        }
+
         return refreshed
     }
 
@@ -323,8 +328,11 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
 
     override fun setItemSelected(holder: V, force: Boolean): Boolean {
         Log.d(TAG, "setItemSelected: $selectByClickEnabled $force")
-        if (engineConnection.getSelectionList()?.let { it.size <= 0 } == true && !force)
+
+        if (engineConnection.getSelectionList().let { it != null && it.size <= 0 } && !force) {
             return false
+        }
+
         try {
             engineConnection.setSelected(holder)
             return true
@@ -425,10 +433,10 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
         fun setSelectionState(newState: Boolean, tryForeground: Boolean) {
             val engine = provider.getPerformerEngine()
             val foreground = foregroundConnection
-            if (foreground != null && tryForeground) setSelectionState(
-                foreground,
-                newState
-            ) else if (engine != null) for (baseEngineConnection in engine.getConnectionList()) {
+
+            if (foreground != null && tryForeground) {
+                setSelectionState(foreground, newState)
+            } else if (engine != null) for (baseEngineConnection in engine.getConnectionList()) {
                 if (baseEngineConnection is IEngineConnection<*>) setSelectionState(
                     baseEngineConnection, newState
                 )
