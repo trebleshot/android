@@ -26,7 +26,7 @@
 
     <fragment
         android:id="@+id/activity_text_stream_fragment"
-        android:name="org.monora.uprotocol.client.android.fragment.SharedTextListFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.SharedTextFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

@@ -25,7 +25,7 @@
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.TrebleShot.ExtendedFloatingActionButtonStyle</item>
-        <item name="floatingActionButtonStyle">@style/Widget.TrebleShot.FloatingActionButtonStyle</item>
+        <item name="floatingActionButtonStyle">@style/Widget.TrebleShot.FloatingActionButtonStyle</item>-->
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="popupMenuBackground">?backgroundPopupMenu</item>
         <!--<item name="snackbarStyle">@style/Widget.TrebleShot.Snackbar</item>-->

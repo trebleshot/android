@@ -34,7 +34,7 @@ import org.monora.uprotocol.client.android.viewholder.SharedTextViewHolder
  * created by: Veli
  * date: 30.12.2017 13:25
  */
-class SharedTextListAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
+class SharedTextAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_SHARED_TEXT -> SharedTextViewHolder(
             ListSharedTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)

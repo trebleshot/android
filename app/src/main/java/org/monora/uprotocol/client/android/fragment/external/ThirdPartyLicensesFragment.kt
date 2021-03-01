@@ -28,8 +28,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLibraryListFragment.LicencesAdapter
-import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLibraryListFragment.ModuleItem
+import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLicensesFragment.LicencesAdapter
+import org.monora.uprotocol.client.android.fragment.external.ThirdPartyLicensesFragment.ModuleItem
 import com.genonbeta.android.framework.app.RecyclerViewFragment
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
@@ -40,7 +40,7 @@ import java.io.ByteArrayOutputStream
  * created by: veli
  * date: 7/20/18 8:56 PM
  */
-class ThirdPartyLibraryListFragment : RecyclerViewFragment<ModuleItem, ViewHolder, LicencesAdapter>() {
+class ThirdPartyLicensesFragment : RecyclerViewFragment<ModuleItem, ViewHolder, LicencesAdapter>() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -66,8 +66,7 @@ class ThirdPartyLibraryListFragment : RecyclerViewFragment<ModuleItem, ViewHolde
                 popupMenu.menu.findItem(R.id.popup_visitWebPage).isEnabled = moduleItem.moduleUrl != null
                 popupMenu.menu.findItem(R.id.popup_goToLicenceURL).isEnabled = moduleItem.licenceUrl != null
                 popupMenu.setOnMenuItemClickListener { item: MenuItem ->
-                    val id = item.itemId
-                    when (id) {
+                    when (item.itemId) {
                         R.id.popup_goToLicenceURL -> context.startActivity(
                             Intent(Intent.ACTION_VIEW).setData(Uri.parse(moduleItem.licenceUrl))
                         )

@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:layout_marginBottom="@dimen/padding_list_content_narrow_parent_layout">
+        android:layout_marginBottom="@dimen/padding_list_content_parent_layout">
 
         <ImageView
             android:id="@+id/image_check"

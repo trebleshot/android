@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
-import org.monora.uprotocol.client.android.adapter.SharedTextListAdapter
+import org.monora.uprotocol.client.android.adapter.SharedTextAdapter
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.DateSectionContentModel
@@ -39,13 +39,13 @@ import org.monora.uprotocol.client.android.viewmodel.SharedTextDataViewModel
  * date: 30.12.2017 13:25
  */
 @AndroidEntryPoint
-class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
+class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
     private val viewModel: SharedTextDataViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        val adapter = SharedTextListAdapter()
+        val adapter = SharedTextAdapter()
 
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
@@ -53,7 +53,7 @@ class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
         //adapter = SharedTextListAdapter(appDatabase)
         //emptyListImageView.setImageResource(R.drawable.ic_forum_white_24dp)
         //emptyListTextView.text = getString(R.string.text_listEmptyTextStream)
-        view.findViewById<View>(R.id.fab).setOnClickListener { v: View? ->
+        view.findViewById<View>(R.id.fab).setOnClickListener {
             startActivity(
                 Intent(activity, TextEditorActivity::class.java).setAction(TextEditorActivity.ACTION_EDIT_TEXT)
             )
@@ -71,8 +71,9 @@ class SharedTextListFragment : Fragment(R.layout.layout_shared_text) {
 
         list.forEach {
             val dateText = DateUtils.formatDateTime(context, it.created, DateUtils.FORMAT_SHOW_DATE)
-            if (previous?.dateText != dateText)
-                newList.add(DateSectionContentModel(dateText, it.created).also { previous = it })
+            if (previous?.dateText != dateText) {
+                newList.add(DateSectionContentModel(dateText, it.created).also { model -> previous = model })
+            }
             newList.add(it)
         }
 

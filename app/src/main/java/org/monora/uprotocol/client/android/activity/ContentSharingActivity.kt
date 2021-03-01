@@ -112,7 +112,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
                 0,
                 R.drawable.ic_short_text_white_24dp,
                 getString(R.string.text_sharedTexts),
-                SharedTextListFragment::class.qualifiedName!!,
+                SharedTextFragment::class.qualifiedName!!,
                 arguments
             )
         )
@@ -121,7 +121,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
                 1,
                 R.drawable.ic_short_text_white_24dp,
                 getString(R.string.text_files),
-                SharedTextListFragment::class.qualifiedName!!,
+                SharedTextFragment::class.qualifiedName!!,
                 arguments
             )
         )

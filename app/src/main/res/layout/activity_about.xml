@@ -141,7 +141,7 @@
 
                 <fragment
                     android:id="@+id/activity_about_contributors_fragment"
-                    android:name="org.monora.uprotocol.client.android.fragment.external.GitHubContributorsListFragment"
+                    android:name="org.monora.uprotocol.client.android.fragment.external.GitHubContributorsFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:tag="contributorsFragment" />

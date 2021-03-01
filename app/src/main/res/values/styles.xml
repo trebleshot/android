@@ -79,12 +79,12 @@
     </style>
 
     <style name="Widget.TrebleShot.FloatingActionButtonStyle" parent="@style/Widget.MaterialComponents.FloatingActionButton">
-        <item name="tint">@android:color/white</item>
+        <!--<item name="tint">@android:color/white</item>-->
     </style>
 
     <style name="Widget.TrebleShot.ExtendedFloatingActionButtonStyle" parent="@style/Widget.MaterialComponents.ExtendedFloatingActionButton">
-        <item name="iconTint">@android:color/white</item>
-        <item name="android:textColor">@android:color/white</item>
+        <!--<item name="iconTint">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>-->
     </style>
 
     <style name="Widget.TrebleShot.Snackbar" parent="Widget.MaterialComponents.Snackbar">

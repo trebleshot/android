@@ -49,11 +49,17 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
     private lateinit var optionsFragment: OptionsFragment
 
-    private lateinit var toolbar: Toolbar
+    private val toolbar: Toolbar by lazy {
+        findViewById(R.id.toolbar)
+    }
 
-    private lateinit var progressBar: ProgressBar
+    private val progressBar: ProgressBar by lazy {
+        findViewById(R.id.activity_connection_establishing_progress_bar)
+    }
 
-    private var connectionMode = ConnectionMode.Return
+    private val connectionMode by lazy {
+        intent?.getSerializableExtra(EXTRA_CONNECTION_MODE) ?: ConnectionMode.Return
+    }
 
     private val selfReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -78,15 +84,9 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent?.hasExtra(EXTRA_CONNECTION_MODE) == true) {
-            connectionMode = intent.getSerializableExtra(EXTRA_CONNECTION_MODE) as ConnectionMode
-        }
 
         setResult(RESULT_CANCELED)
         setContentView(R.layout.activity_add_device)
-
-        toolbar = findViewById(R.id.toolbar)
-
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -96,7 +96,6 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
             arrayListOf(ClientType.Web.toString())
         )
         val factory = supportFragmentManager.fragmentFactory
-        progressBar = findViewById(R.id.activity_connection_establishing_progress_bar)
         optionsFragment = factory.instantiate(classLoader, OptionsFragment::class.java.name) as OptionsFragment
         networkManagerFragment = factory.instantiate(
             classLoader, NetworkManagerFragment::class.java.name
@@ -122,26 +121,15 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && data != null) {
-            val client: UClient?
-            val address: UClientAddress?
-
             when (requestCode) {
-                REQUEST_BARCODE_SCAN -> {
-                    client = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE)
-                    address = data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
-                }
-                REQUEST_IP_DISCOVERY -> {
-                    client = data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT)
-                    address = data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT_ADDRESS)
-                }
-                else -> {
-                    client = null
-                    address = null
-                }
-            }
-
-            if (client != null && address != null) {
-                handleResult(client, address)
+                REQUEST_BARCODE_SCAN -> handleResult(
+                    data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE),
+                    data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
+                )
+                REQUEST_IP_DISCOVERY -> handleResult(
+                    data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT),
+                    data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT_ADDRESS)
+                )
             }
         }
     }
@@ -201,7 +189,9 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         return supportFragmentManager.findFragmentById(R.id.activity_connection_establishing_content_view)
     }
 
-    private fun handleResult(client: UClient, address: UClientAddress?) {
+    private fun handleResult(client: UClient?, address: UClientAddress?) {
+        if (client == null || address == null) return
+
         if (ConnectionMode.Return == connectionMode) {
             returnResult(this, client, address)
         } else if (ConnectionMode.WaitForRequests == connectionMode) {

@@ -63,7 +63,7 @@
     <string name="text_deleteConfirm">Confirm deletion</string>
     <string name="butn_cancel">Cancel</string>
     <string name="butn_refresh">Refresh</string>
-    <string name="butn_shareTrebleshot">Share this app</string>
+    <string name="butn_shareTrebleshot">Share This App</string>
     <string name="text_about">About</string>
     <string name="butn_close">Close</string>
     <string name="text_deviceModelInfo">Device name</string>
@@ -379,7 +379,7 @@
     <string name="text_transferStatusFiles">%1d of %2d</string>
     <string name="text_donate">Support Us</string>
     <string name="mesg_donationSuccessful">Thank you!</string>
-    <string name="butn_donate">Help development</string>
+    <string name="butn_donate">Support Us</string>
     <string name="butn_open">Open</string>
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>

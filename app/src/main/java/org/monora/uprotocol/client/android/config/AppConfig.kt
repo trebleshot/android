@@ -38,15 +38,19 @@ object AppConfig {
 
     const val EMAIL_DEVELOPER = "trebleshot@monora.org"
 
-    const val URI_REPO_APP_UPDATE = "https://api.github.com/repos/genonbeta/TrebleShot/releases"
+    const val URI_API_GITHUB = "https://api.github.com/"
 
-    const val URI_REPO_APP_CONTRIBUTORS = "https://api.github.com/repos/genonbeta/TrebleShot/contributors"
+    const val URI_REPO = "repos/trebleshot/android"
+
+    const val URI_REPO_APP_UPDATE = "https://api.github.com/repos/trebleshot/android/releases"
+
+    const val URI_REPO_APP_CONTRIBUTORS = "https://api.github.com/repos/trebleshot/android/contributors"
 
     const val URI_GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=org.monora.uprotocol.client.android"
 
     const val URI_ORG_HOME = "https://monora.org"
 
-    const val URI_REPO_APP = "http://github.com/genonbeta/TrebleShot"
+    const val URI_REPO_APP = "http://github.com/trebleshot"
 
     const val URI_REPO_ORG = "http://github.com/monoraorg"
 

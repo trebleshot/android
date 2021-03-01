@@ -175,7 +175,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         return Snackbar.make(taskInterruptButton, getString(resId, *objects), Snackbar.LENGTH_LONG)
     }
 
-    protected fun handleBarcode(code: String) {
+    private fun handleBarcode(code: String) {
         try {
             val values: Array<String> = code.split(";".toRegex()).toTypedArray()
             val type = values[0]
@@ -212,7 +212,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     .setTitle(R.string.text_unrecognizedQrCode)
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
-                    .setPositiveButton(R.string.butn_show) { _: DialogInterface?, which: Int ->
+                    .setPositiveButton(R.string.butn_show) { _: DialogInterface?, _: Int ->
                         val sharedText = SharedText(0, code)
 
                         lifecycleScope.launch {
@@ -249,7 +249,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                 AlertDialog.Builder(this)
                     .setMessage(R.string.mesg_errorNotSameNetwork)
                     .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_gotIt) { _: DialogInterface?, which: Int -> runnable.run() }
+                    .setPositiveButton(R.string.butn_gotIt) { _: DialogInterface?, _: Int -> runnable.run() }
                     .setOnDismissListener(dismissListener)
             )
         }
@@ -264,7 +264,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         builder.setOnDismissListener(dismissListener).show()
     }
 
-    fun updateState(connecting: Boolean) {
+    private fun updateState(connecting: Boolean) {
         if (connecting) {
             // Keep showing barcode view
             barcodeView.pauseAndWait()
@@ -275,7 +275,7 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         }
         taskContainer.visibility = if (connecting) View.VISIBLE else View.GONE
         taskInterruptButton.setOnClickListener(if (connecting)
-            View.OnClickListener { v: View? ->
+            View.OnClickListener {
                 getTaskListOf(DeviceIntroductionTask::class.java).forEach {
                     it.interrupt(true)
                 }
@@ -325,17 +325,17 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                 conductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp)
                 conductText.setText(R.string.text_scanQRWifiRequired)
                 conductButton.setText(R.string.butn_enable)
-                conductButton.setOnClickListener { v: View? -> connections.turnOnWiFi(this, this) }
+                conductButton.setOnClickListener { connections.turnOnWiFi(this, this) }
             }
         } else {
             barcodeView.resume()
             conductText.setText(R.string.help_scanQRCode)
         }
         setConductItemsShowing(!state)
-        barcodeView.setVisibility(if (state) View.VISIBLE else View.GONE)
+        barcodeView.visibility = if (state) View.VISIBLE else View.GONE
     }
 
-    protected fun setConductItemsShowing(showing: Boolean) {
+    private fun setConductItemsShowing(showing: Boolean) {
         conductContainer.visibility = if (showing) View.VISIBLE else View.GONE
     }
 
@@ -352,6 +352,9 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         if (task is DeviceIntroductionTask) {
             when (state) {
                 AsyncTask.State.Starting -> updateState(true)
+                AsyncTask.State.Running -> {
+
+                }
                 AsyncTask.State.Finished -> updateState(false)
             }
         }

@@ -14,7 +14,8 @@ import java.net.InetAddress
     tableName = "clientAddress",
     foreignKeys = [
         ForeignKey(
-            entity = UClient::class, parentColumns = ["uid"], childColumns = ["clientUid"], onDelete = CASCADE),
+            entity = UClient::class, parentColumns = ["uid"], childColumns = ["clientUid"], onDelete = CASCADE
+        ),
     ]
 )
 data class UClientAddress(
