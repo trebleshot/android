@@ -17,8 +17,6 @@
  */
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-import com.github.jk1.license.render.JsonReportRenderer
-
 buildscript {
     ext.kotlin_version = '1.4.31'
     ext.kotlin_version = '1.4.30'
@@ -39,18 +37,8 @@ buildscript {
 }
 
 plugins {
-    id "com.github.jk1.dependency-license-report" version "1.2"
     id "org.jetbrains.kotlin.android" version "1.4.20" apply false
-}
-
-licenseReport {
-    outputDir = "$projectDir/app/src/main/res/raw"
-    renderers = [new JsonReportRenderer('libraries_index.json', true)]
-    projects = [project] + project.subprojects
-    // the option for licence rendering which is arg 'compile' in array
-    // won't work therefore, we have to remove the directories
-    // inside the output dir for they will cause build errors
-    configurations = ALL
+    id "com.cookpad.android.plugin.license-tools" version "1.2.6"
 }
 
 allprojects {

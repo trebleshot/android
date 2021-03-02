@@ -87,7 +87,7 @@ class AboutActivity : Activity() {
                 startActivity(Intent(this@AboutActivity, ChangelogActivity::class.java))
             }
             R.id.actions_about_third_party_licenses -> {
-                startActivity(Intent(this@AboutActivity, ThirdPartyLicensesActivity::class.java))
+                startActivity(Intent(this@AboutActivity, LicensesActivity::class.java))
             }
             R.id.actions_about_check_for_updates -> {
                 Updates.checkForUpdates(

@@ -6,4 +6,5 @@
 *.iml
 signing.properties
 local.properties
+licenses.yml
 *.apk

@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/layout_licences_fragment"
-        android:name="org.monora.uprotocol.client.android.fragment.external.ThirdPartyLicensesFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.external.LicensesFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="licencesListFragment" />

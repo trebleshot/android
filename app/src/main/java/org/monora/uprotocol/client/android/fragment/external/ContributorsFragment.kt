@@ -43,7 +43,7 @@ import org.monora.uprotocol.client.android.viewmodel.ContributorsDataViewModel
  * date: 16.03.2018 15:46
  */
 @AndroidEntryPoint
-class GitHubContributorsFragment : Fragment(R.layout.layout_contributors) {
+class ContributorsFragment : Fragment(R.layout.layout_contributors) {
     private val viewModel: ContributorsDataViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

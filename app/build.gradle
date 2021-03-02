@@ -21,6 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: "com.cookpad.android.plugin.license-tools"
 
 // In the root folder of the project, you can find the template properties file
 // named 'signing.properties.txt'. Rename it to 'signing.properties' to make use of it
