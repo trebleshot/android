@@ -20,8 +20,6 @@ package org.monora.uprotocol.client.android.service
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
-import android.net.wifi.WifiManager
-import android.net.wifi.WifiManager.WifiLock
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
@@ -29,7 +27,6 @@ import android.widget.Toast
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.coroutineScope
 import dagger.hilt.android.AndroidEntryPoint
-import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
@@ -43,7 +40,6 @@ import org.monora.uprotocol.client.android.task.FileTransferStarterTask
 import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.client.android.util.*
 import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.TransportSession
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -60,15 +56,10 @@ class BackgroundService : LifecycleService() {
     private val binder = LocalBinder()
 
     @Inject
-    lateinit var transportSession: TransportSession
-
-    @Inject
     lateinit var persistenceProvider: PersistenceProvider
 
     @Inject
     lateinit var connectionFactory: ConnectionFactory
-
-    private lateinit var wifiLock: WifiLock
 
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
@@ -77,15 +68,7 @@ class BackgroundService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-
-        wifiLock = backend.wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG)
-
-        backend.nsdDaemon.registerService()
-        backend.nsdDaemon.startDiscovering()
-        wifiLock.acquire()
-
-        startForeground(NotificationHelper.ID_BG_SERVICE, backend.notificationHelper.foregroundNotification.build())
-        tryStartingOrStopSelf()
+        startForeground(NotificationHelper.ID_BG_SERVICE, backend.bgNotification.build())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -156,14 +139,14 @@ class BackgroundService : LifecycleService() {
                 Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
             }
         } else if (ACTION_END_SESSION == intent.action) {
-            stopSelf()
+            backend.stopByService(this)
         } else if (ACTION_START_TRANSFER == intent.action && intent.hasExtra(EXTRA_TRANSFER)
             && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)
         ) {
             val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
             val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
-            val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type
-            if (client != null && transfer != null) try {
+            val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type?
+            if (client != null && transfer != null && type != null) try {
                 val task = backend.findTaskBy(
                     FileTransferTask.identifyWith(transfer.id, client.uid, type)
                 ) as FileTransferTask?
@@ -191,64 +174,11 @@ class BackgroundService : LifecycleService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopForeground(true)
-        try {
-            transportSession.stop()
-        } catch (ignored: Exception) {
-        }
-
-        backend.nsdDaemon.unregisterService()
-        backend.nsdDaemon.stopDiscovering()
-        backend.webShareServer.stop()
-
-        lifecycle.coroutineScope.launch {
-            appDatabase.transferDao().hideTransfersFromWeb()
-        }
-
-        if (backend.hotspotManager.unloadPreviousConfig()) {
-            Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + backend.hotspotManager.disable())
-        }
-
-        backend.interruptAllTasks()
-
-        if (wifiLock.isHeld) {
-            wifiLock.release()
-            Log.d(TAG, "onDestroy: Releasing Wi-Fi lock")
-        }
+        stopForeground(false)
     }
 
     private fun isProcessRunning(transferId: Long, deviceId: String, type: TransferItem.Type): Boolean {
         return backend.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
-    }
-
-    /**
-     * Some services like file transfer server, web share portal server involve writing and reading data.
-     * So, it is best to avoid starting them when the app doesn't have the right permissions.
-     */
-    fun tryStartingOrStopSelf() {
-        val webServerRunning = backend.webShareServer.isAlive
-        val commServerRunning = transportSession.isListening
-        if (webServerRunning && commServerRunning) return
-        try {
-            if (!Permissions.checkRunningConditions(this)) throw Exception(
-                "The app doesn't have the satisfactory permissions to start the services."
-            )
-
-            if (!commServerRunning) {
-                transportSession.start()
-            }
-
-            if (!webServerRunning) {
-                // TODO: 2/26/21 Fix bound runner
-                /*backend.webShareServer.setAsyncRunner(
-                    BoundRunner(Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX))
-                )*/
-                backend.webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            stopSelf()
-        }
     }
 
     inner class LocalBinder : Binder() {

@@ -20,7 +20,6 @@ class MainTransportSeat @Inject constructor(
     val connectionFactory: ConnectionFactory,
     val persistenceProvider: PersistenceProvider,
     val appDatabase: AppDatabase,
-    val backgroundBackend: BackgroundBackend,
 ) : TransportSeat {
     override fun beginFileTransfer(
         bridge: CommunicationBridge,
@@ -36,11 +35,12 @@ class MainTransportSeat @Inject constructor(
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
         if (client !is UClient) throw UnsupportedOperationException("Expected the UClient implementation")
 
-        backgroundBackend.run(
+        // FIXME: 3/2/21 Having background backend injected causes a dependency cycle
+        /*backgroundBackend.run(
             IndexTransferTask(
                 connectionFactory, persistenceProvider, appDatabase, groupId, jsonArray, client, hasPin
             )
-        )
+        )*/
     }
 
     override fun handleFileTransferState(client: Client, groupId: Long, isAccepted: Boolean) {

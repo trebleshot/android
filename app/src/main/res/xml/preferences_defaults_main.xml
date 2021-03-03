@@ -32,10 +32,6 @@
 
     <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
-        android:key="kill_service_on_exit" />
-
-    <androidx.preference.CheckBoxPreference
-        android:defaultValue="true"
         android:key="qr_trust" />
 
     <androidx.preference.CheckBoxPreference

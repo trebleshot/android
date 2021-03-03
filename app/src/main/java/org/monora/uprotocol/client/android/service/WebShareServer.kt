@@ -80,7 +80,7 @@ class WebShareServer @Inject constructor(
 
     private val client = persistenceProvider.client
 
-    var hadClients = false
+    var hadClients = true
         private set
 
     override fun stop() {

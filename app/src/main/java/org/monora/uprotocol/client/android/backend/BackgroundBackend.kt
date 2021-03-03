@@ -14,12 +14,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import fi.iki.elonen.NanoHTTPD
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -28,6 +33,7 @@ import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.WebShareServer
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.util.*
+import org.monora.uprotocol.core.TransportSession
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -36,9 +42,16 @@ import javax.inject.Singleton
 @Singleton
 class BackgroundBackend @Inject constructor(
     @ApplicationContext val context: Context,
+    val transportSession: TransportSession,
     val nsdDaemon: NsdDaemon,
-    val webShareServer: WebShareServer
+    val webShareServer: WebShareServer,
+    val appDatabase: AppDatabase,
 ) {
+    val bgIntent = Intent(context, BackgroundService::class.java)
+
+    val bgNotification
+        get() = taskNotification?.takeIf { hasTasks() } ?: notificationHelper.foregroundNotification
+
     private val executor = Executors.newFixedThreadPool(10)
 
     private var foregroundActivitiesCount = 0
@@ -46,6 +59,8 @@ class BackgroundBackend @Inject constructor(
     private var foregroundActivity: Activity? = null
 
     var hotspotManager = HotspotManager.newInstance(context)
+
+    var wifiLock: WifiManager.WifiLock? = null
 
     var mediaScanner: MediaScannerConnection = MediaScannerConnection(context, null)
 
@@ -64,10 +79,6 @@ class BackgroundBackend @Inject constructor(
 
     fun attach(task: AsyncTask) {
         runInternal(task)
-    }
-
-    fun canStopService(): Boolean {
-        return !hasTasks() && !hotspotManager.started && !webShareServer.hadClients
     }
 
     fun findTaskBy(identity: Identity): AsyncTask? {
@@ -110,19 +121,17 @@ class BackgroundBackend @Inject constructor(
     }
 
     @Synchronized
-    fun notifyActivityInForeground(activity: Activity?, inForeground: Boolean) {
+    fun notifyActivityInForeground(activity: Activity, inForeground: Boolean) {
         if (!inForeground && foregroundActivitiesCount == 0) return
+        val wasInForeground = foregroundActivitiesCount > 0
         foregroundActivitiesCount += if (inForeground) 1 else -1
-        val inBg = foregroundActivitiesCount == 0
-        val newlyInFg = foregroundActivitiesCount == 1
-        val intent = Intent(context, BackgroundService::class.java)
+        val inBg = wasInForeground && foregroundActivitiesCount == 0
+        val newlyInFg = !wasInForeground && foregroundActivitiesCount == 1
+
         if (Permissions.checkRunningConditions(context)) {
-            if (newlyInFg) {
-                ContextCompat.startForegroundService(context, intent)
-            } else if (inBg) {
-                tryStoppingBgService()
-            }
+            takeBgServiceFgIfNeeded(newlyInFg, inBg)
         }
+
         foregroundActivity = if (inBg) null else if (inForeground) activity else foregroundActivity
         Log.d(App.TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
     }
@@ -130,6 +139,7 @@ class BackgroundBackend @Inject constructor(
     fun notifyFileRequest(device: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
         // Don't show when in the Add Device activity
         if (foregroundActivity is AddDeviceActivity) return
+
         val activity = foregroundActivity
         val numberOfFiles = itemList.size
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
@@ -162,7 +172,7 @@ class BackgroundBackend @Inject constructor(
                 .setNegativeButton(R.string.butn_reject) { _: DialogInterface?, _: Int ->
                     ContextCompat.startForegroundService(activity, rejectIntent)
                 }
-                .setPositiveButton(R.string.butn_accept) { dialog: DialogInterface?, which: Int ->
+                .setPositiveButton(R.string.butn_accept) { _: DialogInterface?, _: Int ->
                     ContextCompat.startForegroundService(activity, acceptIntent)
                 }
             activity.runOnUiThread(Runnable { builder.show() })
@@ -173,11 +183,10 @@ class BackgroundBackend @Inject constructor(
         val notified = System.nanoTime()
         if (notified <= taskNotificationTime && !force) return false
         if (!hasTasks()) {
-            if (foregroundActivitiesCount > 0 || !tryStoppingBgService()) {
-                notificationHelper.foregroundNotification.show()
-            }
+            takeBgServiceFgIfNeeded(newlyInFg = false, newlyInBg = false)
             return false
         }
+
         var taskList: List<AsyncTask>
         synchronized(this.taskList) { taskList = ArrayList(this.taskList) }
         taskNotificationTime = System.nanoTime() + AppConfig.DELAY_DEFAULT_NOTIFICATION * 1e6.toLong()
@@ -186,9 +195,9 @@ class BackgroundBackend @Inject constructor(
     }
 
     @Synchronized
-    protected fun <T : AsyncTask> registerWork(task: T) {
+    private fun <T : AsyncTask> registerWork(task: T) {
         synchronized(taskList) { taskList.add(task) }
-        Log.d(App.TAG, "registerWork: " + task.javaClass.getSimpleName())
+        Log.d(App.TAG, "registerWork: " + task.javaClass.simpleName)
         context.sendBroadcast(Intent(ACTION_TASK_CHANGE))
     }
 
@@ -207,6 +216,76 @@ class BackgroundBackend @Inject constructor(
         publishTaskNotifications(true)
     }
 
+    private fun start() {
+        val webServerRunning = webShareServer.isAlive
+        val commServerRunning = transportSession.isListening
+
+        if (webServerRunning && commServerRunning) {
+            Log.d(TAG, "start: Services are already up")
+            return
+        }
+
+        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, BackgroundService.TAG).also {
+            it.acquire()
+        }
+
+        try {
+            if (!Permissions.checkRunningConditions(context)) throw Exception(
+                "The app doesn't have the satisfactory permissions to start the services."
+            )
+
+            if (!commServerRunning) {
+                transportSession.start()
+            }
+
+            if (!webServerRunning) {
+                // TODO: 2/26/21 Fix bound runner
+                /*backend.webShareServer.setAsyncRunner(
+                    BoundRunner(Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX))
+                )*/
+                webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
+            }
+
+            nsdDaemon.registerService()
+            nsdDaemon.startDiscovering()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun stopByService(backgroundService: BackgroundService) {
+        stop()
+        backgroundService.stopSelf()
+    }
+
+    private fun stop() {
+        try {
+            transportSession.stop()
+        } catch (ignored: Exception) {
+        }
+
+        wifiLock?.takeIf { it.isHeld }?.let {
+            it.release()
+            wifiLock = null
+
+            Log.d(BackgroundService.TAG, "onDestroy: Releasing Wi-Fi lock")
+        }
+
+        nsdDaemon.unregisterService()
+        nsdDaemon.stopDiscovering()
+        webShareServer.stop()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            appDatabase.transferDao().hideTransfersFromWeb()
+        }
+
+        if (hotspotManager.unloadPreviousConfig()) {
+            Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + hotspotManager.disable())
+        }
+
+        interruptAllTasks()
+    }
+
     fun toggleHotspot() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && !Settings.System.canWrite(context)) return
 
@@ -218,18 +297,31 @@ class BackgroundBackend @Inject constructor(
         }
     }
 
-    private fun tryStoppingBgService(): Boolean {
-        val killOnExit = preferences.getBoolean("kill_service_on_exit", true)
-        if (canStopService() && killOnExit) {
-            ContextCompat.startForegroundService(
-                context,
-                Intent(context, BackgroundService::class.java).setAction(
-                    BackgroundService.ACTION_END_SESSION
-                )
-            )
-            return true
+    private fun takeBgServiceFgIfNeeded(newlyInFg: Boolean, newlyInBg: Boolean) {
+        val hasTasks = hasTasks()
+        val hasServices = hotspotManager.started || webShareServer.hadClients
+        val inFgNow = foregroundActivitiesCount > 0
+        val inBgNow = !inFgNow
+
+        if (newlyInFg) {
+            start()
+        } else if (inBgNow && !hasServices && !hasTasks) {
+            stop()
+        } else if (newlyInBg && (hasServices || hasTasks)) {
+            ContextCompat.startForegroundService(context, bgIntent)
         }
-        return false
+
+        if (inFgNow || (inBgNow && !hasServices && !hasTasks)) {
+            context.stopService(bgIntent)
+        }
+
+        if (!hasTasks) {
+            if (hasServices && inBgNow) {
+                notificationHelper.foregroundNotification.show()
+            } else {
+                notificationHelper.foregroundNotification.cancel()
+            }
+        }
     }
 
     @Synchronized
