@@ -17,156 +17,38 @@
  */
 package org.monora.uprotocol.client.android.service
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.coroutineScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.SharedText
-import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.model.*
-import org.monora.uprotocol.client.android.task.FileTransferStarterTask
-import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.client.android.util.*
-import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.persistence.PersistenceProvider
-import org.monora.uprotocol.core.protocol.ConnectionFactory
-import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class BackgroundService : LifecycleService() {
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
-    @Inject
-    lateinit var backend: BackgroundBackend
-
     private val binder = LocalBinder()
 
     @Inject
-    lateinit var persistenceProvider: PersistenceProvider
-
-    @Inject
-    lateinit var connectionFactory: ConnectionFactory
+    lateinit var backend: BackgroundBackend
 
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return binder
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        startForeground(NotificationHelper.ID_BG_SERVICE, backend.bgNotification.build())
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d(TAG, "onStart() : action = " + intent?.action)
 
         if (!Permissions.checkRunningConditions(this) || intent == null) {
             return START_NOT_STICKY
-        }
-
-        if (ACTION_FILE_TRANSFER == intent.action) {
-            val device: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
-            val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
-            val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
-            val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
-
-            backend.notificationHelper.utils.cancel(notificationId)
-
-            if (device != null && transfer != null) try {
-                lifecycle.coroutineScope.launch(Dispatchers.IO) {
-                    val task = FileTransferStarterTask.createFrom(
-                        connectionFactory,
-                        persistenceProvider,
-                        appDatabase,
-                        transfer,
-                        device,
-                        TransferItem.Type.Incoming
-                    )
-
-                    try {
-                        CommunicationBridge.connect(
-                            connectionFactory, persistenceProvider, task.addressList, device.clientUid, 0
-                        ).use { bridge ->
-                            bridge.requestNotifyTransferState(transfer.id, isAccepted)
-                        }
-                    } catch (ignored: Exception) {
-                    }
-
-                    if (isAccepted) {
-                        backend.run(task)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                if (isAccepted) {
-                    backend.notificationHelper.showToast(R.string.mesg_somethingWentWrong)
-                }
-            }
-        } else if (ACTION_DEVICE_KEY_CHANGE_APPROVAL == intent.action) {
-            val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
-            val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
-
-            backend.notificationHelper.utils.cancel(notificationId)
-
-            if (client != null && intent.getBooleanExtra(EXTRA_ACCEPTED, false)) {
-                persistenceProvider.approveInvalidationOfCredentials(client)
-            }
-        } else if (ACTION_CLIPBOARD == intent.action && intent.hasExtra(EXTRA_TEXT_ACCEPTED)) {
-            val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
-            val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
-            val accepted = intent.getBooleanExtra(EXTRA_TEXT_ACCEPTED, false)
-
-            backend.notificationHelper.utils.cancel(notificationId)
-
-            if (accepted && sharedText != null) {
-                val cbManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", sharedText.text))
-                Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-            }
-        } else if (ACTION_END_SESSION == intent.action) {
-            backend.stopByService(this)
-        } else if (ACTION_START_TRANSFER == intent.action && intent.hasExtra(EXTRA_TRANSFER)
-            && intent.hasExtra(EXTRA_DEVICE) && intent.hasExtra(EXTRA_TRANSFER_TYPE)
-        ) {
-            val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
-            val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
-            val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type?
-            if (client != null && transfer != null && type != null) try {
-                val task = backend.findTaskBy(
-                    FileTransferTask.identifyWith(transfer.id, client.uid, type)
-                ) as FileTransferTask?
-
-                if (task == null) lifecycle.coroutineScope.launch {
-                    backend.run(
-                        FileTransferStarterTask.createFrom(
-                            connectionFactory, persistenceProvider, appDatabase, transfer, client, type
-                        )
-                    )
-                } else task.operation.ongoing?.let {
-                    Toast.makeText(
-                        this, getString(R.string.mesg_groupOngoingNotice, it.itemName), Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else if (ACTION_STOP_ALL_TASKS == intent.action) {
-            backend.interruptAllTasks()
+        } else if (intent.action == ACTION_START_BG_SERVICE) {
+            startForeground(NotificationHelper.ID_BG_SERVICE, backend.bgNotification.build())
+        } else if (intent.action == ACTION_STOP_BG_SERVICE) {
+            stopSelf()
+            return START_NOT_STICKY
         }
 
         return START_STICKY
@@ -177,48 +59,14 @@ class BackgroundService : LifecycleService() {
         stopForeground(false)
     }
 
-    private fun isProcessRunning(transferId: Long, deviceId: String, type: TransferItem.Type): Boolean {
-        return backend.findTaskBy(FileTransferTask.identifyWith(transferId, deviceId, type)) != null
-    }
-
     inner class LocalBinder : Binder() {
         val service: BackgroundService
             get() = this@BackgroundService
     }
 
     companion object {
-        val TAG = BackgroundService::class.java.simpleName
+        const val ACTION_START_BG_SERVICE = "org.monora.uprotocol.client.android.action.START_BG_SERVICE"
 
-        const val ACTION_CLIPBOARD = "org.monora.uprotocol.client.android.action.CLIPBOARD"
-
-        const val ACTION_DEVICE_ACQUAINTANCE = "org.monora.uprotocol.client.android.action.DEVICE_ACQUAINTANCE"
-
-        const val ACTION_DEVICE_KEY_CHANGE_APPROVAL = "org.monora.uprotocol.client.android.action.DEVICE_APPROVAL"
-
-        const val ACTION_END_SESSION = "org.monora.uprotocol.client.android.action.END_SESSION"
-
-        const val ACTION_FILE_TRANSFER = "org.monora.uprotocol.client.android.action.FILE_TRANSFER"
-
-        const val ACTION_INCOMING_TRANSFER_READY = "org.monora.uprotocol.client.android.action.INCOMING_TRANSFER_READY"
-
-        const val ACTION_PIN_USED = "org.monora.uprotocol.client.android.transaction.action.PIN_USED"
-
-        const val ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER"
-
-        const val ACTION_STOP_ALL_TASKS = "org.monora.uprotocol.client.android.transaction.action.STOP_ALL_TASKS"
-
-        const val EXTRA_TEXT_ACCEPTED = "extraTextAccepted"
-
-        const val EXTRA_TEXT_MODEL = "extraText"
-
-        const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
-
-        const val EXTRA_DEVICE = "extraDevice"
-
-        const val EXTRA_TRANSFER = "extraTransfer"
-
-        const val EXTRA_ACCEPTED = "extraAccepted"
-
-        const val EXTRA_TRANSFER_TYPE = "extraTransferType"
+        const val ACTION_STOP_BG_SERVICE = "org.monora.uprotocol.client.android.action.STOP_BG_SERVICE"
     }
 }

@@ -6,13 +6,13 @@ import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
+import android.net.wifi.WifiManager.WIFI_MODE_FULL_HIGH_PERF
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +29,7 @@ import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.model.Identity
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.WebShareServer
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
@@ -42,12 +43,18 @@ import javax.inject.Singleton
 @Singleton
 class BackgroundBackend @Inject constructor(
     @ApplicationContext val context: Context,
+    val appDatabase: AppDatabase,
     val transportSession: TransportSession,
     val nsdDaemon: NsdDaemon,
     val webShareServer: WebShareServer,
-    val appDatabase: AppDatabase,
 ) {
-    val bgIntent = Intent(context, BackgroundService::class.java)
+    private val bgIntent = Intent(context, BackgroundService::class.java).also {
+        it.action = BackgroundService.ACTION_START_BG_SERVICE
+    }
+
+    private val bgStopIntent = Intent(context, BackgroundService::class.java).also {
+        it.action = BackgroundService.ACTION_STOP_BG_SERVICE
+    }
 
     val bgNotification
         get() = taskNotification?.takeIf { hasTasks() } ?: notificationHelper.foregroundNotification
@@ -60,8 +67,6 @@ class BackgroundBackend @Inject constructor(
 
     var hotspotManager = HotspotManager.newInstance(context)
 
-    var wifiLock: WifiManager.WifiLock? = null
-
     var mediaScanner: MediaScannerConnection = MediaScannerConnection(context, null)
 
     var notificationHelper = NotificationHelper(Notifications(context))
@@ -72,7 +77,7 @@ class BackgroundBackend @Inject constructor(
 
     private var taskNotificationTime: Long = 0
 
-    private var preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private var wifiLock: WifiManager.WifiLock? = null
 
     val wifiManager: WifiManager
         get() = hotspotManager.wifiManager
@@ -143,12 +148,12 @@ class BackgroundBackend @Inject constructor(
         val activity = foregroundActivity
         val numberOfFiles = itemList.size
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
-            .setAction(BackgroundService.ACTION_FILE_TRANSFER)
-            .putExtra(BackgroundService.EXTRA_DEVICE, device)
-            .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
-            .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
+            .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
+            .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, device)
+            .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
         val rejectIntent = (acceptIntent.clone() as Intent)
-            .putExtra(BackgroundService.EXTRA_ACCEPTED, false)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
         val transferDetail: Intent = Intent(context, TransferDetailActivity::class.java)
             .setAction(TransferDetailActivity.ACTION_LIST_TRANSFERS)
             .putExtra(TransferDetailActivity.EXTRA_TRANSFER, transfer)
@@ -225,14 +230,14 @@ class BackgroundBackend @Inject constructor(
             return
         }
 
-        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, BackgroundService.TAG).also {
-            it.acquire()
-        }
-
         try {
             if (!Permissions.checkRunningConditions(context)) throw Exception(
                 "The app doesn't have the satisfactory permissions to start the services."
             )
+
+            wifiLock = wifiManager.createWifiLock(WIFI_MODE_FULL_HIGH_PERF, TAG).also {
+                it.acquire()
+            }
 
             if (!commServerRunning) {
                 transportSession.start()
@@ -253,11 +258,6 @@ class BackgroundBackend @Inject constructor(
         }
     }
 
-    fun stopByService(backgroundService: BackgroundService) {
-        stop()
-        backgroundService.stopSelf()
-    }
-
     private fun stop() {
         try {
             transportSession.stop()
@@ -268,7 +268,7 @@ class BackgroundBackend @Inject constructor(
             it.release()
             wifiLock = null
 
-            Log.d(BackgroundService.TAG, "onDestroy: Releasing Wi-Fi lock")
+            Log.d(TAG, "onDestroy: Releasing Wi-Fi lock")
         }
 
         nsdDaemon.unregisterService()
@@ -312,7 +312,7 @@ class BackgroundBackend @Inject constructor(
         }
 
         if (inFgNow || (inBgNow && !hasServices && !hasTasks)) {
-            context.stopService(bgIntent)
+            context.startService(bgStopIntent)
         }
 
         if (!hasTasks) {
@@ -342,7 +342,7 @@ class BackgroundBackend @Inject constructor(
     }
 
     companion object {
-        val TAG = App::class.java.simpleName
+        private val TAG = App::class.simpleName
 
         const val ACTION_OREO_HOTSPOT_STARTED = "org.monora.trebleshot.intent.action.HOTSPOT_STARTED"
 

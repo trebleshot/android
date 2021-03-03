@@ -22,10 +22,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -35,8 +33,9 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
-import org.monora.uprotocol.client.android.fragment.DeviceListFragment
+import org.monora.uprotocol.client.android.fragment.ClientsFragment
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.core.protocol.ClientType
 
@@ -45,7 +44,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
     private lateinit var networkManagerFragment: NetworkManagerFragment
 
-    private lateinit var deviceListFragment: DeviceListFragment
+    private lateinit var clientsFragment: ClientsFragment
 
     private lateinit var optionsFragment: OptionsFragment
 
@@ -66,16 +65,16 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
             if (ACTION_CHANGE_FRAGMENT == intent.action && intent.hasExtra(EXTRA_FRAGMENT_ENUM)) {
                 val fragmentEnum = intent.getSerializableExtra(EXTRA_FRAGMENT_ENUM) as AvailableFragment?
                 setFragment(fragmentEnum)
-            } else if (BackgroundService.ACTION_DEVICE_ACQUAINTANCE == intent.action) {
-                val device: UClient? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE)
-                val address: UClientAddress? = intent.getParcelableExtra(BackgroundService.EXTRA_DEVICE_ADDRESS)
+            } else if (BgBroadcastReceiver.ACTION_DEVICE_ACQUAINTANCE == intent.action) {
+                val device: UClient? = intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_DEVICE)
+                val address: UClientAddress? = intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_DEVICE_ADDRESS)
                 if (device != null && address != null) handleResult(device, address)
-            } else if (BackgroundService.ACTION_INCOMING_TRANSFER_READY == intent.action
-                && intent.hasExtra(BackgroundService.EXTRA_TRANSFER)
+            } else if (BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY == intent.action
+                && intent.hasExtra(BgBroadcastReceiver.EXTRA_TRANSFER)
             ) {
                 TransferDetailActivity.startInstance(
                     this@AddDeviceActivity,
-                    intent.getParcelableExtra(BackgroundService.EXTRA_TRANSFER)
+                    intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_TRANSFER)
                 )
                 finish()
             }
@@ -92,7 +91,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
         val deviceListArgs = Bundle()
         deviceListArgs.putStringArrayList(
-            DeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
+            ClientsFragment.ARG_HIDDEN_DEVICES_LIST,
             arrayListOf(ClientType.Web.toString())
         )
         val factory = supportFragmentManager.fragmentFactory
@@ -100,11 +99,11 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         networkManagerFragment = factory.instantiate(
             classLoader, NetworkManagerFragment::class.java.name
         ) as NetworkManagerFragment
-        deviceListFragment = factory.instantiate(classLoader, DeviceListFragment::class.java.name) as DeviceListFragment
-        deviceListFragment.arguments = deviceListArgs
+        clientsFragment = factory.instantiate(classLoader, ClientsFragment::class.java.name) as ClientsFragment
+        clientsFragment.arguments = deviceListArgs
         filter.addAction(ACTION_CHANGE_FRAGMENT)
-        filter.addAction(BackgroundService.ACTION_DEVICE_ACQUAINTANCE)
-        filter.addAction(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
+        filter.addAction(BgBroadcastReceiver.ACTION_DEVICE_ACQUAINTANCE)
+        filter.addAction(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
     }
 
     override fun onResume() {
@@ -151,7 +150,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         return true
     }
 
-    fun applyViewChanges(fragment: Fragment) {
+    private fun applyViewChanges(fragment: Fragment) {
         if (supportActionBar != null) {
             val titleRes = when (fragment) {
                 is NetworkManagerFragment -> R.string.butn_generateQrCode
@@ -178,14 +177,14 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         val fragment = getShowingFragment()
         if (fragment is NetworkManagerFragment)
             return AvailableFragment.GenerateQrCode
-        else if (fragment is DeviceListFragment)
+        else if (fragment is ClientsFragment)
             return AvailableFragment.AllDevices
 
         // Probably OptionsFragment
         return AvailableFragment.Options
     }
 
-    fun getShowingFragment(): Fragment? {
+    private fun getShowingFragment(): Fragment? {
         return supportFragmentManager.findFragmentById(R.id.activity_connection_establishing_content_view)
     }
 
@@ -211,7 +210,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
                 return
             }
             AvailableFragment.GenerateQrCode -> networkManagerFragment
-            AvailableFragment.AllDevices -> deviceListFragment
+            AvailableFragment.AllDevices -> clientsFragment
             AvailableFragment.Options -> optionsFragment
             else -> optionsFragment
         }
@@ -240,30 +239,28 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         Options, GenerateQrCode, AllDevices, ScanQrCode, CreateHotspot, EnterAddress
     }
 
-    class OptionsFragment : com.genonbeta.android.framework.app.Fragment() {
-        override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?,
-        ): View {
-            val view = inflater.inflate(R.layout.layout_connection_options_fragment, container, false)
+    class OptionsFragment : Fragment(R.layout.layout_connection_options_fragment) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
             val listener = View.OnClickListener { v: View ->
-                when (v.id) {
-                    R.id.connection_option_devices -> updateFragment(AvailableFragment.AllDevices)
-                    R.id.connection_option_generate_qr_code -> updateFragment(AvailableFragment.GenerateQrCode)
-                    R.id.connection_option_manual_ip -> updateFragment(AvailableFragment.EnterAddress)
-                    R.id.connection_option_scan -> updateFragment(AvailableFragment.ScanQrCode)
-                }
+                updateFragment(
+                    when (v.id) {
+                        R.id.connection_option_devices -> AvailableFragment.AllDevices
+                        R.id.connection_option_generate_qr_code -> AvailableFragment.GenerateQrCode
+                        R.id.connection_option_manual_ip -> AvailableFragment.EnterAddress
+                        R.id.connection_option_scan -> AvailableFragment.ScanQrCode
+                        else -> AvailableFragment.Options
+                    }
+                )
             }
             view.findViewById<View>(R.id.connection_option_devices).setOnClickListener(listener)
             view.findViewById<View>(R.id.connection_option_generate_qr_code).setOnClickListener(listener)
             view.findViewById<View>(R.id.connection_option_scan).setOnClickListener(listener)
             view.findViewById<View>(R.id.connection_option_manual_ip).setOnClickListener(listener)
-            return view
         }
 
-        fun updateFragment(fragment: AvailableFragment) {
-            if (context != null)
-                context?.sendBroadcast(Intent(ACTION_CHANGE_FRAGMENT).putExtra(EXTRA_FRAGMENT_ENUM, fragment))
+        private fun updateFragment(fragment: AvailableFragment) {
+            context?.sendBroadcast(Intent(ACTION_CHANGE_FRAGMENT).putExtra(EXTRA_FRAGMENT_ENUM, fragment))
         }
     }
 

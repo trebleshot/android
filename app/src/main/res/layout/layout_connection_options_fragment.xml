@@ -60,7 +60,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/connection_option_device_list"
-            android:name="org.monora.uprotocol.client.android.fragment.OnlineDeviceListFragment"
+            android:name="org.monora.uprotocol.client.android.fragment.OnlineClientsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

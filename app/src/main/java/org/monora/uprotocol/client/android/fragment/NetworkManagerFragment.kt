@@ -48,6 +48,7 @@ import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.Keyword
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.HotspotManager
@@ -119,11 +120,11 @@ class NetworkManagerFragment : Fragment() {
         connections = Connections(requireContext())
         manager = HotspotManager.newInstance(requireContext())
         intentFilter.addAction(BackgroundBackend.ACTION_OREO_HOTSPOT_STARTED)
-        intentFilter.addAction(BackgroundService.ACTION_PIN_USED)
+        intentFilter.addAction(BgBroadcastReceiver.ACTION_PIN_USED)
         intentFilter.addAction(WIFI_AP_STATE_CHANGED)
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
-        intentFilter.addAction(BackgroundService.ACTION_PIN_USED)
+        intentFilter.addAction(BgBroadcastReceiver.ACTION_PIN_USED)
         setHasOptionsMenu(true)
     }
 
@@ -358,10 +359,10 @@ class NetworkManagerFragment : Fragment() {
 
     private inner class StatusReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (WIFI_AP_STATE_CHANGED == intent.action || BackgroundService.ACTION_PIN_USED == intent.action
+            if (WIFI_AP_STATE_CHANGED == intent.action || BgBroadcastReceiver.ACTION_PIN_USED == intent.action
                 || WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
                 || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
-                || BackgroundService.ACTION_PIN_USED == intent.action
+                || BgBroadcastReceiver.ACTION_PIN_USED == intent.action
                 || BackgroundBackend.ACTION_OREO_HOTSPOT_STARTED == intent.action
             ) updateState()
         }

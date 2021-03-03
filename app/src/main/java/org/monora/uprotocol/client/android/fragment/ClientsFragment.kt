@@ -19,7 +19,7 @@ package org.monora.uprotocol.client.android.fragment
 
 import com.genonbeta.android.framework.app.Fragment
 
-open class DeviceListFragment : Fragment() {
+open class ClientsFragment : Fragment() {
 
     companion object {
         const val ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList"

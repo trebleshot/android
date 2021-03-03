@@ -244,6 +244,7 @@
         </provider>
 
         <receiver android:name="org.monora.uprotocol.client.android.receiver.DialogEventReceiver" />
+        <receiver android:name=".receiver.BgBroadcastReceiver" />
         <!-- android:process=":transfer"-->
 
         <service

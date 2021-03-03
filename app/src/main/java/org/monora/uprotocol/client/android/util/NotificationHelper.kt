@@ -34,9 +34,11 @@ import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Connection
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.receiver.DialogEventReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
-import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL_TASKS
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver.Companion.ACTION_STOP_ALL_TASKS
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver.Companion.ACTION_END_SESSION
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -77,7 +79,7 @@ class NotificationHelper(val utils: Notifications) {
             PendingIntent.getService(
                 context,
                 ID_BG_SERVICE + 3,
-                Intent(context, BackgroundService::class.java).setAction(BackgroundService.ACTION_END_SESSION),
+                Intent(context, BackgroundService::class.java).setAction(ACTION_END_SESSION),
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
         )
@@ -103,12 +105,12 @@ class NotificationHelper(val utils: Notifications) {
         val notification = utils.buildDynamicNotification(uidHash, Notifications.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent = Intent(context, BackgroundService::class.java)
         val dialogIntent = Intent(context, DialogEventReceiver::class.java)
-        acceptIntent.setAction(BackgroundService.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
-            .putExtra(BackgroundService.EXTRA_DEVICE, client)
+        acceptIntent.setAction(BgBroadcastReceiver.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
+            .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
             .putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
-            .putExtra(BackgroundService.EXTRA_ACCEPTED, true)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
         val rejectIntent = (acceptIntent.clone() as Intent)
-            .putExtra(BackgroundService.EXTRA_ACCEPTED, false)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getService(
             context, uidHash + REQUEST_CODE_ACCEPT, acceptIntent,
             0
@@ -173,13 +175,13 @@ class NotificationHelper(val utils: Notifications) {
     fun notifyClipboardRequest(client: UClient, item: SharedText) {
         val notification = utils.buildDynamicNotification(item.id, Notifications.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
-            .setAction(BackgroundService.ACTION_CLIPBOARD)
-            .putExtra(BackgroundService.EXTRA_TEXT_MODEL, item.id)
+            .setAction(BgBroadcastReceiver.ACTION_CLIPBOARD)
+            .putExtra(BgBroadcastReceiver.EXTRA_TEXT_MODEL, item)
             .putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val activityIntent = Intent(context, TextEditorActivity::class.java)
         val rejectIntent = acceptIntent.clone() as Intent
-        acceptIntent.putExtra(BackgroundService.EXTRA_TEXT_ACCEPTED, true)
-        rejectIntent.putExtra(BackgroundService.EXTRA_TEXT_ACCEPTED, false)
+        acceptIntent.putExtra(BgBroadcastReceiver.EXTRA_TEXT_ACCEPTED, true)
+        rejectIntent.putExtra(BgBroadcastReceiver.EXTRA_TEXT_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getService(
             context, item.id + REQUEST_CODE_ACCEPT, acceptIntent, 0
         )
@@ -212,7 +214,7 @@ class NotificationHelper(val utils: Notifications) {
                 positiveIntent
             )
             .addAction(
-                R.drawable.ic_close_white_24dp_static, context.getString(android.R.string.no),
+                R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no),
                 negativeIntent
             )
             .setTicker(context.getString(R.string.text_receivedTextSummary)).priority =

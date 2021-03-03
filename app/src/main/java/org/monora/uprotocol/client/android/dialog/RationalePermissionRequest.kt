@@ -26,7 +26,6 @@ import androidx.core.app.ActivityCompat
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.AppUtils
 
 /**
  * created by: Veli
@@ -34,10 +33,9 @@ import org.monora.uprotocol.client.android.util.AppUtils
  */
 class RationalePermissionRequest(
     activity: Activity,
-    var permissionQueue: PermissionRequest,
+    permissionQueue: PermissionRequest,
     killActivityOtherwise: Boolean
 ) : AlertDialog.Builder(activity) {
-
     data class PermissionRequest(
         val permission: String,
         val title: String,

@@ -31,6 +31,7 @@ import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
@@ -96,9 +97,9 @@ class IndexTransferTask(
             appDatabase.transferItemDao().insertAll(itemList)
 
             context.sendBroadcast(
-                Intent(BackgroundService.ACTION_INCOMING_TRANSFER_READY)
-                    .putExtra(BackgroundService.EXTRA_TRANSFER, transfer)
-                    .putExtra(BackgroundService.EXTRA_DEVICE, client)
+                Intent(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
+                    .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
+                    .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
             )
             if (noPrompt) {
                 try {

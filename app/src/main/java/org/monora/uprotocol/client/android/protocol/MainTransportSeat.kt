@@ -1,6 +1,7 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.database.AppDatabase
@@ -20,7 +21,12 @@ class MainTransportSeat @Inject constructor(
     val connectionFactory: ConnectionFactory,
     val persistenceProvider: PersistenceProvider,
     val appDatabase: AppDatabase,
+    backgroundBackend: Lazy<BackgroundBackend>,
 ) : TransportSeat {
+    private val backgroundBackend by lazy {
+        backgroundBackend.get()
+    }
+
     override fun beginFileTransfer(
         bridge: CommunicationBridge,
         client: Client,
@@ -35,12 +41,11 @@ class MainTransportSeat @Inject constructor(
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
         if (client !is UClient) throw UnsupportedOperationException("Expected the UClient implementation")
 
-        // FIXME: 3/2/21 Having background backend injected causes a dependency cycle
-        /*backgroundBackend.run(
+        backgroundBackend.run(
             IndexTransferTask(
                 connectionFactory, persistenceProvider, appDatabase, groupId, jsonArray, client, hasPin
             )
-        )*/
+        )
     }
 
     override fun handleFileTransferState(client: Client, groupId: Long, isAccepted: Boolean) {
