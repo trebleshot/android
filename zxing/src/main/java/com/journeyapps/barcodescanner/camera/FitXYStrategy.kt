@@ -46,7 +46,7 @@ class FitXYStrategy : PreviewScalingStrategy() {
     }
 
     companion object {
-        private val TAG = FitXYStrategy::class.java.simpleName
+        private val TAG = FitXYStrategy::class.simpleName
 
         private fun absRatio(ratio: Float): Float = if (ratio < 1.0f) 1.0f / ratio else ratio
     }

@@ -261,10 +261,15 @@ open class TransferItemListFragment : ListingFragment<GenericItem, ViewHolder, T
 
     companion object {
         const val TAG = "TransferListFragment"
+
         const val ARG_DEVICE_ID = "argDeviceId"
+
         const val ARG_TRANSFER_ID = "argGroupId"
+
         const val ARG_TYPE = "argType"
+
         const val ARG_PATH = "argPath"
+
         const val REQUEST_CHOOSE_FOLDER = 1
     }
 }

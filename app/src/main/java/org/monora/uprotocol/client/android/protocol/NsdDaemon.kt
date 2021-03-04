@@ -11,6 +11,7 @@ import org.monora.uprotocol.core.ClientLoader
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.spec.v1.Config
+import org.monora.uprotocol.core.spec.v1.Config.SERVICE_UPROTOCOL_DNS_SD
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,7 +31,7 @@ class NsdDaemon @Inject constructor(
     fun registerService() {
         val localServiceInfo = NsdServiceInfo()
         localServiceInfo.serviceName = persistenceProvider.clientNickname
-        localServiceInfo.serviceType = SERVICE
+        localServiceInfo.serviceType = SERVICE_UPROTOCOL_DNS_SD
         localServiceInfo.port = Config.PORT_UPROTOCOL
         try {
             nsdManager.registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
@@ -41,7 +42,7 @@ class NsdDaemon @Inject constructor(
 
     fun startDiscovering() {
         try {
-            nsdManager.discoverServices(SERVICE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+            nsdManager.discoverServices(SERVICE_UPROTOCOL_DNS_SD, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
         } catch (ignored: Exception) {
         }
     }
@@ -140,7 +141,6 @@ class NsdDaemon @Inject constructor(
     }
 
     companion object {
-        val TAG = NsdDaemon::class.simpleName
-        const val SERVICE = "_tscomm._tcp."
+        private val TAG = NsdDaemon::class.simpleName
     }
 }

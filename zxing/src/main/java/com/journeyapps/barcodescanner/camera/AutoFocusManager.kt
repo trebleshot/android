@@ -102,7 +102,7 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
     }
 
     companion object {
-        private val TAG = AutoFocusManager::class.java.simpleName
+        private val TAG = AutoFocusManager::class.simpleName
 
         private const val AUTO_FOCUS_INTERVAL_MS = 2000L
 

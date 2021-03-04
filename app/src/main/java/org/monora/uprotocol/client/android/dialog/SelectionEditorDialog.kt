@@ -109,7 +109,7 @@ class SelectionEditorDialog(activity: Activity, provider: PerformerEngineProvide
     }
 
     companion object {
-        val TAG = SelectionEditorDialog::class.java.simpleName
+        private val TAG = SelectionEditorDialog::class.simpleName
     }
 
     init {

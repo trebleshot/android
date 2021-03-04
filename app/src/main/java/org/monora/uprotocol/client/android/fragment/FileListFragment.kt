@@ -270,12 +270,18 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
     }
 
     companion object {
-        val TAG = FileListFragment::class.java.simpleName
+        private val TAG = FileListFragment::class.simpleName
+
         const val REQUEST_WRITE_ACCESS = 264
+
         const val ACTION_FILE_LIST_CHANGED = "org.monora.uprotocol.client.android.action.FILE_LIST_CHANGED"
+
         const val ACTION_FILE_RENAME_COMPLETED = "org.monora.uprotocol.client.android.action.FILE_RENAME_COMPLETED"
+
         const val EXTRA_FILE_PARENT = "extraPath"
+
         const val EXTRA_FILE_NAME = "extraFile"
+
         const val EXTRA_FILE_LOCATION = "extraFileLocation"
 
         fun handleEditingAction(

@@ -181,7 +181,7 @@ class MainPersistenceProvider @Inject constructor(
 
     // TODO: 2/21/21 Can we get the device name programmatically, on Android TV for instance?
     override fun getClientNickname(): String = PreferenceManager.getDefaultSharedPreferences(context)
-        .getString("nickname", null) ?: Build.MODEL.toUpperCase(Locale.getDefault())
+        .getString("device_name", null) ?: Build.MODEL.toUpperCase(Locale.getDefault())
 
     override fun getClientPicture(): ByteArray = getClientPictureFor(client)
 
@@ -339,7 +339,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     companion object {
-        val TAG = MainPersistenceProvider::class.simpleName
+        private val TAG = MainPersistenceProvider::class.simpleName
     }
 }
 

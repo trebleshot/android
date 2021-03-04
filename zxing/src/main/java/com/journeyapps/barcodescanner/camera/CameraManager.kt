@@ -438,7 +438,7 @@ class CameraManager(private val context: Context) {
     }
 
     companion object {
-        private val TAG = CameraManager::class.java.simpleName
+        private val TAG = CameraManager::class.simpleName
         private fun getPreviewSizes(parameters: Camera.Parameters): List<Size> {
             val rawSupportedSizes = parameters.supportedPreviewSizes
             val previewSizes: MutableList<Size> = ArrayList()

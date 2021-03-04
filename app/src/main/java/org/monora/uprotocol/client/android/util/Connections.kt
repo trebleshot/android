@@ -486,7 +486,7 @@ class Connections(contextLocal: Context) {
     class WifiInaccessibleException(message: String?) : Exception(message)
 
     companion object {
-        val TAG = Connections::class.java.simpleName
+        private val TAG = Connections::class.simpleName
 
         fun getCleanSsid(ssid: String?): String {
             return ssid?.replace("\"", "") ?: ""

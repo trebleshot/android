@@ -230,7 +230,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     }
 
     companion object {
-        val TAG = TextEditorActivity::class.java.simpleName
+        private val TAG = TextEditorActivity::class.simpleName
 
         const val ACTION_EDIT_TEXT = "genonbeta.intent.action.EDIT_TEXT"
 

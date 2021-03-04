@@ -26,7 +26,7 @@ import java.util.regex.Pattern
  * @author Lachezar Dobrev
  */
 object DecodeHintManager {
-    private val TAG = DecodeHintManager::class.java.simpleName
+    private val TAG = DecodeHintManager::class.simpleName
 
     // This pattern is used in decoding integer arrays.
     private val COMMA = Pattern.compile(",")

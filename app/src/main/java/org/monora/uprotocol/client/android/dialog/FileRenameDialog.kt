@@ -69,6 +69,6 @@ class FileRenameDialog(val activity: Activity, val list: List<FileHolder>) : Abs
     }
 
     companion object {
-        val TAG = FileRenameDialog::class.java.simpleName
+        private val TAG = FileRenameDialog::class.simpleName
     }
 }

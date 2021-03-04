@@ -91,7 +91,7 @@ class LegacyPreviewScalingStrategy : PreviewScalingStrategy() {
     }
 
     companion object {
-        private val TAG = LegacyPreviewScalingStrategy::class.java.simpleName
+        private val TAG = LegacyPreviewScalingStrategy::class.simpleName
 
         /**
          * Scale from so that to.fitsIn(size). Tries to scale by powers of two, or by 3/2. Aspect ratio

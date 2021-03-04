@@ -38,9 +38,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            ACTION_END_SESSION -> {
-                //backend.stop()
-            }
             ACTION_FILE_TRANSFER -> {
                 val device: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
                 val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
@@ -142,8 +139,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
         const val ACTION_DEVICE_ACQUAINTANCE = "org.monora.uprotocol.client.android.action.DEVICE_ACQUAINTANCE"
 
         const val ACTION_DEVICE_KEY_CHANGE_APPROVAL = "org.monora.uprotocol.client.android.action.DEVICE_APPROVAL"
-
-        const val ACTION_END_SESSION = "org.monora.uprotocol.client.android.action.END_SESSION"
 
         const val ACTION_FILE_TRANSFER = "org.monora.uprotocol.client.android.action.FILE_TRANSFER"
 

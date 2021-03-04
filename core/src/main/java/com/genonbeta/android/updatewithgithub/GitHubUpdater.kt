@@ -169,7 +169,7 @@ class GitHubUpdater(
     }
 
     companion object {
-        val TAG: String = GitHubUpdater::class.java.simpleName
+        private val TAG = GitHubUpdater::class.simpleName
 
         fun isNewVersion(context: Context, versionName: String): Boolean {
             try {

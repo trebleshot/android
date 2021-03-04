@@ -58,6 +58,6 @@ class DisplayConfiguration(val rotation: Int, val viewfinderSize: Size) {
     }
 
     companion object {
-        private val TAG = DisplayConfiguration::class.java.simpleName
+        private val TAG = DisplayConfiguration::class.simpleName
     }
 }

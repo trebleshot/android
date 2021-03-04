@@ -185,10 +185,14 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     companion object {
-        val TAG = TransferMemberActivity::class.java.simpleName
+        private val TAG = TransferMemberActivity::class.simpleName
+
         const val EXTRA_DEVICE = "extraDevice"
+
         const val EXTRA_TRANSFER = "extraTransfer"
+
         const val EXTRA_ADDING_FIRST_DEVICE = "extraAddingFirstDevice"
+
         const val REQUEST_CODE_CHOOSE_DEVICE = 0
 
         fun startInstance(context: Context, transfer: Transfer, addingFirstDevice: Boolean) {

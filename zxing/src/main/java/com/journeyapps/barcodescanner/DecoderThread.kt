@@ -138,7 +138,7 @@ class DecoderThread(val cameraInstance: CameraInstance, var decoder: Decoder, va
     }
 
     companion object {
-        private val TAG = DecoderThread::class.java.simpleName
+        private val TAG = DecoderThread::class.simpleName
     }
 
     init {

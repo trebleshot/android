@@ -17,45 +17,20 @@
  */
 package org.monora.uprotocol.client.android
 
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
-import android.media.MediaScannerConnection
-import android.net.wifi.WifiConfiguration
-import android.net.wifi.WifiManager
-import android.net.wifi.WifiManager.LocalOnlyHotspotCallback
-import android.net.wifi.WifiManager.LocalOnlyHotspotReservation
 import android.os.Build
-import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
 import dagger.hilt.android.HiltAndroidApp
-import org.monora.uprotocol.client.android.activity.AddDeviceActivity
-import org.monora.uprotocol.client.android.activity.TransferDetailActivity
-import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.model.Identity
-import org.monora.uprotocol.client.android.service.BackgroundService
-import org.monora.uprotocol.client.android.service.WebShareServer
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.util.*
+import org.monora.uprotocol.client.android.util.Updates
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.PrintWriter
 import java.util.*
-import java.util.concurrent.Executors
-import javax.inject.Inject
 
 /**
  * created by: Veli
@@ -69,7 +44,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     override fun onCreate() {
         super.onCreate()
-        crashFile = applicationContext.getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+        crashFile = applicationContext.getFileStreamPath(FILENAME_UNHANDLED_CRASH_LOG)
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
@@ -146,6 +121,8 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     }
 
     companion object {
-        val TAG = App::class.java.simpleName
+        private val TAG = App::class.simpleName
+
+        const val FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt"
     }
 }

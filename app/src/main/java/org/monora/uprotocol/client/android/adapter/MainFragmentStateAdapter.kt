@@ -79,7 +79,7 @@ open class MainFragmentStateAdapter(
         val fragment = item.fragment ?: fragmentFactory.instantiate(context.classLoader, item.clazz).apply {
             arguments = item.arguments
         }
-        Log.d(MainFragmentStateAdapter::class.java.simpleName, "createFragment: " + fragment.javaClass.name)
+        Log.d(MainFragmentStateAdapter::class.simpleName, "createFragment: " + fragment.javaClass.name)
         onItemInstantiated(item)
 
         return fragment

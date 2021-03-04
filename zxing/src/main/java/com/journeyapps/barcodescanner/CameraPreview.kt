@@ -743,7 +743,7 @@ open class CameraPreview @JvmOverloads constructor(
     }
 
     companion object {
-        private val TAG = CameraPreview::class.java.simpleName
+        private val TAG = CameraPreview::class.simpleName
 
         // Delay after rotation change is detected before we reorientate ourselves.
         // This is to avoid double-reinitialization when the Activity is destroyed and recreated.

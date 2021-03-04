@@ -26,18 +26,17 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
-import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.spec.v1.Keyword
 import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import java.util.*
 
@@ -76,7 +75,7 @@ class IndexTransferTask(
                 val uniqueName = "." + UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART
                 val directory = index.optString(Keyword.INDEX_DIRECTORY).takeIf { it.isNotEmpty() }
                 val transferItem = UTransferItem(
-                    index.getLong(Keyword.TRANSFER_REQUEST_ID),
+                    index.getLong(Keyword.TRANSFER_GROUP_ID),
                     transferId,
                     index.getString(Keyword.INDEX_FILE_NAME),
                     index.getString(Keyword.INDEX_FILE_MIME),
@@ -95,12 +94,12 @@ class IndexTransferTask(
         }
         if (itemList.size > 0) CoroutineScope(Dispatchers.Main).launch {
             appDatabase.transferItemDao().insertAll(itemList)
-
             context.sendBroadcast(
                 Intent(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
                     .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
             )
+
             if (noPrompt) {
                 try {
                     backend.run(

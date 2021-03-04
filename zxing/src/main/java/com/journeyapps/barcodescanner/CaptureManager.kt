@@ -313,7 +313,7 @@ class CaptureManager(private val activity: Activity, private val decoratedBarcod
     }
 
     companion object {
-        private val TAG = CaptureManager::class.java.simpleName
+        private val TAG = CaptureManager::class.simpleName
         private const val SAVED_ORIENTATION_LOCK = "SAVED_ORIENTATION_LOCK"
         var cameraPermissionReqCode = 250
 

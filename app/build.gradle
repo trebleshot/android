@@ -144,7 +144,7 @@ dependencies {
     implementation project(':core')
     implementation project(':database')
     implementation project(':zxing')
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -169,7 +169,7 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation 'com.madgag.spongycastle:bcpkix-jdk15on:1.58.0.0'
     implementation 'org.monora.coolsocket:core:2.0-rc11'
-    implementation 'org.monora.uprotocol:core:0.1.0-ALPHA21'
+    implementation 'org.monora.uprotocol:core:0.1.0-ALPHA22'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'org.nanohttpd:nanohttpd:2.2.0'

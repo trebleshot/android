@@ -247,6 +247,6 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
     }
 
     companion object {
-        val TAG = ContentSharingActivity::class.java.simpleName
+        private val TAG = ContentSharingActivity::class.simpleName
     }
 }

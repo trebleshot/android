@@ -52,8 +52,6 @@
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/connection_option_devices"
                 android:layout_toLeftOf="@id/connection_option_devices"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
                 android:text="@string/text_onlineDevices" />
 
         </RelativeLayout>
@@ -67,22 +65,14 @@
             android:minHeight="160dp"
             android:tag="deviceListFragment" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <TextView
+            style="@style/CondensedTitleStyle"
+            android:layout_marginTop="8dp"
             android:layout_marginLeft="@dimen/short_content_width_padding"
             android:layout_marginRight="@dimen/short_content_width_padding"
-            android:layout_marginTop="8dp">
-
-            <TextView
-                style="@style/CondensedTitleStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:text="@string/text_addNewDevice" />
-
-        </LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_addNewDevice" />
 
         <LinearLayout
             android:id="@+id/actionsContainer"

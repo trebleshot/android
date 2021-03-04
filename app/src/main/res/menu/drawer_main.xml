@@ -53,12 +53,6 @@
             android:orderInCategory="13"
             android:title="@string/text_about" />
 
-        <item
-            android:id="@+id/menu_activity_main_exit"
-            android:icon="@drawable/ic_exit_to_app_white_24dp"
-            android:orderInCategory="14"
-            android:title="@string/butn_exit" />
-
     </group>
 
     <group android:id="@+id/nav_group_support">

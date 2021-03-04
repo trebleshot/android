@@ -214,7 +214,7 @@ open class ViewfinderView(context: Context, attrs: AttributeSet?) : View(context
     }
 
     companion object {
-        protected val TAG = ViewfinderView::class.java.simpleName
+        protected val TAG = ViewfinderView::class.simpleName
         protected val SCANNER_ALPHA = intArrayOf(0, 64, 128, 192, 255, 192, 128, 64)
         protected const val ANIMATION_DELAY = 80L
         protected const val CURRENT_POINT_OPACITY = 0xA0

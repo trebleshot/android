@@ -48,9 +48,7 @@ class BackgroundBackend @Inject constructor(
     val nsdDaemon: NsdDaemon,
     val webShareServer: WebShareServer,
 ) {
-    private val bgIntent = Intent(context, BackgroundService::class.java).also {
-        it.action = BackgroundService.ACTION_START_BG_SERVICE
-    }
+    private val bgIntent = Intent(context, BackgroundService::class.java)
 
     private val bgStopIntent = Intent(context, BackgroundService::class.java).also {
         it.action = BackgroundService.ACTION_STOP_BG_SERVICE
@@ -120,7 +118,7 @@ class BackgroundBackend @Inject constructor(
         synchronized(taskList) {
             for (task in taskList) {
                 task.interrupt(false)
-                Log.d(App.TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getName(context))
+                Log.d(TAG, "interruptAllTasks(): Ongoing task stopped: " + task.getName(context))
             }
         }
     }
@@ -138,7 +136,7 @@ class BackgroundBackend @Inject constructor(
         }
 
         foregroundActivity = if (inBg) null else if (inForeground) activity else foregroundActivity
-        Log.d(App.TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
+        Log.d(TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
     }
 
     fun notifyFileRequest(device: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
@@ -188,7 +186,7 @@ class BackgroundBackend @Inject constructor(
         val notified = System.nanoTime()
         if (notified <= taskNotificationTime && !force) return false
         if (!hasTasks()) {
-            takeBgServiceFgIfNeeded(newlyInFg = false, newlyInBg = false)
+            takeBgServiceFgIfNeeded(newlyInFg = false, newlyInBg = false, byOthers = true)
             return false
         }
 
@@ -202,7 +200,7 @@ class BackgroundBackend @Inject constructor(
     @Synchronized
     private fun <T : AsyncTask> registerWork(task: T) {
         synchronized(taskList) { taskList.add(task) }
-        Log.d(App.TAG, "registerWork: " + task.javaClass.simpleName)
+        Log.d(TAG, "registerWork: " + task.javaClass.simpleName)
         context.sendBroadcast(Intent(ACTION_TASK_CHANGE))
     }
 
@@ -253,12 +251,14 @@ class BackgroundBackend @Inject constructor(
 
             nsdDaemon.registerService()
             nsdDaemon.startDiscovering()
+
+            run(TestTask())
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun stop() {
+    fun stop() {
         try {
             transportSession.stop()
         } catch (ignored: Exception) {
@@ -293,13 +293,18 @@ class BackgroundBackend @Inject constructor(
             hotspotManager.disable()
         } else {
             val result = hotspotManager.enableConfigured(context.getString(R.string.text_appName), null)
-            Log.d(App.TAG, "toggleHotspot: Enabling=$result")
+            Log.d(TAG, "toggleHotspot: Enabling=$result")
         }
     }
 
-    private fun takeBgServiceFgIfNeeded(newlyInFg: Boolean, newlyInBg: Boolean) {
-        val hasTasks = hasTasks()
-        val hasServices = hotspotManager.started || webShareServer.hadClients
+    fun takeBgServiceFgIfNeeded(
+        newlyInFg: Boolean,
+        newlyInBg: Boolean,
+        byOthers: Boolean = false,
+        forceStop: Boolean = false,
+    ) {
+        val hasTasks = hasTasks() && !forceStop
+        val hasServices = (hotspotManager.started || webShareServer.hadClients) && !forceStop
         val inFgNow = foregroundActivitiesCount > 0
         val inBgNow = !inFgNow
 
@@ -311,8 +316,9 @@ class BackgroundBackend @Inject constructor(
             ContextCompat.startForegroundService(context, bgIntent)
         }
 
-        if (inFgNow || (inBgNow && !hasServices && !hasTasks)) {
-            context.startService(bgStopIntent)
+        // Fg checking is for avoiding unnecessary invocation by activities in fg
+        if (newlyInFg || (inFgNow && byOthers) || (inBgNow && !hasServices && !hasTasks)) {
+            ContextCompat.startForegroundService(context, bgStopIntent)
         }
 
         if (!hasTasks) {
@@ -325,9 +331,9 @@ class BackgroundBackend @Inject constructor(
     }
 
     @Synchronized
-    protected fun unregisterWork(task: AsyncTask) {
+    private fun unregisterWork(task: AsyncTask) {
         synchronized(taskList) { taskList.remove(task) }
-        Log.d(App.TAG, "unregisterWork: " + task.javaClass.simpleName)
+        Log.d(TAG, "unregisterWork: " + task.javaClass.simpleName)
         context.sendBroadcast(Intent(ACTION_TASK_CHANGE))
     }
 
@@ -377,4 +383,20 @@ class BackgroundBackend @Inject constructor(
         mediaScanner.connect()
         if (Build.VERSION.SDK_INT >= 26) hotspotManager.secondaryCallback = SecondaryHotspotCallback()
     }
+}
+
+class TestTask : AsyncTask() {
+    override fun onRun() {
+        repeat(10) {
+            ongoingContent = "$it is done"
+            publishStatus()
+            throwIfStopped()
+            Thread.sleep(900)
+        }
+    }
+
+    override fun getName(context: Context): String {
+        return "Test Task"
+    }
+
 }

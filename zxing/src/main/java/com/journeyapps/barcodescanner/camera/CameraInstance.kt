@@ -214,7 +214,7 @@ open class CameraInstance(cameraManager: CameraManager) {
     }
 
     companion object {
-        private val TAG = CameraInstance::class.java.simpleName
+        private val TAG = CameraInstance::class.simpleName
     }
 
     init {

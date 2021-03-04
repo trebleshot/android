@@ -152,7 +152,7 @@ class ManualConnectionActivity : Activity() {
     }
 
     companion object {
-        val TAG = ManualConnectionActivity::class.java.simpleName
+        private val TAG = ManualConnectionActivity::class.simpleName
 
         const val EXTRA_CLIENT = "extraClient"
 

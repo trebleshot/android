@@ -32,18 +32,15 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.data.GitHubDataRepository
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
-import org.monora.uprotocol.client.android.remote.GitHubService
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Updates
 import java.io.*
@@ -155,9 +152,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             R.id.menu_activity_main_preferences == chosenMenuItemId -> {
                 startActivity(Intent(this, PreferencesActivity::class.java))
             }
-            R.id.menu_activity_main_exit == chosenMenuItemId -> {
-                exitApp()
-            }
             R.id.menu_activity_main_donate == chosenMenuItemId -> {
                 try {
                     startActivity(
@@ -181,7 +175,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     private fun checkAndShowCrashReport() {
         try {
-            val log = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)
+            val log = getFileStreamPath(App.FILENAME_UNHANDLED_CRASH_LOG)
             val report = FileReader(log).use { it.readText() }
             val streamObject = SharedText(0, report, log.lastModified())
 
@@ -252,6 +246,8 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     companion object {
+        private val TAG = HomeActivity::class.simpleName
+
         const val REQUEST_PERMISSION_ALL = 1
     }
 }

@@ -210,6 +210,6 @@ class WelcomeActivity : Activity() {
     }
 
     companion object {
-        val TAG = WelcomeActivity::class.java.simpleName
+        private val TAG = WelcomeActivity::class.simpleName
     }
 }

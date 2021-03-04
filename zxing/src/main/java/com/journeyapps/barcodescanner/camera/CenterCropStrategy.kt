@@ -70,6 +70,6 @@ class CenterCropStrategy : PreviewScalingStrategy() {
     }
 
     companion object {
-        private val TAG = CenterCropStrategy::class.java.simpleName
+        private val TAG = CenterCropStrategy::class.simpleName
     }
 }

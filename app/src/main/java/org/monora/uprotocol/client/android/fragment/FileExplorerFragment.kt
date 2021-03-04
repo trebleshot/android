@@ -152,7 +152,7 @@ class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener 
     }
 
     companion object {
-        val TAG = FileExplorerFragment::class.simpleName
+        private val TAG = FileExplorerFragment::class.simpleName
 
         fun getReadableFolder(documentFile: DocumentFile): DocumentFile? {
             val parent = documentFile.getParentFile() ?: return null

@@ -79,6 +79,6 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
     }
 
     companion object {
-        val TAG = DeviceIntroductionTask::class.java.simpleName
+        private val TAG = DeviceIntroductionTask::class.simpleName
     }
 }

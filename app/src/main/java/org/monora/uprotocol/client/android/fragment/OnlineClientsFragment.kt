@@ -80,10 +80,12 @@ class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val model = getItem(position)
-            val textView: TextView = holder.itemView.findViewById(R.id.text1)
+            val textView1: TextView = holder.itemView.findViewById(R.id.text1)
+            val textView2: TextView = holder.itemView.findViewById(R.id.text2)
             val imageView: ImageView = holder.itemView.findViewById(R.id.image)
 
-            textView.text = model.nickname
+            textView1.text = model.nickname
+            textView2.text = model.clientType.name
             imageView.setImageDrawable(imageBuilder.buildRound(model.nickname))
         }
 

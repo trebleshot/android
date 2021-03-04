@@ -33,10 +33,9 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.spec.v1.Config
+import org.monora.uprotocol.core.spec.v1.Keyword
 import java.util.*
 
 @RequiresApi(16)
@@ -61,14 +60,17 @@ class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: C
         get() {
             val client = persistenceProvider.client
             val recordMap: MutableMap<String, String?> = HashMap()
-            recordMap[Keyword.DEVICE_UID] = client.clientUid
-            recordMap[Keyword.DEVICE_PROTOCOL_VERSION] = client.clientProtocolVersion.toString()
-            recordMap[Keyword.DEVICE_PROTOCOL_VERSION_MIN] = client.clientProtocolVersionMin.toString()
-            recordMap[Keyword.DEVICE_BRAND] = client.clientManufacturer
-            recordMap[Keyword.DEVICE_MODEL] = client.clientProduct
-            recordMap[Keyword.DEVICE_VERSION_CODE] = client.clientVersionCode.toString()
-            recordMap[Keyword.DEVICE_VERSION_NAME] = client.clientVersionName
-            return WifiP2pDnsSdServiceInfo.newInstance(client.clientNickname, Config.SERVICE_UPROTOCOL_DNS_SD, recordMap)
+            recordMap[Keyword.CLIENT_UID] = client.clientUid
+            recordMap[Keyword.CLIENT_PROTOCOL_VERSION] = client.clientProtocolVersion.toString()
+            recordMap[Keyword.CLIENT_PROTOCOL_VERSION_MIN] = client.clientProtocolVersionMin.toString()
+            recordMap[Keyword.CLIENT_MANUFACTURER] = client.clientManufacturer
+            recordMap[Keyword.CLIENT_PRODUCT] = client.clientProduct
+            recordMap[Keyword.CLIENT_VERSION_CODE] = client.clientVersionCode.toString()
+            recordMap[Keyword.CLIENT_VERSION_NAME] = client.clientVersionName
+            return WifiP2pDnsSdServiceInfo.newInstance(client.clientNickname,
+                Config.SERVICE_UPROTOCOL_DNS_SD,
+                recordMap
+            )
         }
 
     val wifiP2pManager: WifiP2pManager
@@ -229,7 +231,7 @@ class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: C
     }
 
     companion object {
-        val TAG = P2pDaemon::class.java.simpleName
+        private val TAG = P2pDaemon::class.simpleName
     }
 
     init {

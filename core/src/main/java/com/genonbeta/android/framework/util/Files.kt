@@ -22,7 +22,7 @@ import kotlin.math.pow
  * date: 7/31/18 8:14 AM
  */
 object Files {
-    val TAG = Files::class.java.simpleName
+    private val TAG = Files::class.simpleName
 
     @Throws(Exception::class)
     fun copy(

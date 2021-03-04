@@ -17,7 +17,7 @@ import java.io.File.separator
  * date: 06.04.2018 17:01
  */
 object Transfers {
-    val TAG = Transfers::class.java.simpleName
+    private val TAG = Transfers::class.simpleName
 
     @Throws(TaskStoppedException::class)
     fun createFolderStructure(

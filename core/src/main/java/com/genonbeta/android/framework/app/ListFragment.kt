@@ -207,8 +207,10 @@ abstract class ListFragment<Z : ViewGroup, T, E : ListAdapterBase<T>> : Fragment
     }
 
     companion object {
-        val TAG = ListFragment::class.java.simpleName
+        private val TAG = ListFragment::class.simpleName
+
         val LAYOUT_DEFAULT_EMPTY_LIST_VIEW: Int = R.layout.genfw_layout_listfragment_emptyview
+
         const val TASK_ID_REFRESH = 0
     }
 }

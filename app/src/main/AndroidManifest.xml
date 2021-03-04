@@ -250,9 +250,10 @@
         <service
             android:name="org.monora.uprotocol.client.android.service.BackgroundService"
             android:enabled="true"
-            android:label="@string/text_communicationService" />
+            android:exported="false"
+            android:label="@string/text_backgroundService" />
 
-        <service
+        <!--<service
             android:name="org.monora.uprotocol.client.android.service.CommunicationToggleTile"
             android:icon="@drawable/ic_uprotocol"
             android:label="@string/text_shareFiles"
@@ -260,6 +261,6 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-        </service>
+        </service>-->
     </application>
 </manifest>

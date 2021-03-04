@@ -315,7 +315,7 @@ class IntentIntegrator(private val activity: Activity?) {
         )
         val ALL_CODE_TYPES: Collection<String>? = null
 
-        private val TAG = IntentIntegrator::class.java.simpleName
+        private val TAG = IntentIntegrator::class.simpleName
 
         /**
          * @param fragment [Fragment] invoking the integration.

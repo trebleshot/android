@@ -52,6 +52,6 @@ class OrganizeLocalSharingTask(
     }
 
     companion object {
-        val TAG = OrganizeLocalSharingTask::class.java.simpleName
+        private val TAG = OrganizeLocalSharingTask::class.simpleName
     }
 }

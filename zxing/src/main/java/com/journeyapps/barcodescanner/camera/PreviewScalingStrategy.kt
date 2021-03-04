@@ -85,6 +85,6 @@ abstract class PreviewScalingStrategy {
     abstract fun scalePreview(previewSize: Size, viewfinderSize: Size): Rect
 
     companion object {
-        private val TAG = PreviewScalingStrategy::class.java.simpleName
+        private val TAG = PreviewScalingStrategy::class.simpleName
     }
 }

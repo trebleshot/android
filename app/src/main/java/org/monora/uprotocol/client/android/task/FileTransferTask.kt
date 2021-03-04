@@ -135,7 +135,7 @@ class FileTransferTask(
     }
 
     companion object {
-        val TAG = FileTransferTask::class.java.simpleName
+        private val TAG = FileTransferTask::class.simpleName
 
         fun identityOf(task: FileTransferTask): Identity {
             return identifyWith(task.transfer.id, task.client.clientUid, task.type)

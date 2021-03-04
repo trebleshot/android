@@ -109,9 +109,12 @@ class ShareActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListene
     }
 
     companion object {
-        const val TAG = "ShareActivity"
+        private val TAG = ShareActivity::class.simpleName
+
         const val ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND"
+
         const val ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"
+
         const val EXTRA_DEVICE_ID = "extraDeviceId"
     }
 }

@@ -39,15 +39,21 @@ class BackgroundService : LifecycleService() {
         return binder
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        startForeground(NotificationHelper.ID_BG_SERVICE, backend.bgNotification.build())
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
         if (!Permissions.checkRunningConditions(this) || intent == null) {
             return START_NOT_STICKY
-        } else if (intent.action == ACTION_START_BG_SERVICE) {
-            startForeground(NotificationHelper.ID_BG_SERVICE, backend.bgNotification.build())
         } else if (intent.action == ACTION_STOP_BG_SERVICE) {
             stopSelf()
+            return START_NOT_STICKY
+        } else if (intent.action == ACTION_STOP_ALL) {
+            backend.takeBgServiceFgIfNeeded(newlyInFg = false, newlyInBg = false, byOthers = true, forceStop = true)
             return START_NOT_STICKY
         }
 
@@ -65,7 +71,7 @@ class BackgroundService : LifecycleService() {
     }
 
     companion object {
-        const val ACTION_START_BG_SERVICE = "org.monora.uprotocol.client.android.action.START_BG_SERVICE"
+        const val ACTION_STOP_ALL = "org.monora.uprotocol.client.android.action.STOP_ALL"
 
         const val ACTION_STOP_BG_SERVICE = "org.monora.uprotocol.client.android.action.STOP_BG_SERVICE"
     }

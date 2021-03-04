@@ -80,6 +80,7 @@ class WebShareServer @Inject constructor(
 
     private val client = persistenceProvider.client
 
+    // TODO: 3/4/21 Make sure this is true after a client connects
     var hadClients = true
         private set
 
@@ -735,7 +736,7 @@ class WebShareServer @Inject constructor(
                 sendBody(outputStream)
                 outputStream.flush()
             } catch (ioe: IOException) {
-                Log.d(WebShareServer::class.java.simpleName, "Could not send response to the client", ioe)
+                Log.d(WebShareServer::class.simpleName, "Could not send response to the client", ioe)
             }
         }
 
@@ -832,7 +833,8 @@ class WebShareServer @Inject constructor(
     }
 
     companion object {
-        val TAG = WebShareServer::class.java.simpleName
+        private val TAG = WebShareServer::class.simpleName
+
         private fun applyPattern(pattern: Pattern, template: String, values: Map<String, String?>): String {
             val builder = StringBuilder()
             val matcher = pattern.matcher(template)

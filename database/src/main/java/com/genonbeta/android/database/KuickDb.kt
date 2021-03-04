@@ -398,12 +398,18 @@ abstract class KuickDb(
     }
 
     companion object {
-        val TAG = KuickDb::class.java.simpleName
+        private val TAG = KuickDb::class.simpleName
+
         val ACTION_DATABASE_CHANGE = "com.genonbeta.database.intent.action.DATABASE_CHANGE"
+
         val EXTRA_BROADCAST_DATA = "extraBroadcastData"
+
         val TYPE_REMOVE = "typeRemove"
+
         val TYPE_INSERT = "typeInsert"
+
         val TYPE_UPDATE = "typeUpdate"
+
         fun toData(intent: Intent): BroadcastData {
             return intent.getSerializableExtra(EXTRA_BROADCAST_DATA) as BroadcastData
         }

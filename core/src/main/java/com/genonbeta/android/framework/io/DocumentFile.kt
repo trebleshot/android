@@ -88,7 +88,7 @@ abstract class DocumentFile(private val parent: DocumentFile?, val originalUri: 
     abstract fun sync()
 
     companion object {
-        val TAG = DocumentFile::class.java.simpleName
+        val TAG = DocumentFile::class.simpleName
 
         fun fromFile(file: File): DocumentFile {
             return LocalDocumentFile(null, file)

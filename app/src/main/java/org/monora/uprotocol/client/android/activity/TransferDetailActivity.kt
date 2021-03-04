@@ -264,7 +264,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     companion object {
-        val TAG = TransferDetailActivity::class.java.simpleName
+        private val TAG = TransferDetailActivity::class.simpleName
 
         const val ACTION_LIST_TRANSFERS = "org.monora.uprotocol.client.android.action.LIST_TRANSFERS"
 

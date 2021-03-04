@@ -101,7 +101,7 @@ class InactivityTimer(private val context: Context, private val callback: Runnab
     }
 
     companion object {
-        private val TAG = InactivityTimer::class.java.simpleName
+        private val TAG = InactivityTimer::class.simpleName
 
         private const val INACTIVITY_DELAY_MS = 5 * 60 * 1000L
     }

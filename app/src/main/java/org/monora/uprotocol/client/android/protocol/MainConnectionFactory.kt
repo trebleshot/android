@@ -109,6 +109,6 @@ private class NetworkBinderCallback(
     }
 
     companion object {
-        val TAG = MainConnectionFactory::class.simpleName
+        private val TAG = MainConnectionFactory::class.simpleName
     }
 }

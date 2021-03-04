@@ -26,7 +26,7 @@ import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.model.ContentModel
 
 object AppUtils {
-    val TAG = AppUtils::class.java.simpleName
+    private val TAG = AppUtils::class.simpleName
 
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
         val connection = fragment.engineConnection

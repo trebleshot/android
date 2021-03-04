@@ -191,6 +191,6 @@ class EngineConnection<T : SelectionModel>(
     }
 
     companion object {
-        val TAG: String = EngineConnection::class.java.simpleName
+        private val TAG = EngineConnection::class.simpleName
     }
 }

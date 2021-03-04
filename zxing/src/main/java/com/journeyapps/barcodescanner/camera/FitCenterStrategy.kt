@@ -71,6 +71,6 @@ class FitCenterStrategy : PreviewScalingStrategy() {
     }
 
     companion object {
-        private val TAG = FitCenterStrategy::class.java.simpleName
+        private val TAG = FitCenterStrategy::class.simpleName
     }
 }

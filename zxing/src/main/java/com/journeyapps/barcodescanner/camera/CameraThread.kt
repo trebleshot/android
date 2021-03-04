@@ -97,7 +97,7 @@ open class CameraThread private constructor() {
     }
 
     companion object {
-        private val TAG = CameraThread::class.java.simpleName
+        private val TAG = CameraThread::class.simpleName
 
         val instance: CameraThread by lazy {
             CameraThread()

@@ -32,6 +32,7 @@ import android.widget.ImageView
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -47,11 +48,11 @@ import org.monora.uprotocol.client.android.model.Identifier
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
 import org.monora.uprotocol.client.android.service.BackgroundService
+import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.Permissions
 import java.io.FileNotFoundException
@@ -133,13 +134,13 @@ abstract class Activity : AppCompatActivity() {
             @StyleRes var currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme
             @StyleRes var appliedRes = 0
 
-            Log.d(Activity::class.java.simpleName, "Activity theme id: $currentThemeRes")
+            Log.d(Activity::class.simpleName, "Activity theme id: $currentThemeRes")
 
             if (currentThemeRes == 0) {
                 currentThemeRes = applicationInfo.theme
             }
 
-            Log.d(Activity::class.java.simpleName, "After change theme: $currentThemeRes")
+            Log.d(Activity::class.simpleName, "After change theme: $currentThemeRes")
 
             when (currentThemeRes) {
                 R.style.Theme_TrebleShot -> appliedRes = R.style.Theme_TrebleShot_Dark
@@ -147,7 +148,7 @@ abstract class Activity : AppCompatActivity() {
                 R.style.Theme_TrebleShot_NoActionBar_StaticStatusBar -> appliedRes =
                     R.style.Theme_TrebleShot_Dark_NoActionBar_StaticStatusBar
                 else -> Log.e(
-                    Activity::class.java.simpleName, "The requested theme ${javaClass.simpleName} is unknown."
+                    Activity::class.simpleName, "The requested theme ${javaClass.simpleName} is unknown."
                 )
             }
 
@@ -166,7 +167,7 @@ abstract class Activity : AppCompatActivity() {
 
         // Apply the Preferred Font Family as a patch if enabled
         if (customFontsEnabled) {
-            Log.d(Activity::class.java.simpleName, "Custom fonts have been applied")
+            Log.d(Activity::class.simpleName, "Custom fonts have been applied")
             theme.applyStyle(R.style.Roundies, true)
         }
 
@@ -329,11 +330,6 @@ abstract class Activity : AppCompatActivity() {
         for (task in taskList) detachTask(task)
     }
 
-    fun exitApp() {
-        stopService(Intent(this, BackgroundService::class.java))
-        finish()
-    }
-
     fun findTasksWith(identity: Identity): List<BaseAttachableAsyncTask> {
         synchronized(attachedTaskList) {
             return BackgroundBackend.findTasksBy(
@@ -434,8 +430,10 @@ abstract class Activity : AppCompatActivity() {
     }
 
     companion object {
-        val TAG = Activity::class.java.simpleName
+        private val TAG = Activity::class.simpleName
+
         const val ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED"
+
         const val REQUEST_PICK_PROFILE_PHOTO = 1000
     }
 }
