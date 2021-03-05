@@ -17,7 +17,9 @@
  */
 package org.monora.uprotocol.client.android.util
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.LocalOnlyHotspotCallback
@@ -27,10 +29,13 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 abstract class HotspotManager internal constructor(context: Context) {
+    protected val context: Context = context.applicationContext
+
     abstract val configuration: WifiConfiguration?
 
     abstract val enabled: Boolean
@@ -78,26 +83,12 @@ abstract class HotspotManager internal constructor(context: Context) {
         }
 
         override fun enable(): Boolean {
+            if (ActivityCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+                return false
+            }
+
             try {
-                wifiManager.startLocalOnlyHotspot(object : LocalOnlyHotspotCallback() {
-                    override fun onStarted(reservation: LocalOnlyHotspotReservation) {
-                        super.onStarted(reservation)
-                        hotspotReservation = reservation
-                        secondaryCallback?.onStarted(reservation)
-                    }
-
-                    override fun onStopped() {
-                        super.onStopped()
-                        hotspotReservation = null
-                        secondaryCallback?.onStopped()
-                    }
-
-                    override fun onFailed(reason: Int) {
-                        super.onFailed(reason)
-                        hotspotReservation = null
-                        secondaryCallback?.onFailed(reason)
-                    }
-                }, Handler(Looper.getMainLooper()))
+                wifiManager.startLocalOnlyHotspot(callback, Handler(Looper.getMainLooper()))
                 return true
             } catch (e: Throwable) {
                 e.printStackTrace()
@@ -111,6 +102,26 @@ abstract class HotspotManager internal constructor(context: Context) {
 
         override fun unloadPreviousConfig(): Boolean {
             return hotspotReservation != null
+        }
+
+        val callback = object : LocalOnlyHotspotCallback() {
+            override fun onStarted(reservation: LocalOnlyHotspotReservation) {
+                super.onStarted(reservation)
+                hotspotReservation = reservation
+                secondaryCallback?.onStarted(reservation)
+            }
+
+            override fun onStopped() {
+                super.onStopped()
+                hotspotReservation = null
+                secondaryCallback?.onStopped()
+            }
+
+            override fun onFailed(reason: Int) {
+                super.onFailed(reason)
+                hotspotReservation = null
+                secondaryCallback?.onFailed(reason)
+            }
         }
     }
 
@@ -223,9 +234,9 @@ abstract class HotspotManager internal constructor(context: Context) {
     }
 
     companion object {
-        private const val TAG = "HotspotUtils"
+        private val TAG = HotspotManager::class.simpleName
 
-        val isSupported: Boolean
+        val supported: Boolean
             get() = Build.VERSION.SDK_INT >= 26 || OldHotspotManager.supported()
 
         fun newInstance(context: Context): HotspotManager {

@@ -25,12 +25,12 @@ import android.content.Intent
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.snackbar.Snackbar
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.client.android.util.DynamicNotification
 import org.monora.uprotocol.client.android.util.Notifications
-import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class TaskMessageImpl(
@@ -89,13 +89,13 @@ class TaskMessageImpl(
             for (action in actionList) {
                 if (appliedTones[action.tone.ordinal]) continue
                 when (action.tone) {
-                    Tone.Positive -> builder.setPositiveButton(action.name) { dialog: DialogInterface?, which: Int ->
+                    Tone.Positive -> builder.setPositiveButton(action.name) { _: DialogInterface?, _: Int ->
                         action.callback?.call(activity)
                     }
-                    Tone.Negative -> builder.setNegativeButton(action.name) { dialog: DialogInterface?, which: Int ->
+                    Tone.Negative -> builder.setNegativeButton(action.name) { _: DialogInterface?, _: Int ->
                         action.callback?.call(activity)
                     }
-                    else -> builder.setNeutralButton(action.name) { dialog: DialogInterface?, which: Int ->
+                    else -> builder.setNeutralButton(action.name) { _: DialogInterface?, _: Int ->
                         action.callback?.call(activity)
                     }
                 }
@@ -108,12 +108,15 @@ class TaskMessageImpl(
     }
 
     override fun toNotification(task: AsyncTask): DynamicNotification {
+        var hashCode = task.hashCode()
         val context = task.context.applicationContext
         val utils = task.notificationHelper.utils
-        val notification = utils.buildDynamicNotification(task.hashCode(), Notifications.NOTIFICATION_CHANNEL_HIGH)
+        val notification = utils.buildDynamicNotification(hashCode, Notifications.NOTIFICATION_CHANNEL_HIGH)
         val intent: PendingIntent = PendingIntent.getActivity(
-            context, 0, Intent(context, HomeActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0
+            context,
+            ++hashCode,
+            Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            PendingIntent.FLAG_IMMUTABLE
         )
         notification.setSmallIcon(iconFor(tone))
             .setGroup(task.getTaskGroup())
@@ -121,9 +124,10 @@ class TaskMessageImpl(
             .setContentText(message)
             .setContentIntent(intent)
             .setAutoCancel(true)
+
         for (action in actionList) notification.addAction(
             iconFor(action.tone), action.name, PendingIntent.getActivity(
-                context, 0, Intent(context, HomeActivity::class.java), 0
+                context, ++hashCode, Intent(context, HomeActivity::class.java), PendingIntent.FLAG_IMMUTABLE
             )
         )
         return notification
@@ -131,11 +135,9 @@ class TaskMessageImpl(
 
     override fun toSnackbar(view: View): Snackbar {
         val snackbar: Snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-        if (sizeOfActions() > 0) {
-            synchronized(actionList) {
-                val action = actionList[0]
-                snackbar.setAction(action.name) { v: View -> action.callback?.call(v.context) }
-            }
+        if (sizeOfActions() > 0) synchronized(actionList) {
+            val action = actionList[0]
+            snackbar.setAction(action.name) { v: View -> action.callback?.call(v.context) }
         }
         return snackbar
     }

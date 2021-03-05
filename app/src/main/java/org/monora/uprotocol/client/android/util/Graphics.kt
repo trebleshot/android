@@ -7,14 +7,11 @@ import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
 
 object Graphics {
-    fun getDefaultIconBuilder(context: Context): TextDrawable.IShapeBuilder {
-        val builder: TextDrawable.IShapeBuilder = TextDrawable.builder()
-        builder.beginConfig()
-            .firstLettersOnly(true)
-            .textMaxLength(1)
-            .bold()
-            .textColor(R.attr.colorControlNormal.attrToRes(context).resToColor(context))
-            .shapeColor(R.attr.colorPassive.attrToRes(context).resToColor(context))
-        return builder
+    fun getDefaultIconBuilder(context: Context) = TextDrawable.builder().apply {
+        textFirstLetters = true
+        textMaxLength = 1
+        textBold = true
+        textColor = R.attr.colorControlNormal.attrToRes(context).resToColor(context)
+        shapeColor = R.attr.colorPassive.attrToRes(context).resToColor(context)
     }
 }

@@ -10,8 +10,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class NetworkDescription(var ssid: String, var bssid: String?, var password: String?) : Parcelable {
-    constructor(result: ScanResult) : this(result.SSID, result.BSSID, null)
-
     override fun equals(other: Any?): Boolean {
         if (other is NetworkDescription) {
             return bssid == other.bssid || (bssid == null && ssid == other.ssid)

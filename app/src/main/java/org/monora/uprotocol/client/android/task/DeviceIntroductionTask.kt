@@ -26,36 +26,21 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTas
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.client.android.util.Connections
-import org.monora.uprotocol.core.protocol.ClientAddress
 import java.net.InetAddress
 
-class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.ResultListener> {
-    private val pin: Int
-
-    private var description: NetworkDescription? = null
-
-    private var address: InetAddress? = null
-
-    constructor(address: InetAddress, pin: Int) {
-        this.address = address
-        this.pin = pin
-    }
-
-    constructor(address: ClientAddress, pin: Int) : this(address.clientAddress, pin)
-
-    constructor(description: NetworkDescription, pin: Int) {
-        this.description = description
-        this.pin = pin
-    }
-
+class DeviceIntroductionTask(
+    private val description: NetworkDescription? = null,
+    private val address: InetAddress? = null,
+    private val pin: Int = 0,
+) : AttachableAsyncTask<DeviceIntroductionTask.ResultListener>() {
     @Throws(TaskStoppedException::class)
     public override fun onRun() {
         try {
-            val clientRoute: ClientRoute = if (address == null) {
-                val connections = Connections(context)
-                connections.connectToNetwork(this, description!!, pin)
-            } else
-                Connections.setUpConnection(context, address!!, pin)
+            val clientRoute: ClientRoute = when {
+                address != null -> Connections.setUpConnection(context, address, pin)
+                description != null -> Connections(context).connectToNetwork(this, description, pin)
+                else -> throw IllegalStateException("One of address or description should be provided")
+            }
 
             anchor?.let { post { it.onDeviceReached(clientRoute) } }
         } catch (e: Exception) {
@@ -74,7 +59,7 @@ class DeviceIntroductionTask : AttachableAsyncTask<DeviceIntroductionTask.Result
 
     class SuggestNetworkException(val description: NetworkDescription, val type: Type) : Exception() {
         enum class Type {
-            ExceededLimit, ErrorInternal, Duplicate, AppDisallowed, NetworkDuplicate, DidNotConnect
+            ExceededLimit, ErrorInternal, Duplicate, AppDisallowed
         }
     }
 

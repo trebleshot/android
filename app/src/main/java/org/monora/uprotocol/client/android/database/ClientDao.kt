@@ -1,5 +1,6 @@
 package org.monora.uprotocol.client.android.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.monora.uprotocol.client.android.database.model.UClient
 
@@ -12,7 +13,7 @@ interface ClientDao {
     fun get(uid: String): UClient?
 
     @Query("SELECT * FROM client")
-    fun getAll(): List<UClient>
+    fun getAll(): LiveData<List<UClient>>
 
     @Insert
     fun insert(client: UClient)

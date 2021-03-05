@@ -17,7 +17,7 @@
   -->
 
 <resources>
-    <dimen name="short_content_width_padding">80dp</dimen>
-    <dimen name="short_content_width_padding_between">@dimen/short_content_width_padding</dimen>
-    <dimen name="short_content_width_padding_border">@dimen/short_content_width_padding</dimen>
+    <dimen name="short_content_width_padding">96dp</dimen>
+    <dimen name="short_content_width_padding_between">80dp</dimen>
+    <dimen name="short_content_width_padding_border">88dp</dimen>
 </resources>

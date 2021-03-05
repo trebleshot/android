@@ -49,7 +49,6 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
-import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
@@ -199,8 +198,10 @@ class NetworkManagerFragment : Fragment() {
         requireContext().unregisterReceiver(statusReceiver)
     }
 
-    fun getWifiConfiguration(): WifiConfiguration? {
-        if (Build.VERSION.SDK_INT < 26) return manager.configuration
+    private fun getWifiConfiguration(): WifiConfiguration? {
+        if (Build.VERSION.SDK_INT < 26) {
+            return manager.configuration
+        }
         try {
             return backgroundBackend.getHotspotConfig()
         } catch (e: IllegalStateException) {
@@ -209,7 +210,7 @@ class NetworkManagerFragment : Fragment() {
         return null
     }
 
-    fun openWifiSettings() {
+    private fun openWifiSettings() {
         startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
     }
 
@@ -277,8 +278,8 @@ class NetworkManagerFragment : Fragment() {
                 imageView2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp)
                 imageView3.setImageResource(R.drawable.ic_vpn_key_white_24dp)
                 text1.setText(R.string.text_qrCodeAvailableHelp)
-                text2.setText(ssid)
-                text3.setText(key)
+                text2.text = ssid
+                text3.text = key
             } else {
                 activeType = Type.HotspotExternal
                 text1.setText(R.string.text_hotspotStartedExternallyNotice)

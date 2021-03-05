@@ -41,6 +41,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
+import kotlinx.coroutines.delay
 import org.json.JSONException
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
@@ -64,20 +65,27 @@ class Connections(contextLocal: Context) {
 
     val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    private val isLocationServiceEnabled: Boolean
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            this.locationManager.isLocationEnabled
+        } else {
+            this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        }
 
     val p2pManager
         get() = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
 
-    var wirelessEnableRequested = false
+    private var wirelessEnableRequested = false
 
     fun canAccessLocation(): Boolean {
         return hasLocationPermission() && isLocationServiceEnabled
     }
 
-    fun canReadScanResults(): Boolean {
+    private fun canReadScanResults(): Boolean {
         return wifiManager.isWifiEnabled && (Build.VERSION.SDK_INT < 23 || canAccessLocation())
     }
 
@@ -105,20 +113,16 @@ class Connections(contextLocal: Context) {
             ) status = wifiManager.addNetworkSuggestions(suggestionList)
             when (status) {
                 WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP -> throw SuggestNetworkException(
-                    description,
-                    SuggestNetworkException.Type.ExceededLimit
+                    description, SuggestNetworkException.Type.ExceededLimit
                 )
                 WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED -> throw SuggestNetworkException(
-                    description,
-                    SuggestNetworkException.Type.AppDisallowed
+                    description, SuggestNetworkException.Type.AppDisallowed
                 )
                 WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL -> throw SuggestNetworkException(
-                    description,
-                    SuggestNetworkException.Type.ErrorInternal
+                    description, SuggestNetworkException.Type.ErrorInternal
                 )
                 WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE -> throw SuggestNetworkException(
-                    description,
-                    SuggestNetworkException.Type.Duplicate
+                    description, SuggestNetworkException.Type.Duplicate
                 )
                 WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS -> Log.d(TAG, "Network suggestion successful!")
                 else -> Log.d(TAG, "Network suggestion successful!")
@@ -140,7 +144,7 @@ class Connections(contextLocal: Context) {
                 && wifiManager.disableNetwork(wifiManager.connectionInfo.networkId))
     }
 
-    fun enableNetwork(networkId: Int): Boolean {
+    private fun enableNetwork(networkId: Int): Boolean {
         Log.d(TAG, "enableNetwork: Enabling network: $networkId")
         if (wifiManager.enableNetwork(networkId, true)) return true
         Log.d(TAG, "toggleConnection: Could not enable the network")
@@ -157,62 +161,67 @@ class Connections(contextLocal: Context) {
         InterruptedException::class,
         JSONException::class
     )
-    fun establishHotspotConnection(stoppable: Stoppable, description: NetworkDescription, pin: Int): ClientRoute {
+    suspend fun establishHotspotConnection(
+        stoppable: Stoppable,
+        description: NetworkDescription,
+        pin: Int,
+    ): ClientRoute {
         val timeout = (System.nanoTime() + AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6).toLong()
-        var connectionToggled = Build.VERSION.SDK_INT >= 29
+        var toggled = Build.VERSION.SDK_INT >= 29
         var connectionReset = false
 
         while (true) {
             val timedOut = System.nanoTime() > timeout
             val wifiDhcpInfo: DhcpInfo = wifiManager.dhcpInfo
-            Log.d(
-                TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
-                        + wifiDhcpInfo.toString()
-            )
+
+            Log.d(TAG, "establishHotspotConnection(): Waiting for the network. DhcpInfo: $wifiDhcpInfo")
+
             if (!wifiManager.isWifiEnabled) {
-                Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on")
+                Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on.")
+
                 if (Build.VERSION.SDK_INT >= 29 || !wifiManager.setWifiEnabled(true)) {
                     Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.")
-                    throw WifiInaccessibleException(
-                        "Wifi won't turn on. It is either because the device is " +
-                                "running Android 10 or later, or the Wi-Fi access is blocked by some other reasons."
-                    )
+                    throw WifiInaccessibleException("The device is running Android 10 or Wi-Fi is inaccessible.")
                 }
-            } else if (!connectionToggled && !isConnectedToNetwork(description)) {
-                Log.d(TAG, "establishHotspotConnection: The network is not ready to be used yet.")
+            } else if (!toggled && !isConnectedToNetwork(description)) {
+                Log.d(TAG, "establishHotspotConnection(): The network is not ready yet.")
                 wifiManager.startScan()
+
                 val result = findFromScanResults(description)
+
                 if (!connectionReset && isConnectedToAnyNetwork()) {
                     disableCurrentNetwork()
                     wifiManager.setWifiEnabled(false)
                     connectionReset = true
-                } else if (result == null) Log.e(
-                    TAG,
-                    "establishHotspotConnection: No network found with the name " + description.ssid
-                ) else if (startConnection(
-                        createWifiConfig(result, description.password)
-                    ).also { connectionToggled = it }
-                ) Log.d(
-                    TAG, "establishHotspotConnection: Successfully toggled network from scan results "
-                            + description.ssid
-                ) else Log.d(TAG, "establishHotspotConnection: Toggling network failed " + description.ssid)
+                } else if (result == null) {
+                    Log.e(TAG, "establishHotspotConnection(): No network found? " + description.ssid)
+                } else if (startConnection(createWifiConfig(result, description.password)).also { toggled = it }) {
+                    Log.d(TAG, "establishHotspotConnection(): Toggled network using results " + description.ssid)
+                } else {
+                    Log.d(TAG, "establishHotspotConnection(): Failed to toggle network? " + description.ssid)
+                }
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     val address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway))
                     return setUpConnection(context, address, pin)
                 } catch (e: Exception) {
                     Log.d(TAG, "establishHotspotConnection(): Connection failed.", e)
-                    if (timedOut) throw e
+
+                    if (timedOut) {
+                        throw e
+                    }
                 }
-            } else
+            } else {
                 Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...")
+            }
 
-            Thread.sleep(1000)
+            delay(1000)
 
-            if (stoppable.interrupted())
+            if (stoppable.interrupted()) {
                 throw TaskStoppedException("Task has been stopped.", stoppable.interruptedByUser())
-            else if (timedOut)
+            } else if (timedOut) {
                 throw TimeoutException("The process took longer than expected.")
+            }
         }
     }
 
@@ -276,7 +285,7 @@ class Connections(contextLocal: Context) {
         return null
     }
 
-    fun hasLocationPermission(): Boolean {
+    private fun hasLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
     }
 
@@ -293,28 +302,21 @@ class Connections(contextLocal: Context) {
         return info != null && info.type == ConnectivityManager.TYPE_WIFI && info.isConnected
     }
 
-    fun isConnectedToNetwork(description: NetworkDescription): Boolean {
+    private fun isConnectedToNetwork(description: NetworkDescription): Boolean {
         return isConnectedToNetwork(description.ssid, description.bssid)
     }
 
-    fun isConnectedToNetwork(configuration: WifiConfiguration): Boolean {
+    private fun isConnectedToNetwork(configuration: WifiConfiguration): Boolean {
         return isConnectedToNetwork(configuration.SSID, configuration.BSSID)
     }
 
-    fun isConnectedToNetwork(ssid: String, bssid: String?): Boolean {
+    private fun isConnectedToNetwork(ssid: String, bssid: String?): Boolean {
         if (!isConnectedToAnyNetwork()) return false
         val wifiInfo: WifiInfo = wifiManager.connectionInfo
         val tgSsid = getCleanSsid(wifiInfo.ssid)
         Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + ":" + bssid + "=" + wifiInfo.bssid)
         return bssid?.equals(wifiInfo.bssid, ignoreCase = true) ?: (ssid == tgSsid)
     }
-
-    val isLocationServiceEnabled: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            this.locationManager.isLocationEnabled
-        } else {
-            this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        }
 
     /**
      * @return True if the mobile data connection is active.
@@ -358,7 +360,7 @@ class Connections(contextLocal: Context) {
     )
     fun startConnection(config: WifiConfiguration): Boolean {
         if (isConnectedToNetwork(config)) {
-            Log.d(TAG, "startConnection: Already connected to the network")
+            Log.d(TAG, "startConnection: Already connected to the network.")
             return true
         }
         if (isConnectedToAnyNetwork()) {
@@ -367,14 +369,16 @@ class Connections(contextLocal: Context) {
         }
         try {
             val existingConfig: WifiConfiguration? = findFromConfigurations(config)
+
             if (existingConfig != null && !wifiManager.removeNetwork(existingConfig.networkId)) {
                 Log.d(TAG, "startConnection: The config exits but could not remove it.")
             } else if (!enableNetwork(wifiManager.addNetwork(config))) {
                 Log.d(TAG, "startConnection: Could not enable the network.")
             } else if (!wifiManager.reconnect()) {
                 Log.d(TAG, "startConnection: Could not reconnect the networks.")
-            } else return true
-            return false
+            } else {
+                return true
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -400,7 +404,7 @@ class Connections(contextLocal: Context) {
         suggestActions: Boolean,
         locationPermRequestId: Int,
     ) {
-        if (!HotspotManager.isSupported || Build.VERSION.SDK_INT >= 26
+        if (!HotspotManager.supported || Build.VERSION.SDK_INT >= 26
             && !validateLocationPermission(activity, locationPermRequestId)
         ) return
 
@@ -447,7 +451,7 @@ class Connections(contextLocal: Context) {
                 AlertDialog.Builder(activity)
                     .setMessage(R.string.mesg_wifiEnableFailed)
                     .setNegativeButton(R.string.butn_close, null)
-                    .setPositiveButton(R.string.butn_settings) { dialog: DialogInterface?, which: Int ->
+                    .setPositiveButton(R.string.butn_settings) { _: DialogInterface?, _: Int ->
                         activity.startActivity(
                             Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
@@ -497,34 +501,34 @@ class Connections(contextLocal: Context) {
             config.hiddenSSID = false
             config.BSSID = result.BSSID
             config.status = WifiConfiguration.Status.ENABLED
-            if (result.capabilities.contains("WEP")) {
-                config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
-                config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN)
-                config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104)
-                config.SSID = "\"" + result.SSID + "\""
-                config.wepTxKeyIndex = 0
-                config.wepKeys[0] = password
-            } else if (result.capabilities.contains("PSK")) {
-                config.SSID = "\"" + result.SSID + "\""
-                config.preSharedKey = "\"" + password + "\""
-            } else if (result.capabilities.contains("EAP")) {
-                config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP)
-                config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN)
-                config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP)
-                config.allowedProtocols.set(WifiConfiguration.Protocol.WPA)
-                config.SSID = "\"" + result.SSID + "\""
-                config.preSharedKey = "\"" + password + "\""
-            } else {
-                config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
-                config.SSID = "\"" + result.SSID + "\""
-                config.preSharedKey = null
+            when {
+                result.capabilities.contains("WEP") -> {
+                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN)
+                    config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104)
+                    config.SSID = "\"" + result.SSID + "\""
+                    config.wepTxKeyIndex = 0
+                    config.wepKeys[0] = password
+                }
+                result.capabilities.contains("PSK") -> {
+                    config.SSID = "\"" + result.SSID + "\""
+                    config.preSharedKey = "\"" + password + "\""
+                }
+                result.capabilities.contains("EAP") -> {
+                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP)
+                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN)
+                    config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP)
+                    config.allowedProtocols.set(WifiConfiguration.Protocol.WPA)
+                    config.SSID = "\"" + result.SSID + "\""
+                    config.preSharedKey = "\"" + password + "\""
+                }
+                else -> {
+                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+                    config.SSID = "\"" + result.SSID + "\""
+                    config.preSharedKey = null
+                }
             }
             return config
-        }
-
-        fun isClientNetwork(ssid: String?): Boolean {
-            val prefix = AppConfig.PREFIX_ACCESS_POINT
-            return ssid != null && (ssid.startsWith(prefix) || ssid.startsWith("\"" + prefix))
         }
 
         @WorkerThread

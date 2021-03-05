@@ -37,9 +37,8 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.dialog.DialogUtils
+import org.monora.uprotocol.client.android.dialog.Dialogs
 import org.monora.uprotocol.client.android.exception.TransferNotFoundException
 import org.monora.uprotocol.client.android.fragment.TransferItemExplorerFragment
 import org.monora.uprotocol.client.android.fragment.TransferItemListFragment
@@ -188,7 +187,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             finish()
         } else if (id == R.id.actions_transfer_remove) {
             if (transfer != null) {
-                DialogUtils.showRemoveDialog(this, transfer)
+                Dialogs.showRemoveDialog(this, transfer)
             }
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
             transfer?.let {

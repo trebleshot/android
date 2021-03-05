@@ -21,11 +21,11 @@ data class UClient(
     var versionCode: Int,
     var protocolVersion: Int,
     var protocolVersionMin: Int,
-    var lastUsageTime: Long,
-    var blocked: Boolean,
-    var local: Boolean,
-    var trusted: Boolean,
-    var certificate: X509Certificate?,
+    var lastUsageTime: Long = System.currentTimeMillis(),
+    var blocked: Boolean = false,
+    var local: Boolean = false,
+    var trusted: Boolean = false,
+    var certificate: X509Certificate? = null,
 ) : Client, Parcelable {
     override fun getClientCertificate(): X509Certificate? = certificate
 

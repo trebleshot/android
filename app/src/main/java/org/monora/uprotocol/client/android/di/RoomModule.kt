@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.ClientDao
 import org.monora.uprotocol.client.android.database.SharedTextDao
 import javax.inject.Singleton
 
@@ -19,6 +20,11 @@ object RoomModule {
     fun provideRoomDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "Main.db")
             .build()
+    }
+
+    @Provides
+    fun provideClientDao(appDatabase: AppDatabase): ClientDao {
+        return appDatabase.clientDao()
     }
 
     @Provides

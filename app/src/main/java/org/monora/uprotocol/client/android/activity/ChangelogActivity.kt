@@ -30,16 +30,5 @@ class ChangelogActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_changelog)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home)
-            finish()
-        else
-            return super.onOptionsItemSelected(item)
-
-        return true
     }
 }

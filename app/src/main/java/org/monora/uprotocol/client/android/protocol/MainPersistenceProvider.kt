@@ -154,7 +154,6 @@ class MainPersistenceProvider @Inject constructor(
         protocolVersionMin: Int,
     ) = UClient(
         uid, nickname, manufacturer, product, type, versionName, versionCode, protocolVersion, protocolVersionMin,
-        System.currentTimeMillis(), blocked = false, local = false, trusted = false, certificate = null
     )
 
     override fun createTransferItemFor(
@@ -176,7 +175,7 @@ class MainPersistenceProvider @Inject constructor(
     )
 
     override fun getClientFor(uid: String): UClient? {
-        return db.clientDao().get(client.uid)
+        return db.clientDao().get(uid)
     }
 
     // TODO: 2/21/21 Can we get the device name programmatically, on Android TV for instance?
@@ -332,7 +331,6 @@ class MainPersistenceProvider @Inject constructor(
     override fun setState(clientUid: String, item: TransferItem, state: Int, e: Exception?) {
         if (item is UTransferItem) {
             item.state = state
-            db.transferItemDao().insertAll(item)
         } else {
             throw UnsupportedOperationException()
         }

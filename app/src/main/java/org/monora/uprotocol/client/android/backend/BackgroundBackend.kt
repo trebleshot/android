@@ -44,9 +44,9 @@ import javax.inject.Singleton
 class BackgroundBackend @Inject constructor(
     @ApplicationContext val context: Context,
     val appDatabase: AppDatabase,
-    val transportSession: TransportSession,
-    val nsdDaemon: NsdDaemon,
-    val webShareServer: WebShareServer,
+    private val transportSession: TransportSession,
+    private val nsdDaemon: NsdDaemon,
+    private val webShareServer: WebShareServer,
 ) {
     private val bgIntent = Intent(context, BackgroundService::class.java)
 
@@ -63,7 +63,7 @@ class BackgroundBackend @Inject constructor(
 
     private var foregroundActivity: Activity? = null
 
-    var hotspotManager = HotspotManager.newInstance(context)
+    private var hotspotManager = HotspotManager.newInstance(context)
 
     var mediaScanner: MediaScannerConnection = MediaScannerConnection(context, null)
 
@@ -77,7 +77,7 @@ class BackgroundBackend @Inject constructor(
 
     private var wifiLock: WifiManager.WifiLock? = null
 
-    val wifiManager: WifiManager
+    private val wifiManager: WifiManager
         get() = hotspotManager.wifiManager
 
     fun attach(task: AsyncTask) {
@@ -251,8 +251,6 @@ class BackgroundBackend @Inject constructor(
 
             nsdDaemon.registerService()
             nsdDaemon.startDiscovering()
-
-            run(TestTask())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -303,6 +301,7 @@ class BackgroundBackend @Inject constructor(
         byOthers: Boolean = false,
         forceStop: Boolean = false,
     ) {
+        // Do not try to tweak this!!!
         val hasTasks = hasTasks() && !forceStop
         val hasServices = (hotspotManager.started || webShareServer.hadClients) && !forceStop
         val inFgNow = foregroundActivitiesCount > 0
@@ -383,20 +382,4 @@ class BackgroundBackend @Inject constructor(
         mediaScanner.connect()
         if (Build.VERSION.SDK_INT >= 26) hotspotManager.secondaryCallback = SecondaryHotspotCallback()
     }
-}
-
-class TestTask : AsyncTask() {
-    override fun onRun() {
-        repeat(10) {
-            ongoingContent = "$it is done"
-            publishStatus()
-            throwIfStopped()
-            Thread.sleep(900)
-        }
-    }
-
-    override fun getName(context: Context): String {
-        return "Test Task"
-    }
-
 }

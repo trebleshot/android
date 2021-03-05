@@ -16,41 +16,17 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="160dp"
-    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="8dp"
+    app:strokeWidth="0dp"
     android:layout_height="wrap_content"
     android:background="?rectSelector"
     android:orientation="vertical">
-
-    <org.monora.uprotocol.client.android.view.ComparativeRelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:baseOnSmallerLength="false">
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/text_image" />
-
-        <ImageView
-            android:id="@+id/imageStatus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:background="?rippleBackground"
-            android:padding="3dp"
-            android:visibility="gone"
-            app:tint="?colorControlNormal" />
-
-    </org.monora.uprotocol.client.android.view.ComparativeRelativeLayout>
 
     <LinearLayout
         android:id="@+id/infoContainer"
@@ -58,7 +34,35 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:paddingBottom="16dp"
         android:orientation="vertical">
+
+        <org.monora.uprotocol.client.android.view.ComparativeRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:baseOnSmallerLength="false">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/text_image" />
+
+            <ImageView
+                android:id="@+id/imageStatus"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:background="?rippleBackground"
+                android:padding="3dp"
+                android:visibility="gone"
+                app:tint="?colorControlNormal" />
+
+        </org.monora.uprotocol.client.android.view.ComparativeRelativeLayout>
 
         <TextView
             android:id="@+id/text1"
@@ -89,5 +93,5 @@
             android:id="@+id/layout_online" />
 
     </LinearLayout>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>
 

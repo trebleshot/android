@@ -34,7 +34,7 @@ import java.util.*
  * created by: veli
  * date: 7/3/19 7:53 PM
  */
-object DialogUtils {
+object Dialogs {
     fun showGenericCheckBoxDialog(
         activity: Activity,
         @StringRes title: Int,

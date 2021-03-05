@@ -102,7 +102,12 @@
         <item name="itemBackground">?rectSelector</item>
     </style>
 
-    <style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView" />
+    <style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="strokeColor">?colorDivider</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
+    </style>
 
     <style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval" parent="Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:progressDrawable">?roundProgressBar</item>

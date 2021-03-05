@@ -63,7 +63,7 @@ import java.net.UnknownHostException
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProvider {
+class BarcodeScannerActivity : Activity(), SnackbarPlacementProvider {
     @Inject
     lateinit var appDatabase: AppDatabase
 
@@ -104,9 +104,8 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_barcode_scanner)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        setContentView(R.layout.layout_barcode_scanner)
+        setSupportActionBar(findViewById(R.id.toolbar))
         setResult(RESULT_CANCELED)
         connections = Connections(this)
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -162,13 +161,6 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                 }
             }
         }
-    }
-
-    override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
-        super.onAttachTasks(taskList)
-        for (task in taskList) if (task is DeviceIntroductionTask) task.anchor = this
-
-        updateState(hasTaskOf(DeviceIntroductionTask::class.java))
     }
 
     override fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar {
@@ -236,11 +228,11 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
     }
 
     private fun run(description: NetworkDescription, pin: Int) {
-        run(DeviceIntroductionTask(description, pin))
+        run(DeviceIntroductionTask(description = description, pin = pin))
     }
 
     private fun run(address: InetAddress, bssid: String?, pin: Int) {
-        val runnable = Runnable { run(DeviceIntroductionTask(address, pin)) }
+        val runnable = Runnable { run(DeviceIntroductionTask(address = address, pin = pin)) }
         val wifiInfo = connections.wifiManager.connectionInfo
         if (wifiInfo?.bssid != null && wifiInfo.bssid == bssid) {
             runnable.run()
@@ -253,10 +245,6 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
                     .setOnDismissListener(dismissListener)
             )
         }
-    }
-
-    private fun run(task: DeviceIntroductionTask) {
-        runUiTask(task, this)
     }
 
     private fun showDialog(builder: AlertDialog.Builder) {
@@ -274,12 +262,15 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
             updateState()
         }
         taskContainer.visibility = if (connecting) View.VISIBLE else View.GONE
-        taskInterruptButton.setOnClickListener(if (connecting)
-            View.OnClickListener {
-                getTaskListOf(DeviceIntroductionTask::class.java).forEach {
-                    it.interrupt(true)
+        taskInterruptButton.setOnClickListener(
+            if (connecting) {
+                View.OnClickListener {
+                    getTaskListOf(DeviceIntroductionTask::class.java).forEach {
+                        it.interrupt(true)
+                    }
                 }
-            } else null)
+            } else null
+        )
     }
 
     fun updateState() {
@@ -339,45 +330,13 @@ class BarcodeScannerActivity : Activity(), ResultListener, SnackbarPlacementProv
         conductContainer.visibility = if (showing) View.VISIBLE else View.GONE
     }
 
-    override fun onDeviceReached(clientRoute: ClientRoute) {
-        setResult(
-            RESULT_OK, Intent()
-                .putExtra(EXTRA_DEVICE, clientRoute.client)
-                .putExtra(EXTRA_DEVICE_ADDRESS, clientRoute.address)
-        )
-        finish()
-    }
-
-    override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
-        if (task is DeviceIntroductionTask) {
-            when (state) {
-                AsyncTask.State.Starting -> updateState(true)
-                AsyncTask.State.Running -> {
-
-                }
-                AsyncTask.State.Finished -> updateState(false)
-            }
-        }
-        updateState(!task.finished)
-    }
-
-    override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
-        when {
-            taskMessage.sizeOfActions() > 1 -> runOnUiThread {
-                taskMessage.toDialogBuilder(this).show()
-            }
-            taskMessage.sizeOfActions() <= 1 -> runOnUiThread {
-                taskMessage.toSnackbar(taskInterruptButton).show()
-            }
-            else -> return false
-        }
-        return true
-    }
-
     companion object {
         const val EXTRA_DEVICE = "extraDevice"
+
         const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
+
         const val REQUEST_PERMISSION_CAMERA = 1
+
         const val REQUEST_PERMISSION_LOCATION = 2
     }
 }

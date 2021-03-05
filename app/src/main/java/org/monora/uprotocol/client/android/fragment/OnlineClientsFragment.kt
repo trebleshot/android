@@ -24,19 +24,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.drawable.TextDrawable.IShapeBuilder
+import org.monora.uprotocol.client.android.drawable.TextDrawable.Builder
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
 import org.monora.uprotocol.client.android.util.Graphics
 import javax.inject.Inject
@@ -48,7 +44,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
     @Inject
-    lateinit var appDatabase: AppDatabase
+    lateinit var clientRepository: ClientRepository
 
     private val imageBuilder by lazy {
         Graphics.getDefaultIconBuilder(requireContext())
@@ -59,6 +55,7 @@ class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         val adapter = Adapter(imageBuilder)
 
+        adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
         recyclerView.layoutManager?.let {
             if (it is GridLayoutManager) {
@@ -66,12 +63,12 @@ class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
             }
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            adapter.submitList(appDatabase.clientDao().getAll())
+        clientRepository.getAll().observe(viewLifecycleOwner) {
+            adapter.submitList(it)
         }
     }
 
-    class Adapter(private val imageBuilder: IShapeBuilder) : ListAdapter<UClient, ViewHolder>(UClientItemCallback()) {
+    class Adapter(private val imageBuilder: Builder) : ListAdapter<UClient, ViewHolder>(UClientItemCallback()) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.list_client_grid, parent, false)

@@ -32,7 +32,6 @@ import android.widget.ImageView
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -47,8 +46,6 @@ import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
 import org.monora.uprotocol.client.android.model.Identifier
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
-import org.monora.uprotocol.client.android.service.BackgroundService
-import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
@@ -64,13 +61,13 @@ abstract class Activity : AppCompatActivity() {
     @Inject
     lateinit var backgroundBackend: BackgroundBackend
 
-    private var amoledDarkThemeRequested = false
+    private var amoledThemeState = false
 
     private val attachedTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList()
 
-    private var customFontsEnabled = false
+    private var customFontsState = false
 
-    private var darkThemeRequested = false
+    private var darkThemeState = false
 
     protected val defaultPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
@@ -80,21 +77,21 @@ abstract class Activity : AppCompatActivity() {
 
     private val intentFilter = IntentFilter()
 
-    private val isAmoledDarkThemeRequested: Boolean
+    private val amoledThemeEnabled: Boolean
         get() = defaultPreferences.getBoolean("amoled_theme", false)
 
-    private val isDarkThemeRequested: Boolean
+    private val customFontsEnabled: Boolean
+        get() = defaultPreferences.getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16
+
+    private val darkThemeEnabled: Boolean
         get() {
             val value = defaultPreferences.getString("theme", "light")
             val systemWideTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
             return ("dark" == value || "system" == value && systemWideTheme == Configuration.UI_MODE_NIGHT_YES
-                    || "battery" == value && isPowerSaveMode)
+                    || "battery" == value && powerSaveEnabled)
         }
 
-    private val isUsingCustomFonts: Boolean
-        get() = defaultPreferences.getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16
-
-    private val isPowerSaveMode: Boolean
+    private val powerSaveEnabled: Boolean
         get() {
             if (Build.VERSION.SDK_INT < 23) return false
             val powerManager = getSystemService(POWER_SERVICE) as PowerManager
@@ -123,33 +120,31 @@ abstract class Activity : AppCompatActivity() {
         protected set
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        darkThemeRequested = isDarkThemeRequested
-        amoledDarkThemeRequested = isAmoledDarkThemeRequested
-        customFontsEnabled = isUsingCustomFonts
+        darkThemeState = darkThemeEnabled
+        amoledThemeState = amoledThemeEnabled
+        customFontsState = customFontsEnabled
 
         intentFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED)
         intentFilter.addAction(BackgroundBackend.ACTION_TASK_CHANGE)
 
-        if (darkThemeRequested) try {
-            @StyleRes var currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme
-            @StyleRes var appliedRes = 0
-
-            Log.d(Activity::class.simpleName, "Activity theme id: $currentThemeRes")
-
-            if (currentThemeRes == 0) {
-                currentThemeRes = applicationInfo.theme
+        if (darkThemeState) try {
+            @StyleRes
+            val currentThemeRes = packageManager.getActivityInfo(componentName, 0).theme.let {
+                Log.d(Activity::class.simpleName, "ActivityTheme=$it AppTheme=" + applicationInfo.theme)
+                return@let if (it == 0) applicationInfo.theme else it
             }
 
-            Log.d(Activity::class.simpleName, "After change theme: $currentThemeRes")
-
-            when (currentThemeRes) {
-                R.style.Theme_TrebleShot -> appliedRes = R.style.Theme_TrebleShot_Dark
-                R.style.Theme_TrebleShot_NoActionBar -> appliedRes = R.style.Theme_TrebleShot_Dark_NoActionBar
-                R.style.Theme_TrebleShot_NoActionBar_StaticStatusBar -> appliedRes =
+            @StyleRes
+            val appliedRes = when (currentThemeRes) {
+                R.style.Theme_TrebleShot -> R.style.Theme_TrebleShot_Dark
+                R.style.Theme_TrebleShot_NoActionBar -> R.style.Theme_TrebleShot_Dark_NoActionBar
+                R.style.Theme_TrebleShot_NoActionBar_StaticStatusBar -> {
                     R.style.Theme_TrebleShot_Dark_NoActionBar_StaticStatusBar
-                else -> Log.e(
-                    Activity::class.simpleName, "The requested theme ${javaClass.simpleName} is unknown."
-                )
+                }
+                else -> {
+                    Log.e(Activity::class.simpleName, "The requested theme ${javaClass.simpleName} is unknown.")
+                    0
+                }
             }
 
             themeLoadingFailed = appliedRes == 0
@@ -157,7 +152,7 @@ abstract class Activity : AppCompatActivity() {
             if (!themeLoadingFailed) {
                 setTheme(appliedRes)
 
-                if (amoledDarkThemeRequested) {
+                if (amoledThemeState) {
                     theme.applyStyle(R.style.BlackPatch, true)
                 }
             }
@@ -166,7 +161,7 @@ abstract class Activity : AppCompatActivity() {
         }
 
         // Apply the Preferred Font Family as a patch if enabled
-        if (customFontsEnabled) {
+        if (customFontsState) {
             Log.d(Activity::class.simpleName, "Custom fonts have been applied")
             theme.applyStyle(R.style.Roundies, true)
         }
@@ -255,8 +250,7 @@ abstract class Activity : AppCompatActivity() {
 
     fun attachTask(task: BaseAttachableAsyncTask) {
         synchronized(attachedTaskList) { if (!attachedTaskList.add(task)) return }
-        if (task.activityIntent == null)
-            task.setContentIntent(this, intent)
+        if (task.activityIntent == null) task.setContentIntent(this, intent)
     }
 
     @Synchronized
@@ -280,9 +274,9 @@ abstract class Activity : AppCompatActivity() {
 
         // In this phase, we remove the tasks that are no longer known to the background service.
         if (checkIfExists && attachableBgTaskList.size > 0) {
-            if (concurrentTaskList.isEmpty())
+            if (concurrentTaskList.isEmpty()) {
                 detachTasks()
-            else {
+            } else {
                 val unrefreshedTaskList: List<BaseAttachableAsyncTask> = ArrayList(attachableBgTaskList)
                 for (task in unrefreshedTaskList) {
                     if (!concurrentTaskList.contains(task)) detachTask(task)
@@ -301,16 +295,13 @@ abstract class Activity : AppCompatActivity() {
     }
 
     fun checkForThemeChange() {
-        if ((darkThemeRequested != isDarkThemeRequested || (isDarkThemeRequested
-                    && amoledDarkThemeRequested != isAmoledDarkThemeRequested)) && !themeLoadingFailed
-            || customFontsEnabled != isUsingCustomFonts
+        if ((darkThemeState != darkThemeEnabled || (darkThemeEnabled && amoledThemeState != amoledThemeEnabled))
+            && !themeLoadingFailed || customFontsState != customFontsEnabled
         ) recreate()
     }
 
     fun checkUiTasks() {
-        if (uiTaskList.size <= 0)
-            return
-        synchronized(uiTaskList) {
+        if (uiTaskList.size > 0) synchronized(uiTaskList) {
             val uiTaskList: MutableList<AsyncTask> = ArrayList()
             for (task in this.uiTaskList) if (!task.finished) uiTaskList.add(task)
             this.uiTaskList.clear()

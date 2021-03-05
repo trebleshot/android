@@ -56,14 +56,14 @@
 
         </RelativeLayout>
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/connection_option_device_list"
-            android:name="org.monora.uprotocol.client.android.fragment.OnlineClientsFragment"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:minHeight="160dp"
-            android:tag="deviceListFragment" />
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            android:clipToPadding="false"
+            android:paddingLeft="@dimen/short_content_width_padding_border"
+            android:paddingRight="@dimen/short_content_width_padding_border" />
 
         <TextView
             style="@style/CondensedTitleStyle"

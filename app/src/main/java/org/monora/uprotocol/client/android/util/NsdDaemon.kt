@@ -23,7 +23,8 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.collection.ArrayMap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -49,8 +50,14 @@ class NsdDaemon @Inject constructor(
     @ApplicationContext val context: Context,
     val appDatabase: AppDatabase,
     val persistenceProvider: PersistenceProvider,
-    val connectionFactory: ConnectionFactory
+    val connectionFactory: ConnectionFactory,
 ) {
+    private val onlineClientList = ArrayList<ClientRoute>()
+
+    private val _onlineClients: MutableLiveData<List<ClientRoute>> = MutableLiveData()
+
+    val onlineClients: LiveData<List<ClientRoute>> = _onlineClients
+
     private val nsdManager: NsdManager by lazy {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             throw UnsupportedOperationException("This field shouldn't have been invoked on this version of OS");
@@ -60,9 +67,6 @@ class NsdDaemon @Inject constructor(
     }
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    // TODO: 2/25/21 Can this become a live data
-    private val onlineClientList: MutableMap<String, ClientRoute> = ArrayMap()
 
     private var discoveryListener: NsdManager.DiscoveryListener? = null
 
@@ -74,23 +78,18 @@ class NsdDaemon @Inject constructor(
     val enabled: Boolean
         get() = preferences.getBoolean("nsd_enabled", false)
 
-    fun isDeviceOnline(client: UClient): Boolean {
-        synchronized(onlineClientList) {
-            for (deviceRoute in onlineClientList.values) if (deviceRoute.client == client) return true
-        }
-        return false
-    }
-
     fun registerService() {
         if (!enabled || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN || registrationListener != null) {
             return
         }
 
         val registrationListener = RegistrationListener().also { registrationListener = it }
-        val localServiceInfo = NsdServiceInfo()
-        localServiceInfo.serviceName = persistenceProvider.clientNickname
-        localServiceInfo.serviceType = Config.SERVICE_UPROTOCOL_DNS_SD
-        localServiceInfo.port = Config.PORT_UPROTOCOL
+        val localServiceInfo = NsdServiceInfo().apply {
+            serviceName = persistenceProvider.clientNickname
+            serviceType = Config.SERVICE_UPROTOCOL_DNS_SD
+            port = Config.PORT_UPROTOCOL
+        }
+
         try {
             nsdManager.registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
         } catch (e: Exception) {
@@ -148,11 +147,11 @@ class NsdDaemon @Inject constructor(
         }
 
         override fun onServiceRegistered(serviceInfo: NsdServiceInfo) {
-            Log.v(TAG, "Self service is now registered: " + serviceInfo.getServiceName())
+            Log.v(TAG, "Self service is now registered: " + serviceInfo.serviceName)
         }
 
         override fun onServiceUnregistered(serviceInfo: NsdServiceInfo) {
-            Log.i(TAG, "Self service is unregistered: " + serviceInfo.getServiceName())
+            Log.i(TAG, "Self service is unregistered: " + serviceInfo.serviceName)
             clear()
         }
 
@@ -182,7 +181,7 @@ class NsdDaemon @Inject constructor(
         }
 
         override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-            Log.v(TAG, "'" + serviceInfo.getServiceName() + "' service has been discovered.")
+            Log.v(TAG, "'" + serviceInfo.serviceName + "' service has been discovered.")
             if (serviceInfo.serviceType == Config.SERVICE_UPROTOCOL_DNS_SD) nsdManager.resolveService(
                 serviceInfo, ResolveListener()
             )
@@ -191,7 +190,10 @@ class NsdDaemon @Inject constructor(
         override fun onServiceLost(serviceInfo: NsdServiceInfo) {
             Log.i(TAG, "'" + serviceInfo.serviceName + "' service is now lost.")
             synchronized(onlineClientList) {
-                onlineClientList.remove(serviceInfo.serviceName)
+                onlineClientList.removeIf {
+                    it.address.inetAddress == serviceInfo.host
+                }
+                _onlineClients.postValue(onlineClientList)
             }
         }
 
@@ -222,7 +224,12 @@ class NsdDaemon @Inject constructor(
                         val address = UClientAddress(serviceInfo.host, client.clientUid)
 
                         synchronized(onlineClientList) {
-                            onlineClientList.put(serviceInfo.serviceName, ClientRoute(client, address))
+                            onlineClientList.removeIf {
+                                it.address.inetAddress == serviceInfo.host
+                            }
+
+                            onlineClientList.add(ClientRoute(client, address))
+                            _onlineClients.postValue(onlineClientList)
                         }
                     } else {
                         Log.d(TAG, "onServiceResolved: Not a " + UClient::class.simpleName + " derivative.")

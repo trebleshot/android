@@ -81,7 +81,7 @@ class WebShareServer @Inject constructor(
     private val client = persistenceProvider.client
 
     // TODO: 3/4/21 Make sure this is true after a client connects
-    var hadClients = true
+    var hadClients = false
         private set
 
     override fun stop() {

@@ -27,19 +27,33 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.ACTION_CHANGE_FRAGMENT
+import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.EXTRA_FRAGMENT_ENUM
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.fragment.ClientsFragment
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
+import org.monora.uprotocol.client.android.fragment.OnlineClientsFragment
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
-import org.monora.uprotocol.client.android.service.BackgroundService
+import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.core.protocol.ClientType
+import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
+    @Inject
+    lateinit var appDatabase: AppDatabase
+
     private val filter = IntentFilter()
 
     private lateinit var networkManagerFragment: NetworkManagerFragment
@@ -89,18 +103,13 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val deviceListArgs = Bundle()
-        deviceListArgs.putStringArrayList(
-            ClientsFragment.ARG_HIDDEN_DEVICES_LIST,
-            arrayListOf(ClientType.Web.toString())
-        )
         val factory = supportFragmentManager.fragmentFactory
         optionsFragment = factory.instantiate(classLoader, OptionsFragment::class.java.name) as OptionsFragment
-        networkManagerFragment = factory.instantiate(
-            classLoader, NetworkManagerFragment::class.java.name
+        networkManagerFragment = factory.instantiate(classLoader,
+            NetworkManagerFragment::class.java.name
         ) as NetworkManagerFragment
         clientsFragment = factory.instantiate(classLoader, ClientsFragment::class.java.name) as ClientsFragment
-        clientsFragment.arguments = deviceListArgs
+
         filter.addAction(ACTION_CHANGE_FRAGMENT)
         filter.addAction(BgBroadcastReceiver.ACTION_DEVICE_ACQUAINTANCE)
         filter.addAction(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
@@ -216,11 +225,14 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         }
         if (activeFragment == null || fragmentCandidate !== activeFragment) {
             val transaction = supportFragmentManager.beginTransaction()
-            if (activeFragment != null) transaction.remove(activeFragment)
-            if (activeFragment != null && fragmentCandidate is OptionsFragment) transaction.setCustomAnimations(
-                R.anim.enter_from_left,
-                R.anim.exit_to_right
-            ) else transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+            if (activeFragment != null) {
+                transaction.remove(activeFragment)
+            }
+            if (activeFragment != null && fragmentCandidate is OptionsFragment) {
+                transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
+            } else {
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+            }
             transaction.add(R.id.activity_connection_establishing_content_view, fragmentCandidate)
             transaction.commit()
             applyViewChanges(fragmentCandidate)
@@ -237,31 +249,6 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
     enum class AvailableFragment {
         Options, GenerateQrCode, AllDevices, ScanQrCode, CreateHotspot, EnterAddress
-    }
-
-    class OptionsFragment : Fragment(R.layout.layout_connection_options_fragment) {
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            val listener = View.OnClickListener { v: View ->
-                updateFragment(
-                    when (v.id) {
-                        R.id.connection_option_devices -> AvailableFragment.AllDevices
-                        R.id.connection_option_generate_qr_code -> AvailableFragment.GenerateQrCode
-                        R.id.connection_option_manual_ip -> AvailableFragment.EnterAddress
-                        R.id.connection_option_scan -> AvailableFragment.ScanQrCode
-                        else -> AvailableFragment.Options
-                    }
-                )
-            }
-            view.findViewById<View>(R.id.connection_option_devices).setOnClickListener(listener)
-            view.findViewById<View>(R.id.connection_option_generate_qr_code).setOnClickListener(listener)
-            view.findViewById<View>(R.id.connection_option_scan).setOnClickListener(listener)
-            view.findViewById<View>(R.id.connection_option_manual_ip).setOnClickListener(listener)
-        }
-
-        private fun updateFragment(fragment: AvailableFragment) {
-            context?.sendBroadcast(Intent(ACTION_CHANGE_FRAGMENT).putExtra(EXTRA_FRAGMENT_ENUM, fragment))
-        }
     }
 
     enum class ConnectionMode {
@@ -291,5 +278,56 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
             )
             activity.finish()
         }
+    }
+}
+
+@AndroidEntryPoint
+class OptionsFragment : Fragment(R.layout.layout_connection_options_fragment) {
+    @Inject
+    lateinit var appDatabase: AppDatabase
+
+    @Inject
+    lateinit var clientRepository: ClientRepository
+
+    private val imageBuilder by lazy {
+        Graphics.getDefaultIconBuilder(requireContext())
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val listener = View.OnClickListener { v: View ->
+            updateFragment(
+                when (v.id) {
+                    R.id.connection_option_devices -> AddDeviceActivity.AvailableFragment.AllDevices
+                    R.id.connection_option_generate_qr_code -> AddDeviceActivity.AvailableFragment.GenerateQrCode
+                    R.id.connection_option_manual_ip -> AddDeviceActivity.AvailableFragment.EnterAddress
+                    R.id.connection_option_scan -> AddDeviceActivity.AvailableFragment.ScanQrCode
+                    else -> AddDeviceActivity.AvailableFragment.Options
+                }
+            )
+        }
+        view.findViewById<View>(R.id.connection_option_devices).setOnClickListener(listener)
+        view.findViewById<View>(R.id.connection_option_generate_qr_code).setOnClickListener(listener)
+        view.findViewById<View>(R.id.connection_option_scan).setOnClickListener(listener)
+        view.findViewById<View>(R.id.connection_option_manual_ip).setOnClickListener(listener)
+
+        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
+        val adapter = OnlineClientsFragment.Adapter(imageBuilder)
+
+        adapter.setHasStableIds(true)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager?.let {
+            if (it is GridLayoutManager) {
+                it.orientation = GridLayoutManager.HORIZONTAL
+            }
+        }
+
+        clientRepository.getOnlineClients().observe(viewLifecycleOwner) {
+            adapter.submitList(it.map { clientRoute -> clientRoute.client })
+        }
+    }
+
+    private fun updateFragment(fragment: AddDeviceActivity.AvailableFragment) {
+        context?.sendBroadcast(Intent(ACTION_CHANGE_FRAGMENT).putExtra(EXTRA_FRAGMENT_ENUM, fragment))
     }
 }
