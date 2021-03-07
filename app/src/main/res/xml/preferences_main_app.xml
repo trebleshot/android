@@ -50,15 +50,6 @@
             android:title="@string/text_twoRowLayout"
             app:isPreferenceVisible="@bool/genfw_screen_isLarge" />
 
-        <androidx.preference.EditTextPreference
-            android:dialogTitle="@string/text_deviceNameTitle"
-            android:inputType="text"
-            android:icon="@drawable/ic_edit_white_24dp"
-            android:key="device_name"
-            android:maxLength="32"
-            android:summary="@string/text_deviceNameSummary"
-            android:title="@string/text_deviceName" />
-
         <androidx.preference.PreferenceScreen
             android:icon="@drawable/ic_save_white_24dp"
             android:summary="@string/text_storagePathSummary"

@@ -23,6 +23,7 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
@@ -38,6 +39,7 @@ import org.monora.uprotocol.core.ClientLoader
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.spec.v1.Config
+import java.net.NetworkInterface
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -52,7 +54,7 @@ class NsdDaemon @Inject constructor(
     val persistenceProvider: PersistenceProvider,
     val connectionFactory: ConnectionFactory,
 ) {
-    private val onlineClientList = ArrayList<ClientRoute>()
+    private val onlineClientMap = ArrayMap<String, ClientRoute>()
 
     private val _onlineClients: MutableLiveData<List<ClientRoute>> = MutableLiveData()
 
@@ -182,54 +184,56 @@ class NsdDaemon @Inject constructor(
 
         override fun onServiceFound(serviceInfo: NsdServiceInfo) {
             Log.v(TAG, "'" + serviceInfo.serviceName + "' service has been discovered.")
-            if (serviceInfo.serviceType == Config.SERVICE_UPROTOCOL_DNS_SD) nsdManager.resolveService(
-                serviceInfo, ResolveListener()
-            )
+            if (serviceInfo.serviceType == Config.SERVICE_UPROTOCOL_DNS_SD) {
+                nsdManager.resolveService(serviceInfo, ResolveListener())
+            }
         }
 
         override fun onServiceLost(serviceInfo: NsdServiceInfo) {
             Log.i(TAG, "'" + serviceInfo.serviceName + "' service is now lost.")
-            synchronized(onlineClientList) {
-                onlineClientList.removeIf {
-                    it.address.inetAddress == serviceInfo.host
-                }
-                _onlineClients.postValue(onlineClientList)
+
+            synchronized(onlineClientMap) {
+                onlineClientMap.remove(serviceInfo.serviceName)
+                _onlineClients.postValue(onlineClientMap.values.toList())
             }
         }
 
         fun clear() {
             discoveryListener = null
-            synchronized(onlineClientList) { onlineClientList.clear() }
+            synchronized(onlineClientMap) { onlineClientMap.clear() }
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private inner class ResolveListener : NsdManager.ResolveListener {
         override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-            Log.e(TAG, "Could not resolve " + serviceInfo.serviceName)
+            Log.e(TAG, "Could not resolve '${serviceInfo.serviceName}' with error code $errorCode")
         }
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
             with(serviceInfo) {
-                Log.v(TAG, "Resolved '$serviceName' on '${host.hostAddress}'")
+                if (host.isLoopbackAddress || host.isAnyLocalAddress
+                    || NetworkInterface.getByInetAddress(host) != null) {
+                    Log.d(TAG, "onServiceResolved: Resolved LOCAL '$serviceName' on '$host' (skipping)")
+                    return
+                }
+
+                Log.v(TAG, "Resolved '$serviceName' on '$host'")
             }
 
             CoroutineScope(Dispatchers.Main).launch(Dispatchers.IO) {
                 try {
-                    val client = ClientLoader.load(
-                        connectionFactory, persistenceProvider, serviceInfo.host
-                    )
+                    val client = ClientLoader.load(connectionFactory, persistenceProvider, serviceInfo.host)
 
                     if (client is UClient) {
                         val address = UClientAddress(serviceInfo.host, client.clientUid)
 
-                        synchronized(onlineClientList) {
-                            onlineClientList.removeIf {
-                                it.address.inetAddress == serviceInfo.host
+                        synchronized(onlineClientMap) {
+                            onlineClientMap[serviceInfo.serviceName] = ClientRoute(client, address)
+                            onlineClientMap.values.toMutableList().also { clients ->
+                                clients.sortByDescending { it.client.lastUsageTime }
+                                _onlineClients.postValue(clients)
                             }
-
-                            onlineClientList.add(ClientRoute(client, address))
-                            _onlineClients.postValue(onlineClientList)
                         }
                     } else {
                         Log.d(TAG, "onServiceResolved: Not a " + UClient::class.simpleName + " derivative.")

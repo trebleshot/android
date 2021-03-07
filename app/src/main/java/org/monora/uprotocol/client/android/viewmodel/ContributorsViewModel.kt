@@ -5,13 +5,18 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.data.GitHubDataRepository
+import org.monora.uprotocol.client.android.remote.model.Contributor
 import javax.inject.Inject
 
 @HiltViewModel
-class ReleasesDataViewModel @Inject internal constructor(
+class ContributorsViewModel @Inject internal constructor(
     gitHubDataRepository: GitHubDataRepository,
 ) : ViewModel() {
-    val releases = liveData(viewModelScope.coroutineContext) {
-        emit(gitHubDataRepository.getReleases())
+    val contributors = liveData(viewModelScope.coroutineContext) {
+        try {
+            emit(gitHubDataRepository.getContributors())
+        } catch (e: Exception) {
+            emit(emptyList<Contributor>())
+        }
     }
 }

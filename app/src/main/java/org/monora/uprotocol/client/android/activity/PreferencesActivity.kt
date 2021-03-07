@@ -19,7 +19,6 @@ package org.monora.uprotocol.client.android.activity
 
 import org.monora.uprotocol.client.android.R
 import android.content.DialogInterface
-import org.monora.uprotocol.client.android.util.AppUtils
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog

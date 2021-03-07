@@ -16,34 +16,38 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
-    style="@style/ListContentLayoutStyle"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector"
-    android:orientation="horizontal"
-    android:gravity="center_vertical">
+<layout>
 
-    <FrameLayout
-        style="@style/ListContentIconStyle"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content">
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ListContentLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?rectSelector"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <ImageView
+            style="@style/ListContentIconStyle"
             android:id="@+id/image"
             android:layout_width="@dimen/icon_size_list_normal"
             android:layout_height="@dimen/icon_size_list_normal"
             android:contentDescription="@string/text_image"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+            android:layout_gravity="center"
+            pictureOf="@{viewModel.client}" />
 
-    <TextView
-        android:id="@+id/text1"
-        style="@style/TextAppearance.Primary.Big.SingleLine"
-        android:layout_weight="4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/text1"
+            style="@style/TextAppearance.Primary.Big.SingleLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.nickname}" />
 
-</LinearLayout>
+    </LinearLayout>
+</layout>

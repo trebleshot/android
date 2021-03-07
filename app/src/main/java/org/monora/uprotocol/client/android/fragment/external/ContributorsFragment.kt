@@ -17,26 +17,21 @@
  */
 package org.monora.uprotocol.client.android.fragment.external
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
-import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.databinding.ListContributorsBinding
 import org.monora.uprotocol.client.android.remote.model.Contributor
-import org.monora.uprotocol.client.android.viewmodel.ContributorsDataViewModel
+import org.monora.uprotocol.client.android.viewholder.ContributorViewHolder
+import org.monora.uprotocol.client.android.viewmodel.ContributorsViewModel
 
 /**
  * created by: Veli
@@ -44,7 +39,7 @@ import org.monora.uprotocol.client.android.viewmodel.ContributorsDataViewModel
  */
 @AndroidEntryPoint
 class ContributorsFragment : Fragment(R.layout.layout_contributors) {
-    private val viewModel: ContributorsDataViewModel by viewModels()
+    private val viewModel: ContributorsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,31 +55,15 @@ class ContributorsFragment : Fragment(R.layout.layout_contributors) {
         }
     }
 
-    class ContributorsAdapter : ListAdapter<Contributor, ViewHolder>(ContributorItemCallback()) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val holder = ViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.list_contributors, parent, false)
+    class ContributorsAdapter : ListAdapter<Contributor, ContributorViewHolder>(ContributorItemCallback()) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContributorViewHolder {
+            return ContributorViewHolder(
+                ListContributorsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-            holder.itemView.findViewById<View>(R.id.visitView).setOnClickListener { v: View ->
-                val contributorObject = getItem(holder.adapterPosition)
-                v.context.startActivity(
-                    Intent(Intent.ACTION_VIEW)
-                        .setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name)))
-                )
-            }
-            return holder
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val contributorObject = getItem(position)
-            val textView = holder.itemView.findViewById<TextView>(R.id.text)
-            val imageView = holder.itemView.findViewById<ImageView>(R.id.image)
-            textView.text = contributorObject.name
-            GlideApp.with(holder.itemView.context)
-                .load(contributorObject.urlAvatar)
-                .override(90)
-                .circleCrop()
-                .into(imageView)
+        override fun onBindViewHolder(holder: ContributorViewHolder, position: Int) {
+            holder.bind(getItem(position))
         }
 
         override fun getItemId(position: Int): Long {

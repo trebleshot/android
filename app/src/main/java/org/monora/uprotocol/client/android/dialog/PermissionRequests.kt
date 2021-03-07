@@ -31,7 +31,7 @@ import org.monora.uprotocol.client.android.util.Activities
  * created by: Veli
  * date: 18.11.2017 20:16
  */
-class RationalePermissionRequest(
+class PermissionRequests(
     activity: Activity,
     permissionQueue: PermissionRequest,
     killActivityOtherwise: Boolean
@@ -58,7 +58,7 @@ class RationalePermissionRequest(
             == PackageManager.PERMISSION_GRANTED
         ) null
         else
-            RationalePermissionRequest(activity, permissionQueue, killActivityOtherwise).show()
+            PermissionRequests(activity, permissionQueue, killActivityOtherwise).show()
     }
 
     init {

@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
+import org.monora.uprotocol.client.android.dialog.PermissionRequests
 import java.util.ArrayList
 
 object Permissions {
@@ -19,11 +19,11 @@ object Permissions {
         return true
     }
 
-    fun getRequiredPermissions(context: Context): List<RationalePermissionRequest.PermissionRequest> {
-        val permissionRequests: MutableList<RationalePermissionRequest.PermissionRequest> = ArrayList()
+    fun getRequiredPermissions(context: Context): List<PermissionRequests.PermissionRequest> {
+        val permissionRequests: MutableList<PermissionRequests.PermissionRequest> = ArrayList()
         if (Build.VERSION.SDK_INT >= 16) {
             permissionRequests.add(
-                RationalePermissionRequest.PermissionRequest(
+                PermissionRequests.PermissionRequest(
                     context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     R.string.text_requestPermissionStorage,

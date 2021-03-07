@@ -34,17 +34,6 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize" />
 
-        <ProgressBar
-            android:id="@+id/activity_connection_establishing_progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="-4dp"
-            android:layout_marginBottom="-4dp"
-            android:indeterminate="true"
-            android:visibility="gone" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
@@ -52,7 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/app_bar"
-        android:layout_below="@id/activity_connection_establishing_progress_bar"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

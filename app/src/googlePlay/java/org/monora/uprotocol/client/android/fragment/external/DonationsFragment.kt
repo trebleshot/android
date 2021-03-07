@@ -20,13 +20,13 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.fragment.external.DonationListFragment.DefaultAdapter
+import org.monora.uprotocol.client.android.fragment.external.DonationsFragment.DefaultAdapter
 
 /**
  * created by: veli
  * date: 7/15/18 10:12 PM
  */
-class DonationListFragment : RecyclerViewFragment<SkuDetails, ViewHolder, DefaultAdapter>(), IBillingHandler {
+class DonationsFragment : RecyclerViewFragment<SkuDetails, ViewHolder, DefaultAdapter>(), IBillingHandler {
     private val billingProcessor: BillingProcessor by lazy {
         newBillingProcessor(activity, AppConfig.KEY_GOOGLE_PUBLIC, this)
     }
@@ -146,6 +146,6 @@ class DonationListFragment : RecyclerViewFragment<SkuDetails, ViewHolder, Defaul
     }
 
     companion object {
-        private val TAG = DonationListFragment::class.simpleName
+        private val TAG = DonationsFragment::class.simpleName
     }
 }

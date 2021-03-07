@@ -7,7 +7,7 @@ import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
 
 object Graphics {
-    fun getDefaultIconBuilder(context: Context) = TextDrawable.builder().apply {
+    fun createIconBuilder(context: Context) = TextDrawable.createBuilder().apply {
         textFirstLetters = true
         textMaxLength = 1
         textBold = true

@@ -1,29 +1,17 @@
 package org.monora.uprotocol.client.android.viewmodel
 
-import android.text.format.DateUtils
-import android.widget.TextView
-import androidx.databinding.BindingAdapter
 import androidx.lifecycle.ViewModel
-import org.monora.uprotocol.client.android.database.model.SharedText
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.monora.uprotocol.client.android.data.SharedTextRepository
+import javax.inject.Inject
 
-class SharedTextViewModel(val sharedText: SharedText) : ViewModel()
-
-@BindingAdapter("clock")
-fun toClock(textView: TextView, time: Long) {
-    textView.text = DateUtils.formatDateTime(textView.context, time, DateUtils.FORMAT_SHOW_TIME)
+@HiltViewModel
+class SharedTextViewModel @Inject internal constructor(
+    sharedTextRepository: SharedTextRepository,
+) : ViewModel() {
+    val sharedTexts = sharedTextRepository.getSharedTexts()
 }
-
-/*
-@BindingAdapter("visibleIfSameDate")
-fun visibleIfSameDate(textView: TextView, sharedTextViewModel: SharedTextViewModel) {
-    val date = DateUtils.formatDateTime(
-        textView.context, sharedTextViewModel.sharedTextModel.created, DateUtils.FORMAT_SHOW_DATE
-    )
-    val datePrev = sharedTextViewModel.prevSharedTextModel?.let {
-        DateUtils.formatDateTime(textView.context, it.created, DateUtils.FORMAT_SHOW_DATE)
-    }
-
-    textView.visibility = if (datePrev == null || date != datePrev) View.VISIBLE else View.GONE
-    textView.text = date
-}
-*/

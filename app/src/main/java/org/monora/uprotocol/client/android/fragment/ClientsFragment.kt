@@ -24,6 +24,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
@@ -31,9 +33,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
+import org.monora.uprotocol.client.android.databinding.ListClientBinding
 import org.monora.uprotocol.client.android.drawable.TextDrawable.Builder
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
 import org.monora.uprotocol.client.android.util.Graphics
+import org.monora.uprotocol.client.android.viewholder.ClientViewHolder
+import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,37 +47,37 @@ class ClientsFragment : Fragment(R.layout.layout_clients) {
     @Inject
     lateinit var clientRepository: ClientRepository
 
-    private val imageBuilder by lazy {
-        Graphics.getDefaultIconBuilder(requireContext())
-    }
+    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-        val adapter = Adapter(imageBuilder)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
+        val adapter = Adapter()
 
+        emptyView.viewModel = emptyContentViewModel
+        emptyView.emptyText.setText(R.string.text_noClientList)
+        emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
         adapter.setHasStableIds(true)
+        recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         recyclerView.adapter = adapter
 
+        emptyView.executePendingBindings()
         clientRepository.getAll().observe(viewLifecycleOwner) {
             adapter.submitList(it)
+            emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
     }
 
-    class Adapter(private val imageBuilder: Builder) : ListAdapter<UClient, ViewHolder>(UClientItemCallback()) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.list_client, parent, false)
+    class Adapter : ListAdapter<UClient, ClientViewHolder>(UClientItemCallback()) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientViewHolder {
+            return ClientViewHolder(
+                ListClientBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val model = getItem(position)
-            val textView1: TextView = holder.itemView.findViewById(R.id.text1)
-            val imageView: ImageView = holder.itemView.findViewById(R.id.image)
-
-            textView1.text = model.nickname
-            imageView.setImageDrawable(imageBuilder.buildRound(model.nickname))
+        override fun onBindViewHolder(holder: ClientViewHolder, position: Int) {
+            holder.bind(getItem(position))
         }
 
         override fun getItemId(position: Int): Long {

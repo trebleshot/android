@@ -30,9 +30,11 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.adapter.SharedTextAdapter
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.DateSectionContentModel
-import org.monora.uprotocol.client.android.viewmodel.SharedTextDataViewModel
+import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel
 
 /**
  * created by: Veli
@@ -40,19 +42,23 @@ import org.monora.uprotocol.client.android.viewmodel.SharedTextDataViewModel
  */
 @AndroidEntryPoint
 class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
-    private val viewModel: SharedTextDataViewModel by viewModels()
+    private val viewModel: SharedTextViewModel by viewModels()
+
+    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
         val adapter = SharedTextAdapter()
 
+        emptyView.viewModel = emptyContentViewModel
+        emptyView.emptyText.setText(R.string.text_listEmptyTextStream)
+        emptyView.emptyImage.setImageResource(R.drawable.ic_short_text_white_24dp)
+        emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
 
-        //adapter = SharedTextListAdapter(appDatabase)
-        //emptyListImageView.setImageResource(R.drawable.ic_forum_white_24dp)
-        //emptyListTextView.text = getString(R.string.text_listEmptyTextStream)
         view.findViewById<View>(R.id.fab).setOnClickListener {
             startActivity(
                 Intent(activity, TextEditorActivity::class.java).setAction(TextEditorActivity.ACTION_EDIT_TEXT)
@@ -61,6 +67,7 @@ class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
 
         viewModel.sharedTexts.asLiveData().observe(viewLifecycleOwner) { result ->
             adapter.submitList(withDateSections(result))
+            emptyContentViewModel.with(recyclerView, result.isNotEmpty())
         }
     }
 

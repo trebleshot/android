@@ -6,7 +6,7 @@ import android.view.animation.Animation
 import android.widget.TextView
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.fragment.external.DonationListFragment
+import org.monora.uprotocol.client.android.fragment.external.DonationsFragment
 
 /**
  * created by: veli
@@ -68,12 +68,6 @@ class DonationActivity : Activity() {
         setContentView(R.layout.activity_donation)
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val contributorsListFragment = supportFragmentManager.findFragmentById(
-            R.id.activity_about_contributors_fragment
-        ) as DonationListFragment?
-
-        contributorsListFragment?.listView?.isNestedScrollingEnabled = false
     }
 
     override fun onResume() {

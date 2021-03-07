@@ -25,17 +25,12 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:padding="15dp">
+        android:gravity="center_vertical|end"
+        android:padding="16dp">
 
         <include layout="@layout/include_layout_network_status_image_container" />
 
     </LinearLayout>
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="?colorDivider" />
 
     <ScrollView
         android:layout_width="0dp"

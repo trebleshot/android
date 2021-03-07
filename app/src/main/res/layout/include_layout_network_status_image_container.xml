@@ -23,12 +23,18 @@
     android:layout_height="match_parent"
     app:baseOnSmallerLength="@bool/genfw_screen_isLandscape">
 
-    <ImageView
-        android:id="@+id/layout_network_manager_qr_image"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@drawable/ic_qrcode_white_128dp"
-        android:contentDescription="@string/help_scanQRCode" />
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/layout_network_manager_qr_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_qrcode_white_128dp"
+            android:contentDescription="@string/help_scanQRCode" />
+
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         style="@style/TextAppearance.Primary.Normal"

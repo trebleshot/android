@@ -20,18 +20,16 @@ package org.monora.uprotocol.client.android.dialog
 import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
 
 class ProfileEditorDialog(activity: Activity) : AlertDialog.Builder(activity) {
     private var dialog: AlertDialog? = null
 
-    protected fun closeIfPossible() {
+    private fun closeIfPossible() {
         dialog?.let {
             if (it.isShowing) it.dismiss()
             dialog = null
@@ -42,40 +40,32 @@ class ProfileEditorDialog(activity: Activity) : AlertDialog.Builder(activity) {
         return super.show().also { dialog = it }
     }
 
-    fun saveNickname(activity: Activity, editText: EditText) {
+    private fun saveNickname(editText: EditText) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putString("device_name", editText.text.toString())
+            .putString("client_nickname", editText.text.toString())
             .apply()
-        activity.notifyUserProfileChanged()
     }
 
     init {
-        val view = LayoutInflater.from(activity).inflate(R.layout.layout_profile_editor, null, false)
-        val image = view.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
-        val editImage = view.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
-        val editText: EditText = view.findViewById(R.id.editText)
-        // TODO: 2/26/21 Fix profile editor
-        /*
-        val deviceName = AppUtils.getLocalDeviceName(context)
-        editText.text.clear()
-        editText.text.append(deviceName)
-        activity.loadProfilePictureInto(deviceName, image)
-        editText.requestFocus()
-        editImage.setOnClickListener {
-            activity.requestProfilePictureChange()
-            saveNickname(activity, editText)
+        val binding = LayoutProfileEditorBinding.inflate(
+            LayoutInflater.from(activity),
+            null,
+            false
+        )
+
+        setView(binding.root)
+
+        binding.editText.requestFocus()
+        binding.editText.setOnClickListener {
+            saveNickname(it as EditText)
             closeIfPossible()
         }
-        setView(view)
         setNegativeButton(R.string.butn_remove) { _: DialogInterface?, _: Int ->
             activity.deleteFile("profilePicture")
-            activity.notifyUserProfileChanged()
         }
         setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
-            saveNickname(activity, editText)
+            saveNickname(binding.editText)
         }
         setNeutralButton(R.string.butn_close, null)
-
-         */
     }
 }

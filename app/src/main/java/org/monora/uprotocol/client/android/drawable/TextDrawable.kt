@@ -242,7 +242,7 @@ class TextDrawable private constructor(
     companion object {
         private const val SHADE_FACTOR = 0.9f
 
-        fun builder(): Builder {
+        fun createBuilder(): Builder {
             return BuilderImpl()
         }
 

@@ -30,7 +30,6 @@ import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.IListingFragment
 import org.monora.uprotocol.client.android.model.AppPackageModel
-import org.monora.uprotocol.client.android.util.AppUtils
 import org.monora.uprotocol.client.android.widget.ListingAdapter
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter
 

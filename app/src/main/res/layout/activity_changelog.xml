@@ -20,11 +20,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/activity_changelog_fragment_changelog"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/changelog_fragment"
         android:name="org.monora.uprotocol.client.android.fragment.external.ChangelogFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="changeLogFragment" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>

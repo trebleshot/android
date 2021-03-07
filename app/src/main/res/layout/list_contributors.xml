@@ -16,44 +16,57 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="4dp"
-    android:layout_marginStart="4dp"
-    android:layout_marginBottom="16dp">
+<layout>
 
-    <ImageView
-        android:id="@+id/visitView"
-        style="@style/OverflowButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        app:srcCompat="@drawable/ic_github_circle_white_24dp" />
+    <data>
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp" />
+        <variable
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.ContributorContentViewModel" />
+    </data>
 
-    <TextView
-        android:id="@+id/text"
-        style="@style/TextAppearance.Primary"
-        android:layout_width="wrap_content"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/visitView"
-        android:layout_toLeftOf="@+id/visitView"
-        android:layout_toEndOf="@id/image"
-        android:layout_toRightOf="@+id/image"
-        android:maxLines="3" />
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="16dp">
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/visitView"
+            style="@style/OverflowButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            app:srcCompat="@drawable/ic_github_circle_white_24dp"
+            android:onClick="@{viewModel.visitProfileListener}" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            loadHttpImage="@{viewModel.avatarUrl}" />
+
+        <TextView
+            android:id="@+id/text"
+            style="@style/TextAppearance.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/visitView"
+            android:layout_toLeftOf="@+id/visitView"
+            android:layout_toEndOf="@id/image"
+            android:layout_toRightOf="@+id/image"
+            android:maxLines="3"
+            android:text="@{viewModel.name}" />
+
+    </RelativeLayout>
+</layout>

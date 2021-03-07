@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2019 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<layout>
+
+    <data>
+
+        <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/short_content_width_padding"
+                android:layout_marginRight="@dimen/short_content_width_padding">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clientsButton"
+                    style="?borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:padding="3dp"
+                    android:onClick="@{clickListener}"
+                    android:text="@string/butn_showAll" />
+
+                <TextView
+                    style="@style/CondensedTitleStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/clientsButton"
+                    android:layout_toLeftOf="@id/clientsButton"
+                    android:text="@string/text_onlineDevices" />
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                android:clipToPadding="false"
+                android:paddingLeft="@dimen/short_content_width_padding_border"
+                android:paddingRight="@dimen/short_content_width_padding_border" />
+
+            <include
+                layout="@layout/layout_empty_content"
+                android:id="@+id/emptyView"
+                android:layout_width="match_parent"
+                android:layout_height="220dp" />
+
+            <TextView
+                style="@style/CondensedTitleStyle"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="@dimen/short_content_width_padding"
+                android:layout_marginRight="@dimen/short_content_width_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_addNewDevice" />
+
+            <LinearLayout
+                android:id="@+id/actionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/short_content_width_padding_border"
+                android:paddingRight="@dimen/short_content_width_padding_border">
+
+                <Button
+                    android:id="@+id/generateQrCodeButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="8dp"
+                    app:srcCompat="@drawable/ic_qrcode_white_24dp"
+                    android:onClick="@{clickListener}"
+                    android:text="@string/butn_generateQrCode" />
+
+                <View
+                    android:layout_width="@dimen/short_content_width_padding_between"
+                    android:layout_height="match_parent" />
+
+                <Button
+                    android:id="@+id/scanQrCodeButton"
+                    style="?materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="8dp"
+                    android:onClick="@{clickListener}"
+                    android:text="@string/text_scanQrCode" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingTop="36dp"
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingLeft="@dimen/short_content_width_padding"
+                android:paddingRight="@dimen/short_content_width_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Secondary"
+                    android:text="@string/help_addDeviceUsingIpAddressHelp"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/manualAddressButton"
+                    style="?materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{clickListener}"
+                    android:text="@string/butn_enterAddress" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

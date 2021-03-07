@@ -26,18 +26,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.google.android.material.card.MaterialCardView
+        <include
+            layout="@layout/include_layout_network_status_image_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="30dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp" >
-
-            <include
-                layout="@layout/include_layout_network_status_image_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </com.google.android.material.card.MaterialCardView>
+            android:layout_marginRight="30dp" />
 
         <include
             layout="@layout/include_layout_network_status_info_container"

@@ -18,6 +18,8 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
@@ -38,7 +40,6 @@ class DeviceIntroductionTask(
         try {
             val clientRoute: ClientRoute = when {
                 address != null -> Connections.setUpConnection(context, address, pin)
-                description != null -> Connections(context).connectToNetwork(this, description, pin)
                 else -> throw IllegalStateException("One of address or description should be provided")
             }
 

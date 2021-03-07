@@ -38,7 +38,7 @@ import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.dialog.FileRenameDialog
 import org.monora.uprotocol.client.android.dialogimport.FileDeletionDialog
 import org.monora.uprotocol.client.android.ui.callback.SharingPerformerMenuCallback
-import org.monora.uprotocol.client.android.util.AppUtils
+import org.monora.uprotocol.client.android.util.Views
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.ui.PerformerMenu
@@ -224,7 +224,7 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
         // FIXME: 2/20/21 Fixe directory selection
         if (false) {//target.file.isDirectory()) {
             //goPath(target.file)
-            AppUtils.showFolderSelectionHelp(this)
+            Views.showFolderSelectionHelp(this)
         } else performLayoutClickOpen(holder, target)
         return true
     }

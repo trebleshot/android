@@ -22,7 +22,6 @@ import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.util.AppUtils
 
 class RemoveDeviceDialog(activity: Activity, client: UClient) : AlertDialog.Builder(activity) {
     init {

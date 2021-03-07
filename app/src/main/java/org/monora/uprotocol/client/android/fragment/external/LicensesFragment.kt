@@ -17,16 +17,11 @@
  */
 package org.monora.uprotocol.client.android.fragment.external
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -39,7 +34,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.databinding.ListLibraryLicenseBinding
 import org.monora.uprotocol.client.android.model.LibraryLicense
+import org.monora.uprotocol.client.android.viewholder.LibraryLicenseViewHolder
 import java.io.InputStreamReader
 
 /**
@@ -98,40 +95,15 @@ class LicensesFragment : Fragment(R.layout.layout_licenses) {
         }
     }
 
-    class LicensesAdapter : ListAdapter<LibraryLicense, ViewHolder>(LibraryLicenseItemCallback()) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val holder = ViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.list_third_party_library, parent, false)
+    class LicensesAdapter : ListAdapter<LibraryLicense, LibraryLicenseViewHolder>(LibraryLicenseItemCallback()) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryLicenseViewHolder {
+            return LibraryLicenseViewHolder(
+                ListLibraryLicenseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-            holder.itemView.findViewById<View>(R.id.menu).setOnClickListener { v: View ->
-                val moduleItem = getItem(holder.adapterPosition)
-                val popupMenu = PopupMenu(v.context, v)
-                popupMenu.menuInflater.inflate(R.menu.popup_third_party_library_item, popupMenu.menu)
-                popupMenu.menu.findItem(R.id.popup_visitWebPage).isEnabled = moduleItem.url != null
-                popupMenu.menu.findItem(R.id.popup_goToLicenceURL).isEnabled = moduleItem.licenseUrl != null
-                popupMenu.setOnMenuItemClickListener { item: MenuItem ->
-                    when (item.itemId) {
-                        R.id.popup_goToLicenceURL -> v.context.startActivity(
-                            Intent(Intent.ACTION_VIEW).setData(Uri.parse(moduleItem.licenseUrl))
-                        )
-                        R.id.popup_visitWebPage -> v.context.startActivity(
-                            Intent(Intent.ACTION_VIEW).setData(Uri.parse(moduleItem.url))
-                        )
-                        else -> return@setOnMenuItemClickListener false
-                    }
-                    true
-                }
-                popupMenu.show()
-            }
-            return holder
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = getItem(position)
-            val text1 = holder.itemView.findViewById<TextView>(R.id.text)
-            val text2 = holder.itemView.findViewById<TextView>(R.id.text2)
-            text1.text = "${item.artifactId.group} / ${item.libraryName}"
-            text2.text = item.license
+        override fun onBindViewHolder(holder: LibraryLicenseViewHolder, position: Int) {
+            holder.bind(getItem(position))
         }
 
         override fun getItemId(position: Int): Long {

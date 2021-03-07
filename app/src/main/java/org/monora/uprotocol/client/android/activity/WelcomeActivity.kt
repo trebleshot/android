@@ -26,36 +26,40 @@ import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.annotation.ColorInt
+import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.transition.TransitionManager
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.util.AppUtils
-import org.monora.uprotocol.client.android.widget.ViewPagerAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.data.UserDataRepository
+import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
 import org.monora.uprotocol.client.android.util.Permissions
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
-import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
+import org.monora.uprotocol.client.android.widget.ViewPagerAdapter
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class WelcomeActivity : Activity() {
     @Inject
-    lateinit var persistenceProvider: PersistenceProvider
+    lateinit var userDataRepository: UserDataRepository
+
+    private val userProfileViewModel: UserProfileViewModel by viewModels()
 
     private lateinit var splashView: ViewGroup
 
-    private lateinit var profileView: ViewGroup
+    private val profileViewBinding: LayoutProfileEditorBinding by lazy {
+        LayoutProfileEditorBinding.inflate(layoutInflater, null, false).also {
+            it.viewModel = userProfileViewModel
+            it.lifecycleOwner = this
+        }
+    }
 
     private lateinit var permissionsView: ViewGroup
 
@@ -94,11 +98,8 @@ class WelcomeActivity : Activity() {
             checkPermissionsState()
         }
 
-        layoutInflater.inflate(R.layout.layout_welcome_page_2, null, false).also {
-            profileView = it as ViewGroup
-            pagerAdapter.addView(it)
-            setUserProfile()
-        }
+        pagerAdapter.addView(profileViewBinding.root)
+        profileViewBinding.executePendingBindings()
 
         pagerAdapter.addView(layoutInflater.inflate(R.layout.layout_welcome_page_4, null, false))
 
@@ -166,13 +167,7 @@ class WelcomeActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        setUserProfile()
         checkPermissionsState()
-    }
-
-    override fun onUserProfileUpdated() {
-        super.onUserProfileUpdated()
-        setUserProfile()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -187,19 +182,6 @@ class WelcomeActivity : Activity() {
             if (permissionsOk) View.VISIBLE else View.GONE
         permissionsView.findViewById<View>(R.id.layout_welcome_page_3_request_button).visibility =
             if (permissionsOk) View.GONE else View.VISIBLE
-    }
-
-    private fun setUserProfile() {
-        val localDevice = persistenceProvider.client
-        val imageView = profileView.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
-        val editImageView = profileView.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
-        val deviceNameText: TextView = profileView.findViewById(R.id.header_default_device_name_text)
-        val versionText: TextView = profileView.findViewById(R.id.header_default_device_version_text)
-        deviceNameText.text = localDevice.clientNickname
-        versionText.text = localDevice.clientVersionName
-        loadProfilePictureInto(localDevice.clientNickname, imageView)
-        editImageView.setOnClickListener { startProfileEditor() }
-        TransitionManager.beginDelayedTransition(profileView)
     }
 
     private fun slideSplashView() {

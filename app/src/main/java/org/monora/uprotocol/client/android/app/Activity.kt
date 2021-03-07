@@ -18,31 +18,22 @@
 package org.monora.uprotocol.client.android.app
 
 import android.content.*
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
-import android.widget.ImageView
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import dagger.hilt.android.AndroidEntryPoint
-import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.dialog.ProfileEditorDialog
-import org.monora.uprotocol.client.android.dialog.RationalePermissionRequest
+import org.monora.uprotocol.client.android.dialog.PermissionRequests
 import org.monora.uprotocol.client.android.model.Identifier
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
@@ -50,14 +41,12 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
-import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.Permissions
-import java.io.FileNotFoundException
 import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class Activity : AppCompatActivity() {
+abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     @Inject
     lateinit var backgroundBackend: BackgroundBackend
 
@@ -169,9 +158,18 @@ abstract class Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
     }
 
+    override fun onStart() {
+        super.onStart()
+        attachTasks()
+        registerReceiver(receiver, intentFilter)
+        backgroundBackend.notifyActivityInForeground(this, true)
+    }
+
     override fun onResume() {
         super.onResume()
         checkForThemeChange()
+        defaultPreferences.registerOnSharedPreferenceChangeListener(this)
+
         if (!hasIntroductionShown() && !welcomePageDisallowed) {
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
@@ -180,11 +178,9 @@ abstract class Activity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        attachTasks()
-        registerReceiver(receiver, intentFilter)
-        backgroundBackend.notifyActivityInForeground(this, true)
+    override fun onPause() {
+        super.onPause()
+        defaultPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onStop() {
@@ -199,6 +195,12 @@ abstract class Activity : AppCompatActivity() {
         detachTasks()
     }
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        if ("custom_fonts" == key || "theme" == key || "amoled_theme" == key) {
+            checkForThemeChange()
+        }
+    }
+
     protected open fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
 
     }
@@ -209,44 +211,6 @@ abstract class Activity : AppCompatActivity() {
             requestRequiredPermissions(!skipPermissionRequest)
         }
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PICK_PROFILE_PHOTO) if (resultCode == RESULT_OK && data != null) {
-            val chosenImageUri = data.data
-            if (chosenImageUri != null) {
-                GlideApp.with(this)
-                    .load(chosenImageUri)
-                    .centerCrop()
-                    .override(200, 200)
-                    .into(object : CustomTarget<Drawable?>() {
-                        override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable?>?) {
-                            try {
-                                val bitmap = Bitmap.createBitmap(
-                                    AppConfig.PHOTO_SCALE_FACTOR,
-                                    AppConfig.PHOTO_SCALE_FACTOR,
-                                    Bitmap.Config.ARGB_8888
-                                )
-                                val canvas = Canvas(bitmap)
-                                val outputStream = openFileOutput("profilePicture", MODE_PRIVATE)
-
-                                resource.setBounds(0, 0, canvas.width, canvas.height)
-                                resource.draw(canvas)
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                                outputStream.close()
-                                notifyUserProfileChanged()
-                            } catch (error: Exception) {
-                                error.printStackTrace()
-                            }
-                        }
-
-                        override fun onLoadCleared(placeholder: Drawable?) {}
-                    })
-            }
-        }
-    }
-
-    open fun onUserProfileUpdated() {}
 
     fun attachTask(task: BaseAttachableAsyncTask) {
         synchronized(attachedTaskList) { if (!attachedTaskList.add(task)) return }
@@ -351,33 +315,10 @@ abstract class Activity : AppCompatActivity() {
         synchronized(attachedTaskList) { for (task in attachedTaskList) task.interrupt(userAction) }
     }
 
-    fun loadProfilePictureInto(deviceName: String, imageView: ImageView) {
-        try {
-            val inputStream = openFileInput("profilePicture")
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            GlideApp.with(this)
-                .load(bitmap)
-                .circleCrop()
-                .into(imageView)
-        } catch (e: FileNotFoundException) {
-            imageView.setImageDrawable(Graphics.getDefaultIconBuilder(this).buildRound(deviceName))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun notifyUserProfileChanged() {
-        if (!isFinishing) runOnUiThread { onUserProfileUpdated() }
-    }
-
-    fun requestProfilePictureChange() {
-        startActivityForResult(Intent(Intent.ACTION_PICK).setType("image/*"), REQUEST_PICK_PROFILE_PHOTO)
-    }
-
     fun requestRequiredPermissions(finishIfOtherwise: Boolean) {
         if (ongoingRequest?.isShowing == true) return
         for (request in Permissions.getRequiredPermissions(this)) {
-            if (RationalePermissionRequest.requestIfNecessary(this, request, finishIfOtherwise).also {
+            if (PermissionRequests.requestIfNecessary(this, request, finishIfOtherwise).also {
                     ongoingRequest = it
                 } != null
             ) break
@@ -404,10 +345,6 @@ abstract class Activity : AppCompatActivity() {
         runUiTask(task)
     }
 
-    fun startProfileEditor() {
-        ProfileEditorDialog(this).show()
-    }
-
     protected fun stopUiTasks() {
         if (uiTaskList.size <= 0) return
         synchronized(uiTaskList) {
@@ -424,7 +361,5 @@ abstract class Activity : AppCompatActivity() {
         private val TAG = Activity::class.simpleName
 
         const val ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED"
-
-        const val REQUEST_PICK_PROFILE_PHOTO = 1000
     }
 }

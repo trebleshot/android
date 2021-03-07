@@ -103,9 +103,9 @@ class Connections(contextLocal: Context) {
         TaskStoppedException::class,
         JSONException::class
     )
-    fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int): ClientRoute {
+    suspend fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int): ClientRoute {
         if (Build.VERSION.SDK_INT >= 29) {
-            val suggestionList: MutableList<WifiNetworkSuggestion> = ArrayList<WifiNetworkSuggestion>()
+            val suggestionList: MutableList<WifiNetworkSuggestion> = ArrayList()
             suggestionList.add(description.toNetworkSuggestion())
             var status: Int = wifiManager.removeNetworkSuggestions(suggestionList)
             if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
@@ -174,45 +174,45 @@ class Connections(contextLocal: Context) {
             val timedOut = System.nanoTime() > timeout
             val wifiDhcpInfo: DhcpInfo = wifiManager.dhcpInfo
 
-            Log.d(TAG, "establishHotspotConnection(): Waiting for the network. DhcpInfo: $wifiDhcpInfo")
+            Log.d(TAG, "establishHotspotConnection: Waiting for the network. DhcpInfo: $wifiDhcpInfo")
 
             if (!wifiManager.isWifiEnabled) {
-                Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on.")
+                Log.d(TAG, "establishHotspotConnection: Wifi is off. Making a request to turn it on.")
 
                 if (Build.VERSION.SDK_INT >= 29 || !wifiManager.setWifiEnabled(true)) {
-                    Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.")
+                    Log.d(TAG, "establishHotspotConnection: Wifi was off. The request has failed. Exiting.")
                     throw WifiInaccessibleException("The device is running Android 10 or Wi-Fi is inaccessible.")
                 }
             } else if (!toggled && !isConnectedToNetwork(description)) {
-                Log.d(TAG, "establishHotspotConnection(): The network is not ready yet.")
+                Log.d(TAG, "establishHotspotConnection: The network is not ready yet.")
                 wifiManager.startScan()
 
                 val result = findFromScanResults(description)
 
                 if (!connectionReset && isConnectedToAnyNetwork()) {
                     disableCurrentNetwork()
-                    wifiManager.setWifiEnabled(false)
+                    wifiManager.isWifiEnabled = false
                     connectionReset = true
                 } else if (result == null) {
-                    Log.e(TAG, "establishHotspotConnection(): No network found? " + description.ssid)
+                    Log.e(TAG, "establishHotspotConnection: No network found? " + description.ssid)
                 } else if (startConnection(createWifiConfig(result, description.password)).also { toggled = it }) {
-                    Log.d(TAG, "establishHotspotConnection(): Toggled network using results " + description.ssid)
+                    Log.d(TAG, "establishHotspotConnection: Toggled network using results " + description.ssid)
                 } else {
-                    Log.d(TAG, "establishHotspotConnection(): Failed to toggle network? " + description.ssid)
+                    Log.d(TAG, "establishHotspotConnection: Failed to toggle network? " + description.ssid)
                 }
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     val address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway))
                     return setUpConnection(context, address, pin)
                 } catch (e: Exception) {
-                    Log.d(TAG, "establishHotspotConnection(): Connection failed.", e)
+                    Log.d(TAG, "establishHotspotConnection: Connection failed.", e)
 
                     if (timedOut) {
                         throw e
                     }
                 }
             } else {
-                Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...")
+                Log.d(TAG, "establishHotspotConnection: No DHCP provided or connection not ready. Looping...")
             }
 
             delay(1000)
@@ -343,7 +343,9 @@ class Connections(contextLocal: Context) {
         else if (validateLocationPermission(activity, locationPermRequestId)) {
             provider.createSnackbar(R.string.mesg_scanningSelfHotspot)
                 ?.setAction(R.string.butn_wifiSettings) {
-                    activity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    activity.startActivity(
+                        Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
                 }?.show()
         }
     }
@@ -493,7 +495,7 @@ class Connections(contextLocal: Context) {
         private val TAG = Connections::class.simpleName
 
         fun getCleanSsid(ssid: String?): String {
-            return ssid?.replace("\"", "") ?: ""
+            return ssid?.trim()?.replace("\"", "") ?: ""
         }
 
         fun createWifiConfig(result: ScanResult, password: String?): WifiConfiguration {
@@ -539,7 +541,7 @@ class Connections(contextLocal: Context) {
             val device = bridge.device
             bridge.requestAcquaintance()
             if (bridge.receiveResult()) {
-                Log.d(TAG, "setupConnection(): AP has been reached. Returning OK state.")
+                Log.d(TAG, "setupConnection: AP has been reached. Returning OK state.")
                 DeviceLoader.processConnection(kuick, device, deviceAddress)
                 return ClientRoute(device, deviceAddress)
             }*/

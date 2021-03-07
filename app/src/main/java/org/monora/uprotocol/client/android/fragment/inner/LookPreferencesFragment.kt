@@ -18,46 +18,28 @@
 package org.monora.uprotocol.client.android.fragment.inner
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.SharedPreferences.*
 import android.os.Build
 import android.os.Bundle
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import org.monora.uprotocol.client.android.R
 
-class LookPreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
+class LookPreferencesFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preference_introduction_look)
         loadThemeOptionsTo(requireContext(), findPreference("theme"))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (("custom_fonts" == key || "theme" == key || "amoled_theme" == key) && activity != null) {
-            requireActivity().recreate()
-        }
     }
 
     companion object {
         fun loadThemeOptionsTo(context: Context, themePreference: ListPreference?) {
             if (themePreference == null) return
 
-            val valueList: MutableList<String> = ArrayList()
-            val titleList: MutableList<String> = ArrayList()
-            valueList.add("light")
-            valueList.add("dark")
-            titleList.add(context.getString(R.string.text_lightTheme))
-            titleList.add(context.getString(R.string.text_darkTheme))
+            val valueList: MutableList<String> = arrayListOf("light", "dark")
+            val titleList: MutableList<String> = arrayListOf(
+                context.getString(R.string.text_lightTheme),
+                context.getString(R.string.text_darkTheme)
+            )
+
             if (Build.VERSION.SDK_INT >= 26) {
                 valueList.add("system")
                 titleList.add(context.getString(R.string.text_followSystemTheme))

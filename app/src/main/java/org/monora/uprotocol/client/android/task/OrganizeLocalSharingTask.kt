@@ -18,23 +18,11 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.widget.Toast
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.TransferMemberActivity
-import org.monora.uprotocol.client.android.activity.WebShareActivity
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.util.AppUtils
-import com.genonbeta.android.framework.util.Stoppable
 import org.monora.uprotocol.client.android.model.ContentModel
-import java.util.*
 
 class OrganizeLocalSharingTask(
     var list: List<ContentModel>, private val addNewDevice: Boolean, private val webShare: Boolean,

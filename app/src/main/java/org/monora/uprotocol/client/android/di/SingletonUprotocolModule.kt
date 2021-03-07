@@ -34,6 +34,4 @@ abstract class SingletonUprotocolModule {
     abstract fun provideTransportSeat(
         mainTransportSeat: MainTransportSeat,
     ): TransportSeat
-
-
 }

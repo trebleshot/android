@@ -18,31 +18,46 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.content.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.EXTRA_CONNECTION_MODE
+import org.monora.uprotocol.client.android.activity.AddDeviceActivity.ConnectionMode.WaitForRequests
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.databinding.LayoutClientStatusBinding
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
-import org.monora.uprotocol.client.android.protocol.MainPersistenceProvider
+import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.*
+import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException.*
 import org.monora.uprotocol.client.android.util.Activities
+import org.monora.uprotocol.client.android.util.Drawables
 import org.monora.uprotocol.client.android.util.Updates
+import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
+import org.monora.uprotocol.core.protocol.Client
 import java.io.*
 import javax.inject.Inject
 
@@ -52,13 +67,22 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     lateinit var appDatabase: AppDatabase
 
     @Inject
-    lateinit var persistenceProvider: MainPersistenceProvider
+    lateinit var userDataRepository: UserDataRepository
 
     private lateinit var navigationView: NavigationView
 
     private lateinit var drawerLayout: DrawerLayout
 
-    private var chosenMenuItemId = 0
+    private var pendingMenuItemId = 0
+
+    private val userProfileViewModel: UserProfileViewModel by viewModels()
+
+    private val clientStatusBinding by lazy {
+        LayoutClientStatusBinding.bind(navigationView.getHeaderView(0)).also {
+            it.viewModel = userProfileViewModel
+            it.lifecycleOwner = this
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,11 +98,20 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-        drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
-            override fun onDrawerClosed(drawerView: View) {
-                applyAwaitingDrawerAction()
+        drawerLayout.addDrawerListener(
+            object : DrawerLayout.SimpleDrawerListener() {
+                override fun onDrawerClosed(drawerView: View) {
+                    applyAwaitingDrawerAction()
+                }
             }
-        })
+        )
+
+        fun requestProfilePictureChange() {
+            //startActivityForResult(Intent(Intent.ACTION_PICK).setType("image/*"), REQUEST_PICK_PROFILE_PHOTO)
+        }
+
+        requestProfilePictureChange()
+
         navigationView.setNavigationItemSelectedListener(this)
         if (Updates.hasNewVersion(this)) {
             highlightUpdate()
@@ -87,22 +120,15 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             navigationView.menu.findItem(R.id.menu_activity_main_donate).isVisible = true
         }
         findViewById<View>(R.id.sendLayoutButton).setOnClickListener {
-            startActivity(Intent(this, ContentSharingActivity::class.java))
+            startActivity(Intent(it.context, ContentSharingActivity::class.java))
         }
         findViewById<View>(R.id.receiveLayoutButton).setOnClickListener {
             startActivity(
-                Intent(this, AddDeviceActivity::class.java)
-                    .putExtra(
-                        AddDeviceActivity.EXTRA_CONNECTION_MODE,
-                        AddDeviceActivity.ConnectionMode.WaitForRequests
-                    )
+                Intent(it.context, AddDeviceActivity::class.java).putExtra(EXTRA_CONNECTION_MODE, WaitForRequests)
             )
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
-        createHeaderView()
+        clientStatusBinding.executePendingBindings()
     }
 
     override fun onResume() {
@@ -126,51 +152,50 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        chosenMenuItemId = item.itemId
+        pendingMenuItemId = item.itemId
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    override fun onUserProfileUpdated() {
-        createHeaderView()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_PICK_PROFILE_PHOTO) if (resultCode == RESULT_OK) data?.data?.let { uri ->
+            GlideApp.with(this)
+                .load(uri)
+                .centerCrop()
+                .override(200, 200)
+                .into(ProfilePictureTarget(applicationContext, userDataRepository.clientStatic()))
+        }
     }
 
     private fun applyAwaitingDrawerAction() {
-        if (chosenMenuItemId == 0) // drawer was opened, but nothing was clicked.
-            return
+        if (pendingMenuItemId == 0) {
+            return // drawer was opened, but nothing was clicked.
+        }
 
-        when {
-            R.id.menu_activity_main_manage_devices == chosenMenuItemId -> {
+        when (pendingMenuItemId) {
+            R.id.menu_activity_main_manage_devices -> {
                 startActivity(Intent(this, ManageDevicesActivity::class.java))
             }
-            R.id.menu_activity_main_about == chosenMenuItemId -> {
-                startActivity(Intent(this, AboutActivity::class.java))
-            }
-            R.id.menu_activity_main_send_application == chosenMenuItemId -> {
-                ShareAppDialog(this@HomeActivity).show()
-            }
-            R.id.menu_activity_main_preferences == chosenMenuItemId -> {
+            R.id.menu_activity_main_about -> startActivity(Intent(this, AboutActivity::class.java))
+            R.id.menu_activity_main_send_application -> ShareAppDialog(this).show()
+            R.id.menu_activity_main_preferences -> {
                 startActivity(Intent(this, PreferencesActivity::class.java))
             }
-            R.id.menu_activity_main_donate == chosenMenuItemId -> {
-                try {
-                    startActivity(
-                        Intent(
-                            this,
-                            Class.forName(
-                                "org.monora.uprotocol.client.android.activity.DonationActivity"
-                            )
-                        )
+            R.id.menu_activity_main_donate -> try {
+                startActivity(
+                    Intent(
+                        applicationContext,
+                        Class.forName("org.monora.uprotocol.client.android.activity.DonationActivity")
                     )
-                } catch (e: ClassNotFoundException) {
-                    e.printStackTrace()
-                }
+                )
+            } catch (e: ClassNotFoundException) {
+                e.printStackTrace()
             }
-            R.id.menu_activity_feedback == chosenMenuItemId -> {
-                Activities.startFeedbackActivity(this@HomeActivity)
-            }
+            R.id.menu_activity_feedback -> Activities.startFeedbackActivity(this)
         }
-        chosenMenuItemId = 0
+
+        pendingMenuItemId = 0
     }
 
     private fun checkAndShowCrashReport() {
@@ -228,19 +253,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-    private fun createHeaderView() {
-        val client = persistenceProvider.client
-        val headerView = navigationView.getHeaderView(0)
-        val imageView = headerView.findViewById<ImageView>(R.id.layout_profile_picture_image_default)
-        val editImageView = headerView.findViewById<ImageView>(R.id.layout_profile_picture_image_preferred)
-        val deviceNameText: TextView = headerView.findViewById(R.id.header_default_device_name_text)
-        val versionText: TextView = headerView.findViewById(R.id.header_default_device_version_text)
-        deviceNameText.text = client.clientNickname
-        versionText.text = client.versionName
-        loadProfilePictureInto(client.clientNickname, imageView)
-        editImageView.setOnClickListener { startProfileEditor() }
-    }
-
     private fun highlightUpdate() {
         navigationView.menu.findItem(R.id.menu_activity_main_about).setTitle(R.string.text_newVersionAvailable)
     }
@@ -249,5 +261,39 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         private val TAG = HomeActivity::class.simpleName
 
         const val REQUEST_PERMISSION_ALL = 1
+
+        const val REQUEST_PICK_PROFILE_PHOTO = 2
     }
+}
+
+class ProfilePictureTarget(
+    private val context: Context,
+    private val client: Client,
+) : CustomTarget<Drawable>() {
+    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+        try {
+            val file = context.getFileStreamPath(Drawables.clientPicturePath(client)).also {
+                if ((it.exists() && !it.delete()) || !it.createNewFile()) {
+                    throw IOException("Could not create a new file")
+                }
+            }
+
+            val bitmap = Bitmap.createBitmap(
+                AppConfig.PHOTO_SCALE_FACTOR,
+                AppConfig.PHOTO_SCALE_FACTOR,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+
+            FileOutputStream(file).use { outputStream ->
+                resource.setBounds(0, 0, canvas.width, canvas.height)
+                resource.draw(canvas)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onLoadCleared(placeholder: Drawable?) {}
 }

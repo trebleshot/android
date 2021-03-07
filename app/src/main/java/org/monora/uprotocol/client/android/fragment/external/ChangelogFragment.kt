@@ -32,9 +32,11 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.databinding.ListChangelogBinding
 import org.monora.uprotocol.client.android.remote.model.Release
 import org.monora.uprotocol.client.android.util.Updates
-import org.monora.uprotocol.client.android.viewmodel.ReleasesDataViewModel
+import org.monora.uprotocol.client.android.viewholder.ChangelogViewHolder
+import org.monora.uprotocol.client.android.viewmodel.ReleasesViewModel
 
 /**
  * created by: veli
@@ -42,7 +44,7 @@ import org.monora.uprotocol.client.android.viewmodel.ReleasesDataViewModel
  */
 @AndroidEntryPoint
 class ChangelogFragment : Fragment(R.layout.layout_changelog) {
-    private val viewModel: ReleasesDataViewModel by viewModels()
+    private val viewModel: ReleasesViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,21 +65,15 @@ class ChangelogFragment : Fragment(R.layout.layout_changelog) {
         Updates.declareLatestChangelogAsShown(requireActivity())
     }
 
-    class ReleasesAdapter : ListAdapter<Release, ViewHolder>(ReleaseItemCallback()) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.list_changelog, parent, false)
+    class ReleasesAdapter : ListAdapter<Release, ChangelogViewHolder>(ReleaseItemCallback()) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChangelogViewHolder {
+            return ChangelogViewHolder(
+                ListChangelogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val versionObject = getItem(position)
-            val imageCheck = holder.itemView.findViewById<ImageView>(R.id.image_check)
-            val text1 = holder.itemView.findViewById<TextView>(R.id.text1)
-            val text2 = holder.itemView.findViewById<TextView>(R.id.text2)
-            text1.text = versionObject.name
-            text2.text = versionObject.changelog.trim()
-            imageCheck.visibility = if (BuildConfig.VERSION_NAME == versionObject.tag) View.VISIBLE else View.GONE
+        override fun onBindViewHolder(holder: ChangelogViewHolder, position: Int) {
+            holder.bind(getItem(position))
         }
 
         override fun getItemId(position: Int): Long {

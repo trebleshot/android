@@ -20,16 +20,15 @@ package org.monora.uprotocol.client.android.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
-import android.widget.TextView
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.widget.Toolbar
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.Resources.attrToRes
-import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.client.android.util.Updates
 
 class AboutActivity : Activity() {
@@ -55,20 +54,6 @@ class AboutActivity : Activity() {
         findViewById<View>(R.id.activity_about_telegram_button).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)))
         }
-        /*findViewById<View>(R.id.activity_about_option_fourth_layout).setOnClickListener {
-            if (BuildConfig.FLAVOR == "googlePlay") {
-                try {
-                    startActivity(
-                        Intent(
-                            this@AboutActivity,
-                            Class.forName("org.monora.uprotocol.client.android.activity.DonationActivity")
-                        )
-                    )
-                } catch (e: ClassNotFoundException) {
-                    e.printStackTrace()
-                }
-            } else
-          */
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,23 +63,30 @@ class AboutActivity : Activity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (!googlePlayFlavor && Updates.hasNewVersion(applicationContext)) {
+            menu?.findItem(R.id.actions_about_check_for_updates)?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.actions_about_feedback -> {
-                Activities.startFeedbackActivity(this@AboutActivity)
+                Activities.startFeedbackActivity(this)
             }
             R.id.actions_about_changelog -> {
-                startActivity(Intent(this@AboutActivity, ChangelogActivity::class.java))
+                startActivity(Intent(this, ChangelogActivity::class.java))
             }
             R.id.actions_about_third_party_licenses -> {
-                startActivity(Intent(this@AboutActivity, LicensesActivity::class.java))
+                startActivity(Intent(this, LicensesActivity::class.java))
             }
             R.id.actions_about_check_for_updates -> {
                 Updates.checkForUpdates(
-                    this@AboutActivity,
-                    Updates.getDefaultUpdater(this@AboutActivity),
-                    true,
-                    null
+                    context = this,
+                    Updates.getDefaultUpdater(context = this),
+                    popupDialog = true,
+                    listener = null
                 )
             }
             else -> return false
@@ -104,13 +96,5 @@ class AboutActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        if (!googlePlayFlavor && Updates.hasNewVersion(applicationContext)) {
-            //highlightUpdater(findViewById(R.id.activity_about_option_fourth_text))
-        }
-    }
-
-    private fun highlightUpdater(textView: TextView) {
-        textView.setTextColor(R.attr.colorAccent.attrToRes(applicationContext).resToColor(applicationContext))
-        textView.setText(R.string.text_newVersionAvailable)
     }
 }

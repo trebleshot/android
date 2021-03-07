@@ -16,22 +16,23 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout>
 
     <data>
 
         <variable
             name="viewModel"
-            type="org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel" />
+            type="org.monora.uprotocol.client.android.viewmodel.content.SharedTextContentViewModel" />
     </data>
 
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/ListContentLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:onClick="@{viewModel.clickListener}">
 
         <FrameLayout
             style="@style/ListContentIconStyle"
@@ -45,13 +46,13 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                app:clock="@{viewModel.sharedText.dateCreated()}" />
+                app:clock="@{viewModel.dateCreated}" />
 
         </FrameLayout>
 
         <TextView
             android:id="@+id/text"
-            android:text="@{viewModel.sharedText.name()}"
+            android:text="@{viewModel.text}"
             style="@style/TextAppearance.Primary"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"

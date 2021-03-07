@@ -18,45 +18,17 @@
  */
 package org.monora.uprotocol.client.android.service
 
-import android.app.PendingIntent
-import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
-import android.util.Log
-import androidx.annotation.StringRes
-import androidx.collection.ArrayMap
-import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
-import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.util.Files.getOpenIntent
-import com.genonbeta.android.framework.util.Stoppable
-import com.genonbeta.android.framework.util.StoppableImpl
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fi.iki.elonen.NanoHTTPD
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.FileExplorerActivity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.WebClient
-import org.monora.uprotocol.client.android.fragment.FileListFragment
-import org.monora.uprotocol.client.android.util.AppUtils
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Notifications
-import org.monora.uprotocol.client.android.util.Time
 import org.monora.uprotocol.core.persistence.PersistenceProvider
-import org.monora.uprotocol.core.transfer.TransferItem
-import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.regex.Pattern
-import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 

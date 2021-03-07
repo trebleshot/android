@@ -17,17 +17,12 @@
  */
 package org.monora.uprotocol.client.android.util
 
-import android.util.Log
 import androidx.preference.PreferenceManager
-import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.model.ContentModel
 
-object AppUtils {
-    private val TAG = AppUtils::class.simpleName
-
+object Views {
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
         val connection = fragment.engineConnection
         val preferences = PreferenceManager.getDefaultSharedPreferences(fragment.requireContext())

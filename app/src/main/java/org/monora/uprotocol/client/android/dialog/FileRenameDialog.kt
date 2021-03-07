@@ -19,11 +19,9 @@ package org.monora.uprotocol.client.android.dialog
 
 import android.app.Activity
 import androidx.appcompat.app.AlertDialog
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.task.RenameMultipleFilesTask
-import org.monora.uprotocol.client.android.util.AppUtils
 import com.genonbeta.android.framework.io.DocumentFile
 import java.util.*
 

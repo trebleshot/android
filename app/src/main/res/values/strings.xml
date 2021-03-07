@@ -43,9 +43,9 @@
     <string name="mesg_fileReceived">%s has been received</string>
     <string name="butn_scan">Scan</string>
     <string name="text_listEmpty">No items</string>
-    <string name="text_developerMode">Developer mode</string>
+    <string name="text_developerMode">Developer Mode</string>
     <string name="text_developerModeSummary">Disables the user configuration</string>
-    <string name="text_deviceName">Device name</string>
+    <string name="text_deviceName">Device Name</string>
     <string name="text_deviceNameSummary">This name will be shown on other devices</string>
     <string name="text_deviceNameTitle">Enter a device name</string>
     <string name="mesg_formatNotSupported">Unsupported format</string>
@@ -579,7 +579,7 @@
     <string name="mesg_socketConnectionError">Failed to connect to the service!</string>
     <string name="mesg_noRouteToHostError">This address is unreachable!</string>
     <string name="text_allDevices">All Devices</string>
-    <string name="text_noOnlineDevices">Online devices appear here</string>
+    <string name="text_noOnlineDevices">Online clients appear here</string>
     <string name="text_online">Online</string>
     <string name="text_receiver">Receiver</string>
     <string name="text_sender">Sender</string>
@@ -613,4 +613,5 @@
     <string name="butn_visitLicenseUrl">Visit License URL</string>
     <string name="butn_visitWebPage">Visit Web Page</string>
     <string name="text_backgroundService">Background Service</string>
+    <string name="text_noClientList">Clients appear here</string>
 </resources>
