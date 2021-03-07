@@ -16,7 +16,8 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -25,29 +26,46 @@
             type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/ListContentLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:orientation="horizontal"
         android:gravity="center_vertical">
 
         <ImageView
-            style="@style/ListContentIconStyle"
             android:id="@+id/image"
+            style="@style/ListContentIconStyle"
+            pictureOf="@{viewModel.client}"
             android:layout_width="@dimen/icon_size_list_normal"
             android:layout_height="@dimen/icon_size_list_normal"
             android:contentDescription="@string/text_image"
-            android:layout_gravity="center"
-            pictureOf="@{viewModel.client}" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text1"
             style="@style/TextAppearance.Primary.Big.SingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.nickname}" />
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@{viewModel.nickname}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/overflowButton"
+            app:layout_constraintHorizontal_bias="0.15"
+            app:layout_constraintStart_toEndOf="@+id/image"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/overflowButton"
+            style="@style/OverflowButton"
+            android:onClick="@{viewModel.openClientProfileListener}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_info_white_24dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="50dp">
+        android:padding="50dp">
 
         <include
             layout="@layout/layout_profile_picture"

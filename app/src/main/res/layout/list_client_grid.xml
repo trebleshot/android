@@ -35,7 +35,9 @@
         app:strokeWidth="0dp"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:onClick="@{viewModel.openClientProfileListener}"
+        onLongClick="@{viewModel.openClientProfileListener}">
 
         <LinearLayout
             android:id="@+id/infoContainer"

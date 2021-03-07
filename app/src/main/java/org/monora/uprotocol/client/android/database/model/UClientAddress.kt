@@ -1,6 +1,7 @@
 package org.monora.uprotocol.client.android.database.model
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
@@ -21,6 +22,7 @@ import java.net.InetAddress
 data class UClientAddress(
     @PrimaryKey
     var inetAddress: InetAddress,
+    @ColumnInfo(index = true)
     var clientUid: String,
     var lastUsageTime: Long = System.currentTimeMillis(),
 ) : ClientAddress, Parcelable {

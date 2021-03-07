@@ -1,6 +1,7 @@
 package org.monora.uprotocol.client.android.database.model
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
@@ -20,6 +21,7 @@ import org.monora.uprotocol.core.transfer.TransferItem
 data class Transfer(
     @PrimaryKey
     val id: Long,
+    @ColumnInfo(index = true)
     val clientUid: String,
     val type: TransferItem.Type,
     var location: String,

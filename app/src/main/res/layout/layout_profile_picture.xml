@@ -35,13 +35,14 @@
             android:id="@+id/picture"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            pictureOf="@{viewModel.client}"/>
+            pictureOf="@{viewModel.client}" />
 
         <ImageView
             android:id="@+id/picture_foreground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?roundSelector" />
+            android:background="?roundSelector"
+            android:onClick="@{viewModel.profileEditorListener}" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="24dp"

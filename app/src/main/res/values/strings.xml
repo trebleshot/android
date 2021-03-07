@@ -66,7 +66,7 @@
     <string name="butn_shareTrebleshot">Share This App</string>
     <string name="text_about">About</string>
     <string name="butn_close">Close</string>
-    <string name="text_deviceModelInfo">Device name</string>
+    <string name="text_deviceModelInfo">Device Name</string>
     <string name="butn_clearQueue">Clear the queue</string>
     <string name="butn_shareWithTrebleshot">Share with TrebleShot</string>
     <string name="mesg_somethingWentWrong">Something went wrong</string>
@@ -79,7 +79,7 @@
     <string name="text_storagePathSummary">New files will be saved to this folder</string>
     <string name="mesg_pathUnavailable">%s currently unavailable</string>
     <string name="text_ipAddress">IP address</string>
-    <string name="text_allowToConnect">Allow to connect</string>
+    <string name="text_allowToConnect">Allow To Connect</string>
     <string name="text_connectionPermission">Connection permission</string>
     <string name="ques_allowDeviceToConnect">Let this device connect?</string>
     <string name="mesg_stopping">Stopping</string>
@@ -227,7 +227,7 @@
     <string name="text_communicationServiceStop">Tap to end session</string>
     <string name="text_remainingTime">ETA %s</string>
     <string name="butn_showFiles">Show files</string>
-    <string name="butn_trustDevice">Trust this device</string>
+    <string name="butn_trustDevice">Trust</string>
     <string name="butn_typeNewEntry">Type new entry</string>
     <string name="butn_download">Download</string>
     <string name="mesg_clipboardUpdateNotice">Revise the text or press again to exit</string>
