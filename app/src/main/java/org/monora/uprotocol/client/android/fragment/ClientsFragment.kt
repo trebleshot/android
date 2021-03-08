@@ -21,31 +21,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListClientBinding
-import org.monora.uprotocol.client.android.drawable.TextDrawable.Builder
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
-import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.viewholder.ClientViewHolder
+import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ClientsFragment : Fragment(R.layout.layout_clients) {
-    @Inject
-    lateinit var clientRepository: ClientRepository
+    private val clientsViewModel: ClientsViewModel by viewModels()
 
     private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 
@@ -63,7 +56,7 @@ class ClientsFragment : Fragment(R.layout.layout_clients) {
         recyclerView.adapter = adapter
 
         emptyView.executePendingBindings()
-        clientRepository.getAll().observe(viewLifecycleOwner) {
+        clientsViewModel.clients.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }

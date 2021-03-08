@@ -38,7 +38,6 @@ import org.monora.uprotocol.client.android.activity.AddDeviceActivity.AvailableF
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.ACTION_CHANGE_FRAGMENT
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.EXTRA_FRAGMENT_ENUM
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
@@ -47,7 +46,7 @@ import org.monora.uprotocol.client.android.fragment.ClientsFragment
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
 import org.monora.uprotocol.client.android.fragment.OnlineClientsFragment
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
-import org.monora.uprotocol.client.android.util.Graphics
+import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import java.util.*
 import javax.inject.Inject
@@ -282,11 +281,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
 
 @AndroidEntryPoint
 class OptionsFragment : Fragment(R.layout.layout_connection_options) {
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
-    @Inject
-    lateinit var clientRepository: ClientRepository
+    private val clientsViewModel: ClientsViewModel by viewModels()
 
     private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 
@@ -318,7 +313,7 @@ class OptionsFragment : Fragment(R.layout.layout_connection_options) {
         }
 
         connectionOptions.executePendingBindings()
-        clientRepository.getOnlineClients().observe(viewLifecycleOwner) {
+        clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
             adapter.submitList(it.map { clientRoute -> clientRoute.client })
             emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())
             TransitionManager.beginDelayedTransition(connectionOptions.emptyView.root.parent as ViewGroup)

@@ -34,7 +34,7 @@ import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.DateSectionContentModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
-import org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharedTextsViewModel
 
 /**
  * created by: Veli
@@ -42,7 +42,7 @@ import org.monora.uprotocol.client.android.viewmodel.SharedTextViewModel
  */
 @AndroidEntryPoint
 class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
-    private val viewModel: SharedTextViewModel by viewModels()
+    private val viewModel: SharedTextsViewModel by viewModels()
 
     private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 

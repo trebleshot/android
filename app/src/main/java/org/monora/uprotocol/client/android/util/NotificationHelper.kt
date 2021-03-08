@@ -36,7 +36,6 @@ import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver.Companion.ACTION_STOP_ALL_TASKS
-import org.monora.uprotocol.client.android.receiver.DialogEventReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
@@ -104,7 +103,6 @@ class NotificationHelper(val utils: Notifications) {
         val uidHash = client.clientUid.hashCode()
         val notification = utils.buildDynamicNotification(uidHash, Notifications.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent = Intent(context, BgBroadcastReceiver::class.java)
-        val dialogIntent = Intent(context, DialogEventReceiver::class.java)
         acceptIntent.setAction(BgBroadcastReceiver.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
             .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
             .putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
@@ -112,12 +110,10 @@ class NotificationHelper(val utils: Notifications) {
         val rejectIntent = (acceptIntent.clone() as Intent)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getService(
-            context, uidHash + REQUEST_CODE_ACCEPT, acceptIntent,
-            0
+            context, uidHash + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         val negativeIntent: PendingIntent = PendingIntent.getService(
-            context, uidHash + REQUEST_CODE_ACCEPT, rejectIntent,
-            0
+            context, uidHash + REQUEST_CODE_ACCEPT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
             .setContentTitle(context.getString(R.string.text_deviceKeyChanged))
@@ -125,8 +121,10 @@ class NotificationHelper(val utils: Notifications) {
             .setContentInfo(client.clientNickname)
             .setContentIntent(
                 PendingIntent.getBroadcast(
-                    context, uidHash + REQUEST_CODE_NEUTRAL, dialogIntent,
-                    0
+                    context,
+                    uidHash + REQUEST_CODE_NEUTRAL,
+                    Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                    PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
             .setDefaults(utils.notificationSettings)
@@ -146,10 +144,10 @@ class NotificationHelper(val utils: Notifications) {
         acceptIntent.putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
         rejectIntent.putExtra(Notifications.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val positiveIntent: PendingIntent = PendingIntent.getService(
-            context, hash + REQUEST_CODE_ACCEPT, acceptIntent, 0
+            context, hash + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         val negativeIntent: PendingIntent = PendingIntent.getService(
-            context, hash + REQUEST_CODE_REJECT, rejectIntent, 0
+            context, hash + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setContentTitle(context.getString(R.string.ques_receiveFile))
@@ -157,7 +155,7 @@ class NotificationHelper(val utils: Notifications) {
             .setContentInfo(client.clientNickname)
             .setContentIntent(
                 PendingIntent.getActivity(
-                    context, hash + REQUEST_CODE_NEUTRAL, transferDetail, 0
+                    context, hash + REQUEST_CODE_NEUTRAL, transferDetail, PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
             .setDefaults(utils.notificationSettings)
@@ -183,10 +181,10 @@ class NotificationHelper(val utils: Notifications) {
         acceptIntent.putExtra(BgBroadcastReceiver.EXTRA_TEXT_ACCEPTED, true)
         rejectIntent.putExtra(BgBroadcastReceiver.EXTRA_TEXT_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getBroadcast(
-            context, item.id + REQUEST_CODE_ACCEPT, acceptIntent, 0
+            context, item.id + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         val negativeIntent: PendingIntent = PendingIntent.getBroadcast(
-            context, item.id + REQUEST_CODE_REJECT, rejectIntent, 0
+            context, item.id + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         activityIntent
             .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
@@ -204,18 +202,19 @@ class NotificationHelper(val utils: Notifications) {
             .setContentInfo(client.clientNickname)
             .setContentIntent(
                 PendingIntent.getActivity(
-                    context, item.id + REQUEST_CODE_NEUTRAL, activityIntent, 0
+                    context,
+                    item.id + REQUEST_CODE_NEUTRAL,
+                    activityIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
             .setDefaults(utils.notificationSettings)
             .setDeleteIntent(negativeIntent)
             .addAction(
-                R.drawable.ic_check_white_24dp_static, context.getString(android.R.string.copy),
-                positiveIntent
+                R.drawable.ic_check_white_24dp_static, context.getString(android.R.string.copy), positiveIntent
             )
             .addAction(
-                R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no),
-                negativeIntent
+                R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent
             )
             .setTicker(context.getString(R.string.text_receivedTextSummary)).priority =
             NotificationCompat.PRIORITY_HIGH

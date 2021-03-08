@@ -21,16 +21,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
-import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.ListChangelogBinding
 import org.monora.uprotocol.client.android.remote.model.Release

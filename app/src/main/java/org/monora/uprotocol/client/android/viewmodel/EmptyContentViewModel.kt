@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class EmptyContentViewModel @Inject constructor(
+class EmptyContentViewModel @Inject internal constructor(
 
 ) : ViewModel() {
     var hasContent = ObservableBoolean()

@@ -22,18 +22,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.databinding.ListClientGridBinding
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
-import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.viewholder.ClientGridViewHolder
-import javax.inject.Inject
+import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 
 /**
  * created by: veli
@@ -41,8 +40,7 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
-    @Inject
-    lateinit var clientRepository: ClientRepository
+    private val clientsViewModel: ClientsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,8 +55,8 @@ class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
             }
         }
 
-        clientRepository.getAll().observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
+            adapter.submitList(it.map { clientRoute -> clientRoute.client })
         }
     }
 

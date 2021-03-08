@@ -10,7 +10,7 @@ import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBindin
 import javax.inject.Inject
 
 @HiltViewModel
-class UserProfileViewModel @Inject constructor(
+class UserProfileViewModel @Inject internal constructor(
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
     val client = userDataRepository.client()

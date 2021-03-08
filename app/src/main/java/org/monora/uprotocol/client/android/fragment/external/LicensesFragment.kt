@@ -18,32 +18,31 @@
 package org.monora.uprotocol.client.android.fragment.external
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.*
-import com.google.gson.Gson
-import com.google.gson.stream.JsonReader
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.ListLibraryLicenseBinding
 import org.monora.uprotocol.client.android.model.LibraryLicense
 import org.monora.uprotocol.client.android.viewholder.LibraryLicenseViewHolder
-import java.io.InputStreamReader
+import org.monora.uprotocol.client.android.viewmodel.LicensesViewModel
 
 /**
  * created by: veli
  * date: 7/20/18 8:56 PM
  */
+@AndroidEntryPoint
 class LicensesFragment : Fragment(R.layout.layout_licenses) {
+    private val licensesViewModel: LicensesViewModel by viewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
@@ -53,45 +52,8 @@ class LicensesFragment : Fragment(R.layout.layout_licenses) {
         recyclerView.adapter = adapter
         recyclerView.isNestedScrollingEnabled = true
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            requireContext().assets.open("licenses.json").use { inputStream ->
-                val jsonReader = JsonReader(InputStreamReader(inputStream))
-                val gson = Gson()
-                val list = mutableListOf<LibraryLicense>()
-
-                try {
-                    // skip to the "libraries" index
-                    jsonReader.beginObject()
-
-                    if (!jsonReader.hasNext()) {
-                        return@use
-                    } else if (jsonReader.nextName() != "libraries") {
-                        Log.d(LicensesFragment::class.simpleName, "onViewCreated: 'libraries' does not exist")
-                        return@use
-                    }
-
-                    jsonReader.beginArray()
-
-                    while (jsonReader.hasNext()) {
-                        list.add(gson.fromJson(jsonReader, LibraryLicense::class.java))
-                    }
-
-                    list.sortBy { it.artifactId.group }
-
-                    jsonReader.endArray()
-                    jsonReader.endObject()
-
-                    withContext(Dispatchers.Main) {
-                        adapter.submitList(list)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    list.forEach {
-                        println(it)
-                    }
-                }
-            }
+        licensesViewModel.licenses.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
         }
     }
 

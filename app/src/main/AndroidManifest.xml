@@ -253,9 +253,7 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <receiver android:name="org.monora.uprotocol.client.android.receiver.DialogEventReceiver" />
         <receiver android:name=".receiver.BgBroadcastReceiver" />
-        <!-- android:process=":transfer"-->
 
         <service
             android:name="org.monora.uprotocol.client.android.service.BackgroundService"
