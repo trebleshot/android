@@ -236,7 +236,13 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ManualConnectionActivity"
             android:label="@string/text_enterAddress"
-            android:windowSoftInputMode="stateVisible" />
+            android:windowSoftInputMode="stateVisible"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.AddDeviceActivity"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.AddDeviceActivity" />
+        </activity>
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"

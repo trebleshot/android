@@ -213,7 +213,8 @@ class NsdDaemon @Inject constructor(
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
             with(serviceInfo) {
                 if (host.isLoopbackAddress || host.isAnyLocalAddress
-                    || NetworkInterface.getByInetAddress(host) != null) {
+                    || NetworkInterface.getByInetAddress(host) != null
+                ) {
                     Log.d(TAG, "onServiceResolved: Resolved LOCAL '$serviceName' on '$host' (skipping)")
                     return
                 }
@@ -225,18 +226,19 @@ class NsdDaemon @Inject constructor(
                 try {
                     val client = ClientLoader.load(connectionFactory, persistenceProvider, serviceInfo.host)
 
-                    if (client is UClient) {
-                        val address = UClientAddress(serviceInfo.host, client.clientUid)
-
-                        synchronized(onlineClientMap) {
-                            onlineClientMap[serviceInfo.serviceName] = ClientRoute(client, address)
-                            onlineClientMap.values.toMutableList().also { clients ->
-                                clients.sortByDescending { it.client.lastUsageTime }
-                                _onlineClients.postValue(clients)
-                            }
-                        }
-                    } else {
+                    if (client !is UClient) {
                         Log.d(TAG, "onServiceResolved: Not a " + UClient::class.simpleName + " derivative.")
+                        return@launch
+                    }
+
+                    val address = UClientAddress(serviceInfo.host, client.clientUid)
+
+                    synchronized(onlineClientMap) {
+                        onlineClientMap[serviceInfo.serviceName] = ClientRoute(client, address)
+                        onlineClientMap.values.toMutableList().also { clients ->
+                            clients.sortByDescending { it.client.lastUsageTime }
+                            _onlineClients.postValue(clients)
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

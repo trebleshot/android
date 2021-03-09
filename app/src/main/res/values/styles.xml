@@ -216,9 +216,7 @@
 
     <style name="ListContentLayoutStyle">
         <item name="android:paddingLeft">@dimen/padding_list_content_parent_layout</item>
-        <item name="android:paddingStart">@dimen/padding_list_content_parent_layout</item>
         <item name="android:paddingRight">@dimen/padding_list_content_parent_layout</item>
-        <item name="android:paddingEnd">@dimen/padding_list_content_parent_layout</item>
         <item name="android:paddingTop">@dimen/padding_list_content_parent_layout</item>
         <item name="android:paddingBottom">@dimen/padding_list_content_parent_layout</item>
     </style>
@@ -241,14 +239,10 @@
     <style name="ListContentIconStyle">
         <item name="android:layout_width">@dimen/icon_size_list_normal</item>
         <item name="android:layout_height">@dimen/icon_size_list_normal</item>
-        <item name="android:layout_marginLeft">@dimen/padding_list_content_icon_main_margin_left
-        </item>
-        <item name="android:layout_marginStart">@dimen/padding_list_content_icon_main_margin_left
-        </item>
-        <item name="android:layout_marginEnd">@dimen/padding_list_content_icon_main_margin_right
-        </item>
-        <item name="android:layout_marginRight">@dimen/padding_list_content_icon_main_margin_right
-        </item>
+        <item name="android:layout_marginLeft">@dimen/padding_list_content_icon_main_margin_left</item>
+        <item name="android:layout_marginStart">@dimen/padding_list_content_icon_main_margin_left</item>
+        <item name="android:layout_marginEnd">@dimen/padding_list_content_icon_main_margin_right</item>
+        <item name="android:layout_marginRight">@dimen/padding_list_content_icon_main_margin_right</item>
     </style>
 
     <style name="CustomListFragmentEmptyImageStyle">

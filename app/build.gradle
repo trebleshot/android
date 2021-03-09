@@ -23,17 +23,6 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "com.cookpad.android.plugin.license-tools"
 
-// In the root folder of the project, you can find the template properties file
-// named 'signing.properties.txt'. Rename it to 'signing.properties' to make use of it
-def localPropertiesFile = project.rootProject.file('signing.properties')
-def useLocalSigning = localPropertiesFile.exists()
-Properties localProperties = null
-
-if (useLocalSigning) {
-    localProperties = new Properties()
-    localProperties.load(localPropertiesFile.newDataInputStream())
-}
-
 android {
     compileSdkVersion 30
 
@@ -43,11 +32,18 @@ android {
 
     signingConfigs {
         gbDistribution {
-            if (useLocalSigning) {
-                storeFile file(localProperties.getProperty('signing.storeFile'))
-                keyAlias localProperties.getProperty('signing.keyAlias')
-                storePassword localProperties.getProperty('signing.storePassword')
-                keyPassword localProperties.getProperty('signing.keyPassword')
+            // In the root folder of the project, you can find the template properties file
+            // named 'signing.properties.txt'. Rename it to 'signing.properties' to make use of it
+            def signingPropertiesFile = project.rootProject.file('signing.properties')
+
+            if (signingPropertiesFile.exists()) {
+                Properties signingProperties = new Properties()
+                signingProperties.load(signingPropertiesFile.newDataInputStream())
+
+                storeFile file(signingProperties.getProperty('signing.storeFile'))
+                keyAlias signingProperties.getProperty('signing.keyAlias')
+                storePassword signingProperties.getProperty('signing.storePassword')
+                keyPassword signingProperties.getProperty('signing.keyPassword')
             }
         }
     }
@@ -169,7 +165,7 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation 'com.madgag.spongycastle:bcpkix-jdk15on:1.58.0.0'
     implementation 'org.monora.coolsocket:core:2.0-rc11'
-    implementation 'org.monora.uprotocol:core:0.1.0-ALPHA22'
+    implementation 'org.monora.uprotocol:core:0.1.0-ALPHA25'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'org.nanohttpd:nanohttpd:2.2.0'

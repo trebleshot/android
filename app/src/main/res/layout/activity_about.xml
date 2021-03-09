@@ -30,111 +30,121 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:paddingTop="?attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/short_content_width_padding"
-            android:paddingRight="@dimen/short_content_width_padding"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_monora_logo_no_background"
-                app:tint="?colorControlNormal" />
-
-            <TextView
-                style="@style/CondensedTitleStyle"
-                android:padding="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_joinUs" />
-
             <LinearLayout
+                android:paddingTop="?attr/actionBarSize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:paddingLeft="@dimen/short_content_width_padding"
+                android:paddingRight="@dimen/short_content_width_padding"
+                android:orientation="vertical">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/activity_about_home_button"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/text_org"
-                    android:drawableTop="@drawable/ic_home_white_24dp"
-                    style="?materialButtonOutlinedStyle" />
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_monora_logo_no_background"
+                    app:tint="?colorControlNormal" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/activity_about_localize_button"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                <TextView
+                    style="@style/CondensedTitleStyle"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/butn_helpLocalize"
-                    android:drawableTop="@drawable/ic_translate_white_24dp"
-                    style="?materialButtonOutlinedStyle" />
+                    android:text="@string/text_joinUs" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/activity_about_home_button"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/text_org"
+                        android:drawableTop="@drawable/ic_home_white_24dp"
+                        style="?materialButtonOutlinedStyle" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/activity_about_localize_button"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/butn_helpLocalize"
+                        android:drawableTop="@drawable/ic_translate_white_24dp"
+                        style="?materialButtonOutlinedStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/activity_about_telegram_button"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/butn_telegram"
+                        android:drawableTop="@drawable/ic_telegram_white_24dp"
+                        style="?materialButtonOutlinedStyle" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/activity_about_github_button"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/butn_github"
+                        android:drawableTop="@drawable/ic_github_circle_white_24dp"
+                        style="?materialButtonOutlinedStyle" />
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CondensedTitleStyle"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_license" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/conf_licence" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/activity_about_telegram_button"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/butn_telegram"
-                    android:drawableTop="@drawable/ic_telegram_white_24dp"
-                    style="?materialButtonOutlinedStyle" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/activity_about_github_button"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/butn_github"
-                    android:drawableTop="@drawable/ic_github_circle_white_24dp"
-                    style="?materialButtonOutlinedStyle" />
-
-            </LinearLayout>
-
             <TextView
                 style="@style/CondensedTitleStyle"
                 android:padding="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_license" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="@string/conf_licence" />
-
-            <TextView
-                style="@style/CondensedTitleStyle"
-                android:padding="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_contributors" />
 
             <LinearLayout
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/short_content_width_padding_between"
+                android:layout_marginEnd="@dimen/short_content_width_padding_between"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="400dp">

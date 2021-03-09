@@ -37,9 +37,7 @@ class AboutActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-
-        setSupportActionBar(toolbar)
+        setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         findViewById<View>(R.id.activity_about_home_button).setOnClickListener {
@@ -72,9 +70,7 @@ class AboutActivity : Activity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.actions_about_feedback -> {
-                Activities.startFeedbackActivity(this)
-            }
+            R.id.actions_about_feedback -> Activities.startFeedbackActivity(this)
             R.id.actions_about_changelog -> {
                 startActivity(Intent(this, ChangelogActivity::class.java))
             }
@@ -92,9 +88,5 @@ class AboutActivity : Activity() {
             else -> return false
         }
         return true
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 }

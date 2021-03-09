@@ -58,9 +58,11 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                         )
 
                         try {
-                            CommunicationBridge.connect(
-                                connectionFactory, persistenceProvider, task.addressList, device.clientUid, 0
-                            ).use { bridge ->
+                            CommunicationBridge.Builder(
+                                connectionFactory, persistenceProvider, task.addressList
+                            ).apply {
+                                setClientUid(device.clientUid)
+                            }.connect().use { bridge ->
                                 bridge.requestNotifyTransferState(transfer.id, isAccepted)
                             }
                         } catch (ignored: Exception) {

@@ -25,14 +25,22 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.ChangelogActivity
+import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.dialog.PermissionRequests
 import org.monora.uprotocol.client.android.model.Identifier
 import org.monora.uprotocol.client.android.model.Identity
@@ -42,6 +50,9 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachableA
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.util.Permissions
+import org.monora.uprotocol.client.android.util.Updates
+import java.io.FileReader
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
@@ -176,6 +187,11 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         } else if (!Permissions.checkRunningConditions(this) && !skipPermissionRequest) {
             requestRequiredPermissions(true)
         }
+
+        if (this is HomeActivity && hasIntroductionShown()) {
+            checkAndShowCrashReport()
+            checkAndShowChangelog()
+        }
     }
 
     override fun onPause() {
@@ -256,6 +272,61 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     fun attachUiTask(task: AsyncTask) {
         synchronized(uiTaskList) { uiTaskList.add(task) }
+    }
+
+    private fun checkAndShowCrashReport() {
+        try {
+            val log = getFileStreamPath(App.FILENAME_UNHANDLED_CRASH_LOG)
+            val report = FileReader(log).use { it.readText() }
+            val streamObject = SharedText(0, report, log.lastModified())
+
+            Log.d(TAG, "checkAndShowCrashReport: $report")
+
+            log.delete()
+
+            AlertDialog.Builder(this)
+                .setTitle(R.string.text_crashReport)
+                .setMessage(R.string.text_crashInfo)
+                .setNegativeButton(R.string.butn_dismiss, null)
+                .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
+                    val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboardManager.setPrimaryClip(
+                        ClipData.newPlainText(getString(R.string.text_crashReport), report)
+                    )
+                    Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
+                }.setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
+                    lifecycleScope.launch {
+                        backgroundBackend.appDatabase.sharedTextDao().insert(streamObject)
+                    }
+
+                    Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
+                }.show()
+        } catch (ignored: IOException) {
+        }
+    }
+
+    private fun checkAndShowChangelog() {
+        if (!Updates.isLatestChangelogShown(this)) {
+            AlertDialog.Builder(this)
+                .setMessage(R.string.mesg_versionUpdatedChangelog)
+                .setPositiveButton(R.string.butn_yes) { _: DialogInterface?, _: Int ->
+                    Updates.declareLatestChangelogAsShown(this@Activity)
+                    startActivity(Intent(this@Activity, ChangelogActivity::class.java))
+                }
+                .setNeutralButton(R.string.butn_never) { _: DialogInterface?, _: Int ->
+                    defaultPreferences.edit()
+                        .putBoolean("show_changelog_dialog", false)
+                        .apply()
+                }
+                .setNegativeButton(R.string.butn_no) { _: DialogInterface?, _: Int ->
+                    Updates.declareLatestChangelogAsShown(this@Activity)
+                    Toast.makeText(
+                        this@Activity, R.string.mesg_versionUpdatedChangelogRejected,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .show()
+        }
     }
 
     fun checkForThemeChange() {

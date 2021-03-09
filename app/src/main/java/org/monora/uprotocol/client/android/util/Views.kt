@@ -17,10 +17,15 @@
  */
 package org.monora.uprotocol.client.android.util
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.view.View
 import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.model.ContentModel
+import java.lang.IllegalStateException
 
 object Views {
     fun <T : ContentModel> showFolderSelectionHelp(fragment: ListingFragmentBase<T>) {
@@ -38,4 +43,16 @@ object Views {
                 }
                 ?.show()
     }
+}
+
+fun View.findActivity(): Activity {
+    var context = context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+
+    throw IllegalStateException()
 }

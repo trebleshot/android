@@ -1,11 +1,15 @@
 package org.monora.uprotocol.client.android.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
+import android.content.ContextWrapper
+import android.view.View
+
 
 object Activities {
     fun startApplicationDetails(context: Context) {

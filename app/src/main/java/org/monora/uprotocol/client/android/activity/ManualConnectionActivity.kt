@@ -25,7 +25,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +39,7 @@ import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.communication.client.UnauthorizedClientException
 import java.net.InetAddress
 import java.net.ProtocolException
 import java.net.UnknownHostException
@@ -81,7 +81,6 @@ class ManualConnectionActivity : Activity() {
             }
         }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manual_address_connection)
@@ -100,7 +99,7 @@ class ManualConnectionActivity : Activity() {
                         val inetAddress = withContext(Dispatchers.IO) { InetAddress.getByName(address) }
                         val bridge = withContext(Dispatchers.IO) {
                             val bridge = CommunicationBridge.connect(
-                                connectionFactory, persistenceProvider, inetAddress, null, 0
+                                connectionFactory, persistenceProvider, inetAddress
                             )
 
                             if (!bridge.requestAcquaintance()) {
@@ -125,6 +124,8 @@ class ManualConnectionActivity : Activity() {
                         finish()
                     } catch (e: UnknownHostException) {
                         editText.error = getString(R.string.mesg_unknownHostError)
+                    } catch (e: UnauthorizedClientException) {
+                        editText.error = getString(R.string.mesg_notAllowed)
                     } catch (e: Exception) {
                         editText.error = e.message
                         e.printStackTrace()
@@ -140,15 +141,6 @@ class ManualConnectionActivity : Activity() {
     override fun onResume() {
         super.onResume()
         editText.requestFocus()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home)
-            onBackPressed()
-        else
-            return super.onOptionsItemSelected(item)
-        return true
     }
 
     companion object {

@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android
 import android.os.Build
 import android.text.format.DateFormat
 import android.util.Log
+import androidx.core.content.edit
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
 import com.genonbeta.android.updatewithgithub.GitHubUpdater
@@ -59,36 +60,27 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     private fun initializeSettings() {
         //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
-        val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val nsdDefined = defaultPreferences.contains("nsd_enabled")
-        val refVersion = defaultPreferences.contains("referral_version")
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val hasNsdSet = preferences.contains("nsd_enabled")
+        val hasReferralVersion = preferences.contains("referral_version")
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false)
 
-        if (!refVersion)
-            defaultPreferences.edit()
-                .putInt("referral_version", BuildConfig.VERSION_CODE)
-                .apply()
+        if (!hasReferralVersion) preferences.edit {
+            putInt("referral_version", BuildConfig.VERSION_CODE)
+        }
 
         // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
         // So we will disable it for them and it will still remain as an option for the user.
-        if (!nsdDefined)
-            defaultPreferences.edit()
-                .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
-                .apply()
+        if (!hasNsdSet) preferences.edit {
+            putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
+        }
 
-        if (defaultPreferences.contains("migrated_version")) {
-            val migratedVersion = defaultPreferences.getInt("migrated_version", BuildConfig.VERSION_CODE)
-            if (migratedVersion < BuildConfig.VERSION_CODE) {
-                defaultPreferences.edit()
-                    .putInt("migrated_version", BuildConfig.VERSION_CODE)
-                    .putInt("previously_migrated_version", migratedVersion)
-                    .apply()
-            }
-        } else
-            defaultPreferences.edit()
-                .putInt("migrated_version", BuildConfig.VERSION_CODE)
-                .apply()
+        val migratedVersion = preferences.getInt("migrated_version", -1)
+        if (migratedVersion < BuildConfig.VERSION_CODE) preferences.edit {
+            putInt("migrated_version", BuildConfig.VERSION_CODE)
+            putInt("previously_migrated_version", migratedVersion)
+        }
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
@@ -101,16 +93,16 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             PrintWriter(FileOutputStream(crashFile)).use { printWriter ->
                 val stackTrace = e.stackTrace
 
-                printWriter.append("--TREBLESHOT-CRASH-LOG--\n")
+                printWriter.append("--Uprotocol Client Crash Log ---\n")
                     .append("\nException: ${e.javaClass.simpleName}")
                     .append("\nMessage: ${e.message}")
                     .append("\nCause: ${e.cause}")
                     .append("\nDate: ")
                     .append(DateFormat.getLongDateFormat(this).format(Date()))
-                    .append("\n\n--STACKTRACE--\n\n")
+                    .append("\n\n--Stacktrace--\n\n")
 
-                if (stackTrace.isNotEmpty()) for (element in stackTrace) {
-                    printWriter.append("${element.className}.${element.methodName}:${element.lineNumber}\n")
+                if (stackTrace.isNotEmpty()) for (element in stackTrace) with(element) {
+                    printWriter.append("$className.$methodName:$lineNumber\n")
                 }
             }
         } catch (ex: IOException) {

@@ -279,7 +279,7 @@
     <string name="mesg_deviceConnectionError">Connection with \"%s\" over \"%s\" failed</string>
     <string name="mesg_retryReceivingNotice">TrebleShot will retry receiving interrupted transfers</string>
     <string name="mesg_transferConnectionNotSetUpFix">This device is not available at the moment.</string>
-    <string name="butn_setUp">Set up</string>
+    <string name="butn_setUp">Set Up</string>
     <string name="text_location">Location</string>
     <string name="butn_saveAnyway">Save anyway</string>
     <string name="text_receivedSize">Received size</string>
@@ -470,7 +470,7 @@
     <string name="text_welcome">Welcome</string>
     <string name="text_introMakeItYours">Make It Yours</string>
     <string name="text_introSetUpPermissions">Set Up Permissions</string>
-    <string name="text_introAllSet">All set!</string>
+    <string name="text_introAllSet">All Set!</string>
     <string name="text_introSetUpProfile">Set Up Your Profile</string>
     <string name="mesg_openFailure">Can not view \"%s\"</string>
     <string name="text_textMillisecond">%d ms</string>

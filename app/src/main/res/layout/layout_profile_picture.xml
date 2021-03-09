@@ -16,7 +16,9 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -25,8 +27,7 @@
             type="org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <FrameLayout
         android:layout_width="@dimen/icon_size_list_giant"
         android:layout_height="@dimen/icon_size_list_giant"
         android:layout_marginBottom="8dp">
@@ -42,7 +43,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?roundSelector"
-            android:onClick="@{viewModel.profileEditorListener}" />
+            android:onClick="@{viewModel.profileEditorListener}"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="24dp"

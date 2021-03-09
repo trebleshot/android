@@ -29,9 +29,11 @@ class FileTransferStarterTask(
 ) : AttachableAsyncTask<AttachedTaskListener>() {
     override fun onRun() {
         try {
-            CommunicationBridge.connect(
-                connectionFactory, persistenceProvider, addressList, client.clientUid, 0
-            ).use { bridge ->
+            CommunicationBridge.Builder(
+                connectionFactory, persistenceProvider, addressList
+            ).apply {
+                setClientUid(client.clientUid)
+            }.connect().use { bridge ->
                 bridge.requestFileTransferStart(transfer.id, type)
                 if (bridge.receiveResult()) {
                     backend.attach(FileTransferTask(bridge, transfer, client, type))

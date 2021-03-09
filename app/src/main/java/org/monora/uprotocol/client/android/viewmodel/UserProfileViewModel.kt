@@ -11,9 +11,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserProfileViewModel @Inject internal constructor(
-    userDataRepository: UserDataRepository,
+    private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
     val client = userDataRepository.client()
+
+    val clientStatic
+        get() = userDataRepository.clientStatic()
 
     val profileEditorListener = View.OnClickListener {
         val binding = LayoutProfileEditorBinding.inflate(

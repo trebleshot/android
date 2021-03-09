@@ -16,25 +16,14 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <fragment
-        android:id="@+id/mainContainer"
-        android:name="org.monora.uprotocol.client.android.fragment.inner.LookPreferencesFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-
-    <TextView
-        style="@style/TextAppearance.Primary.Big"
+    <ImageView
+        android:id="@+id/nyancat"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/mainContainer"
-        android:layout_alignParentTop="true"
-        android:gravity="center"
-        android:text="@string/text_introMakeItYours"
-        android:textSize="@dimen/font_size_title" />
+        android:layout_height="wrap_content" />
 
-</RelativeLayout>
+</FrameLayout>

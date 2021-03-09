@@ -36,7 +36,6 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.BuildConfig
@@ -46,10 +45,9 @@ import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.
 import org.monora.uprotocol.client.android.activity.AddDeviceActivity.ConnectionMode.WaitForRequests
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
-import org.monora.uprotocol.client.android.databinding.LayoutClientStatusBinding
+import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.*
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException.*
@@ -63,12 +61,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
-    @Inject
-    lateinit var userDataRepository: UserDataRepository
-
     private lateinit var navigationView: NavigationView
 
     private lateinit var drawerLayout: DrawerLayout
@@ -77,8 +69,8 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
-    private val clientStatusBinding by lazy {
-        LayoutClientStatusBinding.bind(navigationView.getHeaderView(0)).also {
+    private val userProfileBinding by lazy {
+        LayoutUserProfileBinding.bind(navigationView.getHeaderView(0)).also {
             it.viewModel = userProfileViewModel
             it.lifecycleOwner = this
         }
@@ -106,12 +98,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
         )
 
-        fun requestProfilePictureChange() {
-            //startActivityForResult(Intent(Intent.ACTION_PICK).setType("image/*"), REQUEST_PICK_PROFILE_PHOTO)
-        }
-
-        requestProfilePictureChange()
-
         navigationView.setNavigationItemSelectedListener(this)
         if (Updates.hasNewVersion(this)) {
             highlightUpdate()
@@ -128,13 +114,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             )
         }
 
-        clientStatusBinding.executePendingBindings()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        checkAndShowCrashReport()
-        checkAndShowChangelog()
+        userProfileBinding.executePendingBindings()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -164,7 +144,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 .load(uri)
                 .centerCrop()
                 .override(200, 200)
-                .into(ProfilePictureTarget(applicationContext, userDataRepository.clientStatic()))
+                .into(ProfilePictureTarget(applicationContext, userProfileViewModel.clientStatic))
         }
     }
 
@@ -196,61 +176,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         pendingMenuItemId = 0
-    }
-
-    private fun checkAndShowCrashReport() {
-        try {
-            val log = getFileStreamPath(App.FILENAME_UNHANDLED_CRASH_LOG)
-            val report = FileReader(log).use { it.readText() }
-            val streamObject = SharedText(0, report, log.lastModified())
-
-            Log.d(TAG, "checkAndShowCrashReport: $report")
-
-            log.delete()
-
-            AlertDialog.Builder(this)
-                .setTitle(R.string.text_crashReport)
-                .setMessage(R.string.text_crashInfo)
-                .setNegativeButton(R.string.butn_dismiss, null)
-                .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
-                    val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                    clipboardManager.setPrimaryClip(
-                        ClipData.newPlainText(getString(R.string.text_crashReport), report)
-                    )
-                    Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-                }.setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
-                    lifecycleScope.launch {
-                        appDatabase.sharedTextDao().insert(streamObject)
-                    }
-
-                    Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
-                }.show()
-        } catch (ignored: IOException) {
-        }
-    }
-
-    private fun checkAndShowChangelog() {
-        if (!Updates.isLatestChangelogShown(this)) {
-            AlertDialog.Builder(this)
-                .setMessage(R.string.mesg_versionUpdatedChangelog)
-                .setPositiveButton(R.string.butn_yes) { _: DialogInterface?, _: Int ->
-                    Updates.declareLatestChangelogAsShown(this@HomeActivity)
-                    startActivity(Intent(this@HomeActivity, ChangelogActivity::class.java))
-                }
-                .setNeutralButton(R.string.butn_never) { _: DialogInterface?, _: Int ->
-                    defaultPreferences.edit()
-                        .putBoolean("show_changelog_dialog", false)
-                        .apply()
-                }
-                .setNegativeButton(R.string.butn_no) { _: DialogInterface?, _: Int ->
-                    Updates.declareLatestChangelogAsShown(this@HomeActivity)
-                    Toast.makeText(
-                        this@HomeActivity, R.string.mesg_versionUpdatedChangelogRejected,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                .show()
-        }
     }
 
     private fun highlightUpdate() {

@@ -100,7 +100,7 @@ class UserDataRepository @Inject constructor(
                 val commonName = IETFUtils.valueToString(rdn.first.value)
 
                 if (clientUid() != commonName) {
-                    throw IllegalArgumentException("The client uid changed. The certificate must be regenerated.")
+                    throw IllegalArgumentException("The client uid changed. The certificate should be regenerated.")
                 }
 
                 return@lazy cert

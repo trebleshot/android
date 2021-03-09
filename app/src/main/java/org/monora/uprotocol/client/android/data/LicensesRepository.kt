@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class LicensesRepository @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    suspend fun licenses(): List<LibraryLicense> = withContext(Dispatchers.IO) {
+    suspend fun getLicenses(): List<LibraryLicense> = withContext(Dispatchers.IO) {
         val list = mutableListOf<LibraryLicense>()
 
         context.assets.open("licenses.json").use { inputStream ->
