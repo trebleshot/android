@@ -22,31 +22,23 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.EXTRA_CONNECTION_MODE
-import org.monora.uprotocol.client.android.activity.AddDeviceActivity.ConnectionMode.WaitForRequests
+import org.monora.uprotocol.client.android.activity.AddClientActivity.Companion.EXTRA_CONNECTION_MODE
+import org.monora.uprotocol.client.android.activity.AddClientActivity.ConnectionMode.WaitForRequests
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.*
@@ -57,7 +49,6 @@ import org.monora.uprotocol.client.android.util.Updates
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import org.monora.uprotocol.core.protocol.Client
 import java.io.*
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
@@ -110,7 +101,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
         findViewById<View>(R.id.receiveLayoutButton).setOnClickListener {
             startActivity(
-                Intent(it.context, AddDeviceActivity::class.java).putExtra(EXTRA_CONNECTION_MODE, WaitForRequests)
+                Intent(it.context, AddClientActivity::class.java).putExtra(EXTRA_CONNECTION_MODE, WaitForRequests)
             )
         }
 

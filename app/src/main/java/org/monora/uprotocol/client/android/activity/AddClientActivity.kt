@@ -34,9 +34,9 @@ import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.AddDeviceActivity.AvailableFragment.*
-import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.ACTION_CHANGE_FRAGMENT
-import org.monora.uprotocol.client.android.activity.AddDeviceActivity.Companion.EXTRA_FRAGMENT_ENUM
+import org.monora.uprotocol.client.android.activity.AddClientActivity.AvailableFragment.*
+import org.monora.uprotocol.client.android.activity.AddClientActivity.Companion.ACTION_CHANGE_FRAGMENT
+import org.monora.uprotocol.client.android.activity.AddClientActivity.Companion.EXTRA_FRAGMENT_ENUM
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -52,7 +52,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
+class AddClientActivity : Activity(), SnackbarPlacementProvider {
     @Inject
     lateinit var appDatabase: AppDatabase
 
@@ -85,7 +85,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
                 && intent.hasExtra(BgBroadcastReceiver.EXTRA_TRANSFER)
             ) {
                 TransferDetailActivity.startInstance(
-                    this@AddDeviceActivity,
+                    this@AddClientActivity,
                     intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_TRANSFER)
                 )
                 finish()
@@ -161,7 +161,7 @@ class AddDeviceActivity : Activity(), SnackbarPlacementProvider {
         if (supportActionBar != null) {
             val titleRes = when (fragment) {
                 is NetworkManagerFragment -> R.string.butn_generateQrCode
-                else -> R.string.text_chooseDevice
+                else -> R.string.text_chooseClient
             }
 
             toolbar.title = getString(titleRes)
@@ -320,7 +320,7 @@ class OptionsFragment : Fragment(R.layout.layout_connection_options) {
         }
     }
 
-    private fun updateFragment(fragment: AddDeviceActivity.AvailableFragment) {
+    private fun updateFragment(fragment: AddClientActivity.AvailableFragment) {
         context?.sendBroadcast(Intent(ACTION_CHANGE_FRAGMENT).putExtra(EXTRA_FRAGMENT_ENUM, fragment))
     }
 }

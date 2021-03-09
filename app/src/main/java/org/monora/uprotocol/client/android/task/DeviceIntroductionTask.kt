@@ -18,8 +18,6 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
@@ -51,7 +49,7 @@ class DeviceIntroductionTask(
     }
 
     override fun getName(context: Context): String {
-        return context.getString(R.string.text_addNewDevice)
+        return context.getString(R.string.text_addNewClient)
     }
 
     interface ResultListener : AttachedTaskListener {

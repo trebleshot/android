@@ -81,11 +81,11 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
-                && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
-                && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                && data.hasExtra(AddClientActivity.EXTRA_DEVICE)
+                && data.hasExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val client: UClient? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
-                val address: UClientAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val client: UClient? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE)
+                val address: UClientAddress? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
                 val text: String? = if (editText.text != null) editText.text.toString() else null
 
                 if (client != null && address != null && text != null) {
@@ -151,7 +151,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)))
         } else if (id == R.id.menu_action_share_trebleshot) {
             startActivityForResult(
-                Intent(this@TextEditorActivity, AddDeviceActivity::class.java),
+                Intent(this@TextEditorActivity, AddClientActivity::class.java),
                 REQUEST_CODE_CHOOSE_DEVICE
             )
         } else if (id == R.id.menu_action_show_as_qr_code) {

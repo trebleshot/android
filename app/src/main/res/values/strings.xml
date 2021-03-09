@@ -560,10 +560,10 @@
     <string name="transfer_history">Transfer History</string>
     <string name="text_appLogo">App logo</string>
     <string name="help_shareFilesNotice">Let\'s share those files</string>
-    <string name="text_chooseDevice">Choose Device</string>
+    <string name="text_chooseClient">Choose Client</string>
     <string name="butn_showAll">Show All</string>
-    <string name="text_onlineDevices">Online Devices</string>
-    <string name="text_addNewDevice">Add New Device</string>
+    <string name="text_onlineClients">Online Clients</string>
+    <string name="text_addNewClient">Add New Client</string>
     <string name="butn_generateQrCode">Generate QR Code</string>
     <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
     <string name="help_qrCodePosition">QR Code will appear here!</string>

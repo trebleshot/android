@@ -128,11 +128,11 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         if (requestCode == REQUEST_CODE_CHOOSE_DEVICE) {
             if (resultCode == RESULT_CANCELED && addingInitialDevice) {
                 // TODO: 2/25/21 Because the user cancelled choosing the initial device, we assume the task is cancelled, so remove it.
-            } else if (resultCode == RESULT_OK && data != null && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE)
-                && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+            } else if (resultCode == RESULT_OK && data != null && data.hasExtra(AddClientActivity.EXTRA_DEVICE)
+                && data.hasExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
             ) {
-                val client: UClient? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE)
-                val address: UClientAddress? = data.getParcelableExtra(AddDeviceActivity.EXTRA_DEVICE_ADDRESS)
+                val client: UClient? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE)
+                val address: UClientAddress? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
                 val transfer = transfer
 
                 if (client != null && address != null && transfer != null) {
@@ -181,7 +181,7 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     }
 
     private fun startConnectionManagerActivity() {
-        startActivityForResult(Intent(this, AddDeviceActivity::class.java), REQUEST_CODE_CHOOSE_DEVICE)
+        startActivityForResult(Intent(this, AddClientActivity::class.java), REQUEST_CODE_CHOOSE_DEVICE)
     }
 
     companion object {

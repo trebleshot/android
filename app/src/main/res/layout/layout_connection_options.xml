@@ -16,7 +16,8 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -25,132 +26,140 @@
             type="android.view.View.OnClickListener" />
     </data>
 
-    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideStart"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/short_content_width_padding"
-                android:layout_marginRight="@dimen/short_content_width_padding">
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/short_content_width_padding_border" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/clientsButton"
-                    style="?borderlessButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:padding="3dp"
-                    android:onClick="@{clickListener}"
-                    android:text="@string/butn_showAll" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/short_content_width_padding_border" />
 
-                <TextView
-                    style="@style/CondensedTitleStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/clientsButton"
-                    android:layout_toLeftOf="@id/clientsButton"
-                    android:text="@string/text_onlineDevices" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/clientsButton"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:onClick="@{clickListener}"
+                android:text="@string/butn_showAll"
+                app:layout_constraintEnd_toStartOf="@id/guideEnd"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/CondensedTitleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/text_onlineClients"
+                app:layout_constraintBottom_toBottomOf="@id/clientsButton"
+                app:layout_constraintStart_toEndOf="@id/guideStart"
+                app:layout_constraintTop_toTopOf="@id/clientsButton" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingLeft="@dimen/short_content_width_padding_border"
-                android:paddingRight="@dimen/short_content_width_padding_border" />
+                android:paddingRight="@dimen/short_content_width_padding_border"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/clientsButton" />
 
             <include
-                layout="@layout/layout_empty_content"
                 android:id="@+id/emptyView"
-                android:layout_width="match_parent"
-                android:layout_height="220dp" />
+                layout="@layout/layout_empty_content"
+                android:layout_width="0dp"
+                android:layout_height="220dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/clientsButton" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/onlineListBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="recyclerView, emptyView" />
 
             <TextView
+                android:id="@+id/textView3"
                 style="@style/CondensedTitleStyle"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="@dimen/short_content_width_padding"
-                android:layout_marginRight="@dimen/short_content_width_padding"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_addNewDevice" />
+                android:layout_margin="8dp"
+                android:text="@string/text_addNewClient"
+                app:layout_constraintStart_toStartOf="@id/guideStart"
+                app:layout_constraintTop_toBottomOf="@id/onlineListBarrier" />
 
-            <LinearLayout
-                android:id="@+id/actionsContainer"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/generateQrCodeButton"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/short_content_width_padding_border"
-                android:paddingRight="@dimen/short_content_width_padding_border">
+                android:layout_margin="8dp"
+                android:onClick="@{clickListener}"
+                android:text="@string/butn_generateQrCode"
+                app:layout_constraintEnd_toStartOf="@id/scanQrCodeButton"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@id/guideStart"
+                app:layout_constraintTop_toBottomOf="@id/textView3"
+                app:srcCompat="@drawable/ic_qrcode_white_24dp" />
 
-                <Button
-                    android:id="@+id/generateQrCodeButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="8dp"
-                    app:srcCompat="@drawable/ic_qrcode_white_24dp"
-                    android:onClick="@{clickListener}"
-                    android:text="@string/butn_generateQrCode" />
-
-                <View
-                    android:layout_width="@dimen/short_content_width_padding_between"
-                    android:layout_height="match_parent" />
-
-                <Button
-                    android:id="@+id/scanQrCodeButton"
-                    style="?materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="8dp"
-                    android:onClick="@{clickListener}"
-                    android:text="@string/text_scanQrCode" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:paddingTop="36dp"
-                android:orientation="vertical"
-                android:paddingBottom="8dp"
-                android:paddingLeft="@dimen/short_content_width_padding"
-                android:paddingRight="@dimen/short_content_width_padding"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/scanQrCodeButton"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center">
+                android:layout_margin="8dp"
+                android:onClick="@{clickListener}"
+                android:text="@string/text_scanQrCode"
+                app:layout_constraintEnd_toStartOf="@id/guideEnd"
+                app:layout_constraintStart_toEndOf="@id/generateQrCodeButton"
+                app:layout_constraintTop_toBottomOf="@id/textView3" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/TextAppearance.Secondary"
-                    android:text="@string/help_addDeviceUsingIpAddressHelp"
-                    android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/help_addDeviceUsingIpAddressHelp"
+                app:layout_constraintBottom_toTopOf="@+id/manualAddressButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/generateQrCodeButton" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/manualAddressButton"
-                    style="?materialButtonOutlinedStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{clickListener}"
-                    android:text="@string/butn_enterAddress" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manualAddressButton"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:onClick="@{clickListener}"
+                android:text="@string/butn_enterAddress"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideEnd"
+                app:layout_constraintStart_toEndOf="@id/guideStart"
+                app:layout_constraintTop_toBottomOf="@id/scanQrCodeButton" />
 
-            </LinearLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>
