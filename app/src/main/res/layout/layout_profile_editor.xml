@@ -21,6 +21,12 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="pickPhotoClickListener"
+            type="android.view.View.OnClickListener" />
+
         <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel" />
@@ -30,30 +36,27 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:gravity="center">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineMiddle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.5"/>
+        android:gravity="center"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
         <ImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
-            android:layout_width="124dp"
-            android:layout_height="124dp"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineMiddle"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginBottom="16dp"
+            android:foreground="?roundSelector"
+            android:onClick="@{pickPhotoClickListener}"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.8"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:srcCompat="@tools:sample/avatars" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,8 +65,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guidelineMiddle"
-            app:layout_constraintVertical_bias="0.2">
+            app:layout_constraintTop_toBottomOf="@+id/picture">
 
             <EditText
                 android:id="@+id/editText"
@@ -76,6 +78,30 @@
                 android:maxLength="@integer/length_max_username"
                 android:text="@{viewModel.client.clientNickname}" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{pickPhotoClickListener}"
+            android:text="@string/butn_pick"
+            app:fabCustomSize="32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/picture"
+            app:layout_constraintEnd_toEndOf="@+id/picture"
+            app:srcCompat="@drawable/ic_outline_edit_24" />
+
+        <Button
+            android:id="@+id/button2"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{viewModel.deletePictureListener}"
+            android:text="@string/butn_remove"
+            android:visibility="@{viewModel.client.hasPicture() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/picture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/picture"
+            app:layout_constraintTop_toTopOf="@+id/picture" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -16,69 +16,51 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="@dimen/short_content_width_padding_border"
+    android:paddingRight="@dimen/short_content_width_padding_border"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.monora.uprotocol.client.android.activity.HomeActivity"
     tools:showIn="@layout/activity_main">
 
-    <LinearLayout
-        android:id="@+id/actionsContainer"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/sendLayoutButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/short_content_width_padding_border"
-        android:paddingRight="@dimen/short_content_width_padding_border">
+        android:layout_margin="8dp"
+        android:text="@string/butn_send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/receiveLayoutButton"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/sendLayoutButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            android:text="@string/butn_send" />
-
-        <View
-            android:layout_width="@dimen/short_content_width_padding_between"
-            android:layout_height="match_parent" />
-
-        <Button
-            android:id="@+id/receiveLayoutButton"
-            style="?materialButtonOutlinedStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
-            android:text="@string/butn_receive" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:gravity="center"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/receiveLayoutButton"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_above="@id/actionsContainer"
-        android:layout_alignParentTop="true">
+        android:layout_margin="8dp"
+        android:text="@string/butn_receive"
+        app:layout_constraintBottom_toBottomOf="@+id/sendLayoutButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/sendLayoutButton"
+        app:layout_constraintTop_toTopOf="@+id/sendLayoutButton" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/help_shareFilesNotice" />
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:contentDescription="@string/text_appLogo"
+        app:layout_constraintBottom_toTopOf="@+id/receiveLayoutButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_uprotocol"
+        app:tint="?colorPassive" />
 
-        <ImageView
-            android:layout_width="200dip"
-            android:layout_height="200dip"
-            app:srcCompat="@drawable/ic_uprotocol"
-            app:tint="?colorPassive"
-            android:contentDescription="@string/text_appLogo" />
 
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

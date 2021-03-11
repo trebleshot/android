@@ -17,38 +17,31 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.*
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.BuildConfig
-import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.AddClientActivity.Companion.EXTRA_CONNECTION_MODE
 import org.monora.uprotocol.client.android.activity.AddClientActivity.ConnectionMode.WaitForRequests
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.*
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException.*
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.Drawables
+import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.Updates
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
-import org.monora.uprotocol.core.protocol.Client
-import java.io.*
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
@@ -60,10 +53,19 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            Graphics.saveClientPictureLocal(applicationContext, uri)
+        }
+    }
+
     private val userProfileBinding by lazy {
         LayoutUserProfileBinding.bind(navigationView.getHeaderView(0)).also {
             it.viewModel = userProfileViewModel
             it.lifecycleOwner = this
+            it.editProfileClickListener = View.OnClickListener {
+                editProfile(userProfileViewModel, pickPhoto, this)
+            }
         }
     }
 
@@ -128,17 +130,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PICK_PROFILE_PHOTO) if (resultCode == RESULT_OK) data?.data?.let { uri ->
-            GlideApp.with(this)
-                .load(uri)
-                .centerCrop()
-                .override(200, 200)
-                .into(ProfilePictureTarget(applicationContext, userProfileViewModel.clientStatic))
-        }
-    }
-
     private fun applyAwaitingDrawerAction() {
         if (pendingMenuItemId == 0) {
             return // drawer was opened, but nothing was clicked.
@@ -177,39 +168,5 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         private val TAG = HomeActivity::class.simpleName
 
         const val REQUEST_PERMISSION_ALL = 1
-
-        const val REQUEST_PICK_PROFILE_PHOTO = 2
     }
-}
-
-class ProfilePictureTarget(
-    private val context: Context,
-    private val client: Client,
-) : CustomTarget<Drawable>() {
-    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-        try {
-            val file = context.getFileStreamPath(Drawables.clientPicturePath(client)).also {
-                if ((it.exists() && !it.delete()) || !it.createNewFile()) {
-                    throw IOException("Could not create a new file")
-                }
-            }
-
-            val bitmap = Bitmap.createBitmap(
-                AppConfig.PHOTO_SCALE_FACTOR,
-                AppConfig.PHOTO_SCALE_FACTOR,
-                Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-
-            FileOutputStream(file).use { outputStream ->
-                resource.setBounds(0, 0, canvas.width, canvas.height)
-                resource.draw(canvas)
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    override fun onLoadCleared(placeholder: Drawable?) {}
 }

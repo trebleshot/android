@@ -27,137 +27,134 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="@dimen/short_content_width_padding_border"
+        android:paddingEnd="@dimen/short_content_width_padding_border"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="?attr/actionBarSize">
 
-            <LinearLayout
-                android:paddingTop="?attr/actionBarSize"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/short_content_width_padding"
-                android:paddingRight="@dimen/short_content_width_padding"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:padding="8dp"
-                    app:srcCompat="@drawable/ic_monora_logo_no_background"
-                    app:tint="?colorControlNormal" />
-
-                <TextView
-                    style="@style/CondensedTitleStyle"
-                    android:padding="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_joinUs" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="4dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/activity_about_home_button"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:text="@string/text_org"
-                        android:drawableTop="@drawable/ic_home_white_24dp"
-                        style="?materialButtonOutlinedStyle" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/activity_about_localize_button"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:text="@string/butn_helpLocalize"
-                        android:drawableTop="@drawable/ic_translate_white_24dp"
-                        style="?materialButtonOutlinedStyle" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/activity_about_telegram_button"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:text="@string/butn_telegram"
-                        android:drawableTop="@drawable/ic_telegram_white_24dp"
-                        style="?materialButtonOutlinedStyle" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/activity_about_github_button"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:text="@string/butn_github"
-                        android:drawableTop="@drawable/ic_github_circle_white_24dp"
-                        style="?materialButtonOutlinedStyle" />
-
-                </LinearLayout>
-
-                <TextView
-                    style="@style/CondensedTitleStyle"
-                    android:padding="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_license" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:text="@string/conf_licence" />
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_monora_logo_no_background"
+                app:tint="?colorControlNormal" />
 
             <TextView
+                android:id="@+id/textView9"
                 style="@style/CondensedTitleStyle"
-                android:padding="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_contributors" />
+                android:padding="8dp"
+                android:text="@string/text_joinUs"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
-            <LinearLayout
-                android:layout_marginStart="@dimen/short_content_width_padding_between"
-                android:layout_marginEnd="@dimen/short_content_width_padding_between"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/activity_about_home_button"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawableTop="@drawable/ic_home_white_24dp"
+                android:text="@string/text_org"
+                app:layout_constraintEnd_toStartOf="@+id/activity_about_localize_button"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/activity_about_localize_button"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawableTop="@drawable/ic_translate_white_24dp"
+                android:text="@string/butn_helpLocalize"
+                app:layout_constraintBottom_toBottomOf="@+id/activity_about_home_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/activity_about_home_button"
+                app:layout_constraintTop_toTopOf="@+id/activity_about_home_button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/activity_about_telegram_button"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawableTop="@drawable/ic_telegram_white_24dp"
+                android:text="@string/butn_telegram"
+                app:layout_constraintBottom_toTopOf="@+id/textView10"
+                app:layout_constraintEnd_toEndOf="@+id/activity_about_home_button"
+                app:layout_constraintEnd_toStartOf="@+id/activity_about_github_button"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/activity_about_home_button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/activity_about_github_button"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawableTop="@drawable/ic_github_circle_white_24dp"
+                android:text="@string/butn_github"
+                app:layout_constraintBottom_toBottomOf="@+id/activity_about_telegram_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/activity_about_telegram_button"
+                app:layout_constraintTop_toTopOf="@+id/activity_about_telegram_button" />
+
+            <TextView
+                android:id="@+id/textView10"
+                style="@style/CondensedTitleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/text_license"
+                app:layout_constraintBottom_toTopOf="@+id/textView11"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/activity_about_telegram_button" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/conf_licence"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+            <TextView
+                android:id="@+id/textView12"
+                style="@style/CondensedTitleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/text_contributors"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+            <fragment
+                android:id="@+id/activity_about_contributors_fragment"
+                android:name="org.monora.uprotocol.client.android.fragment.external.ContributorsFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="400dp">
+                android:minWidth="400dp"
+                android:tag="contributorsFragment"
+                app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
-                <fragment
-                    android:id="@+id/activity_about_contributors_fragment"
-                    android:name="org.monora.uprotocol.client.android.fragment.external.ContributorsFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:tag="contributorsFragment" />
-
-            </LinearLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.appbar.MaterialToolbar

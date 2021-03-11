@@ -559,7 +559,6 @@
     <string name="mesg_updateDownloadError">Could not download your update</string>
     <string name="transfer_history">Transfer History</string>
     <string name="text_appLogo">App logo</string>
-    <string name="help_shareFilesNotice">Let\'s share those files</string>
     <string name="text_chooseClient">Choose Client</string>
     <string name="butn_showAll">Show All</string>
     <string name="text_onlineClients">Online Clients</string>
@@ -614,4 +613,5 @@
     <string name="butn_visitWebPage">Visit Web Page</string>
     <string name="text_backgroundService">Background Service</string>
     <string name="text_noClientList">Clients appear here</string>
+    <string name="butn_pick">Pick</string>
 </resources>

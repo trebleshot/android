@@ -25,12 +25,17 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
@@ -39,8 +44,8 @@ import org.monora.uprotocol.client.android.activity.ChangelogActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
 import org.monora.uprotocol.client.android.dialog.PermissionRequests
 import org.monora.uprotocol.client.android.model.Identifier
 import org.monora.uprotocol.client.android.model.Identity
@@ -51,6 +56,7 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTas
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.util.Permissions
 import org.monora.uprotocol.client.android.util.Updates
+import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import java.io.FileReader
 import java.io.IOException
 import java.util.*
@@ -354,6 +360,29 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
     private fun detachTasks() {
         val taskList: List<BaseAttachableAsyncTask> = ArrayList(attachedTaskList)
         for (task in taskList) detachTask(task)
+    }
+
+    protected fun editProfile(
+        userProfileViewModel: UserProfileViewModel,
+        pickPhoto: ActivityResultLauncher<String>,
+        lifecycleOwner: LifecycleOwner,
+    ) {
+        val binding = LayoutProfileEditorBinding.inflate(
+            LayoutInflater.from(this), null, false
+        )
+
+        val dialog = BottomSheetDialog(this)
+
+        binding.viewModel = userProfileViewModel
+        binding.lifecycleOwner = lifecycleOwner
+        binding.pickPhotoClickListener = View.OnClickListener {
+            pickPhoto.launch("image/*")
+        }
+
+        binding.executePendingBindings()
+
+        dialog.setContentView(binding.root)
+        dialog.show()
     }
 
     fun findTasksWith(identity: Identity): List<BaseAttachableAsyncTask> {

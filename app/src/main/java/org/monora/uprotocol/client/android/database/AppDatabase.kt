@@ -16,7 +16,7 @@ import org.monora.uprotocol.client.android.database.model.*
     ],
     version = 1
 )
-@TypeConverters(ClientTypeConverter::class, ClientAddressTypeConverter::class, TransferItemTypeConverter::class)
+@TypeConverters(ClientTypeConverter::class, IOTypeConverter::class, TransferItemTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
 

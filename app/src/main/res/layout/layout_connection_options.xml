@@ -16,7 +16,8 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -55,7 +56,8 @@
                 style="?borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:onClick="@{clickListener}"
                 android:text="@string/butn_showAll"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
@@ -72,17 +74,25 @@
                 app:layout_constraintStart_toEndOf="@id/guideStart"
                 app:layout_constraintTop_toTopOf="@id/clientsButton" />
 
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierClientsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="textView2, clientsButton"
+                tools:layout_editor_absoluteY="485dp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:paddingLeft="@dimen/short_content_width_padding_border"
-                android:paddingRight="@dimen/short_content_width_padding_border"
+                android:paddingLeft="@dimen/short_content_width_padding"
+                android:paddingRight="@dimen/short_content_width_padding"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/clientsButton" />
+                app:layout_constraintTop_toBottomOf="@+id/barrierClientsHeader" />
 
             <include
                 android:id="@+id/emptyView"
@@ -91,14 +101,15 @@
                 android:layout_height="220dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/clientsButton" />
+                app:layout_constraintTop_toBottomOf="@+id/barrierClientsHeader" />
 
             <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/onlineListBarrier"
+                android:id="@+id/barrierOnlineList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="recyclerView, emptyView" />
+                app:constraint_referenced_ids="recyclerView, emptyView"
+                tools:layout_editor_absoluteY="276dp" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -108,7 +119,7 @@
                 android:layout_margin="8dp"
                 android:text="@string/text_addNewClient"
                 app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/onlineListBarrier" />
+                app:layout_constraintTop_toBottomOf="@id/barrierOnlineList" />
 
             <Button
                 android:id="@+id/generateQrCodeButton"
@@ -131,9 +142,10 @@
                 android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
                 android:text="@string/text_scanQrCode"
+                app:layout_constraintBottom_toBottomOf="@+id/generateQrCodeButton"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
                 app:layout_constraintStart_toEndOf="@id/generateQrCodeButton"
-                app:layout_constraintTop_toBottomOf="@id/textView3" />
+                app:layout_constraintTop_toTopOf="@+id/generateQrCodeButton" />
 
             <TextView
                 android:id="@+id/textView4"

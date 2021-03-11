@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android.activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.*
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ import android.view.animation.AnimationUtils.*
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.edit
@@ -41,6 +43,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
+import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.Permissions
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
@@ -59,10 +62,19 @@ class WelcomeActivity : Activity() {
         layoutInflater.inflate(R.layout.layout_splash, null, false) as ViewGroup
     }
 
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            Graphics.saveClientPictureLocal(applicationContext, uri)
+        }
+    }
+
     private val profileViewBinding: LayoutProfileEditorBinding by lazy {
         LayoutProfileEditorBinding.inflate(layoutInflater, null, false).also {
             it.viewModel = userProfileViewModel
             it.lifecycleOwner = this
+            it.pickPhotoClickListener = View.OnClickListener {
+                pickPhoto.launch("image/*")
+            }
         }
     }
 

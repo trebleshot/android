@@ -53,7 +53,6 @@ open class MainFragmentStateAdapter(
         fragments.add(position, fragment)
     }
 
-    @JvmOverloads
     fun createTabs(tabLayout: TabLayout, withIcon: Boolean = true, withText: Boolean = true) {
         if (itemCount > 0) for (iterator in 0 until itemCount) {
             val item = getItem(iterator)

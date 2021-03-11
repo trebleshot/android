@@ -50,7 +50,7 @@ class UserDataRepository @Inject constructor(
     }
 
     private val preferencesListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == KEY_NICKNAME) {
+        if (key == KEY_NICKNAME || key == KEY_PICTURE_CHECKSUM) {
             client.postValue(clientStatic())
             clientNickname.postValue(clientNicknameStatic())
         }
@@ -151,7 +151,9 @@ class UserDataRepository @Inject constructor(
         blocked = false,
         local = true,
         trusted = true,
-        certificate
+        certificate,
+        clientPictureFile(),
+        clientPictureChecksum()
     )
 
     fun clientNickname(): LiveData<String> = clientNickname
@@ -166,15 +168,25 @@ class UserDataRepository @Inject constructor(
             .apply()
     }
 
+    private fun clientPictureFile() = with(context.getFileStreamPath(FILE_CLIENT_PICTURE)) {
+        if (isFile) this else null
+    }
+
+    private fun clientPictureChecksum() = preferences.getInt(KEY_PICTURE_CHECKSUM, 0)
+
     companion object {
         private const val KEY_CERTIFICATE = "certificate"
 
-        private const val KEY_NICKNAME = "client_nickname"
+        const val KEY_NICKNAME = "client_nickname"
+
+        const val KEY_PICTURE_CHECKSUM = "picture_checksum"
 
         private const val KEY_PRIVATE_KEY = "private_key"
 
         private const val KEY_PUBLIC_KEY = "public_key"
 
         private const val KEY_UUID = "uuid"
+
+        const val FILE_CLIENT_PICTURE = "localPicture"
     }
 }

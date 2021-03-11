@@ -16,41 +16,79 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<layout xmlns:bind="http://schemas.android.com/tools">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
+        <variable
+            name="editProfileClickListener"
+            type="android.view.View.OnClickListener" />
 
         <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true"
+        android:layout_margin="16dp">
 
-        <include
-            layout="@layout/layout_profile_picture"
-            bind:viewModel="@{viewModel}" />
+        <ImageView
+            android:id="@+id/picture"
+            pictureOf="@{viewModel.client}"
+            android:layout_width="@dimen/icon_size_list_big"
+            android:layout_height="@dimen/icon_size_list_big"
+            android:foreground="?roundSelector"
+            android:onClick="@{editProfileClickListener}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{editProfileClickListener}"
+            android:text="@string/butn_pick"
+            app:fabCustomSize="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_outline_edit_24"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
+            android:id="@+id/textView5"
             style="@style/TextAppearance.Primary.Big.SingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:layout_marginBottom="2dp"
+            android:text="@{viewModel.client.clientNickname}"
             android:textStyle="bold"
-            android:text="@{viewModel.client.clientNickname}" />
+            app:layout_constraintBottom_toTopOf="@+id/textView6"
+            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintStart_toEndOf="@+id/picture"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="@tools:sample/cities" />
 
         <TextView
+            android:id="@+id/textView6"
             style="@style/TextAppearance.Secondary.Small.SingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.client.versionName}" />
+            android:text="@{viewModel.client.versionName}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/textView5"
+            app:layout_constraintTop_toBottomOf="@+id/textView5"
+            tools:text="@tools:sample/full_names" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

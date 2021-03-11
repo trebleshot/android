@@ -45,11 +45,11 @@ class ApplicationGlideModule : AppGlideModule() {
         registry.append(
             ApplicationInfo::class.java,
             Drawable::class.java,
-            DrawableModelLoaderFactory(context)
+            AppIconModelLoaderFactory(context)
         )
     }
 
-    internal class DrawableDataFetcher(val context: Context, val model: ApplicationInfo) : DataFetcher<Drawable> {
+    internal class AppIconDataFetcher(val context: Context, val model: ApplicationInfo) : DataFetcher<Drawable> {
         override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Drawable>) {
             callback.onDataReady(context.packageManager.getApplicationIcon(model))
         }
@@ -71,12 +71,11 @@ class ApplicationGlideModule : AppGlideModule() {
         }
     }
 
-    internal class DrawableModelLoader(private val context: Context) : ModelLoader<ApplicationInfo?, Drawable?> {
+    internal class AppIconModelLoader(private val context: Context) : ModelLoader<ApplicationInfo, Drawable> {
         override fun buildLoadData(
-            applicationInfo: ApplicationInfo, width: Int, height: Int,
-            options: Options,
-        ): LoadData<Drawable?> {
-            return LoadData(ObjectKey(applicationInfo), DrawableDataFetcher(context, applicationInfo))
+            applicationInfo: ApplicationInfo, width: Int, height: Int, options: Options,
+        ): LoadData<Drawable> {
+            return LoadData(ObjectKey(applicationInfo), AppIconDataFetcher(context, applicationInfo))
         }
 
         override fun handles(applicationInfo: ApplicationInfo): Boolean {
@@ -84,10 +83,11 @@ class ApplicationGlideModule : AppGlideModule() {
         }
     }
 
-    internal class DrawableModelLoaderFactory(private val context: Context) :
-        ModelLoaderFactory<ApplicationInfo?, Drawable?> {
-        override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<ApplicationInfo?, Drawable?> {
-            return DrawableModelLoader(context)
+    internal class AppIconModelLoaderFactory(
+        private val context: Context,
+    ) : ModelLoaderFactory<ApplicationInfo, Drawable> {
+        override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<ApplicationInfo, Drawable> {
+            return AppIconModelLoader(context)
         }
 
         override fun teardown() {

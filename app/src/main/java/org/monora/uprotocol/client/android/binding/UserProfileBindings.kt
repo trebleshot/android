@@ -1,13 +1,12 @@
 package org.monora.uprotocol.client.android.binding
 
-import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.GlideApp
-import org.monora.uprotocol.client.android.util.Drawables
+import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import org.monora.uprotocol.core.protocol.Client
@@ -18,7 +17,7 @@ fun listenNicknameChanges(editText: EditText, viewModel: UserProfileViewModel) {
         val nickname = editable.toString().also { if (it.isEmpty()) return@addTextChangedListener }
 
         PreferenceManager.getDefaultSharedPreferences(editText.context).edit()
-            .putString("client_nickname", nickname)
+            .putString(UserDataRepository.KEY_NICKNAME, nickname)
             .apply()
     }
 }
@@ -27,11 +26,10 @@ fun listenNicknameChanges(editText: EditText, viewModel: UserProfileViewModel) {
 fun loadPictureOfClient(imageView: ImageView, client: Client) {
     try {
         val default = Graphics.createIconBuilder(imageView.context).buildRound(client.clientNickname)
-        val picture = imageView.context.getFileStreamPath(Drawables.clientPicturePath(client))
 
-        if (picture.exists() && picture.length() > 0) {
+        if (client.hasPicture()) {
             GlideApp.with(imageView)
-                .load(picture)
+                .load(client.clientPictureData)
                 .circleCrop()
                 .error(default)
                 .into(imageView)

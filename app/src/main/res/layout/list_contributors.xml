@@ -29,7 +29,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ListContentLayoutStyle">
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
         <ImageView
             android:id="@+id/visitView"
@@ -44,12 +47,13 @@
 
         <ImageView
             android:id="@+id/image"
-            style="@style/ListContentIconStyle"
             android:layout_width="@dimen/icon_size_list_normal"
             android:layout_height="@dimen/icon_size_list_normal"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginEnd="32dp"
             android:layout_marginRight="32dp"
             loadHttpImage="@{viewModel.avatarUrl}" />
@@ -64,7 +68,7 @@
             android:layout_toLeftOf="@+id/visitView"
             android:layout_toEndOf="@id/image"
             android:layout_toRightOf="@+id/image"
-            android:maxLines="3"
+            android:maxLines="1"
             android:text="@{viewModel.name}" />
 
     </RelativeLayout>

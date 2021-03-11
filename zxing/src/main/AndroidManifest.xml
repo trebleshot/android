@@ -11,8 +11,7 @@
     <uses-feature
         android:name="android.hardware.camera.front"
         android:required="false" />
-    <!-- TODO replace above two with next line after Android 4.2 -->
-    <!-- <uses-feature android:name="android.hardware.camera.any"/> -->
+    <uses-feature android:name="android.hardware.camera.any" />
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
@@ -25,7 +24,6 @@
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="false" />
-
 
     <application>
         <activity

@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientType
+import java.io.File
+import java.io.FileInputStream
 import java.security.cert.X509Certificate
 
 @Parcelize
@@ -26,6 +28,8 @@ data class UClient(
     var local: Boolean = false,
     var trusted: Boolean = false,
     var certificate: X509Certificate? = null,
+    var pictureFile: File? = null,
+    var checksum: Int = 0,
 ) : Client, Parcelable {
     override fun getClientCertificate(): X509Certificate? = certificate
 
@@ -48,6 +52,14 @@ data class UClient(
     override fun getClientVersionCode(): Int = versionCode
 
     override fun getClientVersionName(): String = versionName
+
+    override fun getClientPictureData(): ByteArray = FileInputStream(pictureFile).use {
+        it.readBytes()
+    }
+
+    override fun getClientPictureChecksum(): Int = checksum
+
+    override fun hasPicture(): Boolean = pictureFile?.isFile == true
 
     override fun isClientBlocked(): Boolean = blocked
 

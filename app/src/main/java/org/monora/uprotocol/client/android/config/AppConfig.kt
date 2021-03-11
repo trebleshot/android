@@ -30,8 +30,6 @@ object AppConfig {
 
     const val DELAY_UPDATE_CHECK = 21600
 
-    const val PHOTO_SCALE_FACTOR = 100
-
     const val WEB_SHARE_CONNECTION_MAX = 20
 
     const val ID_GROUP_WEB_SHARE = 10L

@@ -172,8 +172,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home) {
+        if (item.itemId == android.R.id.home) {
             if (canExit()) finish()
         } else {
             return super.onOptionsItemSelected(item)

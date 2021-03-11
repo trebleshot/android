@@ -48,14 +48,15 @@
         <TextView
             android:id="@+id/text1"
             style="@style/TextAppearance.Primary.Big.SingleLine"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.nickname}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
             app:layout_constraintEnd_toStartOf="@+id/overflowButton"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/guideline2"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/image"
+            app:layout_constraintTop_toTopOf="@+id/image"
             tools:text="@tools:sample/lorem" />
 
         <ImageView
@@ -66,13 +67,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_info_white_24dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="90dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
