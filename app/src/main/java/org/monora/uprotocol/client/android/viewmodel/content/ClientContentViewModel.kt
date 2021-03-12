@@ -14,7 +14,7 @@ import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.databinding.LayoutClientDetailBinding
 import org.monora.uprotocol.client.android.util.findActivity
@@ -47,7 +47,7 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
         val contentComponent = EntryPoints.get(buttonView.findActivity(), ClientContentComponent::class.java)
         clientImpl.isClientBlocked = isChecked
         GlobalScope.launch(Dispatchers.IO) {
-            contentComponent.appDatabase().clientDao().update(clientImpl)
+            contentComponent.clientRepository().update(clientImpl)
         }
     }
 
@@ -55,7 +55,7 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
         val contentComponent = EntryPoints.get(buttonView.findActivity(), ClientContentComponent::class.java)
         clientImpl.isClientTrusted = isChecked
         GlobalScope.launch(Dispatchers.IO) {
-            contentComponent.appDatabase().clientDao().update(clientImpl)
+            contentComponent.clientRepository().update(clientImpl)
         }
     }
 
@@ -76,5 +76,5 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 @EntryPoint
 @InstallIn(ActivityComponent::class)
 interface ClientContentComponent {
-    fun appDatabase(): AppDatabase
+    fun clientRepository(): ClientRepository
 }

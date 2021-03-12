@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.data.UserDataRepository
-import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -32,15 +33,16 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class MainPersistenceProvider @Inject constructor(
-    @ApplicationContext var context: Context,
-    var appDatabase: AppDatabase,
-    private var userDataRepository: UserDataRepository,
+    @ApplicationContext val context: Context,
+    private val clientRepository: ClientRepository,
+    private val userDataRepository: UserDataRepository,
+    private val transferRepository: TransferRepository,
 ) : PersistenceProvider {
     override fun approveInvalidationOfCredentials(client: Client): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun containsTransfer(groupId: Long): Boolean = appDatabase.transferDao().contains(groupId)
+    override fun containsTransfer(groupId: Long): Boolean = transferRepository.containsTransfer(groupId)
 
     override fun createClientAddressFor(address: InetAddress, clientUid: String) = UClientAddress(
         address, clientUid, System.currentTimeMillis()
@@ -75,7 +77,7 @@ class MainPersistenceProvider @Inject constructor(
     override fun getClient(): UClient = userDataRepository.clientStatic()
 
     override fun getClientFor(uid: String): UClient? {
-        return appDatabase.clientDao().get(uid)
+        return clientRepository.get(uid)
     }
 
     override fun getClientNickname(): String = userDataRepository.clientNicknameStatic()
@@ -90,7 +92,7 @@ class MainPersistenceProvider @Inject constructor(
         )
     )
 
-    override fun getFirstReceivableItem(groupId: Long) = appDatabase.transferItemDao().getReceivable(groupId)
+    override fun getFirstReceivableItem(groupId: Long) = transferRepository.getReceivable(groupId)
 
     override fun getNetworkPin(): Int {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -123,8 +125,9 @@ class MainPersistenceProvider @Inject constructor(
         groupId: Long,
         id: Long,
         type: TransferItem.Type,
-    ): TransferItem =
-        appDatabase.transferItemDao().get(groupId, id, type) ?: throw PersistenceException("Item does not exist")
+    ): TransferItem = transferRepository.getTransferItem(
+        groupId, id, type
+    ) ?: throw PersistenceException("Item does not exist")
 
     override fun openInputStream(descriptor: StreamDescriptor): InputStream {
         if (descriptor is FileStreamDescriptor) {
@@ -153,9 +156,9 @@ class MainPersistenceProvider @Inject constructor(
     override fun persist(client: Client, updating: Boolean) {
         if (client is UClient) {
             if (updating) {
-                appDatabase.clientDao().update(client)
+                clientRepository.update(client)
             } else {
-                appDatabase.clientDao().insert(client)
+                clientRepository.insert(client)
             }
         } else {
             throw UnsupportedOperationException()
@@ -164,7 +167,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun persist(clientAddress: ClientAddress) {
         if (clientAddress is UClientAddress) {
-            appDatabase.clientAddressDao().insert(clientAddress)
+            clientRepository.insert(clientAddress)
         } else {
             throw UnsupportedOperationException()
         }
@@ -172,7 +175,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun persist(clientUid: String, item: TransferItem) {
         if (item is UTransferItem) {
-            appDatabase.transferItemDao().update(item)
+            transferRepository.update(item)
         } else {
             throw UnsupportedOperationException()
         }
@@ -187,11 +190,11 @@ class MainPersistenceProvider @Inject constructor(
             }
         }
 
-        appDatabase.transferItemDao().insertAll(usableItemList)
+        transferRepository.insert(usableItemList)
     }
 
     override fun persistClientPicture(client: Client, data: ByteArray?, checksum: Int) {
-        Graphics.saveClientPicture(context, appDatabase.clientDao(), client, data, checksum)
+        Graphics.saveClientPicture(context, clientRepository, client, data, checksum)
     }
 
     override fun revokeNetworkPin() {

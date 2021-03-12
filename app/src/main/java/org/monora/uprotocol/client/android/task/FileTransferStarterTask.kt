@@ -2,7 +2,8 @@ package org.monora.uprotocol.client.android.task
 
 import android.content.Context
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.exception.ConnectionNotFoundException
@@ -21,7 +22,6 @@ import java.net.InetAddress
 class FileTransferStarterTask(
     val connectionFactory: ConnectionFactory,
     val persistenceProvider: PersistenceProvider,
-    val appDatabase: AppDatabase,
     val transfer: Transfer,
     val client: UClient,
     val type: TransferItem.Type,
@@ -60,31 +60,33 @@ class FileTransferStarterTask(
         suspend fun createFrom(
             connectionFactory: ConnectionFactory,
             persistenceProvider: PersistenceProvider,
-            appDatabase: AppDatabase,
+            clientRepository: ClientRepository,
+            transferRepository: TransferRepository,
             transferId: Long,
             clientUid: String,
             type: TransferItem.Type,
         ): FileTransferStarterTask {
-            val client = appDatabase.clientDao().get(clientUid) ?: throw DeviceNotFoundException(clientUid)
-            val transfer = appDatabase.transferDao().get(
+            val client = clientRepository.get(clientUid) ?: throw DeviceNotFoundException(clientUid)
+            val transfer = transferRepository.getTransfer(
                 transferId, client.clientUid, type
             ) ?: throw TransferNotFoundException(transferId)
-            return createFrom(connectionFactory, persistenceProvider, appDatabase, transfer, client, type)
+
+            return createFrom(connectionFactory, persistenceProvider, clientRepository, transfer, client, type)
         }
 
         @Throws(TargetNotFoundException::class, ConnectionNotFoundException::class)
         suspend fun createFrom(
             connectionFactory: ConnectionFactory,
             persistenceProvider: PersistenceProvider,
-            appDatabase: AppDatabase,
+            clientRepository: ClientRepository,
             transfer: Transfer,
             client: UClient,
             type: TransferItem.Type,
         ): FileTransferStarterTask {
-            val inetAddresses = appDatabase.clientAddressDao().getAll(client.clientUid).map { it.clientAddress }
+            val inetAddresses = clientRepository.getAddresses(client.clientUid).map { it.clientAddress }
 
             return FileTransferStarterTask(
-                connectionFactory, persistenceProvider, appDatabase, transfer, client, type, inetAddresses
+                connectionFactory, persistenceProvider, transfer, client, type, inetAddresses
             )
         }
     }

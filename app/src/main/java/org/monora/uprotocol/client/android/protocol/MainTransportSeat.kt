@@ -4,7 +4,8 @@ import android.content.Context
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.task.IndexTransferTask
 import org.monora.uprotocol.core.CommunicationBridge
@@ -18,9 +19,10 @@ import javax.inject.Inject
 
 class MainTransportSeat @Inject constructor(
     @ApplicationContext val context: Context,
-    val connectionFactory: ConnectionFactory,
-    val persistenceProvider: PersistenceProvider,
-    val appDatabase: AppDatabase,
+    private val connectionFactory: ConnectionFactory,
+    private val persistenceProvider: PersistenceProvider,
+    private val clientRepository: ClientRepository,
+    private val transferRepository: TransferRepository,
     backgroundBackend: Lazy<BackgroundBackend>,
 ) : TransportSeat {
     private val backgroundBackend by lazy {
@@ -42,8 +44,14 @@ class MainTransportSeat @Inject constructor(
         if (client !is UClient) throw UnsupportedOperationException("Expected the UClient implementation")
 
         backgroundBackend.run(
-            IndexTransferTask(
-                connectionFactory, persistenceProvider, appDatabase, groupId, jsonArray, client, hasPin
+            IndexTransferTask(connectionFactory,
+                persistenceProvider,
+                clientRepository,
+                transferRepository,
+                groupId,
+                jsonArray,
+                client,
+                hasPin
             )
         )
     }

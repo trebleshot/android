@@ -14,8 +14,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.UserDataRepository
-import org.monora.uprotocol.client.android.database.ClientDao
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.drawable.TextDrawable
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
@@ -44,11 +44,17 @@ object Graphics {
             .into(LocalPictureTarget(context))
     }
 
-    fun saveClientPicture(context: Context, clientDao: ClientDao, client: Client, data: ByteArray?, checksum: Int) {
+    fun saveClientPicture(
+        context: Context,
+        clientRepository: ClientRepository,
+        client: Client,
+        data: ByteArray?,
+        checksum: Int,
+    ) {
         if (client !is UClient) throw UnsupportedOperationException()
 
         if (data == null) {
-            clientDao.update(
+            clientRepository.update(
                 client.also {
                     it.pictureFile?.delete()
                     it.pictureFile = null
@@ -65,7 +71,7 @@ object Graphics {
             .load(data)
             .centerCrop()
             .override(200, 200)
-            .into(PictureTarget(context, clientDao, client, checksum, path))
+            .into(PictureTarget(context, clientRepository, client, checksum, path))
     }
 }
 
@@ -93,7 +99,7 @@ private fun processNewPicture(context: Context, path: String, resource: Drawable
 
 private class PictureTarget(
     private val context: Context,
-    private val clientDao: ClientDao,
+    private val clientRepository: ClientRepository,
     private val client: UClient,
     private val checksum: Int,
     private val path: String,
@@ -101,7 +107,7 @@ private class PictureTarget(
     override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
         if (processNewPicture(context, path, resource)) {
             GlobalScope.launch(Dispatchers.IO) {
-                clientDao.update(
+                clientRepository.update(
                     client.also {
                         it.pictureFile = context.getFileStreamPath(path)
                         it.checksum = checksum

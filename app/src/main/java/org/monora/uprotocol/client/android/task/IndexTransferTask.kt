@@ -26,7 +26,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -43,16 +44,17 @@ import java.util.*
 class IndexTransferTask(
     private val connectionFactory: ConnectionFactory,
     private val persistenceProvider: PersistenceProvider,
-    private val appDatabase: AppDatabase,
+    private val clientRepository: ClientRepository,
+    private val transferRepository: TransferRepository,
     private val transferId: Long,
     private val jsonIndex: String,
     private val client: UClient,
-    private val noPrompt: Boolean
+    private val noPrompt: Boolean,
 ) : AsyncTask() {
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         // Do not let it add the same transfer id again.
-        appDatabase.transferDao().get(transferId)?.run { return }
+        transferRepository.getTransfer(transferId)?.run { return }
 
         val saveLocation = Files.getApplicationDirectory(context).toString()
         val transfer = Transfer(transferId, client.clientUid, Incoming, saveLocation)
@@ -63,7 +65,7 @@ class IndexTransferTask(
         }
 
         progress.increaseTotalBy(jsonArray.length())
-        appDatabase.transferDao().insert(transfer)
+        transferRepository.insert(transfer)
 
         val itemList: MutableList<UTransferItem> = ArrayList()
 
@@ -93,7 +95,7 @@ class IndexTransferTask(
             }
         }
         if (itemList.size > 0) CoroutineScope(Dispatchers.Main).launch {
-            appDatabase.transferItemDao().insertAll(itemList)
+            transferRepository.insert(itemList)
             context.sendBroadcast(
                 Intent(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
                     .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
@@ -104,7 +106,7 @@ class IndexTransferTask(
                 try {
                     backend.run(
                         FileTransferStarterTask.createFrom(
-                            connectionFactory, persistenceProvider, appDatabase, transfer, client, Incoming
+                            connectionFactory, persistenceProvider, clientRepository, transfer, client, Incoming
                         )
                     )
                 } catch (e: Exception) {

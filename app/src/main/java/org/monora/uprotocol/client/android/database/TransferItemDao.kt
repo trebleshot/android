@@ -23,9 +23,6 @@ interface TransferItemDao {
     fun get(location: String, type: TransferItem.Type): UTransferItem?
 
     @Insert
-    fun insertAll(vararg transfers: UTransferItem)
-
-    @Insert
     fun insertAll(list: List<UTransferItem>)
 
     @Update

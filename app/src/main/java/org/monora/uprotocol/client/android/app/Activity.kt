@@ -44,6 +44,7 @@ import org.monora.uprotocol.client.android.activity.ChangelogActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
+import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
 import org.monora.uprotocol.client.android.dialog.PermissionRequests
@@ -66,6 +67,9 @@ import javax.inject.Inject
 abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     @Inject
     lateinit var backgroundBackend: BackgroundBackend
+
+    @Inject
+    lateinit var sharedTextRepository: SharedTextRepository
 
     private var amoledThemeState = false
 
@@ -302,7 +306,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                     Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
                 }.setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
                     lifecycleScope.launch {
-                        backgroundBackend.appDatabase.sharedTextDao().insert(streamObject)
+                        sharedTextRepository.insert(streamObject)
                     }
 
                     Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()

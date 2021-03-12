@@ -9,7 +9,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -25,7 +26,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BgBroadcastReceiver : BroadcastReceiver() {
     @Inject
-    lateinit var appDatabase: AppDatabase
+    lateinit var clientRepository: ClientRepository
+
+    @Inject
+    lateinit var transferRepository: TransferRepository
 
     @Inject
     lateinit var backend: BackgroundBackend
@@ -51,7 +55,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                         val task = FileTransferStarterTask.createFrom(
                             connectionFactory,
                             persistenceProvider,
-                            appDatabase,
+                            clientRepository,
                             transfer,
                             device,
                             TransferItem.Type.Incoming
@@ -117,7 +121,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                     if (task == null) GlobalScope.launch {
                         backend.run(
                             FileTransferStarterTask.createFrom(
-                                connectionFactory, persistenceProvider, appDatabase, transfer, client, type
+                                connectionFactory, persistenceProvider, clientRepository, transfer, client, type
                             )
                         )
                     } else task.operation.ongoing?.let {

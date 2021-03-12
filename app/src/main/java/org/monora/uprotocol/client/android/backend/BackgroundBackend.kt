@@ -24,7 +24,7 @@ import org.monora.uprotocol.client.android.activity.AddClientActivity
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -43,7 +43,7 @@ import javax.inject.Singleton
 @Singleton
 class BackgroundBackend @Inject constructor(
     @ApplicationContext val context: Context,
-    val appDatabase: AppDatabase,
+    private val transferRepository: TransferRepository,
     private val transportSession: TransportSession,
     private val nsdDaemon: NsdDaemon,
     private val webShareServer: WebShareServer,
@@ -274,7 +274,7 @@ class BackgroundBackend @Inject constructor(
         webShareServer.stop()
 
         GlobalScope.launch(Dispatchers.IO) {
-            appDatabase.transferDao().hideTransfersFromWeb()
+            transferRepository.hideTransfersFromWeb()
         }
 
         if (hotspotManager.unloadPreviousConfig()) {

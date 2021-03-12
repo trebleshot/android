@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
@@ -50,9 +50,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class TextEditorActivity : Activity(), SnackbarPlacementProvider {
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
     private lateinit var editText: EditText
 
     private var text: SharedText? = null
@@ -206,7 +203,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     private fun removeText() {
         text?.let {
             lifecycle.coroutineScope.launch {
-                appDatabase.sharedTextDao().delete(it)
+                sharedTextRepository.delete(it)
                 text = null
             }
         }
@@ -225,7 +222,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         }
 
         lifecycle.coroutineScope.launch {
-            if (update) appDatabase.sharedTextDao().update(item) else appDatabase.sharedTextDao().insert(item)
+            if (update) sharedTextRepository.update(item) else sharedTextRepository.insert(item)
         }
     }
 

@@ -35,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.dialog.Dialogs
@@ -60,7 +60,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTaskListener {
     @Inject
-    lateinit var appDatabase: AppDatabase
+    lateinit var transferRepository: TransferRepository
 
     private var backPressedListener: OnBackPressedListener? = null
 
@@ -109,11 +109,11 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             try {
                 val streamInfo = StreamInfo.from(this, intentData)
 
-                transferItem = appDatabase.transferItemDao().get(
+                transferItem = transferRepository.getTransferItem(
                     streamInfo.friendlyName, TransferItem.Type.Incoming
                 ) ?: throw java.lang.Exception("File is not found in the database")
 
-                transfer = appDatabase.transferDao().get(
+                transfer = transferRepository.getTransfer(
                     transferItem.itemGroupId
                 ) ?: throw TransferNotFoundException(transferItem.itemGroupId)
             } catch (e: Exception) {
@@ -191,7 +191,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             }
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
             transfer?.let {
-                appDatabase.transferItemDao().updateTemporaryFailuresAsPending(transfer.id)
+                transferRepository.updateTemporaryFailuresAsPending(transfer.id)
                 createSnackbar(R.string.mesg_retryReceivingNotice)?.show()
             }
         } else if (id == R.id.actions_transfer_receiver_show_files) {
@@ -211,7 +211,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             lifecycleScope.launch {
                 transfer?.let {
                     it.web = !it.web
-                    appDatabase.transferDao().update(it)
+                    transferRepository.update(it)
                 }
             }
         } else {

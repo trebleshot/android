@@ -33,7 +33,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -48,15 +47,10 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
-import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.ResultListener
 import org.monora.uprotocol.client.android.util.Connections
 import java.net.InetAddress
 import java.net.UnknownHostException
@@ -64,9 +58,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BarcodeScannerActivity : Activity(), SnackbarPlacementProvider {
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
     private val dismissListener = DialogInterface.OnDismissListener { updateState() }
 
     private lateinit var barcodeView: DecoratedBarcodeView
@@ -208,7 +199,7 @@ class BarcodeScannerActivity : Activity(), SnackbarPlacementProvider {
                         val sharedText = SharedText(0, code)
 
                         lifecycleScope.launch {
-                            appDatabase.sharedTextDao().insert(sharedText)
+                            sharedTextRepository.insert(sharedText)
                         }
 
                         Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
