@@ -35,33 +35,33 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:layout_margin="12dp">
+        android:layout_margin="12dp"
+        android:fitsSystemWindows="true">
 
         <ImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
-            android:layout_width="@dimen/icon_size_list_big"
-            android:layout_height="@dimen/icon_size_list_big"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:foreground="?roundSelector"
             android:onClick="@{editProfileClickListener}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <ImageButton
             android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/OverflowButton"
             android:onClick="@{editProfileClickListener}"
-            android:text="@string/butn_pick"
-            app:fabCustomSize="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/textView5"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintTop_toTopOf="@+id/textView5"
             app:srcCompat="@drawable/ic_outline_edit_24"
-            tools:srcCompat="@tools:sample/avatars"/>
+            tools:srcCompat="@drawable/ic_outline_edit_24" />
 
         <TextView
             android:id="@+id/textView5"
@@ -70,26 +70,12 @@
             android:layout_height="wrap_content"
             android:text="@{viewModel.client.clientNickname}"
             android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.3"
-            app:layout_constraintBottom_toTopOf="@+id/textView6"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintStart_toEndOf="@+id/picture"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="@tools:sample/cities" />
-
-        <TextView
-            android:id="@+id/textView6"
-            style="@style/TextAppearance.Secondary.Small.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.client.versionName}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/textView5"
-            tools:text="@tools:sample/full_names" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture"
+            tools:text="@tools:sample/cities" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -41,6 +41,8 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:fitsSystemWindows="true"
+            android:paddingStart="@dimen/short_content_width_padding_border"
+            android:paddingEnd="@dimen/short_content_width_padding_border"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

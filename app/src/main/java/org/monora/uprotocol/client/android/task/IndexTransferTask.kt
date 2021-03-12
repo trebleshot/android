@@ -102,11 +102,6 @@ class IndexTransferTask(
         }
         if (itemList.size > 0) CoroutineScope(Dispatchers.Main).launch {
             transferRepository.insert(itemList)
-            context.sendBroadcast(
-                Intent(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
-                    .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
-                    .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
-            )
 
             if (noPrompt) {
                 try {

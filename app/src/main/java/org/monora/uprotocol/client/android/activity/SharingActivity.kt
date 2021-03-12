@@ -22,6 +22,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -36,10 +37,12 @@ import androidx.lifecycle.liveData
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.io.StreamInfo
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -55,9 +58,16 @@ import kotlin.random.Random
 class SharingActivity : Activity() {
     private val sharingActivityViewModel: SharingActivityViewModel by viewModels()
 
+    private val pickClient = registerForActivityResult(PickClient()) {
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
+        setTitle(R.string.butn_shareWithTrebleshot)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
 
         val action: String? = intent?.action
 
@@ -97,10 +107,12 @@ class SharingActivity : Activity() {
             val groupPreparing: Group = findViewById(R.id.groupPreparing)
             val listParent: View = findViewById(R.id.listParent)
             val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+            val fab: FloatingActionButton = findViewById(R.id.fab)
             val adapter = SharingContentAdapter()
 
             recyclerView.adapter = adapter
 
+            fab.setOnClickListener { pickClient.launch(PickClient.ConnectionMode.Return) }
             button.setOnClickListener { finish() }
 
             sharingActivityViewModel.consume(applicationContext, contents).also { data ->
@@ -121,6 +133,15 @@ class SharingActivity : Activity() {
                 }
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {

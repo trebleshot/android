@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pick_client.xml"
+    app:startDestination="@id/optionsFragment">
+    <fragment
+        android:id="@+id/optionsFragment"
+        android:name="org.monora.uprotocol.client.android.activity.OptionsFragment"
+        android:label="OptionsFragment" >
+        <action
+            android:id="@+id/action_optionsFragment_to_networkManagerFragment"
+            app:destination="@id/networkManagerFragment" />
+        <action
+            android:id="@+id/action_optionsFragment_to_clientsFragment"
+            app:destination="@id/clientsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/networkManagerFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.NetworkManagerFragment"
+        android:label="NetworkManagerFragment" />
+    <fragment
+        android:id="@+id/clientsFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.ClientsFragment"
+        android:label="ClientsFragment" />
+</navigation>

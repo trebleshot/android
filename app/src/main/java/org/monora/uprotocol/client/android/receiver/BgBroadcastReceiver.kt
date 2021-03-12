@@ -146,8 +146,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
 
         const val ACTION_FILE_TRANSFER = "org.monora.uprotocol.client.android.action.FILE_TRANSFER"
 
-        const val ACTION_INCOMING_TRANSFER_READY = "org.monora.uprotocol.client.android.action.INCOMING_TRANSFER_READY"
-
         const val ACTION_PIN_USED = "org.monora.uprotocol.client.android.transaction.action.PIN_USED"
 
         const val ACTION_START_TRANSFER = "org.monora.uprotocol.client.android.transaction.action.START_TRANSFER"

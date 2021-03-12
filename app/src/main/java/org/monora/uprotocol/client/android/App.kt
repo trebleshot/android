@@ -76,10 +76,10 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
         }
 
-        val migratedVersion = preferences.getInt("migrated_version", -1)
+        val migratedVersion = preferences.getInt("migrated_version", MIGRATION_NEW)
         if (migratedVersion < BuildConfig.VERSION_CODE) preferences.edit {
             putInt("migrated_version", BuildConfig.VERSION_CODE)
-            putInt("previously_migrated_version", migratedVersion)
+            if (migratedVersion > MIGRATION_NEW) putInt("previously_migrated_version", migratedVersion)
         }
     }
 
@@ -114,6 +114,8 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     companion object {
         private val TAG = App::class.simpleName
+
+        private const val MIGRATION_NEW = -1
 
         const val FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt"
     }

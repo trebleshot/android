@@ -20,6 +20,8 @@ class PickClient : ActivityResultContract<PickClient.ConnectionMode, ClientRoute
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): ClientRoute? {
+        if (resultCode != Activity.RESULT_OK) return null
+
         val client: UClient? = intent?.getParcelableExtra(EXTRA_CLIENT)
         val address: UClientAddress? = intent?.getParcelableExtra(EXTRA_CLIENT_ADDRESS)
 
