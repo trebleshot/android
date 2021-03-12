@@ -8,13 +8,13 @@ import org.monora.uprotocol.core.transfer.TransferItem
 @Dao
 interface TransferDao {
     @Query("SELECT EXISTS(SELECT * FROM transfer WHERE id == :groupId)")
-    fun contains(groupId: Long): Boolean
+    suspend fun contains(groupId: Long): Boolean
 
     @Query("SELECT * FROM transfer WHERE id = :transferId")
-    fun get(transferId: Long): Transfer?
+    suspend fun get(transferId: Long): Transfer?
 
     @Query("SELECT * FROM transfer WHERE id = :transferId AND clientUid = :clientUid AND type = :type")
-    fun get(transferId: Long, clientUid: String, type: TransferItem.Type): Transfer?
+    suspend fun get(transferId: Long, clientUid: String, type: TransferItem.Type): Transfer?
 
     @Query("SELECT * FROM transfer")
     fun getAll(): LiveData<List<Transfer>>
@@ -23,7 +23,7 @@ interface TransferDao {
     suspend fun hideTransfersFromWeb()
 
     @Insert
-    fun insert(transfer: Transfer)
+    suspend fun insert(transfer: Transfer)
 
     @Update
     suspend fun update(transfer: Transfer)

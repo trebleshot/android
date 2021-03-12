@@ -37,12 +37,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
-import javax.inject.Inject
 
 /**
  * Created by: veli
@@ -55,6 +54,17 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     private var text: SharedText? = null
 
     private var backPressTime: Long = 0
+
+    private val pickClient = registerForActivityResult(PickClient()) { clientRoute ->
+        val text: String? = if (editText.text != null) editText.text.toString() else null
+
+        if (clientRoute == null || text != null) return@registerForActivityResult
+
+        if (text != null) {
+            // FIXME: 2/26/21 Improve text sharing task with coroutines
+            //runUiTask(TextShareTask(client, address, text))
+        }
+    }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,25 +80,6 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
                 }
             } else if (intent.hasExtra(EXTRA_TEXT)) {
                 editText.text.append(intent.getStringExtra(EXTRA_TEXT))
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
-                && data.hasExtra(AddClientActivity.EXTRA_DEVICE)
-                && data.hasExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
-            ) {
-                val client: UClient? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE)
-                val address: UClientAddress? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
-                val text: String? = if (editText.text != null) editText.text.toString() else null
-
-                if (client != null && address != null && text != null) {
-                    // FIXME: 2/26/21 Improve text sharing task with coroutines
-                    //runUiTask(TextShareTask(client, address, text))
-                }
             }
         }
     }
@@ -147,10 +138,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
                 .setType("text/*")
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)))
         } else if (id == R.id.menu_action_share_trebleshot) {
-            startActivityForResult(
-                Intent(this@TextEditorActivity, AddClientActivity::class.java),
-                REQUEST_CODE_CHOOSE_DEVICE
-            )
+            pickClient.launch(PickClient.ConnectionMode.Return)
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (editText.length() in 1..1200) {
                 val formatWriter = MultiFormatWriter()
@@ -186,12 +174,12 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         return true
     }
 
-    protected fun checkDeletionNeeded(): Boolean {
+    private fun checkDeletionNeeded(): Boolean {
         val editorText: String = editText.text.toString()
         return editorText.isEmpty() && !text?.text.isNullOrEmpty()
     }
 
-    protected fun checkSaveNeeded(): Boolean {
+    private fun checkSaveNeeded(): Boolean {
         val editorText: String = editText.text.toString()
         return editorText.isNotEmpty() && editorText != text?.text
     }
@@ -234,7 +222,5 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
         const val EXTRA_TEXT = "extraText"
 
         const val EXTRA_TEXT_MODEL = "extraTextModel"
-
-        const val REQUEST_CODE_CHOOSE_DEVICE = 0
     }
 }

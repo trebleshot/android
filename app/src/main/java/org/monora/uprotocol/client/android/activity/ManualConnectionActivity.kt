@@ -17,9 +17,7 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -32,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -116,12 +115,7 @@ class ManualConnectionActivity : Activity() {
                             throw UnsupportedOperationException("Hello dear")
                         }
 
-                        setResult(
-                            RESULT_OK, Intent()
-                                .putExtra(EXTRA_CLIENT, client)
-                                .putExtra(EXTRA_CLIENT_ADDRESS, clientAddress)
-                        )
-                        finish()
+                        PickClient.returnResult(this@ManualConnectionActivity, client, clientAddress)
                     } catch (e: UnknownHostException) {
                         editText.error = getString(R.string.mesg_unknownHostError)
                     } catch (e: UnauthorizedClientException) {
@@ -141,13 +135,5 @@ class ManualConnectionActivity : Activity() {
     override fun onResume() {
         super.onResume()
         editText.requestFocus()
-    }
-
-    companion object {
-        private val TAG = ManualConnectionActivity::class.simpleName
-
-        const val EXTRA_CLIENT = "extraClient"
-
-        const val EXTRA_CLIENT_ADDRESS = "extraClientAddress"
     }
 }

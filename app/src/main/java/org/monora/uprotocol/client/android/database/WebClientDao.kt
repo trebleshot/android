@@ -9,8 +9,8 @@ import org.monora.uprotocol.client.android.database.model.WebClient
 @Dao
 interface WebClientDao {
     @Query("SELECT * FROM webClient WHERE address = :address")
-    fun get(address: String): WebClient?
+    suspend fun get(address: String): WebClient?
 
     @Insert
-    fun insert(webClient: WebClient)
+    suspend fun insert(webClient: WebClient)
 }

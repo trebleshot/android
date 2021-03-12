@@ -23,7 +23,6 @@ import android.text.format.DateUtils
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
@@ -65,9 +64,9 @@ class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
             )
         }
 
-        viewModel.sharedTexts.asLiveData().observe(viewLifecycleOwner) { result ->
-            adapter.submitList(withDateSections(result))
-            emptyContentViewModel.with(recyclerView, result.isNotEmpty())
+        viewModel.sharedTexts.observe(viewLifecycleOwner) {
+            adapter.submitList(withDateSections(it))
+            emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
     }
 

@@ -3,6 +3,7 @@ package org.monora.uprotocol.client.android.protocol
 import android.content.Context
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
@@ -42,7 +43,9 @@ class MainPersistenceProvider @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun containsTransfer(groupId: Long): Boolean = transferRepository.containsTransfer(groupId)
+    override fun containsTransfer(groupId: Long): Boolean = runBlocking {
+        transferRepository.containsTransfer(groupId)
+    }
 
     override fun createClientAddressFor(address: InetAddress, clientUid: String) = UClientAddress(
         address, clientUid, System.currentTimeMillis()
@@ -76,9 +79,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getClient(): UClient = userDataRepository.clientStatic()
 
-    override fun getClientFor(uid: String): UClient? {
-        return clientRepository.get(uid)
-    }
+    override fun getClientFor(uid: String): UClient? = runBlocking { clientRepository.get(uid) }
 
     override fun getClientNickname(): String = userDataRepository.clientNicknameStatic()
 
@@ -92,7 +93,9 @@ class MainPersistenceProvider @Inject constructor(
         )
     )
 
-    override fun getFirstReceivableItem(groupId: Long) = transferRepository.getReceivable(groupId)
+    override fun getFirstReceivableItem(groupId: Long) = runBlocking {
+        transferRepository.getReceivable(groupId)
+    }
 
     override fun getNetworkPin(): Int {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -125,9 +128,9 @@ class MainPersistenceProvider @Inject constructor(
         groupId: Long,
         id: Long,
         type: TransferItem.Type,
-    ): TransferItem = transferRepository.getTransferItem(
-        groupId, id, type
-    ) ?: throw PersistenceException("Item does not exist")
+    ): TransferItem = runBlocking {
+        transferRepository.getTransferItem(groupId, id, type) ?: throw PersistenceException("Item does not exist")
+    }
 
     override fun openInputStream(descriptor: StreamDescriptor): InputStream {
         if (descriptor is FileStreamDescriptor) {
@@ -154,7 +157,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun persist(client: Client, updating: Boolean) {
-        if (client is UClient) {
+        if (client is UClient) runBlocking {
             if (updating) {
                 clientRepository.update(client)
             } else {
@@ -166,7 +169,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun persist(clientAddress: ClientAddress) {
-        if (clientAddress is UClientAddress) {
+        if (clientAddress is UClientAddress) runBlocking {
             clientRepository.insert(clientAddress)
         } else {
             throw UnsupportedOperationException()
@@ -174,7 +177,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun persist(clientUid: String, item: TransferItem) {
-        if (item is UTransferItem) {
+        if (item is UTransferItem) runBlocking {
             transferRepository.update(item)
         } else {
             throw UnsupportedOperationException()
@@ -190,10 +193,12 @@ class MainPersistenceProvider @Inject constructor(
             }
         }
 
-        transferRepository.insert(usableItemList)
+        runBlocking {
+            transferRepository.insert(usableItemList)
+        }
     }
 
-    override fun persistClientPicture(client: Client, data: ByteArray?, checksum: Int) {
+    override fun persistClientPicture(client: Client, data: ByteArray?, checksum: Int) = runBlocking {
         Graphics.saveClientPicture(context, clientRepository, client, data, checksum)
     }
 

@@ -13,37 +13,43 @@ class TransferRepository @Inject constructor(
     private val transferDao: TransferDao,
     private val transferItemDao: TransferItemDao,
 ) {
-    fun containsTransfer(groupId: Long) = transferDao.contains(groupId)
+    suspend fun containsTransfer(groupId: Long) = transferDao.contains(groupId)
 
-    fun delete(transferItem: UTransferItem) = transferItemDao.delete(transferItem)
+    suspend fun delete(transferItem: UTransferItem) = transferItemDao.delete(transferItem)
 
-    fun getReceivable(groupId: Long) = transferItemDao.getReceivable(groupId)
+    suspend fun getReceivable(groupId: Long) = transferItemDao.getReceivable(groupId)
 
-    fun getTransfer(transferId: Long): Transfer? = transferDao.get(transferId)
+    suspend fun getTransfer(transferId: Long): Transfer? = transferDao.get(transferId)
 
-    fun getTransfer(
+    suspend fun getTransfer(
         transferId: Long,
         clientUid: String,
         type: TransferItem.Type,
     ): Transfer? = transferDao.get(transferId, clientUid, type)
 
-    fun getTransferItem(groupId: Long, id: Long) = transferItemDao.get(groupId, id)
+    suspend fun getTransferItem(groupId: Long, id: Long) = transferItemDao.get(groupId, id)
 
-    fun getTransferItem(groupId: Long, id: Long, type: TransferItem.Type) = transferItemDao.get(groupId, id, type)
+    suspend fun getTransferItem(
+        groupId: Long,
+        id: Long,
+        type: TransferItem.Type,
+    ) = transferItemDao.get(groupId, id, type)
 
-    fun getTransferItem(location: String, type: TransferItem.Type) = transferItemDao.get(location, type)
+    suspend fun getTransferItem(location: String, type: TransferItem.Type) = transferItemDao.get(location, type)
 
     fun getTransfers() = transferDao.getAll()
 
     suspend fun hideTransfersFromWeb() = transferDao.hideTransfersFromWeb()
 
-    fun insert(transfer: Transfer) = transferDao.insert(transfer)
+    suspend fun insert(transfer: Transfer) = transferDao.insert(transfer)
 
-    fun insert(list: List<UTransferItem>) = transferItemDao.insertAll(list)
+    suspend fun insert(list: List<UTransferItem>) = transferItemDao.insert(list)
 
     suspend fun update(transfer: Transfer) = transferDao.update(transfer)
 
-    fun update(transferItem: UTransferItem) = transferItemDao.update(transferItem)
+    suspend fun update(transferItem: UTransferItem) = transferItemDao.update(transferItem)
 
-    fun updateTemporaryFailuresAsPending(groupId: Long) = transferItemDao.updateTemporaryFailuresAsPending(groupId)
+    suspend fun updateTemporaryFailuresAsPending(
+        groupId: Long,
+    ) = transferItemDao.updateTemporaryFailuresAsPending(groupId)
 }

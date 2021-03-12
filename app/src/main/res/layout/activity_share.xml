@@ -16,52 +16,106 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="false">
+    android:fitsSystemWindows="true">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="@dimen/short_content_width_padding"
-        android:paddingRight="@dimen/short_content_width_padding">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/listParent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ProgressBar
-            android:layout_centerInParent="true"
-            android:id="@+id/progressBar"
-            android:layout_width="48dp"
-            android:layout_height="48dp" />
-
-        <TextView
-            android:id="@+id/textMain"
-            style="@style/TextAppearance.Secondary.Big"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/progressBar"
-            android:gravity="center" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="true"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <TextView
-            android:id="@+id/organizingFilesText"
-            android:layout_marginTop="15dp"
-            style="@style/TextAppearance.Primary.Big"
-            android:text="@string/mesg_organizingFiles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_below="@id/progressBar" />
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_marginTop="15dp"
-            android:layout_below="@id/organizingFilesText"
-            android:layout_centerHorizontal="true"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/butn_cancel" />
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+            app:srcCompat="@drawable/ic_round_send_24" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    </RelativeLayout>
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/cancelButton"
+        app:layout_constraintEnd_toEndOf="@+id/organizingFilesText"
+        app:layout_constraintStart_toStartOf="@+id/organizingFilesText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/textMain"
+        style="@style/TextAppearance.Secondary.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
+        app:layout_constraintStart_toEndOf="@id/guidelineStart"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar"
+        tools:text="@tools:sample/cities" />
+
+    <TextView
+        android:id="@+id/organizingFilesText"
+        style="@style/TextAppearance.Primary.Big"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mesg_organizingFiles"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
+        app:layout_constraintStart_toEndOf="@id/guidelineStart" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/butn_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
+        app:layout_constraintStart_toEndOf="@id/guidelineStart" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupPreparing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="progressBar, textMain, organizingFilesText, cancelButton" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/short_content_width_padding_border" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/short_content_width_padding_border" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

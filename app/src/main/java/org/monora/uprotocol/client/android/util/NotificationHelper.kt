@@ -30,7 +30,6 @@ import androidx.core.app.NotificationCompat
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.*
-import org.monora.uprotocol.client.android.activity.AddClientActivity.ConnectionMode.WaitForRequests
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -68,9 +67,7 @@ class NotificationHelper(val utils: Notifications) {
         val receiveIntent: PendingIntent = PendingIntent.getActivity(
             context,
             ID_BG_SERVICE + 2,
-            Intent(context, AddClientActivity::class.java)
-                .putExtra(AddClientActivity.EXTRA_CONNECTION_MODE, WaitForRequests)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            Intent(context, PickClientActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val exitAction = NotificationCompat.Action(

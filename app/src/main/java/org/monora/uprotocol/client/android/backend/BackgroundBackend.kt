@@ -20,7 +20,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.AddClientActivity
+import org.monora.uprotocol.client.android.activity.PickClientActivity
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
@@ -141,7 +141,7 @@ class BackgroundBackend @Inject constructor(
 
     fun notifyFileRequest(device: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
         // Don't show when in the Add Device activity
-        if (foregroundActivity is AddClientActivity) return
+        if (foregroundActivity is PickClientActivity) return
 
         val activity = foregroundActivity
         val numberOfFiles = itemList.size

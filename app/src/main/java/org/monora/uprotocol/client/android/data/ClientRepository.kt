@@ -14,17 +14,17 @@ class ClientRepository @Inject constructor(
     private val clientDao: ClientDao,
     private val clientAddressDao: ClientAddressDao,
 ) {
-    fun delete(client: UClient) = clientDao.delete(client)
+    suspend fun delete(client: UClient) = clientDao.delete(client)
 
-    fun get(uid: String): UClient? = clientDao.get(uid)
+    suspend fun get(uid: String): UClient? = clientDao.get(uid)
 
     fun getAll(): LiveData<List<UClient>> = clientDao.getAll()
 
     suspend fun getAddresses(clientUid: String): List<UClientAddress> = clientAddressDao.getAll(clientUid)
 
-    fun insert(client: UClient) = clientDao.insert(client)
+    suspend fun insert(client: UClient) = clientDao.insert(client)
 
-    fun insert(address: UClientAddress) = clientAddressDao.insert(address)
+    suspend fun insert(address: UClientAddress) = clientAddressDao.insert(address)
 
-    fun update(client: UClient) = clientDao.update(client)
+    suspend fun update(client: UClient) = clientDao.update(client)
 }

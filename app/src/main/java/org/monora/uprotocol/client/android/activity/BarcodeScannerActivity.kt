@@ -47,14 +47,12 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
 import org.monora.uprotocol.client.android.util.Connections
 import java.net.InetAddress
 import java.net.UnknownHostException
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class BarcodeScannerActivity : Activity(), SnackbarPlacementProvider {
@@ -322,10 +320,6 @@ class BarcodeScannerActivity : Activity(), SnackbarPlacementProvider {
     }
 
     companion object {
-        const val EXTRA_DEVICE = "extraDevice"
-
-        const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
-
         const val REQUEST_PERMISSION_CAMERA = 1
 
         const val REQUEST_PERMISSION_LOCATION = 2

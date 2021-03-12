@@ -1,5 +1,6 @@
 package org.monora.uprotocol.client.android.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import org.monora.uprotocol.client.android.database.model.SharedText
@@ -10,7 +11,7 @@ interface SharedTextDao {
     suspend fun delete(sharedText: SharedText)
 
     @Query("SELECT * FROM sharedText ORDER BY created DESC")
-    fun getAll(): Flow<List<SharedText>>
+    fun getAll(): LiveData<List<SharedText>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(sharedText: SharedText)

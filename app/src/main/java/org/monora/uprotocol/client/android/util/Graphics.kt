@@ -44,7 +44,7 @@ object Graphics {
             .into(LocalPictureTarget(context))
     }
 
-    fun saveClientPicture(
+    suspend fun saveClientPicture(
         context: Context,
         clientRepository: ClientRepository,
         client: Client,
@@ -61,8 +61,6 @@ object Graphics {
                     it.checksum = checksum
                 }
             )
-
-            return
         }
 
         val path = UUID.randomUUID().toString()

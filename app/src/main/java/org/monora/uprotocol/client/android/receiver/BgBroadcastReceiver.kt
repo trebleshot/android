@@ -142,8 +142,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
     companion object {
         const val ACTION_CLIPBOARD = "org.monora.uprotocol.client.android.action.CLIPBOARD"
 
-        const val ACTION_DEVICE_ACQUAINTANCE = "org.monora.uprotocol.client.android.action.DEVICE_ACQUAINTANCE"
-
         const val ACTION_DEVICE_KEY_CHANGE_APPROVAL = "org.monora.uprotocol.client.android.action.DEVICE_APPROVAL"
 
         const val ACTION_FILE_TRANSFER = "org.monora.uprotocol.client.android.action.FILE_TRANSFER"

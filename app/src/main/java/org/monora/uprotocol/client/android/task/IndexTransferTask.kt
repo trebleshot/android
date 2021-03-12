@@ -22,6 +22,7 @@ import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import org.json.JSONException
 import org.monora.uprotocol.client.android.R
@@ -54,7 +55,9 @@ class IndexTransferTask(
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         // Do not let it add the same transfer id again.
-        transferRepository.getTransfer(transferId)?.run { return }
+        runBlocking {
+            transferRepository.getTransfer(transferId)
+        } ?: return
 
         val saveLocation = Files.getApplicationDirectory(context).toString()
         val transfer = Transfer(transferId, client.clientUid, Incoming, saveLocation)
@@ -65,7 +68,10 @@ class IndexTransferTask(
         }
 
         progress.increaseTotalBy(jsonArray.length())
-        transferRepository.insert(transfer)
+
+        runBlocking {
+            transferRepository.insert(transfer)
+        }
 
         val itemList: MutableList<UTransferItem> = ArrayList()
 

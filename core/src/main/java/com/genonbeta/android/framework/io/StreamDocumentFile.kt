@@ -67,7 +67,7 @@ class StreamDocumentFile(val stream: StreamInfo, uri: Uri) : DocumentFile(null, 
     }
 
     override fun getName(): String {
-        return stream.friendlyName
+        return stream.name
     }
 
     override fun getType(): String {

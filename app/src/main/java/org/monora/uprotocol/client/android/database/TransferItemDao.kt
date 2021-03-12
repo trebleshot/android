@@ -8,26 +8,26 @@ import org.monora.uprotocol.core.transfer.TransferItem
 @Dao
 interface TransferItemDao {
     @Delete
-    fun delete(transferItem: UTransferItem)
+    suspend fun delete(transferItem: UTransferItem)
 
     @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND id == :id LIMIT 1")
-    fun get(groupId: Long, id: Long): UTransferItem?
+    suspend fun get(groupId: Long, id: Long): UTransferItem?
 
     @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND state == $STATE_PENDING ORDER BY name LIMIT 1")
-    fun getReceivable(groupId: Long): UTransferItem?
+    suspend fun getReceivable(groupId: Long): UTransferItem?
 
     @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND id == :id AND type == :type LIMIT 1")
-    fun get(groupId: Long, id: Long, type: TransferItem.Type): UTransferItem?
+    suspend fun get(groupId: Long, id: Long, type: TransferItem.Type): UTransferItem?
 
     @Query("SELECT * FROM transferItem WHERE location = :location AND type = :type")
-    fun get(location: String, type: TransferItem.Type): UTransferItem?
+    suspend fun get(location: String, type: TransferItem.Type): UTransferItem?
 
     @Insert
-    fun insertAll(list: List<UTransferItem>)
+    suspend fun insert(list: List<UTransferItem>)
 
     @Update
-    fun update(transferItem: UTransferItem)
+    suspend fun update(transferItem: UTransferItem)
 
     @Query("UPDATE transferItem SET state = $STATE_PENDING WHERE groupId = :groupId")
-    fun updateTemporaryFailuresAsPending(groupId: Long)
+    suspend fun updateTemporaryFailuresAsPending(groupId: Long)
 }

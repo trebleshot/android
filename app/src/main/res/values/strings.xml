@@ -141,7 +141,7 @@
     <string name="text_noNetworkAvailable">No network available</string>
     <string name="text_newVersionAvailable">New version available!</string>
     <string name="text_folder">Folder</string>
-    <string name="mesg_organizingFiles">Organising your files</string>
+    <string name="mesg_organizingFiles">Organizing Your Files</string>
     <string name="mesg_communicating">Communicating</string>
     <string name="text_communicationService">Communication Service</string>
     <string name="text_chooserTargetService">Device choice provider</string>

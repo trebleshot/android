@@ -119,7 +119,7 @@ object Files {
         ) else DocumentFile.fromUri(context, uri, false)
     }
 
-    fun formatLength(length: Long, kilo: Boolean): String {
+    fun formatLength(length: Long, kilo: Boolean = false): String {
         val unit = if (kilo) 1000 else 1024
         if (length < unit) return "$length B"
         val expression = (ln(length.toDouble()) / ln(unit.toDouble())).toInt()
@@ -130,10 +130,11 @@ object Files {
     }
 
     fun geActionTypeToView(type: String?): String {
-        return if ("application/vnd.android.package-archive" == type && Build.VERSION.SDK_INT >= 14)
+        return if ("application/vnd.android.package-archive" == type && Build.VERSION.SDK_INT >= 14) {
             Intent.ACTION_INSTALL_PACKAGE
-        else
+        } else {
             Intent.ACTION_VIEW
+        }
     }
 
     fun getFileContentType(fileUrl: String?): String {

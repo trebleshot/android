@@ -43,27 +43,24 @@ object MimeIcons {
 
     fun loadMimeIcon(mimeType: String?): Int {
         if (DocumentsContract.Document.MIME_TYPE_DIR == mimeType) return R.drawable.ic_folder_white_24dp
+
         val resId = mimeIcons[mimeType]
+
         if (resId != null) return resId
         if (mimeType == null) return R.drawable.ic_insert_drive_file_white_24dp
-        val typeOnly = mimeType.split("/".toRegex()).toTypedArray()[0]
-        return if ("audio" == typeOnly) {
-            R.drawable.ic_music_box_white_24dp
-        } else if ("image" == typeOnly) {
-            R.drawable.ic_photo_white_24dp
-        } else if ("text" == typeOnly) {
-            R.drawable.ic_file_document_box_white_24dp
-        } else if ("video" == typeOnly) {
-            R.drawable.ic_video_white_24dp
-        } else {
-            R.drawable.ic_insert_drive_file_white_24dp
+
+        return when (mimeType.split("/".toRegex()).toTypedArray()[0]) {
+            "audio" -> R.drawable.ic_music_box_white_24dp
+            "image" -> R.drawable.ic_photo_white_24dp
+            "text" -> R.drawable.ic_file_document_box_white_24dp
+            "video" -> R.drawable.ic_video_white_24dp
+            else -> R.drawable.ic_insert_drive_file_white_24dp
         }
     }
 
     init {
-        var icon: Int
         // Package
-        icon = R.drawable.ic_android_head_white_24dp
+        var icon: Int = R.drawable.ic_android_head_white_24dp
         add("application/vnd.android.package-archive", icon)
         // Audio
         icon = R.drawable.ic_music_box_white_24dp

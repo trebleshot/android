@@ -61,15 +61,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.ShareActivity"
-            android:label="@string/text_appName"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
+            android:name="org.monora.uprotocol.client.android.activity.SharingActivity"
+            android:label="@string/text_appName">
             <intent-filter>
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT" />
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND" />
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
@@ -101,7 +97,7 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.AddClientActivity"
+            android:name="org.monora.uprotocol.client.android.activity.PickClientActivity"
             android:label="@string/text_connectDevices"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
@@ -217,11 +213,11 @@
             android:name="org.monora.uprotocol.client.android.activity.BarcodeScannerActivity"
             android:label="@string/text_scanQrCode"
             android:theme="@style/Theme.TrebleShot.BarcodeScannerActivity"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.AddClientActivity"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.PickClientActivity"
             tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.AddClientActivity" />
+                android:value="org.monora.uprotocol.client.android.activity.PickClientActivity" />
         </activity>
 
         <activity
@@ -237,11 +233,11 @@
             android:name="org.monora.uprotocol.client.android.activity.ManualConnectionActivity"
             android:label="@string/text_enterAddress"
             android:windowSoftInputMode="stateVisible"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.AddClientActivity"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.PickClientActivity"
             tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.AddClientActivity" />
+                android:value="org.monora.uprotocol.client.android.activity.PickClientActivity" />
         </activity>
 
         <activity

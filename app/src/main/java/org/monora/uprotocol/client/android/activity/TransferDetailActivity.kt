@@ -32,6 +32,7 @@ import com.genonbeta.android.framework.io.StreamInfo
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
@@ -39,7 +40,6 @@ import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.dialog.Dialogs
-import org.monora.uprotocol.client.android.exception.TransferNotFoundException
 import org.monora.uprotocol.client.android.fragment.TransferItemExplorerFragment
 import org.monora.uprotocol.client.android.fragment.TransferItemListFragment
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
@@ -50,7 +50,6 @@ import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
-import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
 
 /**
@@ -109,13 +108,16 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             try {
                 val streamInfo = StreamInfo.from(this, intentData)
 
+                // TODO: 3/12/21 Suspending transfer
+                /**
                 transferItem = transferRepository.getTransferItem(
-                    streamInfo.friendlyName, TransferItem.Type.Incoming
+                streamInfo.friendlyName, TransferItem.Type.Incoming
                 ) ?: throw java.lang.Exception("File is not found in the database")
 
                 transfer = transferRepository.getTransfer(
-                    transferItem.itemGroupId
+                transferItem.itemGroupId
                 ) ?: throw TransferNotFoundException(transferItem.itemGroupId)
+                 **/
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this, R.string.mesg_notValidTransfer, Toast.LENGTH_SHORT).show()
@@ -189,7 +191,7 @@ class TransferDetailActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             if (transfer != null) {
                 Dialogs.showRemoveDialog(this, transfer)
             }
-        } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
+        } else if (id == R.id.actions_transfer_receiver_retry_receiving) lifecycleScope.launch(Dispatchers.IO) {
             transfer?.let {
                 transferRepository.updateTemporaryFailuresAsPending(transfer.id)
                 createSnackbar(R.string.mesg_retryReceivingNotice)?.show()

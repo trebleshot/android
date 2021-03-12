@@ -19,7 +19,6 @@ package org.monora.uprotocol.client.android.activity
 
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Menu
@@ -28,15 +27,13 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.fragment.TransferMemberListFragment
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
@@ -56,6 +53,12 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         intent?.getBooleanExtra(EXTRA_ADDING_FIRST_DEVICE, false) ?: false
     }
 
+    private val pickClient = registerForActivityResult(PickClient()) { clientRoute ->
+        if (clientRoute != null) transfer?.let {
+            runUiTask(AddDeviceTask(it, clientRoute.client, clientRoute.address))
+        }
+    }
+
     private lateinit var actionButton: ExtendedFloatingActionButton
 
     private lateinit var progressBar: ProgressBar
@@ -63,8 +66,6 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
     private var colorActive = 0
 
     private var colorNormal = 0
-
-    private val filter: IntentFilter = IntentFilter(KuickDb.ACTION_DATABASE_CHANGE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +75,7 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (addingInitialDevice) {
-            startConnectionManagerActivity()
+            pickClient.launch(PickClient.ConnectionMode.Return)
         }
 
         colorActive = R.attr.colorError.attrToRes(this).resToColor(this)
@@ -86,7 +87,7 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
             if (hasTaskOf(OrganizeLocalSharingTask::class.java)) {
                 interruptAllTasks(true)
             } else {
-                startConnectionManagerActivity()
+                pickClient.launch(PickClient.ConnectionMode.Return)
             }
         }
 
@@ -123,30 +124,10 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_CHOOSE_DEVICE) {
-            if (resultCode == RESULT_CANCELED && addingInitialDevice) {
-                // TODO: 2/25/21 Because the user cancelled choosing the initial device, we assume the task is cancelled, so remove it.
-            } else if (resultCode == RESULT_OK && data != null && data.hasExtra(AddClientActivity.EXTRA_DEVICE)
-                && data.hasExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
-            ) {
-                val client: UClient? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE)
-                val address: UClientAddress? = data.getParcelableExtra(AddClientActivity.EXTRA_DEVICE_ADDRESS)
-                val transfer = transfer
-
-                if (client != null && address != null && transfer != null) {
-                    runUiTask(AddDeviceTask(transfer, client, address))
-                }
-            }
-        }
-    }
-
     override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
         super.onAttachTasks(taskList)
         for (task in taskList) if (task is AddDeviceTask) task.anchor = this
     }
-
 
     override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
         if (task is AddDeviceTask) {
@@ -180,10 +161,6 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         actionButton.backgroundTintList = ColorStateList.valueOf(if (showing) colorActive else colorNormal)
     }
 
-    private fun startConnectionManagerActivity() {
-        startActivityForResult(Intent(this, AddClientActivity::class.java), REQUEST_CODE_CHOOSE_DEVICE)
-    }
-
     companion object {
         private val TAG = TransferMemberActivity::class.simpleName
 
@@ -192,8 +169,6 @@ class TransferMemberActivity : Activity(), SnackbarPlacementProvider, AttachedTa
         const val EXTRA_TRANSFER = "extraTransfer"
 
         const val EXTRA_ADDING_FIRST_DEVICE = "extraAddingFirstDevice"
-
-        const val REQUEST_CODE_CHOOSE_DEVICE = 0
 
         fun startInstance(context: Context, transfer: Transfer, addingFirstDevice: Boolean) {
             context.startActivity(

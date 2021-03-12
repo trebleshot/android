@@ -1,5 +1,6 @@
 package org.monora.uprotocol.client.android.data
 
+import androidx.lifecycle.LiveData
 import org.monora.uprotocol.client.android.database.SharedTextDao
 import org.monora.uprotocol.client.android.database.model.SharedText
 import javax.inject.Inject
@@ -11,7 +12,7 @@ class SharedTextRepository @Inject constructor(
 ) {
     suspend fun delete(sharedText: SharedText) = sharedTextDao.delete(sharedText)
 
-    fun getSharedTexts() = sharedTextDao.getAll()
+    fun getSharedTexts(): LiveData<List<SharedText>> = sharedTextDao.getAll()
 
     suspend fun insert(sharedText: SharedText) = sharedTextDao.insert(sharedText)
 

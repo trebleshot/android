@@ -34,13 +34,11 @@ import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.AddClientActivity.AvailableFragment.*
-import org.monora.uprotocol.client.android.activity.AddClientActivity.Companion.ACTION_CHANGE_FRAGMENT
-import org.monora.uprotocol.client.android.activity.AddClientActivity.Companion.EXTRA_FRAGMENT_ENUM
+import org.monora.uprotocol.client.android.activity.PickClientActivity.AvailableFragment.*
+import org.monora.uprotocol.client.android.activity.PickClientActivity.Companion.ACTION_CHANGE_FRAGMENT
+import org.monora.uprotocol.client.android.activity.PickClientActivity.Companion.EXTRA_FRAGMENT_ENUM
+import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutConnectionOptionsBinding
 import org.monora.uprotocol.client.android.fragment.ClientsFragment
 import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
@@ -49,13 +47,9 @@ import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import java.util.*
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddClientActivity : Activity(), SnackbarPlacementProvider {
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
+class PickClientActivity : Activity(), SnackbarPlacementProvider {
     private val filter = IntentFilter()
 
     private lateinit var networkManagerFragment: NetworkManagerFragment
@@ -64,12 +58,22 @@ class AddClientActivity : Activity(), SnackbarPlacementProvider {
 
     private lateinit var optionsFragment: OptionsFragment
 
+    private val pickClient = registerForActivityResult(PickClient()) { clientRoute ->
+        if (clientRoute == null) return@registerForActivityResult
+
+        if (PickClient.ConnectionMode.Return == connectionMode) {
+            PickClient.returnResult(this, clientRoute.client, clientRoute.address)
+        } else if (PickClient.ConnectionMode.WaitForRequests == connectionMode) {
+            createSnackbar(R.string.mesg_completing).show()
+        }
+    }
+
     private val toolbar: Toolbar by lazy {
         findViewById(R.id.toolbar)
     }
 
     private val connectionMode by lazy {
-        intent?.getSerializableExtra(EXTRA_CONNECTION_MODE) ?: ConnectionMode.Return
+        intent?.getSerializableExtra(PickClient.EXTRA_CONNECTION_MODE) ?: PickClient.ConnectionMode.WaitForRequests
     }
 
     private val selfReceiver = object : BroadcastReceiver() {
@@ -77,15 +81,11 @@ class AddClientActivity : Activity(), SnackbarPlacementProvider {
             if (ACTION_CHANGE_FRAGMENT == intent.action && intent.hasExtra(EXTRA_FRAGMENT_ENUM)) {
                 val fragmentEnum = intent.getSerializableExtra(EXTRA_FRAGMENT_ENUM) as AvailableFragment?
                 setFragment(fragmentEnum)
-            } else if (BgBroadcastReceiver.ACTION_DEVICE_ACQUAINTANCE == intent.action) {
-                val device: UClient? = intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_DEVICE)
-                val address: UClientAddress? = intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_DEVICE_ADDRESS)
-                if (device != null && address != null) handleResult(device, address)
             } else if (BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY == intent.action
                 && intent.hasExtra(BgBroadcastReceiver.EXTRA_TRANSFER)
             ) {
                 TransferDetailActivity.startInstance(
-                    this@AddClientActivity,
+                    this@PickClientActivity,
                     intent.getParcelableExtra(BgBroadcastReceiver.EXTRA_TRANSFER)
                 )
                 finish()
@@ -109,7 +109,6 @@ class AddClientActivity : Activity(), SnackbarPlacementProvider {
         clientsFragment = factory.instantiate(classLoader, ClientsFragment::class.java.name) as ClientsFragment
 
         filter.addAction(ACTION_CHANGE_FRAGMENT)
-        filter.addAction(BgBroadcastReceiver.ACTION_DEVICE_ACQUAINTANCE)
         filter.addAction(BgBroadcastReceiver.ACTION_INCOMING_TRANSFER_READY)
     }
 
@@ -122,22 +121,6 @@ class AddClientActivity : Activity(), SnackbarPlacementProvider {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(selfReceiver)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && data != null) {
-            when (requestCode) {
-                REQUEST_BARCODE_SCAN -> handleResult(
-                    data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE),
-                    data.getParcelableExtra(BarcodeScannerActivity.EXTRA_DEVICE_ADDRESS)
-                )
-                REQUEST_IP_DISCOVERY -> handleResult(
-                    data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT),
-                    data.getParcelableExtra(ManualConnectionActivity.EXTRA_CLIENT_ADDRESS)
-                )
-            }
-        }
     }
 
     override fun onBackPressed() {
@@ -180,40 +163,19 @@ class AddClientActivity : Activity(), SnackbarPlacementProvider {
         )
     }
 
-    fun getShowingFragmentId(): AvailableFragment {
-        val fragment = getShowingFragment()
-        if (fragment is NetworkManagerFragment)
-            return GenerateQrCode
-        else if (fragment is ClientsFragment)
-            return AllDevices
-
-        // Probably OptionsFragment
-        return Options
-    }
-
     private fun getShowingFragment(): Fragment? {
         return supportFragmentManager.findFragmentById(R.id.activity_connection_establishing_content_view)
-    }
-
-    private fun handleResult(client: UClient?, address: UClientAddress?) {
-        if (client == null || address == null) return
-
-        if (ConnectionMode.Return == connectionMode) {
-            returnResult(this, client, address)
-        } else if (ConnectionMode.WaitForRequests == connectionMode) {
-            createSnackbar(R.string.mesg_completing).show()
-        }
     }
 
     fun setFragment(fragment: AvailableFragment?) {
         val activeFragment = getShowingFragment()
         val fragmentCandidate = when (fragment) {
             EnterAddress -> {
-                startManualConnectionActivity()
+                pickClient.launch(PickClient.ConnectionMode.Manual)
                 return
             }
             ScanQrCode -> {
-                startCodeScanner()
+                pickClient.launch(PickClient.ConnectionMode.Barcode)
                 return
             }
             GenerateQrCode -> networkManagerFragment
@@ -237,45 +199,14 @@ class AddClientActivity : Activity(), SnackbarPlacementProvider {
         }
     }
 
-    private fun startCodeScanner() {
-        startActivityForResult(Intent(this, BarcodeScannerActivity::class.java), REQUEST_BARCODE_SCAN)
-    }
-
-    protected fun startManualConnectionActivity() {
-        startActivityForResult(Intent(this, ManualConnectionActivity::class.java), REQUEST_IP_DISCOVERY)
-    }
-
     enum class AvailableFragment {
         Options, GenerateQrCode, AllDevices, ScanQrCode, EnterAddress
-    }
-
-    enum class ConnectionMode {
-        WaitForRequests, Return
     }
 
     companion object {
         const val ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CHANGE_FRAGMENT"
 
         const val EXTRA_FRAGMENT_ENUM = "extraFragmentEnum"
-
-        const val EXTRA_DEVICE = "extraDevice"
-
-        const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
-
-        const val EXTRA_CONNECTION_MODE = "extraConnectionMode"
-
-        const val REQUEST_BARCODE_SCAN = 100
-
-        const val REQUEST_IP_DISCOVERY = 110
-
-        fun returnResult(activity: android.app.Activity, client: UClient?, address: UClientAddress?) {
-            activity.setResult(
-                RESULT_OK, Intent()
-                    .putExtra(EXTRA_DEVICE, client)
-                    .putExtra(EXTRA_DEVICE_ADDRESS, address)
-            )
-            activity.finish()
-        }
     }
 }
 
@@ -320,7 +251,7 @@ class OptionsFragment : Fragment(R.layout.layout_connection_options) {
         }
     }
 
-    private fun updateFragment(fragment: AddClientActivity.AvailableFragment) {
+    private fun updateFragment(fragment: PickClientActivity.AvailableFragment) {
         context?.sendBroadcast(Intent(ACTION_CHANGE_FRAGMENT).putExtra(EXTRA_FRAGMENT_ENUM, fragment))
     }
 }
