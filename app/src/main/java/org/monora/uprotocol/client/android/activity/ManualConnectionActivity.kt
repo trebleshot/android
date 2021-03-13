@@ -82,8 +82,9 @@ class ManualConnectionActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_manual_address_connection)
+        setContentView(R.layout.activity_manual_connection)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         findViewById<View>(R.id.confirm_button).setOnClickListener {
             val address = editText.text?.trim()?.toString()
 

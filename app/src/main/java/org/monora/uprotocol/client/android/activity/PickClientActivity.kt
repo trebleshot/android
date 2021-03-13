@@ -18,6 +18,7 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -53,6 +54,10 @@ class PickClientActivity : Activity() {
         intent?.getSerializableExtra(PickClient.EXTRA_CONNECTION_MODE) ?: PickClient.ConnectionMode.WaitForRequests
     }
 
+    private val navController by lazy {
+        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,18 +66,29 @@ class PickClientActivity : Activity() {
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navHostFragment.navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            return navController.popBackStack()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
 
 @AndroidEntryPoint
-class OptionsFragment : Fragment(R.layout.layout_connection_options) {
+class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
     private val clientsViewModel: ClientsViewModel by viewModels()
 
     private val emptyContentViewModel: EmptyContentViewModel by viewModels()
+
+    private val pickClient = registerForActivityResult(PickClient()) {
+        if (it == null) return@registerForActivityResult
+        PickClient.returnResult(requireActivity(), it)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,17 +109,13 @@ class OptionsFragment : Fragment(R.layout.layout_connection_options) {
         connectionOptions.clickListener = View.OnClickListener { v: View ->
             when (v.id) {
                 R.id.clientsButton -> findNavController().navigate(
-                    OptionsFragmentDirections.actionOptionsFragmentToClientsFragment()
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToClientsFragment()
                 )
                 R.id.generateQrCodeButton -> findNavController().navigate(
-                    OptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment()
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment()
                 )
-                R.id.manualAddressButton -> {
-                }
-                R.id.scanQrCodeButton -> {
-                }
-                else -> {
-                }
+                R.id.manualAddressButton -> pickClient.launch(PickClient.ConnectionMode.Manual)
+                R.id.scanQrCodeButton -> pickClient.launch(PickClient.ConnectionMode.Barcode)
             }
         }
 

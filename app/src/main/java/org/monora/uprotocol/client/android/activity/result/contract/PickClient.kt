@@ -35,9 +35,13 @@ class PickClient : ActivityResultContract<PickClient.ConnectionMode, ClientRoute
     companion object {
         private const val EXTRA_CLIENT = "extraClient"
 
-        private const val EXTRA_CLIENT_ADDRESS = "extraClient"
+        private const val EXTRA_CLIENT_ADDRESS = "extraClientAddress"
 
         const val EXTRA_CONNECTION_MODE = "extraConnectionMode"
+
+        fun returnResult(activity: Activity, clientRoute: ClientRoute) {
+            returnResult(activity, clientRoute.client, clientRoute.address)
+        }
 
         fun returnResult(activity: Activity, client: UClient?, address: UClientAddress?) {
             activity.setResult(
