@@ -614,4 +614,5 @@
     <string name="text_backgroundService">Background Service</string>
     <string name="text_noClientList">Clients appear here</string>
     <string name="butn_pick">Pick</string>
+    <string name="text_allClients">All Clients</string>
 </resources>

@@ -6,20 +6,28 @@
     <fragment
         android:id="@+id/optionsFragment"
         android:name="org.monora.uprotocol.client.android.activity.OptionsFragment"
-        android:label="OptionsFragment" >
+        android:label="@string/text_chooseClient">
         <action
             android:id="@+id/action_optionsFragment_to_networkManagerFragment"
-            app:destination="@id/networkManagerFragment" />
+            app:destination="@id/networkManagerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_optionsFragment_to_clientsFragment"
-            app:destination="@id/clientsFragment" />
+            app:destination="@id/clientsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/networkManagerFragment"
         android:name="org.monora.uprotocol.client.android.fragment.NetworkManagerFragment"
-        android:label="NetworkManagerFragment" />
+        android:label="@string/butn_generateQrCode" />
     <fragment
         android:id="@+id/clientsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ClientsFragment"
-        android:label="ClientsFragment" />
+        android:label="@string/text_allClients" />
 </navigation>

@@ -17,25 +17,20 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.IntentFilter
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.transition.TransitionManager
-import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutConnectionOptionsBinding
-import org.monora.uprotocol.client.android.fragment.ClientsFragment
-import org.monora.uprotocol.client.android.fragment.NetworkManagerFragment
 import org.monora.uprotocol.client.android.fragment.OnlineClientsFragment
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
@@ -43,12 +38,6 @@ import java.util.*
 
 @AndroidEntryPoint
 class PickClientActivity : Activity() {
-    private lateinit var networkManagerFragment: NetworkManagerFragment
-
-    private lateinit var clientsFragment: ClientsFragment
-
-    private lateinit var optionsFragment: OptionsFragment
-
     private val pickClient = registerForActivityResult(PickClient()) { clientRoute ->
         if (clientRoute == null) return@registerForActivityResult
 
@@ -60,10 +49,6 @@ class PickClientActivity : Activity() {
         }
     }
 
-    private val toolbar: Toolbar by lazy {
-        findViewById(R.id.toolbar)
-    }
-
     private val connectionMode by lazy {
         intent?.getSerializableExtra(PickClient.EXTRA_CONNECTION_MODE) ?: PickClient.ConnectionMode.WaitForRequests
     }
@@ -73,15 +58,13 @@ class PickClientActivity : Activity() {
 
         setResult(RESULT_CANCELED)
         setContentView(R.layout.activity_pick_client)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val factory = supportFragmentManager.fragmentFactory
-        optionsFragment = factory.instantiate(classLoader, OptionsFragment::class.java.name) as OptionsFragment
-        networkManagerFragment = factory.instantiate(classLoader,
-            NetworkManagerFragment::class.java.name
-        ) as NetworkManagerFragment
-        clientsFragment = factory.instantiate(classLoader, ClientsFragment::class.java.name) as ClientsFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navHostFragment.navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            title = destination.label
+        }
     }
 }
 
@@ -106,12 +89,15 @@ class OptionsFragment : Fragment(R.layout.layout_connection_options) {
                 it.orientation = GridLayoutManager.HORIZONTAL
             }
         }
+
         connectionOptions.clickListener = View.OnClickListener { v: View ->
             when (v.id) {
-                R.id.clientsButton -> {
-                }
-                R.id.generateQrCodeButton -> {
-                }
+                R.id.clientsButton -> findNavController().navigate(
+                    OptionsFragmentDirections.actionOptionsFragmentToClientsFragment()
+                )
+                R.id.generateQrCodeButton -> findNavController().navigate(
+                    OptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment()
+                )
                 R.id.manualAddressButton -> {
                 }
                 R.id.scanQrCodeButton -> {
