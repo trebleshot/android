@@ -43,8 +43,8 @@ class LicensesActivity : Activity() {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
             R.id.menu_action_info -> {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.text_help)
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.text_help)
                     .setMessage(R.string.text_thirdPartyLibrariesHelp)
                     .setPositiveButton(android.R.string.ok, null)
                     .show()

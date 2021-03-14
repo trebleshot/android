@@ -27,8 +27,4 @@
         android:layout_height="match_parent"
         android:tag="licencesListFragment" />
 
-    <View
-        style="@style/DividerStyle"
-        android:layout_gravity="bottom" />
-
 </FrameLayout>

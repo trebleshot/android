@@ -23,7 +23,9 @@ fun listenNicknameChanges(editText: EditText, viewModel: UserProfileViewModel) {
 }
 
 @BindingAdapter("pictureOf")
-fun loadPictureOfClient(imageView: ImageView, client: Client) {
+fun loadPictureOfClient(imageView: ImageView, client: Client?) {
+    if (client == null) return
+
     try {
         val default = Graphics.createIconBuilder(imageView.context).buildRound(client.clientNickname)
 

@@ -114,7 +114,9 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
                 R.id.generateQrCodeButton -> findNavController().navigate(
                     ConnectionOptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment()
                 )
-                R.id.manualAddressButton -> pickClient.launch(PickClient.ConnectionMode.Manual)
+                R.id.manualAddressButton -> findNavController().navigate(
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToManualConnectionFragment()
+                )
                 R.id.scanQrCodeButton -> pickClient.launch(PickClient.ConnectionMode.Barcode)
             }
         }

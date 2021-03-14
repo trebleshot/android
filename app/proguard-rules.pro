@@ -1,17 +1,7 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in C:\tools\adt-bundle-windows-x86_64-20131030\sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+-keep class org.spongycastle.** { *; }
 
-# Add any project specific keep options here:
+# Application classes that will be serialized/deserialized over Gson
+-keep class org.monora.uprotocol.client.android.model.** { *; }
+-keep class org.monora.uprotocol.client.android.database.model.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class mName to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-keep class * extends androidx.fragment.app.Fragment{}

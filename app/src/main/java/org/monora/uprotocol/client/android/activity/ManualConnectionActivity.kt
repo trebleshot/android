@@ -88,9 +88,9 @@ class ManualConnectionActivity : Activity() {
         findViewById<View>(R.id.confirm_button).setOnClickListener {
             val address = editText.text?.trim()?.toString()
 
-            if (address.isNullOrEmpty())
+            if (address.isNullOrEmpty()) {
                 editText.error = getString(R.string.mesg_enterValidHostAddress)
-            else {
+            } else {
                 lifecycleScope.launch {
                     button.isEnabled = false
                     progress = true

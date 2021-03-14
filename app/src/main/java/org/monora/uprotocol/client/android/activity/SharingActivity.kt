@@ -64,7 +64,7 @@ class SharingActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_share)
+        setContentView(R.layout.activity_sharing)
         setTitle(R.string.butn_shareWithTrebleshot)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
@@ -118,12 +118,12 @@ class SharingActivity : Activity() {
             sharingActivityViewModel.consume(applicationContext, contents).also { data ->
                 data.observe(this) {
                     when (it) {
-                        is SharingActivityResult.Progress -> {
+                        is SharingActivityState.Progress -> {
                             textMain.text = it.title
                             progressBar.max = it.total
                             progressBar.setProgress(it.index, true)
                         }
-                        is SharingActivityResult.Result -> {
+                        is SharingActivityState.State -> {
                             groupPreparing.visibility = View.GONE
                             listParent.visibility = View.VISIBLE
 
@@ -176,7 +176,7 @@ class SharingViewHolder(private val binding: ListSharingItemBinding) : RecyclerV
 class SharingActivityViewModel @Inject internal constructor(
     transferRepository: TransferRepository,
 ) : ViewModel() {
-    private var consumer: LiveData<SharingActivityResult>? = null
+    private var consumer: LiveData<SharingActivityState>? = null
 
     fun consume(
         context: Context, contents: List<Uri>,
@@ -186,7 +186,7 @@ class SharingActivityViewModel @Inject internal constructor(
 
         contents.forEachIndexed { index, it ->
             StreamInfo.from(context, it).runCatching {
-                emit(SharingActivityResult.Progress(index, contents.size, name))
+                emit(SharingActivityState.Progress(index, contents.size, name))
                 list.add(
                     UTransferItem(
                         index.toLong(), id, name, mimeType, size, null, uri.toString(), Outgoing
@@ -195,12 +195,12 @@ class SharingActivityViewModel @Inject internal constructor(
             }
         }
 
-        emit(SharingActivityResult.Result(id, list))
+        emit(SharingActivityState.State(id, list))
     }.also { consumer = it }
 }
 
-sealed class SharingActivityResult {
-    class Progress(val index: Int, val total: Int, val title: String) : SharingActivityResult()
+sealed class SharingActivityState {
+    class Progress(val index: Int, val total: Int, val title: String) : SharingActivityState()
 
-    class Result(val id: Long, val list: List<UTransferItem>) : SharingActivityResult()
+    class State(val id: Long, val list: List<UTransferItem>) : SharingActivityState()
 }

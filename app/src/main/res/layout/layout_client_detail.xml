@@ -58,6 +58,7 @@
                 android:layout_gravity="center_horizontal"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
+                android:textStyle="bold"
                 android:layout_marginBottom="16dp"
                 android:text="@{viewModel.nickname}" />
 

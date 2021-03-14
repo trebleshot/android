@@ -25,7 +25,7 @@
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="text_appName" translatable="false">UDrop</string>
+    <string name="text_appName" translatable="false">uprotocol client</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
     <string name="text_preferences">Preferences</string>
@@ -530,7 +530,7 @@
     <string name="mesg_noActivityFound">Found no activity that can do this action</string>
     <string name="text_devicesWithAppInstalled">TrebleShot to TrebleShot</string>
     <string name="mesg_unknownHostError">Could not resolve this host address!</string>
-    <string name="text_thirdPartyLibrariesHelp">This include both runtime and compile libraries and may not reflect
+    <string name="text_thirdPartyLibrariesHelp">This include both runtime and compile time libraries and may not reflect
         what is used in the final product!</string>
     <string name="text_uiTheme">Theme</string>
     <string name="text_darkTheme">Dark</string>

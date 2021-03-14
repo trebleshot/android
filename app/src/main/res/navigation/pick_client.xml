@@ -21,6 +21,13 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_optionsFragment_to_manualConnectionFragment"
+            app:destination="@id/manualConnectionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/networkManagerFragment"
@@ -30,4 +37,8 @@
         android:id="@+id/clientsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ClientsFragment"
         android:label="@string/text_allClients" />
+    <fragment
+        android:id="@+id/manualConnectionFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.ManualConnectionFragment"
+        android:label="@string/text_enterAddress" />
 </navigation>
