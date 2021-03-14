@@ -30,9 +30,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.ListChangelogBinding
 import org.monora.uprotocol.client.android.remote.model.Release
-import org.monora.uprotocol.client.android.util.Updates
+import org.monora.uprotocol.client.android.util.Updater
 import org.monora.uprotocol.client.android.viewholder.ChangelogViewHolder
 import org.monora.uprotocol.client.android.viewmodel.ReleasesViewModel
+import javax.inject.Inject
 
 /**
  * created by: veli
@@ -40,6 +41,9 @@ import org.monora.uprotocol.client.android.viewmodel.ReleasesViewModel
  */
 @AndroidEntryPoint
 class ChangelogFragment : Fragment(R.layout.layout_changelog) {
+    @Inject
+    lateinit var updater: Updater
+
     private val viewModel: ReleasesViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +62,7 @@ class ChangelogFragment : Fragment(R.layout.layout_changelog) {
 
     override fun onResume() {
         super.onResume()
-        Updates.declareLatestChangelogAsShown(requireActivity())
+        updater.declareLatestChangelogAsShown()
     }
 
     class ReleasesAdapter : ListAdapter<Release, ChangelogViewHolder>(ReleaseItemCallback()) {

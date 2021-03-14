@@ -39,17 +39,12 @@ import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Graphics
-import org.monora.uprotocol.client.android.util.Updates
+import org.monora.uprotocol.client.android.util.Updater
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var navigationView: NavigationView
-
-    private lateinit var drawerLayout: DrawerLayout
-
-    private var pendingMenuItemId = 0
-
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
     private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -71,6 +66,12 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
         }
     }
+
+    private lateinit var navigationView: NavigationView
+
+    private lateinit var drawerLayout: DrawerLayout
+
+    private var pendingMenuItemId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +96,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         )
 
         navigationView.setNavigationItemSelectedListener(this)
-        if (Updates.hasNewVersion(this)) {
+        if (updater.hasNewVersion()) {
             highlightUpdate()
         }
         if (BuildConfig.FLAVOR == "googlePlay") {

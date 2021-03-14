@@ -18,9 +18,7 @@
 package org.monora.uprotocol.client.android.util
 
 import android.Manifest.permission.*
-import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationManager
@@ -33,12 +31,11 @@ import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresPermission
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
 import kotlinx.coroutines.delay
@@ -69,20 +66,13 @@ class Connections(contextLocal: Context) {
 
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private val isLocationServiceEnabled: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            this.locationManager.isLocationEnabled
-        } else {
-            this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        }
-
     val p2pManager
         get() = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
 
     private var wirelessEnableRequested = false
 
     fun canAccessLocation(): Boolean {
-        return hasLocationPermission() && isLocationServiceEnabled
+        return hasLocationPermission() && isLocationServiceEnabled()
     }
 
     private fun canReadScanResults(): Boolean {
@@ -90,7 +80,7 @@ class Connections(contextLocal: Context) {
     }
 
     fun canReadWifiInfo(): Boolean {
-        return Build.VERSION.SDK_INT < 26 || hasLocationPermission() && isLocationServiceEnabled
+        return Build.VERSION.SDK_INT < 26 || hasLocationPermission() && isLocationServiceEnabled()
     }
 
     @Throws(
@@ -318,6 +308,12 @@ class Connections(contextLocal: Context) {
         return bssid?.equals(wifiInfo.bssid, ignoreCase = true) ?: (ssid == tgSsid)
     }
 
+    private fun isLocationServiceEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        this.locationManager.isLocationEnabled
+    } else {
+        this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
     /**
      * @return True if the mobile data connection is active.
      */
@@ -333,20 +329,27 @@ class Connections(contextLocal: Context) {
     }
 
     @UiThread
-    fun showConnectionOptions(activity: Activity, provider: SnackbarPlacementProvider, locationPermRequestId: Int) {
-        if (!wifiManager.isWifiEnabled)
-            provider.createSnackbar(R.string.mesg_suggestSelfHotspot)
-                ?.setAction(R.string.butn_enable) {
+    fun showConnectionOptions(
+        provider: SnackbarPlacementProvider,
+        permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
+    ) {
+        if (!wifiManager.isWifiEnabled) {
+            provider.createSnackbar(R.string.mesg_suggestSelfHotspot)?.apply {
+                setAction(R.string.butn_enable) {
                     wirelessEnableRequested = true
-                    turnOnWiFi(activity, provider)
-                }?.show()
-        else if (validateLocationPermission(activity, locationPermRequestId)) {
-            provider.createSnackbar(R.string.mesg_scanningSelfHotspot)
-                ?.setAction(R.string.butn_wifiSettings) {
-                    activity.startActivity(
+                    turnOnWiFi(provider)
+                }
+                show()
+            }
+        } else if (validateLocationPermission(provider, permissionsResultLauncher)) {
+            provider.createSnackbar(R.string.mesg_scanningSelfHotspot)?.apply {
+                setAction(R.string.butn_wifiSettings) {
+                    context.startActivity(
                         Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
-                }?.show()
+                }
+                show()
+            }
         }
     }
 
@@ -400,92 +403,92 @@ class Connections(contextLocal: Context) {
 
     fun toggleHotspot(
         backend: BackgroundBackend,
-        activity: FragmentActivity,
         provider: SnackbarPlacementProvider,
         manager: HotspotManager,
         suggestActions: Boolean,
-        locationPermRequestId: Int,
+        permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
     ) {
         if (!HotspotManager.supported || Build.VERSION.SDK_INT >= 26
-            && !validateLocationPermission(activity, locationPermRequestId)
+            && !validateLocationPermission(provider, permissionsResultLauncher)
         ) return
 
         // Android introduced permissions in 23 and this permission is not needed for local only hotspot introduced
         // in 26
         if (Build.VERSION.SDK_INT in 23..25 && !Settings.System.canWrite(context)) {
-            AlertDialog.Builder(activity)
-                .setMessage(R.string.mesg_errorHotspotPermission)
-                .setNegativeButton(R.string.butn_cancel, null)
-                .setPositiveButton(R.string.butn_settings) { _: DialogInterface?, _: Int ->
-                    activity.startActivity(
+            provider.createSnackbar(R.string.mesg_errorHotspotPermission)?.apply {
+                setAction(R.string.butn_settings) {
+                    context.startActivity(
                         Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                            .setData(Uri.parse("package:" + activity.packageName))
+                            .setData(Uri.parse("package:" + context.packageName))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 }
-                .show()
+                show()
+            }
         } else if (Build.VERSION.SDK_INT < 26 && !manager.enabled && isMobileDataActive() && suggestActions) {
-            AlertDialog.Builder(activity)
-                .setMessage(R.string.mesg_warningHotspotMobileActive)
-                .setNegativeButton(R.string.butn_cancel, null)
-                .setPositiveButton(R.string.butn_skip) { _: DialogInterface?, _: Int ->
-                    // no need to call watcher due to recycle
-                    toggleHotspot(backend, activity, provider, manager, false, locationPermRequestId)
+            provider.createSnackbar(R.string.mesg_warningHotspotMobileActive)?.apply {
+                setAction(R.string.butn_skip) {
+                    toggleHotspot(backend, provider, manager, false, permissionsResultLauncher)
                 }
-                .show()
+                show()
+            }
         } else {
             val config: WifiConfiguration? = manager.configuration
+            val state = if (manager.enabled) R.string.mesg_stoppingSelfHotspot else R.string.mesg_startingSelfHotspot
+
             if (!manager.enabled || config != null) {
-                provider.createSnackbar(
-                    if (manager.enabled) R.string.mesg_stoppingSelfHotspot else R.string.mesg_startingSelfHotspot
-                )?.show()
+                provider.createSnackbar(state)?.show()
             }
 
             backend.toggleHotspot()
         }
     }
 
-    fun turnOnWiFi(activity: Activity, provider: SnackbarPlacementProvider) {
+    fun turnOnWiFi(provider: SnackbarPlacementProvider) {
+        val startSettings = {
+            context.startActivity(
+                Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+
         when {
-            Build.VERSION.SDK_INT >= 29 -> activity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+            Build.VERSION.SDK_INT >= 29 -> startSettings()
             wifiManager.setWifiEnabled(true) -> provider.createSnackbar(R.string.mesg_turningWiFiOn)?.show()
-            else -> {
-                AlertDialog.Builder(activity)
-                    .setMessage(R.string.mesg_wifiEnableFailed)
-                    .setNegativeButton(R.string.butn_close, null)
-                    .setPositiveButton(R.string.butn_settings) { _: DialogInterface?, _: Int ->
-                        activity.startActivity(
-                            Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        )
-                    }
-                    .show()
+            else -> provider.createSnackbar(R.string.mesg_wifiEnableFailed)?.apply {
+                setAction(R.string.butn_settings) {
+                    startSettings()
+                }
+                show()
             }
         }
     }
 
-    fun validateLocationPermission(activity: Activity, permRequestId: Int): Boolean {
+    fun validateLocationPermission(
+        provider: SnackbarPlacementProvider,
+        permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
+    ): Boolean {
         if (Build.VERSION.SDK_INT < 23) return true
+
         if (!hasLocationPermission()) {
-            AlertDialog.Builder(activity)
-                .setMessage(R.string.mesg_locationPermissionRequiredSelfHotspot)
-                .setNegativeButton(R.string.butn_cancel, null)
-                .setPositiveButton(R.string.butn_allow) { _: DialogInterface?, _: Int ->
-                    activity.requestPermissions(
-                        arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION), permRequestId
-                    )
+            provider.createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)?.apply {
+                setAction(R.string.butn_allow) {
+                    permissionsResultLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
                 }
-                .show()
-        } else if (!isLocationServiceEnabled) {
-            AlertDialog.Builder(activity)
-                .setMessage(R.string.mesg_locationDisabledSelfHotspot)
-                .setNegativeButton(R.string.butn_cancel, null)
-                .setPositiveButton(R.string.butn_locationSettings) { _: DialogInterface?, _: Int ->
-                    activity.startActivity(
+                show()
+            }
+        } else if (!isLocationServiceEnabled()) {
+            provider.createSnackbar(R.string.mesg_locationDisabledSelfHotspot)?.apply {
+                setAction(R.string.butn_locationSettings) {
+                    context.startActivity(
                         Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 }
-                .show()
-        } else return true
+                show()
+            }
+        } else {
+            return true
+        }
+
         return false
     }
 

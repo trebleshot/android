@@ -23,6 +23,6 @@ import com.google.android.material.snackbar.Snackbar
  * created by: veli
  * date: 15/04/18 18:45
  */
-interface SnackbarPlacementProvider {
+fun interface SnackbarPlacementProvider {
     fun createSnackbar(resId: Int, vararg objects: Any?): Snackbar?
 }

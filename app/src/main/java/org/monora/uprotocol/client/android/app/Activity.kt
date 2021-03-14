@@ -56,7 +56,7 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachableA
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.util.Permissions
-import org.monora.uprotocol.client.android.util.Updates
+import org.monora.uprotocol.client.android.util.Updater
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import java.io.FileReader
 import java.io.IOException
@@ -70,6 +70,9 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     @Inject
     lateinit var sharedTextRepository: SharedTextRepository
+
+    @Inject
+    lateinit var updater: Updater
 
     private var amoledThemeState = false
 
@@ -316,11 +319,11 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
     }
 
     private fun checkAndShowChangelog() {
-        if (!Updates.isLatestChangelogShown(this)) {
+        if (!updater.isLatestChangelogShown()) {
             AlertDialog.Builder(this)
                 .setMessage(R.string.mesg_versionUpdatedChangelog)
                 .setPositiveButton(R.string.butn_yes) { _: DialogInterface?, _: Int ->
-                    Updates.declareLatestChangelogAsShown(this@Activity)
+                    updater.declareLatestChangelogAsShown()
                     startActivity(Intent(this@Activity, ChangelogActivity::class.java))
                 }
                 .setNeutralButton(R.string.butn_never) { _: DialogInterface?, _: Int ->
@@ -329,7 +332,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                         .apply()
                 }
                 .setNegativeButton(R.string.butn_no) { _: DialogInterface?, _: Int ->
-                    Updates.declareLatestChangelogAsShown(this@Activity)
+                    updater.declareLatestChangelogAsShown()
                     Toast.makeText(
                         this@Activity, R.string.mesg_versionUpdatedChangelogRejected,
                         Toast.LENGTH_SHORT

@@ -18,7 +18,6 @@ import com.journeyapps.barcodescanner.camera.CameraSettings
 /**
  * Encapsulates BarcodeView, ViewfinderView and status text.
  *
- *
  * To customize the UI, use BarcodeView and ViewfinderView directly.
  */
 class DecoratedBarcodeView @JvmOverloads constructor(

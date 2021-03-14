@@ -17,20 +17,27 @@
  */
 package org.monora.uprotocol.client.android.activity
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.Updates
+import org.monora.uprotocol.client.android.util.Updater
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AboutActivity : Activity() {
     private val googlePlayFlavor = BuildConfig.FLAVOR == "googlePlay"
 
@@ -62,7 +69,7 @@ class AboutActivity : Activity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if (!googlePlayFlavor && Updates.hasNewVersion(applicationContext)) {
+        if (!googlePlayFlavor && updater.hasNewVersion()) {
             menu?.findItem(R.id.actions_about_check_for_updates)?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
         return super.onPrepareOptionsMenu(menu)
@@ -77,13 +84,41 @@ class AboutActivity : Activity() {
             R.id.actions_about_third_party_licenses -> {
                 startActivity(Intent(this, LicensesActivity::class.java))
             }
-            R.id.actions_about_check_for_updates -> {
-                Updates.checkForUpdates(
-                    context = this,
-                    Updates.getDefaultUpdater(context = this),
-                    popupDialog = true,
-                    listener = null
-                )
+            R.id.actions_about_check_for_updates -> lifecycleScope.launch {
+                var snack = 0
+
+                try {
+                    val release = updater.checkForUpdates()
+
+                    if (release == null) {
+                        snack = R.string.genfw_uwg_up_to_date
+                    } else {
+                        val visitPage = DialogInterface.OnClickListener { _, _ ->
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(release.url)))
+                        }
+
+                        AlertDialog.Builder(this@AboutActivity)
+                            .setTitle(R.string.genfw_uwg_update_available)
+                            .setMessage(
+                                String.format(
+                                    getString(R.string.genfw_uwg_update_body),
+                                    release.name,
+                                    release.tag,
+                                    release.publishDate,
+                                    release.changelog
+                                )
+                            )
+                            .setPositiveButton(R.string.genfw_uwg_visit_page, visitPage)
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show()
+                    }
+                } catch (e: Exception) {
+                    snack = R.string.genfw_uwg_version_check_error
+                }
+
+                if (snack != 0) {
+                    Snackbar.make(window.decorView, snack, Snackbar.LENGTH_LONG).show()
+                }
             }
             else -> return false
         }

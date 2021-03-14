@@ -24,6 +24,5 @@
     <string name="genfw_uwg_visit_page">Visit Page</string>
     <string name="genfw_uwg_up_to_date">Great, you are up-to-date!</string>
     <string name="genfw_uwg_update_body" formatted="false">Current version: %s\nLatest version: %s\nRelease date: %s\n\n%s</string>
-    <string name="genfw_uwg_version_check_error">Could not check newer versions</string>
-    <string name="genfw_uwg_no_update">No update is available</string>
+    <string name="genfw_uwg_version_check_error">Could not check for newer versions</string>
 </resources>

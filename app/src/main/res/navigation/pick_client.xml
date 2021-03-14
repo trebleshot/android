@@ -28,6 +28,13 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_optionsFragment_to_barcodeScannerFragment"
+            app:destination="@id/barcodeScannerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/networkManagerFragment"
@@ -41,4 +48,8 @@
         android:id="@+id/manualConnectionFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ManualConnectionFragment"
         android:label="@string/text_enterAddress" />
+    <fragment
+        android:id="@+id/barcodeScannerFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.BarcodeScannerFragment"
+        android:label="@string/text_scanQrCode" />
 </navigation>

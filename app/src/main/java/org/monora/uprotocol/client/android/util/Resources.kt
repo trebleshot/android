@@ -3,12 +3,11 @@ package org.monora.uprotocol.client.android.util
 import android.content.Context
 import android.util.TypedValue
 import androidx.annotation.AnyRes
-import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 
 object Resources {
     @AnyRes
-    fun Int.attrToRes(context: Context,): Int {
+    fun Int.attrToRes(context: Context): Int {
         val typedValue = TypedValue()
         if (!context.theme.resolveAttribute(this, typedValue, true)) {
             val values = context.theme.obtainStyledAttributes(context.applicationInfo.theme, intArrayOf(this))

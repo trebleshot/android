@@ -23,10 +23,15 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
-import com.genonbeta.android.updatewithgithub.GitHubUpdater
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
-import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.util.Updates
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.util.Updater
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -39,6 +44,8 @@ import java.util.*
  */
 @HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
+    private val applicationScope = CoroutineScope(SupervisorJob())
+
     private lateinit var crashFile: File
 
     private var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
@@ -50,16 +57,18 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
 
-        if (BuildConfig.FLAVOR != "googlePlay" && !Updates.hasNewVersion(applicationContext)
-            && System.currentTimeMillis() - Updates.getCheckTime(applicationContext) >= AppConfig.DELAY_UPDATE_CHECK
-        ) {
-            val updater: GitHubUpdater = Updates.getDefaultUpdater(applicationContext)
-            Updates.checkForUpdates(applicationContext, updater, false, null)
+        val updater = EntryPoints.get(this@App, AppEntryPoint::class.java).updater()
+
+        if (updater.needsToCheckForUpdates()) applicationScope.launch {
+            try {
+                updater.checkForUpdates()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     private fun initializeSettings() {
-        //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         val hasNsdSet = preferences.contains("nsd_enabled")
         val hasReferralVersion = preferences.contains("referral_version")
@@ -76,10 +85,10 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
             putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
         }
 
-        val migratedVersion = preferences.getInt("migrated_version", MIGRATION_NEW)
+        val migratedVersion = preferences.getInt("migrated_version", MIGRATION_NONE)
         if (migratedVersion < BuildConfig.VERSION_CODE) preferences.edit {
             putInt("migrated_version", BuildConfig.VERSION_CODE)
-            if (migratedVersion > MIGRATION_NEW) putInt("previously_migrated_version", migratedVersion)
+            if (migratedVersion > MIGRATION_NONE) putInt("previously_migrated_version", migratedVersion)
         }
     }
 
@@ -115,8 +124,14 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     companion object {
         private val TAG = App::class.simpleName
 
-        private const val MIGRATION_NEW = -1
+        private const val MIGRATION_NONE = -1
 
         const val FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt"
     }
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface AppEntryPoint {
+    fun updater(): Updater
 }

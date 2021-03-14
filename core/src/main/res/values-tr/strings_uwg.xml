@@ -26,5 +26,4 @@
     <string name="genfw_uwg_up_to_date">Harika, son sürümdesin!</string>
     <string name="genfw_uwg_update_body" formatted="false">Şu anki sürüm: %s\nKullanılabilir sürüm: %s\nYayınlanma tarihi: %s\n\n%s</string>
     <string name="genfw_uwg_version_check_error">Güncellemeler denetlenemedi</string>
-    <string name="genfw_uwg_no_update">Yeni güncelleme yok</string>
 </resources>

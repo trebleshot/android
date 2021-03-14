@@ -30,14 +30,20 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
-import com.genonbeta.android.framework.app.Fragment
+import androidx.fragment.app.Fragment
+import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
@@ -65,7 +71,7 @@ import javax.inject.Inject
  * date: 11/04/18 20:53
  */
 @AndroidEntryPoint
-class NetworkManagerFragment : Fragment() {
+class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
     @Inject
     lateinit var backgroundBackend: BackgroundBackend
 
@@ -114,6 +120,20 @@ class NetworkManagerFragment : Fragment() {
 
     private var activeType: Type? = null
 
+    private val requestHotspotPermission = registerForActivityResult(RequestMultiplePermissions()) {
+        toggleHotspot()
+    }
+
+    private val requestLocationPermission = registerForActivityResult(RequestMultiplePermissions()) {
+        updateState()
+    }
+
+    private val snackbarPlacementProvider = SnackbarPlacementProvider { resId, objects ->
+        view?.let {
+            Snackbar.make(it, getString(resId, objects), Snackbar.LENGTH_LONG)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         connections = Connections(requireContext())
@@ -125,12 +145,6 @@ class NetworkManagerFragment : Fragment() {
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         intentFilter.addAction(BgBroadcastReceiver.ACTION_PIN_USED)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
-    ): View? {
-        return layoutInflater.inflate(R.layout.layout_network_manager, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -178,15 +192,6 @@ class NetworkManagerFragment : Fragment() {
         return true
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT == requestCode) {
-            toggleHotspot()
-        } else if (REQUEST_LOCATION_PERMISSION == requestCode) {
-            updateState()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         requireContext().registerReceiver(statusReceiver, intentFilter)
@@ -216,7 +221,7 @@ class NetworkManagerFragment : Fragment() {
 
     private fun toggleHotspot() {
         connections.toggleHotspot(
-            backgroundBackend, requireActivity(), this, manager, true, REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT
+            backgroundBackend, snackbarPlacementProvider, manager, true, requestHotspotPermission
         )
     }
 
@@ -224,7 +229,7 @@ class NetworkManagerFragment : Fragment() {
         if (v.id == R.id.layout_network_manager_info_toggle_button) {
             when (activeType) {
                 Type.LocationPermissionNeeded -> connections.validateLocationPermission(
-                    requireActivity(), REQUEST_LOCATION_PERMISSION
+                    snackbarPlacementProvider, requestLocationPermission
                 )
                 Type.WiFi, Type.HotspotExternal -> openWifiSettings()
                 Type.Hotspot, Type.None -> toggleHotspot()
@@ -296,8 +301,7 @@ class NetworkManagerFragment : Fragment() {
             val ssid: String? = connectionInfo.ssid
             val bssid: String? = connectionInfo.bssid
             val hostAddress: String? = try {
-                InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.ipAddress))
-                    .hostAddress
+                InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.ipAddress)).hostAddress
             } catch (e: UnknownHostException) {
                 "0.0.0.0"
             }
@@ -374,8 +378,6 @@ class NetworkManagerFragment : Fragment() {
     }
 
     companion object {
-        const val REQUEST_LOCATION_PERMISSION = 1
-        const val REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 2
         const val WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED"
     }
 }
