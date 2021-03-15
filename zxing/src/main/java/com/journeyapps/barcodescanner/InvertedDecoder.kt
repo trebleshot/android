@@ -5,19 +5,7 @@ import com.google.zxing.LuminanceSource
 import com.google.zxing.Reader
 import com.google.zxing.common.HybridBinarizer
 
-/**
- * Created by leighmd on 11/2/16.
- */
 class InvertedDecoder(reader: Reader) : Decoder(reader) {
-    /**
-     * Given an image source, convert to a binary bitmap.
-     *
-     *
-     * Override this to use a custom binarizer.
-     *
-     * @param source the image source
-     * @return a BinaryBitmap
-     */
     override fun toBitmap(source: LuminanceSource): BinaryBitmap {
         return BinaryBitmap(HybridBinarizer(source.invert()))
     }

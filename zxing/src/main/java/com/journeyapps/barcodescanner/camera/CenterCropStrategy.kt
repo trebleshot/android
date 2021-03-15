@@ -26,6 +26,7 @@ class CenterCropStrategy : PreviewScalingStrategy() {
         if (size.width <= 0 || size.height <= 0) {
             return 0f
         }
+
         val scaled = size.scaleCrop(desired)
         // Scaling preserves aspect ratio
         val scaleRatio = scaled.width * 1.0f / size.width
@@ -41,8 +42,7 @@ class CenterCropStrategy : PreviewScalingStrategy() {
 
         // Ratio of scaledDimension / dimension.
         // Note that with scaleCrop, only one dimension is cropped.
-        val cropRatio = scaled.width * 1.0f / desired.width +
-                scaled.height * 1.0f / desired.height
+        val cropRatio = scaled.width * 1.0f / desired.width + scaled.height * 1.0f / desired.height
 
         // Cropping is bad, square it
         // 1.0 means no cropping. 50% cropping is 0.44f, 10% cropping is 0.82f

@@ -14,23 +14,22 @@ import com.journeyapps.barcodescanner.camera.PreviewCallback
 /**
  *
  */
-class DecoderThread(val cameraInstance: CameraInstance, var decoder: Decoder, val resultHandler: Handler?) {
+class DecoderThread(
+    private val cameraInstance: CameraInstance,
+    var decoder: Decoder,
+    private val resultHandler: Handler,
+    var cropRect: Rect,
+) {
     private val lock = Any()
 
     private var thread: HandlerThread? = null
 
     private var handler: Handler? = null
 
-    var cropRect: Rect? = null
-
     private var running = false
 
     private val previewCallback: PreviewCallback = object : PreviewCallback {
         override fun onPreview(sourceData: SourceData?) {
-            // Only post if running, to prevent a warning like this:
-            //   java.lang.RuntimeException: Handler (android.os.Handler) sending message to a Handler on a dead thread
-
-            // synchronize to handle cases where this is called concurrently with stop()
             synchronized(lock) {
                 if (running) {
                     // Post to our thread.
@@ -59,12 +58,6 @@ class DecoderThread(val cameraInstance: CameraInstance, var decoder: Decoder, va
         true
     }
 
-    /**
-     * Start decoding.
-     *
-     *
-     * This must be called from the UI thread.
-     */
     fun start() {
         Util.validateMainThread()
         thread = HandlerThread(TAG).also {
@@ -76,12 +69,6 @@ class DecoderThread(val cameraInstance: CameraInstance, var decoder: Decoder, va
         requestNextPreview()
     }
 
-    /**
-     * Stop decoding.
-     *
-     *
-     * This must be called from the UI thread.
-     */
     fun stop() {
         Util.validateMainThread()
         synchronized(lock) {

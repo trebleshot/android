@@ -72,7 +72,6 @@ class CameraManager(private val context: Context) {
 
     private var defaultParameters: String? = null
 
-    // User parameters
     var cameraSettings = CameraSettings()
 
     var displayConfiguration: DisplayConfiguration? = null
@@ -120,17 +119,6 @@ class CameraManager(private val context: Context) {
             throw RuntimeException("Camera not open")
         }
         setParameters()
-    }
-
-    /**
-     * Must be called from camera thread.
-     *
-     * @param holder related object
-     * @throws IOException if fails
-     */
-    @Throws(IOException::class)
-    fun setPreviewDisplay(holder: SurfaceHolder?) {
-        setPreviewDisplay(CameraSurface(holder))
     }
 
     @Throws(IOException::class)
@@ -222,13 +210,13 @@ class CameraManager(private val context: Context) {
         CameraConfigurationUtils.setFocus(parameters, cameraSettings.focusMode, safeMode)
         if (!safeMode) {
             CameraConfigurationUtils.setTorch(parameters, false)
-            if (cameraSettings.isScanInverted) {
+            if (cameraSettings.scanInverted) {
                 CameraConfigurationUtils.setInvertColor(parameters)
             }
-            if (cameraSettings.isBarcodeSceneModeEnabled) {
+            if (cameraSettings.barcodeSceneModeEnabled) {
                 CameraConfigurationUtils.setBarcodeSceneMode(parameters)
             }
-            if (cameraSettings.isMeteringEnabled) {
+            if (cameraSettings.meteringEnabled) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
                     CameraConfigurationUtils.setVideoStabilization(parameters)
                     CameraConfigurationUtils.setFocusArea(parameters)
@@ -359,7 +347,7 @@ class CameraManager(private val context: Context) {
                 autoFocusManager?.stop()
                 val parameters = camera.parameters
                 CameraConfigurationUtils.setTorch(parameters, on)
-                if (cameraSettings.isExposureEnabled) {
+                if (cameraSettings.exposureEnabled) {
                     CameraConfigurationUtils.setBestExposure(parameters, on)
                 }
                 camera.parameters = parameters

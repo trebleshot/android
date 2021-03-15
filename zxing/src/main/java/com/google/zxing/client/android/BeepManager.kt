@@ -89,7 +89,9 @@ class BeepManager(activity: Activity) {
 
     companion object {
         private val TAG = BeepManager::class.simpleName
+
         private const val BEEP_VOLUME = 0.10f
+
         private const val VIBRATE_DURATION = 200L
     }
 

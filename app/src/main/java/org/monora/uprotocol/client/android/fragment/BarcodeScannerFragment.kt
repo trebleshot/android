@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -41,6 +42,7 @@ import java.net.UnknownHostException
 import javax.inject.Inject
 
 @AndroidEntryPoint
+@RequiresApi(19)
 class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     @Inject
     lateinit var sharedTextRepository: SharedTextRepository
@@ -140,7 +142,9 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is State.Scan -> binding.barcodeView.resume()
+                is State.Scan -> {
+
+                }
                 is State.Error -> {
 
                 }
@@ -186,10 +190,12 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     }
 
     fun emitState() {
-        val cameraAccess = checkSelfPermission(requireContext(), CAMERA) == PERMISSION_GRANTED
-
         state.postValue(
-            Change(connections.canAccessLocation(), connections.wifiManager.isWifiEnabled, cameraAccess)
+            Change(
+                connections.canAccessLocation(),
+                connections.wifiManager.isWifiEnabled,
+                checkSelfPermission(requireContext(), CAMERA) == PERMISSION_GRANTED
+            )
         )
     }
 

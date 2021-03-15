@@ -2,44 +2,14 @@ package com.journeyapps.barcodescanner.camera
 
 import com.google.zxing.client.android.camera.open.OpenCameraInterface
 
-/**
- *
- */
 class CameraSettings {
-    /**
-     * Allows third party apps to specify the camera ID, rather than determine
-     * it automatically based on available cameras and their orientation.
-     *
-     * @param requestedCameraId camera ID of the camera to use. A negative value means "no preference".
-     */
     var requestedCameraId = OpenCameraInterface.NO_REQUESTED_CAMERA
 
-    /**
-     * Default to false.
-     *
-     *
-     * Inverted means dark and light colors are inverted.
-     *
-     * @return true if scan is inverted
-     */
-    var isScanInverted = false
+    var scanInverted = false
 
-    /**
-     * Default to false.
-     *
-     * @return true if barcode scene mode is enabled
-     */
-    var isBarcodeSceneModeEnabled = false
+    var barcodeSceneModeEnabled = false
 
-    /**
-     * Default to false.
-     *
-     *
-     * If enabled, metering is performed to determine focus area.
-     *
-     * @return true if metering is enabled
-     */
-    var isMeteringEnabled = false
+    var meteringEnabled = false
 
     var autoFocusEnabled = true
         set(value) {
@@ -63,25 +33,10 @@ class CameraSettings {
             }
         }
 
-    /**
-     * Default to false.
-     *
-     * @return true if exposure is enabled.
-     */
-    var isExposureEnabled = false
+    var exposureEnabled = false
 
-    /**
-     * Default to false.
-     *
-     * @return true if the torch is automatically controlled based on ambient light.
-     */
-    var isAutoTorchEnabled = false
+    var autoTorchEnabled = false
 
-    /**
-     * Default to FocusMode.AUTO.
-     *
-     * @return value of selected focus mode
-     */
     var focusMode: FocusMode? = FocusMode.AUTO
 
     enum class FocusMode {

@@ -5,35 +5,25 @@ import android.hardware.Camera
 import android.view.SurfaceHolder
 import java.io.IOException
 
-/**
- * A surface on which a camera preview is displayed.
- *
- *
- * This wraps either a SurfaceHolder or a SurfaceTexture.
- */
-class CameraSurface {
-    var surfaceHolder: SurfaceHolder? = null
-        private set
-
-    var surfaceTexture: SurfaceTexture? = null
-        private set
-
-    constructor(surfaceHolder: SurfaceHolder?) {
-        requireNotNull(surfaceHolder) { "surfaceHolder may not be null" }
-        this.surfaceHolder = surfaceHolder
-    }
-
-    constructor(surfaceTexture: SurfaceTexture?) {
-        requireNotNull(surfaceTexture) { "surfaceTexture may not be null" }
-        this.surfaceTexture = surfaceTexture
-    }
-
+interface CameraSurface {
     @Throws(IOException::class)
-    fun setPreview(camera: Camera?) {
-        if (surfaceHolder != null) {
-            camera?.setPreviewDisplay(surfaceHolder)
-        } else {
-            camera?.setPreviewTexture(surfaceTexture)
-        }
+    fun setPreview(camera: Camera?)
+
+    companion object {
+        fun create(surfaceTexture: SurfaceTexture): CameraSurface = TextureCameraSurface(surfaceTexture)
+
+        fun create(surfaceHolder: SurfaceHolder): CameraSurface = HolderCameraSurface(surfaceHolder)
+    }
+}
+
+private class TextureCameraSurface(val surfaceTexture: SurfaceTexture) : CameraSurface {
+    override fun setPreview(camera: Camera?) {
+        camera?.setPreviewTexture(surfaceTexture)
+    }
+}
+
+private class HolderCameraSurface(val surfaceHolder: SurfaceHolder) : CameraSurface {
+    override fun setPreview(camera: Camera?) {
+        camera?.setPreviewDisplay(surfaceHolder)
     }
 }

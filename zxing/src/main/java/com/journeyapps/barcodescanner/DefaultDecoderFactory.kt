@@ -14,23 +14,13 @@ class DefaultDecoderFactory(
     private val characterSet: String? = null,
     private val scanType: Int = 0,
 ) : DecoderFactory {
-    override fun createDecoder(baseHints: Map<DecodeHintType, Any?>?): Decoder {
-        val hints: MutableMap<DecodeHintType?, Any?> = EnumMap(DecodeHintType::class.java)
+    override fun createDecoder(baseHints: Map<DecodeHintType, Any?>): Decoder {
+        val hints = EnumMap<DecodeHintType, Any?>(DecodeHintType::class.java).apply {
+            putAll(baseHints)
 
-        if (baseHints != null) {
-            hints.putAll(baseHints)
-        }
-
-        if (this.hints != null) {
-            hints.putAll(this.hints)
-        }
-
-        if (decodeFormats != null) {
-            hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
-        }
-
-        if (characterSet != null) {
-            hints[DecodeHintType.CHARACTER_SET] = characterSet
+            if (hints != null) putAll(hints)
+            if (decodeFormats != null) this[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
+            if (characterSet != null) this[DecodeHintType.CHARACTER_SET] = characterSet
         }
 
         val reader = MultiFormatReader().also { it.setHints(hints) }

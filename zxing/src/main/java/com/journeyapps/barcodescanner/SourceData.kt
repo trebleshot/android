@@ -4,48 +4,22 @@ import android.graphics.*
 import com.google.zxing.PlanarYUVLuminanceSource
 import java.io.ByteArrayOutputStream
 
-/**
- * Raw preview data from a camera.
- */
 class SourceData(
-    /**
-     * Raw YUV data
-     */
     val data: ByteArray,
-    /**
-     * Source data width
-     */
-    val dataWidth: Int,
-    /**
-     * Source data height
-     */
-    val dataHeight: Int,
-    /**
-     * The format of the image data. ImageFormat.NV21 and ImageFormat.YUY2 are supported.
-     */
-    val imageFormat: Int,
-    /**
-     * Rotation in degrees (0, 90, 180 or 270). This is camera rotation relative to display rotation.
-     */
+    private val dataWidth: Int,
+    private val dataHeight: Int,
+    private val imageFormat: Int,
     private val rotation: Int,
 ) {
-    /**
-     * Set the crop rectangle.
-     * Crop rectangle, in display orientation.
-     */
     var cropRect: Rect? = null
 
-    /**
-     * @return true if the preview image is rotated orthogonal to the display
-     */
     private val isRotated: Boolean
         get() = rotation % 180 != 0
 
     fun createSource(): PlanarYUVLuminanceSource {
         val rotated = rotateCameraPreview(rotation, data, dataWidth, dataHeight)
         val cropRect = cropRect ?: throw NullPointerException("cropRect cannot be null")
-        // TODO: handle mirrored (front) camera. Probably only the ResultPoints should be mirrored,
-        // not the preview for decoding.
+
         return PlanarYUVLuminanceSource(
             rotated,
             if (isRotated) dataHeight else dataWidth,
@@ -58,27 +32,22 @@ class SourceData(
         )
     }
 
-    /**
-     * Return the source bitmap (cropped; in display orientation).
-     *
-     * @param scaleFactor factor to scale down by. Must be a power of 2.
-     * @return the bitmap
-     */
     fun getBitmap(scaleFactor: Int = 1, cropRect: Rect = Rect(this.cropRect!!)): Bitmap {
         if (isRotated) {
             cropRect.set(cropRect.top, cropRect.left, cropRect.bottom, cropRect.right)
         }
 
-        // TODO: there should be a way to do this without JPEG compression / decompression cycle.
         val img = YuvImage(data, imageFormat, dataWidth, dataHeight, null)
         val buffer = ByteArrayOutputStream()
+
         img.compressToJpeg(cropRect, 90, buffer)
+
         val jpegData = buffer.toByteArray()
-        val options = BitmapFactory.Options()
-        options.inSampleSize = scaleFactor
+        val options = BitmapFactory.Options().apply {
+            inSampleSize = scaleFactor
+        }
         var bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.size, options)
 
-        // Rotate if required
         if (rotation != 0) {
             val imageMatrix = Matrix()
             imageMatrix.postRotate(rotation.toFloat())
@@ -91,24 +60,14 @@ class SourceData(
         fun rotateCameraPreview(cameraRotation: Int, data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
             return when (cameraRotation) {
                 0 -> data
-                90 -> rotateCW(data, imageWidth, imageHeight)
-                180 -> rotate180(data, imageWidth, imageHeight)
-                270 -> rotateCCW(data, imageWidth, imageHeight)
-                else -> data // Should not happen
+                90 -> rotateClockwise(data, imageWidth, imageHeight)
+                180 -> rotateInverse(data, imageWidth, imageHeight)
+                270 -> rotateCounterClockwise(data, imageWidth, imageHeight)
+                else -> data
             }
         }
 
-        /**
-         * Rotate an image by 90 degrees CW.
-         *
-         * @param data        the image data, in with the first width * height bytes being the luminance data.
-         * @param imageWidth  the width of the image
-         * @param imageHeight the height of the image
-         * @return the rotated bytes
-         */
-        fun rotateCW(data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
-            // Adapted from http://stackoverflow.com/a/15775173
-            // data may contain more than just y (u and v), but we are only interested in the y section.
+        private fun rotateClockwise(data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
             val yuv = ByteArray(imageWidth * imageHeight)
             var i = 0
             for (x in 0 until imageWidth) {
@@ -120,34 +79,7 @@ class SourceData(
             return yuv
         }
 
-        /**
-         * Rotate an image by 180 degrees.
-         *
-         * @param data        the image data, in with the first width * height bytes being the luminance data.
-         * @param imageWidth  the width of the image
-         * @param imageHeight the height of the image
-         * @return the rotated bytes
-         */
-        fun rotate180(data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
-            val n = imageWidth * imageHeight
-            val yuv = ByteArray(n)
-            var i = n - 1
-            for (j in 0 until n) {
-                yuv[i] = data[j]
-                i--
-            }
-            return yuv
-        }
-
-        /**
-         * Rotate an image by 90 degrees CCW.
-         *
-         * @param data        the image data, in with the first width * height bytes being the luminance data.
-         * @param imageWidth  the width of the image
-         * @param imageHeight the height of the image
-         * @return the rotated bytes
-         */
-        fun rotateCCW(data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
+        private fun rotateCounterClockwise(data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
             val n = imageWidth * imageHeight
             val yuv = ByteArray(n)
             var i = n - 1
@@ -156,6 +88,17 @@ class SourceData(
                     yuv[i] = data[y * imageWidth + x]
                     i--
                 }
+            }
+            return yuv
+        }
+
+        private fun rotateInverse(data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {
+            val n = imageWidth * imageHeight
+            val yuv = ByteArray(n)
+            var i = n - 1
+            for (j in 0 until n) {
+                yuv[i] = data[j]
+                i--
             }
             return yuv
         }

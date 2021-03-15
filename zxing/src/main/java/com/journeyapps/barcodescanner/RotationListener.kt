@@ -23,8 +23,8 @@ class RotationListener {
 
     private var rotationCallback: RotationCallback? = null
 
-    fun listen(contextt: Context, callback: RotationCallback?) {
-        val appContext = contextt.applicationContext
+    fun listen(context: Context, callback: RotationCallback?) {
+        val appContext = context.applicationContext
         stop()
 
         rotationCallback = callback

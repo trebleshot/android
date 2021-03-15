@@ -56,14 +56,6 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
         }
     }
 
-    /**
-     * Start auto-focus. The first focus will happen now, then repeated every two seconds.
-     */
-    fun start() {
-        stopped = false
-        focus()
-    }
-
     private fun focus() {
         if (useAutoFocus) {
             if (!stopped && !focusing) {
@@ -82,6 +74,11 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
 
     private fun cancelOutstandingTask() {
         handler.removeMessages(MESSAGE_FOCUS)
+    }
+
+    fun start() {
+        stopped = false
+        focus()
     }
 
     fun stop() {

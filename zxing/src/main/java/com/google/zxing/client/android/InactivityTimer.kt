@@ -23,9 +23,6 @@ import android.os.BatteryManager
 import android.os.Handler
 import com.google.zxing.client.android.InactivityTimer
 
-/**
- * Finishes an context after a period of inactivity if the device is on battery power.
- */
 class InactivityTimer(private val context: Context, private val callback: Runnable) {
     private val powerStatusReceiver: BroadcastReceiver = PowerStatusReceiver()
 

@@ -40,7 +40,7 @@ class AmbientLightManager(
     private val handler: Handler = Handler()
 
     fun start() {
-        if (cameraSettings.isAutoTorchEnabled) {
+        if (cameraSettings.autoTorchEnabled) {
             val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
             lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
             if (lightSensor != null) {

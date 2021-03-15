@@ -144,12 +144,13 @@ open class ViewfinderView(context: Context, attrs: AttributeSet?) : View(context
                 paint.alpha = CURRENT_POINT_OPACITY / 2
                 paint.color = resultPointColor
                 val radius = POINT_SIZE / 2.0f
+
                 for (point in lastPossibleResultPoints) {
                     canvas.drawCircle(
-                        (
-                                frameLeft + (point.x * scaleX).toInt()).toFloat(), (
-                                frameTop + (point.y * scaleY).toInt()).toFloat(),
-                        radius, paint
+                        (frameLeft + (point.x * scaleX).toInt()).toFloat(),
+                        (frameTop + (point.y * scaleY).toInt()).toFloat(),
+                        radius,
+                        paint
                     )
                 }
                 lastPossibleResultPoints.clear()

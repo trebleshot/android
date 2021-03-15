@@ -11,11 +11,4 @@
         android:layout_height="match_parent"
         android:id="@+id/zxing_viewfinder_view"/>
 
-    <TextView android:id="@+id/zxing_status_view"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="bottom|center_horizontal"
-              android:background="@color/zxing_transparent"
-              android:text="@string/zxing_msg_default_status"
-              android:textColor="@color/zxing_status_text"/>
 </merge>
