@@ -36,11 +36,7 @@ import java.util.*
  * Wrapper to manage the Camera. This is not thread-safe, and the methods must always be called
  * from the same thread.
  *
- *
- *
- *
  * Call order:
- *
  *
  * 1. setCameraSettings()
  * 2. open(), set desired preview size (any order)
@@ -115,9 +111,7 @@ class CameraManager(private val context: Context) {
     /**
      * Configure the camera parameters, including preview size.
      *
-     *
      * The camera must be opened before calling this.
-     *
      *
      * Must be called from camera thread.
      */
@@ -147,7 +141,6 @@ class CameraManager(private val context: Context) {
     /**
      * Asks the camera hardware to begin drawing preview frames to the screen.
      *
-     *
      * Must be called from camera thread.
      */
     fun startPreview() {
@@ -165,7 +158,6 @@ class CameraManager(private val context: Context) {
     /**
      * Tells the camera to stop drawing preview frames.
      *
-     *
      * Must be called from camera thread.
      */
     fun stopPreview() {
@@ -181,7 +173,7 @@ class CameraManager(private val context: Context) {
 
         camera?.takeIf { previewing }?.let {
             it.stopPreview()
-            cameraPreviewCallback.setCallback(null)
+            cameraPreviewCallback.callback = null
             previewing = false
         }
     }
@@ -265,6 +257,7 @@ class CameraManager(private val context: Context) {
         // http://developer.android.com/reference/android/hardware/Camera.html#setDisplayOrientation(int)
         val rotation = displayConfiguration?.rotation ?: 0
         var degrees = 0
+
         when (rotation) {
             Surface.ROTATION_0 -> degrees = 0
             Surface.ROTATION_90 -> degrees = 90
@@ -315,7 +308,7 @@ class CameraManager(private val context: Context) {
         } else {
             Size(realPreviewSize.width, realPreviewSize.height)
         }
-        cameraPreviewCallback.setResolution(naturalPreviewSize)
+        cameraPreviewCallback.resolution = naturalPreviewSize
     }
 
     /**
@@ -350,10 +343,11 @@ class CameraManager(private val context: Context) {
      * @param callback The callback to receive the preview.
      */
     fun requestPreviewFrame(callback: PreviewCallback?) {
-        val theCamera = camera
-        if (theCamera != null && previewing) {
-            cameraPreviewCallback.setCallback(callback)
-            theCamera.setOneShotPreviewCallback(cameraPreviewCallback)
+        camera?.let {
+            if (previewing) {
+                cameraPreviewCallback.callback = callback
+                it.setOneShotPreviewCallback(cameraPreviewCallback)
+            }
         }
     }
 
@@ -403,19 +397,14 @@ class CameraManager(private val context: Context) {
         }
 
     private inner class CameraPreviewCallback : Camera.PreviewCallback {
-        private var callback: PreviewCallback? = null
-        private var resolution: Size? = null
-        fun setResolution(resolution: Size?) {
-            this.resolution = resolution
-        }
+        var callback: PreviewCallback? = null
 
-        fun setCallback(callback: PreviewCallback?) {
-            this.callback = callback
-        }
+        var resolution: Size? = null
 
         override fun onPreviewFrame(data: ByteArray, camera: Camera) {
             val cameraResolution = resolution
             val callback = callback
+
             if (cameraResolution != null && callback != null) {
                 try {
                     val format = camera.parameters.previewFormat
@@ -439,9 +428,11 @@ class CameraManager(private val context: Context) {
 
     companion object {
         private val TAG = CameraManager::class.simpleName
+
         private fun getPreviewSizes(parameters: Camera.Parameters): List<Size> {
             val rawSupportedSizes = parameters.supportedPreviewSizes
             val previewSizes: MutableList<Size> = ArrayList()
+
             if (rawSupportedSizes == null) {
                 val defaultSize = parameters.previewSize
                 if (defaultSize != null) {

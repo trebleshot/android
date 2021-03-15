@@ -32,24 +32,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+            android:id="@+id/barcodeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{!viewModel.running &amp;&amp; !viewModel.needsAccess ? View.VISIBLE : View.GONE}"
+            app:zxing_preview_scaling_strategy="fitCenter"
+            app:zxing_scanner_layout="@layout/external_layout_barcode_scanner"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_margin="16dp">
-
-            <com.journeyapps.barcodescanner.DecoratedBarcodeView
-                android:id="@+id/barcodeView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{!viewModel.running &amp;&amp; !viewModel.needsAccess ? View.VISIBLE : View.GONE}"
-                app:zxing_preview_scaling_strategy="fitCenter"
-                app:zxing_scanner_layout="@layout/external_layout_barcode_scanner" />
-        </com.google.android.material.card.MaterialCardView>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -83,6 +76,7 @@
             android:layout_below="@id/progressBar"
             android:gravity="center_horizontal"
             android:text="@{viewModel.running ? @string/mesg_completing : viewModel.stateText}"
+            android:visibility="@{viewModel.running || viewModel.needsAccess ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

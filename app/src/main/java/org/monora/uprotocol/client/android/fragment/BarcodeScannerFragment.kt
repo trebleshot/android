@@ -9,29 +9,31 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.data.SharedTextRepository
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.util.Connections
@@ -61,6 +63,10 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
         }
     }
 
+    private val binding by lazy {
+        LayoutBarcodeScannerBinding.bind(requireView())
+    }
+
     private val state = MutableLiveData<Change>()
 
     private val receiver = object : BroadcastReceiver() {
@@ -88,14 +94,24 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
     private val snackbarPlacementProvider = SnackbarPlacementProvider { resId, objects ->
         return@SnackbarPlacementProvider view?.let {
-            Snackbar.make(it, getString(resId, objects), Snackbar.LENGTH_LONG)
+            Snackbar.make(it, getString(resId, objects), Snackbar.LENGTH_LONG).addCallback(
+                object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                    override fun onShown(transientBottomBar: Snackbar?) {
+                        super.onShown(transientBottomBar)
+                        binding.barcodeView.pauseAndWait()
+                    }
+
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        super.onDismissed(transientBottomBar, event)
+                        resumeIfPossible()
+                    }
+                }
+            )
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val binding = LayoutBarcodeScannerBinding.bind(view)
 
         binding.viewModel = viewModel
         viewModel.requestPermissionsClickListener = requestPermissionsClickListener
@@ -118,8 +134,6 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                     stateImage.set(R.drawable.ic_signal_wifi_off_white_144dp)
                     stateText.set(getString(R.string.text_scanQRWifiRequired))
                     stateButtonText.set(getString(R.string.butn_enable))
-                } else {
-                    stateText.set(getString(R.string.help_scanQRCode))
                 }
             }
         }
@@ -141,7 +155,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             if (it.running) {
                 binding.barcodeView.pauseAndWait()
             } else {
-                binding.barcodeView.resume()
+                resumeIfPossible()
             }
         }
 
@@ -156,18 +170,19 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 }
             }
         )
-
-        emitState()
     }
 
     override fun onResume() {
         super.onResume()
         requireContext().registerReceiver(receiver, intentFilter)
+        emitState()
+        resumeIfPossible()
     }
 
     override fun onPause() {
         super.onPause()
         requireContext().unregisterReceiver(receiver)
+        binding.barcodeView.pauseAndWait()
     }
 
     fun emitState() {
@@ -208,21 +223,21 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
         } catch (e: Exception) {
             e.printStackTrace()
 
-            /*AlertDialog.Builder(this)
+            AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.text_unrecognizedQrCode)
                 .setMessage(code)
                 .setNegativeButton(R.string.butn_close, null)
                 .setPositiveButton(R.string.butn_show) { _: DialogInterface?, _: Int ->
                     val sharedText = SharedText(0, code)
 
-                    lifecycleScope.launch(Dispatcher.IO) {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         sharedTextRepository.insert(sharedText)
                     }
 
                     snackbarPlacementProvider.createSnackbar(R.string.mesg_textStreamSaved)?.show()
 
                     startActivity(
-                        Intent(this, TextEditorActivity::class.java)
+                        Intent(context, TextEditorActivity::class.java)
                             .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
                             .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, sharedText)
                     )
@@ -232,8 +247,26 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                         it.setPrimaryClip(ClipData.newPlainText("copiedText", code))
                         snackbarPlacementProvider.createSnackbar(R.string.mesg_textCopiedToClipboard)?.show()
                     }
-                }*/
+                }
+                .setOnDismissListener {
+                    resumeIfPossible()
+                }
+                .show()
+
+            binding.barcodeView.pauseAndWait()
         }
+    }
+
+    private fun resumeIfPossible() {
+        state.value?.let {
+            if (it.camera && it.location && it.wifi) {
+                binding.barcodeView.resume()
+            }
+        }
+    }
+
+    companion object {
+        val TAG = BarcodeScannerFragment::class.simpleName
     }
 }
 
@@ -269,7 +302,7 @@ class BarcodeScannerViewModel @Inject constructor(
 
     val stateText = ObservableField<String>()
 
-    fun consume() = _job ?: viewModelScope.launch(IO) {
+    fun consume() = _job ?: viewModelScope.launch(Dispatchers.IO) {
         try {
 
         } finally {

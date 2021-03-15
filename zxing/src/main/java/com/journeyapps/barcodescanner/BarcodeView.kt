@@ -33,9 +33,8 @@ open class BarcodeView @JvmOverloads constructor(
         when (message.what) {
             R.id.zxing_decode_succeeded -> {
                 val result = message.obj as BarcodeResult
-                val callback = callback
-                if (callback != null && decodeMode != DecodeMode.NONE) {
-                    callback.barcodeResult(result)
+                if (decodeMode != DecodeMode.NONE) {
+                    callback?.barcodeResult(result)
                     if (decodeMode == DecodeMode.SINGLE) {
                         stopDecoding()
                     }

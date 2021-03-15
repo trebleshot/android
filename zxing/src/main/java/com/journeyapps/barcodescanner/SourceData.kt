@@ -27,7 +27,7 @@ class SourceData(
     /**
      * Rotation in degrees (0, 90, 180 or 270). This is camera rotation relative to display rotation.
      */
-    private val rotation: Int
+    private val rotation: Int,
 ) {
     /**
      * Set the crop rectangle.
@@ -38,7 +38,7 @@ class SourceData(
     /**
      * @return true if the preview image is rotated orthogonal to the display
      */
-    val isRotated: Boolean
+    private val isRotated: Boolean
         get() = rotation % 180 != 0
 
     fun createSource(): PlanarYUVLuminanceSource {
@@ -46,38 +46,17 @@ class SourceData(
         val cropRect = cropRect ?: throw NullPointerException("cropRect cannot be null")
         // TODO: handle mirrored (front) camera. Probably only the ResultPoints should be mirrored,
         // not the preview for decoding.
-        return if (isRotated) {
-            PlanarYUVLuminanceSource(
-                rotated,
-                dataHeight,
-                dataWidth,
-                cropRect.left,
-                cropRect.top,
-                cropRect.width(),
-                cropRect.height(),
-                false
-            )
-        } else {
-            PlanarYUVLuminanceSource(
-                rotated,
-                dataWidth,
-                dataHeight,
-                cropRect.left,
-                cropRect.top,
-                cropRect.width(),
-                cropRect.height(),
-                false
-            )
-        }
+        return PlanarYUVLuminanceSource(
+            rotated,
+            if (isRotated) dataHeight else dataWidth,
+            if (isRotated) dataWidth else dataHeight,
+            if (isRotated) cropRect.left else cropRect.top,
+            if (isRotated) cropRect.top else cropRect.left,
+            cropRect.width(),
+            cropRect.height(),
+            false
+        )
     }
-
-    /**
-     * Return the source bitmap (cropped; in display orientation).
-     *
-     * @return the bitmap
-     */
-    val bitmap: Bitmap
-        get() = getBitmap(1)
 
     /**
      * Return the source bitmap (cropped; in display orientation).
@@ -85,21 +64,15 @@ class SourceData(
      * @param scaleFactor factor to scale down by. Must be a power of 2.
      * @return the bitmap
      */
-    fun getBitmap(scaleFactor: Int): Bitmap {
-        return getBitmap(cropRect, scaleFactor)
-    }
-
-    private fun getBitmap(cropRect: Rect?, scaleFactor: Int): Bitmap {
-        var localRect = cropRect ?: throw NullPointerException("cropRect cannot be null")
-
+    fun getBitmap(scaleFactor: Int = 1, cropRect: Rect = Rect(this.cropRect!!)): Bitmap {
         if (isRotated) {
-            localRect = Rect(localRect.top, localRect.left, localRect.bottom, localRect.right)
+            cropRect.set(cropRect.top, cropRect.left, cropRect.bottom, cropRect.right)
         }
 
         // TODO: there should be a way to do this without JPEG compression / decompression cycle.
         val img = YuvImage(data, imageFormat, dataWidth, dataHeight, null)
         val buffer = ByteArrayOutputStream()
-        img.compressToJpeg(localRect, 90, buffer)
+        img.compressToJpeg(cropRect, 90, buffer)
         val jpegData = buffer.toByteArray()
         val options = BitmapFactory.Options()
         options.inSampleSize = scaleFactor
@@ -121,8 +94,7 @@ class SourceData(
                 90 -> rotateCW(data, imageWidth, imageHeight)
                 180 -> rotate180(data, imageWidth, imageHeight)
                 270 -> rotateCCW(data, imageWidth, imageHeight)
-                else ->                 // Should not happen
-                    data
+                else -> data // Should not happen
             }
         }
 

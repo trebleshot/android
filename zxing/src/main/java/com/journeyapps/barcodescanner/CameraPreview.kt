@@ -77,7 +77,6 @@ open class CameraPreview @JvmOverloads constructor(
     var cameraInstance: CameraInstance? = null
         private set
 
-
     /**
      * Set to true to use TextureView instead of SurfaceView.
      */
@@ -306,9 +305,10 @@ open class CameraPreview @JvmOverloads constructor(
         val height = containerSize.height
         val surfaceRect = displayConfiguration.scalePreview(previewSize).also { surfaceRect = it }
         val container = Rect(0, 0, width, height)
-        framingRect = calculateFramingRect(container, surfaceRect)
-        val frameInPreview = Rect(framingRect)
-        frameInPreview.offset(-surfaceRect.left, -surfaceRect.top)
+        val frameInPreview = calculateFramingRect(container, surfaceRect).also {
+            framingRect = Rect(it)
+            it.offset(-surfaceRect.left, -surfaceRect.top)
+        }
         val previewFramingRect = Rect(
             frameInPreview.left * previewWidth / surfaceRect.width(),
             frameInPreview.top * previewHeight / surfaceRect.height(),
@@ -463,7 +463,6 @@ open class CameraPreview @JvmOverloads constructor(
 
         val surfaceView = surfaceView
         val surfaceRect = surfaceRect
-        val textureView = textureView
 
         if (surfaceView != null) {
             if (surfaceRect == null) {
@@ -473,9 +472,7 @@ open class CameraPreview @JvmOverloads constructor(
             } else {
                 surfaceView.layout(surfaceRect.left, surfaceRect.top, surfaceRect.right, surfaceRect.bottom)
             }
-        } else if (textureView != null) {
-            textureView.layout(0, 0, width, height)
-        }
+        } else textureView?.layout(0, 0, width, height)
     }
 
     /**

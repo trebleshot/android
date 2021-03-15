@@ -44,6 +44,7 @@
         <item name="backgroundGradientTop">@drawable/background_gradient_top_black</item>
         <item name="backgroundTopBar">@drawable/background_top_bar_black</item>
         <item name="colorDivider">@color/black_colorDivider</item>
+        <item name="colorTranslucent">@color/black_colorTranslucent</item>
 
     </style>
 

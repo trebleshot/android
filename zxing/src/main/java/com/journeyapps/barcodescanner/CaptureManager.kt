@@ -1,12 +1,12 @@
 package com.journeyapps.barcodescanner
 
-import android.Manifest
+import android.Manifest.permission.CAMERA
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
@@ -185,15 +185,10 @@ class CaptureManager(private val activity: Activity, private val decoratedBarcod
 
     @TargetApi(23)
     private fun openCameraWithPermission() {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(activity, CAMERA) == PERMISSION_GRANTED) {
             decoratedBarcodeView.resume()
         } else if (!askedPermission) {
-            ActivityCompat.requestPermissions(
-                activity, arrayOf(Manifest.permission.CAMERA),
-                cameraPermissionReqCode
-            )
+            ActivityCompat.requestPermissions(activity, arrayOf(CAMERA), REQUEST_PERMISSION_CAMERA)
             askedPermission = true
         } else {
             // Wait for permission result
@@ -210,8 +205,8 @@ class CaptureManager(private val activity: Activity, private val decoratedBarcod
      * or [android.content.pm.PackageManager.PERMISSION_DENIED]. Never null.
      */
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>?, grantResults: IntArray) {
-        if (requestCode == cameraPermissionReqCode) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
                 // permission was granted
                 decoratedBarcodeView.resume()
             } else {
@@ -314,8 +309,10 @@ class CaptureManager(private val activity: Activity, private val decoratedBarcod
 
     companion object {
         private val TAG = CaptureManager::class.simpleName
+
         private const val SAVED_ORIENTATION_LOCK = "SAVED_ORIENTATION_LOCK"
-        var cameraPermissionReqCode = 250
+
+        const val REQUEST_PERMISSION_CAMERA = 250
 
         /**
          * Create a intent to return as the Activity result.
