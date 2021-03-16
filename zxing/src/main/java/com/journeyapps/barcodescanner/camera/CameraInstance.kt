@@ -7,7 +7,7 @@ import com.journeyapps.barcodescanner.R
 import com.journeyapps.barcodescanner.Size
 import com.journeyapps.barcodescanner.Util
 
-open class CameraInstance(private val cameraManager: CameraManager) {
+class CameraInstance(private val cameraManager: CameraManager) {
     private val cameraThreadManager: CameraThreadManager = CameraThreadManager.INSTANCE
 
     private val closer = Runnable {

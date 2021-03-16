@@ -32,7 +32,7 @@ import java.io.IOException
 import java.util.*
 
 class CameraManager(private val context: Context) {
-    private val cameraPreviewCallback: CameraPreviewCallback
+    private val cameraPreviewCallback = CameraPreviewCallback()
 
     private val defaultCameraParameters: Camera.Parameters?
         get() = camera?.parameters?.also {
@@ -61,8 +61,7 @@ class CameraManager(private val context: Context) {
 
     var displayConfiguration: DisplayConfiguration? = null
 
-    var naturalPreviewSize: Size? = null
-        private set
+    private var naturalPreviewSize: Size? = null
 
     private var previewing = false
 
@@ -128,14 +127,14 @@ class CameraManager(private val context: Context) {
         }
     }
 
-    fun isCameraRotated(): Boolean {
+    private fun isCameraRotated(): Boolean {
         check(cameraRotation != -1) { "Rotation not calculated yet. Call configure() first." }
         return cameraRotation % 180 != 0
     }
 
     fun isOpen(): Boolean = camera != null
 
-    fun isTorchOn(): Boolean = camera?.parameters?.flashMode.let {
+    private fun isTorchOn(): Boolean = camera?.parameters?.flashMode.let {
         it != null && (FLASH_MODE_ON == it || FLASH_MODE_TORCH == it)
     }
 
@@ -346,9 +345,5 @@ class CameraManager(private val context: Context) {
 
             return previewSizes
         }
-    }
-
-    init {
-        cameraPreviewCallback = CameraPreviewCallback()
     }
 }

@@ -18,7 +18,11 @@ import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -102,7 +106,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                         super.onShown(transientBottomBar)
                         binding.barcodeView.pauseAndWait()
                     }
-s
+
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                         super.onDismissed(transientBottomBar, event)
                         resumeIfPossible()
@@ -137,6 +141,12 @@ s
                     stateText.set(getString(R.string.text_scanQRWifiRequired))
                     stateButtonText.set(getString(R.string.butn_enable))
                 }
+            }
+
+            if (viewModel.needsAccess.get()) {
+                binding.barcodeView.pauseAndWait()
+            } else {
+                binding.barcodeView.resume()
             }
         }
 

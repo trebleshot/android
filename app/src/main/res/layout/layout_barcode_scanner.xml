@@ -32,17 +32,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        <com.journeyapps.barcodescanner.BarcodeView
             android:id="@+id/barcodeView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="@{!viewModel.running &amp;&amp; !viewModel.needsAccess ? View.VISIBLE : View.GONE}"
             app:zxing_preview_scaling_strategy="fitCenter"
-            app:zxing_scanner_layout="@layout/external_layout_barcode_scanner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:zxing_viewfinder_laser="?colorSecondary"
+            app:zxing_viewfinder_mask="?colorTranslucent" />
 
         <ProgressBar
             android:id="@+id/progressBar"

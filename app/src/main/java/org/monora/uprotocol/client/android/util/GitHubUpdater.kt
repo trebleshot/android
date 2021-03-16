@@ -35,12 +35,12 @@ object GitHubUpdater {
     private val TAG = GitHubUpdater::class.simpleName
 
     suspend fun checkForUpdates(gitHubDataRepository: GitHubDataRepository): Release? {
-        Log.d(TAG, "Checking updates")
+        Log.d(TAG, "Checking for updates")
 
         val releases = withContext(Dispatchers.IO) { gitHubDataRepository.getReleases() }
         val installed = ComparableVersion(BuildConfig.VERSION_NAME)
 
-        Log.d(TAG, "Have gathered the results, length=" + releases.size)
+        Log.d(TAG, "Gathered the results with length=" + releases.size)
 
         releases.forEach { release ->
             val installable = ComparableVersion(release.tag)

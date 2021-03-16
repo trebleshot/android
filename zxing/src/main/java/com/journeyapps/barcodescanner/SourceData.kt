@@ -1,6 +1,10 @@
 package com.journeyapps.barcodescanner
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.graphics.Rect
+import android.graphics.YuvImage
 import com.google.zxing.PlanarYUVLuminanceSource
 import java.io.ByteArrayOutputStream
 
@@ -13,8 +17,7 @@ class SourceData(
 ) {
     var cropRect: Rect? = null
 
-    private val isRotated: Boolean
-        get() = rotation % 180 != 0
+    private fun isRotated(): Boolean = rotation % 180 != 0
 
     fun createSource(): PlanarYUVLuminanceSource {
         val rotated = rotateCameraPreview(rotation, data, dataWidth, dataHeight)
@@ -22,10 +25,10 @@ class SourceData(
 
         return PlanarYUVLuminanceSource(
             rotated,
-            if (isRotated) dataHeight else dataWidth,
-            if (isRotated) dataWidth else dataHeight,
-            if (isRotated) cropRect.left else cropRect.top,
-            if (isRotated) cropRect.top else cropRect.left,
+            if (isRotated()) dataHeight else dataWidth,
+            if (isRotated()) dataWidth else dataHeight,
+            if (isRotated()) cropRect.left else cropRect.top,
+            if (isRotated()) cropRect.top else cropRect.left,
             cropRect.width(),
             cropRect.height(),
             false
@@ -33,7 +36,7 @@ class SourceData(
     }
 
     fun getBitmap(scaleFactor: Int = 1, cropRect: Rect = Rect(this.cropRect!!)): Bitmap {
-        if (isRotated) {
+        if (isRotated()) {
             cropRect.set(cropRect.top, cropRect.left, cropRect.bottom, cropRect.right)
         }
 
