@@ -39,6 +39,23 @@ class AmbientLightManager(
 
     private val handler: Handler = Handler()
 
+    override fun onSensorChanged(sensorEvent: SensorEvent) {
+        val ambientLightLux = sensorEvent.values[0]
+        if (ambientLightLux <= TOO_DARK_LUX) {
+            setTorch(true)
+        } else if (ambientLightLux >= BRIGHT_ENOUGH_LUX) {
+            setTorch(false)
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+        // do nothing
+    }
+
+    private fun setTorch(on: Boolean) {
+        handler.post { cameraManager?.setTorch(on) }
+    }
+
     fun start() {
         if (cameraSettings.autoTorchEnabled) {
             val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -57,26 +74,9 @@ class AmbientLightManager(
         }
     }
 
-    private fun setTorch(on: Boolean) {
-        handler.post { cameraManager?.setTorch(on) }
-    }
-
-    override fun onSensorChanged(sensorEvent: SensorEvent) {
-        val ambientLightLux = sensorEvent.values[0]
-        if (ambientLightLux <= TOO_DARK_LUX) {
-            setTorch(true)
-        } else if (ambientLightLux >= BRIGHT_ENOUGH_LUX) {
-            setTorch(false)
-        }
-    }
-
-    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-        // do nothing
-    }
-
     companion object {
         private const val TOO_DARK_LUX = 45.0f
+
         private const val BRIGHT_ENOUGH_LUX = 450.0f
     }
-
 }

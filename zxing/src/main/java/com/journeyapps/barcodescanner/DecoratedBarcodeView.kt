@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.widget.FrameLayout
 import com.google.zxing.ResultPoint
-import com.journeyapps.barcodescanner.camera.CameraParametersCallback
 
 class DecoratedBarcodeView @JvmOverloads constructor(
     context: Context,
@@ -51,17 +50,15 @@ class DecoratedBarcodeView @JvmOverloads constructor(
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_FOCUS, KeyEvent.KEYCODE_CAMERA -> return true // Handle these events so they don't launch the Camera app
-            KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                setTorchOff()
-                return true
+            KeyEvent.KEYCODE_FOCUS, KeyEvent.KEYCODE_CAMERA -> {
+                // Handle these events so they don't launch the Camera app
             }
-            KeyEvent.KEYCODE_VOLUME_UP -> {
-                setTorchOn()
-                return true
-            }
+            KeyEvent.KEYCODE_VOLUME_DOWN -> setTorchOff()
+            KeyEvent.KEYCODE_VOLUME_UP -> setTorchOn()
+            else -> return super.onKeyDown(keyCode, event)
         }
-        return super.onKeyDown(keyCode, event)
+
+        return true
     }
 
     fun interface TorchStateListener {

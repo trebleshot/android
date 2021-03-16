@@ -23,6 +23,8 @@ import android.util.Log
 import com.journeyapps.barcodescanner.camera.CameraSettings.FocusMode
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Utility methods for configuring the Android camera.
@@ -134,7 +136,7 @@ object CameraConfigurationUtils {
             var compensationSteps = Math.round(targetCompensation / step)
             val actualCompensation = step * compensationSteps
             // Clamp value:
-            compensationSteps = Math.max(Math.min(compensationSteps, maxExposure), minExposure)
+            compensationSteps = max(min(compensationSteps, maxExposure), minExposure)
             if (parameters.exposureCompensation == compensationSteps) {
                 Log.i(TAG, "Exposure compensation already set to $compensationSteps / $actualCompensation")
             } else {

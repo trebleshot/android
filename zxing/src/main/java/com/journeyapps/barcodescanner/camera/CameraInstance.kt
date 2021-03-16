@@ -8,7 +8,7 @@ import com.journeyapps.barcodescanner.Size
 import com.journeyapps.barcodescanner.Util
 
 open class CameraInstance(private val cameraManager: CameraManager) {
-    private val cameraThread: CameraThread = CameraThread.instance
+    private val cameraThreadManager: CameraThreadManager = CameraThreadManager.INSTANCE
 
     private val closer = Runnable {
         try {
@@ -18,9 +18,11 @@ open class CameraInstance(private val cameraManager: CameraManager) {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to close camera", e)
         }
+
         cameraClosed = true
+
         readyHandler?.sendEmptyMessage(R.id.zxing_camera_closed)
-        cameraThread.decrementInstances()
+        cameraThreadManager.decrementInstances()
     }
 
     private val configure = Runnable {
@@ -80,18 +82,20 @@ open class CameraInstance(private val cameraManager: CameraManager) {
 
     fun close() {
         Util.validateMainThread()
+
         if (open) {
-            cameraThread.enqueue(closer)
+            cameraThreadManager.enqueue(closer)
         } else {
             cameraClosed = true
         }
+
         open = false
     }
 
     fun configureCamera() {
         Util.validateMainThread()
         validateOpen()
-        cameraThread.enqueue(configure)
+        cameraThreadManager.enqueue(configure)
     }
 
     private fun notifyError(error: Exception) {
@@ -100,9 +104,11 @@ open class CameraInstance(private val cameraManager: CameraManager) {
 
     fun open() {
         Util.validateMainThread()
+
         open = true
         cameraClosed = false
-        cameraThread.incrementAndEnqueue(opener)
+
+        cameraThreadManager.incrementAndEnqueue(opener)
     }
 
     fun requestPreview(callback: PreviewCallback?) {
@@ -110,7 +116,7 @@ open class CameraInstance(private val cameraManager: CameraManager) {
             if (!open) {
                 Log.d(TAG, "Camera is closed, not requesting preview")
             } else {
-                cameraThread.enqueue { cameraManager.requestPreviewFrame(callback) }
+                cameraThreadManager.enqueue { cameraManager.requestPreviewFrame(callback) }
             }
         }
     }
@@ -123,15 +129,16 @@ open class CameraInstance(private val cameraManager: CameraManager) {
 
     fun setTorch(on: Boolean) {
         Util.validateMainThread()
+
         if (open) {
-            cameraThread.enqueue { cameraManager.setTorch(on) }
+            cameraThreadManager.enqueue { cameraManager.setTorch(on) }
         }
     }
 
     fun startPreview() {
         Util.validateMainThread()
         validateOpen()
-        cameraThread.enqueue(previewStarter)
+        cameraThreadManager.enqueue(previewStarter)
     }
 
     private fun validateOpen() {

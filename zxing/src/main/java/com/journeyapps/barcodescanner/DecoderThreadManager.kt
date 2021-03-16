@@ -11,10 +11,7 @@ import com.google.zxing.Result
 import com.journeyapps.barcodescanner.camera.CameraInstance
 import com.journeyapps.barcodescanner.camera.PreviewCallback
 
-/**
- *
- */
-class DecoderThread(
+class DecoderThreadManager(
     private val cameraInstance: CameraInstance,
     var decoder: Decoder,
     private val resultHandler: Handler,
@@ -60,6 +57,7 @@ class DecoderThread(
 
     fun start() {
         Util.validateMainThread()
+
         thread = HandlerThread(TAG).also {
             it.start()
             handler = Handler(it.looper, callback)
@@ -71,6 +69,7 @@ class DecoderThread(
 
     fun stop() {
         Util.validateMainThread()
+
         synchronized(lock) {
             running = false
             handler?.removeCallbacksAndMessages(null)
@@ -125,7 +124,7 @@ class DecoderThread(
     }
 
     companion object {
-        private val TAG = DecoderThread::class.simpleName
+        private val TAG = DecoderThreadManager::class.simpleName
     }
 
     init {

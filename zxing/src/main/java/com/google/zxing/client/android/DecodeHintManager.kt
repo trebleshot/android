@@ -94,12 +94,9 @@ object DecodeHintManager {
                 pos = amp + 1
                 continue
             }
-            var name = query.substring(pos, equ)
-            name = name.replace('+', ' ') // Preemptively decode +
-            name = Uri.decode(name)
-            var text = query.substring(equ + 1, amp)
-            text = text.replace('+', ' ') // Preemptively decode +
-            text = Uri.decode(text)
+            val name = Uri.decode(query.substring(pos, equ).replace('+', ' '))
+            val text = Uri.decode(query.substring(equ + 1, amp).replace('+', ' '))
+
             if (!map.containsKey(name)) {
                 map[name] = text
             }
@@ -109,10 +106,7 @@ object DecodeHintManager {
     }
 
     fun parseDecodeHints(inputUri: Uri): Map<DecodeHintType, *>? {
-        val query = inputUri.encodedQuery
-        if (query == null || query.isEmpty()) {
-            return null
-        }
+        val query = inputUri.encodedQuery?.takeIf { it.isNotEmpty() } ?: return null
 
         // Extract parameters
         val parameters = splitQuery(query)
@@ -127,10 +121,8 @@ object DecodeHintManager {
                 continue  // This hint is specified in another way
             }
             val parameterName = hintType.name
-            var parameterText = parameters[parameterName]
-            if (parameterText == null) {
-                continue
-            }
+            var parameterText = parameters[parameterName] ?: continue
+
             if (hintType.valueType == Any::class.java) {
                 // This is an unspecified type of hint content. Use the value as is.
                 // TODO: Can we make a different assumption on this?

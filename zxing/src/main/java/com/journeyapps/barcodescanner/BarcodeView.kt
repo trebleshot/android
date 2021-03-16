@@ -10,18 +10,25 @@ import java.util.*
 open class BarcodeView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : CameraPreview(context, attrs, defStyleAttr) {
+    private var barcodeCallback: BarcodeCallback? = null
+
+    var decoderFactory: DecoderFactory = createDefaultDecoderFactory()
+        set(value) {
+            Util.validateMainThread()
+            field = value
+            decoderThreadManager?.decoder = createDecoder()
+        }
+
     private var decodeMode = DecodeMode.NONE
 
-    private var callback: BarcodeCallback? = null
-
-    private var decoderThread: DecoderThread? = null
+    private var decoderThreadManager: DecoderThreadManager? = null
 
     private val resultCallback = Handler.Callback { message ->
         when (message.what) {
             R.id.zxing_decode_succeeded -> {
                 val result = message.obj as BarcodeResult
                 if (decodeMode != DecodeMode.NONE) {
-                    callback?.barcodeResult(result)
+                    barcodeCallback?.barcodeResult(result)
                     if (decodeMode == DecodeMode.SINGLE) {
                         stopDecoding()
                     }
@@ -34,20 +41,13 @@ open class BarcodeView @JvmOverloads constructor(
             R.id.zxing_possible_result_points -> {
                 val resultPoints = message.obj as List<ResultPoint>
                 if (decodeMode != DecodeMode.NONE) {
-                    callback?.possibleResultPoints(resultPoints)
+                    barcodeCallback?.possibleResultPoints(resultPoints)
                 }
                 return@Callback true
             }
             else -> false
         }
     }
-
-    var decoderFactory: DecoderFactory = createDefaultDecoderFactory()
-        set(value) {
-            Util.validateMainThread()
-            field = value
-            decoderThread?.decoder = createDecoder()
-        }
 
     private var resultHandler = Handler(resultCallback)
 
@@ -67,13 +67,15 @@ open class BarcodeView @JvmOverloads constructor(
 
     fun decodeSingle(callback: BarcodeCallback?) {
         decodeMode = DecodeMode.SINGLE
-        this.callback = callback
+        barcodeCallback = callback
+
         startDecoderThread()
     }
 
     fun decodeContinuous(callback: BarcodeCallback?) {
         decodeMode = DecodeMode.CONTINUOUS
-        this.callback = callback
+        barcodeCallback = callback
+
         startDecoderThread()
     }
 
@@ -93,7 +95,12 @@ open class BarcodeView @JvmOverloads constructor(
         if (decodeMode != DecodeMode.NONE && previewActive) {
             val cameraInstance = cameraInstance ?: throw NullPointerException("Camera instance should not be null")
 
-            decoderThread = DecoderThread(cameraInstance, createDecoder(), resultHandler, previewFramingRect).also {
+            decoderThreadManager = DecoderThreadManager(
+                cameraInstance,
+                createDecoder(),
+                resultHandler,
+                previewFramingRect!!
+            ).also {
                 it.start()
             }
         }
@@ -101,14 +108,15 @@ open class BarcodeView @JvmOverloads constructor(
 
     fun stopDecoding() {
         decodeMode = DecodeMode.NONE
-        callback = null
+        barcodeCallback = null
+
         stopDecoderThread()
     }
 
     private fun stopDecoderThread() {
-        decoderThread?.let {
+        decoderThreadManager?.let {
             it.stop()
-            decoderThread = null
+            decoderThreadManager = null
         }
     }
 

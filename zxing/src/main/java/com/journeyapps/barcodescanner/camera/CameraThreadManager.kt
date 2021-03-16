@@ -3,7 +3,7 @@ package com.journeyapps.barcodescanner.camera
 import android.os.Handler
 import android.os.HandlerThread
 
-open class CameraThread private constructor() {
+open class CameraThreadManager private constructor() {
     private val lock = Any()
 
     private var handler: Handler? = null
@@ -65,10 +65,10 @@ open class CameraThread private constructor() {
     }
 
     companion object {
-        private val TAG = CameraThread::class.simpleName
+        private val TAG = CameraThreadManager::class.simpleName
 
-        val instance: CameraThread by lazy {
-            CameraThread()
+        val INSTANCE: CameraThreadManager by lazy {
+            CameraThreadManager()
         }
     }
 }

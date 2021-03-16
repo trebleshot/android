@@ -17,7 +17,7 @@ import kotlin.math.min
 open class CameraPreview @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : ViewGroup(context, attrs, defStyleAttr) {
-    private var windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     private val displayRotation: Int
         get() = windowManager.defaultDisplay.rotation
@@ -57,7 +57,7 @@ open class CameraPreview @JvmOverloads constructor(
     private val stateCallback = Handler.Callback { message ->
         when (message.what) {
             R.id.zxing_prewiew_size_ready -> {
-                previewSized(message.obj as Size)
+                sizePreview(message.obj as Size)
                 return@Callback true
             }
             R.id.zxing_camera_error -> {
@@ -144,7 +144,7 @@ open class CameraPreview @JvmOverloads constructor(
 
     private var torchOn = false
 
-    var useTextureView = false
+    private var useTextureView = false
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -153,7 +153,7 @@ open class CameraPreview @JvmOverloads constructor(
 
     @SuppressLint("DrawAllocation")
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        containerSized(Size(r - l, b - t))
+        sizeContainer(Size(r - l, b - t))
 
         val surfaceView = surfaceView
         val surfaceRect = surfaceRect
@@ -167,23 +167,18 @@ open class CameraPreview @JvmOverloads constructor(
         } else textureView?.layout(0, 0, width, height)
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
-        val superState = super.onSaveInstanceState()
-        val myState = Bundle()
-        myState.putParcelable("super", superState)
-        myState.putBoolean("torch", torchOn)
-        return myState
+    override fun onSaveInstanceState(): Parcelable? = Bundle().apply {
+        putParcelable("super", super.onSaveInstanceState())
+        putBoolean("torch", torchOn)
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
-        if (state !is Bundle) {
+        if (state is Bundle) {
+            super.onRestoreInstanceState(state.getParcelable("super"))
+            setTorch(state.getBoolean("torch"))
+        } else {
             super.onRestoreInstanceState(state)
-            return
         }
-        val superState = state.getParcelable<Parcelable>("super")
-        super.onRestoreInstanceState(superState)
-        val torch = state.getBoolean("torch")
-        setTorch(torch)
     }
 
     fun initializeAttributes(attrs: AttributeSet?) {
@@ -253,6 +248,29 @@ open class CameraPreview @JvmOverloads constructor(
         }
     }
 
+    private fun calculateFramingRect(container: Rect?, surface: Rect): Rect {
+        val framingRectSize = framingRectSize
+        val intersection = Rect(container)
+        val intersects = intersection.intersect(surface)
+
+        if (framingRectSize != null) {
+            val horizontalMargin = Math.max(0, (intersection.width() - framingRectSize.width) / 2)
+            val verticalMargin = Math.max(0, (intersection.height() - framingRectSize.height) / 2)
+            intersection.inset(horizontalMargin, verticalMargin)
+            return intersection
+        }
+
+        val margin = min(intersection.width() * marginFraction, intersection.height() * marginFraction).toInt()
+
+        intersection.inset(margin, margin)
+        if (intersection.height() > intersection.width()) {
+            intersection.inset(0, (intersection.height() - intersection.width()) / 2)
+        } else if (intersection.width() > intersection.height()) {
+            intersection.inset((intersection.width() - intersection.height()) / 2, 0)
+        }
+        return intersection
+    }
+
     private fun calculateTextureTransform(textureSize: Size, previewSize: Size): Matrix {
         val ratioTexture = textureSize.width.toFloat() / textureSize.height.toFloat()
         val ratioPreview = previewSize.width.toFloat() / previewSize.height.toFloat()
@@ -278,27 +296,12 @@ open class CameraPreview @JvmOverloads constructor(
         }
     }
 
-    private fun containerSized(containerSize: Size) {
-        this.containerSize = containerSize
-        cameraInstance?.let { cameraInstance ->
-            if (cameraInstance.displayConfiguration == null) {
-                displayConfiguration = DisplayConfiguration(displayRotation, containerSize).also {
-                    displayConfiguration?.previewScalingStrategy = getPreviewScalingStrategy()
-                    cameraInstance.displayConfiguration = displayConfiguration
-                }
-
-                cameraInstance.configureCamera()
-
-                if (torchOn) {
-                    cameraInstance.setTorch(torchOn)
-                }
-            }
-        }
+    private fun createCameraInstance() = CameraInstance(context).apply {
+        setCameraSettings(cameraSettings)
     }
 
     @TargetApi(14)
     private fun createSurfaceTextureListener(): SurfaceTextureListener {
-        // Cannot initialize automatically, since we may be API < 14
         return object : SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
                 onSurfaceTextureSizeChanged(surface, width, height)
@@ -329,85 +332,21 @@ open class CameraPreview @JvmOverloads constructor(
         }
     }
 
-    private fun previewSized(size: Size) {
-        previewSize = size
-        if (containerSize != null) {
-            calculateFrames()
-            requestLayout()
-            startPreviewIfReady()
-        }
-    }
-
-    private fun rotationChanged() {
-        if (isActive() && displayRotation != openedOrientation) {
-            pause()
-            resume()
-        }
-    }
-
-    private fun setupSurfaceView() {
-        if (useTextureView) textureView = TextureView(context).also {
-            it.surfaceTextureListener = createSurfaceTextureListener()
-            addView(it)
-        } else surfaceView = SurfaceView(context).also {
-            it.holder.addCallback(surfaceCallback)
-            addView(it)
-        }
-    }
-
-    fun setTorch(on: Boolean) {
-        torchOn = on
-        cameraInstance?.setTorch(on)
-    }
-
-    private fun startPreviewIfReady() {
-        val surfaceView = surfaceView
-        val surfaceRect = surfaceRect
-        val previewSize = previewSize
-        val textureView = textureView
-        val surfaceTexture = textureView?.surfaceTexture
-
-        if (currentSurfaceSize != null && previewSize != null && surfaceRect != null) {
-            if (surfaceView != null && currentSurfaceSize == Size(surfaceRect.width(), surfaceRect.height())) {
-                startCameraPreview(CameraSurface.create(surfaceView.holder))
-            } else if (textureView != null && surfaceTexture != null) {
-                val transform = calculateTextureTransform(
-                    Size(textureView.width, textureView.height), previewSize
-                )
-                textureView.setTransform(transform)
-                startCameraPreview(CameraSurface.create(surfaceTexture))
-            }
-        }
-    }
-
-    fun resume() {
-        Util.validateMainThread()
-        Log.d(TAG, "resume()")
-
-        initCamera()
-
-        val surfaceView = surfaceView
-        val textureView = textureView
-        val surfaceTexture = textureView?.surfaceTexture
-
-        if (currentSurfaceSize != null) {
-            startPreviewIfReady()
-        } else if (surfaceView != null) {
-            // Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceView.holder.addCallback(surfaceCallback)
-        } else if (textureView != null) {
-            if (surfaceTexture != null) {
-                createSurfaceTextureListener().onSurfaceTextureAvailable(
-                    surfaceTexture, textureView.width, textureView.height
-                )
-            } else {
-                textureView.surfaceTextureListener = createSurfaceTextureListener()
-            }
+    private fun initCamera() {
+        if (cameraInstance != null) {
+            Log.w(TAG, "initCamera called twice")
+            return
         }
 
-        requestLayout()
-        rotationListener.listen(context, rotationCallback)
+        cameraInstance = createCameraInstance().also {
+            it.readyHandler = stateHandler
+            it.open()
+        }
+
+        openedOrientation = displayRotation
     }
+
+    private fun isActive() = cameraInstance != null
 
     open fun pause() {
         Util.validateMainThread()
@@ -449,51 +388,86 @@ open class CameraPreview @JvmOverloads constructor(
         }
     }
 
-    private fun isActive() = cameraInstance != null
-
-    private fun initCamera() {
-        if (cameraInstance != null) {
-            Log.w(TAG, "initCamera called twice")
-            return
-        }
-        cameraInstance = createCameraInstance().also {
-            it.readyHandler = stateHandler
-            it.open()
-        }
-
-        openedOrientation = displayRotation
-    }
-
-    private fun calculateFramingRect(container: Rect?, surface: Rect): Rect {
-        val framingRectSize = framingRectSize
-        val intersection = Rect(container)
-        val intersects = intersection.intersect(surface)
-
-        if (framingRectSize != null) {
-            val horizontalMargin = Math.max(0, (intersection.width() - framingRectSize.width) / 2)
-            val verticalMargin = Math.max(0, (intersection.height() - framingRectSize.height) / 2)
-            intersection.inset(horizontalMargin, verticalMargin)
-            return intersection
-        }
-
-        val margin = min(intersection.width() * marginFraction, intersection.height() * marginFraction).toInt()
-
-        intersection.inset(margin, margin)
-        if (intersection.height() > intersection.width()) {
-            intersection.inset(0, (intersection.height() - intersection.width()) / 2)
-        } else if (intersection.width() > intersection.height()) {
-            intersection.inset((intersection.width() - intersection.height()) / 2, 0)
-        }
-        return intersection
-    }
-
-    private fun createCameraInstance(): CameraInstance {
-        val cameraInstance = CameraInstance(context)
-        cameraInstance.setCameraSettings(cameraSettings)
-        return cameraInstance
-    }
-
     protected open fun previewStarted() {}
+
+    fun resume() {
+        Util.validateMainThread()
+        Log.d(TAG, "resume()")
+
+        initCamera()
+
+        val surfaceView = surfaceView
+        val textureView = textureView
+        val surfaceTexture = textureView?.surfaceTexture
+
+        if (currentSurfaceSize != null) {
+            startPreviewIfReady()
+        } else if (surfaceView != null) {
+            // Install the callback and wait for surfaceCreated() to init the camera.
+            surfaceView.holder.addCallback(surfaceCallback)
+        } else if (textureView != null) {
+            if (surfaceTexture != null) {
+                createSurfaceTextureListener().onSurfaceTextureAvailable(
+                    surfaceTexture, textureView.width, textureView.height
+                )
+            } else {
+                textureView.surfaceTextureListener = createSurfaceTextureListener()
+            }
+        }
+
+        requestLayout()
+        rotationListener.listen(context, rotationCallback)
+    }
+
+    private fun rotationChanged() {
+        if (isActive() && displayRotation != openedOrientation) {
+            pause()
+            resume()
+        }
+    }
+
+    private fun setupSurfaceView() {
+        if (useTextureView) textureView = TextureView(context).also {
+            it.surfaceTextureListener = createSurfaceTextureListener()
+            addView(it)
+        } else surfaceView = SurfaceView(context).also {
+            it.holder.addCallback(surfaceCallback)
+            addView(it)
+        }
+    }
+
+    fun setTorch(on: Boolean) {
+        torchOn = on
+        cameraInstance?.setTorch(on)
+    }
+
+    private fun sizeContainer(size: Size) {
+        containerSize = size
+        cameraInstance?.let { cameraInstance ->
+            if (cameraInstance.displayConfiguration == null) {
+                displayConfiguration = DisplayConfiguration(displayRotation, size).also {
+                    displayConfiguration?.previewScalingStrategy = getPreviewScalingStrategy()
+                    cameraInstance.displayConfiguration = displayConfiguration
+                }
+
+                cameraInstance.configureCamera()
+
+                if (torchOn) {
+                    cameraInstance.setTorch(torchOn)
+                }
+            }
+        }
+    }
+
+    private fun sizePreview(size: Size) {
+        previewSize = size
+
+        if (containerSize != null) {
+            calculateFrames()
+            requestLayout()
+            startPreviewIfReady()
+        }
+    }
 
     private fun startCameraPreview(surface: CameraSurface) {
         if (!previewActive) cameraInstance?.let {
@@ -503,6 +477,26 @@ open class CameraPreview @JvmOverloads constructor(
             previewActive = true
             previewStarted()
             fireState.previewStarted()
+        }
+    }
+
+    private fun startPreviewIfReady() {
+        val surfaceView = surfaceView
+        val surfaceRect = surfaceRect
+        val previewSize = previewSize
+        val textureView = textureView
+        val surfaceTexture = textureView?.surfaceTexture
+
+        if (currentSurfaceSize != null && previewSize != null && surfaceRect != null) {
+            if (surfaceView != null && currentSurfaceSize == Size(surfaceRect.width(), surfaceRect.height())) {
+                startCameraPreview(CameraSurface.create(surfaceView.holder))
+            } else if (textureView != null && surfaceTexture != null) {
+                val transform = calculateTextureTransform(
+                    Size(textureView.width, textureView.height), previewSize
+                )
+                textureView.setTransform(transform)
+                startCameraPreview(CameraSurface.create(surfaceTexture))
+            }
         }
     }
 

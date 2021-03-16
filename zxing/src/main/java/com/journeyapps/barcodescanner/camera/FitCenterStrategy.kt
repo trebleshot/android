@@ -5,25 +5,7 @@ import android.util.Log
 import com.journeyapps.barcodescanner.Size
 import kotlin.math.pow
 
-/**
- * Scales the size so that both dimensions will be greater than or equal to the corresponding
- * dimension of the parent. One of width or height will fit exactly. Aspect ratio is preserved.
- */
 class FitCenterStrategy : PreviewScalingStrategy() {
-    /**
-     * Get a score for our size.
-     *
-     *
-     * Based on heuristics for penalizing scaling and cropping.
-     *
-     *
-     * 1.0 is perfect (exact match).
-     * 0.0 means we can't use it at all.
-     *
-     * @param size    the camera preview size (that can be scaled)
-     * @param desired the viewfinder size
-     * @return the score
-     */
     override fun getScore(size: Size, desired: Size): Float {
         if (size.width <= 0 || size.height <= 0) {
             return 0f
@@ -51,16 +33,6 @@ class FitCenterStrategy : PreviewScalingStrategy() {
         return scaleScore * cropScore
     }
 
-    /**
-     * Scale the preview to cover the viewfinder, then center it.
-     *
-     *
-     * Aspect ratio is preserved.
-     *
-     * @param previewSize    the size of the preview (camera), in current display orientation
-     * @param viewfinderSize the size of the viewfinder (display), in current display orientation
-     * @return a rect placing the preview
-     */
     override fun scalePreview(previewSize: Size, viewfinderSize: Size): Rect {
         // We avoid scaling if feasible.
         val scaledPreview = previewSize.scaleFit(viewfinderSize)

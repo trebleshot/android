@@ -26,12 +26,6 @@ import java.util.*
  * to run all operations on the same thread.
  */
 class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
-    private val useAutoFocus: Boolean
-
-    private var stopped = false
-
-    private var focusing = false
-
     private val autoFocusCallback = AutoFocusCallback { _, _ ->
         handler.post {
             focusing = false
@@ -49,11 +43,22 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
 
     private val handler: Handler = Handler(focusHandlerCallback)
 
+    private val useAutoFocus = settings.autoFocusEnabled
+            && FOCUS_MODES_CALLING_AF.contains(camera.parameters.focusMode)
+
+    private var focusing = false
+
+    private var stopped = false
+
     @Synchronized
     private fun autoFocusAgainLater() {
         if (!stopped && !handler.hasMessages(MESSAGE_FOCUS)) {
             handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_FOCUS), AUTO_FOCUS_INTERVAL_MS)
         }
+    }
+
+    private fun cancelOutstandingTask() {
+        handler.removeMessages(MESSAGE_FOCUS)
     }
 
     private fun focus() {
@@ -63,17 +68,11 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
                     camera.autoFocus(autoFocusCallback)
                     focusing = true
                 } catch (re: RuntimeException) {
-                    // Have heard RuntimeException reported in Android 4.0.x+; continue?
                     Log.w(TAG, "Unexpected exception while focusing", re)
-                    // Try again later to keep cycle going
                     autoFocusAgainLater()
                 }
             }
         }
-    }
-
-    private fun cancelOutstandingTask() {
-        handler.removeMessages(MESSAGE_FOCUS)
     }
 
     fun start() {
@@ -92,7 +91,6 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
             try {
                 camera.cancelAutoFocus()
             } catch (e: RuntimeException) {
-                // Have heard RuntimeException reported in Android 4.0.x+; continue?
                 Log.w(TAG, "Unexpected exception while cancelling focusing", e)
             }
         }
@@ -114,9 +112,7 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
     }
 
     init {
-        val currentFocusMode = camera.parameters.focusMode
-        useAutoFocus = settings.autoFocusEnabled && FOCUS_MODES_CALLING_AF.contains(currentFocusMode)
-        Log.i(TAG, "Current focus mode '$currentFocusMode'; use auto focus? $useAutoFocus")
+        Log.i(TAG, "Current focus mode '${camera.parameters.focusMode}'; use auto focus? $useAutoFocus")
         start()
     }
 }

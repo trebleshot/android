@@ -102,7 +102,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                         super.onShown(transientBottomBar)
                         binding.barcodeView.pauseAndWait()
                     }
-
+s
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                         super.onDismissed(transientBottomBar, event)
                         resumeIfPossible()
