@@ -1,16 +1,8 @@
 package com.journeyapps.barcodescanner.camera
 
-import com.google.zxing.client.android.camera.open.OpenCameraInterface
+import com.google.zxing.client.android.camera.open.Cameras
 
 class CameraSettings {
-    var requestedCameraId = OpenCameraInterface.NO_REQUESTED_CAMERA
-
-    var scanInverted = false
-
-    var barcodeSceneModeEnabled = false
-
-    var meteringEnabled = false
-
     var autoFocusEnabled = true
         set(value) {
             field = value
@@ -22,6 +14,10 @@ class CameraSettings {
                 null
             }
         }
+
+    var autoTorchEnabled = false
+
+    var barcodeSceneModeEnabled = false
 
     var continuousFocusEnabled = false
         set(value) {
@@ -35,9 +31,13 @@ class CameraSettings {
 
     var exposureEnabled = false
 
-    var autoTorchEnabled = false
-
     var focusMode: FocusMode? = FocusMode.AUTO
+
+    var meteringEnabled = false
+
+    var requestedCameraId = Cameras.NO_REQUESTED_CAMERA
+
+    var scanInverted = false
 
     enum class FocusMode {
         AUTO, CONTINUOUS, INFINITY, MACRO

@@ -22,32 +22,12 @@ import com.google.zxing.DecodeHintType
 import java.util.*
 import java.util.regex.Pattern
 
-/**
- * @author Lachezar Dobrev
- */
 object DecodeHintManager {
     private val TAG = DecodeHintManager::class.simpleName
 
     // This pattern is used in decoding integer arrays.
     private val COMMA = Pattern.compile(",")
 
-    /**
-     *
-     * Split a query string into a list of name-value pairs.
-     *
-     *
-     * This is an alternative to the [Uri.getQueryParameterNames] and
-     * [Uri.getQueryParameters], which are quirky and not suitable
-     * for exist-only Uri parameters.
-     *
-     *
-     * This method ignores multiple parameters with the same name and returns the
-     * first one only. This is technically incorrect, but should be acceptable due
-     * to the method of processing Hints: no multiple values for a hint.
-     *
-     * @param query query to split
-     * @return name-value pairs
-     */
     private fun splitQuery(query: String): Map<String, String> {
         val map: MutableMap<String, String> = HashMap()
         var pos = 0
@@ -120,6 +100,7 @@ object DecodeHintManager {
             ) {
                 continue  // This hint is specified in another way
             }
+
             val parameterName = hintType.name
             var parameterText = parameters[parameterName] ?: continue
 
@@ -160,8 +141,10 @@ object DecodeHintManager {
                 if (!parameterText.isEmpty() && parameterText[parameterText.length - 1] == ',') {
                     parameterText = parameterText.substring(0, parameterText.length - 1)
                 }
+
                 val values = COMMA.split(parameterText)
                 var array: IntArray? = IntArray(values.size)
+
                 for (i in values.indices) {
                     try {
                         array?.let { it[i] = values[i].toInt() }
@@ -177,6 +160,7 @@ object DecodeHintManager {
                 if (array != null) {
                     hints[hintType] = array
                 }
+
                 continue
             }
             Log.w(TAG, "Unsupported hint type '" + hintType + "' of type " + hintType.valueType)

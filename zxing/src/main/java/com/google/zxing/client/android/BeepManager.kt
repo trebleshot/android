@@ -25,31 +25,20 @@ import android.util.Log
 import com.journeyapps.barcodescanner.R
 import java.io.IOException
 
-/**
- * Manages beeps and vibrations.
- */
 class BeepManager(activity: Activity) {
-    private val context: Context
+    private val context = activity.applicationContext
 
-    /**
-     * Call updatePrefs() after setting this.
-     *
-     * If the device is in silent mode, it will not beep.
-     */
-    var isBeepEnabled = true
+    var beepEnabled = true
 
-    /**
-     * Call updatePrefs() after setting this.
-     */
-    private var isVibrateEnabled = false
+    private var vibrateEnabled = false
 
     @SuppressLint("MissingPermission")
     @Synchronized
     fun playBeepSoundAndVibrate() {
-        if (isBeepEnabled) {
+        if (beepEnabled) {
             playBeepSound()
         }
-        if (isVibrateEnabled) {
+        if (vibrateEnabled) {
             val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
             vibrator?.vibrate(VIBRATE_DURATION)
         }
@@ -70,18 +59,16 @@ class BeepManager(activity: Activity) {
             true
         }
         return try {
-            val file = context.resources.openRawResourceFd(R.raw.zxing_beep)
-            try {
-                mediaPlayer.setDataSource(file.fileDescriptor, file.startOffset, file.length)
-            } finally {
-                file.close()
+            val file = context.resources.openRawResourceFd(R.raw.zxing_beep).use {
+                mediaPlayer.setDataSource(it.fileDescriptor, it.startOffset, it.length)
             }
+
             mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME)
             mediaPlayer.prepare()
             mediaPlayer.start()
             mediaPlayer
-        } catch (ioe: IOException) {
-            Log.w(TAG, ioe)
+        } catch (e: IOException) {
+            Log.w(TAG, e)
             mediaPlayer.release()
             null
         }
@@ -97,8 +84,5 @@ class BeepManager(activity: Activity) {
 
     init {
         activity.volumeControlStream = AudioManager.STREAM_MUSIC
-
-        // We do not keep a reference to the Activity itself, to prevent leaks
-        context = activity.applicationContext
     }
 }

@@ -25,7 +25,7 @@ import android.util.Log
 import android.view.Surface
 import com.google.zxing.client.android.AmbientLightManager
 import com.google.zxing.client.android.camera.CameraConfigurationUtils
-import com.google.zxing.client.android.camera.open.OpenCameraInterface
+import com.google.zxing.client.android.camera.open.Cameras
 import com.journeyapps.barcodescanner.Size
 import com.journeyapps.barcodescanner.SourceData
 import java.io.IOException
@@ -139,12 +139,10 @@ class CameraManager(private val context: Context) {
     }
 
     fun open() {
-        camera = OpenCameraInterface.open(
-            cameraSettings.requestedCameraId
-        ) ?: throw RuntimeException("Failed to open camera")
+        camera = Cameras.open(cameraSettings.requestedCameraId)
         cameraInfo = CameraInfo()
 
-        Camera.getCameraInfo(OpenCameraInterface.getCameraId(cameraSettings.requestedCameraId), cameraInfo)
+        Camera.getCameraInfo(Cameras.getCameraId(cameraSettings.requestedCameraId), cameraInfo)
     }
 
     fun requestPreviewFrame(callback: PreviewCallback?) {
@@ -308,9 +306,6 @@ class CameraManager(private val context: Context) {
                     )
                     callback.onPreview(source)
                 } catch (e: RuntimeException) {
-                    // Could be:
-                    // java.lang.RuntimeException: getParameters failed (empty parameters)
-                    // IllegalArgumentException: Image data does not match the resolution
                     Log.e(TAG, "Camera preview failed", e)
                     callback.onPreviewError(e)
                 }
@@ -344,6 +339,10 @@ class CameraManager(private val context: Context) {
             }
 
             return previewSizes
+        }
+
+        fun newInstance() {
+
         }
     }
 }

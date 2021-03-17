@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import android.view.TextureView.SurfaceTextureListener
-import com.google.zxing.DecodeHintType
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.camera.*
 import java.util.*
@@ -21,30 +20,10 @@ class BarcodeView @JvmOverloads constructor(
 ) : ViewGroup(context, attrs, defStyleAttr) {
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
+    val cameraView: View
+
     private val displayRotation: Int
         get() = windowManager.defaultDisplay.rotation
-
-    private val stateCallback = Handler.Callback { message ->
-        when (message.what) {
-            R.id.zxing_prewiew_size_ready -> {
-                sizePreview(message.obj as Size)
-                return@Callback true
-            }
-            R.id.zxing_camera_error -> {
-                val error = message.obj as Exception
-
-                if (isActive()) {
-                    pause()
-                }
-            }
-            R.id.zxing_camera_closed -> {
-
-            }
-        }
-        false
-    }
-
-    private val stateHandler = Handler(stateCallback)
 
     private val surfaceCallback = object : SurfaceHolder.Callback {
         override fun surfaceCreated(holder: SurfaceHolder) {
@@ -57,18 +36,13 @@ class BarcodeView @JvmOverloads constructor(
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             currentSurfaceSize = Size(width, height)
-            startPreviewIfReady()
         }
     }
 
-    var cameraInstance: CameraInstance? = null
-        private set
-
-    private var cameraSettings = CameraSettings()
-
     private var containerSize: Size? = null
 
-    private var currentSurfaceSize: Size? = null
+    var currentSurfaceSize: Size? = null
+        private set
 
     private var displayConfiguration: DisplayConfiguration? = null
 
@@ -83,82 +57,18 @@ class BarcodeView @JvmOverloads constructor(
             field = value
         }
 
-    private var openedOrientation = -1
-
-    var previewActive = false
-        private set
-
     var previewFramingRect: Rect? = null
         private set
 
     private var previewScalingStrategy: PreviewScalingStrategy? = null
 
-    private var previewSize: Size? = null
+    var previewSize: Size? = null
+        private set
 
-    private val rotationCallback = RotationCallback {
-        stateHandler.postDelayed({ rotationChanged() }, ROTATION_LISTENER_DELAY_MS.toLong())
-    }
-
-    private var rotationListener = RotationListener()
-
-    private var surfaceRect: Rect? = null
-
-    private var surfaceView: SurfaceView? = null
-
-    private var textureView: TextureView? = null
+    var surfaceRect: Rect? = null
+        private set
 
     private var torchOn = false
-
-    private var useTextureView = false
-
-    // BarcodeView starts here
-
-    private var barcodeCallback: BarcodeCallback? = null
-
-    private var decoderFactory: DecoderFactory = createDefaultDecoderFactory()
-        set(value) {
-            Util.validateMainThread()
-
-            field = value
-            decoderThreadManager?.decoder = createDecoder()
-        }
-
-    private var decodeMode = DecodeMode.NONE
-
-    private var decoderThreadManager: DecoderThreadManager? = null
-
-    private val resultCallback = Handler.Callback { message ->
-        when (message.what) {
-            R.id.zxing_decode_succeeded -> {
-                val result = message.obj as BarcodeResult
-                if (decodeMode != DecodeMode.NONE) {
-                    barcodeCallback?.barcodeResult(result)
-                    if (decodeMode == DecodeMode.SINGLE) {
-                        stopDecoding()
-                    }
-                }
-                return@Callback true
-            }
-            R.id.zxing_decode_failed -> {
-                return@Callback true
-            }
-            R.id.zxing_possible_result_points -> {
-                val resultPoints = message.obj as List<ResultPoint>
-
-                if (decodeMode != DecodeMode.NONE) {
-                    for (point in resultPoints) {
-                        addPossibleResultPoint(point)
-                    }
-
-                    barcodeCallback?.possibleResultPoints(resultPoints)
-                }
-                return@Callback true
-            }
-            else -> false
-        }
-    }
-
-    private var resultHandler = Handler(resultCallback)
 
     // ViewfinderView starts here
 
@@ -174,44 +84,31 @@ class BarcodeView @JvmOverloads constructor(
 
     private var resultBitmap: Bitmap? = null
 
-    private var scannerAlpha: Int
+    private var scannerAlpha: Int = 0
 
-    private var possibleResultPoints: MutableList<ResultPoint>
+    private var possibleResultPoints = ArrayList<ResultPoint>(MAX_RESULT_POINTS)
 
-    private var lastPossibleResultPoints: MutableList<ResultPoint>
+    private var lastPossibleResultPoints = ArrayList<ResultPoint>(MAX_RESULT_POINTS)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setupSurfaceView()
+
+        addView(cameraView)
     }
 
     @SuppressLint("DrawAllocation")
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        sizeContainer(Size(r - l, b - t))
+        containerSize = Size(r - l, b - t)
 
-        val surfaceView = surfaceView
         val surfaceRect = surfaceRect
 
-        if (surfaceView != null) {
-            if (surfaceRect == null) {
-                surfaceView.layout(0, 0, width, height)
+        when (cameraView) {
+            is SurfaceView -> if (surfaceRect == null) {
+                cameraView.layout(0, 0, width, height)
             } else {
-                surfaceView.layout(surfaceRect.left, surfaceRect.top, surfaceRect.right, surfaceRect.bottom)
+                cameraView.layout(surfaceRect.left, surfaceRect.top, surfaceRect.right, surfaceRect.bottom)
             }
-        } else textureView?.layout(0, 0, width, height)
-    }
-
-    override fun onSaveInstanceState(): Parcelable = Bundle().apply {
-        putParcelable("super", super.onSaveInstanceState())
-        putBoolean("torch", torchOn)
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable) {
-        if (state is Bundle) {
-            super.onRestoreInstanceState(state.getParcelable("super"))
-            setTorch(state.getBoolean("torch"))
-        } else {
-            super.onRestoreInstanceState(state)
+            is TextureView -> cameraView.layout(0, 0, width, height)
         }
     }
 
@@ -301,10 +198,6 @@ class BarcodeView @JvmOverloads constructor(
         }
     }
 
-    private fun createCameraInstance() = CameraInstance(context).apply {
-        setCameraSettings(cameraSettings)
-    }
-
     @TargetApi(14)
     private fun createSurfaceTextureListener(): SurfaceTextureListener {
         return object : SurfaceTextureListener {
@@ -314,7 +207,6 @@ class BarcodeView @JvmOverloads constructor(
 
             override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
                 currentSurfaceSize = Size(width, height)
-                startPreviewIfReady()
             }
 
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -327,159 +219,15 @@ class BarcodeView @JvmOverloads constructor(
 
     private fun getPreviewScalingStrategy(): PreviewScalingStrategy {
         previewScalingStrategy?.let { return it }
-        // If we are using SurfaceTexture, it is safe to use centerCrop.
-        // For SurfaceView, it's better to use fitCenter, otherwise the preview may overlap to
-        // other views.
-        return if (textureView != null) {
-            CenterCropStrategy()
-        } else {
-            FitCenterStrategy()
-        }
-    }
-
-    private fun initCamera() {
-        if (cameraInstance != null) {
-            Log.w(TAG, "initCamera called twice")
-            return
-        }
-
-        cameraInstance = createCameraInstance().also {
-            it.readyHandler = stateHandler
-            it.open()
-        }
-
-        openedOrientation = displayRotation
-    }
-
-    private fun isActive() = cameraInstance != null
-
-    fun pause() {
-        Util.validateMainThread()
-
-        /* BarcodeView begin */
-        stopDecoderThread()
-        /* BarcodeView end */
-
-        Log.d(TAG, "pause()")
-
-        openedOrientation = -1
-        cameraInstance?.let {
-            it.close()
-            cameraInstance = null
-            previewActive = false
-        } ?: run {
-            stateHandler.sendEmptyMessage(R.id.zxing_camera_closed)
-        }
-        if (currentSurfaceSize == null) {
-            surfaceView?.holder?.removeCallback(surfaceCallback)
-            textureView?.surfaceTextureListener = null
-        }
-        containerSize = null
-        previewSize = null
-        previewFramingRect = null
-        rotationListener.stop()
-    }
-
-    fun pauseAndWait() {
-        val instance = cameraInstance
-        pause()
-        val startTime = System.nanoTime()
-        while (instance != null && !instance.cameraClosed) {
-            if (System.nanoTime() - startTime > 2000000000) {
-                // Don't wait for longer than 2 seconds
-                break
-            }
-            try {
-                Thread.sleep(1)
-            } catch (e: InterruptedException) {
-                break
-            }
-        }
-    }
-
-    protected fun previewStarted() {
-        /* BarcodeView begin */
-        startDecoderThread()
-        /* BarcodeView end */
-    }
-
-    fun resume() {
-        Util.validateMainThread()
-        Log.d(TAG, "resume()")
-
-        initCamera()
-
-        val surfaceView = surfaceView
-        val textureView = textureView
-        val surfaceTexture = textureView?.surfaceTexture
-
-        if (currentSurfaceSize != null) {
-            startPreviewIfReady()
-        } else if (surfaceView != null) {
-            // Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceView.holder.addCallback(surfaceCallback)
-        } else if (textureView != null) {
-            if (surfaceTexture != null) {
-                createSurfaceTextureListener().onSurfaceTextureAvailable(
-                    surfaceTexture, textureView.width, textureView.height
-                )
-            } else {
-                textureView.surfaceTextureListener = createSurfaceTextureListener()
-            }
-        }
-
-        requestLayout()
-        rotationListener.listen(context, rotationCallback)
-    }
-
-    private fun rotationChanged() {
-        if (isActive() && displayRotation != openedOrientation) {
-            pause()
-            resume()
-        }
-    }
-
-    private fun setupSurfaceView() {
-        if (useTextureView) textureView = TextureView(context).also {
-            it.surfaceTextureListener = createSurfaceTextureListener()
-            addView(it)
-        } else surfaceView = SurfaceView(context).also {
-            it.holder.addCallback(surfaceCallback)
-            addView(it)
-        }
-    }
-
-    fun setTorch(on: Boolean) {
-        torchOn = on
-        cameraInstance?.setTorch(on)
-    }
-
-    private fun sizeContainer(size: Size) {
-        containerSize = size
-
-        cameraInstance?.let { cameraInstance ->
-            if (cameraInstance.displayConfiguration == null) {
-                displayConfiguration = DisplayConfiguration(displayRotation, size).also {
-                    it.previewScalingStrategy = getPreviewScalingStrategy()
-                    cameraInstance.displayConfiguration = it
-                }
-
-                cameraInstance.configureCamera()
-
-                if (torchOn) {
-                    cameraInstance.setTorch(torchOn)
-                }
-            }
-        }
+        return if (cameraView is TextureView) CenterCropStrategy() else FitCenterStrategy()
     }
 
     private fun sizePreview(size: Size) {
         previewSize = size
 
         if (containerSize != null) {
-            calculateFrames()
+            calculateFrames() // only here
             requestLayout()
-            startPreviewIfReady()
         }
     }
 
@@ -489,98 +237,16 @@ class BarcodeView @JvmOverloads constructor(
             it.surface = surface
             it.startPreview()
             previewActive = true
-            previewStarted()
-        }
-    }
-
-    private fun startPreviewIfReady() {
-        val surfaceView = surfaceView
-        val surfaceRect = surfaceRect
-        val previewSize = previewSize
-        val textureView = textureView
-        val surfaceTexture = textureView?.surfaceTexture
-
-        if (currentSurfaceSize != null && previewSize != null && surfaceRect != null) {
-            if (surfaceView != null && currentSurfaceSize == Size(surfaceRect.width(), surfaceRect.height())) {
-                startCameraPreview(CameraSurface.create(surfaceView.holder))
-            } else if (textureView != null && surfaceTexture != null) {
-                val transform = calculateTextureTransform(
-                    Size(textureView.width, textureView.height), previewSize
-                )
-                textureView.setTransform(transform)
-                startCameraPreview(CameraSurface.create(surfaceTexture))
-            }
         }
     }
 
     // BarcodeView method start here
 
-    private fun createDecoder(): Decoder {
-        val callback = DecoderResultPointCallback()
-        val hints = HashMap<DecodeHintType, Any>().also {
-            it[DecodeHintType.NEED_RESULT_POINT_CALLBACK] = callback
-        }
-        val decoder = decoderFactory.createDecoder(hints)
-        callback.decoder = decoder
-        return decoder
-    }
-
-    private fun createDefaultDecoderFactory(): DecoderFactory {
-        return DefaultDecoderFactory()
-    }
-
-    fun decodeSingle(callback: BarcodeCallback?) {
-        decodeMode = DecodeMode.SINGLE
-        barcodeCallback = callback
-
-        startDecoderThread()
-    }
-
-    fun decodeContinuous(callback: BarcodeCallback?) {
-        decodeMode = DecodeMode.CONTINUOUS
-        barcodeCallback = callback
-
-        startDecoderThread()
-    }
-
-    private fun startDecoderThread() {
-        stopDecoderThread()
-
-        if (decodeMode != DecodeMode.NONE && previewActive) {
-            val cameraInstance = cameraInstance ?: throw NullPointerException("Camera instance should not be null")
-
-            decoderThreadManager = DecoderThreadManager(
-                cameraInstance,
-                createDecoder(),
-                resultHandler,
-                previewFramingRect!!
-            ).also {
-                it.start()
-            }
-        }
-    }
-
-    fun stopDecoding() {
-        decodeMode = DecodeMode.NONE
-        barcodeCallback = null
-
-        stopDecoderThread()
-    }
-
-    private fun stopDecoderThread() {
-        decoderThreadManager?.let {
-            it.stop()
-            decoderThreadManager = null
-        }
-    }
-
-    private enum class DecodeMode {
-        NONE, SINGLE, CONTINUOUS
-    }
-
     // ViewfinderView starts here
 
-    public override fun onDraw(canvas: Canvas) {
+    override fun dispatchDraw(canvas: Canvas) {
+        super.dispatchDraw(canvas)
+
         val frame = framingRect ?: return
         val previewFrame = previewFramingRect ?: return
         val width = width
@@ -623,7 +289,7 @@ class BarcodeView @JvmOverloads constructor(
             val frameTop = frame.top
 
             // draw the last possible result points
-            if (!lastPossibleResultPoints.isEmpty()) {
+            if (lastPossibleResultPoints.isNotEmpty()) {
                 paint.alpha = CURRENT_POINT_OPACITY / 2
                 paint.color = resultPointColor
                 val radius = POINT_SIZE / 2.0f
@@ -643,6 +309,7 @@ class BarcodeView @JvmOverloads constructor(
             if (possibleResultPoints.isNotEmpty()) {
                 paint.alpha = CURRENT_POINT_OPACITY
                 paint.color = resultPointColor
+
                 for (point in possibleResultPoints) {
                     canvas.drawCircle(
                         (frameLeft + (point.x * scaleX).toInt()).toFloat(),
@@ -671,7 +338,7 @@ class BarcodeView @JvmOverloads constructor(
         }
     }
 
-    private fun addPossibleResultPoint(point: ResultPoint) {
+    fun addPossibleResultPoint(point: ResultPoint) {
         if (possibleResultPoints.size < MAX_RESULT_POINTS) possibleResultPoints.add(point)
     }
 
@@ -690,10 +357,6 @@ class BarcodeView @JvmOverloads constructor(
     companion object {
         private val TAG = BarcodeView::class.simpleName
 
-        private const val ROTATION_LISTENER_DELAY_MS = 250
-
-        private val SCANNER_ALPHA = intArrayOf(0, 64, 128, 192, 255, 192, 128, 64)
-
         private const val ANIMATION_DELAY = 80L
 
         private const val CURRENT_POINT_OPACITY = 0xA0
@@ -701,13 +364,11 @@ class BarcodeView @JvmOverloads constructor(
         private const val MAX_RESULT_POINTS = 20
 
         private const val POINT_SIZE = 6
+
+        private val SCANNER_ALPHA = intArrayOf(0, 64, 128, 192, 255, 192, 128, 64)
     }
 
     init {
-        if (background == null) {
-            setBackgroundColor(Color.BLACK)
-        }
-
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.zxing_camera_preview)
         val framingRectWidth = attributes.getDimension(
             R.styleable.zxing_camera_preview_zxing_framing_rect_width, -1f
@@ -719,17 +380,17 @@ class BarcodeView @JvmOverloads constructor(
         if (framingRectWidth > 0 && framingRectHeight > 0) {
             framingRectSize = Size(framingRectWidth, framingRectHeight)
         }
-
-        useTextureView = attributes.getBoolean(
+        val useTextureView = attributes.getBoolean(
             R.styleable.zxing_camera_preview_zxing_use_texture_view, true
         )
-
-        when (attributes.getInteger(R.styleable.zxing_camera_preview_zxing_preview_scaling_strategy, -1)) {
-            1 -> previewScalingStrategy = CenterCropStrategy()
-            2 -> previewScalingStrategy = FitCenterStrategy()
-            3 -> previewScalingStrategy = FitXYStrategy()
+        previewScalingStrategy = when (
+            attributes.getInteger(R.styleable.zxing_camera_preview_zxing_preview_scaling_strategy, -1)
+        ) {
+            1 -> CenterCropStrategy()
+            2 -> FitCenterStrategy()
+            3 -> FitXYStrategy()
+            else -> previewScalingStrategy
         }
-
         maskColor = attributes.getColor(
             R.styleable.zxing_finder_zxing_viewfinder_mask,
             resources.getColor(R.color.zxing_viewfinder_mask, context.theme)
@@ -749,8 +410,14 @@ class BarcodeView @JvmOverloads constructor(
 
         attributes.recycle()
 
-        scannerAlpha = 0
-        possibleResultPoints = ArrayList(MAX_RESULT_POINTS)
-        lastPossibleResultPoints = ArrayList(MAX_RESULT_POINTS)
+        if (background == null) {
+            setBackgroundColor(Color.BLACK)
+        }
+
+        cameraView = if (useTextureView) TextureView(context).also {
+            it.surfaceTextureListener = createSurfaceTextureListener()
+        } else SurfaceView(context).also {
+            it.holder.addCallback(surfaceCallback)
+        }
     }
 }

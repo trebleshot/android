@@ -32,7 +32,7 @@ import com.journeyapps.barcodescanner.camera.CameraSettings
  */
 class AmbientLightManager(
     private val context: Context,
-    private val cameraManager: CameraManager?,
+    private val cameraManager: CameraManager,
     private val cameraSettings: CameraSettings
 ) : SensorEventListener {
     private var lightSensor: Sensor? = null
@@ -53,7 +53,7 @@ class AmbientLightManager(
     }
 
     private fun setTorch(on: Boolean) {
-        handler.post { cameraManager?.setTorch(on) }
+        handler.post { cameraManager.setTorch(on) }
     }
 
     fun start() {

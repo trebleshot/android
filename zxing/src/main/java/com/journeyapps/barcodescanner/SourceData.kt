@@ -17,8 +17,6 @@ class SourceData(
 ) {
     var cropRect: Rect? = null
 
-    private fun isRotated(): Boolean = rotation % 180 != 0
-
     fun createSource(): PlanarYUVLuminanceSource {
         val rotated = rotateCameraPreview(rotation, data, dataWidth, dataHeight)
         val cropRect = cropRect ?: throw NullPointerException("cropRect cannot be null")
@@ -58,6 +56,8 @@ class SourceData(
         }
         return bitmap
     }
+
+    private fun isRotated(): Boolean = rotation % 180 != 0
 
     companion object {
         fun rotateCameraPreview(cameraRotation: Int, data: ByteArray, imageWidth: Int, imageHeight: Int): ByteArray {

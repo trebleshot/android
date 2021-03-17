@@ -21,10 +21,6 @@ import android.os.*
 import android.util.Log
 import java.util.*
 
-/**
- * This should be created and used from the camera thread only. The thread message queue is used
- * to run all operations on the same thread.
- */
 class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
     private val autoFocusCallback = AutoFocusCallback { _, _ ->
         handler.post {
@@ -62,16 +58,17 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
     }
 
     private fun focus() {
-        if (useAutoFocus) {
-            if (!stopped && !focusing) {
-                try {
-                    camera.autoFocus(autoFocusCallback)
-                    focusing = true
-                } catch (re: RuntimeException) {
-                    Log.w(TAG, "Unexpected exception while focusing", re)
-                    autoFocusAgainLater()
-                }
-            }
+        if (!useAutoFocus || stopped || focusing) {
+            Log.d(TAG, "Cannot focus right now, AF=$useAutoFocus stopped=$stopped focusing=$focusing")
+            return
+        }
+
+        try {
+            camera.autoFocus(autoFocusCallback)
+            focusing = true
+        } catch (re: RuntimeException) {
+            Log.w(TAG, "Unexpected exception while focusing", re)
+            autoFocusAgainLater()
         }
     }
 
@@ -103,12 +100,9 @@ class AutoFocusManager(private val camera: Camera, settings: CameraSettings) {
 
         private const val MESSAGE_FOCUS = 1
 
-        private val FOCUS_MODES_CALLING_AF: MutableCollection<String> = ArrayList(2)
-
-        init {
-            FOCUS_MODES_CALLING_AF.add(Camera.Parameters.FOCUS_MODE_AUTO)
-            FOCUS_MODES_CALLING_AF.add(Camera.Parameters.FOCUS_MODE_MACRO)
-        }
+        private val FOCUS_MODES_CALLING_AF = mutableListOf(
+            Camera.Parameters.FOCUS_MODE_AUTO, Camera.Parameters.FOCUS_MODE_MACRO
+        )
     }
 
     init {
