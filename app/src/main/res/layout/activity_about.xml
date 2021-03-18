@@ -27,6 +27,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:clipToPadding="false"
         android:paddingStart="@dimen/short_content_width_padding_border"
         android:paddingEnd="@dimen/short_content_width_padding_border"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -157,9 +159,15 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <View
+        android:background="?backgroundGradientTop"
+        android:fitsSystemWindows="true"
+        android:clipToPadding="false"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize" />
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:background="?backgroundGradientTop"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize" />
 
