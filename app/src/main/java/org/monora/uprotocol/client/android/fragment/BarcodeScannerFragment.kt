@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.BarcodeScanner
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +74,20 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
         LayoutBarcodeScannerBinding.bind(requireView())
     }
 
+    private val scanner by lazy {
+        BarcodeScanner(binding.barcodeView, scannerCallBack)
+    }
+
+    private val scannerCallBack = object : BarcodeCallback {
+        override fun barcodeResult(result: BarcodeResult) {
+            handleBarcode(result.result.text)
+        }
+
+        override fun possibleResultPoints(resultPoints: List<ResultPoint>) {
+
+        }
+    }
+
     private val state = MutableLiveData<Change>()
 
     private val receiver = object : BroadcastReceiver() {
@@ -104,7 +119,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                     override fun onShown(transientBottomBar: Snackbar?) {
                         super.onShown(transientBottomBar)
-                        binding.barcodeView.pauseAndWait()
+                        scanner.pause()
                     }
 
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -144,11 +159,13 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             }
 
             if (viewModel.needsAccess.get()) {
-                binding.barcodeView.pauseAndWait()
+                scanner.pause()
             } else {
-                binding.barcodeView.resume()
+                scanner.resume()
             }
         }
+
+        scanner.create()
 
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
@@ -167,23 +184,11 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             }
 
             if (it.running) {
-                binding.barcodeView.pauseAndWait()
+                scanner.resume()
             } else {
                 resumeIfPossible()
             }
         }
-
-        binding.barcodeView.decodeContinuous(
-            object : BarcodeCallback {
-                override fun barcodeResult(result: BarcodeResult) {
-                    handleBarcode(result.result.text)
-                }
-
-                override fun possibleResultPoints(resultPoints: List<ResultPoint>) {
-
-                }
-            }
-        )
     }
 
     override fun onResume() {
@@ -196,7 +201,12 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     override fun onPause() {
         super.onPause()
         requireContext().unregisterReceiver(receiver)
-        binding.barcodeView.pauseAndWait()
+        scanner.resume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scanner.destroy()
     }
 
     fun emitState() {
@@ -269,14 +279,14 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 }
                 .show()
 
-            binding.barcodeView.pauseAndWait()
+            scanner.pause()
         }
     }
 
     private fun resumeIfPossible() {
         state.value?.let {
             if (it.camera && it.location && it.wifi) {
-                binding.barcodeView.resume()
+                scanner.resume()
             }
         }
     }

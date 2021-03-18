@@ -21,7 +21,7 @@
   <item type="id" name="zxing_decode_succeeded"/>
   <item type="id" name="zxing_possible_result_points"/>
   <item type="id" name="zxing_back_button"/>
-  <item type="id" name="zxing_prewiew_size_ready"/>
+  <item type="id" name="zxing_preview_proportions"/>
   <item type="id" name="zxing_camera_error"/>
   <item type="id" name="zxing_camera_closed"/>
 </resources>

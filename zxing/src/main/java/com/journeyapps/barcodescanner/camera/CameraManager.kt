@@ -32,8 +32,6 @@ import java.io.IOException
 import java.util.*
 
 class CameraManager(private val context: Context) {
-    private val cameraPreviewCallback = CameraPreviewCallback()
-
     private val defaultCameraParameters: Camera.Parameters?
         get() = camera?.parameters?.also {
             if (defaultParameters == null) {
@@ -65,7 +63,7 @@ class CameraManager(private val context: Context) {
 
     private var previewing = false
 
-    private var requestedPreviewSize: Size? = null
+    var resolution: Size? = null
 
     private fun calculateDisplayRotation(): Int {
         // http://developer.android.com/reference/android/hardware/Camera.html#setDisplayOrientation(int)
@@ -148,8 +146,7 @@ class CameraManager(private val context: Context) {
     fun requestPreviewFrame(callback: PreviewCallback?) {
         camera?.let {
             if (previewing) {
-                cameraPreviewCallback.callback = callback
-                it.setOneShotPreviewCallback(cameraPreviewCallback)
+                it.setOneShotPreviewCallback(CameraPreviewCallback(callback))
             }
         }
     }
@@ -159,16 +156,19 @@ class CameraManager(private val context: Context) {
     }
 
     private fun setDesiredParameters(safeMode: Boolean) {
-        val parameters = defaultCameraParameters
-        if (parameters == null) {
+        val parameters = defaultCameraParameters ?: run {
             Log.w(TAG, "Device error: no camera parameters are available. Proceeding without configuration.")
             return
         }
+
         Log.i(TAG, "Initial camera parameters: " + parameters.flatten())
+
         if (safeMode) {
             Log.w(TAG, "In camera config safe mode -- most settings will not be honored")
         }
+
         CameraConfigurationUtils.setFocus(parameters, cameraSettings.focusMode, safeMode)
+
         if (!safeMode) {
             CameraConfigurationUtils.setTorch(parameters, false)
             if (cameraSettings.scanInverted) {
@@ -185,17 +185,16 @@ class CameraManager(private val context: Context) {
                 }
             }
         }
-        val previewSizes = getPreviewSizes(parameters)
-        if (previewSizes.isEmpty()) {
-            requestedPreviewSize = null
-        } else {
-            displayConfiguration?.getBestPreviewSize(previewSizes, isCameraRotated())?.let { requestedPreviewSize ->
-                parameters.setPreviewSize(requestedPreviewSize.width, requestedPreviewSize.height)
-            }
+
+        displayConfiguration?.getBestPreviewSize(
+            getPreviewSizes(parameters),
+            isCameraRotated()
+        )?.let { requestedPreviewSize ->
+            parameters.setPreviewSize(requestedPreviewSize.width, requestedPreviewSize.height)
         }
+
         if (Build.DEVICE == "glass-1") {
             // We need to set the FPS on Google Glass devices, otherwise the preview is scrambled.
-            // FIXME - can/should we do this for other devices as well?
             CameraConfigurationUtils.setBestPreviewFPS(parameters)
         }
         Log.i(TAG, "Final camera parameters: " + parameters.flatten())
@@ -220,13 +219,11 @@ class CameraManager(private val context: Context) {
                 Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration")
             }
         }
-        val realPreviewSize = camera?.parameters?.previewSize
-        naturalPreviewSize = if (realPreviewSize == null) {
-            requestedPreviewSize
-        } else {
-            Size(realPreviewSize.width, realPreviewSize.height)
+
+        camera?.parameters?.previewSize?.let {
+            naturalPreviewSize = Size(it.width, it.height)
+            resolution = naturalPreviewSize
         }
-        cameraPreviewCallback.resolution = naturalPreviewSize
     }
 
     @Throws(IOException::class)
@@ -260,11 +257,11 @@ class CameraManager(private val context: Context) {
     }
 
     fun startPreview() {
-        camera?.takeIf { !previewing }?.let {
-            it.startPreview()
+        camera?.takeIf { !previewing }?.let { camera ->
+            camera.startPreview()
 
             previewing = true
-            autoFocusManager = AutoFocusManager(it, cameraSettings)
+            autoFocusManager = AutoFocusManager(camera, cameraSettings)
             ambientLightManager = AmbientLightManager(context, this, cameraSettings).also {
                 it.start()
             }
@@ -284,16 +281,11 @@ class CameraManager(private val context: Context) {
 
         camera?.takeIf { previewing }?.let {
             it.stopPreview()
-            cameraPreviewCallback.callback = null
             previewing = false
         }
     }
 
-    private inner class CameraPreviewCallback : Camera.PreviewCallback {
-        var callback: PreviewCallback? = null
-
-        var resolution: Size? = null
-
+    private inner class CameraPreviewCallback(private val callback: PreviewCallback?) : Camera.PreviewCallback {
         override fun onPreviewFrame(data: ByteArray, camera: Camera) {
             val cameraResolution = resolution
             val callback = callback

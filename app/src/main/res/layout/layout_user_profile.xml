@@ -41,8 +41,8 @@
         <ImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/icon_size_list_big"
+            android:layout_height="@dimen/icon_size_list_big"
             android:foreground="?roundSelector"
             android:onClick="@{editProfileClickListener}"
             app:layout_constraintBottom_toTopOf="@+id/textView5"

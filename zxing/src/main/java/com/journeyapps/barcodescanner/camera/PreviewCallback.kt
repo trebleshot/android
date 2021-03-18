@@ -6,7 +6,7 @@ import com.journeyapps.barcodescanner.SourceData
  * Callback for camera previews.
  */
 interface PreviewCallback {
-    fun onPreview(sourceData: SourceData?)
+    fun onPreview(sourceData: SourceData)
 
-    fun onPreviewError(e: Exception?)
+    fun onPreviewError(e: Exception)
 }

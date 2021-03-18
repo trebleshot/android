@@ -37,7 +37,7 @@ class DecoderSession(
     }
 
     private val previewCallback = object : PreviewCallback {
-        override fun onPreview(sourceData: SourceData?) {
+        override fun onPreview(sourceData: SourceData) {
             synchronized(lock) {
                 if (handlerThread.isAlive) {
                     handler.obtainMessage(R.id.zxing_decode, sourceData).sendToTarget()
@@ -45,7 +45,7 @@ class DecoderSession(
             }
         }
 
-        override fun onPreviewError(e: Exception?) {
+        override fun onPreviewError(e: Exception) {
             synchronized(lock) {
                 if (handlerThread.isAlive) {
                     handler.obtainMessage(R.id.zxing_preview_failed).sendToTarget()
@@ -66,11 +66,10 @@ class DecoderSession(
         val rawResult = decoder.decode(source)
 
         if (rawResult != null) {
-            val end = System.currentTimeMillis()
-            Log.d(TAG, "Found barcode in " + (end - start) + " ms")
-            val barcodeResult = BarcodeResult(rawResult, sourceData)
-
-            Message.obtain(resultHandler, R.id.zxing_decode_succeeded, barcodeResult).sendToTarget()
+            Log.d(TAG, "Found barcode in " + (System.currentTimeMillis() - start) + " ms")
+            Message.obtain(
+                resultHandler, R.id.zxing_decode_succeeded, BarcodeResult(rawResult, sourceData)
+            ).sendToTarget()
         } else {
             Message.obtain(resultHandler, R.id.zxing_decode_failed).sendToTarget()
         }
@@ -80,7 +79,7 @@ class DecoderSession(
         requestNextPreview()
     }
 
-    private fun destroy() {
+    fun destroy() {
         synchronized(lock) {
             handler.removeCallbacksAndMessages(null)
             handlerThread.quit()

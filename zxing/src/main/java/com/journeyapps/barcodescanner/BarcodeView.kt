@@ -173,7 +173,7 @@ class BarcodeView @JvmOverloads constructor(
         return intersection
     }
 
-    private fun calculateTextureTransform(textureSize: Size, previewSize: Size): Matrix {
+    fun calculateTextureTransform(textureSize: Size, previewSize: Size): Matrix {
         val ratioTexture = textureSize.width.toFloat() / textureSize.height.toFloat()
         val ratioPreview = previewSize.width.toFloat() / previewSize.height.toFloat()
         val scaleX: Float
@@ -228,15 +228,6 @@ class BarcodeView @JvmOverloads constructor(
         if (containerSize != null) {
             calculateFrames() // only here
             requestLayout()
-        }
-    }
-
-    private fun startCameraPreview(surface: CameraSurface) {
-        if (!previewActive) cameraInstance?.let {
-            Log.i(TAG, "Starting preview")
-            it.surface = surface
-            it.startPreview()
-            previewActive = true
         }
     }
 

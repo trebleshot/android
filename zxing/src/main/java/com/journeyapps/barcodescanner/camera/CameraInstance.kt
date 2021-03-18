@@ -2,12 +2,17 @@ package com.journeyapps.barcodescanner.camera
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.journeyapps.barcodescanner.R
 import com.journeyapps.barcodescanner.Size
 import com.journeyapps.barcodescanner.Util
 
-class CameraInstance(context: Context, private val readyHandler: Handler) {
+class CameraInstance(
+    context: Context,
+    private val resultHandler: Handler,
+    private val surface: CameraSurface,
+) {
     private val cameraManager: CameraManager = CameraManager(context)
 
     private val cameraThreadManager: CameraThreadManager = CameraThreadManager.INSTANCE
@@ -24,12 +29,10 @@ class CameraInstance(context: Context, private val readyHandler: Handler) {
             cameraManager.displayConfiguration = configuration
         }
 
-    private var mainHandler = Handler()
+    private var mainHandler = Handler(Looper.getMainLooper())
 
     var open = false
         private set
-
-    var surface: CameraSurface? = null
 
     fun close() {
         Util.validateMainThread()
@@ -45,7 +48,7 @@ class CameraInstance(context: Context, private val readyHandler: Handler) {
 
             cameraClosed = true
 
-            readyHandler.sendEmptyMessage(R.id.zxing_camera_closed)
+            resultHandler.sendEmptyMessage(R.id.zxing_camera_closed)
             cameraThreadManager.decrementInstances()
         } else {
             cameraClosed = true
@@ -62,7 +65,7 @@ class CameraInstance(context: Context, private val readyHandler: Handler) {
             try {
                 Log.d(TAG, "Configuring camera")
                 cameraManager.configure()
-                readyHandler.obtainMessage(R.id.zxing_prewiew_size_ready, previewSize).sendToTarget()
+                resultHandler.obtainMessage(R.id.zxing_preview_proportions, previewSize).sendToTarget()
             } catch (e: Exception) {
                 notifyError(e)
                 Log.e(TAG, "Failed to configure camera", e)
@@ -71,7 +74,7 @@ class CameraInstance(context: Context, private val readyHandler: Handler) {
     }
 
     private fun notifyError(error: Exception) {
-        readyHandler.obtainMessage(R.id.zxing_camera_error, error).sendToTarget()
+        resultHandler.obtainMessage(R.id.zxing_camera_error, error).sendToTarget()
     }
 
     fun open() {

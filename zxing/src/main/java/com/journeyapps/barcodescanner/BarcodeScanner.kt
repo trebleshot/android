@@ -1,5 +1,6 @@
 package com.journeyapps.barcodescanner
 
+import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -50,16 +51,12 @@ class BarcodeScanner(
 
     private val stateCallback = Handler.Callback { message ->
         when (message.what) {
-            R.id.zxing_prewiew_size_ready -> {
-                sizePreview(message.obj as Size)
+            R.id.zxing_preview_proportions -> {
+                //sizePreview(message.obj as Size)
                 return@Callback true
             }
             R.id.zxing_camera_error -> {
                 val error = message.obj as Exception
-
-                if (isActive()) {
-                    pause()
-                }
             }
             R.id.zxing_camera_closed -> {
 
@@ -69,30 +66,6 @@ class BarcodeScanner(
     }
 
     private val stateHandler = Handler(stateCallback)
-
-
-    private fun startPreviewIfReady() {
-        val surfaceRect = barcodeView.surfaceRect
-        val previewSize = barcodeView.previewSize
-        val currentSurfaceSize = barcodeView.currentSurfaceSize
-
-        if (currentSurfaceSize != null && previewSize != null && surfaceRect != null) {
-            when (barcodeView.cameraView) {
-                is SurfaceView -> if (currentSurfaceSize == Size(surfaceRect.width(), surfaceRect.height())) {
-                    startCameraPreview(CameraSurface.create(barcodeView.cameraView.holder))
-                }
-                is TextureView -> if (barcodeView.cameraView.surfaceTexture != null) {
-                    val transform = calculateTextureTransform(
-                        Size(barcodeView.cameraView.width, barcodeView.cameraView.height), previewSize
-                    )
-                    barcodeView.cameraView.setTransform(transform)
-                    startCameraPreview(CameraSurface.create(barcodeView.cameraView))
-                }
-            }
-        }
-    }
-
-    // demo methods
 
     @Synchronized
     fun create() {
@@ -111,11 +84,36 @@ class BarcodeScanner(
             callback.actualCallback = it
         }
 
-        val cameraInstance = CameraInstance(barcodeView.context, resultHandler).also {
+        // TODO: 3/18/21 Use an actual crop rect
+        val cropRect = Rect()
+        val surfaceRect = barcodeView.surfaceRect
+        val previewSize = barcodeView.previewSize
+        val currentSurfaceSize = barcodeView.currentSurfaceSize
+
+        if (currentSurfaceSize == null || previewSize == null || surfaceRect == null) {
+            throw java.lang.IllegalStateException("Not ready yet")
+        }
+
+        val cameraSurface = when (barcodeView.cameraView) {
+            is SurfaceView -> CameraSurface.create(barcodeView.cameraView.holder)
+            is TextureView -> {
+                val texture = barcodeView.cameraView.surfaceTexture ?: throw IllegalStateException(
+                    "Texture is not ready yet"
+                )
+                val transform = barcodeView.calculateTextureTransform(
+                    Size(barcodeView.cameraView.width, barcodeView.cameraView.height), previewSize
+                )
+                barcodeView.cameraView.setTransform(transform)
+                CameraSurface.create(texture)
+            }
+            else -> throw IllegalStateException("An undefined surface was requested")
+        }
+
+        val cameraInstance = CameraInstance(barcodeView.context, resultHandler, cameraSurface).also {
             it.open()
         }
 
-        decoderSession = DecoderSession(cameraInstance, decoder, resultHandler)
+        decoderSession = DecoderSession(cameraInstance, decoder, resultHandler, cropRect)
     }
 
     @Synchronized
@@ -127,13 +125,17 @@ class BarcodeScanner(
             return
         }
 
-        destroy()
+        decoderSession?.let {
+            it.destroy()
+        }
     }
 
     @Synchronized
     fun pause() {
+        check(sessionBegan()) {"Trying to pause after destroy()"}
+
         if (!resumed) {
-            Log.d(TAG, "destroy: Already paused")
+            Log.d(TAG, "pause: Already paused")
             return
         }
 
@@ -158,9 +160,15 @@ class BarcodeScanner(
 
     @Synchronized
     fun resume() {
+        check(sessionBegan()) {"Trying to resume before create()"}
+
         if (!resumed) {
-            Log.d(TAG, "destroy: Already resumed")
+            Log.d(TAG, "resume: Already resumed")
             return
+        }
+
+        decoderSession?.let {
+            it.cameraInstance.startPreview()
         }
 
         resumed = true
