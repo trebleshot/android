@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,7 +14,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY t.zxing]:org.monora.android.codescanner.*IND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -40,7 +41,7 @@ import com.google.zxing.common.BitMatrix
 import java.util.*
 
 /**
- * Utils for decoding and encoding bar codes
+ * Utils for decoding and encoding bar codes.
  */
 object BarcodeUtils {
     const val ROTATION_0 = 0
@@ -52,11 +53,11 @@ object BarcodeUtils {
     const val ROTATION_270 = 270
 
     /**
-     * Decode barcode from bitmap
+     * Decode barcode from bitmap.
      *
-     * @param bitmap Bitmap
-     * @param hints  Decoder hints
-     * @return Decode result, if barcode was decoded successfully, `null` otherwise
+     * @param bitmap Bitmap.
+     * @param hints  Decoder hints.
+     * @return Decode result, if barcode was decoded successfully, `null` otherwise.
      * @see DecodeHintType
      */
     @JvmOverloads
@@ -73,13 +74,13 @@ object BarcodeUtils {
     }
 
     /**
-     * Decode barcode from RGB pixels array
+     * Decode barcode from RGB pixels array.
      *
-     * @param pixels Colors in standard Android ARGB format
-     * @param width  Image width
-     * @param height Image height
-     * @param hints  Decoder hints
-     * @return Decode result, if barcode was decoded successfully, `null` otherwise
+     * @param pixels Colors in standard Android ARGB format.
+     * @param width  Image width.
+     * @param height Image height.
+     * @param hints  Decoder hints.
+     * @return Decode result, if barcode was decoded successfully, `null` otherwise.
      * @see DecodeHintType
      *
      * @see Color
@@ -101,15 +102,15 @@ object BarcodeUtils {
     }
 
     /**
-     * Decode barcode from YUV pixels array
+     * Decode barcode from YUV pixels array.
      *
-     * @param pixels            YUV image data
-     * @param width             Image width
-     * @param height            Image height
-     * @param rotation          Degrees to rotate image before decoding (only 0, 90, 180 or 270 are allowed)
-     * @param reverseHorizontal Reverse image horizontally before decoding
-     * @param hints             Decoder hints
-     * @return Decode result, if barcode was decoded successfully, `null` otherwise
+     * @param pixels            YUV image data.
+     * @param width             Image width.
+     * @param height            Image height.
+     * @param rotation          Degrees to rotate image before decoding (only 0, 90, 180 or 270 are allowed).
+     * @param reverseHorizontal Reverse image horizontally before decoding.
+     * @param hints             Decoder hints.
+     * @return Decode result, if barcode was decoded successfully, `null` otherwise.
      * @see DecodeHintType
      */
     @JvmOverloads
@@ -143,16 +144,15 @@ object BarcodeUtils {
     }
 
     /**
-     * Encode text content
+     * Encode text content.
      *
-     * @param content Text to be encoded
-     * @param format  Result barcode format
-     * @param width   Result image width
-     * @param height  Result image height
-     * @param hints   Encoder hints
-     * @return Barcode bit matrix, if it was encoded successfully, `null` otherwise
+     * @param content Text to be encoded.
+     * @param format  Result barcode format.
+     * @param width   Result image width.
+     * @param height  Result image height.
+     * @param hints   Encoder hints.
+     * @return Barcode bit matrix, if it was encoded successfully, `null` otherwise.
      * @see EncodeHintType
-     *
      * @see BitMatrix
      */
     @JvmOverloads
@@ -178,14 +178,14 @@ object BarcodeUtils {
     }
 
     /**
-     * Encode text content
+     * Encode text content.
      *
-     * @param content Text to be encoded
-     * @param format  Result barcode format
-     * @param width   Result image width
-     * @param height  Result image height
-     * @param hints   Encoder hints
-     * @return Barcode bitmap, if it was encoded successfully, `null` otherwise
+     * @param content Text to be encoded.
+     * @param format  Result barcode format.
+     * @param width   Result image width.
+     * @param height  Result image height.
+     * @param hints   Encoder hints.
+     * @return Barcode bitmap, if it was encoded successfully, `null` otherwise.
      * @see EncodeHintType
      */
     @JvmOverloads
@@ -205,10 +205,10 @@ object BarcodeUtils {
     }
 
     /**
-     * Create bitmap from bit matrix
+     * Create bitmap from bit matrix.
      *
-     * @param matrix Bit matrix
-     * @return Bitmap
+     * @param matrix Bit matrix.
+     * @return Bitmap.
      * @see BitMatrix
      * @see Bitmap
      */

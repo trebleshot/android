@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +25,23 @@
 package org.monora.android.codescanner
 
 /**
- * Code scanner scan mode
+ * Code scanner scan mode.
  *
- * @see CodeScanner.setScanMode
+ * @see CodeScanner.scanMode
  */
 enum class ScanMode {
     /**
-     * Preview will stop after first decoded code
+     * Preview will stop after first decoded code.
      */
     SINGLE,
 
     /**
-     * Continuous scan, don't stop preview after decoding the code
+     * Continuous scan, don't stop preview after decoding the code.
      */
     CONTINUOUS,
 
     /**
-     * Preview only, no code recognition
+     * Preview only, no code recognition.
      */
     PREVIEW
 }

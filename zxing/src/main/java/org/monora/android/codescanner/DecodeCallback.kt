@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +31,7 @@ import androidx.annotation.WorkerThread
 import com.google.zxing.Result
 
 /**
- * Callback of the decoding process
+ * Callback of the decoding process.
  */
 fun interface DecodeCallback {
     /**

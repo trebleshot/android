@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +25,20 @@
 package org.monora.android.codescanner
 
 /**
- * Code scanner auto focus mode
+ * Code scanner auto focus mode.
  *
  * @see CodeScanner.safeAutoFocusInterval
  */
 enum class AutoFocusMode {
     /**
-     * Auto focus camera with the specified interval
+     * Auto focus camera with the specified interval.
      *
      * @see CodeScanner.safeAutoFocusInterval
      */
     SAFE,
 
     /**
-     * Continuous auto focus, may not work on some devices
+     * Continuous auto focus, may not work on some devices.
      */
     CONTINUOUS
 }

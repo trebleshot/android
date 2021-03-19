@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,6 +55,7 @@ import java.util.*
 
 /**
  * Code scanner.
+ *
  * Supports portrait and landscape screen orientations, back and front facing cameras,
  * auto focus and flash light control, touch focus, viewfinder customization.
  *
@@ -163,6 +165,7 @@ class CodeScanner @MainThread constructor(
 
     /**
      * Camera initialization error callback.
+     *
      * If not set, an exception will be thrown when error will occur.
      *
      * @see ErrorCallback.SUPPRESS
@@ -231,7 +234,7 @@ class CodeScanner @MainThread constructor(
         }
 
     /**
-     * Preview is active or not
+     * Preview is active or not.
      */
     var isPreviewActive = false
         private set
@@ -777,12 +780,12 @@ class CodeScanner @MainThread constructor(
 
     companion object {
         /**
-         * All supported barcode formats
+         * All supported barcode formats.
          */
         val ALL_FORMATS = listOf(*BarcodeFormat.values())
 
         /**
-         * One dimensional barcode formats
+         * One dimensional barcode formats.
          */
         val ONE_DIMENSIONAL_FORMATS = listOf(
             BarcodeFormat.CODABAR,
@@ -800,7 +803,7 @@ class CodeScanner @MainThread constructor(
         )
 
         /**
-         * Two dimensional barcode formats
+         * Two dimensional barcode formats.
          */
         val TWO_DIMENSIONAL_FORMATS = listOf(
             BarcodeFormat.AZTEC,
@@ -811,12 +814,12 @@ class CodeScanner @MainThread constructor(
         )
 
         /**
-         * First back-facing camera
+         * First back-facing camera.
          */
         const val CAMERA_BACK = -1
 
         /**
-         * First front-facing camera
+         * First front-facing camera.
          */
         const val CAMERA_FRONT = -2
 

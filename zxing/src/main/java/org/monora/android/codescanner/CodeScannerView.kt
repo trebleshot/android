@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,11 +38,10 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.annotation.Px
-import com.journeyapps.barcodescanner.R
 import kotlin.math.roundToInt
 
 /**
- * A view to display code scanner preview
+ * A view to display code scanner preview.
  *
  * @see CodeScanner
  */
@@ -94,7 +94,7 @@ class CodeScannerView @JvmOverloads constructor(
     private var buttonSize: Int
 
     /**
-     * Auto-focus button color
+     * Auto-focus button color.
      */
     @get:ColorInt
     var autoFocusButtonColor = 0
@@ -106,7 +106,7 @@ class CodeScannerView @JvmOverloads constructor(
     private var focusAreaSize = 0
 
     /**
-     * Flash button color
+     * Flash button color.
      */
     @get:ColorInt
     var flashButtonColor = 0
@@ -116,7 +116,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Frame color
+     * Frame color.
      */
     @get:ColorInt
     var frameColor: Int
@@ -126,7 +126,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Frame thickness
+     * Frame thickness.
      */
     @get:Px
     var frameThickness: Int
@@ -137,7 +137,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Frame corner radius
+     * Frame corner radius.
      */
     @get:Px
     var frameCornersRadius: Int
@@ -148,7 +148,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Frame corners' size
+     * Frame corners' size.
      */
     @get:Px
     var frameCornersSize: Int
@@ -170,7 +170,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Frame aspect-ratio height
+     * Frame aspect-ratio height.
      */
     @get:FloatRange(from = 0.0, fromInclusive = false)
     var frameAspectRatioHeight: Float
@@ -184,7 +184,7 @@ class CodeScannerView @JvmOverloads constructor(
         get() = viewFinderView.frameRect
 
     /**
-     * Frame size
+     * Frame size.
      */
     @get:FloatRange(from = 0.1, to = 1.0)
     var frameSize: Float
@@ -195,7 +195,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Whether if auto focus button is currently visible
+     * Whether if auto focus button is currently visible.
      */
     var isAutoFocusButtonVisible: Boolean
         get() = autoFocusButton.visibility == VISIBLE
@@ -210,7 +210,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Whether if mask is currently visible
+     * Whether if mask is currently visible.
      */
     var isMaskVisible: Boolean
         get() = viewFinderView.visibility == VISIBLE
@@ -219,7 +219,7 @@ class CodeScannerView @JvmOverloads constructor(
         }
 
     /**
-     * Mask color
+     * Mask color.
      */
     @get:ColorInt
     var maskColor: Int
@@ -310,10 +310,10 @@ class CodeScannerView @JvmOverloads constructor(
     }
 
     /**
-     * Set frame aspect ratio (ex. 1:1, 15:10, 16:9, 4:3)
+     * Set frame aspect ratio (ex. 1:1, 15:10, 16:9, 4:3).
      *
-     * @param ratioWidth  Frame aspect ratio width
-     * @param ratioHeight Frame aspect ratio height
+     * @param ratioWidth  Frame aspect ratio width.
+     * @param ratioHeight Frame aspect ratio height.
      */
     private fun setFrameAspectRatio(
         @FloatRange(from = 0.0, fromInclusive = false) ratioWidth: Float,

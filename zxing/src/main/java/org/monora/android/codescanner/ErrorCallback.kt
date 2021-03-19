@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Yuriy Budiyev [yuriy.budiyev@yandex.ru]
+ * Copyright (c) 2021 Veli Tasalı [me@velitasali.com]
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,20 +24,23 @@
  */
 package org.monora.android.codescanner
 
+import android.app.Activity
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.WorkerThread
 import org.monora.android.codescanner.Utils.SuppressErrorCallback
 import java.lang.Exception
 
 /**
- * Code scanner error callback
+ * Code scanner error callback.
  */
 fun interface ErrorCallback {
     /**
-     * Called when error has occurred
-     * <br></br>
-     * Note that this method always called on a worker thread
+     * Called when error has occurred.
      *
-     * @param error Exception that has been thrown
+     * Note that this method always called on a worker thread.
+     *
+     * @param error Exception that has been thrown.
      * @see Handler
      * @see Looper.getMainLooper
      * @see Activity.runOnUiThread
@@ -46,7 +50,7 @@ fun interface ErrorCallback {
 
     companion object {
         /**
-         * Callback to suppress errors
+         * Callback to suppress errors.
          */
         @JvmField
         val SUPPRESS: ErrorCallback = SuppressErrorCallback()
