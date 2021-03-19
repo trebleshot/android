@@ -26,10 +26,8 @@ import androidx.lifecycle.viewModelScope
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.google.zxing.ResultPoint
-import com.journeyapps.barcodescanner.BarcodeCallback
-import com.journeyapps.barcodescanner.BarcodeResult
-import com.journeyapps.barcodescanner.BarcodeScanner
+import org.monora.android.codescanner.CodeScanner
+import org.monora.android.codescanner.DecodeCallback
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -75,16 +73,12 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     }
 
     private val scanner by lazy {
-        BarcodeScanner(binding.barcodeView, scannerCallBack)
-    }
-
-    private val scannerCallBack = object : BarcodeCallback {
-        override fun barcodeResult(result: BarcodeResult) {
-            handleBarcode(result.result.text)
-        }
-
-        override fun possibleResultPoints(resultPoints: List<ResultPoint>) {
-
+        CodeScanner(requireContext(), binding.barcodeView).apply {
+            decodeCallback = DecodeCallback {
+                lifecycleScope.launch {
+                    handleBarcode(it.text)
+                }
+            }
         }
     }
 
@@ -119,7 +113,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                     override fun onShown(transientBottomBar: Snackbar?) {
                         super.onShown(transientBottomBar)
-                        scanner.pause()
+                        scanner.startPreview()
                     }
 
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -159,13 +153,11 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             }
 
             if (viewModel.needsAccess.get()) {
-                scanner.pause()
+                scanner.stopPreview()
             } else {
-                scanner.resume()
+                scanner.startPreview()
             }
         }
-
-        scanner.create()
 
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
@@ -184,7 +176,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             }
 
             if (it.running) {
-                scanner.resume()
+                scanner.startPreview()
             } else {
                 resumeIfPossible()
             }
@@ -201,12 +193,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     override fun onPause() {
         super.onPause()
         requireContext().unregisterReceiver(receiver)
-        scanner.resume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        scanner.destroy()
+        scanner.startPreview()
     }
 
     fun emitState() {
@@ -279,14 +266,14 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 }
                 .show()
 
-            scanner.pause()
+            scanner.stopPreview()
         }
     }
 
     private fun resumeIfPossible() {
         state.value?.let {
             if (it.camera && it.location && it.wifi) {
-                scanner.resume()
+                scanner.startPreview()
             }
         }
     }

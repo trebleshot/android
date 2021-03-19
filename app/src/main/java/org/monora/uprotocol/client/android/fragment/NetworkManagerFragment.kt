@@ -47,7 +47,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
-import com.journeyapps.barcodescanner.BarcodeEncoder
+import org.monora.android.codescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.monora.uprotocol.client.android.GlideApp

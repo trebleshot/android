@@ -32,17 +32,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.journeyapps.barcodescanner.BarcodeView
+        <org.monora.android.codescanner.CodeScannerView
             android:id="@+id/barcodeView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="@{!viewModel.running &amp;&amp; !viewModel.needsAccess ? View.VISIBLE : View.GONE}"
-            app:zxing_preview_scaling_strategy="fitCenter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:zxing_viewfinder_mask="?colorTranslucent" />
+            app:autoFocusButtonColor="@android:color/white"
+            app:autoFocusButtonVisible="true"
+            app:flashButtonColor="@android:color/white"
+            app:flashButtonVisible="true"
+            app:frameColor="@android:color/white"
+            app:frameCornersSize="50dp"
+            app:frameCornersRadius="0dp"
+            app:frameAspectRatioWidth="1"
+            app:frameAspectRatioHeight="1"
+            app:frameSize="0.75"
+            app:frameThickness="2dp"
+            app:maskColor="#77000000" />
 
         <ProgressBar
             android:id="@+id/progressBar"
