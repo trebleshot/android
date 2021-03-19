@@ -315,7 +315,7 @@ class CodeScannerView @JvmOverloads constructor(
      * @param ratioWidth  Frame aspect ratio width
      * @param ratioHeight Frame aspect ratio height
      */
-    fun setFrameAspectRatio(
+    private fun setFrameAspectRatio(
         @FloatRange(from = 0.0, fromInclusive = false) ratioWidth: Float,
         @FloatRange(from = 0.0, fromInclusive = false) ratioHeight: Float,
     ) {
@@ -407,43 +407,43 @@ class CodeScannerView @JvmOverloads constructor(
             try {
                 a = context.theme.obtainStyledAttributes(
                     attrs,
-                    R.styleable.CodeScannerView,
+                    R.styleable.zxing,
                     defStyleAttr,
                     defStyleRes
                 )
-                maskColor = a.getColor(R.styleable.CodeScannerView_maskColor, DEFAULT_MASK_COLOR)
-                frameColor = a.getColor(R.styleable.CodeScannerView_frameColor, DEFAULT_FRAME_COLOR)
+                maskColor = a.getColor(R.styleable.zxing_zxing_maskColor, DEFAULT_MASK_COLOR)
+                frameColor = a.getColor(R.styleable.zxing_zxing_frameColor, DEFAULT_FRAME_COLOR)
                 frameThickness = a.getDimensionPixelOffset(
-                    R.styleable.CodeScannerView_frameThickness,
+                    R.styleable.zxing_zxing_frameThickness,
                     (DEFAULT_FRAME_THICKNESS_DP * density).roundToInt()
                 )
                 frameCornersSize = a.getDimensionPixelOffset(
-                    R.styleable.CodeScannerView_frameCornersSize,
+                    R.styleable.zxing_zxing_frameCornersSize,
                     (DEFAULT_FRAME_CORNER_SIZE_DP * density).roundToInt()
                 )
                 frameCornersRadius = a.getDimensionPixelOffset(
-                    R.styleable.CodeScannerView_frameCornersRadius,
+                    R.styleable.zxing_zxing_frameCornersRadius,
                     (DEFAULT_FRAME_CORNERS_RADIUS_DP * density).roundToInt()
                 )
                 setFrameAspectRatio(
-                    a.getFloat(R.styleable.CodeScannerView_frameAspectRatioWidth, DEFAULT_FRAME_ASPECT_RATIO_WIDTH),
-                    a.getFloat(R.styleable.CodeScannerView_frameAspectRatioHeight, DEFAULT_FRAME_ASPECT_RATIO_HEIGHT)
+                    a.getFloat(R.styleable.zxing_zxing_frameAspectRatioWidth, DEFAULT_FRAME_ASPECT_RATIO_WIDTH),
+                    a.getFloat(R.styleable.zxing_zxing_frameAspectRatioHeight, DEFAULT_FRAME_ASPECT_RATIO_HEIGHT)
                 )
-                frameSize = a.getFloat(R.styleable.CodeScannerView_frameSize, DEFAULT_FRAME_SIZE)
+                frameSize = a.getFloat(R.styleable.zxing_zxing_frameSize, DEFAULT_FRAME_SIZE)
                 isAutoFocusButtonVisible = a.getBoolean(
-                    R.styleable.CodeScannerView_autoFocusButtonVisible,
+                    R.styleable.zxing_zxing_autoFocusButtonVisible,
                     DEFAULT_AUTO_FOCUS_BUTTON_VISIBLE
                 )
                 isFlashButtonVisible = a.getBoolean(
-                    R.styleable.CodeScannerView_flashButtonVisible,
+                    R.styleable.zxing_zxing_flashButtonVisible,
                     DEFAULT_FLASH_BUTTON_VISIBLE
                 )
                 autoFocusButtonColor = a.getColor(
-                    R.styleable.CodeScannerView_autoFocusButtonColor,
+                    R.styleable.zxing_zxing_autoFocusButtonColor,
                     DEFAULT_AUTO_FOCUS_BUTTON_COLOR
                 )
                 flashButtonColor = a.getColor(
-                    R.styleable.CodeScannerView_flashButtonColor,
+                    R.styleable.zxing_zxing_flashButtonColor,
                     DEFAULT_FLASH_BUTTON_COLOR
                 )
             } finally {

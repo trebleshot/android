@@ -34,14 +34,10 @@ class DecoderWrapper(
     val previewSize: CartesianCoordinate,
     val viewSize: CartesianCoordinate,
     val displayOrientation: Int,
-    autoFocusSupported: Boolean,
-    flashSupported: Boolean,
+    val autoFocusSupported: Boolean,
+    val flashSupported: Boolean,
 ) {
     val reverseHorizontal: Boolean = cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT
-
-    val isAutoFocusSupported: Boolean = autoFocusSupported
-
-    val isFlashSupported: Boolean = flashSupported
 
     fun release() {
         camera.release()

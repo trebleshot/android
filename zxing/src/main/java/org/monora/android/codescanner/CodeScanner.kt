@@ -31,6 +31,7 @@ import android.hardware.Camera.AutoFocusCallback
 import android.hardware.Camera.CameraInfo
 import android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK
 import android.os.Handler
+import android.os.Looper
 import android.os.Process
 import android.view.SurfaceHolder
 import androidx.annotation.MainThread
@@ -56,18 +57,18 @@ import java.util.*
  * Supports portrait and landscape screen orientations, back and front facing cameras,
  * auto focus and flash light control, touch focus, viewfinder customization.
  *
- * @see com.budiyev.android.codescanner.CodeScannerView
- *
+ * @see CodeScannerView
  * @see BarcodeFormat
  */
 class CodeScanner @MainThread constructor(
     private val context: Context,
     private val scannerView: CodeScannerView,
+    decodeCallback: DecodeCallback? = null,
     requestedCameraId: Int = CAMERA_BACK,
 ) {
     private val initializeLock = Any()
 
-    private val mainThreadHandler = Handler()
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
 
     private val surfaceHolder = scannerView.previewView.holder
 
@@ -86,30 +87,25 @@ class CodeScanner @MainThread constructor(
     private val decoderStateListener = DecoderStateListener()
 
     /**
-     * Formats that decoder should react to, which is ([ALL_FORMATS] by default).
-     *
-     * @see BarcodeFormat
-     * @see ALL_FORMATS
-     * @see ONE_DIMENSIONAL_FORMATS
-     * @see TWO_DIMENSIONAL_FORMATS
+     * Whether the auto-focus is enabled.
      */
     @Volatile
     @set:MainThread
-    private var formats = DEFAULT_FORMATS
+    var autoFocusEnabled = DEFAULT_AUTO_FOCUS_ENABLED
         set(value) {
             synchronized(initializeLock) {
-                field = Objects.requireNonNull(value)
-                if (initialized) {
-                    decoderWrapper?.decoder?.setFormats(value)
+                val changed = field != value
+                field = value
+                scannerView.setAutoFocusEnabled(value)
+                val decoderWrapper = decoderWrapper
+                if (initialized && isPreviewActive && changed
+                    && decoderWrapper != null
+                    && decoderWrapper.autoFocusSupported
+                ) {
+                    setAutoFocusEnabledInternal(value)
                 }
             }
         }
-
-    /**
-     * Scan mode.
-     */
-    @Volatile
-    var scanMode = DEFAULT_SCAN_MODE
 
     /**
      * Auto-focus mode.
@@ -125,90 +121,6 @@ class CodeScanner @MainThread constructor(
                 }
             }
         }
-
-    /**
-     * Decode callback.
-     */
-    @Volatile
-    @set:MainThread
-    var decodeCallback: DecodeCallback? = null
-        set(value) {
-            synchronized(initializeLock) {
-                field = value
-                if (initialized) {
-                    decoderWrapper?.decoder?.decodeCallback = field
-                }
-            }
-        }
-
-    /**
-     * Camera initialization error callback.
-     * If not set, an exception will be thrown when error will occur.
-     *
-     * @see ErrorCallback.SUPPRESS
-     */
-    @Volatile
-    var errorCallback: ErrorCallback? = null
-
-    @Volatile
-    private var decoderWrapper: DecoderWrapper? = null
-
-    @Volatile
-    private var initialization = false
-
-    @Volatile
-    private var initialized = false
-
-    @Volatile
-    private var stoppingPreview = false
-
-    /**
-     * Whether the auto-focus is enabled.
-     */
-    @Volatile
-    @set:MainThread
-    var autoFocusEnabled = DEFAULT_AUTO_FOCUS_ENABLED
-        set(value) {
-            synchronized(initializeLock) {
-                val changed = field != value
-                field = value
-                scannerView.setAutoFocusEnabled(value)
-                val decoderWrapper = decoderWrapper
-                if (initialized && isPreviewActive && changed
-                    && decoderWrapper != null
-                    && decoderWrapper.isAutoFocusSupported
-                ) {
-                    setAutoFocusEnabledInternal(value)
-                }
-            }
-        }
-
-    /**
-     * Whether flash-light is enabled.
-     */
-    @Volatile
-    @set:MainThread
-    var flashEnabled = DEFAULT_FLASH_ENABLED
-        set(value) {
-            synchronized(initializeLock) {
-                val changed = field != value
-                field = value
-                scannerView.setFlashEnabled(value)
-                val decoderWrapper = decoderWrapper
-                if (initialized && isPreviewActive && changed && decoderWrapper != null &&
-                    decoderWrapper.isFlashSupported
-                ) {
-                    setFlashEnabledInternal(value)
-                }
-            }
-        }
-
-    /**
-     * Auto focus interval in milliseconds for [AutoFocusMode.SAFE] mode, which is
-     * [DEFAULT_SAFE_AUTO_FOCUS_INTERVAL] by default.
-     */
-    @Volatile
-    var safeAutoFocusInterval = DEFAULT_SAFE_AUTO_FOCUS_INTERVAL
 
     /**
      * The ID of the camera that is in use.
@@ -230,6 +142,132 @@ class CodeScanner @MainThread constructor(
                 }
             }
         }
+
+    /**
+     * Decode callback.
+     */
+    @Volatile
+    @set:MainThread
+    var decodeCallback: DecodeCallback? = decodeCallback
+        set(value) {
+            synchronized(initializeLock) {
+                field = value
+                if (initialized) {
+                    decoderWrapper?.decoder?.decodeCallback = field
+                }
+            }
+        }
+
+    @Volatile
+    private var decoderWrapper: DecoderWrapper? = null
+
+    /**
+     * Camera initialization error callback.
+     * If not set, an exception will be thrown when error will occur.
+     *
+     * @see ErrorCallback.SUPPRESS
+     */
+    @Volatile
+    var errorCallback: ErrorCallback? = null
+
+    /**
+     * Whether flash-light is enabled.
+     */
+    @Volatile
+    @set:MainThread
+    var flashEnabled = DEFAULT_FLASH_ENABLED
+        set(value) {
+            synchronized(initializeLock) {
+                val changed = field != value
+                field = value
+                scannerView.setFlashEnabled(value)
+                val decoderWrapper = decoderWrapper
+                if (initialized && isPreviewActive && changed && decoderWrapper != null
+                    && decoderWrapper.flashSupported
+                ) {
+                    setFlashEnabledInternal(value)
+                }
+            }
+        }
+
+    /**
+     * Formats that decoder should react to, which is ([ALL_FORMATS] by default).
+     *
+     * @see BarcodeFormat
+     * @see ALL_FORMATS
+     * @see ONE_DIMENSIONAL_FORMATS
+     * @see TWO_DIMENSIONAL_FORMATS
+     */
+    @Volatile
+    @set:MainThread
+    private var formats = DEFAULT_FORMATS
+        set(value) {
+            synchronized(initializeLock) {
+                field = Objects.requireNonNull(value)
+                if (initialized) {
+                    decoderWrapper?.decoder?.setFormats(value)
+                }
+            }
+        }
+
+    @Volatile
+    private var initialization = false
+
+    private var initializationRequested = false
+
+    @Volatile
+    private var initialized = false
+
+    val isAutoFocusSupportedOrUnknown: Boolean
+        get() {
+            val wrapper = decoderWrapper
+            return wrapper == null || wrapper.autoFocusSupported
+        }
+
+    val isFlashSupportedOrUnknown: Boolean
+        get() {
+            val wrapper = decoderWrapper
+            return wrapper == null || wrapper.flashSupported
+        }
+
+    /**
+     * Preview is active or not
+     */
+    var isPreviewActive = false
+        private set
+
+    /**
+     * Whether the touch focus is enable at the moment or not.
+     */
+    var isTouchFocusEnabled = DEFAULT_TOUCH_FOCUS_ENABLED
+
+    private var safeAutoFocusing = false
+
+    /**
+     * Auto focus interval in milliseconds for [AutoFocusMode.SAFE] mode which is
+     * [DEFAULT_SAFE_AUTO_FOCUS_INTERVAL] by default.
+     */
+    @Volatile
+    var safeAutoFocusInterval = DEFAULT_SAFE_AUTO_FOCUS_INTERVAL
+
+    /**
+     * Scan mode.
+     */
+    @Volatile
+    var scanMode = DEFAULT_SCAN_MODE
+
+    private var safeAutoFocusAttemptsCount = 0
+
+    private var safeAutoFocusTaskScheduled = false
+
+    @Volatile
+    private var stoppingPreview = false
+
+    private var touchFocusing = false
+
+    private var viewWidth = 0
+
+    private var viewHeight = 0
 
     /**
      * Camera zoom value.
@@ -255,31 +293,6 @@ class CodeScanner @MainThread constructor(
             field = value
         }
 
-    /**
-     * Whether the touch focus is enable at the moment or not.
-     */
-    var isTouchFocusEnabled = DEFAULT_TOUCH_FOCUS_ENABLED
-
-    private var touchFocusing = false
-
-    /**
-     * Preview is active or not
-     */
-    var isPreviewActive = false
-        private set
-
-    private var safeAutoFocusing = false
-
-    private var safeAutoFocusTaskScheduled = false
-
-    private var initializationRequested = false
-
-    private var safeAutoFocusAttemptsCount = 0
-
-    private var viewWidth = 0
-
-    private var viewHeight = 0
-
     //@RequiresPermission(Manifest.permission.CAMERA)
     @MainThread
     fun startPreview() {
@@ -289,6 +302,7 @@ class CodeScanner @MainThread constructor(
                 return
             }
         }
+
         if (!isPreviewActive) {
             surfaceHolder.addCallback(surfaceCallback)
             startPreviewInternal(false)
@@ -325,9 +339,7 @@ class CodeScanner @MainThread constructor(
                 try {
                     autoFocusEnabled = false
                     val decoderWrapper = decoderWrapper
-                    if (isPreviewActive && decoderWrapper != null &&
-                        decoderWrapper.isAutoFocusSupported
-                    ) {
+                    if (isPreviewActive && decoderWrapper != null && decoderWrapper.autoFocusSupported) {
                         val imageSize = decoderWrapper.imageSize
                         var imageWidth: Int = imageSize.x
                         var imageHeight: Int = imageSize.y
@@ -360,18 +372,6 @@ class CodeScanner @MainThread constructor(
         }
     }
 
-    val isAutoFocusSupportedOrUnknown: Boolean
-        get() {
-            val wrapper = decoderWrapper
-            return wrapper == null || wrapper.isAutoFocusSupported
-        }
-
-    val isFlashSupportedOrUnknown: Boolean
-        get() {
-            val wrapper = decoderWrapper
-            return wrapper == null || wrapper.isFlashSupported
-        }
-
     private fun initialize(width: Int = scannerView.width, height: Int = scannerView.height) {
         viewWidth = width
         viewHeight = height
@@ -385,30 +385,28 @@ class CodeScanner @MainThread constructor(
     }
 
     private fun startPreviewInternal(internal: Boolean) {
+        val decoderWrapper = decoderWrapper ?: return
         try {
-            val decoderWrapper = decoderWrapper
-            if (decoderWrapper != null) {
-                val camera = decoderWrapper.camera
-                camera.setPreviewCallback(previewCallback)
-                camera.setPreviewDisplay(surfaceHolder)
-                if (!internal && decoderWrapper.isFlashSupported && flashEnabled) {
-                    setFlashEnabledInternal(true)
+            val camera = decoderWrapper.camera
+            camera.setPreviewCallback(previewCallback)
+            camera.setPreviewDisplay(surfaceHolder)
+            if (!internal && decoderWrapper.flashSupported && flashEnabled) {
+                setFlashEnabledInternal(true)
+            }
+            camera.startPreview()
+            stoppingPreview = false
+            isPreviewActive = true
+            safeAutoFocusing = false
+            safeAutoFocusAttemptsCount = 0
+            if (decoderWrapper.autoFocusSupported && autoFocusEnabled) {
+                val frameRect: Rect? = scannerView.frameRect
+                if (frameRect != null) {
+                    val parameters = camera.parameters
+                    configureDefaultFocusArea(parameters, decoderWrapper, frameRect)
+                    camera.parameters = parameters
                 }
-                camera.startPreview()
-                stoppingPreview = false
-                isPreviewActive = true
-                safeAutoFocusing = false
-                safeAutoFocusAttemptsCount = 0
-                if (decoderWrapper.isAutoFocusSupported && autoFocusEnabled) {
-                    val frameRect: Rect? = scannerView.frameRect
-                    if (frameRect != null) {
-                        val parameters = camera.parameters
-                        configureDefaultFocusArea(parameters, decoderWrapper, frameRect)
-                        camera.parameters = parameters
-                    }
-                    if (autoFocusMode === AutoFocusMode.SAFE) {
-                        scheduleSafeAutoFocusTask()
-                    }
+                if (autoFocusMode === AutoFocusMode.SAFE) {
+                    scheduleSafeAutoFocusTask()
                 }
             }
         } catch (ignored: Exception) {
@@ -422,19 +420,17 @@ class CodeScanner @MainThread constructor(
     }
 
     private fun stopPreviewInternal(internal: Boolean) {
+        val decoderWrapper = decoderWrapper ?: return
         try {
-            val decoderWrapper = decoderWrapper
-            if (decoderWrapper != null) {
-                val camera = decoderWrapper.camera
-                camera.cancelAutoFocus()
-                val parameters = camera.parameters
-                if (!internal && decoderWrapper.isFlashSupported && flashEnabled) {
-                    setFlashMode(parameters, Camera.Parameters.FLASH_MODE_OFF)
-                }
-                camera.parameters = parameters
-                camera.setPreviewCallback(null)
-                camera.stopPreview()
+            val camera = decoderWrapper.camera
+            camera.cancelAutoFocus()
+            val parameters = camera.parameters
+            if (!internal && decoderWrapper.flashSupported && flashEnabled) {
+                setFlashMode(parameters, Camera.Parameters.FLASH_MODE_OFF)
             }
+            camera.parameters = parameters
+            camera.setPreviewCallback(null)
+            camera.stopPreview()
         } catch (ignored: Exception) {
         }
         stoppingPreview = false
@@ -455,10 +451,10 @@ class CodeScanner @MainThread constructor(
         stoppingPreview = false
         isPreviewActive = false
         safeAutoFocusing = false
-        val decoderWrapper = decoderWrapper
-        if (decoderWrapper != null) {
-            this.decoderWrapper = null
-            decoderWrapper.release()
+
+        decoderWrapper?.let {
+            it.release()
+            decoderWrapper = null
         }
     }
 
@@ -517,7 +513,7 @@ class CodeScanner @MainThread constructor(
             return
         }
         val decoderWrapper = decoderWrapper
-        if (decoderWrapper == null || !decoderWrapper.isAutoFocusSupported || !autoFocusEnabled
+        if (decoderWrapper == null || !decoderWrapper.autoFocusSupported || !autoFocusEnabled
         ) {
             return
         }
@@ -563,7 +559,7 @@ class CodeScanner @MainThread constructor(
 
     private inner class PreviewCallback : Camera.PreviewCallback {
         override fun onPreviewFrame(data: ByteArray, camera: Camera) {
-            if (!initialized || stoppingPreview || scanMode == ScanMode.PREVIEW || data == null) {
+            if (!initialized || stoppingPreview || scanMode == ScanMode.PREVIEW) {
                 return
             }
             val decoderWrapper = decoderWrapper ?: return
@@ -595,8 +591,7 @@ class CodeScanner @MainThread constructor(
         }
 
         override fun surfaceChanged(
-            holder: SurfaceHolder, format: Int, width: Int,
-            height: Int,
+            holder: SurfaceHolder, format: Int, width: Int, height: Int,
         ) {
             if (holder.surface == null) {
                 isPreviewActive = false
@@ -667,18 +662,25 @@ class CodeScanner @MainThread constructor(
             val parameters = camera.parameters ?: throw CodeScannerException("Unable to configure camera")
             val orientation = getDisplayOrientation(context, cameraInfo)
             val portrait = isPortrait(orientation)
-            val imageSize = findSuitableImageSize(parameters, if (portrait) height else width,
-                if (portrait) width else height)
+            val imageSize = findSuitableImageSize(
+                parameters,
+                if (portrait) height else width,
+                if (portrait) width else height
+            )
             val imageWidth: Int = imageSize.x
             val imageHeight: Int = imageSize.y
             parameters.setPreviewSize(imageWidth, imageHeight)
             parameters.previewFormat = ImageFormat.NV21
-            val previewSize = getPreviewSize(if (portrait) imageHeight else imageWidth,
-                if (portrait) imageWidth else imageHeight, width, height)
+            val previewSize = getPreviewSize(
+                if (portrait) imageHeight else imageWidth,
+                if (portrait) imageWidth else imageHeight,
+                width,
+                height
+            )
             val focusModes = parameters.supportedFocusModes
-            val autoFocusSupported = focusModes != null &&
-                    (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO) ||
-                            focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
+            val autoFocusSupported = focusModes != null
+                    && (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)
+                    || focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
             if (!autoFocusSupported) {
                 autoFocusEnabled = false
             }
@@ -687,8 +689,15 @@ class CodeScanner @MainThread constructor(
                 setAutoFocusMode(parameters, autoFocusMode)
                 val frameRect: Rect? = scannerView.frameRect
                 if (frameRect != null) {
-                    configureDefaultFocusArea(parameters, frameRect, previewSize, viewSize,
-                        imageWidth, imageHeight, orientation)
+                    configureDefaultFocusArea(
+                        parameters,
+                        frameRect,
+                        previewSize,
+                        viewSize,
+                        imageWidth,
+                        imageHeight,
+                        orientation
+                    )
                 }
             }
             val flashModes = parameters.supportedFlashModes
@@ -706,8 +715,17 @@ class CodeScanner @MainThread constructor(
             camera.setDisplayOrientation(orientation)
             synchronized(initializeLock) {
                 val decoder = Decoder(decoderStateListener, formats, decodeCallback)
-                decoderWrapper = DecoderWrapper(camera, cameraInfo, decoder, imageSize, previewSize,
-                    viewSize, orientation, autoFocusSupported, flashSupported)
+                decoderWrapper = DecoderWrapper(
+                    camera,
+                    cameraInfo,
+                    decoder,
+                    imageSize,
+                    previewSize,
+                    viewSize,
+                    orientation,
+                    autoFocusSupported,
+                    flashSupported
+                )
                 decoder.start()
                 initialization = false
                 initialized = true
@@ -761,7 +779,7 @@ class CodeScanner @MainThread constructor(
         /**
          * All supported barcode formats
          */
-        val ALL_FORMATS = Collections.unmodifiableList(Arrays.asList(*BarcodeFormat.values()))
+        val ALL_FORMATS = listOf(*BarcodeFormat.values())
 
         /**
          * One dimensional barcode formats
@@ -819,13 +837,6 @@ class CodeScanner @MainThread constructor(
         private const val SAFE_AUTO_FOCUS_ATTEMPTS_THRESHOLD = 2
     }
 
-    /**
-     * CodeScanner, associated with the first back-facing camera on the device
-     *
-     * @param context Context
-     * @param view    A view to display the preview
-     * @see CodeScannerView
-     */
     init {
         scannerView.codeScanner = this
         scannerView.sizeListener = ScannerSizeListener()

@@ -26,13 +26,12 @@ import androidx.lifecycle.viewModelScope
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import org.monora.android.codescanner.CodeScanner
-import org.monora.android.codescanner.DecodeCallback
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.monora.android.codescanner.CodeScanner
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.config.Keyword
@@ -73,13 +72,13 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     }
 
     private val scanner by lazy {
-        CodeScanner(requireContext(), binding.barcodeView).apply {
-            decodeCallback = DecodeCallback {
+        CodeScanner(
+            requireContext(), binding.barcodeView, {
                 lifecycleScope.launch {
                     handleBarcode(it.text)
                 }
             }
-        }
+        )
     }
 
     private val state = MutableLiveData<Change>()
@@ -153,7 +152,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             }
 
             if (viewModel.needsAccess.get()) {
-                scanner.stopPreview()
+                scanner.releaseResources()
             } else {
                 scanner.startPreview()
             }
@@ -193,7 +192,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     override fun onPause() {
         super.onPause()
         requireContext().unregisterReceiver(receiver)
-        scanner.startPreview()
+        scanner.releaseResources()
     }
 
     fun emitState() {
@@ -234,8 +233,6 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
         } catch (e: UnknownHostException) {
             snackbarPlacementProvider.createSnackbar(R.string.mesg_unknownHostError)?.show()
         } catch (e: Exception) {
-            e.printStackTrace()
-
             AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.text_unrecognizedQrCode)
                 .setMessage(code)

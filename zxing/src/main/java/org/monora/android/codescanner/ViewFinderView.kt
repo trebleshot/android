@@ -29,62 +29,35 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.view.View
-import androidx.annotation.FloatRange
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.annotation.Px
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ViewFinderView(context: Context) : View(context) {
-    private val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-
     private val framePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    private val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     private val path = Path()
 
-    var frameRect: Rect? = null
-        private set
-
-    private var mFrameCornersSize = 0
-
-    private var mFrameCornersRadius = 0
-
-    private var frameRatioWidth = 1f
-
-    private var frameRatioHeight = 1f
-
-    private var mFrameSize = 0.75f
-
-    private var laidOut = false
-
-    @get:FloatRange(from = 0.0, fromInclusive = false)
-    var frameAspectRatioWidth: Float
-        get() = frameRatioWidth
-        set(ratioWidth) {
-            frameRatioWidth = ratioWidth
+    @FloatRange(from = 0.0, fromInclusive = false)
+    var frameAspectRatioHeight = 1f
+        set(value) {
+            field = value
             invalidateFrameRect()
             if (laidOut) {
                 invalidate()
             }
         }
 
-    @get:FloatRange(from = 0.0, fromInclusive = false)
-    var frameAspectRatioHeight: Float
-        get() = frameRatioHeight
-        set(ratioHeight) {
-            frameRatioHeight = ratioHeight
+    @FloatRange(from = 0.0, fromInclusive = false)
+    var frameAspectRatioWidth = 1f
+        set(value) {
+            field = value
             invalidateFrameRect()
-            if (laidOut) {
-                invalidate()
-            }
-        }
-
-    @get:ColorInt
-    var maskColor: Int
-        get() = maskPaint.color
-        set(color) {
-            maskPaint.color = color
             if (laidOut) {
                 invalidate()
             }
@@ -100,6 +73,37 @@ class ViewFinderView(context: Context) : View(context) {
             }
         }
 
+    @Px
+    var frameCornersRadius = 0
+        set(value) {
+            field = value
+            if (laidOut) {
+                invalidate()
+            }
+        }
+
+    @Px
+    var frameCornersSize = 0
+        set(value) {
+            field = value
+            if (laidOut) {
+                invalidate()
+            }
+        }
+
+    var frameRect: Rect? = null
+        private set
+
+    @FloatRange(from = 0.1, to = 1.0)
+    var frameSize = 0.75f
+        set(value) {
+            field = value
+            invalidateFrameRect()
+            if (laidOut) {
+                invalidate()
+            }
+        }
+
     @get:Px
     var frameThickness: Int
         get() = framePaint.strokeWidth.toInt()
@@ -110,36 +114,17 @@ class ViewFinderView(context: Context) : View(context) {
             }
         }
 
-    @get:Px
-    var frameCornersSize: Int
-        get() = mFrameCornersSize
-        set(size) {
-            mFrameCornersSize = size
+    @get:ColorInt
+    var maskColor: Int
+        get() = maskPaint.color
+        set(color) {
+            maskPaint.color = color
             if (laidOut) {
                 invalidate()
             }
         }
 
-    @get:Px
-    var frameCornersRadius: Int
-        get() = mFrameCornersRadius
-        set(radius) {
-            mFrameCornersRadius = radius
-            if (laidOut) {
-                invalidate()
-            }
-        }
-
-    @get:FloatRange(from = 0.1, to = 1.0)
-    var frameSize: Float
-        get() = mFrameSize
-        set(size) {
-            mFrameSize = size
-            invalidateFrameRect()
-            if (laidOut) {
-                invalidate()
-            }
-        }
+    private var laidOut = false
 
     override fun onDraw(canvas: Canvas) {
         val frame = frameRect ?: return
@@ -149,8 +134,8 @@ class ViewFinderView(context: Context) : View(context) {
         val left = frame.left.toFloat()
         val right = frame.right.toFloat()
         val bottom = frame.bottom.toFloat()
-        val frameCornersSize = mFrameCornersSize.toFloat()
-        val frameCornersRadius = mFrameCornersRadius.toFloat()
+        val frameCornersSize = frameCornersSize.toFloat()
+        val frameCornersRadius = frameCornersRadius.toFloat()
         val path = path
 
         if (frameCornersRadius > 0) {
@@ -232,10 +217,10 @@ class ViewFinderView(context: Context) : View(context) {
 
     fun setFrameAspectRatio(
         @FloatRange(from = 0.0, fromInclusive = false) ratioWidth: Float,
-        @FloatRange(from = 0.0, fromInclusive = false) ratioHeight: Float
+        @FloatRange(from = 0.0, fromInclusive = false) ratioHeight: Float,
     ) {
-        frameRatioWidth = ratioWidth
-        frameRatioHeight = ratioHeight
+        frameAspectRatioWidth = ratioWidth
+        frameAspectRatioHeight = ratioHeight
 
         invalidateFrameRect()
 
@@ -247,14 +232,14 @@ class ViewFinderView(context: Context) : View(context) {
     private fun invalidateFrameRect(width: Int = getWidth(), height: Int = getHeight()) {
         if (width < 1 || height < 1) return
         val viewAR = width.toFloat() / height.toFloat()
-        val frameAR = frameRatioWidth / frameRatioHeight
+        val frameAR = frameAspectRatioWidth / frameAspectRatioHeight
         val frameWidth: Int
         val frameHeight: Int
         if (viewAR <= frameAR) {
-            frameWidth = (width * mFrameSize).roundToInt()
+            frameWidth = (width * frameSize).roundToInt()
             frameHeight = (frameWidth / frameAR).roundToInt()
         } else {
-            frameHeight = (height * mFrameSize).roundToInt()
+            frameHeight = (height * frameSize).roundToInt()
             frameWidth = (frameHeight * frameAR).roundToInt()
         }
         val frameLeft = (width - frameWidth) / 2

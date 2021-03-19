@@ -1,34 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <declare-styleable name="zxing_camera_preview">
-        <attr name="zxing_framing_rect_width" format="dimension" />
-        <attr name="zxing_framing_rect_height" format="dimension" />
-        <attr name="zxing_use_texture_view" format="boolean" />
-        <attr name="zxing_preview_scaling_strategy" format="enum">
-            <enum name="centerCrop" value="1" />
-            <enum name="fitCenter" value="2" />
-            <enum name="fitXY" value="3" />
-        </attr>
-    </declare-styleable>
-
-    <declare-styleable name="zxing_finder">
-        <attr name="zxing_possible_result_points" format="color" />
-        <attr name="zxing_result_view" format="color" />
-        <attr name="zxing_viewfinder_laser" format="color" />
-        <attr name="zxing_viewfinder_mask" format="color" />
-    </declare-styleable>
-    <declare-styleable name="CodeScannerView">
-        <attr format="color" name="maskColor"/>
-        <attr format="color" name="frameColor"/>
-        <attr format="color" name="autoFocusButtonColor"/>
-        <attr format="color" name="flashButtonColor"/>
-        <attr format="boolean" name="autoFocusButtonVisible"/>
-        <attr format="boolean" name="flashButtonVisible"/>
-        <attr format="dimension" name="frameThickness"/>
-        <attr format="dimension" name="frameCornersSize"/>
-        <attr format="dimension" name="frameCornersRadius"/>
-        <attr format="float" name="frameAspectRatioWidth"/>
-        <attr format="float" name="frameAspectRatioHeight"/>
-        <attr format="float" name="frameSize"/>
+    <declare-styleable name="zxing">
+        <attr format="color" name="zxing_autoFocusButtonColor"/>
+        <attr format="color" name="zxing_maskColor"/>
+        <attr format="color" name="zxing_frameColor"/>
+        <attr format="color" name="zxing_flashButtonColor"/>
+        <attr format="boolean" name="zxing_autoFocusButtonVisible"/>
+        <attr format="boolean" name="zxing_flashButtonVisible"/>
+        <attr format="dimension" name="zxing_frameThickness"/>
+        <attr format="dimension" name="zxing_frameCornersSize"/>
+        <attr format="dimension" name="zxing_frameCornersRadius"/>
+        <attr format="float" name="zxing_frameAspectRatioWidth"/>
+        <attr format="float" name="zxing_frameAspectRatioHeight"/>
+        <attr format="float" name="zxing_frameSize"/>
     </declare-styleable>
 </resources>
