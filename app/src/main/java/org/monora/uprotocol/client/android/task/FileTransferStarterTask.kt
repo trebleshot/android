@@ -74,7 +74,6 @@ class FileTransferStarterTask(
             ConnectionNotFoundException::class,
             TargetNotFoundException::class
         )
-
         suspend fun createFrom(
             connectionFactory: ConnectionFactory,
             persistenceProvider: PersistenceProvider,

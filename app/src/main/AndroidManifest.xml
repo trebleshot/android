@@ -20,8 +20,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.monora.uprotocol.client.android">
 
-    <uses-sdk tools:overrideLibrary="com.budiyev.android.codescanner"/>
-
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -56,6 +54,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
         <activity

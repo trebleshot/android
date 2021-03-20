@@ -30,6 +30,7 @@ import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.SurfaceView
 import android.view.View
@@ -38,6 +39,7 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.annotation.Px
+import androidx.appcompat.widget.AppCompatImageButton
 import kotlin.math.roundToInt
 
 /**
@@ -58,17 +60,19 @@ class CodeScannerView @JvmOverloads constructor(
     }
         private set
 
-    private var autoFocusButton = ImageView(context).apply {
+    private var autoFocusButton = AppCompatImageButton(context).apply {
         layoutParams = LayoutParams(buttonSize, buttonSize)
         scaleType = ImageView.ScaleType.CENTER
+        setBackgroundResource(R.drawable.zxing_round_selector)
         setImageResource(R.drawable.zxing_ic_baseline_filter_center_focus_24)
         setOnClickListener(AutoFocusClickListener())
     }
 
-    private var flashButton = ImageView(context).apply {
+    private var flashButton = AppCompatImageButton(context).apply {
         layoutParams = LayoutParams(buttonSize, buttonSize)
         scaleType = ImageView.ScaleType.CENTER
-        setImageResource(R.drawable.zxing_ic_baseline_center_focus_weak_24)
+        setBackgroundResource(R.drawable.zxing_round_selector)
+        setImageResource(R.drawable.zxing_ic_baseline_flash_off_24)
         setOnClickListener(FlashClickListener())
     }
 
@@ -290,8 +294,14 @@ class CodeScannerView @JvmOverloads constructor(
 
         viewFinderView.layout(0, 0, width, height)
         buttonSize.let { buttonSize ->
-            autoFocusButton.layout(0, 0, buttonSize, buttonSize)
-            flashButton.layout(width - buttonSize, 0, width, buttonSize)
+            val margin = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                8f,
+                resources.displayMetrics
+            ).toInt()
+
+            autoFocusButton.layout(margin, margin, buttonSize, buttonSize)
+            flashButton.layout(width - buttonSize, margin, width - margin, buttonSize)
         }
     }
 

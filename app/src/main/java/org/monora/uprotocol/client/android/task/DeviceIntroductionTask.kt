@@ -25,7 +25,6 @@ import org.monora.uprotocol.client.android.service.backgroundservice.AttachableA
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
-import org.monora.uprotocol.client.android.util.Connections
 import java.net.InetAddress
 
 class DeviceIntroductionTask(
@@ -36,12 +35,7 @@ class DeviceIntroductionTask(
     @Throws(TaskStoppedException::class)
     public override fun onRun() {
         try {
-            val clientRoute: ClientRoute = when {
-                address != null -> Connections.setUpConnection(context, address, pin)
-                else -> throw IllegalStateException("One of address or description should be provided")
-            }
 
-            anchor?.let { post { it.onDeviceReached(clientRoute) } }
         } catch (e: Exception) {
             e.printStackTrace()
             post(CommonErrorHelper.messageOf(context, e))

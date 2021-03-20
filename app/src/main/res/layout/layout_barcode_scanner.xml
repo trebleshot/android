@@ -37,9 +37,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="@{!viewModel.running &amp;&amp; !viewModel.needsAccess ? View.VISIBLE : View.GONE}"
-            app:zxing_autoFocusButtonColor="?colorControlNormal"
+            app:zxing_autoFocusButtonColor="@android:color/white"
             app:zxing_autoFocusButtonVisible="true"
-            app:zxing_flashButtonColor="?colorControlNormal"
+            app:zxing_flashButtonColor="@android:color/white"
             app:zxing_flashButtonVisible="true"
             app:zxing_frameColor="@android:color/white"
             app:zxing_frameCornersSize="50dp"
@@ -48,7 +48,7 @@
             app:zxing_frameAspectRatioHeight="1"
             app:zxing_frameSize="0.75"
             app:zxing_frameThickness="2dp"
-            app:zxing_maskColor="?colorTranslucent" />
+            app:zxing_maskColor="#30000000" />
 
         <ProgressBar
             android:id="@+id/progressBar"

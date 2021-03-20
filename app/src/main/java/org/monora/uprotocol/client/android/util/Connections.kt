@@ -38,12 +38,13 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.genonbeta.android.framework.util.Stoppable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException
@@ -60,14 +61,14 @@ import java.util.concurrent.TimeoutException
 class Connections(contextLocal: Context) {
     val context: Context = contextLocal.applicationContext
 
-    val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
     val p2pManager
         get() = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+
+    val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     private var wirelessEnableRequested = false
 
@@ -93,7 +94,7 @@ class Connections(contextLocal: Context) {
         TaskStoppedException::class,
         JSONException::class
     )
-    suspend fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int): ClientRoute {
+    suspend fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int) {
         if (Build.VERSION.SDK_INT >= 29) {
             val suggestionList: MutableList<WifiNetworkSuggestion> = ArrayList()
             suggestionList.add(description.toNetworkSuggestion())
@@ -118,7 +119,8 @@ class Connections(contextLocal: Context) {
                 else -> Log.d(TAG, "Network suggestion successful!")
             }
         }
-        return establishHotspotConnection(stoppable, description, pin)
+
+        // TODO: 3/20/21 This should establish an actual connection.
     }
 
     /**
@@ -151,11 +153,7 @@ class Connections(contextLocal: Context) {
         InterruptedException::class,
         JSONException::class
     )
-    suspend fun establishHotspotConnection(
-        stoppable: Stoppable,
-        description: NetworkDescription,
-        pin: Int,
-    ): ClientRoute {
+    suspend fun establishHotspotConnection(description: NetworkDescription): InetAddress {
         val timeout = (System.nanoTime() + AppConfig.DEFAULT_TIMEOUT_HOTSPOT * 1e6).toLong()
         var toggled = Build.VERSION.SDK_INT >= 29
         var connectionReset = false
@@ -192,8 +190,9 @@ class Connections(contextLocal: Context) {
                 }
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
-                    val address = InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway))
-                    return setUpConnection(context, address, pin)
+                    return withContext(Dispatchers.IO) {
+                        InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway))
+                    }
                 } catch (e: Exception) {
                     Log.d(TAG, "establishHotspotConnection: Connection failed.", e)
 
@@ -207,9 +206,7 @@ class Connections(contextLocal: Context) {
 
             delay(1000)
 
-            if (stoppable.interrupted()) {
-                throw TaskStoppedException("Task has been stopped.", stoppable.interruptedByUser())
-            } else if (timedOut) {
+            if (timedOut) {
                 throw TimeoutException("The process took longer than expected.")
             }
         }
@@ -534,21 +531,6 @@ class Connections(contextLocal: Context) {
                 }
             }
             return config
-        }
-
-        @WorkerThread
-        @Throws(CommunicationException::class, IOException::class, JSONException::class)
-        fun setUpConnection(context: Context, inetAddress: InetAddress, pin: Int): ClientRoute {
-            // TODO: 2/26/21 Fix set up connection
-            /*val bridge = CommunicationBridge.connect(kuick, deviceAddress, null, pin)
-            val device = bridge.device
-            bridge.requestAcquaintance()
-            if (bridge.receiveResult()) {
-                Log.d(TAG, "setupConnection: AP has been reached. Returning OK state.")
-                DeviceLoader.processConnection(kuick, device, deviceAddress)
-                return ClientRoute(device, deviceAddress)
-            }*/
-            throw IOException("Didn't have the result and the errors were unknown")
         }
     }
 }

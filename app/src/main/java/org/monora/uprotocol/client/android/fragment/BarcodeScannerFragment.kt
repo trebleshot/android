@@ -26,6 +26,7 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -46,6 +47,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -57,6 +59,7 @@ import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
+import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.util.Connections
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -182,7 +185,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
                 }
                 is State.Error -> {
-
+                    Toast.makeText(context, "Error ${it.e.message}", Toast.LENGTH_LONG).show()
                 }
                 is State.Result -> {
 
@@ -191,6 +194,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
                 }
             }
+
 
             if (it.running) {
                 scanner.startPreview()
@@ -237,7 +241,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                         val ssid = values[2]
                         val bssid = values[3]
                         val password = values[4]
-                        //run(NetworkDescription(ssid, bssid, password), pin)
+                        viewModel.consume(NetworkDescription(ssid, bssid, password)) //, pin)
                     }
                     Keyword.QR_CODE_TYPE_WIFI -> {
                         val pin = values[1].toInt()
@@ -300,8 +304,10 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
 @HiltViewModel
 class BarcodeScannerViewModel @Inject constructor(
-
+    @ApplicationContext context: Context,
 ) : ViewModel() {
+    private val connections = Connections(context)
+
     private val _state = MutableLiveData<State>(State.Scan())
 
     private var _job: Job? = null
@@ -330,9 +336,13 @@ class BarcodeScannerViewModel @Inject constructor(
 
     val stateText = ObservableField<String>()
 
-    fun consume() = _job ?: viewModelScope.launch(Dispatchers.IO) {
+    fun consume(networkDescription: NetworkDescription) = _job ?: viewModelScope.launch(Dispatchers.IO) {
         try {
+            _state.postValue(State.Running())
+            connections.establishHotspotConnection(networkDescription)
 
+        } catch (e: Exception) {
+            _state.postValue(State.Error(e))
         } finally {
             _job = null
         }
@@ -344,9 +354,9 @@ sealed class State(val running: Boolean) {
 
     class Running : State(true)
 
-    class Error(e: Exception) : State(false)
+    class Error(val e: Exception) : State(false)
 
-    class Result(clientRoute: ClientRoute) : State(false)
+    class Result(val clientRoute: ClientRoute) : State(false)
 }
 
 data class Change(val location: Boolean, val wifi: Boolean, val camera: Boolean)
