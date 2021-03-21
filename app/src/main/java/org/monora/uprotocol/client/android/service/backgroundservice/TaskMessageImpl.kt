@@ -30,7 +30,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.client.android.util.DynamicNotification
-import org.monora.uprotocol.client.android.util.Notifications
+import org.monora.uprotocol.client.android.util.NotificationBackend
 import java.util.*
 
 class TaskMessageImpl(
@@ -110,8 +110,8 @@ class TaskMessageImpl(
     override fun toNotification(task: AsyncTask): DynamicNotification {
         var hashCode = task.hashCode()
         val context = task.context.applicationContext
-        val utils = task.notificationHelper.utils
-        val notification = utils.buildDynamicNotification(hashCode, Notifications.NOTIFICATION_CHANNEL_HIGH)
+        val utils = task.notifications.backend
+        val notification = utils.buildDynamicNotification(hashCode, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
         val intent: PendingIntent = PendingIntent.getActivity(
             context,
             ++hashCode,

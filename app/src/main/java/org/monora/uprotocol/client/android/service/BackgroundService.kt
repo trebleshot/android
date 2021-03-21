@@ -41,7 +41,7 @@ class BackgroundService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        startForeground(NotificationHelper.ID_BG_SERVICE, backend.bgNotification.build())
+        startForeground(Notifications.ID_BG_SERVICE, backend.bgNotification.build())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

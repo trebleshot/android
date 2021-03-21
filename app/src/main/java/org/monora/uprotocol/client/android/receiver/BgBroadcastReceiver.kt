@@ -34,7 +34,7 @@ import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.task.FileTransferStarterTask
 import org.monora.uprotocol.client.android.task.FileTransferTask
-import org.monora.uprotocol.client.android.util.Notifications
+import org.monora.uprotocol.client.android.util.NotificationBackend
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -63,10 +63,10 @@ class BgBroadcastReceiver : BroadcastReceiver() {
             ACTION_FILE_TRANSFER -> {
                 val device: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
                 val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
-                val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
+                val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
 
-                backend.notificationHelper.utils.cancel(notificationId)
+                backend.notificationHelper.backend.cancel(notificationId)
 
                 if (device != null && transfer != null) try {
                     GlobalScope.launch(Dispatchers.IO) {
@@ -103,20 +103,20 @@ class BgBroadcastReceiver : BroadcastReceiver() {
             }
             ACTION_DEVICE_KEY_CHANGE_APPROVAL -> {
                 val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
-                val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
+                val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
 
-                backend.notificationHelper.utils.cancel(notificationId)
+                backend.notificationHelper.backend.cancel(notificationId)
 
                 if (client != null && intent.getBooleanExtra(EXTRA_ACCEPTED, false)) {
                     persistenceProvider.approveInvalidationOfCredentials(client)
                 }
             }
             ACTION_CLIPBOARD -> {
-                val notificationId = intent.getIntExtra(Notifications.EXTRA_NOTIFICATION_ID, -1)
+                val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
                 val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
                 val accepted = intent.getBooleanExtra(EXTRA_TEXT_ACCEPTED, false)
 
-                backend.notificationHelper.utils.cancel(notificationId)
+                backend.notificationHelper.backend.cancel(notificationId)
 
                 if (accepted && sharedText != null) {
                     val cbManager = context.applicationContext.getSystemService(

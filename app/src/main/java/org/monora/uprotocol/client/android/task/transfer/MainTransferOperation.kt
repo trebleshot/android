@@ -20,7 +20,6 @@ package org.monora.uprotocol.client.android.task.transfer
 
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
-import org.monora.uprotocol.client.android.io.FileStreamDescriptor
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.task.FileTransferTask
@@ -48,7 +47,7 @@ class MainTransferOperation(val task: FileTransferTask) : TransferOperation {
 
     override fun finishOperation() {
         if (count > 0) {
-            task.notificationHelper.notifyFileReceived(task, Files.getSavePath(task.context, task.transfer))
+            task.notifications.notifyFileReceived(task, Files.getSavePath(task.context, task.transfer))
         }
     }
 

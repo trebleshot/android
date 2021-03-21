@@ -301,7 +301,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
             val ssid: String? = connectionInfo.ssid
             val bssid: String? = connectionInfo.bssid
             val hostAddress: String? = try {
-                InetAddress.getByAddress(InetAddresses.toByteArray(connectionInfo.ipAddress)).hostAddress
+                InetAddresses.from(connectionInfo.ipAddress).hostAddress
             } catch (e: UnknownHostException) {
                 "0.0.0.0"
             }

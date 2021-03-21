@@ -615,4 +615,16 @@
     <string name="text_noClientList">Clients appear here</string>
     <string name="butn_pick">Pick</string>
     <string name="text_allClients">All Clients</string>
+    <string name="text_connectToWifi">Connect to Wi-Fi</string>
+    <string name="text_wifiConnectionInstructions">1- Open Wi-Fi settings
+        \n\n2- Wait until \'%s\' appears on the Wi-Fi list
+        \n\n3- Pick it (%s) and paste the password (%s)
+        \n\n4- Return here after successful connection
+    </string>
+    <string name="butn_copyPasswordAndOpenSettings"><![CDATA[Copy Password & Open Settings]]></string>
+    <string name="text_wifiPassword">Wi-Fi Password</string>
+    <string name="text_instructiveNotifications">Instructive Notifications</string>
+    <string name="text_connectToWifiTitle">Connect to \"%s\"</string>
+    <string name="text_connectToWifiPasswordInstructions">Paste the password \"%s\"</string>
+    <string name="text_yetToConnectToWifiNetwork">Not connected  yet</string>
 </resources>

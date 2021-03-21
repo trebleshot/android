@@ -20,21 +20,16 @@ package org.monora.uprotocol.client.android.service.backgroundservice
 import android.app.PendingIntent
 import android.content.*
 import android.media.MediaScannerConnection
-import android.os.Build
-import android.provider.Settings
-import android.util.Log
 import com.genonbeta.android.database.Progress
 import com.genonbeta.android.framework.util.Stoppable
 import com.genonbeta.android.framework.util.StoppableImpl
-import org.monora.uprotocol.client.android.App
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.model.Identifiable
 import org.monora.uprotocol.client.android.model.Identifier.Companion.from
 import org.monora.uprotocol.client.android.model.Identity
 import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
 import org.monora.uprotocol.client.android.util.DynamicNotification
-import org.monora.uprotocol.client.android.util.NotificationHelper
+import org.monora.uprotocol.client.android.util.Notifications
 import org.monora.uprotocol.client.android.util.StoppableJob
 
 abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
@@ -67,7 +62,7 @@ abstract class AsyncTask : StoppableJob(), Stoppable, Identifiable {
     val name: String
         get() = getName(context)
 
-    val notificationHelper: NotificationHelper
+    val notifications: Notifications
         get() = backend.notificationHelper
 
     var ongoingContent: String? = null

@@ -69,5 +69,29 @@
     <fragment
         android:id="@+id/barcodeScannerFragment"
         android:name="org.monora.uprotocol.client.android.fragment.BarcodeScannerFragment"
-        android:label="@string/text_scanQrCode" />
+        android:label="@string/text_scanQrCode" >
+        <action
+            android:id="@+id/action_barcodeScannerFragment_to_wifiConnectFragment"
+            app:destination="@id/wifiConnectFragment" />
+        <argument
+            android:name="inetAddress"
+            app:argType="java.net.InetAddress"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <dialog
+        android:id="@+id/wifiConnectFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.WifiConnectFragment"
+        android:label="WifiConnectFragment" >
+        <argument
+            android:name="networkDescription"
+            app:argType="org.monora.uprotocol.client.android.model.NetworkDescription" />
+        <action
+            android:id="@+id/action_wifiConnectFragment_to_barcodeScannerFragment"
+            app:destination="@id/barcodeScannerFragment" />
+        <argument
+            android:name="pin"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </dialog>
 </navigation>

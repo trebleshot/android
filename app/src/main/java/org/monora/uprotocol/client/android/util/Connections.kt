@@ -191,7 +191,7 @@ class Connections(contextLocal: Context) {
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     return withContext(Dispatchers.IO) {
-                        InetAddress.getByAddress(InetAddresses.toByteArray(wifiDhcpInfo.gateway))
+                        InetAddresses.from(wifiDhcpInfo.gateway)
                     }
                 } catch (e: Exception) {
                     Log.d(TAG, "establishHotspotConnection: Connection failed.", e)
@@ -289,7 +289,7 @@ class Connections(contextLocal: Context) {
         return info != null && info.type == ConnectivityManager.TYPE_WIFI && info.isConnected
     }
 
-    private fun isConnectedToNetwork(description: NetworkDescription): Boolean {
+    fun isConnectedToNetwork(description: NetworkDescription): Boolean {
         return isConnectedToNetwork(description.ssid, description.bssid)
     }
 
@@ -301,7 +301,7 @@ class Connections(contextLocal: Context) {
         if (!isConnectedToAnyNetwork()) return false
         val wifiInfo: WifiInfo = wifiManager.connectionInfo
         val tgSsid = getCleanSsid(wifiInfo.ssid)
-        Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + ":" + bssid + "=" + wifiInfo.bssid)
+        Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + "," + bssid + "=" + wifiInfo.bssid)
         return bssid?.equals(wifiInfo.bssid, ignoreCase = true) ?: (ssid == tgSsid)
     }
 

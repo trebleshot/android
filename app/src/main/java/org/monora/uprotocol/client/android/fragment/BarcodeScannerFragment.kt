@@ -25,6 +25,9 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
@@ -36,18 +39,19 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -57,12 +61,21 @@ import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.util.Connections
+import org.monora.uprotocol.client.android.util.InetAddresses
+import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.ConnectionFactory
+import java.net.InetAddress
 import java.net.UnknownHostException
+import java.util.*
 import javax.inject.Inject
+import kotlin.IllegalStateException
 
 @AndroidEntryPoint
 @RequiresApi(19)
@@ -145,6 +158,11 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -202,6 +220,15 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 resumeIfPossible()
             }
         }
+
+        setFragmentResultListener(WifiConnectFragment.REQUEST_INET_ADDRESS) { _: String, bundle: Bundle ->
+            val inetAddress = bundle.getSerializable(WifiConnectFragment.EXTRA_INET_ADDRESS) as InetAddress?
+            val pin = bundle.getInt(WifiConnectFragment.EXTRA_PIN, 0)
+
+            if (inetAddress != null) {
+                viewModel.consume(inetAddress, pin)
+            }
+        }
     }
 
     override fun onResume() {
@@ -231,30 +258,41 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     private fun handleBarcode(code: String) {
         try {
             val values: Array<String> = code.split(";".toRegex()).toTypedArray()
-            val type = values[0]
 
             // empty-strings cause trouble and are harder to manage.
-            for (i in values.indices)
-                when (type) {
-                    Keyword.QR_CODE_TYPE_HOTSPOT -> {
-                        val pin = values[1].toInt()
-                        val ssid = values[2]
-                        val bssid = values[3]
-                        val password = values[4]
-                        viewModel.consume(NetworkDescription(ssid, bssid, password)) //, pin)
+            when (values[0]) {
+                Keyword.QR_CODE_TYPE_HOTSPOT -> {
+                    val pin = values[1].toInt()
+                    val ssid = values[2]
+                    val bssid = values[3].takeIf { it.isNotEmpty() }
+                    val password = values[4]
+                    val description = NetworkDescription(ssid, bssid, password)
+
+                    if (!connections.isConnectedToNetwork(description)) {
+                        findNavController().navigate(
+                            BarcodeScannerFragmentDirections.actionBarcodeScannerFragmentToWifiConnectFragment(
+                                description, pin
+                            )
+                        )
+                    } else {
+                        val hostAddress = InetAddresses.from(connections.wifiManager.dhcpInfo.gateway)
+                        viewModel.consume(hostAddress, pin)
                     }
-                    Keyword.QR_CODE_TYPE_WIFI -> {
-                        val pin = values[1].toInt()
-                        val ssid = values[2]
-                        val bssid = values[3]
-                        val ip = values[4]
-                        //run(InetAddress.getByName(ip), bssid, pin)
-                    }
-                    else -> throw Exception("Request is unknown")
                 }
+                Keyword.QR_CODE_TYPE_WIFI -> {
+                    val pin = values[1].toInt()
+                    val ssid = values[2]
+                    val bssid = values[3]
+                    val ip = values[4]
+
+                    viewModel.consume(InetAddress.getByName(ip), pin)
+                }
+                else -> throw Exception("Request is unknown")
+            }
         } catch (e: UnknownHostException) {
             snackbarPlacementProvider.createSnackbar(R.string.mesg_unknownHostError)?.show()
         } catch (e: Exception) {
+            e.printStackTrace()
             AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.text_unrecognizedQrCode)
                 .setMessage(code)
@@ -304,10 +342,9 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
 @HiltViewModel
 class BarcodeScannerViewModel @Inject constructor(
-    @ApplicationContext context: Context,
+    private val connectionFactory: ConnectionFactory,
+    private val persistenceProvider: PersistenceProvider,
 ) : ViewModel() {
-    private val connections = Connections(context)
-
     private val _state = MutableLiveData<State>(State.Scan())
 
     private var _job: Job? = null
@@ -336,11 +373,24 @@ class BarcodeScannerViewModel @Inject constructor(
 
     val stateText = ObservableField<String>()
 
-    fun consume(networkDescription: NetworkDescription) = _job ?: viewModelScope.launch(Dispatchers.IO) {
+    fun consume(inetAddress: InetAddress, pin: Int) = _job ?: viewModelScope.launch(Dispatchers.IO) {
         try {
             _state.postValue(State.Running())
-            connections.establishHotspotConnection(networkDescription)
 
+            CommunicationBridge.Builder(connectionFactory, persistenceProvider, inetAddress).apply {
+                setPin(pin)
+            }.connect().use { bridge ->
+                val client = bridge.remoteClient
+                val clientAddress = bridge.remoteClientAddress
+
+                if (client !is UClient || clientAddress !is UClientAddress) {
+                   throw IllegalStateException("Unsupported format was requested")
+                }
+
+                if (bridge.requestAcquaintance()) {
+                    _state.postValue(State.Result(ClientRoute(client, clientAddress)))
+                }
+            }
         } catch (e: Exception) {
             _state.postValue(State.Error(e))
         } finally {
@@ -355,6 +405,8 @@ sealed class State(val running: Boolean) {
     class Running : State(true)
 
     class Error(val e: Exception) : State(false)
+
+    class Network(val networkDescription: NetworkDescription) : State(false)
 
     class Result(val clientRoute: ClientRoute) : State(false)
 }

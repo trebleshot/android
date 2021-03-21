@@ -25,7 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import fi.iki.elonen.NanoHTTPD
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.AppDatabase
-import org.monora.uprotocol.client.android.util.Notifications
+import org.monora.uprotocol.client.android.util.NotificationBackend
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import java.io.*
 import java.util.*
@@ -46,7 +46,7 @@ class WebShareServer @Inject constructor(
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    private val notifications: Notifications = Notifications(context)
+    private val notificationBackend: NotificationBackend = NotificationBackend(context)
 
     private val mediaScanner = MediaScannerConnection(context, null)
 

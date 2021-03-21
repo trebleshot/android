@@ -81,6 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/progressBar"
             android:gravity="center_horizontal"
+            android:padding="8dp"
             android:text="@{viewModel.running ? @string/mesg_completing : viewModel.stateText}"
             android:visibility="@{viewModel.running || viewModel.needsAccess ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"

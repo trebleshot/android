@@ -85,7 +85,7 @@ class BackgroundBackend @Inject constructor(
 
     var mediaScanner: MediaScannerConnection = MediaScannerConnection(context, null)
 
-    var notificationHelper = NotificationHelper(Notifications(context))
+    var notificationHelper = Notifications(NotificationBackend(context))
 
     private val taskList: MutableList<AsyncTask> = ArrayList()
 
