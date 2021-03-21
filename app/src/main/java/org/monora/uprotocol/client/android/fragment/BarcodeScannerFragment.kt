@@ -25,13 +25,9 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -39,6 +35,7 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -68,6 +65,7 @@ import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.InetAddresses
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -75,13 +73,13 @@ import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.*
 import javax.inject.Inject
-import kotlin.IllegalStateException
 
 @AndroidEntryPoint
-@RequiresApi(19)
 class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     @Inject
     lateinit var sharedTextRepository: SharedTextRepository
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     private val viewModel: BarcodeScannerViewModel by viewModels()
 
@@ -206,13 +204,13 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                     Toast.makeText(context, "Error ${it.e.message}", Toast.LENGTH_LONG).show()
                 }
                 is State.Result -> {
-
+                    clientPickerViewModel.clientRoute.postValue(it.clientRoute)
+                    findNavController().navigateUp()
                 }
                 is State.Running -> {
 
                 }
             }
-
 
             if (it.running) {
                 scanner.startPreview()
@@ -384,7 +382,7 @@ class BarcodeScannerViewModel @Inject constructor(
                 val clientAddress = bridge.remoteClientAddress
 
                 if (client !is UClient || clientAddress !is UClientAddress) {
-                   throw IllegalStateException("Unsupported format was requested")
+                    throw IllegalStateException("Unsupported format was requested")
                 }
 
                 if (bridge.requestAcquaintance()) {
@@ -405,8 +403,6 @@ sealed class State(val running: Boolean) {
     class Running : State(true)
 
     class Error(val e: Exception) : State(false)
-
-    class Network(val networkDescription: NetworkDescription) : State(false)
 
     class Result(val clientRoute: ClientRoute) : State(false)
 }

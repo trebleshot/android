@@ -21,34 +21,29 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.transition.TransitionManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutConnectionOptionsBinding
 import org.monora.uprotocol.client.android.fragment.OnlineClientsFragment
+import org.monora.uprotocol.client.android.model.ClientRoute
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import java.util.*
 
 @AndroidEntryPoint
 class PickClientActivity : Activity() {
-    private val pickClient = registerForActivityResult(PickClient()) { clientRoute ->
-        if (clientRoute == null) return@registerForActivityResult
-
-        if (PickClient.ConnectionMode.Return == connectionMode) {
-            PickClient.returnResult(this, clientRoute.client, clientRoute.address)
-        } else if (PickClient.ConnectionMode.WaitForRequests == connectionMode) {
-            // TODO: 3/13/21 Snackbar creation was here.
-            //createSnackbar(R.string.mesg_completing).show()
-        }
-    }
+    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
 
     private val connectionMode by lazy {
         intent?.getSerializableExtra(PickClient.EXTRA_CONNECTION_MODE) ?: PickClient.ConnectionMode.WaitForRequests
@@ -69,6 +64,14 @@ class PickClientActivity : Activity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
         }
+
+        clientPickerViewModel.clientRoute.observe(this) {
+            handleResult(it)
+        }
+
+        clientPickerViewModel.client.observe(this) {
+
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -76,6 +79,14 @@ class PickClientActivity : Activity() {
             return navController.popBackStack()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun handleResult(clientRoute: ClientRoute) {
+        if (PickClient.ConnectionMode.Return == connectionMode) {
+            PickClient.returnResult(this, clientRoute.client, clientRoute.address)
+        } else if (PickClient.ConnectionMode.WaitForRequests == connectionMode) {
+            Snackbar.make(findViewById(android.R.id.content), R.string.mesg_completing, Snackbar.LENGTH_LONG).show()
+        }
     }
 }
 
