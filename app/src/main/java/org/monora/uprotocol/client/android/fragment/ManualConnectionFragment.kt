@@ -24,11 +24,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,6 +41,7 @@ import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutManualConnectionBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
@@ -48,8 +52,11 @@ import java.net.ProtocolException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
-    private val viewModel: ManualConnectionViewModel by activityViewModels()
+    private val viewModel: ManualConnectionViewModel by viewModels()
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,6 +72,14 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
                 viewModel.connect(address)
             }
         }
+        binding.fab.setOnClickListener {
+            viewModel.state.value?.let {
+                if (it is ManualConnectionState.Loaded) {
+                    clientPickerViewModel.clientRoute.postValue(it.clientRoute)
+                    findNavController().navigateUp()
+                }
+            }
+        }
 
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
@@ -77,7 +92,6 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
                     else -> binding.editText.error = it.exception.message
                 }
                 is ManualConnectionState.Loaded -> {
-                    Log.d("ManualConnection", "onViewCreated: Loaded: ${it.clientRoute}")
                     binding.clientContentViewModel = ClientContentViewModel(it.clientRoute.client)
                     binding.executePendingBindings()
                 }
