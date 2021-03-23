@@ -80,7 +80,7 @@
     <string name="text_deviceNameSummary">यह नाम अन्य यंत्रों में दिखाया जाएगा</string>
     <string name="text_deviceName">यंत्र का नाम</string>
     <string name="text_developerModeSummary">उपयोगकर्ता द्वारा की गयी व्यवस्था को असक्षम करता है</string>
-    <string name="text_developerMode">डेवलपर मोड</string>
+    <string name="text_developerMode">विकासक प्रणाली</string>
     <string name="text_listEmpty">कोई वस्तु नहीं</string>
     <string name="butn_scan">ढूंढें</string>
     <string name="mesg_fileReceived">%s प्राप्त कर ली गयी है</string>
@@ -96,8 +96,8 @@
     <string name="mesg_noNetwork">कोई संपर्क मौजूद नहीं है (जैसे की वाई फाई) जिससे आस पास के यंत्र खोजें जा सकें</string>
     <string name="mesg_connectionFailure">संपर्क असफल हुआ</string>
     <string name="text_preferences">सेटिंग्स</string>
-    <string name="text_navigationDrawerClose">मेनू बंद करें</string>
-    <string name="text_navigationDrawerOpen">मेनू खोलें</string>n
+    <string name="text_navigationDrawerClose">नेविगेशन मेनू बंद करें</string>
+    <string name="text_navigationDrawerOpen">नेविगेशन मेनू खोलें</string>n
     <string name="text_chooseFolder">फोल्डर चुने</string>
     <string name="butn_createFolder">फोल्डर बनाएं</string>
     <string name="text_fileExplorer">फाइल एक्स्प्लोरर</string>
@@ -162,4 +162,25 @@
     <string name="text_checkOldFiles">आप संबंधित फ़ाइलों को पूर्ण और आंशिक रूप से इस फ़ोल्डर में ले जा सकते हैं और आकारों के आधार पर इसमें कुछ समय लग सकता है</string>
     <string name="ques_checkOldFiles">फ़ाइलें स्थानांतरित करें\?</string>
     <string name="mesg_pathSameError">आप पुराने फ़ोल्डर का चयन नहीं कर सकते</string>
+    <string name="mesg_notEnoughSpace">पर्याप्त खाली स्थान नहीं है</string>
+    <string name="text_emulatedMediaDirectory">अनुकरण (%s)</string>
+    <string name="text_mediaDirectory">मीडिया निर्देशिका</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">अन्य डिवाइस आपको पहचान सकें इसलिए ट्रेबलशॉट को एक दीर्घकालिक पहचान संख्या बनाने के लिए आपके डिवाइस के सीरियल नंबर तक पहुंचने की आवश्यकता है</string>
+    <string name="text_requestPermissionReadPhoneState">फोन की स्थिति पढ़ने की अनुमति</string>
+    <string name="text_requestPermissionStorage">भंडारण की अनुमति</string>
+    <string name="text_permissionRequest">अनुमति के लिए अनुरोध है</string>
+    <string name="butn_ask">पूछिए</string>
+    <string name="butn_retryReceiving">पुनः प्राप्त करने का प्रयास करें</string>
+    <string name="text_automaticNetworkConnectionOngoing">सबसे अच्छा संपर्क माध्यम चुना जा रहा है</string>
+    <string name="text_automaticNetworkConnectionFailed">यन्त्र से सम्बंध स्थापित नहीं हो पा रहा है। शायद यन्त्र का पता बदल गया होगा। ट्रेबलशॉट के खुला रहते नेटवर्क से पुनः संपर्क स्थापित करने का प्रयास करें।</string>
+    <string name="butn_connectionList">संपर्क</string>
+    <string name="text_shareTextShort">शब्द</string>
+    <string name="text_interfaceUnknown">अज्ञात संपर्क</string>
+    <string name="text_interfaceEthernet">ईथरनेट</string>
+    <string name="text_interfaceBluetooth">ब्लूटूथ</string>
+    <string name="text_interfaceWireless">वाईफाई</string>
+    <string name="text_interfaceWifiDirect">वाईफाई डायरेक्ट</string>
+    <string name="text_longAgo">बहुत पहले</string>
+    <string name="text_unknown">अज्ञात</string>
+    <string name="text_chooseFile">फ़ाइल चुनें</string>
 </resources>
