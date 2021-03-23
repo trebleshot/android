@@ -249,8 +249,6 @@
         off.
     </string>
     <string name="butn_skip">Skip</string>
-    <string name="mesg_scanningSelfHotspot">Searching for TrebleShot hotspot</string>
-    <string name="mesg_suggestSelfHotspot">You can enable Wi-Fi to search for a TrebleShot hotspot</string>
     <string name="butn_enable">Enable</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Allow TrebleShot to search and create hotspot</string>
     <string name="butn_locationSettings">Location</string>
@@ -270,9 +268,6 @@
     <string name="mesg_ongoingUpdateDownload">Downloading the new version</string>
     <string name="butn_gotIt">Got it</string>
     <string name="mesg_helpFolderSelection">To select a folder, tap its icon</string>
-    <string name="mesg_hotspotCreatedInfo">Connect to \"%s\" in \"Wi-Fi settings\" or send files via \"%s\" inside
-        TrebleShot
-    </string>
     <string name="butn_selectAll">Select all</string>
     <string name="butn_selectNone">Select none</string>
     <string name="butn_previewSelections">Preview selections</string>
@@ -451,16 +446,14 @@
     <string name="text_search">Search</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi won\'t turn on.</string>
     <string name="mesg_turningWiFiOn">Turning Wi-Fi on</string>
-    <string name="mesg_locationPermissionRequiredAny">Turn on location service first to continue</string>
+    <string name="mesg_locationPermissionRequiredAny">Needs location permission</string>
     <string name="mesg_connectToWiFiNetworkHelp">Connect to a Wi-Fi network to continue</string>
     <string name="mesg_removing">Removing…</string>
     <string name="butn_help">Help</string>
     <string name="text_help" translatable="false">@string/butn_help</string>
     <string name="butn_choose">Choose</string>
     <string name="butn_never">Never</string>
-    <string name="text_hotspotStartedExternallyNotice">The hotspot was started externally. To use QR code, you should
-        start it here.
-    </string>
+    <string name="text_hotspotStartedExternallyNotice">Externally started hotspot cannot be managed from here</string>
     <string name="text_shortcut">Shortcut</string>
     <string name="butn_addShortcut">Add Shortcut</string>
     <string name="butn_removeShortcut">Remove Shortcut</string>
@@ -566,7 +559,7 @@
     <string name="butn_generateQrCode">Generate QR Code</string>
     <string name="help_addDeviceUsingIpAddressHelp">Nothing worked?</string>
     <string name="help_qrCodePosition">QR Code will appear here!</string>
-    <string name="help_setUpNetwork">Set up a hotspot network or connect to a Wi-Fi network.</string>
+    <string name="help_setUpNetwork">Set up a hotspot or connect to Wi-Fi</string>
     <string name="mesg_enterValidHostAddress">Please enter an internet address!</string>
     <string name="text_deviceKeyChanged">Device key changed</string>
     <string name="ques_acceptNewDeviceKey">Do you accept the new key for %s?</string>
@@ -626,5 +619,7 @@
     <string name="text_instructiveNotifications">Instructive Notifications</string>
     <string name="text_connectToWifiTitle">Connect to \"%s\"</string>
     <string name="text_connectToWifiPasswordInstructions">Paste the password \"%s\"</string>
-    <string name="text_yetToConnectToWifiNetwork">Not connected  yet</string>
+    <string name="text_yetToConnectToWifiNetwork">Not connected yet</string>
+    <string name="mesg_locationServiceDisabled">Location Service is disabled</string>
+    <string name="text_wifiDisabled">Wi-Fi is disabled</string>
 </resources>

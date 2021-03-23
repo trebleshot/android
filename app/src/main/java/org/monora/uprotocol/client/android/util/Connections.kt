@@ -18,6 +18,7 @@
 package org.monora.uprotocol.client.android.util
 
 import android.Manifest.permission.*
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -26,14 +27,17 @@ import android.net.ConnectivityManager
 import android.net.DhcpInfo
 import android.net.NetworkInfo
 import android.net.Uri
-import android.net.wifi.*
+import android.net.wifi.ScanResult
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSuggestion
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresPermission
-import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
@@ -272,7 +276,7 @@ class Connections(contextLocal: Context) {
         return null
     }
 
-    private fun hasLocationPermission(): Boolean {
+    fun hasLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
     }
 
@@ -305,15 +309,12 @@ class Connections(contextLocal: Context) {
         return bssid?.equals(wifiInfo.bssid, ignoreCase = true) ?: (ssid == tgSsid)
     }
 
-    private fun isLocationServiceEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    fun isLocationServiceEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         this.locationManager.isLocationEnabled
     } else {
         this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    /**
-     * @return True if the mobile data connection is active.
-     */
     @Deprecated("Do not use this method above 9, there is a better method in-place.")
     fun isMobileDataActive(): Boolean {
         return connectivityManager.activeNetworkInfo?.type == ConnectivityManager.TYPE_MOBILE
@@ -323,31 +324,6 @@ class Connections(contextLocal: Context) {
         val returnedState = wirelessEnableRequested
         wirelessEnableRequested = false
         return returnedState
-    }
-
-    @UiThread
-    fun showConnectionOptions(
-        provider: SnackbarPlacementProvider,
-        permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
-    ) {
-        if (!wifiManager.isWifiEnabled) {
-            provider.createSnackbar(R.string.mesg_suggestSelfHotspot)?.apply {
-                setAction(R.string.butn_enable) {
-                    wirelessEnableRequested = true
-                    turnOnWiFi(provider)
-                }
-                show()
-            }
-        } else if (validateLocationPermission(provider, permissionsResultLauncher)) {
-            provider.createSnackbar(R.string.mesg_scanningSelfHotspot)?.apply {
-                setAction(R.string.butn_wifiSettings) {
-                    context.startActivity(
-                        Intent(Settings.ACTION_WIFI_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                }
-                show()
-            }
-        }
     }
 
     /**
@@ -360,6 +336,7 @@ class Connections(contextLocal: Context) {
         """The use of this method is limited to Android version 9 and below due to the deprecation of the
       APIs it makes use of."""
     )
+    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_WIFI_STATE])
     fun startConnection(config: WifiConfiguration): Boolean {
         if (isConnectedToNetwork(config)) {
             Log.d(TAG, "startConnection: Already connected to the network.")
@@ -387,17 +364,6 @@ class Connections(contextLocal: Context) {
         return false
     }
 
-    /**
-     * This method activates or deactivates a given network depending on its state.
-     *
-     * @param config The network specifier that you want to toggle the connection to.
-     * @return True when the request is successful, false if otherwise.
-     */
-    @Deprecated("The use of this method is limited to Android version 9 and below.")
-    fun toggleConnection(config: WifiConfiguration): Boolean {
-        return if (isConnectedToNetwork(config)) wifiManager.disconnect() else startConnection(config)
-    }
-
     fun toggleHotspot(
         backend: BackgroundBackend,
         provider: SnackbarPlacementProvider,
@@ -406,7 +372,7 @@ class Connections(contextLocal: Context) {
         permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
     ) {
         if (!HotspotManager.supported || Build.VERSION.SDK_INT >= 26
-            && !validateLocationPermission(provider, permissionsResultLauncher)
+            && !validateLocationAccess(provider, permissionsResultLauncher)
         ) return
 
         // Android introduced permissions in 23 and this permission is not needed for local only hotspot introduced
@@ -460,28 +426,42 @@ class Connections(contextLocal: Context) {
         }
     }
 
-    fun validateLocationPermission(
+    fun validateLocationAccess(
         provider: SnackbarPlacementProvider,
         permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
     ): Boolean {
         if (Build.VERSION.SDK_INT < 23) return true
 
         if (!hasLocationPermission()) {
-            provider.createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)?.apply {
+            provider.createSnackbar(R.string.mesg_locationPermissionRequiredAny)?.apply {
                 setAction(R.string.butn_allow) {
                     permissionsResultLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
                 }
                 show()
             }
         } else if (!isLocationServiceEnabled()) {
-            provider.createSnackbar(R.string.mesg_locationDisabledSelfHotspot)?.apply {
+            provider.createSnackbar(R.string.mesg_locationServiceDisabled)?.apply {
                 setAction(R.string.butn_locationSettings) {
-                    context.startActivity(
-                        Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
+                    Activities.startLocationServiceSettings(context)
                 }
                 show()
             }
+        } else {
+            return true
+        }
+
+        return false
+    }
+
+    fun validateLocationAccessNoPrompt(permissionsResultLauncher: ActivityResultLauncher<Array<String>>): Boolean {
+        if (Build.VERSION.SDK_INT < 23) return true
+
+        if (!hasLocationPermission()) {
+            permissionsResultLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
+        } else if (!isLocationServiceEnabled()) {
+            context.startActivity(
+                Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         } else {
             return true
         }

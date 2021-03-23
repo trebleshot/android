@@ -18,7 +18,7 @@
 
 package org.monora.uprotocol.client.android.fragment
 
-import android.Manifest.permission.CAMERA
+import android.Manifest.permission.*
 import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationManager
@@ -63,6 +63,7 @@ import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
@@ -85,6 +86,12 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
 
     private val requestPermissions = registerForActivityResult(RequestMultiplePermissions()) {
         emitState()
+
+        if ((it[ACCESS_FINE_LOCATION] == true || it[ACCESS_COARSE_LOCATION] == true)
+            && !connections.isLocationServiceEnabled()
+        ) {
+            Activities.startLocationServiceSettings(requireContext())
+        }
     }
 
     private val connections by lazy {
@@ -131,7 +138,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             if (!it.camera) {
                 requestPermissions.launch(arrayOf(CAMERA))
             } else if (!it.location) {
-                connections.validateLocationPermission(snackbarPlacementProvider, requestPermissions)
+                connections.validateLocationAccessNoPrompt(requestPermissions)
             } else if (!it.wifi) {
                 connections.turnOnWiFi(snackbarPlacementProvider)
             }
@@ -178,12 +185,18 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                     stateText.set(getString(R.string.text_cameraPermissionRequired))
                     stateButtonText.set(getString(R.string.butn_ask))
                 } else if (!it.location) {
-                    stateImage.set(R.drawable.ic_perm_device_information_white_144dp)
-                    stateText.set(getString(R.string.mesg_locationPermissionRequiredAny))
-                    stateButtonText.set(getString(R.string.butn_enable))
+                    stateImage.set(R.drawable.ic_round_location_off_144)
+
+                    if (!connections.hasLocationPermission()) {
+                        stateText.set(getString(R.string.mesg_locationPermissionRequiredAny))
+                        stateButtonText.set(getString(R.string.butn_allow))
+                    } else {
+                        stateText.set(getString(R.string.mesg_locationServiceDisabled))
+                        stateButtonText.set(getString(R.string.butn_enable))
+                    }
                 } else if (!it.wifi) {
                     stateImage.set(R.drawable.ic_signal_wifi_off_white_144dp)
-                    stateText.set(getString(R.string.text_scanQRWifiRequired))
+                    stateText.set(getString(R.string.text_wifiDisabled))
                     stateButtonText.set(getString(R.string.butn_enable))
                 }
             }

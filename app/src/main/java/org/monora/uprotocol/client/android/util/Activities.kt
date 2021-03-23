@@ -57,4 +57,10 @@ object Activities {
 
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.butn_feedbackContact)))
     }
+
+    fun startLocationServiceSettings(context: Context) {
+        context.startActivity(
+            Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
 }

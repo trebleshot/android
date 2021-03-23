@@ -25,6 +25,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -32,9 +33,9 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
-import org.monora.android.codescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.result.contract.PickClient
@@ -56,12 +57,10 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
     private val pickClient = registerForActivityResult(PickClient()) { clientRoute ->
         val text: String? = if (editText.text != null) editText.text.toString() else null
 
-        if (clientRoute == null || text != null) return@registerForActivityResult
+        if (clientRoute == null || text == null) return@registerForActivityResult
 
-        if (text != null) {
-            // FIXME: 2/26/21 Improve text sharing task with coroutines
-            //runUiTask(TextShareTask(client, address, text))
-        }
+        // FIXME: 2/26/21 Improve text sharing task with coroutines
+        //runUiTask(TextShareTask(client, address, text))
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -207,7 +206,7 @@ class TextEditorActivity : Activity(), SnackbarPlacementProvider {
             this.text = it
         }
 
-        lifecycle.coroutineScope.launch {
+        lifecycleScope.launch {
             if (update) sharedTextRepository.update(item) else sharedTextRepository.insert(item)
         }
     }

@@ -47,9 +47,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
-import org.monora.android.codescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
+import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
@@ -62,7 +62,6 @@ import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
 import org.monora.uprotocol.client.android.util.TextManipulators.toFriendlySsid
 import org.monora.uprotocol.core.persistence.PersistenceProvider
-import java.net.InetAddress
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -144,7 +143,6 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         intentFilter.addAction(BgBroadcastReceiver.ACTION_PIN_USED)
-        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -170,26 +168,6 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
         toggleButtonDefaultStateList = ViewCompat.getBackgroundTintList(toggleButton)
         toggleButton.setOnClickListener { v: View -> toggle(v) }
         secondButton.setOnClickListener { v: View -> toggle(v) }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.actions_hotspot_manager, menu)
-        helpMenuItem = menu.findItem(R.id.show_help)
-        showMenu()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        val configuration = manager.configuration
-        if (id == R.id.show_help && configuration != null) {
-            val hotspotName: String = configuration.SSID
-            AlertDialog.Builder(requireActivity())
-                .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, hotspotName.toFriendlySsid()))
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
-        } else return super.onOptionsItemSelected(item)
-        return true
     }
 
     override fun onResume() {
@@ -219,6 +197,10 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
         startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
     }
 
+    private fun showMenu() {
+        helpMenuItem?.isVisible = manager.configuration != null && manager.enabled
+    }
+
     private fun toggleHotspot() {
         connections.toggleHotspot(
             backgroundBackend, snackbarPlacementProvider, manager, true, requestHotspotPermission
@@ -228,24 +210,18 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
     fun toggle(v: View) {
         if (v.id == R.id.layout_network_manager_info_toggle_button) {
             when (activeType) {
-                Type.LocationPermissionNeeded -> connections.validateLocationPermission(
-                    snackbarPlacementProvider, requestLocationPermission
-                )
+                Type.LocationAccess -> connections.validateLocationAccessNoPrompt(requestLocationPermission)
                 Type.WiFi, Type.HotspotExternal -> openWifiSettings()
                 Type.Hotspot, Type.None -> toggleHotspot()
                 else -> toggleHotspot()
             }
         } else if (v.id == R.id.layout_network_manager_info_second_toggle_button) {
             when (activeType) {
-                Type.LocationPermissionNeeded, Type.WiFi -> toggleHotspot()
+                Type.LocationAccess, Type.WiFi -> toggleHotspot()
                 Type.HotspotExternal, Type.Hotspot, Type.None -> openWifiSettings()
                 else -> openWifiSettings()
             }
         }
-    }
-
-    private fun showMenu() {
-        helpMenuItem?.isVisible = manager.configuration != null && manager.enabled
     }
 
     private fun updateState() {
@@ -292,8 +268,14 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
             toggleButton.setText(R.string.butn_stopHotspot)
             secondButton.setText(R.string.butn_wifiSettings)
         } else if (!connections.canReadWifiInfo() && connections.wifiManager.isWifiEnabled) {
-            activeType = Type.LocationPermissionNeeded
-            text1.setText(R.string.mesg_locationPermissionRequiredAny)
+            activeType = Type.LocationAccess
+            text1.setText(
+                if (connections.isLocationServiceEnabled()) {
+                    R.string.mesg_locationPermissionRequiredAny
+                } else {
+                    R.string.mesg_locationServiceDisabled
+                }
+            )
             toggleButton.setText(R.string.butn_enable)
             secondButton.setText(R.string.text_startHotspot)
         } else if (connections.isConnectedToAnyNetwork()) {
@@ -317,7 +299,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
             imageView2.setImageResource(R.drawable.ic_wifi_white_24dp)
             imageView3.setImageResource(R.drawable.ic_ip_white_24dp)
             text1.setText(R.string.help_scanQRCode)
-            text2.text = Connections.getCleanSsid(connectionInfo.getSSID())
+            text2.text = Connections.getCleanSsid(connectionInfo.ssid)
             text3.text = hostAddress
             toggleButton.setText(R.string.butn_wifiSettings)
             secondButton.setText(R.string.text_startHotspot)
@@ -334,7 +316,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
             else -> ViewCompat.setBackgroundTintList(toggleButton, toggleButtonDefaultStateList)
         }
         when (activeType) {
-            Type.LocationPermissionNeeded, Type.None, Type.HotspotExternal -> {
+            Type.LocationAccess, Type.None, Type.HotspotExternal -> {
                 text2.text = null
                 text3.text = null
             }
@@ -374,7 +356,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
     }
 
     private enum class Type {
-        None, WiFi, Hotspot, HotspotExternal, LocationPermissionNeeded
+        None, WiFi, Hotspot, HotspotExternal, LocationAccess
     }
 
     companion object {
