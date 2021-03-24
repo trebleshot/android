@@ -59,7 +59,7 @@ class SharingActivity : Activity() {
     private val sharingActivityViewModel: SharingActivityViewModel by viewModels()
 
     private val pickClient = registerForActivityResult(PickClient()) {
-
+        if (it == null) return@registerForActivityResult
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

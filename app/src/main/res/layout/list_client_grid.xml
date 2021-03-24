@@ -21,6 +21,10 @@
     <data>
 
         <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
     </data>
@@ -36,7 +40,7 @@
         android:layout_height="wrap_content"
         android:background="?rectSelector"
         android:orientation="vertical"
-        android:onClick="@{viewModel.openClientProfileListener}"
+        android:onClick="@{clickListener}"
         onLongClick="@{viewModel.openClientProfileListener}">
 
         <LinearLayout

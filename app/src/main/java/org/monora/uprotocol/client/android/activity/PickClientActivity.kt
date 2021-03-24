@@ -70,7 +70,11 @@ class PickClientActivity : Activity() {
         }
 
         clientPickerViewModel.client.observe(this) {
-
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                it.nickname,
+                Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -94,17 +98,16 @@ class PickClientActivity : Activity() {
 class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
     private val clientsViewModel: ClientsViewModel by viewModels()
 
-    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
+    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
 
-    private val pickClient = registerForActivityResult(PickClient()) {
-        if (it == null) return@registerForActivityResult
-        PickClient.returnResult(requireActivity(), it)
-    }
+    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val connectionOptions = LayoutConnectionOptionsBinding.bind(view)
-        val adapter = OnlineClientsFragment.Adapter()
+        val adapter = OnlineClientsFragment.Adapter {
+            clientPickerViewModel.clientRoute.postValue(it)
+        }
 
         adapter.setHasStableIds(true)
         connectionOptions.emptyView.emptyText.setText(R.string.text_noOnlineDevices)
@@ -136,7 +139,7 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
 
         connectionOptions.executePendingBindings()
         clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
-            adapter.submitList(it.map { clientRoute -> clientRoute.client })
+            adapter.submitList(it)
             emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())
             TransitionManager.beginDelayedTransition(connectionOptions.emptyView.root.parent as ViewGroup)
         }

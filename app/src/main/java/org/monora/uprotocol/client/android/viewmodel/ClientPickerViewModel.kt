@@ -18,9 +18,9 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.model.ClientRoute
 import javax.inject.Inject
@@ -28,8 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ClientPickerViewModel @Inject internal constructor(
 
-): ViewModel() {
-    val client = MutableLiveData<UClient>()
+) : ViewModel() {
+    val client = SingleLiveEvent<UClient>()
 
-    val clientRoute = MutableLiveData<ClientRoute>()
+    val clientRoute = SingleLiveEvent<ClientRoute>()
 }

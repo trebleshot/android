@@ -252,11 +252,8 @@
     <string name="butn_enable">Enable</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Allow TrebleShot to search and create hotspot</string>
     <string name="butn_locationSettings">Location</string>
-    <string name="mesg_locationDisabledSelfHotspot">Enable location service to see scan results and create hotspot
-    </string>
-    <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot hotspot</string>
-    <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot hotspot</string>
-    <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
+    <string name="mesg_stoppingSelfHotspot">Stopping hotspot</string>
+    <string name="mesg_startingSelfHotspot">Starting hotspot</string>
     <string name="butn_check">Check</string>
     <string name="butn_uncheck">Uncheck</string>
     <string name="text_previewAndEditList">Preview &amp; edit</string>
@@ -622,4 +619,5 @@
     <string name="text_yetToConnectToWifiNetwork">Not connected yet</string>
     <string name="mesg_locationServiceDisabled">Location Service is disabled</string>
     <string name="text_wifiDisabled">Wi-Fi is disabled</string>
+    <string name="mesg_needsSettingsWritePermission">Needs permission to modify system settings</string>
 </resources>

@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +32,9 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.databinding.ListClientGridBinding
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
+import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.viewholder.ClientGridViewHolder
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 
 /**
@@ -42,10 +45,14 @@ import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
     private val clientsViewModel: ClientsViewModel by viewModels()
 
+    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-        val adapter = Adapter()
+        val adapter = Adapter {
+            clientPickerViewModel.clientRoute.postValue(it)
+        }
 
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
@@ -56,14 +63,17 @@ class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
         }
 
         clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
-            adapter.submitList(it.map { clientRoute -> clientRoute.client })
+            adapter.submitList(it)
         }
     }
 
-    class Adapter : ListAdapter<UClient, ClientGridViewHolder>(UClientItemCallback()) {
+    class Adapter(
+        private val clickListener: (ClientRoute) -> Unit
+    ) : ListAdapter<ClientRoute, ClientGridViewHolder>(ClientRouteItemCallback()) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientGridViewHolder {
             return ClientGridViewHolder(
-                ListClientGridBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ListClientGridBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+                clickListener
             )
         }
 
@@ -72,8 +82,17 @@ class OnlineClientsFragment : Fragment(R.layout.layout_online_client) {
         }
 
         override fun getItemId(position: Int): Long {
-            return getItem(position).uid.hashCode().toLong()
+            return getItem(position).client.uid.hashCode().toLong()
         }
     }
 }
 
+class ClientRouteItemCallback : DiffUtil.ItemCallback<ClientRoute>() {
+    override fun areItemsTheSame(oldItem: ClientRoute, newItem: ClientRoute): Boolean {
+        return oldItem === newItem
+    }
+
+    override fun areContentsTheSame(oldItem: ClientRoute, newItem: ClientRoute): Boolean {
+        return oldItem == newItem
+    }
+}

@@ -37,6 +37,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
@@ -73,8 +74,6 @@ class Connections(contextLocal: Context) {
         get() = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
 
     val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-    private var wirelessEnableRequested = false
 
     fun canAccessLocation(): Boolean {
         return hasLocationPermission() && isLocationServiceEnabled()
@@ -127,62 +126,6 @@ class Connections(contextLocal: Context) {
         // TODO: 3/20/21 This should establish an actual connection.
     }
 
-    /**
-     * @return True if disabling the network was successful
-     */
-    @Deprecated("Do not use this method with 10 and above.")
-    fun disableCurrentNetwork(): Boolean {
-        // WONTFIX: Android 10 makes this obsolete.
-        // NOTTODO: Networks added by other applications will possibly reconnect even if we disconnect them.
-        // This is because we are only allowed to manipulate the networks that we added.
-        // And if it is the case, then the return value of disableNetwork will be false.
-        return (isConnectedToAnyNetwork() && wifiManager.disconnect()
-                && wifiManager.disableNetwork(wifiManager.connectionInfo.networkId))
-    }
-
-    private fun enableNetwork(networkId: Int): Boolean {
-        Log.d(TAG, "enableNetwork: Enabling network: $networkId")
-        if (wifiManager.enableNetwork(networkId, true)) return true
-        Log.d(TAG, "toggleConnection: Could not enable the network")
-        return false
-    }
-
-    /**
-     * @param configuration The configuration that contains network SSID, BSSID, other fields required to filter the
-     * network
-     * @see findFromConfigurations
-     */
-    @Deprecated(
-        "The use of this method is limited to Android version 9 and below due to the deprecation of the "
-                + "APIs it makes use of."
-    )
-    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_WIFI_STATE])
-    fun findFromConfigurations(configuration: WifiConfiguration): WifiConfiguration? {
-        return findFromConfigurations(configuration.SSID, configuration.BSSID)
-    }
-
-    /**
-     * @param ssid  The SSID that will be used to filter.
-     * @param bssid The MAC address of the network. Its use is prioritized when not null since it is unique.
-     * @return The matching configuration or null if no configuration matched with the given parameters.
-     */
-    @Deprecated(
-        """The use of this method is limited to Android version 9 and below due to the deprecation of the
-      APIs it makes use of."""
-    )
-    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_WIFI_STATE])
-    fun findFromConfigurations(ssid: String, bssid: String?): WifiConfiguration? {
-        val list: List<WifiConfiguration> = wifiManager.configuredNetworks
-        for (config in list) {
-            if (bssid == null) {
-                if (ssid.equals(config.SSID, ignoreCase = true)) return config
-            } else {
-                if (bssid.equals(config.BSSID, ignoreCase = true)) return config
-            }
-        }
-        return null
-    }
-
     @Throws(SecurityException::class)
     fun findFromScanResults(description: NetworkDescription): ScanResult? {
         return findFromScanResults(description.ssid, description.bssid)
@@ -211,14 +154,6 @@ class Connections(contextLocal: Context) {
         return ContextCompat.checkSelfPermission(context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
     }
 
-    fun isConnectionToHotspotNetwork(): Boolean {
-        val wifiInfo: WifiInfo = wifiManager.connectionInfo
-        return getCleanSsid(wifiInfo.ssid).startsWith(AppConfig.PREFIX_ACCESS_POINT)
-    }
-
-    /**
-     * @return True if connected to a Wi-Fi network.
-     */
     fun isConnectedToAnyNetwork(): Boolean {
         val info: NetworkInfo? = this.connectivityManager.activeNetworkInfo
         return info != null && info.type == ConnectivityManager.TYPE_WIFI && info.isConnected
@@ -228,12 +163,9 @@ class Connections(contextLocal: Context) {
         return isConnectedToNetwork(description.ssid, description.bssid)
     }
 
-    private fun isConnectedToNetwork(configuration: WifiConfiguration): Boolean {
-        return isConnectedToNetwork(configuration.SSID, configuration.BSSID)
-    }
-
     private fun isConnectedToNetwork(ssid: String, bssid: String?): Boolean {
         if (!isConnectedToAnyNetwork()) return false
+
         val wifiInfo: WifiInfo = wifiManager.connectionInfo
         val tgSsid = getCleanSsid(wifiInfo.ssid)
         Log.d(TAG, "isConnectedToNetwork: " + ssid + "=" + tgSsid + "," + bssid + "=" + wifiInfo.bssid)
@@ -251,50 +183,6 @@ class Connections(contextLocal: Context) {
         return connectivityManager.activeNetworkInfo?.type == ConnectivityManager.TYPE_MOBILE
     }
 
-    fun notifyWirelessRequestHandled(): Boolean {
-        val returnedState = wirelessEnableRequested
-        wirelessEnableRequested = false
-        return returnedState
-    }
-
-    /**
-     * Enable and connect to the given network specification.
-     *
-     * @param config The network specifier that will be connected to.
-     * @return True when the request is successful and false when it fails.
-     */
-    @Deprecated(
-        """The use of this method is limited to Android version 9 and below due to the deprecation of the
-      APIs it makes use of."""
-    )
-    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_WIFI_STATE])
-    fun startConnection(config: WifiConfiguration): Boolean {
-        if (isConnectedToNetwork(config)) {
-            Log.d(TAG, "startConnection: Already connected to the network.")
-            return true
-        }
-        if (isConnectedToAnyNetwork()) {
-            Log.d(TAG, "startConnection: Connected to some other network, will try to disable it.")
-            disableCurrentNetwork()
-        }
-        try {
-            val existingConfig: WifiConfiguration? = findFromConfigurations(config)
-
-            if (existingConfig != null && !wifiManager.removeNetwork(existingConfig.networkId)) {
-                Log.d(TAG, "startConnection: The config exits but could not remove it.")
-            } else if (!enableNetwork(wifiManager.addNetwork(config))) {
-                Log.d(TAG, "startConnection: Could not enable the network.")
-            } else if (!wifiManager.reconnect()) {
-                Log.d(TAG, "startConnection: Could not reconnect the networks.")
-            } else {
-                return true
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return false
-    }
-
     fun toggleHotspot(
         backend: BackgroundBackend,
         provider: SnackbarPlacementProvider,
@@ -308,8 +196,9 @@ class Connections(contextLocal: Context) {
 
         // Android introduced permissions in 23 and this permission is not needed for local only hotspot introduced
         // in 26
+        @RequiresApi(Build.VERSION_CODES.M)
         if (Build.VERSION.SDK_INT in 23..25 && !Settings.System.canWrite(context)) {
-            provider.createSnackbar(R.string.mesg_errorHotspotPermission)?.apply {
+            provider.createSnackbar(R.string.mesg_needsSettingsWritePermission)?.apply {
                 setAction(R.string.butn_settings) {
                     context.startActivity(
                         Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
@@ -357,7 +246,7 @@ class Connections(contextLocal: Context) {
         }
     }
 
-    fun validateLocationAccess(
+    private fun validateLocationAccess(
         provider: SnackbarPlacementProvider,
         permissionsResultLauncher: ActivityResultLauncher<Array<String>>,
     ): Boolean {

@@ -21,6 +21,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener" />
 
         <variable
             name="viewModel"
@@ -31,7 +34,8 @@
         style="@style/ListContentLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?rectSelector">
+        android:background="?rectSelector"
+        android:onClick="@{clickListener}">
 
         <ImageView
             android:id="@+id/image"

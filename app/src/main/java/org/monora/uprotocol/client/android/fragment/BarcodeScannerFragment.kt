@@ -391,6 +391,8 @@ class BarcodeScannerViewModel @Inject constructor(
             CommunicationBridge.Builder(connectionFactory, persistenceProvider, inetAddress).apply {
                 setPin(pin)
             }.connect().use { bridge ->
+                if (!bridge.requestAcquaintance()) return@use
+
                 val client = bridge.remoteClient
                 val clientAddress = bridge.remoteClientAddress
 
@@ -398,9 +400,7 @@ class BarcodeScannerViewModel @Inject constructor(
                     throw IllegalStateException("Unsupported format was requested")
                 }
 
-                if (bridge.requestAcquaintance()) {
-                    _state.postValue(State.Result(ClientRoute(client, clientAddress)))
-                }
+                _state.postValue(State.Result(ClientRoute(client, clientAddress)))
             }
         } catch (e: Exception) {
             _state.postValue(State.Error(e))
