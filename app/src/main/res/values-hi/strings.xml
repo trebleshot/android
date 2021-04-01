@@ -183,4 +183,14 @@
     <string name="text_longAgo">बहुत पहले</string>
     <string name="text_unknown">अज्ञात</string>
     <string name="text_chooseFile">फ़ाइल चुनें</string>
+    <string name="butn_no">नहीं</string>
+    <string name="butn_yes">हाँ</string>
+    <string name="butn_previewSelections">चुनाव किये हुए देखें</string>
+    <string name="butn_selectNone">चयन हटाएँ</string>
+    <string name="text_connect">जोड़ें</string>
+    <string name="text_translateTrebleshot">अनुवाद करने में हमारी मदद करें</string>
+    <string name="text_sortBySize">आकार</string>
+    <string name="text_deletingFilesOngoing">चुनी हुई फाइलें हटाई जा रही हैं</string>
+    <string name="text_taskCompleted">कार्य पूर्ण हुआ</string>
+    <string name="text_savePath">संरक्षित करने का पथ</string>
 </resources>
