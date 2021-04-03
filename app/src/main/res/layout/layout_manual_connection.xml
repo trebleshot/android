@@ -30,7 +30,7 @@
 
         <variable
             name="viewModel"
-            type="org.monora.uprotocol.client.android.fragment.ManualConnectionViewModel" />
+            type="org.monora.uprotocol.client.android.fragment.pickclient.ManualConnectionViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

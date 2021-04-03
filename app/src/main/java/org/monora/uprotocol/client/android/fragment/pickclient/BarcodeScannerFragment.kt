@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.fragment
+package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.Manifest.permission.*
 import android.content.*
@@ -384,6 +384,7 @@ class BarcodeScannerViewModel @Inject constructor(
 
     val stateText = ObservableField<String>()
 
+    @Synchronized
     fun consume(inetAddress: InetAddress, pin: Int) = _job ?: viewModelScope.launch(Dispatchers.IO) {
         try {
             _state.postValue(State.Running())

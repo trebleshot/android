@@ -23,7 +23,7 @@
     app:startDestination="@id/optionsFragment">
     <fragment
         android:id="@+id/optionsFragment"
-        android:name="org.monora.uprotocol.client.android.activity.ConnectionOptionsFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.ConnectionOptionsFragment"
         android:label="@string/text_chooseClient">
         <action
             android:id="@+id/action_optionsFragment_to_networkManagerFragment"
@@ -53,6 +53,9 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_optionsFragment_to_clientConnectionFragment"
+            app:destination="@id/clientConnectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/networkManagerFragment"
@@ -60,15 +63,19 @@
         android:label="@string/butn_generateQrCode" />
     <fragment
         android:id="@+id/clientsFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.ClientsFragment"
-        android:label="@string/text_allClients" />
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.PickClientFragment"
+        android:label="@string/text_allClients" >
+        <action
+            android:id="@+id/action_clientsFragment_to_clientConnectionFragment"
+            app:destination="@id/clientConnectionFragment" />
+    </fragment>
     <fragment
         android:id="@+id/manualConnectionFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.ManualConnectionFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.ManualConnectionFragment"
         android:label="@string/text_enterAddress" />
     <fragment
         android:id="@+id/barcodeScannerFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.BarcodeScannerFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.BarcodeScannerFragment"
         android:label="@string/text_scanQrCode" >
         <action
             android:id="@+id/action_barcodeScannerFragment_to_wifiConnectFragment"
@@ -81,8 +88,8 @@
     </fragment>
     <dialog
         android:id="@+id/wifiConnectFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.WifiConnectFragment"
-        android:label="WifiConnectFragment" >
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.WifiConnectFragment"
+        android:label="@string/text_connectToWifi" >
         <argument
             android:name="networkDescription"
             app:argType="org.monora.uprotocol.client.android.model.NetworkDescription" />
@@ -94,4 +101,17 @@
             app:argType="integer"
             android:defaultValue="0" />
     </dialog>
+    <fragment
+        android:id="@+id/clientConnectionFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.ClientConnectionFragment"
+        android:label="@string/text_connectingToClient" >
+        <argument
+            android:name="client"
+            app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
+        <argument
+            android:name="clientAddress"
+            app:argType="org.monora.uprotocol.client.android.database.model.UClientAddress"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 </navigation>

@@ -43,13 +43,12 @@ import org.monora.uprotocol.client.android.viewmodel.SharedTextsViewModel
 class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
     private val viewModel: SharedTextsViewModel by viewModels()
 
-    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
         val adapter = SharedTextAdapter()
+        val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
         emptyView.emptyText.setText(R.string.text_listEmptyTextStream)

@@ -23,8 +23,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
-import org.monora.uprotocol.client.android.activity.BarcodeScannerActivity
-import org.monora.uprotocol.client.android.activity.ManualConnectionActivity
 import org.monora.uprotocol.client.android.activity.PickClientActivity
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
@@ -32,8 +30,6 @@ import org.monora.uprotocol.client.android.model.ClientRoute
 
 class PickClient : ActivityResultContract<PickClient.ConnectionMode, ClientRoute?>() {
     override fun createIntent(context: Context, input: ConnectionMode): Intent = when (input) {
-        ConnectionMode.Barcode -> Intent(context, BarcodeScannerActivity::class.java)
-        ConnectionMode.Manual -> Intent(context, ManualConnectionActivity::class.java)
         else -> Intent(context, PickClientActivity::class.java).putExtra(EXTRA_CONNECTION_MODE, input)
     }
 
@@ -47,7 +43,7 @@ class PickClient : ActivityResultContract<PickClient.ConnectionMode, ClientRoute
     }
 
     enum class ConnectionMode {
-        WaitForRequests, Return, Barcode, Manual
+        WaitForRequests, Return
     }
 
     companion object {

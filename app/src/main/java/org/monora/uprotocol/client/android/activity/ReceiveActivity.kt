@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,19 +18,34 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
-import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
+import android.view.MenuItem
+import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 
 @AndroidEntryPoint
-class BarcodeScannerActivity : Activity() {
+class ReceiveActivity : Activity() {
+    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
+
+    private val navController by lazy {
+        navController(R.id.nav_host_fragment)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_receive)
 
-        setContentView(R.layout.activity_barcode_scanner)
-        setSupportActionBar(findViewById(R.id.toolbar))
-        setResult(RESULT_CANCELED)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            title = destination.label
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            return navController.popBackStack()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

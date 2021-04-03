@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.fragment
+package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.content.ClipData
 import android.content.ClipDescription

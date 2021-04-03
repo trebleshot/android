@@ -19,27 +19,14 @@ package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.databinding.LayoutConnectionOptionsBinding
-import org.monora.uprotocol.client.android.fragment.OnlineClientsFragment
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
-import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
-import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
-import java.util.*
 
 @AndroidEntryPoint
 class PickClientActivity : Activity() {
@@ -50,7 +37,7 @@ class PickClientActivity : Activity() {
     }
 
     private val navController by lazy {
-        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+        navController(R.id.nav_host_fragment)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,54 +81,3 @@ class PickClientActivity : Activity() {
     }
 }
 
-@AndroidEntryPoint
-class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
-    private val clientsViewModel: ClientsViewModel by viewModels()
-
-    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
-
-    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val connectionOptions = LayoutConnectionOptionsBinding.bind(view)
-        val adapter = OnlineClientsFragment.Adapter {
-            clientPickerViewModel.clientRoute.postValue(it)
-        }
-
-        adapter.setHasStableIds(true)
-        connectionOptions.emptyView.emptyText.setText(R.string.text_noOnlineDevices)
-        connectionOptions.emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
-        connectionOptions.emptyView.viewModel = emptyContentViewModel
-        connectionOptions.recyclerView.adapter = adapter
-        connectionOptions.recyclerView.layoutManager?.let {
-            if (it is GridLayoutManager) {
-                it.orientation = GridLayoutManager.HORIZONTAL
-            }
-        }
-
-        connectionOptions.clickListener = View.OnClickListener { v: View ->
-            when (v.id) {
-                R.id.clientsButton -> findNavController().navigate(
-                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToClientsFragment()
-                )
-                R.id.generateQrCodeButton -> findNavController().navigate(
-                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment()
-                )
-                R.id.manualAddressButton -> findNavController().navigate(
-                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToManualConnectionFragment()
-                )
-                R.id.scanQrCodeButton -> findNavController().navigate(
-                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToBarcodeScannerFragment()
-                )
-            }
-        }
-
-        connectionOptions.executePendingBindings()
-        clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-            emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())
-            TransitionManager.beginDelayedTransition(connectionOptions.emptyView.root.parent as ViewGroup)
-        }
-    }
-}

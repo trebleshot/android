@@ -620,4 +620,5 @@
     <string name="mesg_locationServiceDisabled">Location Service is disabled</string>
     <string name="text_wifiDisabled">Wi-Fi is disabled</string>
     <string name="mesg_needsSettingsWritePermission">Needs permission to modify system settings</string>
+    <string name="text_connectingToClient">Connecting to Client</string>
 </resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,15 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.fragment
+package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -34,25 +34,23 @@ import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListClientBinding
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
 import org.monora.uprotocol.client.android.viewholder.ClientViewHolder
-import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 
 @AndroidEntryPoint
-class ClientsFragment : Fragment(R.layout.layout_clients) {
-    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
-
+class PickClientFragment : Fragment(R.layout.layout_clients) {
     private val clientsViewModel: ClientsViewModel by viewModels()
-
-    private val emptyContentViewModel: EmptyContentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
         val adapter = Adapter {
-            clientPickerViewModel.client.postValue(it)
+            findNavController().navigate(
+                PickClientFragmentDirections.actionClientsFragmentToClientConnectionFragment(it, null)
+            )
         }
+        val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
         emptyView.emptyText.setText(R.string.text_noClientList)

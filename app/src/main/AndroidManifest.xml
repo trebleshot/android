@@ -210,17 +210,6 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.BarcodeScannerActivity"
-            android:label="@string/text_scanQrCode"
-            android:theme="@style/Theme.TrebleShot.BarcodeScannerActivity"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.PickClientActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.PickClientActivity" />
-        </activity>
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.WelcomeActivity"
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
@@ -230,20 +219,18 @@
             android:label="@string/text_webShare" />
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.ManualConnectionActivity"
-            android:label="@string/text_enterAddress"
-            android:windowSoftInputMode="stateVisible"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.PickClientActivity"
-            tools:targetApi="jelly_bean">
+            android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"
+            android:label="@string/transfer_history"
+            android:launchMode="singleTask" />
+
+        <activity android:name=".activity.ReceiveActivity"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            tools:targetApi="jelly_bean"
+            android:label="@string/text_receive">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.monora.uprotocol.client.android.activity.PickClientActivity" />
         </activity>
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"
-            android:label="@string/transfer_history"
-            android:launchMode="singleTask" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

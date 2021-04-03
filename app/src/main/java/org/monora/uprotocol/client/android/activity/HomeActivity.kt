@@ -33,15 +33,12 @@ import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.result.contract.PickClient
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
 import org.monora.uprotocol.client.android.dialog.ShareAppDialog
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Graphics
-import org.monora.uprotocol.client.android.util.Updater
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
@@ -51,10 +48,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         if (uri != null) {
             Graphics.saveClientPictureLocal(applicationContext, uri)
         }
-    }
-
-    private val pickClient = registerForActivityResult(PickClient()) {
-
     }
 
     private val userProfileBinding by lazy {
@@ -106,7 +99,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             startActivity(Intent(it.context, ContentSharingActivity::class.java))
         }
         findViewById<View>(R.id.receiveLayoutButton).setOnClickListener {
-            pickClient.launch(PickClient.ConnectionMode.WaitForRequests)
+            startActivity(Intent(it.context, ReceiveActivity::class.java))
         }
 
         userProfileBinding.executePendingBindings()

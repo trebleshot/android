@@ -16,23 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.viewmodel
+package org.monora.uprotocol.client.android.activity
 
-import android.view.View
-import androidx.databinding.Observable
-import androidx.databinding.ObservableBoolean
-import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import org.monora.uprotocol.client.android.R
 
-class EmptyContentViewModel {
-    var hasContent = ObservableBoolean()
-
-    var loading = ObservableBoolean()
-
-    fun with(content: View, hasContent: Boolean) {
-        this.hasContent.set(hasContent)
-        content.visibility = if (hasContent) View.VISIBLE else View.GONE
-    }
+fun FragmentActivity.navController(id: Int): NavController {
+    return (supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
 }

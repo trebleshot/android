@@ -460,6 +460,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         }
     }
 
+    @Deprecated("Do not use this! Thanks!")
     interface OnBackPressedListener {
         fun onBackPressed(): Boolean
     }
