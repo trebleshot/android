@@ -18,8 +18,35 @@
 
 package org.monora.uprotocol.client.android.fragment.pickclient
 
+import android.os.Bundle
+import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.databinding.LayoutClientConnectionBinding
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 
+@AndroidEntryPoint
 class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
+    private val args: ClientConnectionFragmentArgs by navArgs()
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val binding = LayoutClientConnectionBinding.bind(view)
+        binding.client = args.client
+        binding.image.animation = AnimationUtils.loadAnimation(binding.image.context, R.anim.pulse)
+
+        binding.executePendingBindings()
+
+        GlideApp.with(binding.imageLoading)
+            .load(R.drawable.nyancat)
+            .into(binding.imageLoading)
+    }
 }
