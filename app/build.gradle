@@ -178,6 +178,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.10.0'
     googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.google.zxing:core:3.3.0' // Needed because 'zxing' module won't export it. Do not update!
 }
 
 repositories {
