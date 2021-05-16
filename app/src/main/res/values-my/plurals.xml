@@ -1,2 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="text_devicesShared">
+        <item quantity="other">စက် %d လုံးနှင့် ဝေမျှနေသည်</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="other">%d တန်း</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="other">ဖိုင် %d ခု ဖျက်ပြီးပါပြီ</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="other">%d မိနစ်ခန့်က</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="other">%d စက္ကန့်အကြာက</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="other">ဖိုင် %d ခု</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="other">ဖိုင် %d ခု လက်ခံမည်လား\?</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="other">ချိတ်ဆက်မှု %d ခု</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="other">ကူးရန်ကျန်သော လုပ်ငန်းစဉ် %d ခုကို ပယ်ဖျက်လိမ့်မည်</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="other">ဖိုင် %d ခု ရွေးထားသည်</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="other">ဖိုင် %d ခု ရရှိပြီးပါပြီ</item>
+    </plurals>
+    <plurals name="ques_deleteFile">
+        <item quantity="other">ဖိုင် %d ခု ကို ဖျက်လိုပါသလား\?</item>
+    </plurals>
+</resources>
