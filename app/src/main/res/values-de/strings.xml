@@ -40,7 +40,7 @@
     <string name="text_deleteConfirm">Löschen bestätigen</string>
     <string name="butn_cancel">Abbrechen</string>
     <string name="text_refresh">Aktualisieren</string>
-    <string name="butn_shareTrebleshot">Diese App teilen</string>
+    <string name="butn_shareTrebleshot">Diese Anwendung teilen</string>
     <string name="text_about">Über</string>
     <string name="text_clearList">Liste leeren</string>
     <string name="mesg_deviceListCleared">Geräteliste wurde geleert</string>
@@ -74,13 +74,13 @@
     <string name="mesg_scanCompleted">Scan abgeschlossen</string>
     <string name="text_autoStart">Autostart</string>
     <string name="text_autoStartSummary">Kommunikation erlauben, wenn Verbindung erkannt wird</string>
-    <string name="text_application">App</string>
+    <string name="text_application">Anwendung</string>
     <string name="text_image">Bild</string>
     <string name="text_music">Musik</string>
     <string name="text_video">Video</string>
-    <string name="text_showSystemApps">System-Apps zeigen</string>
-    <string name="text_showSystemAppsSummary">System-Apps in \"Teilen\"-Sektion zeigen</string>
-    <string name="butn_showSystemApps">System-Apps zeigen</string>
+    <string name="text_showSystemApps">Systemanwendungen zeigen</string>
+    <string name="text_showSystemAppsSummary">Systemanwendungen in „Teilen“-Sektion zeigen</string>
+    <string name="butn_showSystemApps">Systemanwendungen zeigen</string>
     <string name="mesg_notAllowed">Nicht erlaubt</string>
     <string name="mesg_connectionProblem">Verbindungsproblem</string>
     <string name="text_communicationProblem">Kommunikationsproblem</string>
@@ -91,7 +91,7 @@
     <string name="butn_appLaunch">Starten</string>
     <string name="ques_launchApplication">Willst Du diese App starten\?</string>
     <string name="mesg_launchApplicationError">Diese App kann nicht gestartet werden</string>
-    <string name="text_enterText">Hier Text eingeben…</string>
+    <string name="text_enterText">Hier Text eingeben …</string>
     <string name="mesg_textCopiedToClipboard">Text in Zwischenablage kopiert</string>
     <string name="ques_copyToClipboard">In Zwischenablage kopieren?</string>
     <string name="text_textReceived">Text empfangen</string>
@@ -244,7 +244,7 @@
     <string name="text_uncheckedItemsNotice">Nicht markierte Einträge werden übersprungen</string>
     <string name="text_fileRoot">Wurzelverzeichnis</string>
     <string name="mesg_versionNotSupported">Bitte auf eine unterstützte Version aktualisieren und Geräte neu suchen.</string>
-    <string name="mesg_connectionUpdated">Kommuniziere jetzt über die Verbindung \"%s\"</string>
+    <string name="mesg_connectionUpdated">Kommuniziere jetzt über die Verbindung „%s“</string>
     <string name="mesg_ongoingUpdateDownload">Neue Version herunterladen</string>
     <string name="butn_gotIt">Verstanden</string>
     <string name="mesg_helpFolderSelection">Um einen Ordner auszuwählen, auf das Symbol tippen</string>
@@ -302,9 +302,9 @@
     <string name="text_listEmptyMusic">Keine Musik</string>
     <string name="text_internalStorage">Interner Speicher</string>
     <string name="text_restrictedAccessStorage">%s (beschränkter Zugriff)</string>
-    <string name="text_emptySearchResult">Keine Ergebnisse für \"%s\"</string>
+    <string name="text_emptySearchResult">Keine Ergebnisse für „%s“</string>
     <string name="mesg_listRefreshSnoozed">Die Liste wird aktualisiert, wenn sie verfügbar ist</string>
-    <string name="mesg_errorReadFolder">Zugriff auf \"%s\" nicht möglich</string>
+    <string name="mesg_errorReadFolder">Zugriff auf „%s“ nicht möglich</string>
     <string name="butn_mountDirectory">Ordner mounten</string>
     <string name="mesg_mountDirectoryHelp">Wählen Sie den Ordner aus, auf den Sie zugreifen möchten</string>
     <string name="butn_ejectDirectory">Ordner unmounten</string>
@@ -366,14 +366,14 @@
     <string name="butn_open">Öffnen</string>
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Nochmal versuchen</string>
-    <string name="mesg_noPendingTransferObjectExists">Keine Übertragung ausstehend. Um unterbrochene Dateien wieder aufzunehmen, verwenden Sie die Option \'Empfang wiederholen\'.</string>
+    <string name="mesg_noPendingTransferObjectExists">Keine Übertragung ausstehend. Um unterbrochene Dateien wieder aufzunehmen, verwenden Sie die Option „Empfang wiederholen“.</string>
     <string name="mesg_notSavingToChosenLocation">Ihr gewünschter Ordner ist nicht zugänglich. Die Dateien werden im Standardordner gespeichert.
 \n 
 \n%s</string>
     <string name="butn_changelog">Änderungsprotokoll</string>
     <string name="text_changelog">Änderungsprotokoll</string>
     <string name="mesg_versionUpdatedChangelog">Sie haben TrebleShot aktualisiert, möchten Sie das Änderungsprotokoll sehen\?</string>
-    <string name="mesg_versionUpdatedChangelogRejected">Das \'Änderungsprotokoll\' ist immer im Menü \'Über\' zu finden</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Das „Änderungsprotokoll“ ist immer im Menü „Über“ zu finden</string>
     <string name="mesg_noInternetConnection">Dafür wird eine Internetverbindung benötigt</string>
     <string name="text_applyDarkTheme">Dunkler Modus</string>
     <string name="text_applyDarkThemeSummary">Verwenden Sie das dunkle Stil-Thema</string>
@@ -432,7 +432,7 @@
     <string name="text_introSetUpPermissions">Berechtigungen setzen</string>
     <string name="text_introAllSet">Eingerichtet!</string>
     <string name="text_introSetUpProfile">Profil einrichten</string>
-    <string name="mesg_openFailure">\"%s\" kann nicht geöffnet werden</string>
+    <string name="mesg_openFailure">„%s“ kann nicht geöffnet werden</string>
     <string name="text_connectionTest">Verbindungstest - %s</string>
     <string name="butn_connectionTest">Verbindungstest</string>
     <string name="text_textMillisecond">%d ms</string>
@@ -445,7 +445,7 @@
     <string name="mesg_errorNotTrustZoneDevice">Dieses Gerät muss als TrustZone-Gerät auf dem Empfängergerät eingestellt sein, um diesen Vorgang durchzuführen.</string>
     <string name="butn_enterIpAddress">IP-Adresse eingeben</string>
     <string name="butn_webShare">Freigabe über den Browser</string>
-    <string name="text_webShareNoContentNotice">Verwenden Sie die Option \'Im Browser freigeben\', um die Übertragungen hier zu sehen!</string>
+    <string name="text_webShareNoContentNotice">Verwenden Sie die Option „Im Browser freigeben“, um die Übertragungen hier zu sehen!</string>
     <string name="butn_shareOnBrowser">Im Browser freigeben</string>
     <string name="butn_hideOnBrowser">Im Browser ausblenden</string>
     <string name="text_transferSharedOnBrowser">Im Browser freigegeben</string>
