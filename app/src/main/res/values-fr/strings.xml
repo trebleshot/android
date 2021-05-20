@@ -34,7 +34,7 @@
     <string name="text_fileShareAppChoose">Choisissez une application avec laquelle vous souhaitez partager</string>
     <string name="ques_resetToDefault">Réinitialiser aux valeurs par défaut ?</string>
     <string name="text_receivedFiles">Fichiers reçus</string>
-    <string name="butn_edit">Édition</string>
+    <string name="butn_edit">Modifier</string>
     <string name="butn_share">Partager</string>
     <string name="butn_delete">Supprimer</string>
     <string name="text_deleteConfirm">Confirmer la suppression</string>
@@ -49,7 +49,7 @@
     <string name="text_pendingTransfersOfDevice">File d\'attente - %s</string>
     <string name="butn_pendingTransfers">File d\'attente</string>
     <string name="butn_shareWithTrebleshot">Partager via TrebleShot</string>
-    <string name="mesg_somethingWentWrong">Oups ! Quelque chose s\'est mal passé</string>
+    <string name="mesg_somethingWentWrong">Quelque chose s\'est mal passé</string>
     <string name="text_findDevicesHint">Aucun appareil connu</string>
     <string name="text_autoScanDevices">Balayage automatique des périphériques</string>
     <string name="text_autoScanDevicesSummary">Balayage des périphériques en cas de besoin</string>
@@ -69,9 +69,9 @@
     <string name="text_music">Musique</string>
     <string name="text_video">Vidéo</string>
     <string name="text_showSystemApps">Afficher les applications système</string>
-    <string name="text_showSystemAppsSummary">Afficher les applications système dans la section \"Partager\"</string>
+    <string name="text_showSystemAppsSummary">Afficher les applications système dans la section « Partager »</string>
     <string name="butn_showSystemApps">Afficher les applications système</string>
-    <string name="mesg_notAllowed">Vous n’êtes pas autorisé</string>
+    <string name="mesg_notAllowed">Vous n’êtes pas autorisé·e</string>
     <string name="mesg_connectionProblem">Problème de connexion</string>
     <string name="text_communicationProblem">Problème de communication</string>
     <string name="butn_receive">Recevoir</string>
@@ -80,7 +80,7 @@
     <string name="butn_appLaunch">Lancer</string>
     <string name="ques_launchApplication">Voulez-vous lancer cette application ?</string>
     <string name="mesg_launchApplicationError">Cette application ne peut pas être lancée</string>
-    <string name="text_enterText">Saisissez un texte ici …</string>
+    <string name="text_enterText">Saisissez du texte ici…</string>
     <string name="mesg_textCopiedToClipboard">Texte copié dans le presse-papiers</string>
     <string name="ques_copyToClipboard">Copier vers le presse-papier ?</string>
     <string name="text_textReceived">Texte reçu</string>
@@ -210,7 +210,7 @@
     <string name="text_uncheckedItemsNotice">Les éléments non marqués seront ignorés</string>
     <string name="text_fileRoot">Fichier racine</string>
     <string name="mesg_versionNotSupported">Veuillez mettre à niveau vers une version prise en charge et ré-analyser les périphériques.</string>
-    <string name="mesg_connectionUpdated">Vous communiquez actuellement via la connexion \"%s\"</string>
+    <string name="mesg_connectionUpdated">Vous communiquez actuellement via la connexion « %s »</string>
     <string name="mesg_ongoingUpdateDownload">Téléchargement de la nouvelle version</string>
     <string name="butn_gotIt">J’ai compris</string>
     <string name="mesg_helpFolderSelection">Pour sélectionner un dossier, appuyez sur son icône</string>
@@ -249,8 +249,8 @@
     <string name="text_listEmptyMusic">Il n’y a pas de chansons ici</string>
     <string name="text_internalStorage">Stockage interne</string>
     <string name="text_restrictedAccessStorage">%s (accès restreint)</string>
-    <string name="text_emptySearchResult">Aucun résultat pour \"%s\"</string>
-    <string name="mesg_errorReadFolder">Impossible d’accéder à \"%s\"</string>
+    <string name="text_emptySearchResult">Aucun résultat pour « %s »</string>
+    <string name="mesg_errorReadFolder">Impossible d’accéder à « %s »</string>
     <string name="butn_mountDirectory">Monter le dossier</string>
     <string name="mesg_mountDirectoryHelp">Sélectionnez le dossier auquel vous désirez accéder</string>
     <string name="butn_ejectDirectory">Démonter le dossier</string>
@@ -342,8 +342,8 @@
     <string name="text_sendText">Envoyer du texte</string>
     <string name="text_addDeviceHelp">En ajoutant des périphériques, vous avez la possibilité de partager les mêmes fichiers avec plus de périphériques. Vous retournerez au menu du transfert lorsque celui-ci sera terminé.</string>
     <string name="text_send">Envoyer</string>
-    <string name="text_connectionHelp">Choisissez une option pour vous connecter à l’autre appareil. Par exemple, si l’autre appareil affiche un code QR, utilisez l’option Scan QR code.</string>
-    <string name="ques_needHelp">Besoin d’un coup de main \?</string>
+    <string name="text_connectionHelp">Choisissez une option pour vous connecter à l’autre appareil. Par exemple, si l’autre appareil affiche un code QR, utilisez l’option Scanner le code QR.</string>
+    <string name="ques_needHelp">Besoin d’un coup de main \?</string>
     <string name="text_manageDevices">Gérer les appareils</string>
     <string name="butn_fixConnection">Réparer la connexion</string>
     <string name="text_welcome">Bienvenue</string>
@@ -442,13 +442,13 @@
 \nAppareils &gt; %2$s &gt; Autoriser à se connecter &gt; (cochez-le)</string>
     <string name="text_automaticNetworkConnectionFailed">Impossible de connecter l\'appareil. Son adresse a peut-être changé. Essayez de vous reconnecter au réseau pendant que TrebleShot est ouvert.</string>
     <string name="text_deletingFilesOngoing">Suppression de fichiers sélectionnés</string>
-    <string name="mesg_noPendingTransferObjectExists">Il n\'y a plus de transfert en attente. Pour reprendre les fichiers interrompus, utilisez l\'option \'Réessayer la réception\'.</string>
+    <string name="mesg_noPendingTransferObjectExists">Il n’y a plus de transfert en attente. Pour reprendre les fichiers interrompus, utilisez l’option « Réessayer la réception ».</string>
     <string name="mesg_notSavingToChosenLocation">Le dossier de votre choix n\'est pas accessible. Les fichiers seront enregistrés dans le dossier par défaut.
 \n 
 \n%s</string>
     <string name="butn_feedbackContact">Appréciations et contact</string>
     <string name="mesg_locationPermissionRequiredAny">Activez d’abord le service de localisation pour continuer</string>
-    <string name="mesg_openFailure">Impossible d\'afficher \"%s\"</string>
+    <string name="mesg_openFailure">Impossible d’afficher « %s »</string>
     <string name="text_webShareNoContentNotice">Utilisez l\'option « Partager via le navigateur » pour voir les transferts ici !</string>
     <string name="text_checkOldFiles">Vous pouvez déplacer les fichiers associés complétés ainsi que ceux partiellement complétés vers ce dossier. Ceci peut prendre un certain temps, en fonction des volumes</string>
     <string name="text_sortOrderAscending">Plus volumineux en premier ↑</string>
