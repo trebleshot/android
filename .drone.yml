@@ -1,0 +1,9 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: build
+    image: mreichelt/android:30
+    commands:
+      - ./gradlew -Dorg.gradle.jvmargs=-Xms8192m assembleFossReliantDebug lintFossReliantDebug testFossReliantDebugUnitTest
