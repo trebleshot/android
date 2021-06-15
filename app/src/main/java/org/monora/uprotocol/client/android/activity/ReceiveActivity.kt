@@ -19,7 +19,9 @@ package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
@@ -39,6 +41,10 @@ class ReceiveActivity : Activity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
+        }
+
+        clientPickerViewModel.bridge.observe(this) {
+            Toast.makeText(this, "Ladies and Gentlemen... we've got 'em!", Toast.LENGTH_SHORT).show()
         }
     }
 

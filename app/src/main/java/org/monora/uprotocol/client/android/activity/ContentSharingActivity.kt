@@ -45,6 +45,7 @@ import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.dialog.ChooseSharingMethodDialog
 import org.monora.uprotocol.client.android.fragment.*
+import org.monora.uprotocol.client.android.fragment.content.FileFragment
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
@@ -121,7 +122,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
                 1,
                 R.drawable.ic_short_text_white_24dp,
                 getString(R.string.text_files),
-                SharedTextFragment::class.qualifiedName!!,
+                FileFragment::class.qualifiedName!!,
                 arguments
             )
         )

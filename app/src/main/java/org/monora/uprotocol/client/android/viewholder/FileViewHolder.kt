@@ -16,21 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.viewmodel
+package org.monora.uprotocol.client.android.viewholder
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.core.CommunicationBridge
-import javax.inject.Inject
+import androidx.recyclerview.widget.RecyclerView
+import org.monora.uprotocol.client.android.databinding.ListFileNouveauBinding
+import org.monora.uprotocol.client.android.model.FileModel
+import org.monora.uprotocol.client.android.viewmodel.content.FileContentViewModel
 
-@HiltViewModel
-class ClientPickerViewModel @Inject internal constructor(
-
-) : ViewModel() {
-    val client = SingleLiveEvent<UClient>()
-
-    val bridge = SingleLiveEvent<CommunicationBridge>()
+class FileViewHolder(private val binding: ListFileNouveauBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(fileModel: FileModel) {
+        binding.viewModel = FileContentViewModel(fileModel)
+    }
 }

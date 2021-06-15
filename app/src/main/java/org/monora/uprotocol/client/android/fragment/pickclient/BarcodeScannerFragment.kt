@@ -19,7 +19,13 @@
 package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.Manifest.permission.*
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationManager
 import android.net.ConnectivityManager
@@ -58,10 +64,7 @@ import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
-import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Connections
@@ -72,7 +75,6 @@ import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import java.net.InetAddress
 import java.net.UnknownHostException
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -217,7 +219,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                     Toast.makeText(context, "Error ${it.e.message}", Toast.LENGTH_LONG).show()
                 }
                 is State.Result -> {
-                    clientPickerViewModel.clientRoute.postValue(it.clientRoute)
+                    clientPickerViewModel.bridge.postValue(it.bridge)
                     findNavController().navigateUp()
                 }
                 is State.Running -> {
@@ -392,16 +394,7 @@ class BarcodeScannerViewModel @Inject constructor(
             CommunicationBridge.Builder(connectionFactory, persistenceProvider, inetAddress).apply {
                 setPin(pin)
             }.connect().use { bridge ->
-                if (!bridge.requestAcquaintance()) return@use
-
-                val client = bridge.remoteClient
-                val clientAddress = bridge.remoteClientAddress
-
-                if (client !is UClient || clientAddress !is UClientAddress) {
-                    throw IllegalStateException("Unsupported format was requested")
-                }
-
-                _state.postValue(State.Result(ClientRoute(client, clientAddress)))
+                _state.postValue(State.Result(bridge))
             }
         } catch (e: Exception) {
             _state.postValue(State.Error(e))
@@ -418,7 +411,7 @@ sealed class State(val running: Boolean) {
 
     class Error(val e: Exception) : State(false)
 
-    class Result(val clientRoute: ClientRoute) : State(false)
+    class Result(val bridge: CommunicationBridge) : State(false)
 }
 
 data class Change(val location: Boolean, val wifi: Boolean, val camera: Boolean)

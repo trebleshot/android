@@ -17,21 +17,7 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/tools">
-
-    <data>
-
-        <import type="android.view.View" />
-
-        <variable
-            name="clientContentViewModel"
-            type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
-
-        <variable
-            name="viewModel"
-            type="org.monora.uprotocol.client.android.fragment.pickclient.ManualConnectionViewModel" />
-    </data>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_main"
@@ -84,33 +70,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/confirm_button" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/clientView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="@{clientContentViewModel == null ? View.GONE: View.VISIBLE}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progressBar">
-
-            <include
-                layout="@layout/layout_client_detail"
-                bind:viewModel="@{clientContentViewModel}" />
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/clientView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/clientView"
-            app:srcCompat="@drawable/ic_round_send_24"
-            android:visibility="@{clientContentViewModel == null ? View.GONE: View.VISIBLE}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

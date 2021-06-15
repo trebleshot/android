@@ -16,21 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.viewmodel
+package org.monora.uprotocol.client.android.data
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.core.CommunicationBridge
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import org.monora.uprotocol.client.android.model.FileModel
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
-class ClientPickerViewModel @Inject internal constructor(
+@Singleton
+class MediaRepository @Inject constructor(
+    @ApplicationContext
+    context: Context
+) {
 
-) : ViewModel() {
-    val client = SingleLiveEvent<UClient>()
-
-    val bridge = SingleLiveEvent<CommunicationBridge>()
 }

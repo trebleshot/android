@@ -22,16 +22,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.app.ListingFragment.LayoutClickListener
-import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.fragment.FileExplorerFragment
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.app.ListingFragment.LayoutClickListener
+import org.monora.uprotocol.client.android.app.ListingFragmentBase
+import org.monora.uprotocol.client.android.fragment.FileExplorerFragment
 
 /**
  * Created by: veli
@@ -54,19 +54,19 @@ class FilePickerActivity : Activity() {
         super.onStart()
         if (intent != null) {
             var hasTitlesDefined = false
-            if (intent != null) {
-                supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                if (intent.hasExtra(EXTRA_ACTIVITY_TITLE).also { hasTitlesDefined = it })
-                    supportActionBar?.setTitle(intent.getStringExtra(EXTRA_ACTIVITY_TITLE))
-            }
+
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            if (intent.hasExtra(EXTRA_ACTIVITY_TITLE).also { hasTitlesDefined = it })
+                supportActionBar?.setTitle(intent.getStringExtra(EXTRA_ACTIVITY_TITLE))
 
             if (ACTION_CHOOSE_DIRECTORY == intent.action) {
-                if (supportActionBar != null) {
-                    if (!hasTitlesDefined) supportActionBar!!.setTitle(R.string.text_chooseFolder) else supportActionBar!!.setSubtitle(
-                        R.string.text_chooseFolder
-                    )
+                if (!hasTitlesDefined) {
+                    supportActionBar?.setTitle(R.string.text_chooseFolder)
+                } else {
+                    supportActionBar?.setSubtitle(R.string.text_chooseFolder)
                 }
+
                 fileExplorerFragment.adapter.also {
                     it.showDirectories = true
                     it.showFiles = false

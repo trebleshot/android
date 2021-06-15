@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -26,10 +27,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +40,7 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.client.android.databinding.LayoutClientDetailPickBinding
 import org.monora.uprotocol.client.android.databinding.LayoutManualConnectionBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
@@ -45,9 +48,9 @@ import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewMo
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.communication.ProtocolException
 import org.monora.uprotocol.core.protocol.communication.client.UnauthorizedClientException
 import java.net.InetAddress
-import java.net.ProtocolException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -71,14 +74,6 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
                 viewModel.connect(address)
             }
         }
-        binding.fab.setOnClickListener {
-            viewModel.state.value?.let {
-                if (it is ManualConnectionState.Loaded) {
-                    clientPickerViewModel.clientRoute.postValue(it.clientRoute)
-                    findNavController().navigateUp()
-                }
-            }
-        }
 
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
@@ -91,8 +86,34 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
                     else -> binding.editText.error = it.exception.message
                 }
                 is ManualConnectionState.Loaded -> {
-                    binding.clientContentViewModel = ClientContentViewModel(it.clientRoute.client)
-                    binding.executePendingBindings()
+                    val pickBinding = LayoutClientDetailPickBinding.inflate(
+                        LayoutInflater.from(context), null, false
+                    )
+                    val bottomSheetDialog = BottomSheetDialog(requireActivity())
+
+                    pickBinding.viewModel = ClientContentViewModel(it.clientRoute.client)
+                    pickBinding.acceptButton.setOnClickListener { _ ->
+                        pickBinding.acceptButton.isEnabled = false
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            try {
+                                clientPickerViewModel.bridge.postValue(viewModel.reconnect(it.clientRoute))
+                            } catch (e: Exception) {
+
+                            } finally {
+                                lifecycleScope.launchWhenResumed {
+                                    pickBinding.acceptButton.isEnabled = true
+                                }
+                            }
+                        }
+                    }
+                    pickBinding.rejectButton.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                    }
+
+                    pickBinding.executePendingBindings()
+
+                    bottomSheetDialog.setContentView(pickBinding.root)
+                    bottomSheetDialog.show()
                 }
             }
 
@@ -126,14 +147,14 @@ class ManualConnectionViewModel @Inject internal constructor(
             )
 
             if (!bridge.requestAcquaintance()) {
-                throw ProtocolException("Should not have returned this")
+                throw ProtocolException()
             }
 
             val client = bridge.remoteClient
             val clientAddress = bridge.remoteClientAddress
 
             if (client !is UClient || clientAddress !is UClientAddress) {
-                throw UnsupportedOperationException("Hello dear")
+                throw UnsupportedOperationException("Unknown parameters")
             }
 
             _state.postValue(ManualConnectionState.Loaded(ClientRoute(client, clientAddress)))
@@ -144,6 +165,12 @@ class ManualConnectionViewModel @Inject internal constructor(
             _job = null
         }
     }.also { _job = it }
+
+    fun reconnect(clientRoute: ClientRoute): CommunicationBridge = CommunicationBridge.Builder(
+        connectionFactory, persistenceProvider, clientRoute.address.inetAddress
+    ).also {
+        it.setClientUid(clientRoute.client.clientUid)
+    }.connect()
 }
 
 sealed class ManualConnectionState(val loading: Boolean) {

@@ -15,22 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package org.monora.uprotocol.client.android.fragment.content
 
-package org.monora.uprotocol.client.android.viewmodel
+import androidx.fragment.app.Fragment
+import org.monora.uprotocol.client.android.R
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.core.CommunicationBridge
-import javax.inject.Inject
+class PhotoBrowserFragment : Fragment(R.layout.layout_photo_content_fragment) {
 
-@HiltViewModel
-class ClientPickerViewModel @Inject internal constructor(
 
-) : ViewModel() {
-    val client = SingleLiveEvent<UClient>()
-
-    val bridge = SingleLiveEvent<CommunicationBridge>()
 }

@@ -16,21 +16,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.viewmodel
+package com.genonbeta.android.framework
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.core.CommunicationBridge
-import javax.inject.Inject
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
 
-@HiltViewModel
-class ClientPickerViewModel @Inject internal constructor(
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see [Testing documentation](http://d.android.com/tools/testing)
+ */
+@RunWith(AndroidJUnit4::class)
+class AndroidTest {
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getTargetContext()
+        Assert.assertEquals("org.monora.uprotocol.client.android.debug", appContext.packageName)
+    }
 
-) : ViewModel() {
-    val client = SingleLiveEvent<UClient>()
+    @Test
+    fun startActivity() {
 
-    val bridge = SingleLiveEvent<CommunicationBridge>()
+    }
 }

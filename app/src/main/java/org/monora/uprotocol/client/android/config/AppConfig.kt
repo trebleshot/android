@@ -48,9 +48,9 @@ object AppConfig {
 
     const val URI_ORG_HOME = "https://monora.org"
 
-    const val URI_REPO_APP = "http://github.com/trebleshot"
+    const val URI_REPO_APP = "https://github.com/trebleshot"
 
-    const val URI_REPO_ORG = "http://github.com/monoraorg"
+    const val URI_REPO_ORG = "https://github.com/monoraorg"
 
     const val URI_GITHUB_PROFILE = "https://github.com/%s"
 

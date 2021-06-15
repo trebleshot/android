@@ -52,9 +52,9 @@ class PickClientActivity : Activity() {
             title = destination.label
         }
 
-        clientPickerViewModel.clientRoute.observe(this) {
+        /*clientPickerViewModel.clientRoute.observe(this) {
             handleResult(it)
-        }
+        }*/
 
         clientPickerViewModel.client.observe(this) {
             Snackbar.make(

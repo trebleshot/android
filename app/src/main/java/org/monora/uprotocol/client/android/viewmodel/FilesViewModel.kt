@@ -18,19 +18,25 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.client.android.data.FileRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class ClientPickerViewModel @Inject internal constructor(
-
+class FilesViewModel @Inject internal constructor(
+    private val fileRepository: FileRepository
 ) : ViewModel() {
-    val client = SingleLiveEvent<UClient>()
 
-    val bridge = SingleLiveEvent<CommunicationBridge>()
+    private val _files = MutableLiveData(fileRepository.fileList("/sdcard/Download"))
+
+    val files = liveData {
+        emitSource(_files)
+    }
+
+    fun requestPath(path: String) {
+        _files.postValue(fileRepository.fileList(path))
+    }
 }

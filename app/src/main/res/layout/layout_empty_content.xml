@@ -37,34 +37,34 @@
         android:paddingRight="15dp"
         android:visibility="@{viewModel.hasContent ? View.GONE : View.VISIBLE}">
 
+        <ImageView
+            android:id="@+id/emptyImage"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:layout_constraintBottom_toTopOf="@+id/emptyText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/ic_uprotocol"
+            app:tint="?colorPassive" />
+
         <TextView
             android:id="@+id/emptyText"
             style="@style/TextAppearance.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:maxLines="5"
             android:text="@string/text_listEmpty"
             android:textColor="?colorPassive"
             android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/progressBar5"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/emptyImage"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/emptyImage"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:padding="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/emptyText"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_uprotocol"
-            app:tint="?colorPassive" />
+            app:layout_constraintTop_toBottomOf="@+id/emptyImage"
+            tools:text="This is a test for long texts where the views should still be presentable" />
 
         <ProgressBar
             android:id="@+id/progressBar5"
@@ -74,6 +74,7 @@
             android:layout_marginTop="16dp"
             android:indeterminate="true"
             android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/emptyText" />

@@ -16,21 +16,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.viewmodel
+package org.monora.uprotocol.client.android.viewholder
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.model.ClientRoute
-import org.monora.uprotocol.core.CommunicationBridge
-import javax.inject.Inject
+import androidx.recyclerview.widget.RecyclerView
+import org.monora.uprotocol.client.android.databinding.ListSectionTitleBinding
+import org.monora.uprotocol.client.android.model.TitleSectionContentModel
+import org.monora.uprotocol.client.android.viewmodel.content.TitleSectionContentViewModel
 
-@HiltViewModel
-class ClientPickerViewModel @Inject internal constructor(
-
-) : ViewModel() {
-    val client = SingleLiveEvent<UClient>()
-
-    val bridge = SingleLiveEvent<CommunicationBridge>()
+class TitleSectionViewHolder(val binding: ListSectionTitleBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(contentModel: TitleSectionContentModel) {
+        binding.viewModel = TitleSectionContentViewModel(contentModel)
+        binding.executePendingBindings()
+    }
 }
