@@ -19,11 +19,16 @@ package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigator
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 
 /**
  * Created by: veli
@@ -31,12 +36,20 @@ import org.monora.uprotocol.client.android.app.Activity
  */
 @AndroidEntryPoint
 class TextEditorActivity : Activity() {
+    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_text_editor)
         navController(R.id.nav_host_fragment).addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
+        }
+
+        clientPickerViewModel.bridge.observe(this) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                it.requestTextTransfer("hello")
+            }
         }
     }
 

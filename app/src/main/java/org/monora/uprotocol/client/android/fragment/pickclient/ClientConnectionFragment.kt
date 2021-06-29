@@ -20,8 +20,10 @@ package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -61,7 +63,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
 
         binding.executePendingBindings()
         clientConnectionViewModel.start(args.client, args.clientAddress)
-        clientConnectionViewModel.liveData.observe(viewLifecycleOwner) {
+        clientConnectionViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is ConnectionState.Connected -> {
                     clientPickerViewModel.bridge.postValue(it.bridge)
@@ -93,7 +95,7 @@ class ClientConnectionViewModel @Inject constructor(
 ) : ViewModel() {
     private var job: Job? = null
 
-    val liveData = MutableLiveData<ConnectionState>()
+    val state = MutableLiveData<ConnectionState>()
 
     fun start(client: UClient, address: UClientAddress?): Job = job ?: viewModelScope.launch(Dispatchers.IO) {
         val addresses = address?.let { listOf(it.inetAddress) } ?: clientRepository.getAddresses(client.clientUid).map {
@@ -102,9 +104,9 @@ class ClientConnectionViewModel @Inject constructor(
 
         try {
             if (addresses.isEmpty()) {
-                liveData.postValue(ConnectionState.NoAddress())
+                state.postValue(ConnectionState.NoAddress())
             } else {
-                liveData.postValue(ConnectionState.Connecting())
+                state.postValue(ConnectionState.Connecting())
 
                 val bridge = CommunicationBridge.Builder(
                     connectionFactory, persistenceProvider, addresses
@@ -115,10 +117,10 @@ class ClientConnectionViewModel @Inject constructor(
 
                 delay(2000)
 
-                liveData.postValue(ConnectionState.Connected(bridge.connect()))
+                state.postValue(ConnectionState.Connected(bridge.connect()))
             }
         } catch (e: Exception) {
-            liveData.postValue(ConnectionState.Error(e))
+            state.postValue(ConnectionState.Error(e))
         } finally {
             job = null
         }

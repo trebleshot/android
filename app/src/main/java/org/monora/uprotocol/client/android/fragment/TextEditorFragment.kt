@@ -33,9 +33,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -55,12 +57,15 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacementProvider {
     @Inject
     lateinit var sharedTextRepository: SharedTextRepository
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     private var sharedText: SharedText? = null
 

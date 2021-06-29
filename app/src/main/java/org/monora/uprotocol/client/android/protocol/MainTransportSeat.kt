@@ -23,7 +23,9 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
+import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.task.IndexTransferTask
 import org.monora.uprotocol.core.CommunicationBridge
@@ -41,6 +43,7 @@ class MainTransportSeat @Inject constructor(
     private val persistenceProvider: PersistenceProvider,
     private val clientRepository: ClientRepository,
     private val transferRepository: TransferRepository,
+    private val sharedTextRepository: SharedTextRepository,
     backgroundBackend: Lazy<BackgroundBackend>,
 ) : TransportSeat {
     private val backgroundBackend by lazy {
@@ -59,10 +62,13 @@ class MainTransportSeat @Inject constructor(
     override fun handleAcquaintanceRequest(client: Client, clientAddress: ClientAddress): Boolean = true
 
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
-        if (client !is UClient) throw UnsupportedOperationException("Expected the UClient implementation")
+        check(client is UClient) {
+            "Expected the UClient implementation"
+        }
 
         backgroundBackend.run(
-            IndexTransferTask(connectionFactory,
+            IndexTransferTask(
+                connectionFactory,
                 persistenceProvider,
                 clientRepository,
                 transferRepository,
@@ -81,7 +87,14 @@ class MainTransportSeat @Inject constructor(
     }
 
     override fun handleTextTransfer(client: Client, text: String) {
-        TODO("Not yet implemented")
+        check(client is UClient) {
+            "Expected the UClient implementation"
+        }
+
+        val sharedText = SharedText(0, text)
+
+        //sharedTextRepository.insert(sharedText)
+        backgroundBackend.notificationHelper.notifyClipboardRequest(client, sharedText)
     }
 
     override fun hasOngoingTransferFor(groupId: Long, clientUid: String, type: TransferItem.Type): Boolean {
