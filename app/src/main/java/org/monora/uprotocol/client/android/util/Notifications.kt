@@ -67,7 +67,7 @@ class Notifications(val backend: NotificationBackend) {
         val receiveIntent: PendingIntent = PendingIntent.getActivity(
             context,
             ID_BG_SERVICE + 2,
-            Intent(context, PickClientActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            Intent(context, ReceiveActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val exitAction = NotificationCompat.Action(

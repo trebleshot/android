@@ -72,7 +72,11 @@
     <fragment
         android:id="@+id/manualConnectionFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.ManualConnectionFragment"
-        android:label="@string/text_enterAddress" />
+        android:label="@string/text_enterAddress" >
+        <action
+            android:id="@+id/action_manualConnectionFragment_to_acceptClientFragment"
+            app:destination="@id/acceptClientFragment" />
+    </fragment>
     <fragment
         android:id="@+id/barcodeScannerFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.BarcodeScannerFragment"
@@ -85,6 +89,11 @@
             app:argType="java.net.InetAddress"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_barcodeScannerFragment_to_optionsFragment"
+            app:destination="@id/optionsFragment"
+            app:popUpTo="@id/optionsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/wifiConnectFragment"
@@ -113,5 +122,21 @@
             app:argType="org.monora.uprotocol.client.android.database.model.UClientAddress"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_clientConnectionFragment_to_optionsFragment2"
+            app:destination="@id/optionsFragment"
+            app:popUpTo="@id/optionsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/acceptClientFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.pickclient.AcceptClientFragment"
+        android:label="@string/text_verifyClient" >
+        <action
+            android:id="@+id/action_acceptClientFragment_to_clientConnectionFragment"
+            app:destination="@id/clientConnectionFragment" />
+        <argument
+            android:name="clientRoute"
+            app:argType="org.monora.uprotocol.client.android.model.ClientRoute" />
+    </dialog>
 </navigation>

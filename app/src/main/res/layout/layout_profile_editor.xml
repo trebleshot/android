@@ -37,18 +37,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp">
 
         <ImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:foreground="?roundSelector"
             android:onClick="@{pickPhotoClickListener}"
-            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+            app:layout_constraintBottom_toTopOf="@+id/button3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -57,38 +57,43 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/short_content_width_padding"
             android:layout_marginRight="@dimen/short_content_width_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/picture">
+            app:layout_constraintTop_toBottomOf="@+id/button3"
+            app:layout_constraintWidth_max="160dp">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editText"
                 listenNicknameChanges="@{viewModel}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="none"
+                android:gravity="center_horizontal"
                 android:hint="@string/text_deviceName"
                 android:inputType="textPersonName"
                 android:maxLength="@integer/length_max_username"
                 android:text="@{viewModel.client.clientNickname}" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/button"
+        <Button
+            android:id="@+id/button3"
+            style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:onClick="@{pickPhotoClickListener}"
-            android:text="@string/butn_pick"
-            app:fabCustomSize="32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/picture"
-            app:layout_constraintEnd_toEndOf="@+id/picture"
-            app:srcCompat="@drawable/ic_outline_edit_24" />
+            android:text="@string/butn_change"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+            app:layout_constraintEnd_toStartOf="@+id/button2"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture" />
 
         <Button
             android:id="@+id/button2"
@@ -98,10 +103,10 @@
             android:onClick="@{viewModel.deletePictureListener}"
             android:text="@string/butn_remove"
             android:visibility="@{viewModel.client.hasPicture() ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@+id/picture"
+            app:layout_constraintBaseline_toBaselineOf="@id/button3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/picture"
-            app:layout_constraintTop_toTopOf="@+id/picture" />
+            app:layout_constraintStart_toEndOf="@+id/button3"
+            tools:layout_editor_absoluteY="120dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

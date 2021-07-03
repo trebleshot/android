@@ -19,20 +19,57 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
+import android.transition.Transition
 import android.view.View
-import android.widget.Button
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.consume
 
+@AndroidEntryPoint
 class ReceiveFragment : Fragment(R.layout.layout_receive) {
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val binding = LayoutReceiveBinding.bind(view)
 
-        view.findViewById<Button>(R.id.button).setOnClickListener {
+        binding.button.setOnClickListener {
             findNavController().navigate(
                 ReceiveFragmentDirections.pickClient()
             )
+        }
+
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
+            val bridge = it.consume() ?: return@observe
+
+            binding.progressBar.visibility = View.VISIBLE
+            binding.button.isEnabled = false
+            TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val result = bridge.requestAcquaintance()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    lifecycleScope.launchWhenResumed {
+                        binding.progressBar.visibility = View.GONE
+                        binding.button.isEnabled = true
+                        TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
+                    }
+                }
+            }
         }
     }
 }

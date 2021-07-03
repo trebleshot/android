@@ -34,22 +34,13 @@ import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
  * Created by: veli
  * Date: 1/19/17 5:05 PM
  */
-@AndroidEntryPoint
 class TextEditorActivity : Activity() {
-    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_text_editor)
         navController(R.id.nav_host_fragment).addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
-        }
-
-        clientPickerViewModel.bridge.observe(this) {
-            lifecycleScope.launch(Dispatchers.IO) {
-                it.requestTextTransfer("hello")
-            }
         }
     }
 

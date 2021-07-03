@@ -22,7 +22,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -38,12 +40,13 @@ import org.monora.uprotocol.client.android.viewholder.ClientGridViewHolder
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.isValid
 
 @AndroidEntryPoint
 class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
     private val clientsViewModel: ClientsViewModel by viewModels()
 
-    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -86,6 +89,13 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
         }
 
         connectionOptions.executePendingBindings()
+
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
+            if (it.isValid()) {
+                findNavController().navigateUp()
+            }
+        }
+
         clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())

@@ -16,28 +16,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.viewmodel
+package org.monora.uprotocol.client.android.util
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import org.apache.commons.lang3.tuple.MutablePair
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.core.CommunicationBridge
-import javax.inject.Inject
 
-typealias StatefulBridge = MutablePair<Boolean, CommunicationBridge>
+val CommunicationBridge.clientRoute: ClientRoute
+    get() {
+        val client = this.remoteClient
+        val address = this.remoteClientAddress
 
-@HiltViewModel
-class ClientPickerViewModel @Inject internal constructor() : ViewModel() {
-    val bridge = MutableLiveData<MutablePair<Boolean, CommunicationBridge>>()
-}
+        check(client is UClient) {
+            "Unsupported client wrapper class: ${client.javaClass.simpleName}"
+        }
 
-fun MutablePair<Boolean, CommunicationBridge>.consume(): CommunicationBridge? {
-    val (used, bridge) = this
-    return if (used) null else {
-        this.setLeft(true)
-        bridge
+        check(address is UClientAddress) {
+            "Unsupported client address wrapper class: ${address.javaClass.simpleName}"
+        }
+
+        return ClientRoute(client, address)
     }
-}
-
-fun MutablePair<Boolean, CommunicationBridge>.isValid(): Boolean = !this.left

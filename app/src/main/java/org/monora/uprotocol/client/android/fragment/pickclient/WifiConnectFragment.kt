@@ -62,6 +62,11 @@ class WifiConnectFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = LayoutWifiConnectBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.viewModel = args.networkDescription
 
         binding.clickListener = View.OnClickListener {
@@ -83,8 +88,6 @@ class WifiConnectFragment : BottomSheetDialogFragment() {
             }
         }
         binding.executePendingBindings()
-
-        return binding.root
     }
 
     override fun onResume() {

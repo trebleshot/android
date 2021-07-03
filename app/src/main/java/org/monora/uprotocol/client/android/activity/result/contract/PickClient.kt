@@ -23,14 +23,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
-import org.monora.uprotocol.client.android.activity.PickClientActivity
+import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.model.ClientRoute
 
 class PickClient : ActivityResultContract<PickClient.ConnectionMode, ClientRoute?>() {
     override fun createIntent(context: Context, input: ConnectionMode): Intent = when (input) {
-        else -> Intent(context, PickClientActivity::class.java).putExtra(EXTRA_CONNECTION_MODE, input)
+        else -> Intent(context, ReceiveActivity::class.java).putExtra(EXTRA_CONNECTION_MODE, input)
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): ClientRoute? {

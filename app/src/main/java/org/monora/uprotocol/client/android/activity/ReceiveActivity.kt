@@ -42,10 +42,6 @@ class ReceiveActivity : Activity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
         }
-
-        clientPickerViewModel.bridge.observe(this) {
-            Toast.makeText(this, "Ladies and Gentlemen... we've got 'em!", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

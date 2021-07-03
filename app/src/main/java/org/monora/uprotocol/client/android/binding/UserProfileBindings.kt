@@ -23,6 +23,7 @@ import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.util.Graphics
@@ -51,7 +52,9 @@ fun loadPictureOfClient(imageView: ImageView, client: Client?) {
             GlideApp.with(imageView)
                 .load(client.clientPictureData)
                 .circleCrop()
+                .placeholder(default)
                 .error(default)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .into(imageView)
         } else {
             imageView.setImageDrawable(default)

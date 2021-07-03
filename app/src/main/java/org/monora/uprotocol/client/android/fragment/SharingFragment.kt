@@ -40,7 +40,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
@@ -82,7 +81,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                         binding.progressBar.progress = it.index
                     }
                 }
-                is SharingActivityState.State -> {
+                is SharingActivityState.Ready -> {
                     binding.groupPreparing.visibility = View.GONE
                     binding.listParent.visibility = View.VISIBLE
 
@@ -141,7 +140,7 @@ class SharingActivityViewModel @Inject internal constructor(
                 }
             }
 
-            shared.postValue(SharingActivityState.State(id, list))
+            shared.postValue(SharingActivityState.Ready(id, list))
         }
     }
 }
@@ -149,5 +148,5 @@ class SharingActivityViewModel @Inject internal constructor(
 sealed class SharingActivityState {
     class Progress(val index: Int, val total: Int, val title: String) : SharingActivityState()
 
-    class State(val id: Long, val list: List<UTransferItem>) : SharingActivityState()
+    class Ready(val id: Long, val list: List<UTransferItem>) : SharingActivityState()
 }

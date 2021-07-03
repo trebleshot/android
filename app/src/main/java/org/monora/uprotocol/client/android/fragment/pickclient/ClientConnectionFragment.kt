@@ -20,16 +20,16 @@ package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +42,7 @@ import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutClientConnectionBinding
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -66,8 +67,10 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
         clientConnectionViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is ConnectionState.Connected -> {
-                    clientPickerViewModel.bridge.postValue(it.bridge)
-                    findNavController().navigateUp()
+                    clientPickerViewModel.bridge.postValue(StatefulBridge.of(false, it.bridge))
+                    findNavController().navigate(
+                        ClientConnectionFragmentDirections.actionClientConnectionFragmentToOptionsFragment2()
+                    )
                 }
                 is ConnectionState.Error -> {
                     binding.image.alpha = 0.5f
@@ -83,6 +86,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
             }
 
             binding.progress.visibility = if (it.connecting) View.VISIBLE else View.GONE
+            TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
         }
     }
 }
@@ -114,8 +118,6 @@ class ClientConnectionViewModel @Inject constructor(
                     setClearBlockedStatus(true)
                     setClientUid(client.clientUid)
                 }
-
-                delay(2000)
 
                 state.postValue(ConnectionState.Connected(bridge.connect()))
             }

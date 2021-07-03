@@ -70,6 +70,7 @@ import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -219,8 +220,10 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                     Toast.makeText(context, "Error ${it.e.message}", Toast.LENGTH_LONG).show()
                 }
                 is State.Result -> {
-                    clientPickerViewModel.bridge.postValue(it.bridge)
-                    findNavController().navigateUp()
+                    clientPickerViewModel.bridge.postValue(StatefulBridge.of(false, it.bridge))
+                    findNavController().navigate(
+                        BarcodeScannerFragmentDirections.actionBarcodeScannerFragmentToOptionsFragment()
+                    )
                 }
                 is State.Running -> {
 

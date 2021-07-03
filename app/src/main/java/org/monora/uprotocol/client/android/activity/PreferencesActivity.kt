@@ -17,12 +17,13 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import org.monora.uprotocol.client.android.R
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 
 class PreferencesActivity : Activity() {
@@ -39,10 +40,14 @@ class PreferencesActivity : Activity() {
                     .setTitle(R.string.ques_resetToDefault)
                     .setMessage(R.string.text_resetPreferencesToDefaultSummary)
                     .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_proceed) { dialog: DialogInterface?, which: Int ->
+                    .setPositiveButton(R.string.butn_proceed) { _: DialogInterface?, _: Int ->
                         PreferenceManager.getDefaultSharedPreferences(applicationContext).edit()
                             .clear()
                             .apply()
+                        PreferenceManager.setDefaultValues(
+                            applicationContext, R.xml.preferences_defaults_main, true
+                        )
+
                         finish()
                     }
                     .show()

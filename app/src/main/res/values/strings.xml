@@ -624,4 +624,5 @@
     <string name="mesg_offline">The remote is unavailable</string>
     <string name="text_deviceOffline">Device is offline!</string>
     <string name="ques_correct_client">Is this the client you are looking for?</string>
+    <string name="text_verifyClient">Verify Client</string>
 </resources>

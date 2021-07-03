@@ -33,7 +33,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -43,13 +42,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
@@ -58,6 +58,7 @@ import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.consume
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,6 +72,8 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
 
     private val text
         get() = requireView().findViewById<EditText>(R.id.editText).text.toString()
+
+    private var shareButton: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,11 +97,25 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
         val backPressedDispatcher = requireActivity().onBackPressedDispatcher
         val backPressedCallback = object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
+                // Capture back press events when there is unsaved changes that should be handled first.
+
                 val hasObject = sharedText != null
+                val eventListener = object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        super.onDismissed(transientBottomBar, event)
+                        isEnabled = true
+                    }
+
+                    override fun onShown(transientBottomBar: Snackbar?) {
+                        super.onShown(transientBottomBar)
+                        isEnabled = false
+                    }
+                }
 
                 when {
                     checkDeletionNeeded() -> {
                         createSnackbar(R.string.ques_deleteEmptiedText)
+                            .addCallback(eventListener)
                             .setAction(R.string.butn_delete) {
                                 removeText()
                                 backPressedDispatcher.onBackPressed()
@@ -107,6 +124,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
                     }
                     checkSaveNeeded() -> {
                         createSnackbar(if (hasObject) R.string.mesg_clipboardUpdateNotice else R.string.mesg_textSaveNotice)
+                            .addCallback(eventListener)
                             .setAction(if (hasObject) R.string.butn_update else R.string.butn_save) {
                                 saveText()
                                 backPressedDispatcher.onBackPressed()
@@ -118,17 +136,12 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
                         backPressedDispatcher.onBackPressed()
                     }
                 }
-
-                lifecycleScope.launch {
-                    isEnabled = false
-                    delay(3000)
-                    isEnabled = true
-                }
             }
         }
 
         editText.addTextChangedListener {
             backPressedCallback.isEnabled = checkDeletionNeeded() || checkSaveNeeded()
+            updateShareButton()
         }
 
         backPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
@@ -139,11 +152,29 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
                 append(text)
             }
         }
+
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
+            val bridge = it.consume() ?: return@observe
+
+            createSnackbar(R.string.text_sending).show()
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    if (bridge.requestTextTransfer(this@TextEditorFragment.text)) {
+                        lifecycleScope.launch {
+                            createSnackbar(R.string.mesg_sent).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.actions_text_editor, menu)
+        shareButton = menu.findItem(R.id.menu_action_share_trebleshot)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -152,6 +183,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
             .setVisible(!checkDeletionNeeded()).isEnabled = checkSaveNeeded()
         menu.findItem(R.id.menu_action_remove).isVisible = sharedText != null
         menu.findItem(R.id.menu_action_show_as_qr_code).isEnabled = (text.length in 1..1200)
+        updateShareButton()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -223,6 +255,10 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
     private fun checkSaveNeeded(): Boolean {
         val editorText: String = text
         return editorText.isNotEmpty() && editorText != sharedText?.text
+    }
+
+    private fun updateShareButton() {
+        shareButton?.isEnabled = this@TextEditorFragment.text.isNotEmpty()
     }
 
     private fun saveText() {

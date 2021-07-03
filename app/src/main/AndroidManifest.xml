@@ -97,17 +97,6 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.PickClientActivity"
-            android:label="@string/text_connectDevices"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.ContentSharingActivity"
             android:label="@string/text_send"
             android:launchMode="singleTask"
@@ -229,7 +218,7 @@
             android:label="@string/text_receive">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.PickClientActivity" />
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
         </activity>
 
         <provider

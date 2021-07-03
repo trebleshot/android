@@ -32,6 +32,10 @@
 
     <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
+        android:key="custom_fonts" />
+
+    <androidx.preference.CheckBoxPreference
+        android:defaultValue="true"
         android:key="qr_trust" />
 
     <androidx.preference.CheckBoxPreference
