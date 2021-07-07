@@ -26,11 +26,13 @@ import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.data.UserDataRepository
+import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.io.FileStreamDescriptor
+import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.persistence.PersistenceException
@@ -39,7 +41,12 @@ import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ClientType
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.InetAddress
 import java.security.PrivateKey
 import java.security.PublicKey
@@ -49,7 +56,6 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class MainPersistenceProvider @Inject constructor(
     @ApplicationContext val context: Context,
@@ -91,13 +97,13 @@ class MainPersistenceProvider @Inject constructor(
         size: Long,
         directory: String?,
         type: TransferItem.Type,
-    ): TransferItem = UTransferItem(groupId, id, name, mimeType, size, directory, uniqueFileName(), type)
+    ): TransferItem = UTransferItem(id, groupId, name, mimeType, size, directory, uniqueFileName(), type)
 
     override fun getCertificate(): X509Certificate = userDataRepository.certificate
 
     override fun getClient(): UClient = userDataRepository.clientStatic()
 
-    override fun getClientFor(uid: String): UClient? = runBlocking { clientRepository.get(uid) }
+    override fun getClientFor(uid: String): UClient? = runBlocking { clientRepository.getSingle(uid) }
 
     override fun getClientNickname(): String = userDataRepository.clientNicknameStatic()
 
@@ -203,7 +209,20 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun persist(clientUid: String, itemList: MutableList<out TransferItem>) {
+        if (itemList.isEmpty()) return
+
         val usableItemList = ArrayList<UTransferItem>()
+        val exemplar = itemList[0]
+        val transfer = Transfer(
+            exemplar.itemGroupId,
+            clientUid,
+            exemplar.itemType,
+            Files.getApplicationDirectory(context).getUri().toString(),
+        )
+
+        runBlocking {
+            transferRepository.insert(transfer)
+        }
 
         itemList.forEach {
             if (it is UTransferItem) {

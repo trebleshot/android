@@ -37,8 +37,6 @@ class TransferRepository @Inject constructor(
 
     suspend fun getReceivable(groupId: Long) = transferItemDao.getReceivable(groupId)
 
-    suspend fun getTransfer(transferId: Long): Transfer? = transferDao.get(transferId)
-
     suspend fun getTransfer(
         transferId: Long,
         clientUid: String,
@@ -54,6 +52,8 @@ class TransferRepository @Inject constructor(
     ) = transferItemDao.get(groupId, id, type)
 
     suspend fun getTransferItem(location: String, type: TransferItem.Type) = transferItemDao.get(location, type)
+
+    fun getTransferItems(groupId: Long) = transferItemDao.getAll(groupId)
 
     fun getTransfers() = transferDao.getAll()
 

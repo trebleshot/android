@@ -34,13 +34,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutClientConnectionBinding
+import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
 import org.monora.uprotocol.core.CommunicationBridge
@@ -62,8 +62,14 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
         val binding = LayoutClientConnectionBinding.bind(view)
         binding.client = args.client
 
+        binding.retryButton.setOnClickListener {
+            clientConnectionViewModel.start(args.client, args.clientAddress)
+        }
+
         binding.executePendingBindings()
-        clientConnectionViewModel.start(args.client, args.clientAddress)
+
+        binding.retryButton.performClick()
+
         clientConnectionViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is ConnectionState.Connected -> {
@@ -73,19 +79,23 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
                     )
                 }
                 is ConnectionState.Error -> {
-                    binding.image.alpha = 0.5f
-                    binding.text.alpha = 0.5f
-                    binding.textOffline.visibility = View.VISIBLE
+                    binding.textOffline.text = CommonErrorHelper.messageOf(requireContext(), it.e).message
                 }
                 is ConnectionState.NoAddress -> {
-                    binding.textOffline.text = getString(R.string.text_deviceOffline)
-                    binding.textOffline.visibility = View.VISIBLE
+                    binding.textOffline.text = getString(R.string.mesg_clientOffline)
                 }
                 is ConnectionState.Connecting -> {
                 }
             }
 
-            binding.progress.visibility = if (it.connecting) View.VISIBLE else View.GONE
+            val alpha = if (it.isError) 0.5f else 1f
+
+            binding.image.alpha = alpha
+            binding.text.alpha = alpha
+            binding.textOffline.visibility = if (it.isError) View.VISIBLE else View.GONE
+            binding.progress.visibility = if (it.isConnecting) View.VISIBLE else View.GONE
+            binding.retryButton.visibility =
+                if (!it.isConnecting && it !is ConnectionState.Connected) View.VISIBLE else View.GONE
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
         }
     }
@@ -129,12 +139,12 @@ class ClientConnectionViewModel @Inject constructor(
     }.also { job = it }
 }
 
-sealed class ConnectionState(val connecting: Boolean = false) {
+sealed class ConnectionState(val isConnecting: Boolean = false, val isError: Boolean = false) {
     class Connected(val bridge: CommunicationBridge) : ConnectionState()
 
-    class Error(val e: Exception) : ConnectionState()
+    class Error(val e: Exception) : ConnectionState(isError = true)
 
-    class NoAddress : ConnectionState()
+    class NoAddress : ConnectionState(isError = true)
 
-    class Connecting : ConnectionState(connecting = true)
+    class Connecting : ConnectionState(isConnecting = true)
 }

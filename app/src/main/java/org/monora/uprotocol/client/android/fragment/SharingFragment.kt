@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -29,22 +30,28 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.genonbeta.android.framework.io.StreamInfo
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
 import org.monora.uprotocol.client.android.itemcallback.UTransferItemCallback
+import org.monora.uprotocol.client.android.util.CommonErrorHelper
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
 import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
@@ -53,6 +60,8 @@ import kotlin.random.Random
 @AndroidEntryPoint
 class SharingFragment : Fragment(R.layout.layout_sharing) {
     private val sharingActivityViewModel: SharingActivityViewModel by activityViewModels()
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -86,6 +95,29 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                     binding.listParent.visibility = View.VISIBLE
 
                     adapter.submitList(it.list)
+                }
+            }
+        }
+
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val value: SharingActivityState = sharingActivityViewModel.shared.value ?: return@launch
+                val bridge = it.consume() ?: return@launch
+
+                if (value !is SharingActivityState.Ready) return@launch
+
+                try {
+                    if (bridge.requestFileTransfer(value.id, value.list)) {
+                        lifecycleScope.launchWhenResumed {
+                            context?.startActivity(Intent(context, TransferDetailActivity::class.java))
+                        }
+                    }
+                } catch (e: Exception) {
+                    lifecycleScope.launchWhenResumed {
+                        val msg = CommonErrorHelper.messageOf(requireContext(), e).message
+
+                        Snackbar.make(binding.fab, msg, Snackbar.LENGTH_LONG).show()
+                    }
                 }
             }
         }

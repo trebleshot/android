@@ -112,7 +112,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.actions_home_transfer_history) {
-            startActivity(Intent(this, SharedTextActivity::class.java))
+            startActivity(Intent(this, TransferHistoryActivity::class.java))
         } else {
             return super.onOptionsItemSelected(item)
         }

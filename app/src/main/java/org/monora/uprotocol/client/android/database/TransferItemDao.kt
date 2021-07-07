@@ -18,7 +18,12 @@
 
 package org.monora.uprotocol.client.android.database
 
-import androidx.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.persistence.PersistenceProvider.STATE_PENDING
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -27,6 +32,9 @@ import org.monora.uprotocol.core.transfer.TransferItem
 interface TransferItemDao {
     @Delete
     suspend fun delete(transferItem: UTransferItem)
+
+    @Query("SELECT * FROM transferItem WHERE groupId == :groupId")
+    fun getAll(groupId: Long): LiveData<List<UTransferItem>>
 
     @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND id == :id LIMIT 1")
     suspend fun get(groupId: Long, id: Long): UTransferItem?

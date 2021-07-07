@@ -18,27 +18,19 @@
 package org.monora.uprotocol.client.android.task
 
 import android.content.Context
-import android.content.Intent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import android.util.Log
 import kotlinx.coroutines.runBlocking
-import org.json.JSONArray
-import org.json.JSONException
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
-import org.monora.uprotocol.core.spec.v1.Keyword
 import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import java.util.*
 
@@ -55,71 +47,53 @@ class IndexTransferTask(
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         // Do not let it add the same transfer id again.
-        runBlocking {
-            transferRepository.getTransfer(transferId)
-        } ?: return
-
-        val saveLocation = Files.getApplicationDirectory(context).toString()
-        val transfer = Transfer(transferId, client.clientUid, Incoming, saveLocation)
-        val jsonArray: JSONArray = try {
-            JSONArray(jsonIndex)
-        } catch (e: Exception) {
-            return
-        }
-
-        progress.increaseTotalBy(jsonArray.length())
-
-        runBlocking {
-            transferRepository.insert(transfer)
-        }
-
-        val itemList: MutableList<UTransferItem> = ArrayList()
-
-        for (i in 0 until jsonArray.length()) {
-            throwIfStopped()
-            progress.increaseBy(1)
-            try {
-                val index = jsonArray.getJSONObject(i)
-                val uniqueName = "." + UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART
-                val directory = index.optString(Keyword.INDEX_DIRECTORY).takeIf { it.isNotEmpty() }
-                val transferItem = UTransferItem(
-                    index.getLong(Keyword.TRANSFER_GROUP_ID),
-                    transferId,
-                    index.getString(Keyword.INDEX_FILE_NAME),
-                    index.getString(Keyword.INDEX_FILE_MIME),
-                    index.getLong(Keyword.INDEX_FILE_SIZE),
-                    directory,
-                    uniqueName,
-                    Incoming,
-                )
-                ongoingContent = transferItem.name
-                if (index.has(Keyword.INDEX_DIRECTORY)) transferItem.directory =
-                    index.getString(Keyword.INDEX_DIRECTORY)
-                itemList.add(transferItem)
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-        }
-        if (itemList.size > 0) CoroutineScope(Dispatchers.Main).launch {
-            transferRepository.insert(itemList)
-
-            if (noPrompt) {
-                try {
-                    backend.run(
-                        FileTransferStarterTask.createFrom(
-                            connectionFactory, persistenceProvider, clientRepository, transfer, client, Incoming
-                        )
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        try {
+            runBlocking {
+                if (transferRepository.containsTransfer(transferId)) {
+                    Log.d(TAG, "onRun: Transfer already exists: $transferId. Skipping...")
                 }
-            } else {
-                backend.notifyFileRequest(client, transfer, itemList)
+            } ?: return
+
+            val saveLocation = Files.getApplicationDirectory(context).toString()
+            val transfer = Transfer(transferId, client.clientUid, Incoming, saveLocation)
+            val items = persistenceProvider.toTransferItemList(transferId, jsonIndex).map {
+                // TODO: 7/4/21 PersistenceProvider types can be improved?
+                check(it is UTransferItem) {
+                    "Unexpected type"
+                }
+
+                it
             }
+
+            if (items.isNotEmpty()) runBlocking {
+                transferRepository.insert(transfer)
+
+                transferRepository.insert(items)
+
+                if (noPrompt) {
+                    try {
+                        backend.run(
+                            FileTransferStarterTask.createFrom(
+                                connectionFactory, persistenceProvider, clientRepository, transfer, client, Incoming
+                            )
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    backend.notifyFileRequest(client, transfer, items)
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
         }
     }
 
     override fun getName(context: Context): String {
         return context.getString(R.string.text_preparingFiles)
+    }
+
+    companion object {
+        const val TAG = "IndexTransferTask"
     }
 }

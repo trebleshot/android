@@ -165,20 +165,20 @@ class NsdDaemon @Inject constructor(
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private inner class DiscoveryListener : NsdManager.DiscoveryListener {
         override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-            Log.e(TAG, "NSD discovery failed to start with error code $errorCode")
+            Log.e(TAG, "NSD failed to start with error code $errorCode")
             clear()
         }
 
         override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-            Log.e(TAG, "NSD discovery failed to stop with error code $errorCode")
+            Log.e(TAG, "NSD failed to stop with error code $errorCode")
         }
 
         override fun onDiscoveryStarted(serviceType: String) {
-            Log.v(TAG, "NSD discovery started")
+            Log.v(TAG, "NSD started")
         }
 
         override fun onDiscoveryStopped(serviceType: String) {
-            Log.v(TAG, "NSD discovery stopped")
+            Log.v(TAG, "NSD stopped")
             clear()
         }
 

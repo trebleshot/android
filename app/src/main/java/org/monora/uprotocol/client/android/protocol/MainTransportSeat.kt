@@ -21,12 +21,14 @@ package org.monora.uprotocol.client.android.protocol
 import android.content.Context
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.backend.BackgroundBackend
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.client.android.task.IndexTransferTask
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
@@ -93,16 +95,19 @@ class MainTransportSeat @Inject constructor(
 
         val sharedText = SharedText(0, text)
 
-        //sharedTextRepository.insert(sharedText)
+        runBlocking {
+            sharedTextRepository.insert(sharedText)
+        }
+
         backgroundBackend.notificationHelper.notifyClipboardRequest(client, sharedText)
     }
 
     override fun hasOngoingTransferFor(groupId: Long, clientUid: String, type: TransferItem.Type): Boolean {
-        TODO("Not yet implemented")
+        return backgroundBackend.findTaskBy(FileTransferTask.identifyWith(groupId, clientUid, type)) != null
     }
 
     override fun hasOngoingIndexingFor(groupId: Long): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun notifyClientCredentialsChanged(client: Client) {

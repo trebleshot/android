@@ -547,7 +547,7 @@
     <string name="butn_compose">Compose</string>
     <string name="butn_addMore">Add more</string>
     <string name="mesg_updateDownloadError">Could not download your update</string>
-    <string name="transfer_history">Transfer History</string>
+    <string name="text_transfer_history">Transfer History</string>
     <string name="text_appLogo">App logo</string>
     <string name="text_chooseClient">Choose Client</string>
     <string name="butn_showAll">Show All</string>
@@ -621,8 +621,7 @@
     <string name="text_wifiDisabled">Wi-Fi is disabled</string>
     <string name="mesg_needsSettingsWritePermission">Needs permission to modify system settings</string>
     <string name="text_connectingToClient">Connecting to Client</string>
-    <string name="mesg_offline">The remote is unavailable</string>
-    <string name="text_deviceOffline">Device is offline!</string>
+    <string name="mesg_clientOffline">The remote is unavailable</string>
     <string name="ques_correct_client">Is this the client you are looking for?</string>
     <string name="text_verifyClient">Verify Client</string>
 </resources>

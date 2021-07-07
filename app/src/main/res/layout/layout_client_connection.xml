@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/mesg_offline"
+            android:text="@string/mesg_clientOffline"
             app:layout_constraintTop_toBottomOf="@id/text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,6 +75,16 @@
             app:layout_constraintEnd_toEndOf="@+id/text"
             app:layout_constraintStart_toStartOf="@+id/text"
             app:layout_constraintTop_toBottomOf="@+id/text" />
+
+        <ImageView
+            android:id="@+id/retryButton"
+            style="@style/OverflowButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text"
+            app:srcCompat="@drawable/ic_refresh_white_24dp"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

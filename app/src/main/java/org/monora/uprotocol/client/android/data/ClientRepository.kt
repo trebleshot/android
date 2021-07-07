@@ -23,7 +23,6 @@ import org.monora.uprotocol.client.android.database.ClientAddressDao
 import org.monora.uprotocol.client.android.database.ClientDao
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
-import org.monora.uprotocol.client.android.util.NsdDaemon
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,7 +33,9 @@ class ClientRepository @Inject constructor(
 ) {
     suspend fun delete(client: UClient) = clientDao.delete(client)
 
-    suspend fun get(uid: String): UClient? = clientDao.get(uid)
+    suspend fun getSingle(uid: String): UClient? = clientDao.getSingle(uid)
+
+    fun get(uid: String): LiveData<UClient> = clientDao.get(uid)
 
     fun getAll(): LiveData<List<UClient>> = clientDao.getAll()
 

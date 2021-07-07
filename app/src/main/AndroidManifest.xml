@@ -209,10 +209,17 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"
-            android:label="@string/transfer_history"
-            android:launchMode="singleTask" />
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
+            android:label="@string/text_transfer_history"
+            android:launchMode="singleTask"
+            tools:targetApi="jelly_bean">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
+        </activity>
 
-        <activity android:name=".activity.ReceiveActivity"
+        <activity
+            android:name=".activity.ReceiveActivity"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
             tools:targetApi="jelly_bean"
             android:label="@string/text_receive">

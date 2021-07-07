@@ -16,33 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.database
+package org.monora.uprotocol.client.android.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import dagger.hilt.android.lifecycle.HiltViewModel
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UClient
+import javax.inject.Inject
 
-@Dao
-interface ClientDao {
-    @Delete
-    suspend fun delete(client: UClient)
-
-    @Query("SELECT * FROM client WHERE uid == :uid LIMIT 1")
-    suspend fun getSingle(uid: String): UClient?
-
-    @Query("SELECT * FROM client WHERE uid == :uid LIMIT 1")
-    fun get(uid: String): LiveData<UClient>
-
-    @Query("SELECT * FROM client ORDER BY lastUsageTime DESC")
-    fun getAll(): LiveData<List<UClient>>
-
-    @Insert
-    suspend fun insert(client: UClient)
-
-    @Update
-    suspend fun update(client: UClient)
+@HiltViewModel
+class TransferDetailsViewModel @Inject internal constructor(
+    val userRepository: ClientRepository,
+    val transferRepository: TransferRepository,
+) : ViewModel() {
 }

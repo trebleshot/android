@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2020 Veli Tasalı
+  ~ Copyright (C) 2021 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
   ~ modify it under the terms of the GNU General Public License
@@ -16,15 +16,18 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="org.monora.uprotocol.client.android.fragment.TransferListFragment"
-        android:id="@+id/transfer_history_fragment" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_transfer_details" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

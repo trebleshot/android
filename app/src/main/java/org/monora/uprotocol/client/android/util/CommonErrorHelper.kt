@@ -24,6 +24,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
+import org.monora.uprotocol.core.io.DefectiveAddressListException
 import org.monora.uprotocol.core.protocol.communication.CommunicationException
 import org.monora.uprotocol.core.protocol.communication.ContentException
 import org.monora.uprotocol.core.protocol.communication.UndefinedErrorCodeException
@@ -102,7 +103,7 @@ object CommonErrorHelper {
                     else -> message = context.getString(R.string.mesg_unknownErrorOccurred)
                 }
             }
-            is ConnectException -> {
+            is ConnectException, is DefectiveAddressListException -> {
                 title = context.getString(R.string.text_communicationError)
                 message = context.getString(R.string.mesg_socketConnectionError)
             }

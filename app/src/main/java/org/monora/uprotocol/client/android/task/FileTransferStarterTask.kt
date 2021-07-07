@@ -83,7 +83,7 @@ class FileTransferStarterTask(
             clientUid: String,
             type: TransferItem.Type,
         ): FileTransferStarterTask {
-            val client = clientRepository.get(clientUid) ?: throw DeviceNotFoundException(clientUid)
+            val client = clientRepository.getSingle(clientUid) ?: throw DeviceNotFoundException(clientUid)
             val transfer = transferRepository.getTransfer(
                 transferId, client.clientUid, type
             ) ?: throw TransferNotFoundException(transferId)
