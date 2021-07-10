@@ -52,8 +52,9 @@
             style="@style/TextAppearance.Primary.Big"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.nickname}"
             android:layout_margin="8dp"
+            android:text="@{viewModel.nickname}"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/progressBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,13 +76,13 @@
 
         <TextView
             android:id="@+id/transferTypeText"
-            style="@style/TextAppearance.Secondary.Big"
+            style="@style/TextAppearance.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_receiving"
-            app:layout_constraintBottom_toTopOf="@+id/imageView4"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
-            app:layout_constraintStart_toStartOf="@+id/progressBar" />
+            app:layout_constraintStart_toStartOf="@+id/progressBar"
+            app:layout_constraintTop_toBottomOf="@+id/text" />
 
         <ImageView
             android:id="@+id/imageView4"
@@ -118,6 +119,7 @@
             tools:text="@tools:sample/date/hhmmss" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -125,6 +127,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progressBar"
             app:srcCompat="@drawable/ic_pause_white_24dp" />
+
+        <ImageView
+            android:id="@+id/showFilesButton"
+            style="@style/OverflowButton"
+            app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
+            app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/floatingActionButton"
+            app:srcCompat="@drawable/ic_file_document_box_white_24dp" />
+
+        <ImageView
+            android:id="@+id/optionsButton"
+            style="@style/OverflowButton"
+            app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/floatingActionButton"
+            app:layout_constraintTop_toTopOf="@+id/floatingActionButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

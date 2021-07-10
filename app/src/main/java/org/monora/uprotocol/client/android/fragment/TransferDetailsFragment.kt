@@ -45,6 +45,11 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         val binding = LayoutTransferDetailsBinding.bind(view)
 
         binding.progressBar.max = 100
+        binding.showFilesButton.setOnClickListener {
+            findNavController().navigate(
+                TransferDetailsFragmentDirections.actionTransferDetailsFragmentToTransferContentsFragment(args.transfer)
+            )
+        }
 
         lifecycleScope.launch {
             repeat(101) {

@@ -36,5 +36,16 @@
         <argument
             android:name="transfer"
             app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+        <action
+            android:id="@+id/action_transferDetailsFragment_to_transferContentsFragment"
+            app:destination="@id/transferContentsFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/transferContentsFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.TransferContentsFragment"
+        android:label="@string/text_files">
+        <argument
+            android:name="transfer"
+            app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+    </dialog>
 </navigation>

@@ -20,19 +20,17 @@ package org.monora.uprotocol.client.android.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.fragment.SharingActivityViewModel
+import org.monora.uprotocol.client.android.fragment.PreparationViewModel
 import java.util.*
 
 @AndroidEntryPoint
 class SharingActivity : Activity() {
-    private val sharingActivityViewModel: SharingActivityViewModel by viewModels()
+    private val preparationViewModel: PreparationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +62,7 @@ class SharingActivity : Activity() {
             return
         }
 
-        sharingActivityViewModel.consume(applicationContext, list)
+        preparationViewModel.consume(applicationContext, list)
 
         setContentView(R.layout.activity_sharing)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

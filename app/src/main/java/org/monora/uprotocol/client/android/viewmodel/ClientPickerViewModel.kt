@@ -29,10 +29,10 @@ typealias StatefulBridge = MutablePair<Boolean, CommunicationBridge>
 
 @HiltViewModel
 class ClientPickerViewModel @Inject internal constructor() : ViewModel() {
-    val bridge = MutableLiveData<MutablePair<Boolean, CommunicationBridge>>()
+    val bridge = MutableLiveData<StatefulBridge>()
 }
 
-fun MutablePair<Boolean, CommunicationBridge>.consume(): CommunicationBridge? {
+fun StatefulBridge.consume(): CommunicationBridge? {
     val (used, bridge) = this
     return if (used) null else {
         this.setLeft(true)
@@ -40,4 +40,4 @@ fun MutablePair<Boolean, CommunicationBridge>.consume(): CommunicationBridge? {
     }
 }
 
-fun MutablePair<Boolean, CommunicationBridge>.isValid(): Boolean = !this.left
+fun StatefulBridge.isValid(): Boolean = !this.left

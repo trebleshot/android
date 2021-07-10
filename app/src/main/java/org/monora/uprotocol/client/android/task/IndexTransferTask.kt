@@ -48,11 +48,10 @@ class IndexTransferTask(
     override fun onRun() {
         // Do not let it add the same transfer id again.
         try {
-            runBlocking {
-                if (transferRepository.containsTransfer(transferId)) {
-                    Log.d(TAG, "onRun: Transfer already exists: $transferId. Skipping...")
-                }
-            } ?: return
+            if (runBlocking { transferRepository.containsTransfer(transferId) }) {
+                Log.d(TAG, "onRun: Transfer already exists: $transferId. Skipping...")
+                return
+            }
 
             val saveLocation = Files.getApplicationDirectory(context).toString()
             val transfer = Transfer(transferId, client.clientUid, Incoming, saveLocation)

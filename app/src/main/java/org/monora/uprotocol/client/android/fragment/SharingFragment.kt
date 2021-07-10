@@ -18,24 +18,22 @@
 
 package org.monora.uprotocol.client.android.fragment
 
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.genonbeta.android.framework.io.StreamInfo
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +42,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
-import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
@@ -53,13 +50,14 @@ import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.CommunicationBridge
 import javax.inject.Inject
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class SharingFragment : Fragment(R.layout.layout_sharing) {
-    private val sharingActivityViewModel: SharingActivityViewModel by activityViewModels()
+    private val args: SharingFragmentArgs by navArgs()
+
+    private val sharingViewModel: SharingViewModel by viewModels()
 
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
@@ -74,54 +72,59 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
             findNavController().navigate(SharingFragmentDirections.pickClient())
         }
 
-        binding.button.setOnClickListener {
-            TODO("Implement cancellation button")
-        }
+        adapter.submitList(args.contents.toList())
 
-        sharingActivityViewModel.shared.observe(viewLifecycleOwner) {
-            when (it) {
-                is SharingActivityState.Progress -> {
-                    binding.textMain.text = it.title
-                    binding.progressBar.max = it.total
-
-                    if (Build.VERSION.SDK_INT >= 24) {
-                        binding.progressBar.setProgress(it.index, true)
-                    } else {
-                        binding.progressBar.progress = it.index
-                    }
-                }
-                is SharingActivityState.Ready -> {
-                    binding.groupPreparing.visibility = View.GONE
-                    binding.listParent.visibility = View.VISIBLE
-
-                    adapter.submitList(it.list)
-                }
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
+            statefulBridge.consume()?.let {
+                sharingViewModel.consume(it, args.transferId, args.contents.toList())
             }
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
-            lifecycleScope.launch(Dispatchers.IO) {
-                val value: SharingActivityState = sharingActivityViewModel.shared.value ?: return@launch
-                val bridge = it.consume() ?: return@launch
-
-                if (value !is SharingActivityState.Ready) return@launch
-
-                try {
-                    if (bridge.requestFileTransfer(value.id, value.list)) {
-                        lifecycleScope.launchWhenResumed {
-                            context?.startActivity(Intent(context, TransferDetailActivity::class.java))
-                        }
-                    }
-                } catch (e: Exception) {
-                    lifecycleScope.launchWhenResumed {
-                        val msg = CommonErrorHelper.messageOf(requireContext(), e).message
-
-                        Snackbar.make(binding.fab, msg, Snackbar.LENGTH_LONG).show()
-                    }
+        sharingViewModel.state.observe(viewLifecycleOwner) {
+            when (it) {
+                is SharingState.Success -> {
+                    context?.startActivity(Intent(context, TransferDetailActivity::class.java))
+                }
+                is SharingState.Error -> {
+                    val msg = CommonErrorHelper.messageOf(requireContext(), it.exception).message
+                    Snackbar.make(binding.fab, msg, Snackbar.LENGTH_LONG).show()
                 }
             }
         }
     }
+}
+
+@HiltViewModel
+class SharingViewModel @Inject internal constructor() : ViewModel() {
+    private var consumer: Job? = null
+
+    private val _state = MutableLiveData<SharingState>()
+
+    val state = liveData {
+        emitSource(_state)
+    }
+
+    fun consume(bridge: CommunicationBridge, transferId: Long, contents: List<UTransferItem>) {
+        if (consumer != null) return
+
+        consumer = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                if (bridge.requestFileTransfer(transferId, contents)) {
+                    _state.postValue(SharingState.Success)
+                }
+            } catch (e: Exception) {
+                _state.postValue(SharingState.Error(e))
+            } finally {
+                consumer = null
+            }
+        }
+    }
+}
+
+sealed class SharingState {
+    object Success : SharingState()
+
+    class Error(val exception: Exception) : SharingState()
 }
 
 class SharingContentAdapter : ListAdapter<UTransferItem, SharingViewHolder>(UTransferItemCallback()) {
@@ -143,42 +146,4 @@ class SharingViewHolder(private val binding: ListSharingItemBinding) : RecyclerV
         binding.viewModel = TransferItemContentViewModel(transferItem)
         binding.executePendingBindings()
     }
-}
-
-@HiltViewModel
-class SharingActivityViewModel @Inject internal constructor(
-    transferRepository: TransferRepository,
-) : ViewModel() {
-    private var consumer: Job? = null
-
-    val shared = MutableLiveData<SharingActivityState>()
-
-    @Synchronized
-    fun consume(context: Context, contents: List<Uri>) {
-        if (consumer != null) return
-
-        consumer = viewModelScope.launch(Dispatchers.IO) {
-            val id = Random.nextLong()
-            val list = mutableListOf<UTransferItem>()
-
-            contents.forEachIndexed { index, it ->
-                StreamInfo.from(context, it).runCatching {
-                    shared.postValue(SharingActivityState.Progress(index, contents.size, name))
-                    list.add(
-                        UTransferItem(
-                            index.toLong(), id, name, mimeType, size, null, uri.toString(), TransferItem.Type.Outgoing
-                        )
-                    )
-                }
-            }
-
-            shared.postValue(SharingActivityState.Ready(id, list))
-        }
-    }
-}
-
-sealed class SharingActivityState {
-    class Progress(val index: Int, val total: Int, val title: String) : SharingActivityState()
-
-    class Ready(val id: Long, val list: List<UTransferItem>) : SharingActivityState()
 }

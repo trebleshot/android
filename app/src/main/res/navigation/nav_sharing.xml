@@ -19,7 +19,18 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_sharing"
-    app:startDestination="@id/sharingFragment">
+    app:startDestination="@id/prepareSharingFragment">
+
+    <fragment
+        android:id="@+id/prepareSharingFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.PrepareSharingFragment"
+        android:label="@string/text_preparingFiles">
+        <action
+            android:id="@+id/action_prepareSharingFragment_to_sharingFragment"
+            app:destination="@id/sharingFragment"
+            app:popUpTo="@id/prepareSharingFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/sharingFragment"
@@ -33,8 +44,13 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <argument
+            android:name="contents"
+            app:argType="org.monora.uprotocol.client.android.database.model.UTransferItem[]" />
+        <argument
+            android:name="transferId"
+            app:argType="long" />
     </fragment>
     <include app:graph="@navigation/nav_pick_client" />
-
 
 </navigation>

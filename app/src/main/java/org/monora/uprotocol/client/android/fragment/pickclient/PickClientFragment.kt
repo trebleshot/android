@@ -59,7 +59,6 @@ class PickClientFragment : Fragment(R.layout.layout_clients) {
         emptyView.emptyText.setText(R.string.text_noClientList)
         emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
         adapter.setHasStableIds(true)
-        recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         recyclerView.adapter = adapter
 
         emptyView.executePendingBindings()
