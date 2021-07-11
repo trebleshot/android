@@ -28,10 +28,9 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
             android:fitsSystemWindows="true"
-            android:paddingStart="@dimen/short_content_width_padding_border"
-            android:paddingEnd="@dimen/short_content_width_padding_border"
+            android:layout_marginStart="@dimen/short_content_width_padding_between"
+            android:layout_marginEnd="@dimen/short_content_width_padding_between"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

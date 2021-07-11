@@ -60,12 +60,13 @@
         <TextView
             android:id="@+id/textView7"
             style="@style/TextAppearance.Primary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.name}"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@{viewModel.name}"
             app:layout_constraintBottom_toTopOf="@+id/textView8"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@tools:sample/cities" />
@@ -73,10 +74,11 @@
         <TextView
             android:id="@+id/textView8"
             style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.size}"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView7"
             app:layout_constraintTop_toBottomOf="@+id/textView7"
             tools:text="@tools:sample/first_names" />

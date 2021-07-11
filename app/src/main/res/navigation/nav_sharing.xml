@@ -50,7 +50,20 @@
         <argument
             android:name="transferId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_sharingFragment_to_transferDetailsFragment2"
+            app:destination="@id/transferDetailsFragment2"
+            app:popUpTo="@id/sharingFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <include app:graph="@navigation/nav_pick_client" />
+    <fragment
+        android:id="@+id/transferDetailsFragment2"
+        android:name="org.monora.uprotocol.client.android.fragment.TransferDetailsFragment"
+        android:label="@string/text_transactionDetails">
+        <argument
+            android:name="transfer"
+            app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+    </fragment>
 
 </navigation>

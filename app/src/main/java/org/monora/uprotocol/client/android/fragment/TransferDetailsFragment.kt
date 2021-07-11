@@ -47,7 +47,7 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         binding.progressBar.max = 100
         binding.showFilesButton.setOnClickListener {
             findNavController().navigate(
-                TransferDetailsFragmentDirections.actionTransferDetailsFragmentToTransferContentsFragment(args.transfer)
+                TransferDetailsFragmentDirections.actionTransferDetailsFragmentToTransferItemFragment(args.transfer)
             )
         }
 

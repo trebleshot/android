@@ -42,7 +42,7 @@ import java.util.*
  * created by: Veli
  * date: 25.02.2018 01:23
  */
-@HiltAndroidApp()
+@HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     private val applicationScope = CoroutineScope(SupervisorJob())
 

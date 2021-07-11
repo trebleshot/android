@@ -64,6 +64,7 @@ class SharedTextAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItem
 
     companion object {
         const val VIEW_TYPE_SECTION = 0
+
         const val VIEW_TYPE_SHARED_TEXT = 1
     }
 }

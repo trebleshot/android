@@ -33,8 +33,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
+        android:padding="16dp"
         android:visibility="@{viewModel.hasContent ? View.GONE : View.VISIBLE}">
 
         <ImageView

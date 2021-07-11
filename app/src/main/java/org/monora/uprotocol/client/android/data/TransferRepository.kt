@@ -33,6 +33,8 @@ class TransferRepository @Inject constructor(
 ) {
     suspend fun containsTransfer(groupId: Long) = transferDao.contains(groupId)
 
+    suspend fun delete(transfer: Transfer) = transferDao.delete(transfer)
+
     suspend fun delete(transferItem: UTransferItem) = transferItemDao.delete(transferItem)
 
     suspend fun getReceivable(groupId: Long) = transferItemDao.getReceivable(groupId)

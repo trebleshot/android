@@ -28,6 +28,9 @@ interface TransferDao {
     @Query("SELECT EXISTS(SELECT * FROM transfer WHERE id == :groupId)")
     suspend fun contains(groupId: Long): Boolean
 
+    @Delete
+    suspend fun delete(transfer: Transfer)
+
     @Query("SELECT * FROM transfer WHERE id = :transferId")
     suspend fun get(transferId: Long): Transfer?
 

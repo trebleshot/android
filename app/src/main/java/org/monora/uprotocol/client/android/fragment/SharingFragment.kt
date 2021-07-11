@@ -42,6 +42,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TransferDetailActivity
+import org.monora.uprotocol.client.android.data.TransferRepository
+import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
@@ -51,6 +53,9 @@ import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
 import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.persistence.PersistenceException
+import org.monora.uprotocol.core.transfer.TransferItem
+import java.net.ProtocolException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -83,6 +88,11 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
         sharingViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is SharingState.Success -> {
+                    findNavController().navigate(
+                        SharingFragmentDirections.actionSharingFragmentToTransferDetailsFragment2(
+                            it.transfer
+                        )
+                    )
                     context?.startActivity(Intent(context, TransferDetailActivity::class.java))
                 }
                 is SharingState.Error -> {
@@ -95,7 +105,9 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 }
 
 @HiltViewModel
-class SharingViewModel @Inject internal constructor() : ViewModel() {
+class SharingViewModel @Inject internal constructor(
+    val transferRepository: TransferRepository,
+) : ViewModel() {
     private var consumer: Job? = null
 
     private val _state = MutableLiveData<SharingState>()
@@ -110,7 +122,12 @@ class SharingViewModel @Inject internal constructor() : ViewModel() {
         consumer = viewModelScope.launch(Dispatchers.IO) {
             try {
                 if (bridge.requestFileTransfer(transferId, contents)) {
-                    _state.postValue(SharingState.Success)
+                    val transfer = transferRepository.getTransfer(
+                        transferId, bridge.remoteClient.clientUid, TransferItem.Type.Outgoing
+                    ) ?: throw PersistenceException("The transfer object should exist after success")
+                    _state.postValue(SharingState.Success(transfer))
+                } else {
+                    throw ProtocolException()
                 }
             } catch (e: Exception) {
                 _state.postValue(SharingState.Error(e))
@@ -122,7 +139,7 @@ class SharingViewModel @Inject internal constructor() : ViewModel() {
 }
 
 sealed class SharingState {
-    object Success : SharingState()
+    class Success(val transfer: Transfer) : SharingState()
 
     class Error(val exception: Exception) : SharingState()
 }
