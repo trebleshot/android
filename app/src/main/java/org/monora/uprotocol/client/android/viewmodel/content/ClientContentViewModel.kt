@@ -46,8 +46,6 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 
     val clientType = client.clientType.name
 
-    val manufacturer = client.clientManufacturer
-
     val product = client.clientProduct
 
     val supported = Config.VERSION_UPROTOCOL_MIN <= client.clientProtocolVersion
@@ -77,17 +75,17 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
         }
     }
 
-    val openClientProfileListener = View.OnClickListener {
-        val binding = LayoutClientDetailBinding.inflate(
-            LayoutInflater.from(it.context), null, false
-        )
-        val bottomSheetDialog = BottomSheetDialog(it.context)
+    fun onRemove(view: View) {
+        val contentComponent = EntryPoints.get(view.findActivity(), ClientContentComponent::class.java)
 
-        binding.viewModel = this
-        binding.executePendingBindings()
+        GlobalScope.launch(Dispatchers.IO) {
+            contentComponent.clientRepository().delete(clientImpl)
+        }
+    }
 
-        bottomSheetDialog.setContentView(binding.root)
-        bottomSheetDialog.show()
+    enum class ClickType {
+        Default,
+        Details,
     }
 }
 

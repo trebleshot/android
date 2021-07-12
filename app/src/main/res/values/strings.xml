@@ -259,7 +259,7 @@
     <string name="text_previewAndEditList">Preview &amp; edit</string>
     <string name="text_uncheckedItemsNotice">Uncheck items to remove them</string>
     <string name="text_fileRoot">File root</string>
-    <string name="mesg_versionNotSupported">Please upgrade to a supported version, and rescan devices.</string>
+    <string name="mesg_versionNotSupported">This client uses a version that is no longer supported!</string>
     <string name="text_versionNotSupported" translatable="false">@string/mesg_versionNotSupported</string>
     <string name="mesg_connectionUpdated">Now communicating over the \"%s\" connection</string>
     <string name="mesg_ongoingUpdateDownload">Downloading the new version</string>
@@ -624,4 +624,5 @@
     <string name="mesg_clientOffline">The remote is unavailable</string>
     <string name="ques_correct_client">Is this the client you are looking for?</string>
     <string name="text_verifyClient">Verify Client</string>
+    <string name="client_details">Client Details</string>
 </resources>

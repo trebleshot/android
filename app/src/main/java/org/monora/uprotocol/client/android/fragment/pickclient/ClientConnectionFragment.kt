@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -46,6 +47,7 @@ import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.communication.client.DifferentRemoteClientException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -79,6 +81,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
                     )
                 }
                 is ConnectionState.Error -> {
+                    it.e.printStackTrace()
                     binding.textOffline.text = CommonErrorHelper.messageOf(requireContext(), it.e).message
                 }
                 is ConnectionState.NoAddress -> {

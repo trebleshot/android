@@ -44,7 +44,6 @@ object CommonErrorHelper {
             is CommunicationException -> {
                 title = context.getString(R.string.text_communicationError)
                 message = when (exception) {
-                    is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
                     is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
                     is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
                     is UndefinedErrorCodeException -> context.getString(
@@ -61,6 +60,10 @@ object CommonErrorHelper {
                     )
                     else -> context.getString(R.string.mesg_unknownErrorOccurred)
                 }
+            }
+            is DifferentRemoteClientException -> {
+                title = context.getString(R.string.text_communicationError)
+                message = context.getString(R.string.mesg_errorDifferentDevice)
             }
             is DeviceIntroductionTask.SuggestNetworkException -> {
                 title = context.getString(R.string.text_networkSuggestionError)

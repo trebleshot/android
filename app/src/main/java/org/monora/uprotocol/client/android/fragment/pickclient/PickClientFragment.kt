@@ -22,11 +22,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,9 +33,9 @@ import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListClientBinding
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
 import org.monora.uprotocol.client.android.viewholder.ClientViewHolder
-import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 
 @AndroidEntryPoint
 class PickClientFragment : Fragment(R.layout.layout_clients) {
@@ -48,10 +45,15 @@ class PickClientFragment : Fragment(R.layout.layout_clients) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = Adapter {
-            findNavController().navigate(
-                PickClientFragmentDirections.actionClientsFragmentToClientConnectionFragment(it, null)
-            )
+        val adapter = Adapter { client, clickType ->
+            when (clickType) {
+                ClientContentViewModel.ClickType.Default -> findNavController().navigate(
+                    PickClientFragmentDirections.actionClientsFragmentToClientConnectionFragment(client)
+                )
+                ClientContentViewModel.ClickType.Details -> findNavController().navigate(
+                    PickClientFragmentDirections.actionClientsFragmentToClientDetailsFragment(client)
+                )
+            }
         }
         val emptyContentViewModel = EmptyContentViewModel()
 
@@ -69,7 +71,7 @@ class PickClientFragment : Fragment(R.layout.layout_clients) {
     }
 
     class Adapter(
-        private val clickListener: (UClient) -> Unit,
+        private val clickListener: (UClient, ClientContentViewModel.ClickType) -> Unit,
     ) : ListAdapter<UClient, ClientViewHolder>(UClientItemCallback()) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientViewHolder {
             return ClientViewHolder(

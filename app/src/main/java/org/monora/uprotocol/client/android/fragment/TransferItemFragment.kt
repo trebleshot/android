@@ -113,7 +113,6 @@ class ItemContentViewModel(transferItem: UTransferItem) {
     val name = transferItem.name
 
     val size = Files.formatLength(transferItem.size, false)
-
 }
 
 class ItemViewHolder(private val binding: ListTransferItemBinding) : RecyclerView.ViewHolder(binding.root) {

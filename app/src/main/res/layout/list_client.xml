@@ -27,6 +27,10 @@
             type="android.view.View.OnClickListener" />
 
         <variable
+            name="detailsClickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
     </data>
@@ -71,7 +75,7 @@
         <ImageView
             android:id="@+id/overflowButton"
             style="@style/OverflowButton"
-            android:onClick="@{viewModel.openClientProfileListener}"
+            android:onClick="@{detailsClickListener}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

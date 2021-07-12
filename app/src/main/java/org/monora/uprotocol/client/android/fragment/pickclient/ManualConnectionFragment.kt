@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,7 +38,6 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutManualConnectionBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.util.clientRoute
-import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -53,8 +51,6 @@ import javax.inject.Inject
 class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
     private val viewModel: ManualConnectionViewModel by viewModels()
 
-    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -66,6 +62,7 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
             if (address.isNullOrEmpty()) {
                 binding.editText.error = getString(R.string.mesg_enterValidHostAddress)
             } else {
+                binding.editText.error = null
                 viewModel.connect(address)
             }
         }
@@ -80,7 +77,9 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
                     is UnauthorizedClientException -> binding.editText.error = getString(R.string.mesg_notAllowed)
                     else -> binding.editText.error = it.exception.message
                 }
-                is ManualConnectionState.Loaded -> {
+                is ManualConnectionState.Loaded -> if (!it.isUsed) {
+                    it.isUsed = true
+
                     findNavController().navigate(
                         ManualConnectionFragmentDirections.actionManualConnectionFragmentToAcceptClientFragment(
                             it.clientRoute
@@ -124,24 +123,17 @@ class ManualConnectionViewModel @Inject internal constructor(
 
             _state.postValue(ManualConnectionState.Loaded(bridge.clientRoute))
         } catch (e: Exception) {
-            e.printStackTrace()
             _state.postValue(ManualConnectionState.Error(e))
         } finally {
             _job = null
         }
     }.also { _job = it }
-
-    fun reconnect(clientRoute: ClientRoute): CommunicationBridge = CommunicationBridge.Builder(
-        connectionFactory, persistenceProvider, clientRoute.address.inetAddress
-    ).also {
-        it.setClientUid(clientRoute.client.clientUid)
-    }.connect()
 }
 
-sealed class ManualConnectionState(val loading: Boolean) {
+sealed class ManualConnectionState(val loading: Boolean = false) {
     class Loading : ManualConnectionState(true)
 
-    class Error(val exception: Exception) : ManualConnectionState(false)
+    class Error(val exception: Exception) : ManualConnectionState()
 
-    class Loaded(val clientRoute: ClientRoute) : ManualConnectionState(false)
+    class Loaded(val clientRoute: ClientRoute, var isUsed: Boolean = false) : ManualConnectionState()
 }

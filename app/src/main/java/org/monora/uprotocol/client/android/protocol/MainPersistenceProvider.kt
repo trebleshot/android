@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
+import android.util.Log
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
@@ -64,7 +65,8 @@ class MainPersistenceProvider @Inject constructor(
     private val transferRepository: TransferRepository,
 ) : PersistenceProvider {
     override fun approveInvalidationOfCredentials(client: Client): Boolean {
-        TODO("Not yet implemented")
+        Log.d(TAG, "approveInvalidationOfCredentials: ${client.clientUid}")
+        return false
     }
 
     override fun containsTransfer(groupId: Long): Boolean = runBlocking {
@@ -144,7 +146,8 @@ class MainPersistenceProvider @Inject constructor(
     )
 
     override fun hasRequestForInvalidationOfCredentials(clientUid: String): Boolean {
-        TODO("Not yet implemented")
+        Log.d(TAG, "hasRequestForInvalidationOfCredentials: $clientUid")
+        return false
     }
 
     override fun loadTransferItem(
@@ -246,7 +249,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun saveRequestForInvalidationOfCredentials(clientUid: String) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "saveRequestForInvalidationOfCredentials: $clientUid")
     }
 
     override fun setState(clientUid: String, item: TransferItem, state: Int, e: Exception?) {

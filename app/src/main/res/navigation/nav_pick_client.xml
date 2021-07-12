@@ -56,6 +56,9 @@
         <action
             android:id="@+id/action_optionsFragment_to_clientConnectionFragment"
             app:destination="@id/clientConnectionFragment" />
+        <action
+            android:id="@+id/action_optionsFragment_to_clientDetailsFragment"
+            app:destination="@id/clientDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/networkManagerFragment"
@@ -68,6 +71,9 @@
         <action
             android:id="@+id/action_clientsFragment_to_clientConnectionFragment"
             app:destination="@id/clientConnectionFragment" />
+        <action
+            android:id="@+id/action_clientsFragment_to_clientDetailsFragment"
+            app:destination="@id/clientDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/manualConnectionFragment"
@@ -138,5 +144,13 @@
         <argument
             android:name="clientRoute"
             app:argType="org.monora.uprotocol.client.android.model.ClientRoute" />
+    </dialog>
+    <dialog
+        android:id="@+id/clientDetailsFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.ClientDetailsFragment"
+        android:label="@string/client_details" >
+        <argument
+            android:name="client"
+            app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
     </dialog>
 </navigation>

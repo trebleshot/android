@@ -23,14 +23,16 @@ import androidx.recyclerview.widget.RecyclerView
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.databinding.ListClientBinding
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel.ClickType
 
 class ClientViewHolder(
     val binding: ListClientBinding,
-    val clickListener: (UClient) -> Unit,
+    val clickListener: (UClient, ClickType) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(client: UClient) {
         binding.viewModel = ClientContentViewModel(client)
-        binding.clickListener = View.OnClickListener { clickListener(client) }
+        binding.clickListener = View.OnClickListener { clickListener(client, ClickType.Default) }
+        binding.detailsClickListener = View.OnClickListener { clickListener(client, ClickType.Details) }
         binding.executePendingBindings()
     }
 }

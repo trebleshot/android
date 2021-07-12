@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -40,6 +39,7 @@ import org.monora.uprotocol.client.android.viewholder.ClientGridViewHolder
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.isValid
 
 @AndroidEntryPoint
@@ -51,12 +51,17 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val connectionOptions = LayoutConnectionOptionsBinding.bind(view)
-        val adapter = OnlineClientsAdapter {
-            findNavController().navigate(
-                ConnectionOptionsFragmentDirections.actionOptionsFragmentToClientConnectionFragment(
-                    it.client, it.address
+        val adapter = OnlineClientsAdapter { clientRoute, clickType ->
+            when (clickType) {
+                ClientContentViewModel.ClickType.Default -> findNavController().navigate(
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToClientConnectionFragment(
+                        clientRoute.client, clientRoute.address
+                    )
                 )
-            )
+                ClientContentViewModel.ClickType.Details -> findNavController().navigate(
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToClientDetailsFragment(clientRoute.client)
+                )
+            }
         }
         val emptyContentViewModel = EmptyContentViewModel()
 
@@ -105,7 +110,7 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
 }
 
 class OnlineClientsAdapter(
-    private val clickListener: (ClientRoute) -> Unit
+    private val clickListener: (ClientRoute, ClientContentViewModel.ClickType) -> Unit
 ) : ListAdapter<ClientRoute, ClientGridViewHolder>(ClientRouteItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientGridViewHolder {
         return ClientGridViewHolder(
