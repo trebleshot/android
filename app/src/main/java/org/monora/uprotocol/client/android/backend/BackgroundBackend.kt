@@ -156,12 +156,12 @@ class BackgroundBackend @Inject constructor(
         Log.d(TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
     }
 
-    fun notifyFileRequest(device: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
+    fun notifyFileRequest(client: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
         val activity = foregroundActivity
         val numberOfFiles = itemList.size
         val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
             .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
-            .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, device)
+            .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
             .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
         val rejectIntent = (acceptIntent.clone() as Intent)
@@ -176,11 +176,11 @@ class BackgroundBackend @Inject constructor(
 
         if (activity == null) {
             notificationHelper.notifyTransferRequest(
-                device, transfer, acceptIntent, rejectIntent, transferDetail, message
+                client, transfer, acceptIntent, rejectIntent, transferDetail, message
             )
         } else {
             val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-                .setTitle(context.getString(R.string.text_deviceFileTransferRequest, device.clientNickname))
+                .setTitle(context.getString(R.string.text_deviceFileTransferRequest, client.clientNickname))
                 .setMessage(message)
                 .setCancelable(false)
                 .setNeutralButton(R.string.butn_show) { _: DialogInterface?, _: Int ->

@@ -23,17 +23,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
-import org.monora.uprotocol.client.android.viewholder.TransferViewHolder
+import org.monora.uprotocol.client.android.viewholder.TransferDetailViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransfersViewModel
 
@@ -45,10 +47,14 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = TransferHistoryAdapter() {
-            findNavController().navigate(
-                TransferHistoryFragmentDirections.actionTransferHistoryFragmentToTransferDetailsFragment(it)
-            )
+        val adapter = TransferHistoryAdapter { transferDetail ->
+            lifecycleScope.launch {
+                viewModel.getTransfer(transferDetail.id)?.let {
+                    findNavController().navigate(
+                        TransferHistoryFragmentDirections.actionTransferHistoryFragmentToNavTransferDetails(it)
+                    )
+                }
+            }
         }
         val emptyContentViewModel = EmptyContentViewModel()
 
@@ -59,7 +65,7 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
 
-        viewModel.transfers.observe(viewLifecycleOwner) {
+        viewModel.transferDetails.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
@@ -67,11 +73,11 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
 }
 
 class TransferHistoryAdapter(
-    private val clickListener: (Transfer) -> Unit
-) : ListAdapter<Transfer, ViewHolder>(TransferItemCallback()) {
+    private val clickListener: (TransferDetail) -> Unit
+) : ListAdapter<TransferDetail, ViewHolder>(TransferDetailItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         if (viewType == VIEW_TYPE_TRANSFER) {
-            return TransferViewHolder(
+            return TransferDetailViewHolder(
                 ListTransferBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         } else {
@@ -80,7 +86,7 @@ class TransferHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (holder is TransferViewHolder) {
+        if (holder is TransferDetailViewHolder) {
             holder.bind(getItem(position), clickListener)
         }
     }
@@ -94,12 +100,12 @@ class TransferHistoryAdapter(
     }
 }
 
-class TransferItemCallback : DiffUtil.ItemCallback<Transfer>() {
-    override fun areItemsTheSame(oldItem: Transfer, newItem: Transfer): Boolean {
+class TransferDetailItemCallback : DiffUtil.ItemCallback<TransferDetail>() {
+    override fun areItemsTheSame(oldItem: TransferDetail, newItem: TransferDetail): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Transfer, newItem: Transfer): Boolean {
+    override fun areContentsTheSame(oldItem: TransferDetail, newItem: TransferDetail): Boolean {
         return oldItem == newItem
     }
 }

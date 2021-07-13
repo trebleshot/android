@@ -23,8 +23,12 @@
     <data>
 
         <variable
-            name="viewModel"
+            name="clientViewModel"
             type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
+
+        <variable
+            name="transferViewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,11 +41,13 @@
 
         <ImageView
             android:id="@+id/image"
-            pictureOf="@{viewModel.client}"
+            pictureOf="@{clientViewModel.client}"
             android:layout_width="@dimen/icon_size_list_giant"
             android:layout_height="@dimen/icon_size_list_giant"
+            android:foreground="?roundSelector"
             app:layout_constraintBottom_toTopOf="@+id/text"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
@@ -53,46 +59,61 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="@{viewModel.nickname}"
+            android:text="@{clientViewModel.nickname}"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/progressBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/image"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="@tools:sample/first_names" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="H,1:1"
+            app:layout_constraintBottom_toTopOf="@+id/transferTypeText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/image"
+            tools:text="@tools:sample/first_names" />
 
         <TextView
             android:id="@+id/transferTypeText"
             style="@style/TextAppearance.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_receiving"
+            android:text="@{transferViewModel.isReceiving ? @string/text_receiving : @string/text_sending}"
+            app:layout_constraintBottom_toTopOf="@+id/progressBar"
+            app:layout_constraintEnd_toEndOf="@+id/progressBar"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/progressBar"
+            app:layout_constraintTop_toBottomOf="@+id/text"
+            tools:text="@tools:sample/lorem" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:max="100"
+            app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/transferTypeText" />
+
+        <TextView
+            style="@style/TextAppearance.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="@{transferViewModel.sizeText}"
+            app:layout_constraintBottom_toTopOf="@+id/imageView4"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
             app:layout_constraintStart_toStartOf="@+id/progressBar"
-            app:layout_constraintTop_toBottomOf="@+id/text" />
+            tools:text="@tools:sample/lorem" />
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="@dimen/icon_size_list_big"
             android:layout_height="@dimen/icon_size_list_big"
             android:layout_marginBottom="8dp"
+            app:imageResource="@{transferViewModel.icon}"
             app:layout_constraintBottom_toTopOf="@+id/progressText"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
-            app:layout_constraintStart_toStartOf="@+id/progressBar"
-            app:srcCompat="@drawable/ic_arrow_down_white_24dp" />
+            app:layout_constraintStart_toStartOf="@+id/progressBar" />
 
         <TextView
             android:id="@+id/progressText"
@@ -124,6 +145,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progressBar"
             app:srcCompat="@drawable/ic_pause_white_24dp" />

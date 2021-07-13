@@ -18,15 +18,15 @@
 package org.monora.uprotocol.client.android.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
-import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
-import org.monora.uprotocol.client.android.viewmodel.content.TransferContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
 
-class TransferViewHolder(private val binding: ListTransferBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(transfer: Transfer, clickListener: (Transfer) -> Unit) {
-        binding.viewModel = TransferContentViewModel(transfer)
+class TransferDetailViewHolder(private val binding: ListTransferBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(transferDetail: TransferDetail, clickListener: (TransferDetail) -> Unit) {
+        binding.viewModel = TransferDetailContentViewModel(transferDetail)
         binding.container.setOnClickListener {
-            clickListener(transfer)
+            clickListener(transferDetail)
         }
         binding.executePendingBindings()
     }

@@ -17,16 +17,27 @@
  */
 package org.monora.uprotocol.client.android.viewmodel.content
 
+import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.core.transfer.TransferItem
 
-class TransferContentViewModel(transfer: Transfer) {
-    val text = transfer.clientUid
+class TransferDetailContentViewModel(transferDetail: TransferDetail) {
+    val clientNickname = transferDetail.clientNickname
 
-    val icon = if (transfer.type == TransferItem.Type.Incoming) {
+    val sizeText = Files.formatLength(transferDetail.size, false)
+
+    val isReceiving = transferDetail.type == TransferItem.Type.Incoming
+
+    val icon = if (isReceiving) {
         R.drawable.ic_arrow_down_white_24dp
     } else {
         R.drawable.ic_arrow_up_white_24dp
+    }
+
+    val percentage: Int = if (transferDetail.sizeOfDone <= 0) {
+        if (transferDetail.size <= 0) 100 else 1
+    } else {
+        ((transferDetail.sizeOfDone.toDouble() / transferDetail.size) * 100).toInt()
     }
 }

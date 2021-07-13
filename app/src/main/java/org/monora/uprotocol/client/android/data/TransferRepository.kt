@@ -18,9 +18,11 @@
 
 package org.monora.uprotocol.client.android.data
 
+import androidx.lifecycle.LiveData
 import org.monora.uprotocol.client.android.database.TransferDao
 import org.monora.uprotocol.client.android.database.TransferItemDao
 import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
@@ -39,11 +41,11 @@ class TransferRepository @Inject constructor(
 
     suspend fun getReceivable(groupId: Long) = transferItemDao.getReceivable(groupId)
 
-    suspend fun getTransfer(
-        transferId: Long,
-        clientUid: String,
-        type: TransferItem.Type,
-    ): Transfer? = transferDao.get(transferId, clientUid, type)
+    suspend fun getTransfer(transferId: Long): Transfer? = transferDao.get(transferId)
+
+    fun getTransferDetail(transferId: Long): LiveData<TransferDetail> = transferDao.getDetail(transferId)
+
+    fun getTransferDetails(): LiveData<List<TransferDetail>> = transferDao.getDetails()
 
     suspend fun getTransferItem(groupId: Long, id: Long) = transferItemDao.get(groupId, id)
 

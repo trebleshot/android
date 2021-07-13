@@ -159,7 +159,7 @@ class UserDataRepository @Inject constructor(
         clientUid(),
         clientNicknameStatic(),
         Build.MANUFACTURER,
-        Build.PRODUCT,
+        Build.MODEL,
         ClientType.Portable,
         BuildConfig.VERSION_NAME,
         BuildConfig.VERSION_CODE,

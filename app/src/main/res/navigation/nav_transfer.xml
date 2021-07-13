@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
+  ~ Copyright (C) 2021 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
   ~ modify it under the terms of the GNU General Public License
@@ -16,22 +16,22 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/short_content_width_padding_between"
-    android:layout_marginRight="@dimen/short_content_width_padding_between">
+    android:id="@+id/nav_transfer"
+    app:startDestination="@id/transferHistoryFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-    <include
-        layout="@layout/layout_empty_content"
-        android:id="@+id/emptyView" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <fragment
+        android:id="@+id/transferHistoryFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.TransferHistoryFragment"
+        android:label="@string/text_transfer_history">
+        <action
+            android:id="@+id/action_transferHistoryFragment_to_nav_transfer_details"
+            app:destination="@id/nav_transfer_details">
+            <argument
+                android:name="transfer"
+                app:argType="org.monora.uprotocol.client.android.database.model.Transfer"/>
+        </action>
+    </fragment>
+    <include app:graph="@navigation/nav_transfer_details" />
+</navigation>

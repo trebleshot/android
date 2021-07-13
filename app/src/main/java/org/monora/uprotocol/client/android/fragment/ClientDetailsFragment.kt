@@ -42,12 +42,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ClientDetailsFragment : BottomSheetDialogFragment() {
     @Inject
-    lateinit var argumentFactory: ClientDetailsViewModel.ArgumentFactory
+    lateinit var factory: ClientDetailsViewModel.Factory
 
     private val args: ClientDetailsFragmentArgs by navArgs()
 
     private val viewModel: ClientDetailsViewModel by viewModels {
-        ClientDetailsViewModelFactory(argumentFactory, args.client)
+        ClientDetailsViewModel.ModelFactory(factory, args.client)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -71,19 +71,6 @@ class ClientDetailsFragment : BottomSheetDialogFragment() {
     }
 }
 
-class ClientDetailsViewModelFactory(
-    private val argumentFactory: ClientDetailsViewModel.ArgumentFactory,
-    private val client: UClient,
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        check(modelClass.isAssignableFrom(ClientDetailsViewModel::class.java)) {
-            "Unknown type of view model requested"
-        }
-        return argumentFactory.create(client) as T
-    }
-}
-
 class ClientDetailsViewModel @AssistedInject internal constructor(
     clientRepository: ClientRepository,
     @Assisted client: UClient,
@@ -91,7 +78,20 @@ class ClientDetailsViewModel @AssistedInject internal constructor(
     val client = clientRepository.get(client.uid)
 
     @AssistedFactory
-    interface ArgumentFactory {
+    interface Factory {
         fun create(client: UClient): ClientDetailsViewModel
+    }
+
+    class ModelFactory(
+        private val factory: Factory,
+        private val client: UClient,
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            check(modelClass.isAssignableFrom(ClientDetailsViewModel::class.java)) {
+                "Unknown type of view model requested"
+            }
+            return factory.create(client) as T
+        }
     }
 }

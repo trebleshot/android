@@ -18,17 +18,9 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_transfer"
-    app:startDestination="@id/transferHistoryFragment">
+    android:id="@+id/nav_transfer_details"
+    app:startDestination="@id/transferDetailsFragment">
 
-    <fragment
-        android:id="@+id/transferHistoryFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.TransferHistoryFragment"
-        android:label="@string/text_transfer_history">
-        <action
-            android:id="@+id/action_transferHistoryFragment_to_transferDetailsFragment"
-            app:destination="@id/transferDetailsFragment" />
-    </fragment>
     <fragment
         android:id="@+id/transferDetailsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.TransferDetailsFragment"
@@ -39,6 +31,9 @@
         <action
             android:id="@+id/action_transferDetailsFragment_to_TransferItemFragment"
             app:destination="@id/TransferItemFragment" />
+        <action
+            android:id="@+id/action_transferDetailsFragment_to_clientDetailsFragment2"
+            app:destination="@id/clientDetailsFragment2" />
     </fragment>
     <dialog
         android:id="@+id/TransferItemFragment"
@@ -47,5 +42,13 @@
         <argument
             android:name="transfer"
             app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+    </dialog>
+    <dialog
+        android:id="@+id/clientDetailsFragment2"
+        android:name="org.monora.uprotocol.client.android.fragment.ClientDetailsFragment"
+        android:label="@string/client_details">
+        <argument
+            android:name="client"
+            app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
     </dialog>
 </navigation>

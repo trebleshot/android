@@ -28,6 +28,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_transfer_details" />
+        app:navGraph="@navigation/nav_transfer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,11 +20,14 @@ package org.monora.uprotocol.client.android.viewmodel
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.data.TransferRepository
+import org.monora.uprotocol.client.android.database.model.Transfer
 import javax.inject.Inject
 
 @HiltViewModel
 class TransfersViewModel @Inject internal constructor(
-    transferRepository: TransferRepository
+    private val transferRepository: TransferRepository
 ) : ViewModel() {
-    val transfers = transferRepository.getTransfers()
+    val transferDetails = transferRepository.getTransferDetails()
+
+    suspend fun getTransfer(transferId: Long): Transfer? = transferRepository.getTransfer(transferId)
 }

@@ -89,7 +89,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
             when (it) {
                 is SharingState.Success -> {
                     findNavController().navigate(
-                        SharingFragmentDirections.actionSharingFragmentToTransferDetailsFragment2(
+                        SharingFragmentDirections.actionSharingFragmentToNavTransferDetails(
                             it.transfer
                         )
                     )
@@ -122,9 +122,9 @@ class SharingViewModel @Inject internal constructor(
         consumer = viewModelScope.launch(Dispatchers.IO) {
             try {
                 if (bridge.requestFileTransfer(transferId, contents)) {
-                    val transfer = transferRepository.getTransfer(
-                        transferId, bridge.remoteClient.clientUid, TransferItem.Type.Outgoing
-                    ) ?: throw PersistenceException("The transfer object should exist after success")
+                    val transfer = transferRepository.getTransfer(transferId,) ?: throw PersistenceException(
+                        "The transfer object should exist after success"
+                    )
                     _state.postValue(SharingState.Success(transfer))
                 } else {
                     throw ProtocolException()

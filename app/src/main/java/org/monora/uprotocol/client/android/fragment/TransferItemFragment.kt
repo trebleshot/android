@@ -51,12 +51,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TransferItemFragment : BottomSheetDialogFragment() {
     @Inject
-    lateinit var argumentFactory: ItemViewModel.ArgumentFactory
+    lateinit var factory: ItemViewModel.Factory
 
     private val args: TransferItemFragmentArgs by navArgs()
 
     private val viewModel: ItemViewModel by viewModels {
-        ItemViewModelFactory(argumentFactory, args.transfer)
+        ItemViewModel.ModelFactory(factory, args.transfer)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -84,19 +84,6 @@ class TransferItemFragment : BottomSheetDialogFragment() {
     }
 }
 
-class ItemViewModelFactory(
-    private val argumentFactory: ItemViewModel.ArgumentFactory,
-    private val transfer: Transfer,
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        check(modelClass.isAssignableFrom(ItemViewModel::class.java)) {
-            "Unknown type of view model was requested"
-        }
-        return argumentFactory.create(transfer) as T
-    }
-}
-
 class ItemViewModel @AssistedInject internal constructor(
     transferRepository: TransferRepository,
     @Assisted val transfer: Transfer,
@@ -104,8 +91,21 @@ class ItemViewModel @AssistedInject internal constructor(
     val items = transferRepository.getTransferItems(transfer.id)
 
     @AssistedFactory
-    interface ArgumentFactory {
+    interface Factory {
         fun create(transfer: Transfer): ItemViewModel
+    }
+
+    class ModelFactory(
+        private val factory: ItemViewModel.Factory,
+        private val transfer: Transfer,
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            check(modelClass.isAssignableFrom(ItemViewModel::class.java)) {
+                "Unknown type of view model was requested"
+            }
+            return factory.create(transfer) as T
+        }
     }
 }
 
@@ -150,7 +150,7 @@ class ItemAdapter : ListAdapter<Any, ViewHolder>(ItemCallback()) {
         }
     }
 
-    override fun getItemViewType(position: Int): Int = when(getItem(position)) {
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is UTransferItem -> VIEW_TYPE_TRANSFER_ITEM
         is TitleSectionContentModel -> VIEW_TYPE_SECTION
         else -> throw UnsupportedOperationException()

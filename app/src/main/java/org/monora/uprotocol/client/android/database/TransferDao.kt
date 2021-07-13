@@ -19,8 +19,13 @@
 package org.monora.uprotocol.client.android.database;
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
-import org.monora.uprotocol.client.android.database.model.Transfer;
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.core.transfer.TransferItem
 
 @Dao
@@ -34,11 +39,14 @@ interface TransferDao {
     @Query("SELECT * FROM transfer WHERE id = :transferId")
     suspend fun get(transferId: Long): Transfer?
 
-    @Query("SELECT * FROM transfer WHERE id = :transferId AND clientUid = :clientUid AND type = :type")
-    suspend fun get(transferId: Long, clientUid: String, type: TransferItem.Type): Transfer?
-
     @Query("SELECT * FROM transfer")
     fun getAll(): LiveData<List<Transfer>>
+
+    @Query("SELECT * FROM transferDetail WHERE id = :transferId")
+    fun getDetail(transferId: Long): LiveData<TransferDetail>
+
+    @Query("SELECT * FROM transferDetail")
+    fun getDetails(): LiveData<List<TransferDetail>>
 
     @Query("UPDATE transfer SET web = 0")
     suspend fun hideTransfersFromWeb()

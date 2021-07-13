@@ -30,10 +30,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?rectSelector"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:paddingEnd="8dp">
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/name"
@@ -42,21 +43,24 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:text="@{viewModel.name}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/size"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:text="@tools:sample/cities" />
 
         <TextView
             android:id="@+id/size"
             style="@style/TextAppearance.Secondary"
             android:layout_width="0dp"
-            android:gravity="start"
             android:layout_height="wrap_content"
+            android:gravity="start"
             android:text="@{viewModel.size}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/name"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@+id/name"
             tools:text="@tools:sample/cities" />

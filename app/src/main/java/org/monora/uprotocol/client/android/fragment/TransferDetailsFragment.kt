@@ -22,57 +22,59 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
+    @Inject
+    lateinit var factory: TransferDetailsViewModel.Factory
+
     private val args: TransferDetailsFragmentArgs by navArgs()
 
-    private val viewModel: TransferDetailsViewModel by viewModels()
+    private val viewModel: TransferDetailsViewModel by viewModels {
+        TransferDetailsViewModel.ModelFactory(factory, args.transfer)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = LayoutTransferDetailsBinding.bind(view)
 
-        binding.progressBar.max = 100
+        binding.image.setOnClickListener {
+            viewModel.client.value?.let {
+                findNavController().navigate(
+                    TransferDetailsFragmentDirections.actionTransferDetailsFragmentToClientDetailsFragment2(it)
+                )
+            }
+        }
         binding.showFilesButton.setOnClickListener {
             findNavController().navigate(
                 TransferDetailsFragmentDirections.actionTransferDetailsFragmentToTransferItemFragment(args.transfer)
             )
         }
 
-        lifecycleScope.launch {
-            repeat(101) {
-                binding.progressBar.setProgress(it, true)
-                binding.progressText.text = "$it%"
-                binding.speedText.text = "${if (it % 4 == 0) 117 else 112}.${(100f * Math.random()).toInt()} Mbps"
-                delay(100)
-                println("yeah I work")
+        viewModel.transferDetail.observe(viewLifecycleOwner) {
+            if (it != null) {
+                binding.transferViewModel = TransferDetailContentViewModel(it)
+                binding.executePendingBindings()
             }
         }
 
-        viewModel.userRepository.get(args.transfer.clientUid).observe(viewLifecycleOwner) {
+        viewModel.client.observe(viewLifecycleOwner) {
             if (it == null) {
                 findNavController().popBackStack()
-                return@observe
+            } else {
+                binding.clientViewModel = ClientContentViewModel(it)
+                binding.executePendingBindings()
             }
-
-            binding.viewModel = ClientContentViewModel(it)
-            binding.executePendingBindings()
-        }
-
-        viewModel.transferRepository.getTransferItems(args.transfer.id).observe(viewLifecycleOwner) {
-            println(it[0].name)
         }
     }
 }

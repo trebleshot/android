@@ -18,18 +18,40 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.lifecycle.ViewModelProvider
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
-import org.monora.uprotocol.client.android.database.model.UClient
-import javax.inject.Inject
+import org.monora.uprotocol.client.android.database.model.Transfer
 
-@HiltViewModel
-class TransferDetailsViewModel @Inject internal constructor(
-    val userRepository: ClientRepository,
-    val transferRepository: TransferRepository,
+class TransferDetailsViewModel @AssistedInject internal constructor(
+    userRepository: ClientRepository,
+    transferRepository: TransferRepository,
+    @Assisted transfer: Transfer,
 ) : ViewModel() {
+    val client = userRepository.get(transfer.clientUid)
+
+    val transferDetail = transferRepository.getTransferDetail(transfer.id)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(transfer: Transfer): TransferDetailsViewModel
+    }
+
+    class ModelFactory(
+        private val factory: Factory,
+        private val transfer: Transfer,
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            check(modelClass.isAssignableFrom(TransferDetailsViewModel::class.java)) {
+                "Requested unknown view model type"
+            }
+
+            return factory.create(transfer) as T
+        }
+    }
 }

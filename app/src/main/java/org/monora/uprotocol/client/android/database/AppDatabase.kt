@@ -21,7 +21,13 @@ package org.monora.uprotocol.client.android.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import org.monora.uprotocol.client.android.database.model.*
+import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
+import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.database.model.WebClient
 
 @Database(
     entities = [
@@ -32,6 +38,7 @@ import org.monora.uprotocol.client.android.database.model.*
         Transfer::class,
         WebClient::class
     ],
+    views = [TransferDetail::class],
     version = 1
 )
 @TypeConverters(ClientTypeConverter::class, IOTypeConverter::class, TransferItemTypeConverter::class)
