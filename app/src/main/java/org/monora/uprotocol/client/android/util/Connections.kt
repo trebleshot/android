@@ -17,47 +17,29 @@
  */
 package org.monora.uprotocol.client.android.util
 
-import android.Manifest.permission.*
-import android.app.Activity
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationManager
 import android.net.ConnectivityManager
-import android.net.DhcpInfo
 import android.net.NetworkInfo
 import android.net.Uri
-import android.net.wifi.ScanResult
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
-import android.net.wifi.WifiNetworkSuggestion
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
-import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
-import com.genonbeta.android.framework.util.Stoppable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import org.json.JSONException
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.config.AppConfig
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.model.NetworkDescription
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask.SuggestNetworkException
-import org.monora.uprotocol.core.protocol.communication.CommunicationException
-import java.io.IOException
-import java.net.InetAddress
-import java.util.*
-import java.util.concurrent.TimeoutException
 
 /**
  * created by: veli
@@ -85,69 +67,6 @@ class Connections(contextLocal: Context) {
 
     fun canReadWifiInfo(): Boolean {
         return Build.VERSION.SDK_INT < 26 || hasLocationPermission() && isLocationServiceEnabled()
-    }
-
-    @Throws(
-        SuggestNetworkException::class,
-        WifiInaccessibleException::class,
-        TimeoutException::class,
-        InterruptedException::class,
-        IOException::class,
-        CommunicationException::class,
-        TaskStoppedException::class,
-        JSONException::class
-    )
-    suspend fun connectToNetwork(stoppable: Stoppable, description: NetworkDescription, pin: Int) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            val suggestionList: MutableList<WifiNetworkSuggestion> = ArrayList()
-            suggestionList.add(description.toNetworkSuggestion())
-            var status: Int = wifiManager.removeNetworkSuggestions(suggestionList)
-            if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
-                || status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_REMOVE_INVALID
-            ) status = wifiManager.addNetworkSuggestions(suggestionList)
-            when (status) {
-                WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP -> throw SuggestNetworkException(
-                    description, SuggestNetworkException.Type.ExceededLimit
-                )
-                WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED -> throw SuggestNetworkException(
-                    description, SuggestNetworkException.Type.AppDisallowed
-                )
-                WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL -> throw SuggestNetworkException(
-                    description, SuggestNetworkException.Type.ErrorInternal
-                )
-                WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE -> throw SuggestNetworkException(
-                    description, SuggestNetworkException.Type.Duplicate
-                )
-                WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS -> Log.d(TAG, "Network suggestion successful!")
-                else -> Log.d(TAG, "Network suggestion successful!")
-            }
-        }
-
-        // TODO: 3/20/21 This should establish an actual connection.
-    }
-
-    @Throws(SecurityException::class)
-    fun findFromScanResults(description: NetworkDescription): ScanResult? {
-        return findFromScanResults(description.ssid, description.bssid)
-    }
-
-    @Throws(SecurityException::class)
-    fun findFromScanResults(ssid: String, bssid: String?): ScanResult? {
-        if (canReadScanResults()) {
-            for (result in wifiManager.scanResults) {
-                if (result.SSID.equals(ssid, ignoreCase = true)
-                    && (bssid == null || result.BSSID.equals(bssid, ignoreCase = true))
-                ) {
-                    Log.d(TAG, "findFromScanResults: Found the network with capabilities: " + result.capabilities)
-                    return result
-                }
-            }
-        } else {
-            Log.e(TAG, "findFromScanResults: Cannot read scan results")
-            throw SecurityException("You do not have permission to read the scan results")
-        }
-        Log.d(TAG, "findFromScanResults: Could not find the related Wi-Fi network with SSID $ssid")
-        return null
     }
 
     fun hasLocationPermission(): Boolean {
@@ -184,7 +103,7 @@ class Connections(contextLocal: Context) {
     }
 
     fun toggleHotspot(
-        backend: BackgroundBackend,
+        backend: Backend,
         provider: SnackbarPlacementProvider,
         manager: HotspotManager,
         suggestActions: Boolean,
@@ -289,48 +208,11 @@ class Connections(contextLocal: Context) {
         return false
     }
 
-    class WifiInaccessibleException(message: String?) : Exception(message)
-
     companion object {
         private val TAG = Connections::class.simpleName
 
         fun getCleanSsid(ssid: String?): String {
             return ssid?.trim()?.replace("\"", "") ?: ""
-        }
-
-        fun createWifiConfig(result: ScanResult, password: String?): WifiConfiguration {
-            val config = WifiConfiguration()
-            config.hiddenSSID = false
-            config.BSSID = result.BSSID
-            config.status = WifiConfiguration.Status.ENABLED
-            when {
-                result.capabilities.contains("WEP") -> {
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN)
-                    config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104)
-                    config.SSID = "\"" + result.SSID + "\""
-                    config.wepTxKeyIndex = 0
-                    config.wepKeys[0] = password
-                }
-                result.capabilities.contains("PSK") -> {
-                    config.SSID = "\"" + result.SSID + "\""
-                    config.preSharedKey = "\"" + password + "\""
-                }
-                result.capabilities.contains("EAP") -> {
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP)
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN)
-                    config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP)
-                    config.allowedProtocols.set(WifiConfiguration.Protocol.WPA)
-                    config.SSID = "\"" + result.SSID + "\""
-                    config.preSharedKey = "\"" + password + "\""
-                }
-                else -> {
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
-                    config.SSID = "\"" + result.SSID + "\""
-                    config.preSharedKey = null
-                }
-            }
-            return config
         }
     }
 }

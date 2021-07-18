@@ -18,17 +18,13 @@
 
 package org.monora.uprotocol.client.android.task.transfer
 
-import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.task.FileTransferTask
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferOperation
 
-class MainTransferOperation(val task: FileTransferTask) : TransferOperation {
+class MainTransferOperation(val backend: Backend) : TransferOperation {
     private var ongoing: TransferItem? = null
 
     private var bytesOngoing: Long = 0
@@ -47,7 +43,8 @@ class MainTransferOperation(val task: FileTransferTask) : TransferOperation {
 
     override fun finishOperation() {
         if (count > 0) {
-            task.notifications.notifyFileReceived(task, Files.getSavePath(task.context, task.transfer))
+            // TODO: 7/16/21 Fix transfer completed notification
+            //backend.notifications.notifyFileReceived(task, Files.getSavePath(task.context, task.transfer))
         }
     }
 
@@ -70,20 +67,20 @@ class MainTransferOperation(val task: FileTransferTask) : TransferOperation {
     }
 
     override fun onUnhandledException(e: Exception) {
-        try {
-            task.post(
-                TaskMessage.newInstance(
-                    task.context.getString(R.string.text_communicationError),
-                    task.context.getString(R.string.mesg_errorDuringTransfer, task.client.clientNickname),
-                    TaskMessage.Tone.Negative
-                )
+        // TODO: 7/16/21 Handle unknown errors.
+        /*
+        task.post(
+            TaskMessage.newInstance(
+                task.context.getString(R.string.text_communicationError),
+                task.context.getString(R.string.mesg_errorDuringTransfer, task.client.clientNickname),
+                TaskMessage.Tone.Negative
             )
-        } catch (ignored: TaskStoppedException) {
-        }
+        )*/
     }
 
     override fun publishProgress() {
-        task.publishStatus()
+        // TODO: 7/16/21 Publish transfer operation status.
+        //task.publishStatus()
     }
 
     override fun setBytesOngoing(bytes: Long, bytesIncrease: Long) {

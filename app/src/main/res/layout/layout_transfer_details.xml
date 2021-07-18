@@ -45,6 +45,7 @@
             android:layout_width="@dimen/icon_size_list_giant"
             android:layout_height="@dimen/icon_size_list_giant"
             android:foreground="?roundSelector"
+            android:layout_marginBottom="2dp"
             app:layout_constraintBottom_toTopOf="@+id/text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -87,6 +88,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:max="100"
+            android:progress="@{transferViewModel.percentageInt}"
             app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -95,10 +97,11 @@
             app:layout_constraintTop_toBottomOf="@+id/transferTypeText" />
 
         <TextView
+            android:id="@+id/textView15"
             style="@style/TextAppearance.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="12dp"
             android:text="@{transferViewModel.sizeText}"
             app:layout_constraintBottom_toTopOf="@+id/imageView4"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
@@ -107,9 +110,9 @@
 
         <ImageView
             android:id="@+id/imageView4"
-            android:layout_width="@dimen/icon_size_list_big"
-            android:layout_height="@dimen/icon_size_list_big"
-            android:layout_marginBottom="8dp"
+            android:layout_width="18pt"
+            android:layout_height="18pt"
+            android:layout_marginBottom="4dp"
             app:imageResource="@{transferViewModel.icon}"
             app:layout_constraintBottom_toTopOf="@+id/progressText"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
@@ -120,20 +123,33 @@
             style="@style/TextAppearance.Primary.Big"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{transferViewModel.percentageText}"
             android:textSize="22pt"
             android:textStyle="bold"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             app:layout_constraintBottom_toBottomOf="@+id/progressBar"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
             app:layout_constraintStart_toStartOf="@+id/progressBar"
             app:layout_constraintTop_toTopOf="@+id/progressBar"
-            tools:text="@tools:sample/cities" />
+            tools:text="99" />
+
+        <TextView
+            android:id="@+id/percentageSignPlaceholder"
+            style="@style/TextAppearance.Primary.Big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/percent_sign"
+            android:textSize="18pt"
+            app:layout_constraintBottom_toBottomOf="@id/progressText"
+            app:layout_constraintStart_toEndOf="@id/progressText"
+            app:layout_constraintTop_toTopOf="@id/progressText" />
 
         <TextView
             android:id="@+id/speedText"
             style="@style/TextAppearance.Secondary.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
             app:layout_constraintStart_toStartOf="@+id/progressBar"
             app:layout_constraintTop_toBottomOf="@+id/progressText"

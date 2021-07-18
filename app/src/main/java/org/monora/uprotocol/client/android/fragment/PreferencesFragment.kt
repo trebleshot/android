@@ -26,7 +26,6 @@ class PreferencesFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences_main_app)
         addPreferencesFromResource(R.xml.preferences_main_notification)
-        addPreferencesFromResource(R.xml.preferences_main_advanced)
         LookPreferencesFragment.loadThemeOptionsTo(requireContext(), findPreference("theme"))
     }
 }

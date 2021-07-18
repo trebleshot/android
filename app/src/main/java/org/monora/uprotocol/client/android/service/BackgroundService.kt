@@ -22,8 +22,7 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import dagger.hilt.android.AndroidEntryPoint
-import org.monora.uprotocol.client.android.backend.BackgroundBackend
-import org.monora.uprotocol.client.android.model.*
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.util.*
 import javax.inject.Inject
 
@@ -32,7 +31,7 @@ class BackgroundService : LifecycleService() {
     private val binder = LocalBinder()
 
     @Inject
-    lateinit var backend: BackgroundBackend
+    lateinit var backend: Backend
 
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)

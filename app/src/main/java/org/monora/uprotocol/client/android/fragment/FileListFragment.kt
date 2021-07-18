@@ -35,9 +35,6 @@ import org.monora.uprotocol.client.android.adapter.FileListAdapter
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.dialog.FileRenameDialog
-import org.monora.uprotocol.client.android.dialogimport.FileDeletionDialog
-import org.monora.uprotocol.client.android.ui.callback.SharingPerformerMenuCallback
 import org.monora.uprotocol.client.android.util.Views
 import com.genonbeta.android.database.KuickDb
 import com.genonbeta.android.framework.io.DocumentFile
@@ -165,10 +162,6 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
         }
     }
 
-    override fun onCreatePerformerMenu(context: Context): PerformerMenu? {
-        return PerformerMenu(context, SelectionCallback(this, this))
-    }
-
     override fun onResume() {
         super.onResume()
         requireActivity().registerReceiver(receiver, intentFilter)
@@ -239,36 +232,6 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
         fun onPathChanged(file: DocumentFile?)
     }
 
-    private class SelectionCallback(
-        private val fragment: FileListFragment,
-        provider: PerformerEngineProvider,
-    ) : SharingPerformerMenuCallback(fragment.requireActivity(), provider) {
-        override fun onPerformerMenuList(
-            performerMenu: PerformerMenu,
-            inflater: MenuInflater,
-            targetMenu: Menu,
-        ): Boolean {
-            super.onPerformerMenuList(performerMenu, inflater, targetMenu)
-            inflater.inflate(R.menu.action_mode_file, targetMenu)
-            return true
-        }
-
-        override fun onPerformerMenuSelected(performerMenu: PerformerMenu, item: MenuItem): Boolean {
-            val performerEngine = getPerformerEngine() ?: return false
-            val selectionModelList: List<SelectionModel> = ArrayList<SelectionModel>(performerEngine.getSelectionList())
-            val fileList: MutableList<FileHolder> = ArrayList()
-
-            for (selectionModel in selectionModelList)
-                if (selectionModel is FileHolder)
-                    fileList.add(selectionModel)
-
-            return if (fileList.size <= 0 || !handleEditingAction(item, fragment, fileList))
-                super.onPerformerMenuSelected(performerMenu, item)
-            else
-                true
-        }
-    }
-
     companion object {
         private val TAG = FileListFragment::class.simpleName
 
@@ -291,49 +254,7 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
             val id = item.itemId
             val activity = fragment.activity
 
-            if (activity != null && id == R.id.action_mode_file_delete) {
-                FileDeletionDialog(activity, selectedItemList).show()
-            } else if (activity != null && id == R.id.action_mode_file_rename) {
-                FileRenameDialog(activity, selectedItemList).show()
-            } else if (id == R.id.action_mode_file_copy_here) {
-                // FIXME: 8/17/20 Sharing with third-party has problems. This should be fixed.
-                /*} else if (id == R.id.action_mode_file_share_all_apps) {
-            Intent intent = new Intent(selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
-                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-            if (selectedItemList.size() > 1) {
-                MIMEGrouper mimeGrouper = new MIMEGrouper();
-                ArrayList<Uri> uriList = new ArrayList<>();
-
-                for (FileHolder sharedItem : selectedItemList) {
-
-                    uriList.add();
-
-                    if (!mimeGrouper.isLocked())
-                        mimeGrouper.process(sharedItem.mimeType);
-                }
-
-                intent.setType(mimeGrouper.toString())
-                        .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-            } else if (selectedItemList.size() == 1) {
-                Shareable sharedItem = selectedItemList.get(0);
-
-                intent.setType(sharedItem.mimeType)
-                        .putExtra(Intent.EXTRA_STREAM, sharedItem.uri);
-            }
-
-            try {
-                fragment.requireActivity().startActivity(Intent.createChooser(intent, fragment.getString(
-                        R.string.text_fileShareAppChoose)));
-                return true;
-            } catch (ActivityNotFoundException e) {
-                fragment.createSnackbar(R.string.mesg_noActivityFound, Toast.LENGTH_SHORT).show();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                fragment.createSnackbar(R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
-            }*/
-            } else return false
-            return true
+            return false
         }
 
         fun <T : ContentModel> shortcutItem(fragment: ListingFragmentBase<T>, holder: FileHolder) {

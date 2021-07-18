@@ -18,19 +18,15 @@
 package org.monora.uprotocol.client.android.service.backgroundservice
 
 import android.app.Activity
-import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.client.android.util.DynamicNotification
-import org.monora.uprotocol.client.android.util.NotificationBackend
 import java.util.*
 
 class TaskMessageImpl(
@@ -107,7 +103,9 @@ class TaskMessageImpl(
         return builder
     }
 
-    override fun toNotification(task: AsyncTask): DynamicNotification {
+    // TODO: 7/17/21 Fix "to notification"
+    /*
+    override fun toNotification(task: Task): DynamicNotification {
         var hashCode = task.hashCode()
         val context = task.context.applicationContext
         val utils = task.notifications.backend
@@ -119,7 +117,6 @@ class TaskMessageImpl(
             PendingIntent.FLAG_IMMUTABLE
         )
         notification.setSmallIcon(iconFor(tone))
-            .setGroup(task.getTaskGroup())
             .setContentTitle(title)
             .setContentText(message)
             .setContentIntent(intent)
@@ -132,6 +129,8 @@ class TaskMessageImpl(
         )
         return notification
     }
+
+     */
 
     override fun toSnackbar(view: View): Snackbar {
         val snackbar: Snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)

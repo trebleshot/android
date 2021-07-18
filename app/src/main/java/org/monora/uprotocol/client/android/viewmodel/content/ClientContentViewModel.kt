@@ -18,23 +18,20 @@
 
 package org.monora.uprotocol.client.android.viewmodel.content
 
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.CompoundButton
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.ObservableBoolean
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.AppEntryPoint
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.databinding.LayoutClientDetailBinding
 import org.monora.uprotocol.client.android.util.findActivity
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.spec.v1.Config
@@ -60,25 +57,33 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
     val trusted = ObservableBoolean(client.isClientTrusted)
 
     fun onBlockedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        val contentComponent = EntryPoints.get(buttonView.findActivity(), ClientContentComponent::class.java)
+        val activity = buttonView.findActivity()
+        val appEntryPoint = EntryPoints.get(activity, AppEntryPoint::class.java)
+        val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
         clientImpl.isClientBlocked = isChecked
-        GlobalScope.launch(Dispatchers.IO) {
+
+        appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {
             contentComponent.clientRepository().update(clientImpl)
         }
     }
 
     fun onTrustChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        val contentComponent = EntryPoints.get(buttonView.findActivity(), ClientContentComponent::class.java)
+        val activity = buttonView.findActivity()
+        val appEntryPoint = EntryPoints.get(activity, AppEntryPoint::class.java)
+        val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
         clientImpl.isClientTrusted = isChecked
-        GlobalScope.launch(Dispatchers.IO) {
+
+        appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {
             contentComponent.clientRepository().update(clientImpl)
         }
     }
 
     fun onRemove(view: View) {
-        val contentComponent = EntryPoints.get(view.findActivity(), ClientContentComponent::class.java)
+        val activity = view.findActivity()
+        val appEntryPoint = EntryPoints.get(activity, AppEntryPoint::class.java)
+        val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
 
-        GlobalScope.launch(Dispatchers.IO) {
+        appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {
             contentComponent.clientRepository().delete(clientImpl)
         }
     }

@@ -28,8 +28,6 @@ import org.monora.uprotocol.client.android.exception.ConnectionNotFoundException
 import org.monora.uprotocol.client.android.exception.DeviceNotFoundException
 import org.monora.uprotocol.client.android.exception.TargetNotFoundException
 import org.monora.uprotocol.client.android.exception.TransferNotFoundException
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
@@ -44,8 +42,8 @@ class FileTransferStarterTask(
     val client: UClient,
     val type: TransferItem.Type,
     val addressList: List<InetAddress>,
-) : AttachableAsyncTask<AttachedTaskListener>() {
-    override fun onRun() {
+) {
+    /*override fun onRun() {
         try {
             CommunicationBridge.Builder(
                 connectionFactory, persistenceProvider, addressList
@@ -54,7 +52,7 @@ class FileTransferStarterTask(
             }.connect().use { bridge ->
                 bridge.requestFileTransferStart(transfer.id, type)
                 if (bridge.receiveResult()) {
-                    backend.attach(FileTransferTask(bridge, transfer, client, type))
+                    backend.attach(FileTransferTaskRegistry(bridge, transfer, client, type))
                 }
             }
         } catch (e: Exception) {
@@ -82,7 +80,7 @@ class FileTransferStarterTask(
             transferId: Long,
             clientUid: String,
             type: TransferItem.Type,
-        ): FileTransferStarterTask {
+        ): FileTransferStarterTaskRegistry {
             val client = clientRepository.getSingle(clientUid) ?: throw DeviceNotFoundException(clientUid)
             val transfer = transferRepository.getTransfer(transferId) ?: throw TransferNotFoundException(transferId)
 
@@ -97,12 +95,12 @@ class FileTransferStarterTask(
             transfer: Transfer,
             client: UClient,
             type: TransferItem.Type,
-        ): FileTransferStarterTask {
+        ): FileTransferStarterTaskRegistry {
             val inetAddresses = clientRepository.getAddresses(client.clientUid).map { it.clientAddress }
 
-            return FileTransferStarterTask(
+            return FileTransferStarterTaskRegistry(
                 connectionFactory, persistenceProvider, transfer, client, type, inetAddresses
             )
         }
-    }
+    }*/
 }

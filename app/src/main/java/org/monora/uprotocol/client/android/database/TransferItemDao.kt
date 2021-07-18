@@ -36,6 +36,9 @@ interface TransferItemDao {
     @Query("SELECT * FROM transferItem WHERE groupId == :groupId")
     fun getAll(groupId: Long): LiveData<List<UTransferItem>>
 
+    @Query("SELECT * FROM transferItem WHERE groupId == :groupId")
+    suspend fun getAllDirect(groupId: Long): List<UTransferItem>
+
     @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND id == :id LIMIT 1")
     suspend fun get(groupId: Long, id: Long): UTransferItem?
 

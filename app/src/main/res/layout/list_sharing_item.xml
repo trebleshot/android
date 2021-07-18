@@ -41,18 +41,18 @@
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@id/imageView2"
+            app:layout_constraintEnd_toEndOf="@id/imageView2"
             app:layout_constraintStart_toStartOf="@id/imageView2"
-            app:layout_constraintTop_toTopOf="@id/imageView2"
-            app:layout_constraintEnd_toEndOf="@id/imageView2"/>
+            app:layout_constraintTop_toTopOf="@id/imageView2" />
 
         <ImageView
             android:id="@+id/imageView2"
             thumbnailOf="@{viewModel.transferItem}"
             android:layout_width="@dimen/icon_size_list_big"
             android:layout_height="@dimen/icon_size_list_big"
+            android:layout_margin="8dp"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            android:layout_margin="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -69,6 +69,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:text="@tools:sample/cities" />
 
         <TextView
@@ -77,6 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.size}"
+            android:layout_marginTop="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView7"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2020 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,25 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.util
+package org.monora.uprotocol.client.android.service.backgroundservice
 
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import com.genonbeta.android.framework.util.Stoppable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
+import kotlinx.coroutines.Job
 
-/**
- * created by: Veli
- * date: 11.02.2018 19:37
- */
-abstract class StoppableJob {
-    @Throws(TaskStoppedException::class)
-    protected abstract fun onRun()
-
-    @Throws(TaskStoppedException::class)
-    protected open fun run(stoppable: Stoppable) {
-        try {
-            onRun()
-        } finally {
-            stoppable.removeClosers()
-        }
+class Task(val name: String, val params: Any, val job: Job, state: LiveData<State>) {
+    val state = liveData {
+        emitSource(state)
     }
+
+    sealed class State {
+        object Pending : State()
+
+        class Running(val message: String) : State()
+
+        class Progress(val message: String, val total: Int, val progress: Int) : State()
+
+        object Finished : State()
+    }
+
+    data class Change<T>(val task: Task, val exported: T, val state: State)
 }

@@ -21,6 +21,7 @@ import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.core.transfer.TransferItem
+import java.text.NumberFormat
 
 class TransferDetailContentViewModel(transferDetail: TransferDetail) {
     val clientNickname = transferDetail.clientNickname
@@ -35,9 +36,13 @@ class TransferDetailContentViewModel(transferDetail: TransferDetail) {
         R.drawable.ic_arrow_up_white_24dp
     }
 
-    val percentage: Int = if (transferDetail.sizeOfDone <= 0) {
-        if (transferDetail.size <= 0) 100 else 1
+    val percentage: Double = if (transferDetail.sizeOfDone <= 0) {
+        if (transferDetail.size <= 0) 1.0 else 0.01
     } else {
-        ((transferDetail.sizeOfDone.toDouble() / transferDetail.size) * 100).toInt()
+        transferDetail.sizeOfDone.toDouble() / transferDetail.size
     }
+
+    val percentageInt = (percentage * 100).toInt()
+
+    val percentageText = percentageInt.toString()
 }

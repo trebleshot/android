@@ -17,33 +17,23 @@
  */
 package org.monora.uprotocol.client.android.task
 
-import android.content.Context
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.model.Identifier.Companion.from
-import org.monora.uprotocol.client.android.model.Identity
-import org.monora.uprotocol.client.android.model.Identity.Companion.withANDs
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.task.transfer.MainTransferOperation
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.transfer.TransferItem
-import org.monora.uprotocol.core.transfer.Transfers
-import java.io.IOException
 
-class FileTransferTask(
+class FileTransferTaskRegistry(
     private val bridge: CommunicationBridge,
     val transfer: Transfer,
     val client: Client,
     val type: TransferItem.Type,
-) : AttachableAsyncTask<AttachedTaskListener>() {
+) {
+    /*
     // TODO: 2/25/21 Generate via dependency injection
     var operation: MainTransferOperation = MainTransferOperation(this)
 
     @Throws(TaskStoppedException::class)
-    override fun onRun() {
+    fun onRun() {
         if (TransferItem.Type.Outgoing == type) {
             Transfers.receive(bridge, operation, transfer.id)
         } else if (TransferItem.Type.Incoming == type) {
@@ -51,7 +41,8 @@ class FileTransferTask(
         }
     }
 
-    override fun onPublishStatus() {
+    fun onPublishStatus() {
+        /*
         super.onPublishStatus()
         if (interrupted() || finished) {
             if (interrupted()) {
@@ -103,19 +94,8 @@ class FileTransferTask(
             }*/
         }
         ongoingContent = text.toString()
+         */
     }
-
-    override fun forceQuit() {
-        super.forceQuit()
-        try {
-            bridge.activeConnection.socket?.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    override val identity: Identity
-        get() = identityOf(this)
 
     override fun getName(context: Context): String {
         return context.getString(R.string.text_transfer)
@@ -130,35 +110,5 @@ class FileTransferTask(
         return super.interrupt(userAction)
     }
 
-    enum class Id {
-        TransferId, ClientUid, Type
-    }
-
-    companion object {
-        private val TAG = FileTransferTask::class.simpleName
-
-        fun identityOf(task: FileTransferTask): Identity {
-            return identifyWith(task.transfer.id, task.client.clientUid, task.type)
-        }
-
-        fun identifyWith(transferId: Long): Identity {
-            return withANDs(from(Id.TransferId, transferId))
-        }
-
-        fun identifyWith(transferId: Long, type: TransferItem.Type?): Identity {
-            return withANDs(from(Id.TransferId, transferId), from(Id.Type, type))
-        }
-
-        fun identifyWith(transferId: Long, deviceId: String?): Identity {
-            return withANDs(from(Id.TransferId, transferId), from(Id.ClientUid, deviceId))
-        }
-
-        fun identifyWith(transferId: Long, clientUid: String?, type: TransferItem.Type?): Identity {
-            return withANDs(
-                from(Id.TransferId, transferId),
-                from(Id.ClientUid, clientUid),
-                from(Id.Type, type)
-            )
-        }
-    }
+     */
 }

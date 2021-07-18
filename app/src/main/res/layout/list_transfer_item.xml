@@ -31,10 +31,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="8dp">
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            iconOf="@{viewModel.transferItem}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="@id/imageView2"
+            app:layout_constraintStart_toStartOf="@id/imageView2"
+            app:layout_constraintTop_toTopOf="@id/imageView2"
+            app:layout_constraintEnd_toEndOf="@id/imageView2"/>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            thumbnailOf="@{viewModel.transferItem}"
+            android:layout_width="@dimen/icon_size_list_big"
+            android:layout_height="@dimen/icon_size_list_big"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            android:layout_margin="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/name"
@@ -42,11 +63,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:text="@{viewModel.name}"
             app:layout_constraintBottom_toTopOf="@+id/size"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="@tools:sample/cities" />
@@ -57,6 +79,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start"
+            android:layout_marginTop="4dp"
             android:text="@{viewModel.size}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/name"

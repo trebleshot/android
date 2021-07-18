@@ -53,39 +53,8 @@ class FileFragment : Fragment(R.layout.layout_file_fragment) {
         recyclerView.adapter = adapter
 
         viewModel.files.observe(viewLifecycleOwner) {
-            adapter.submitList(withSections(it))
+            adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
-    }
-
-    @Synchronized
-    private fun withSections(list: List<FileModel>): List<ContentModel> {
-        if (list.isEmpty()) return list
-
-        val collator = Collator.getInstance()
-        collator.strength = Collator.TERTIARY
-
-        val sortedList = list.sortedWith(compareBy(collator) {
-            it.name()
-        })
-
-        val contents = ArrayList<ContentModel>(0)
-        val files = ArrayList<FileModel>(0)
-
-        sortedList.forEach {
-            if (it.file.isDirectory) contents.add(it)
-            else if (it.file.isFile) files.add(it)
-        }
-
-        if (contents.isNotEmpty()) {
-            contents.add(0, TitleSectionContentModel(getString(R.string.text_folder)))
-        }
-
-        if (files.isNotEmpty()) {
-            contents.add(TitleSectionContentModel(getString(R.string.text_file)))
-            contents.addAll(files)
-        }
-
-        return contents
     }
 }

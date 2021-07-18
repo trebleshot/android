@@ -22,16 +22,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.transition.TransitionManager
 import androidx.viewpager2.widget.ViewPager2
-import com.genonbeta.android.framework.ui.PerformerMenu
 import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
 import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
@@ -43,17 +40,8 @@ import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter.Page
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.dialog.ChooseSharingMethodDialog
-import org.monora.uprotocol.client.android.fragment.*
+import org.monora.uprotocol.client.android.fragment.SharedTextFragment
 import org.monora.uprotocol.client.android.fragment.content.FileFragment
-import org.monora.uprotocol.client.android.model.ContentModel
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
-import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
-import org.monora.uprotocol.client.android.task.OrganizeLocalSharingTask
-import org.monora.uprotocol.client.android.ui.callback.LocalSharingCallback
-import org.monora.uprotocol.client.android.ui.callback.SharingPerformerMenuCallback
 import org.monora.uprotocol.client.android.util.Selections
 
 /**
@@ -61,10 +49,8 @@ import org.monora.uprotocol.client.android.util.Selections
  * date: 13/04/18 19:45
  */
 @AndroidEntryPoint
-class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharingCallback, AttachedTaskListener {
+class ContentSharingActivity : Activity(), PerformerEngineProvider {
     private var backPressedListener: OnBackPressedListener? = null
-
-    private val menuCallback = SharingPerformerMenuCallback(this, this)
 
     private val performerEngine = PerformerEngine()
 
@@ -85,11 +71,6 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val performerMenu = PerformerMenu(this, menuCallback)
-        menuCallback.localSharingCallback = this
-        menuCallback.cancellable = false
-        performerMenu.load(actionMenuView.menu)
-        performerMenu.setUp(performerEngine)
         val tabLayout: TabLayout = findViewById(R.id.activity_content_sharing_tab_layout)
         val viewPager: ViewPager2 = findViewById(R.id.activity_content_sharing_view_pager)
         val pagerAdapter: MainFragmentStateAdapter = object : MainFragmentStateAdapter(
@@ -99,7 +80,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
                 val fragment: Fragment? = item.fragment
                 if (fragment is ListingFragmentBase<*>) {
                     if (viewPager.currentItem == item.currentPosition) {
-                        attachListeners(fragment)
+
                     }
                 }
             }
@@ -162,7 +143,6 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
                     val fragment = pagerAdapter.getItem(position).fragment
                     if (fragment is ListingFragmentBase<*>) {
                         val editableListFragment = fragment as ListingFragmentBase<*>
-                        attachListeners(editableListFragment)
                         Handler(Looper.getMainLooper()).postDelayed(
                             { editableListFragment.adapterImpl.syncAllAndNotify() }, 200
                         )
@@ -181,32 +161,10 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
         return true
     }
 
-    override fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
-        super.onAttachTasks(taskList)
-        for (task in taskList) if (task is OrganizeLocalSharingTask) task.anchor = this
-    }
-
-    override fun onShareLocal(shareableList: List<ContentModel>) {
-        ChooseSharingMethodDialog(
-            this,
-            object : ChooseSharingMethodDialog.PickListener {
-                override fun onShareMethod(sharingMethod: ChooseSharingMethodDialog.SharingMethod) {
-                    val task = ChooseSharingMethodDialog.createLocalShareOrganizingTask(sharingMethod, shareableList)
-                    runUiTask(task, this@ContentSharingActivity)
-                }
-            }
-        ).show()
-    }
-
     override fun onBackPressed() {
         if (backPressedListener?.onBackPressed() != true && canExit()) {
             super.onBackPressed()
         }
-    }
-
-    fun attachListeners(fragment: ListingFragmentBase<*>) {
-        menuCallback.foregroundConnection = fragment.engineConnection
-        backPressedListener = if (fragment is OnBackPressedListener) fragment else null
     }
 
     private fun canExit(): Boolean {
@@ -223,30 +181,5 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider, LocalSharing
 
     override fun getPerformerEngine(): IPerformerEngine {
         return performerEngine
-    }
-
-    override fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State) {
-        if (task is OrganizeLocalSharingTask) {
-            when (state) {
-                AsyncTask.State.Finished -> {
-                    actionMenuView.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                    TransitionManager.beginDelayedTransition(cardView)
-                }
-                AsyncTask.State.Starting -> {
-                    actionMenuView.visibility = View.GONE
-                    progressBar.visibility = View.VISIBLE
-                    TransitionManager.beginDelayedTransition(cardView)
-                }
-            }
-        }
-    }
-
-    override fun onTaskMessage(taskMessage: TaskMessage): Boolean {
-        return false
-    }
-
-    companion object {
-        private val TAG = ContentSharingActivity::class.simpleName
     }
 }

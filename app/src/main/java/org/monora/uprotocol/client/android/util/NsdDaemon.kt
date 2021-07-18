@@ -27,10 +27,11 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
@@ -53,6 +54,7 @@ class NsdDaemon @Inject constructor(
     val appDatabase: AppDatabase,
     val persistenceProvider: PersistenceProvider,
     val connectionFactory: ConnectionFactory,
+    val bgBackend: Lazy<Backend>,
 ) {
     private val onlineClientMap = ArrayMap<String, ClientRoute>()
 
@@ -222,7 +224,7 @@ class NsdDaemon @Inject constructor(
                 Log.v(TAG, "Resolved '$serviceName' on '$host'")
             }
 
-            CoroutineScope(Dispatchers.Main).launch(Dispatchers.IO) {
+            bgBackend.get().applicationScope.launch(Dispatchers.IO) {
                 try {
                     val client = ClientLoader.load(connectionFactory, persistenceProvider, serviceInfo.host)
 

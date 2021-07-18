@@ -626,4 +626,5 @@
     <string name="text_verifyClient">Verify Client</string>
     <string name="client_details">Client Details</string>
     <string name="client_model">Model</string>
+    <string name="percent_sign">%</string>
 </resources>

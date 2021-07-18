@@ -18,12 +18,9 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
-import android.content.Intent
-import android.provider.Settings
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
-import org.monora.uprotocol.client.android.task.DeviceIntroductionTask
 import org.monora.uprotocol.core.io.DefectiveAddressListException
 import org.monora.uprotocol.core.protocol.communication.CommunicationException
 import org.monora.uprotocol.core.protocol.communication.ContentException
@@ -64,47 +61,6 @@ object CommonErrorHelper {
             is DifferentRemoteClientException -> {
                 title = context.getString(R.string.text_communicationError)
                 message = context.getString(R.string.mesg_errorDifferentDevice)
-            }
-            is DeviceIntroductionTask.SuggestNetworkException -> {
-                title = context.getString(R.string.text_networkSuggestionError)
-                when (exception.type) {
-                    DeviceIntroductionTask.SuggestNetworkException.Type.ExceededLimit -> {
-                        message = context.getString(R.string.text_errorExceededMaximumSuggestions)
-                        action = TaskMessage.Action(
-                            context.getString(R.string.butn_openSettings),
-                            Tone.Positive, object : TaskMessage.Callback {
-                                override fun call(context: Context) {
-                                    context.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
-                                }
-                            }
-                        )
-                    }
-                    DeviceIntroductionTask.SuggestNetworkException.Type.AppDisallowed -> {
-                        message = context.getString(R.string.text_errorNetworkSuggestionsDisallowed)
-                        action = TaskMessage.Action(
-                            context.getString(R.string.butn_openSettings),
-                            Tone.Positive,
-                            object : TaskMessage.Callback {
-                                override fun call(context: Context) {
-                                    Activities.startApplicationDetails(context)
-                                }
-                            }
-                        )
-                    }
-                    DeviceIntroductionTask.SuggestNetworkException.Type.ErrorInternal -> {
-                        message = context.getString(R.string.text_errorNetworkSuggestionInternal)
-                        action = TaskMessage.Action(
-                            context.getString(R.string.butn_feedbackContact),
-                            Tone.Positive,
-                            object : TaskMessage.Callback {
-                                override fun call(context: Context) {
-                                    Activities.startFeedbackActivity(context)
-                                }
-                            }
-                        )
-                    }
-                    else -> message = context.getString(R.string.mesg_unknownErrorOccurred)
-                }
             }
             is ConnectException, is DefectiveAddressListException -> {
                 title = context.getString(R.string.text_communicationError)

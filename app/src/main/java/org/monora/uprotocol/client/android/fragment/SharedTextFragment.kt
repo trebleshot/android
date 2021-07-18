@@ -19,7 +19,6 @@ package org.monora.uprotocol.client.android.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.format.DateUtils
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -28,10 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.adapter.SharedTextAdapter
-import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
-import org.monora.uprotocol.client.android.model.ContentModel
-import org.monora.uprotocol.client.android.model.DateSectionContentModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharedTextsViewModel
 
@@ -64,24 +60,8 @@ class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
         }
 
         viewModel.sharedTexts.observe(viewLifecycleOwner) {
-            adapter.submitList(withDateSections(it))
+            adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
-    }
-
-    @Synchronized
-    private fun withDateSections(list: List<SharedText>): List<ContentModel> {
-        val newList = ArrayList<ContentModel>()
-        var previous: DateSectionContentModel? = null
-
-        list.forEach {
-            val dateText = DateUtils.formatDateTime(context, it.created, DateUtils.FORMAT_SHOW_DATE)
-            if (previous?.dateText != dateText) {
-                newList.add(DateSectionContentModel(dateText, it.created).also { model -> previous = model })
-            }
-            newList.add(it)
-        }
-
-        return newList
     }
 }

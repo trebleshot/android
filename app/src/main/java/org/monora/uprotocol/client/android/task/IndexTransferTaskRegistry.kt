@@ -17,24 +17,13 @@
  */
 package org.monora.uprotocol.client.android.task
 
-import android.content.Context
-import android.util.Log
-import kotlinx.coroutines.runBlocking
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
-import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
-import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
-import java.util.*
 
-class IndexTransferTask(
+class IndexTransferTaskRegistry(
     private val connectionFactory: ConnectionFactory,
     private val persistenceProvider: PersistenceProvider,
     private val clientRepository: ClientRepository,
@@ -43,7 +32,8 @@ class IndexTransferTask(
     private val jsonIndex: String,
     private val client: UClient,
     private val noPrompt: Boolean,
-) : AsyncTask() {
+) {
+    /*
     @Throws(TaskStoppedException::class)
     override fun onRun() {
         // Do not let it add the same transfer id again.
@@ -72,7 +62,7 @@ class IndexTransferTask(
                 if (noPrompt) {
                     try {
                         backend.run(
-                            FileTransferStarterTask.createFrom(
+                            FileTransferStarterTaskRegistry.createFrom(
                                 connectionFactory, persistenceProvider, clientRepository, transfer, client, Incoming
                             )
                         )
@@ -94,5 +84,5 @@ class IndexTransferTask(
 
     companion object {
         const val TAG = "IndexTransferTask"
-    }
+    }*/
 }

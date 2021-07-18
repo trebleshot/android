@@ -18,14 +18,35 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
+import android.content.Context
+import android.text.format.DateUtils
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.data.SharedTextRepository
+import org.monora.uprotocol.client.android.model.ContentModel
+import org.monora.uprotocol.client.android.model.DateSectionContentModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SharedTextsViewModel @Inject internal constructor(
+    @ApplicationContext context: Context,
     sharedTextRepository: SharedTextRepository,
 ) : ViewModel() {
-    val sharedTexts = sharedTextRepository.getSharedTexts()
+    val sharedTexts = Transformations.switchMap(sharedTextRepository.getSharedTexts()) { list ->
+        val newList = ArrayList<ContentModel>()
+        var previous: DateSectionContentModel? = null
+
+        list.forEach {
+            val dateText = DateUtils.formatDateTime(context, it.created, DateUtils.FORMAT_SHOW_DATE)
+            if (previous?.dateText != dateText) {
+                newList.add(DateSectionContentModel(dateText, it.created).also { model -> previous = model })
+            }
+            newList.add(it)
+        }
+
+        MutableLiveData(newList)
+    }
 }

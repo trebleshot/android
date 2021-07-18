@@ -48,9 +48,6 @@ interface TransferDao {
     @Query("SELECT * FROM transferDetail")
     fun getDetails(): LiveData<List<TransferDetail>>
 
-    @Query("UPDATE transfer SET web = 0")
-    suspend fun hideTransfersFromWeb()
-
     @Insert
     suspend fun insert(transfer: Transfer)
 

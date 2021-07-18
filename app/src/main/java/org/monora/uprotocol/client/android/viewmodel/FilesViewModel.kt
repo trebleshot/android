@@ -18,25 +18,74 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.FileRepository
+import org.monora.uprotocol.client.android.model.ContentModel
+import org.monora.uprotocol.client.android.model.FileModel
+import org.monora.uprotocol.client.android.model.TitleSectionContentModel
+import java.text.Collator
 import javax.inject.Inject
 
 @HiltViewModel
 class FilesViewModel @Inject internal constructor(
+    @ApplicationContext context: Context,
     private val fileRepository: FileRepository
 ) : ViewModel() {
+    private val textFolder = context.getString(R.string.text_folder)
 
-    private val _files = MutableLiveData(fileRepository.fileList("/sdcard/Download"))
+    private val textFile = context.getString(R.string.text_file)
+
+    private val _files = MutableLiveData<List<ContentModel>>()
 
     val files = liveData {
+        requestPath("/sdcard/Download")
         emitSource(_files)
     }
 
+    private fun createOrderedFileList(path: String): List<ContentModel> {
+        val list = fileRepository.getFileList(path)
+
+        if (list.isEmpty()) return list
+
+        val collator = Collator.getInstance()
+        collator.strength = Collator.TERTIARY
+
+        val sortedList = list.sortedWith(compareBy(collator) {
+            it.name()
+        })
+
+        val contents = ArrayList<ContentModel>(0)
+        val files = ArrayList<FileModel>(0)
+
+        sortedList.forEach {
+            if (it.file.isDirectory) contents.add(it)
+            else if (it.file.isFile) files.add(it)
+        }
+
+        if (contents.isNotEmpty()) {
+            contents.add(0, TitleSectionContentModel(textFolder))
+        }
+
+        if (files.isNotEmpty()) {
+            contents.add(TitleSectionContentModel(textFile))
+            contents.addAll(files)
+        }
+
+        return contents
+    }
+
     fun requestPath(path: String) {
-        _files.postValue(fileRepository.fileList(path))
+        viewModelScope.launch(Dispatchers.IO) {
+            _files.postValue(createOrderedFileList(path))
+        }
     }
 }

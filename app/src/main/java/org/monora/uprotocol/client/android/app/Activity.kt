@@ -43,30 +43,22 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.ChangelogActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
-import org.monora.uprotocol.client.android.backend.BackgroundBackend
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
 import org.monora.uprotocol.client.android.dialog.PermissionRequests
-import org.monora.uprotocol.client.android.model.Identifier
-import org.monora.uprotocol.client.android.model.Identity
-import org.monora.uprotocol.client.android.model.Identity.Companion.withORs
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachableAsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.AttachedTaskListener
-import org.monora.uprotocol.client.android.service.backgroundservice.BaseAttachableAsyncTask
 import org.monora.uprotocol.client.android.util.Permissions
 import org.monora.uprotocol.client.android.util.Updater
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import java.io.FileReader
 import java.io.IOException
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     @Inject
-    lateinit var backgroundBackend: BackgroundBackend
+    lateinit var backend: Backend
 
     @Inject
     lateinit var sharedTextRepository: SharedTextRepository
@@ -76,17 +68,12 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     private var amoledThemeState = false
 
-    private val attachedTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList()
-
     private var customFontsState = false
 
     private var darkThemeState = false
 
     protected val defaultPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
-
-    open val identity: Identity
-        get() = withORs(Identifier.from(AsyncTask.Id.HashCode, AsyncTask.hashIntent(intent)))
 
     private val intentFilter = IntentFilter()
 
@@ -115,10 +102,9 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED == intent.action)
+            if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED == intent.action) {
                 checkForThemeChange()
-            else if (BackgroundBackend.ACTION_TASK_CHANGE == intent.action)
-                attachTasks()
+            }
         }
     }
 
@@ -126,8 +112,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         protected set
 
     private var themeLoadingFailed = false
-
-    private val uiTaskList: MutableList<AsyncTask> = ArrayList()
 
     var welcomePageDisallowed = false
         protected set
@@ -138,7 +122,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         customFontsState = customFontsEnabled
 
         intentFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED)
-        intentFilter.addAction(BackgroundBackend.ACTION_TASK_CHANGE)
 
         if (darkThemeState) try {
             @StyleRes
@@ -184,9 +167,8 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     override fun onStart() {
         super.onStart()
-        attachTasks()
         registerReceiver(receiver, intentFilter)
-        backgroundBackend.notifyActivityInForeground(this, true)
+        backend.notifyActivityInForeground(this, true)
     }
 
     override fun onResume() {
@@ -215,13 +197,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
     override fun onStop() {
         super.onStop()
         unregisterReceiver(receiver)
-        backgroundBackend.notifyActivityInForeground(this, false)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopUiTasks()
-        detachTasks()
+        backend.notifyActivityInForeground(this, false)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -230,61 +206,11 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         }
     }
 
-    protected open fun onAttachTasks(taskList: List<BaseAttachableAsyncTask>) {
-
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (!Permissions.checkRunningConditions(this)) {
             requestRequiredPermissions(!skipPermissionRequest)
         }
-    }
-
-    fun attachTask(task: BaseAttachableAsyncTask) {
-        synchronized(attachedTaskList) { if (!attachedTaskList.add(task)) return }
-        if (task.activityIntent == null) task.setContentIntent(this, intent)
-    }
-
-    @Synchronized
-    private fun attachTasks() {
-        val concurrentTaskList = backgroundBackend.findTasksBy(identity)
-        val attachableBgTaskList: MutableList<BaseAttachableAsyncTask> = ArrayList(attachedTaskList)
-        val checkIfExists = attachableBgTaskList.size > 0
-
-        // If this call is in between of onStart and onStop, it means there could be some tasks held in the
-        // attached task list. To avoid duplicates, we check them using 'checkIfExists'.
-        if (concurrentTaskList.isNotEmpty()) {
-            for (task in concurrentTaskList) {
-                if (task is BaseAttachableAsyncTask) {
-                    if (!checkIfExists || !attachableBgTaskList.contains(task)) {
-                        attachTask(task)
-                        attachableBgTaskList.add(task)
-                    }
-                }
-            }
-        }
-
-        // In this phase, we remove the tasks that are no longer known to the background service.
-        if (checkIfExists && attachableBgTaskList.size > 0) {
-            if (concurrentTaskList.isEmpty()) {
-                detachTasks()
-            } else {
-                val unrefreshedTaskList: List<BaseAttachableAsyncTask> = ArrayList(attachableBgTaskList)
-                for (task in unrefreshedTaskList) {
-                    if (!concurrentTaskList.contains(task)) detachTask(task)
-                }
-            }
-        }
-        onAttachTasks(attachableBgTaskList)
-        for (bgTask in attachableBgTaskList) if (!bgTask.hasAnchor()) throw RuntimeException(
-            "The task " + bgTask.javaClass.simpleName + " owner "
-                    + javaClass.simpleName + " did not provide the anchor."
-        )
-    }
-
-    fun attachUiTask(task: AsyncTask) {
-        synchronized(uiTaskList) { uiTaskList.add(task) }
     }
 
     private fun checkAndShowCrashReport() {
@@ -348,27 +274,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         ) recreate()
     }
 
-    fun checkUiTasks() {
-        if (uiTaskList.size > 0) synchronized(uiTaskList) {
-            val uiTaskList: MutableList<AsyncTask> = ArrayList()
-            for (task in this.uiTaskList) if (!task.finished) uiTaskList.add(task)
-            this.uiTaskList.clear()
-            this.uiTaskList.addAll(uiTaskList)
-        }
-    }
-
-    fun detachTask(task: BaseAttachableAsyncTask) {
-        synchronized(attachedTaskList) {
-            task.removeAnchor()
-            attachedTaskList.remove(task)
-        }
-    }
-
-    private fun detachTasks() {
-        val taskList: List<BaseAttachableAsyncTask> = ArrayList(attachedTaskList)
-        for (task in taskList) detachTask(task)
-    }
-
     protected fun editProfile(
         userProfileViewModel: UserProfileViewModel,
         pickPhoto: ActivityResultLauncher<String>,
@@ -392,34 +297,8 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         dialog.show()
     }
 
-    fun findTasksWith(identity: Identity): List<BaseAttachableAsyncTask> {
-        synchronized(attachedTaskList) {
-            return BackgroundBackend.findTasksBy(
-                attachedTaskList,
-                identity
-            )
-        }
-    }
-
-    fun <T : BaseAttachableAsyncTask> getTaskListOf(clazz: Class<T>): List<T> {
-        synchronized(attachedTaskList) { return BackgroundBackend.getTaskListOf(attachedTaskList, clazz) }
-    }
-
     fun hasIntroductionShown(): Boolean {
         return defaultPreferences.getBoolean("introduction_shown", false)
-    }
-
-    fun hasTaskOf(clazz: Class<out AsyncTask?>): Boolean {
-        synchronized(attachedTaskList) { return BackgroundBackend.hasTaskOf(attachedTaskList, clazz) }
-    }
-
-    fun hasTaskWith(identity: Identity): Boolean {
-        synchronized(attachedTaskList) { return BackgroundBackend.hasTaskWith(attachedTaskList, identity) }
-    }
-
-    fun interruptAllTasks(userAction: Boolean) {
-        if (attachedTaskList.size <= 0) return
-        synchronized(attachedTaskList) { for (task in attachedTaskList) task.interrupt(userAction) }
     }
 
     fun requestRequiredPermissions(finishIfOtherwise: Boolean) {
@@ -429,34 +308,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                     ongoingRequest = it
                 } != null
             ) break
-        }
-    }
-
-    fun run(task: AsyncTask) {
-        task.setContentIntent(this, intent)
-        backgroundBackend.run(task)
-    }
-
-    /**
-     * Run a task that will be stopped if the user leaves.
-     *
-     * @param task to be stopped when user leaves
-     */
-    fun runUiTask(task: AsyncTask) {
-        attachUiTask(task)
-        run(task)
-    }
-
-    fun <T : AttachedTaskListener, V : AttachableAsyncTask<T>> runUiTask(task: V, anchor: T) {
-        task.anchor = anchor
-        runUiTask(task)
-    }
-
-    protected fun stopUiTasks() {
-        if (uiTaskList.size <= 0) return
-        synchronized(uiTaskList) {
-            for (task in uiTaskList) task.interrupt(true)
-            uiTaskList.clear()
         }
     }
 

@@ -96,7 +96,7 @@ class ItemViewModel @AssistedInject internal constructor(
     }
 
     class ModelFactory(
-        private val factory: ItemViewModel.Factory,
+        private val factory: Factory,
         private val transfer: Transfer,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -109,7 +109,7 @@ class ItemViewModel @AssistedInject internal constructor(
     }
 }
 
-class ItemContentViewModel(transferItem: UTransferItem) {
+class ItemContentViewModel(val transferItem: UTransferItem) {
     val name = transferItem.name
 
     val size = Files.formatLength(transferItem.size, false)

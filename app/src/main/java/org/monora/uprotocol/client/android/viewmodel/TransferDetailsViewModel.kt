@@ -24,17 +24,26 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
+import org.monora.uprotocol.client.android.database.TransferItemDao
 import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
 
 class TransferDetailsViewModel @AssistedInject internal constructor(
+    taskRepository: TaskRepository,
     userRepository: ClientRepository,
     transferRepository: TransferRepository,
+    val transferItemDao: TransferItemDao,
     @Assisted transfer: Transfer,
 ) : ViewModel() {
     val client = userRepository.get(transfer.clientUid)
 
     val transferDetail = transferRepository.getTransferDetail(transfer.id)
+
+    val state = taskRepository.subscribeToTask {
+        if (it.params is TransferParams && it.params.id == transfer.id) it.params else null
+    }
 
     @AssistedFactory
     interface Factory {

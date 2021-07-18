@@ -29,7 +29,11 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.*
+import org.monora.uprotocol.client.android.activity.ContentSharingActivity
+import org.monora.uprotocol.client.android.activity.HomeActivity
+import org.monora.uprotocol.client.android.activity.ReceiveActivity
+import org.monora.uprotocol.client.android.activity.TextEditorActivity
+import org.monora.uprotocol.client.android.activity.TransferHistoryActivity
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -37,8 +41,8 @@ import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver.Companion.ACTION_STOP_ALL_TASKS
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.task.FileTransferTask
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.FileTransferTaskRegistry
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.text.NumberFormat
 
@@ -101,7 +105,7 @@ class Notifications(val backend: NotificationBackend) {
         val notification = backend.buildDynamicNotification(uidHash, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent = Intent(context, BgBroadcastReceiver::class.java)
         acceptIntent.setAction(BgBroadcastReceiver.ACTION_DEVICE_KEY_CHANGE_APPROVAL)
-            .putExtra(BgBroadcastReceiver.EXTRA_DEVICE, client)
+            .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
             .putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
         val rejectIntent = (acceptIntent.clone() as Intent)
@@ -218,7 +222,7 @@ class Notifications(val backend: NotificationBackend) {
         notification.show()
     }
 
-    fun notifyFileReceived(task: FileTransferTask, saveLocation: DocumentFile) {
+    fun notifyFileReceived(task: FileTransferTaskRegistry, saveLocation: DocumentFile) {
         // FIXME: 2/25/21 We no longer have the file and lastItem attributes to generate a notification.
         /*
         val file = task.file ?: return
@@ -285,7 +289,7 @@ class Notifications(val backend: NotificationBackend) {
     }
 
     fun notifyTasksNotification(
-        taskList: List<AsyncTask>,
+        taskList: List<Task>,
         notification: DynamicNotification?,
     ): DynamicNotification {
         val notificationLocal = notification ?: backend.buildDynamicNotification(
@@ -325,28 +329,42 @@ class Notifications(val backend: NotificationBackend) {
 
         val msg = SpannableStringBuilder()
         for (task in taskList) {
-            task.onPublishStatus()
-            val content = task.ongoingContent
+            val state: Task.State = task.state.value ?: continue
             val middleDot = " " + context.getString(R.string.mode_middleDot) + " "
-            val taskName = task.getName(context)
-            val progressCurrent = task.progress.getProgress()
-            val progressTotal = task.progress.getTotal()
+
             if (msg.isNotEmpty()) msg.append("\n")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) msg.append(
-                taskName,
-                StyleSpan(Typeface.BOLD),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            ) else msg.append(taskName)
-            if (progressCurrent > 0 && progressTotal > 0) {
-                msg.append(middleDot)
-                val percentage = percentFormat.format(progressCurrent.toDouble() / progressTotal)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) msg.append(
-                    percentage,
-                    StyleSpan(Typeface.ITALIC),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                ) else msg.append(percentage)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                msg.append(task.name, StyleSpan(Typeface.BOLD), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            } else {
+                msg.append(task.name)
             }
-            if (content != null && content.isNotEmpty()) msg.append(middleDot).append(content)
+
+            val content: String
+
+            when (state) {
+                is Task.State.Pending, is Task.State.Finished -> {
+                    content = context.getString(R.string.mesg_waiting)
+                }
+                is Task.State.Running -> {
+                    content = state.message
+                }
+                is Task.State.Progress -> {
+                    content = state.message
+
+                    if (state.progress > 0 && state.total > 0) {
+                        msg.append(middleDot)
+                        val percentage: String = percentFormat.format(state.progress.toDouble() / state.total)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            msg.append(percentage, StyleSpan(Typeface.ITALIC), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        } else {
+                            msg.append(percentage)
+                        }
+                    }
+                }
+            }
+
+            if (content.isNotEmpty()) msg.append(middleDot).append(content)
             if (msg.isEmpty()) msg.append(context.getString(R.string.text_empty))
         }
         val summary = context.resources.getQuantityString(

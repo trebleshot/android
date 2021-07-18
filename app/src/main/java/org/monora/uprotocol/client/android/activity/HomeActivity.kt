@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -31,13 +32,17 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
-import org.monora.uprotocol.client.android.dialog.ShareAppDialog
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Graphics
+import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 
 @AndroidEntryPoint
@@ -103,6 +108,32 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         userProfileBinding.executePendingBindings()
+
+        backend.subscribeToTask {
+            if (it.params is TransferParams && it.params.id == 1L) it.params else null
+        }.observe(this) {
+            Log.d(TAG, "onCreate: Change on task ${it.task.name} with params.id=${it.exported.id}")
+        }
+
+        if (!backend.hasTask { it.params is TransferParams && it.params.id == 1L }) {
+            backend.register("Grinding", TransferParams(1)) { applicationScope, params, state ->
+                applicationScope.launch {
+                    repeat(600) {
+                        delay(50)
+                        state.postValue(Task.State.Progress("Hello", 600, it))
+                    }
+                }
+            }
+        }
+
+        backend.register("Powdering", TransferParams(2)) { applicationScope, params, state ->
+            applicationScope.launch {
+                repeat(600) {
+                    delay(50)
+                    state.postValue(Task.State.Running("Miyazaki"))
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -135,7 +166,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
                 startActivity(Intent(this, ManageDevicesActivity::class.java))
             }
             R.id.menu_activity_main_about -> startActivity(Intent(this, AboutActivity::class.java))
-            R.id.menu_activity_main_send_application -> ShareAppDialog(this).show()
             R.id.menu_activity_main_preferences -> {
                 startActivity(Intent(this, PreferencesActivity::class.java))
             }

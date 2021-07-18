@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,16 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.service.backgroundservice
 
-interface AttachedTaskListener {
-    fun onTaskStateChange(task: BaseAttachableAsyncTask, state: AsyncTask.State)
+package org.monora.uprotocol.client.android.task.transfer
 
-    /**
-     * When [AttachableAsyncTask.post] is called, this will be invoked when available.
-     *
-     * @param message to be handled
-     * @return false if you didn't process the message
-     */
-    fun onTaskMessage(taskMessage: TaskMessage): Boolean
-}
+import org.monora.uprotocol.client.android.database.model.UClient
+
+data class IndexingParams(
+    val transferId: Long,
+    val client: UClient,
+    val jsonData: String,
+    val hasPin: Boolean,
+)

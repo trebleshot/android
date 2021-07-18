@@ -18,24 +18,22 @@
 
 package org.monora.uprotocol.client.android.receiver
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.lifecycle.LifecycleService
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.backend.BackgroundBackend
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.task.FileTransferStarterTask
-import org.monora.uprotocol.client.android.task.FileTransferTask
 import org.monora.uprotocol.client.android.util.NotificationBackend
-import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -50,7 +48,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
     lateinit var transferRepository: TransferRepository
 
     @Inject
-    lateinit var backend: BackgroundBackend
+    lateinit var backend: Backend
 
     @Inject
     lateinit var persistenceProvider: PersistenceProvider
@@ -61,16 +59,17 @@ class BgBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ACTION_FILE_TRANSFER -> {
-                val device: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
+                val device: UClient? = intent.getParcelableExtra(EXTRA_CLIENT)
                 val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
                 val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
 
-                backend.notificationHelper.backend.cancel(notificationId)
+                backend.services.notifications.backend.cancel(notificationId)
 
                 if (device != null && transfer != null) try {
+                    /*
                     GlobalScope.launch(Dispatchers.IO) {
-                        val task = FileTransferStarterTask.createFrom(
+                        val task = FileTransferStarterTaskRegistry.createFrom(
                             connectionFactory,
                             persistenceProvider,
                             clientRepository,
@@ -94,18 +93,20 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                             backend.run(task)
                         }
                     }
+
+                     */
                 } catch (e: Exception) {
                     e.printStackTrace()
                     if (isAccepted) {
-                        backend.notificationHelper.showToast(R.string.mesg_somethingWentWrong)
+                        backend.services.notifications.showToast(R.string.mesg_somethingWentWrong)
                     }
                 }
             }
             ACTION_DEVICE_KEY_CHANGE_APPROVAL -> {
-                val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
+                val client: UClient? = intent.getParcelableExtra(EXTRA_CLIENT)
                 val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
 
-                backend.notificationHelper.backend.cancel(notificationId)
+                backend.services.notifications.backend.cancel(notificationId)
 
                 if (client != null && intent.getBooleanExtra(EXTRA_ACCEPTED, false)) {
                     persistenceProvider.approveInvalidationOfCredentials(client)
@@ -116,7 +117,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                 val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
                 val accepted = intent.getBooleanExtra(EXTRA_TEXT_ACCEPTED, false)
 
-                backend.notificationHelper.backend.cancel(notificationId)
+                backend.services.notifications.backend.cancel(notificationId)
 
                 if (accepted && sharedText != null) {
                     val cbManager = context.applicationContext.getSystemService(
@@ -127,18 +128,19 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                 }
             }
             ACTION_START_TRANSFER -> {
-                val client: UClient? = intent.getParcelableExtra(EXTRA_DEVICE)
+                val client: UClient? = intent.getParcelableExtra(EXTRA_CLIENT)
                 val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
                 val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type?
 
                 if (client != null && transfer != null && type != null) try {
+                    /*
                     val task = backend.findTaskBy(
-                        FileTransferTask.identifyWith(transfer.id, client.uid, type)
-                    ) as FileTransferTask?
+                        FileTransferTaskRegistry.identifyWith(transfer.id, client.uid, type)
+                    ) as FileTransferTaskRegistry?
 
-                    if (task == null) GlobalScope.launch {
+                    if (task == null) taskManager.applicationScope.launch {
                         backend.run(
-                            FileTransferStarterTask.createFrom(
+                            FileTransferStarterTaskRegistry.createFrom(
                                 connectionFactory, persistenceProvider, clientRepository, transfer, client, type
                             )
                         )
@@ -149,11 +151,13 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+
+                     */
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
-            ACTION_STOP_ALL_TASKS -> backend.interruptAllTasks()
+            ACTION_STOP_ALL_TASKS -> backend.cancelAllTasks()
         }
     }
 
@@ -174,9 +178,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
 
         const val EXTRA_TEXT_MODEL = "extraText"
 
-        const val EXTRA_DEVICE_ADDRESS = "extraDeviceAddress"
-
-        const val EXTRA_DEVICE = "extraDevice"
+        const val EXTRA_CLIENT = "extraClient"
 
         const val EXTRA_TRANSFER = "extraTransfer"
 

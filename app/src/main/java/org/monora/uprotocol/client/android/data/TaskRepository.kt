@@ -18,21 +18,23 @@
 
 package org.monora.uprotocol.client.android.data
 
-import org.monora.uprotocol.client.android.model.FileModel
-import java.io.File
+import org.monora.uprotocol.client.android.backend.Backend
+import org.monora.uprotocol.client.android.backend.TaskFilter
+import org.monora.uprotocol.client.android.backend.TaskRegistry
+import org.monora.uprotocol.client.android.backend.TaskSubscriber
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FileRepository @Inject constructor() {
-    fun getFileList(path: String): List<FileModel> {
-        val file = File(path)
-        check(file.isDirectory) {
-            "$path is not a directory."
-        }
+class TaskRepository @Inject constructor(private val backend: Backend) {
+    fun contains(filter: TaskFilter) = backend.hasTask(filter)
 
-        return file.listFiles()?.map {
-            FileModel((it))
-        } ?: listOf()
-    }
+    fun containsAny() = backend.hasTasks()
+
+    fun <T : Any> register(name: String, params: T, registry: TaskRegistry<T>): Task = backend.register(
+        name, params, registry
+    )
+
+    fun <T : Any> subscribeToTask(condition: TaskSubscriber<T>) = backend.subscribeToTask(condition)
 }

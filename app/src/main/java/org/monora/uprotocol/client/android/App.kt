@@ -28,9 +28,8 @@ import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.util.Updater
 import java.io.File
 import java.io.FileOutputStream
@@ -44,7 +43,13 @@ import java.util.*
  */
 @HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
-    private val applicationScope = CoroutineScope(SupervisorJob())
+    private val appEntryPoint by lazy {
+        EntryPoints.get(this@App, AppEntryPoint::class.java)
+    }
+
+    private val bgBackend by lazy {
+        appEntryPoint.bgBackend()
+    }
 
     private lateinit var crashFile: File
 
@@ -52,14 +57,15 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     override fun onCreate() {
         super.onCreate()
+
         crashFile = applicationContext.getFileStreamPath(FILENAME_UNHANDLED_CRASH_LOG)
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
 
-        val updater = EntryPoints.get(this@App, AppEntryPoint::class.java).updater()
+        val updater = appEntryPoint.updater()
 
-        if (updater.needsToCheckForUpdates()) applicationScope.launch {
+        if (updater.needsToCheckForUpdates()) bgBackend.applicationScope.launch {
             try {
                 updater.checkForUpdates()
             } catch (e: Exception) {
@@ -133,5 +139,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface AppEntryPoint {
+    fun bgBackend(): Backend
+
     fun updater(): Updater
 }

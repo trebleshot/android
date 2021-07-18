@@ -61,8 +61,6 @@ class TransferRepository @Inject constructor(
 
     fun getTransfers() = transferDao.getAll()
 
-    suspend fun hideTransfersFromWeb() = transferDao.hideTransfersFromWeb()
-
     suspend fun insert(transfer: Transfer) = transferDao.insert(transfer)
 
     suspend fun insert(list: List<UTransferItem>) = transferItemDao.insert(list)

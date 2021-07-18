@@ -21,8 +21,8 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import org.monora.uprotocol.client.android.util.DynamicNotification
 import com.google.android.material.snackbar.Snackbar
+import org.monora.uprotocol.client.android.util.DynamicNotification
 
 interface TaskMessage {
     var title: String
@@ -53,7 +53,7 @@ interface TaskMessage {
 
     fun toDialogBuilder(activity: Activity): AlertDialog.Builder
 
-    fun toNotification(task: AsyncTask): DynamicNotification
+    //fun toNotification(task: Task): DynamicNotification
 
     fun toSnackbar(view: View): Snackbar
 

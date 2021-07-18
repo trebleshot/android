@@ -30,15 +30,12 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
@@ -52,7 +49,8 @@ import org.json.JSONException
 import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.backend.BackgroundBackend
+import org.monora.uprotocol.client.android.backend.Backend
+import org.monora.uprotocol.client.android.backend.Services
 import org.monora.uprotocol.client.android.config.Keyword
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.util.Connections
@@ -60,7 +58,6 @@ import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
-import org.monora.uprotocol.client.android.util.TextManipulators.toFriendlySsid
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -72,7 +69,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
     @Inject
-    lateinit var backgroundBackend: BackgroundBackend
+    lateinit var backend: Backend
 
     @Inject
     lateinit var persistenceProvider: PersistenceProvider
@@ -137,7 +134,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
         super.onCreate(savedInstanceState)
         connections = Connections(requireContext())
         manager = HotspotManager.newInstance(requireContext())
-        intentFilter.addAction(BackgroundBackend.ACTION_OREO_HOTSPOT_STARTED)
+        intentFilter.addAction(Services.ACTION_OREO_HOTSPOT_STARTED)
         intentFilter.addAction(BgBroadcastReceiver.ACTION_PIN_USED)
         intentFilter.addAction(WIFI_AP_STATE_CHANGED)
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -186,7 +183,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
             return manager.configuration
         }
         try {
-            return backgroundBackend.getHotspotConfig()
+            return backend.getHotspotConfig()
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
@@ -203,7 +200,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
 
     private fun toggleHotspot() {
         connections.toggleHotspot(
-            backgroundBackend, snackbarPlacementProvider, manager, true, requestHotspotPermission
+            backend, snackbarPlacementProvider, manager, true, requestHotspotPermission
         )
     }
 
@@ -350,7 +347,7 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
                 || WifiManager.WIFI_STATE_CHANGED_ACTION == intent.action
                 || ConnectivityManager.CONNECTIVITY_ACTION == intent.action
                 || BgBroadcastReceiver.ACTION_PIN_USED == intent.action
-                || BackgroundBackend.ACTION_OREO_HOTSPOT_STARTED == intent.action
+                || Services.ACTION_OREO_HOTSPOT_STARTED == intent.action
             ) updateState()
         }
     }

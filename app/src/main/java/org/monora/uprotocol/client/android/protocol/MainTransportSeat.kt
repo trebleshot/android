@@ -19,17 +19,19 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
-import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.monora.uprotocol.client.android.backend.BackgroundBackend
+import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.SharedTextRepository
+import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.task.FileTransferTask
-import org.monora.uprotocol.client.android.task.IndexTransferTask
+import org.monora.uprotocol.client.android.task.transfer.IndexingParams
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
 import org.monora.uprotocol.core.persistence.PersistenceProvider
@@ -46,12 +48,9 @@ class MainTransportSeat @Inject constructor(
     private val clientRepository: ClientRepository,
     private val transferRepository: TransferRepository,
     private val sharedTextRepository: SharedTextRepository,
-    backgroundBackend: Lazy<BackgroundBackend>,
+    private val taskRepository: TaskRepository,
+    private val backend: Backend,
 ) : TransportSeat {
-    private val backgroundBackend by lazy {
-        backgroundBackend.get()
-    }
-
     override fun beginFileTransfer(
         bridge: CommunicationBridge,
         client: Client,
@@ -68,23 +67,24 @@ class MainTransportSeat @Inject constructor(
             "Expected the UClient implementation"
         }
 
-        backgroundBackend.run(
-            IndexTransferTask(
-                connectionFactory,
-                persistenceProvider,
-                clientRepository,
-                transferRepository,
-                groupId,
-                jsonArray,
-                client,
-                hasPin
-            )
-        )
+        taskRepository.register(
+            context.getString(R.string.mesg_organizingFiles),
+            IndexingParams(groupId, client, jsonArray, hasPin)
+        ) { applicationScope, params, state ->
+            applicationScope.launch {
+
+            }
+        }
     }
 
     override fun handleFileTransferState(client: Client, groupId: Long, isAccepted: Boolean) {
         if (!isAccepted) {
-
+            runBlocking {
+                val transfer = transferRepository.getTransfer(groupId)
+                if (transfer != null && transfer.clientUid == client.clientUid) {
+                    transferRepository.delete(transfer)
+                }
+            }
         }
     }
 
@@ -99,15 +99,15 @@ class MainTransportSeat @Inject constructor(
             sharedTextRepository.insert(sharedText)
         }
 
-        backgroundBackend.notificationHelper.notifyClipboardRequest(client, sharedText)
+        backend.services.notifications.notifyClipboardRequest(client, sharedText)
     }
 
     override fun hasOngoingTransferFor(groupId: Long, clientUid: String, type: TransferItem.Type): Boolean {
-        return backgroundBackend.findTaskBy(FileTransferTask.identifyWith(groupId, clientUid, type)) != null
+        return taskRepository.contains { it.params is TransferParams && it.params.id == groupId }
     }
 
     override fun hasOngoingIndexingFor(groupId: Long): Boolean {
-        return false
+        return taskRepository.contains { it.params is IndexingParams && it.params.transferId == groupId }
     }
 
     override fun notifyClientCredentialsChanged(client: Client) {

@@ -22,14 +22,19 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
+import org.monora.uprotocol.core.persistence.PersistenceProvider
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -74,6 +79,25 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             } else {
                 binding.clientViewModel = ClientContentViewModel(it)
                 binding.executePendingBindings()
+            }
+        }
+
+        // TODO: 7/13/21 Remove
+        lifecycleScope.launch(Dispatchers.IO) {
+            var finishing = true
+
+            repeat(2) {
+                viewModel.transferItemDao.getAllDirect(args.transfer.id).forEach {
+                    val finished = it.state == PersistenceProvider.STATE_DONE
+
+                    if (finishing == finished) return@forEach
+
+                    it.state = if (finishing) PersistenceProvider.STATE_DONE else PersistenceProvider.STATE_PENDING
+
+                    viewModel.transferItemDao.update(it)
+                }
+
+                finishing = !finishing
             }
         }
     }

@@ -23,12 +23,8 @@ import androidx.core.util.ObjectsCompat
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.service.backgroundservice.AsyncTask
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskStoppedException
-import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.io.File.separator
 
 /**
  * created by: veli
@@ -37,20 +33,20 @@ import java.io.File.separator
 object Transfers {
     private val TAG = Transfers::class.simpleName
 
-    @Throws(TaskStoppedException::class)
     fun createFolderStructure(
         list: MutableList<TransferItem>, transferId: Long, folder: DocumentFile,
-        directory: String?, task: AsyncTask,
+        directory: String?, task: Task,
     ) {
         val files = folder.listFiles()
         if (files.isEmpty()) return
-        task.progress.increaseTotalBy(files.size)
+        /*
+        taskRegistry.progress.increaseTotalBy(files.size)
         for (file in files) {
-            task.throwIfStopped()
-            task.ongoingContent = file.getName()
-            task.progress.increaseBy(1)
+            taskRegistry.throwIfStopped()
+            taskRegistry.ongoingContent = file.getName()
+            taskRegistry.progress.increaseBy(1)
             if (file.isDirectory()) createFolderStructure(
-                list, transferId, file, directory?.let { it + separator + file.getName() }, task
+                list, transferId, file, directory?.let { it + separator + file.getName() }, taskRegistry
             ) else {
                 list.add(
                     UTransferItem(
@@ -67,6 +63,8 @@ object Transfers {
                 )
             }
         }
+
+         */
     }
 
     @SuppressLint("DefaultLocale")

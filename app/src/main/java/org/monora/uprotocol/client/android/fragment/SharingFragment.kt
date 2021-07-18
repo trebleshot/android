@@ -41,7 +41,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.TransferDetailActivity
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -54,7 +53,6 @@ import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceException
-import org.monora.uprotocol.core.transfer.TransferItem
 import java.net.ProtocolException
 import javax.inject.Inject
 
@@ -93,7 +91,6 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                             it.transfer
                         )
                     )
-                    context?.startActivity(Intent(context, TransferDetailActivity::class.java))
                 }
                 is SharingState.Error -> {
                     val msg = CommonErrorHelper.messageOf(requireContext(), it.exception).message
