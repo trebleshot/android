@@ -115,7 +115,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
             ACTION_CLIPBOARD -> {
                 val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
                 val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
-                val accepted = intent.getBooleanExtra(EXTRA_TEXT_ACCEPTED, false)
+                val accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
 
                 backend.services.notifications.backend.cancel(notificationId)
 
@@ -173,8 +173,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
         const val ACTION_START_TRANSFER = "org.monora.uprotocol.client.android.transaction.action.START_TRANSFER"
 
         const val ACTION_STOP_ALL_TASKS = "org.monora.uprotocol.client.android.transaction.action.STOP_ALL_TASKS"
-
-        const val EXTRA_TEXT_ACCEPTED = "extraTextAccepted"
 
         const val EXTRA_TEXT_MODEL = "extraText"
 

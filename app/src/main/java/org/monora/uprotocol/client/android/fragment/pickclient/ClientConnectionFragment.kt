@@ -19,36 +19,22 @@
 package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.data.ClientRepository
-import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.databinding.LayoutClientConnectionBinding
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
+import org.monora.uprotocol.client.android.viewmodel.ClientConnectionViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.ConnectionState
 import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
-import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.persistence.PersistenceProvider
-import org.monora.uprotocol.core.protocol.ConnectionFactory
-import org.monora.uprotocol.core.protocol.communication.client.DifferentRemoteClientException
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
@@ -102,52 +88,4 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
         }
     }
-}
-
-@HiltViewModel
-class ClientConnectionViewModel @Inject constructor(
-    val connectionFactory: ConnectionFactory,
-    val persistenceProvider: PersistenceProvider,
-    var clientRepository: ClientRepository,
-) : ViewModel() {
-    private var job: Job? = null
-
-    val state = MutableLiveData<ConnectionState>()
-
-    fun start(client: UClient, address: UClientAddress?): Job = job ?: viewModelScope.launch(Dispatchers.IO) {
-        val addresses = address?.let { listOf(it.inetAddress) } ?: clientRepository.getAddresses(client.clientUid).map {
-            it.inetAddress
-        }
-
-        try {
-            if (addresses.isEmpty()) {
-                state.postValue(ConnectionState.NoAddress())
-            } else {
-                state.postValue(ConnectionState.Connecting())
-
-                val bridge = CommunicationBridge.Builder(
-                    connectionFactory, persistenceProvider, addresses
-                ).apply {
-                    setClearBlockedStatus(true)
-                    setClientUid(client.clientUid)
-                }
-
-                state.postValue(ConnectionState.Connected(bridge.connect()))
-            }
-        } catch (e: Exception) {
-            state.postValue(ConnectionState.Error(e))
-        } finally {
-            job = null
-        }
-    }.also { job = it }
-}
-
-sealed class ConnectionState(val isConnecting: Boolean = false, val isError: Boolean = false) {
-    class Connected(val bridge: CommunicationBridge) : ConnectionState()
-
-    class Error(val e: Exception) : ConnectionState(isError = true)
-
-    class NoAddress : ConnectionState(isError = true)
-
-    class Connecting : ConnectionState(isConnecting = true)
 }

@@ -59,7 +59,7 @@
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            android:layout_margin="8dp"
+            android:padding="8dp"
             app:srcCompat="@drawable/ic_play_arrow_white_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/progressBar"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"

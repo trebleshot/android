@@ -41,18 +41,18 @@
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@id/imageView2"
+            app:layout_constraintEnd_toEndOf="@id/imageView2"
             app:layout_constraintStart_toStartOf="@id/imageView2"
-            app:layout_constraintTop_toTopOf="@id/imageView2"
-            app:layout_constraintEnd_toEndOf="@id/imageView2"/>
+            app:layout_constraintTop_toTopOf="@id/imageView2" />
 
         <ImageView
             android:id="@+id/imageView2"
             thumbnailOf="@{viewModel.transferItem}"
             android:layout_width="@dimen/icon_size_list_big"
             android:layout_height="@dimen/icon_size_list_big"
+            android:layout_margin="8dp"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            android:layout_margin="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -62,9 +62,9 @@
             style="@style/TextAppearance.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="start"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:gravity="start"
             android:text="@{viewModel.name}"
             app:layout_constraintBottom_toTopOf="@+id/size"
             app:layout_constraintEnd_toEndOf="parent"
@@ -78,14 +78,29 @@
             style="@style/TextAppearance.Secondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="start"
             android:layout_marginTop="4dp"
+            android:gravity="start"
             android:text="@{viewModel.size}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/name"
+            app:layout_constraintEnd_toStartOf="@+id/state"
             app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@+id/name"
+            tools:text="@tools:sample/cities" />
+
+        <TextView
+            android:id="@+id/state"
+            style="@style/TextAppearance.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="@{viewModel.state}"
+            app:layout_constraintBottom_toBottomOf="@+id/size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/size"
+            app:layout_constraintTop_toTopOf="@+id/size"
             tools:text="@tools:sample/cities" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

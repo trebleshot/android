@@ -19,8 +19,10 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.preference.PreferenceManager
+import com.genonbeta.android.framework.io.StreamInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.config.AppConfig
@@ -32,7 +34,7 @@ import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
-import org.monora.uprotocol.client.android.io.FileStreamDescriptor
+import org.monora.uprotocol.client.android.io.StreamInfoStreamDescriptor
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.core.io.StreamDescriptor
@@ -42,9 +44,6 @@ import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ClientType
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -111,16 +110,27 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getClientUid(): String = userDataRepository.clientUid()
 
-    override fun getDescriptorFor(transferItem: TransferItem): StreamDescriptor = FileStreamDescriptor(
-        File(
-            context.filesDir,
-            transferItem.itemGroupId.toString() + File.separator + transferItem.itemDirectory
-                    + File.separator + transferItem.itemName
-        )
-    )
+    override fun getDescriptorFor(transferItem: TransferItem): StreamDescriptor {
+        check(transferItem is UTransferItem) {
+            "Unknown item type"
+        }
+
+        // TODO: 7/19/21 Cache the 'Transfer' instance
+        val transfer = runBlocking {
+            transferRepository.getTransfer(transferItem.groupId) ?: throw IOException()
+        }
+
+        return if (transferItem.itemType == TransferItem.Type.Incoming) {
+            DocumentFileStreamDescriptor(Files.getIncomingFile(context, transferItem, transfer))
+        } else {
+            StreamInfoStreamDescriptor(StreamInfo.from(context, Uri.parse(transferItem.location)))
+        }
+    }
 
     override fun getFirstReceivableItem(groupId: Long) = runBlocking {
-        transferRepository.getReceivable(groupId)
+        transferRepository.getReceivable(groupId).also {
+            Log.d(TAG, "getFirstReceivableItem: $groupId $it")
+        }
     }
 
     override fun getNetworkPin(): Int {
@@ -160,24 +170,24 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun openInputStream(descriptor: StreamDescriptor): InputStream {
-        if (descriptor is FileStreamDescriptor) {
-            return FileInputStream(descriptor.file)
+        if (descriptor is StreamInfoStreamDescriptor) {
+            return descriptor.streamInfo.openInputStream(context)
         } else if (descriptor is DocumentFileStreamDescriptor) {
-            return context.contentResolver.openInputStream(descriptor.documentFile.getUri()) ?: kotlin.run {
-                throw IOException("Supported resource did not open")
-            }
+            return context.contentResolver.openInputStream(descriptor.documentFile.getUri()) ?: throw IOException(
+                "Supported resource did not open"
+            )
         }
 
         throw RuntimeException("Unsupported descriptor.")
     }
 
     override fun openOutputStream(descriptor: StreamDescriptor): OutputStream {
-        if (descriptor is FileStreamDescriptor) {
-            return FileOutputStream(descriptor.file)
+        if (descriptor is StreamInfoStreamDescriptor) {
+            return descriptor.streamInfo.openOutputStream(context)
         } else if (descriptor is DocumentFileStreamDescriptor) {
-            return context.contentResolver.openOutputStream(descriptor.documentFile.getUri()) ?: kotlin.run {
-                throw IOException("Supported resource did not open")
-            }
+            return context.contentResolver.openOutputStream(descriptor.documentFile.getUri()) ?: throw IOException(
+                "Supported resource did not open"
+            )
         }
 
         throw RuntimeException("Unsupported descriptor.")

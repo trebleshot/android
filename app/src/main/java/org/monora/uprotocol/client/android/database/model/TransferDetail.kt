@@ -24,7 +24,7 @@ import org.monora.uprotocol.core.transfer.TransferItem
 
 @DatabaseView(
     viewName = "transferDetail",
-    value = "SELECT transfer.id, transfer.location, transfer.clientUid, transfer.type, " +
+    value = "SELECT transfer.id, transfer.location, transfer.clientUid, transfer.type, transfer.dateCreated, " +
             "client.nickname AS clientNickname, SUM(items.size) AS size, " +
             "SUM(CASE WHEN items.state == $STATE_DONE THEN items.size END) as sizeOfDone FROM transfer " +
             "INNER JOIN client ON client.uid = transfer.clientUid " +
@@ -38,4 +38,5 @@ data class TransferDetail(
     val type: TransferItem.Type,
     val size: Long,
     val sizeOfDone: Long,
+    val dateCreated: Long,
 )

@@ -47,19 +47,13 @@ class TransferRepository @Inject constructor(
 
     fun getTransferDetails(): LiveData<List<TransferDetail>> = transferDao.getDetails()
 
-    suspend fun getTransferItem(groupId: Long, id: Long) = transferItemDao.get(groupId, id)
-
     suspend fun getTransferItem(
         groupId: Long,
         id: Long,
         type: TransferItem.Type,
     ) = transferItemDao.get(groupId, id, type)
 
-    suspend fun getTransferItem(location: String, type: TransferItem.Type) = transferItemDao.get(location, type)
-
     fun getTransferItems(groupId: Long) = transferItemDao.getAll(groupId)
-
-    fun getTransfers() = transferDao.getAll()
 
     suspend fun insert(transfer: Transfer) = transferDao.insert(transfer)
 

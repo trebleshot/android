@@ -16,10 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.task.transfer
+package org.monora.uprotocol.client.android.protocol
 
+import android.util.Log
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
+import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferOperation
@@ -42,6 +44,7 @@ class MainTransferOperation(val backend: Backend) : TransferOperation {
     }
 
     override fun finishOperation() {
+        Log.d(TAG, "finishOperation: ")
         if (count > 0) {
             // TODO: 7/16/21 Fix transfer completed notification
             //backend.notifications.notifyFileReceived(task, Files.getSavePath(task.context, task.transfer))
@@ -57,30 +60,22 @@ class MainTransferOperation(val backend: Backend) : TransferOperation {
     override fun getOngoing(): TransferItem? = ongoing
 
     override fun installReceivedContent(descriptor: StreamDescriptor) {
+        Log.d(TAG, "installReceivedContent: $descriptor")
         if (descriptor is DocumentFileStreamDescriptor) {
 
         }
     }
 
     override fun onCancelOperation() {
-        TODO("Not yet implemented")
+        Log.d(TAG, "onCancelOperation: ")
     }
 
     override fun onUnhandledException(e: Exception) {
-        // TODO: 7/16/21 Handle unknown errors.
-        /*
-        task.post(
-            TaskMessage.newInstance(
-                task.context.getString(R.string.text_communicationError),
-                task.context.getString(R.string.mesg_errorDuringTransfer, task.client.clientNickname),
-                TaskMessage.Tone.Negative
-            )
-        )*/
+        e.printStackTrace()
     }
 
     override fun publishProgress() {
-        // TODO: 7/16/21 Publish transfer operation status.
-        //task.publishStatus()
+
     }
 
     override fun setBytesOngoing(bytes: Long, bytesIncrease: Long) {

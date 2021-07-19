@@ -39,21 +39,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:paddingLeft="48dp"
-        android:paddingStart="48dp"
-        android:paddingRight="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:onClick="@{clickListener}">
+        android:onClick="@{clickListener}"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp">
 
         <ImageView
             android:id="@+id/image"
             pictureOf="@{viewModel.client}"
             android:layout_width="@dimen/icon_size_list_normal"
             android:layout_height="@dimen/icon_size_list_normal"
+            android:layout_margin="8dp"
             android:contentDescription="@string/text_image"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/text1"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
@@ -64,10 +67,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.nickname}"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/image"
             app:layout_constraintEnd_toStartOf="@+id/overflowButton"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/image"
             app:layout_constraintTop_toTopOf="@+id/image"
             tools:text="@tools:sample/lorem" />
@@ -78,6 +82,8 @@
             android:onClick="@{detailsClickListener}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/text1"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

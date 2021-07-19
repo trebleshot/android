@@ -179,8 +179,8 @@ class Notifications(val backend: NotificationBackend) {
             .putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val activityIntent = Intent(context, TextEditorActivity::class.java)
         val rejectIntent = acceptIntent.clone() as Intent
-        acceptIntent.putExtra(BgBroadcastReceiver.EXTRA_TEXT_ACCEPTED, true)
-        rejectIntent.putExtra(BgBroadcastReceiver.EXTRA_TEXT_ACCEPTED, false)
+        acceptIntent.putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
+        rejectIntent.putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
         val positiveIntent: PendingIntent = PendingIntent.getBroadcast(
             context, item.id + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )

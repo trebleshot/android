@@ -21,7 +21,13 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.genonbeta.android.framework.util.Files
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.URI
 import java.util.*
 
@@ -37,15 +43,15 @@ class StreamInfo private constructor(
     val file: File? = null,
 ) {
     @Throws(FileNotFoundException::class)
-    fun openOutputStream(context: Context): OutputStream? = if (file == null) {
-        context.contentResolver.openOutputStream(uri, "wa")
+    fun openOutputStream(context: Context): OutputStream = if (file == null) {
+        context.contentResolver.openOutputStream(uri, "wa") ?: throw IOException()
     } else {
         FileOutputStream(file, true)
     }
 
     @Throws(FileNotFoundException::class)
-    fun openInputStream(context: Context): InputStream? = if (file == null) {
-        context.contentResolver.openInputStream(uri)
+    fun openInputStream(context: Context): InputStream = if (file == null) {
+        context.contentResolver.openInputStream(uri) ?: throw IOException()
     } else {
         FileInputStream(file)
     }

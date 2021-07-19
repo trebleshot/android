@@ -15,12 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.monora.uprotocol.client.android.io
 
+import com.genonbeta.android.framework.io.StreamInfo
 import org.monora.uprotocol.core.io.StreamDescriptor
-import java.io.File
 
-class FileStreamDescriptor(val file: File) : StreamDescriptor {
-    override fun length(): Long = file.length()
+class StreamInfoStreamDescriptor(val streamInfo: StreamInfo) : StreamDescriptor {
+    override fun length(): Long = streamInfo.size
 }

@@ -33,19 +33,13 @@ interface TransferItemDao {
     @Delete
     suspend fun delete(transferItem: UTransferItem)
 
-    @Query("SELECT * FROM transferItem WHERE groupId == :groupId")
+    @Query("SELECT * FROM transferItem WHERE groupId = :groupId ORDER BY name")
     fun getAll(groupId: Long): LiveData<List<UTransferItem>>
 
-    @Query("SELECT * FROM transferItem WHERE groupId == :groupId")
-    suspend fun getAllDirect(groupId: Long): List<UTransferItem>
-
-    @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND id == :id LIMIT 1")
-    suspend fun get(groupId: Long, id: Long): UTransferItem?
-
-    @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND state == $STATE_PENDING ORDER BY name LIMIT 1")
+    @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND state == $STATE_PENDING ORDER BY name LIMIT 1")
     suspend fun getReceivable(groupId: Long): UTransferItem?
 
-    @Query("SELECT * FROM transferItem WHERE groupId == :groupId AND id == :id AND type == :type LIMIT 1")
+    @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND id = :id AND type = :type LIMIT 1")
     suspend fun get(groupId: Long, id: Long, type: TransferItem.Type): UTransferItem?
 
     @Query("SELECT * FROM transferItem WHERE location = :location AND type = :type")

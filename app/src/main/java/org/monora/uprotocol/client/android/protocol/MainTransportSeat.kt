@@ -19,7 +19,9 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
@@ -29,9 +31,13 @@ import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.task.transfer.IndexingParams
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.util.Files
+import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
 import org.monora.uprotocol.core.persistence.PersistenceProvider
@@ -39,6 +45,8 @@ import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
+import org.monora.uprotocol.core.transfer.Transfers
 import javax.inject.Inject
 
 class MainTransportSeat @Inject constructor(
@@ -57,9 +65,16 @@ class MainTransportSeat @Inject constructor(
         groupId: Long,
         type: TransferItem.Type,
     ) {
-        TODO("Not yet implemented")
+        val transferOperation = MainTransferOperation(backend)
+
+        if (type == Incoming) {
+            Transfers.receive(bridge, transferOperation, groupId)
+        } else {
+            Transfers.send(bridge, transferOperation, groupId)
+        }
     }
 
+    // TODO: 7/19/21 Handle acquaintance requests when the client picker fragment is showing
     override fun handleAcquaintanceRequest(client: Client, clientAddress: ClientAddress): Boolean = true
 
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
@@ -71,8 +86,32 @@ class MainTransportSeat @Inject constructor(
             context.getString(R.string.mesg_organizingFiles),
             IndexingParams(groupId, client, jsonArray, hasPin)
         ) { applicationScope, params, state ->
-            applicationScope.launch {
+            applicationScope.launch(Dispatchers.IO) {
+                try {
+                    val saveLocation = Files.getApplicationDirectory(context).toString()
+                    val transfer = Transfer(params.transferId, client.clientUid, Incoming, saveLocation)
+                    val items = persistenceProvider.toTransferItemList(params.transferId, params.jsonData).map {
+                        // TODO: 7/4/21 PersistenceProvider types can be improved?
+                        check(it is UTransferItem) {
+                            "Unexpected type"
+                        }
 
+                        it
+                    }
+
+                    if (items.isNotEmpty()) {
+                        transferRepository.insert(transfer)
+                        transferRepository.insert(items)
+
+                        if (hasPin) {
+                            // TODO: 7/19/21 File transfer operation should be started when has PIN.
+                        } else {
+                            backend.notifyFileRequest(client, transfer, items)
+                        }
+                    }
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
             }
         }
     }

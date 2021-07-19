@@ -31,10 +31,10 @@ interface ClientDao {
     @Delete
     suspend fun delete(client: UClient)
 
-    @Query("SELECT * FROM client WHERE uid == :uid LIMIT 1")
+    @Query("SELECT * FROM client WHERE uid = :uid LIMIT 1")
     suspend fun getSingle(uid: String): UClient?
 
-    @Query("SELECT * FROM client WHERE uid == :uid LIMIT 1")
+    @Query("SELECT * FROM client WHERE uid = :uid LIMIT 1")
     fun get(uid: String): LiveData<UClient>
 
     @Query("SELECT * FROM client ORDER BY lastUsageTime DESC")

@@ -46,6 +46,7 @@ import org.monora.uprotocol.client.android.databinding.ListTransferItemBinding
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.core.persistence.PersistenceProvider.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -113,6 +114,13 @@ class ItemContentViewModel(val transferItem: UTransferItem) {
     val name = transferItem.name
 
     val size = Files.formatLength(transferItem.size, false)
+
+    val state = when (transferItem.state) {
+        STATE_INVALIDATED_TEMPORARILY -> "Interrupted"
+        STATE_INVALIDATED_STICKY -> "Removed"
+        STATE_DONE -> "Completed"
+        else -> "Pending"
+    }
 }
 
 class ItemViewHolder(private val binding: ListTransferItemBinding) : RecyclerView.ViewHolder(binding.root) {

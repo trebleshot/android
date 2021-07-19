@@ -26,11 +26,10 @@ import androidx.room.Query
 import androidx.room.Update
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.TransferDetail
-import org.monora.uprotocol.core.transfer.TransferItem
 
 @Dao
 interface TransferDao {
-    @Query("SELECT EXISTS(SELECT * FROM transfer WHERE id == :groupId)")
+    @Query("SELECT EXISTS(SELECT * FROM transfer WHERE id = :groupId)")
     suspend fun contains(groupId: Long): Boolean
 
     @Delete
@@ -39,13 +38,10 @@ interface TransferDao {
     @Query("SELECT * FROM transfer WHERE id = :transferId")
     suspend fun get(transferId: Long): Transfer?
 
-    @Query("SELECT * FROM transfer")
-    fun getAll(): LiveData<List<Transfer>>
-
     @Query("SELECT * FROM transferDetail WHERE id = :transferId")
     fun getDetail(transferId: Long): LiveData<TransferDetail>
 
-    @Query("SELECT * FROM transferDetail")
+    @Query("SELECT * FROM transferDetail ORDER BY dateCreated DESC")
     fun getDetails(): LiveData<List<TransferDetail>>
 
     @Insert

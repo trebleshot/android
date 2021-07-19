@@ -19,26 +19,40 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.Backend
+import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
+import org.monora.uprotocol.client.android.protocol.MainTransferOperation
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
+import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.Transfers
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
+    @Inject
+    lateinit var backend: Backend
+
     @Inject
     lateinit var factory: TransferDetailsViewModel.Factory
 
@@ -47,6 +61,19 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
     private val viewModel: TransferDetailsViewModel by viewModels {
         TransferDetailsViewModel.ModelFactory(factory, args.transfer)
     }
+
+    // TODO: 7/19/21 Remove test injections
+    @Inject
+    lateinit var connectionFactory: ConnectionFactory
+
+    @Inject
+    lateinit var transferRepository: TransferRepository
+
+    @Inject
+    lateinit var persistenceProvider: PersistenceProvider
+
+    @Inject
+    lateinit var clientRepository: ClientRepository
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,6 +93,52 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             )
         }
 
+        binding.floatingActionButton.setOnClickListener {
+            viewModel.client.value?.let { client ->
+                backend.register(
+                    "Send files",
+                    TransferParams(args.transfer.id)
+                ) { applicationScope, params, state ->
+                    applicationScope.launch(Dispatchers.IO) {
+                        state.postValue(Task.State.Running("Starting"))
+
+                        val addresses = clientRepository.getAddresses(client.clientUid).map {
+                            it.inetAddress
+                        }
+
+                        try {
+                            val bridge = CommunicationBridge.Builder(
+                                connectionFactory, persistenceProvider, addresses
+                            ).apply {
+                                setClearBlockedStatus(true)
+                                setClientUid(client.clientUid)
+                            }.connect()
+
+                            Log.d(TAG, "onViewCreated: Start transfer ${args.transfer.id}")
+
+                            if (bridge.requestFileTransferStart(args.transfer.id, args.transfer.type)) {
+                                val transferOperation = MainTransferOperation(backend)
+
+                                Log.d(TAG, "onViewCreated: It was okay!")
+
+                                if (args.transfer.type == TransferItem.Type.Incoming) {
+                                    Log.d(TAG, "onViewCreated: Receiving")
+                                    Transfers.receive(bridge, transferOperation, args.transfer.id)
+                                } else {
+                                    Log.d(TAG, "onViewCreated: Sending")
+                                    Transfers.send(bridge, transferOperation, args.transfer.id)
+                                }
+                            } else {
+                                Log.d(TAG, "onViewCreated: Returned false")
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }
+
         viewModel.transferDetail.observe(viewLifecycleOwner) {
             if (it != null) {
                 binding.transferViewModel = TransferDetailContentViewModel(it)
@@ -82,22 +155,15 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             }
         }
 
-        // TODO: 7/13/21 Remove
-        lifecycleScope.launch(Dispatchers.IO) {
-            var finishing = true
+        viewModel.state.observe(viewLifecycleOwner) {
+            binding.stateViewModel = TransferStateContentViewModel(it)
+            binding.executePendingBindings()
 
-            repeat(2) {
-                viewModel.transferItemDao.getAllDirect(args.transfer.id).forEach {
-                    val finished = it.state == PersistenceProvider.STATE_DONE
-
-                    if (finishing == finished) return@forEach
-
-                    it.state = if (finishing) PersistenceProvider.STATE_DONE else PersistenceProvider.STATE_PENDING
-
-                    viewModel.transferItemDao.update(it)
+            when (val state = it?.state) {
+                is Task.State.Progress -> {
+                    binding.progressBar.max = state.total
+                    binding.progressBar.progress = state.progress
                 }
-
-                finishing = !finishing
             }
         }
     }

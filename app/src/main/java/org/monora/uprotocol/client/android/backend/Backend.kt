@@ -88,7 +88,7 @@ class Backend @Inject constructor(
 
     private val taskSet: MutableSet<Task> = ArraySet()
 
-    private val _tasks = MutableLiveData<List<Task>>()
+    private val _tasks = MutableLiveData<List<Task>>(emptyList())
 
     val tasks = liveData {
         emitSource(_tasks)
@@ -137,7 +137,7 @@ class Backend @Inject constructor(
     fun notifyFileRequest(client: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
         val activity = foregroundActivity
         val numberOfFiles = itemList.size
-        val acceptIntent: Intent = Intent(context, BackgroundService::class.java)
+        val acceptIntent: Intent = Intent(context, BgBroadcastReceiver::class.java)
             .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
             .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
             .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
@@ -250,9 +250,11 @@ class Backend @Inject constructor(
         cancelAllTasks()
     }
 
-    fun <T> subscribeToTask(condition: TaskSubscriber<T>): LiveData<Task.Change<T>> {
-        val dummyLiveData = liveData<Task.Change<T>> { }
-        var previous: Pair<Task, LiveData<Task.Change<T>>>? = null
+    fun <T> subscribeToTask(condition: TaskSubscriber<T>): LiveData<Task.Change<T>?> {
+        val dummyLiveData = liveData<Task.Change<T>?> {
+            emit(null)
+        }
+        var previous: Pair<Task, LiveData<Task.Change<T>?>>? = null
 
         return Transformations.switchMap(tasks) { list ->
             if (previous == null || Task.State.Finished == previous?.first?.state?.value) {

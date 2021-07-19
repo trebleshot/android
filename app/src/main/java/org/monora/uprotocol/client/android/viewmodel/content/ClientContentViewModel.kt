@@ -28,6 +28,7 @@ import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.AppEntryPoint
 import org.monora.uprotocol.client.android.data.ClientRepository
@@ -58,7 +59,7 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 
     fun onBlockedChanged(buttonView: CompoundButton, isChecked: Boolean) {
         val activity = buttonView.findActivity()
-        val appEntryPoint = EntryPoints.get(activity, AppEntryPoint::class.java)
+        val appEntryPoint = EntryPoints.get(activity.application, AppEntryPoint::class.java)
         val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
         clientImpl.isClientBlocked = isChecked
 
@@ -69,7 +70,7 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 
     fun onTrustChanged(buttonView: CompoundButton, isChecked: Boolean) {
         val activity = buttonView.findActivity()
-        val appEntryPoint = EntryPoints.get(activity, AppEntryPoint::class.java)
+        val appEntryPoint = EntryPoints.get(activity.application, AppEntryPoint::class.java)
         val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
         clientImpl.isClientTrusted = isChecked
 
