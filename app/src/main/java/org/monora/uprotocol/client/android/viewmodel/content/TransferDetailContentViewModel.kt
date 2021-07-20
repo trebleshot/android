@@ -30,6 +30,8 @@ class TransferDetailContentViewModel(transferDetail: TransferDetail) {
 
     val isReceiving = transferDetail.type == TransferItem.Type.Incoming
 
+    val count = transferDetail.itemsCount
+
     val icon = if (isReceiving) {
         R.drawable.ic_arrow_down_white_24dp
     } else {

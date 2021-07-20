@@ -19,7 +19,6 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
-import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +36,6 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.task.transfer.IndexingParams
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Files
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
 import org.monora.uprotocol.core.persistence.PersistenceProvider
@@ -88,15 +86,18 @@ class MainTransportSeat @Inject constructor(
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {
                 try {
-                    val saveLocation = Files.getApplicationDirectory(context).toString()
+                    val saveLocation = Files.getApplicationDirectory(context).getUri().toString()
                     val transfer = Transfer(params.transferId, client.clientUid, Incoming, saveLocation)
-                    val items = persistenceProvider.toTransferItemList(params.transferId, params.jsonData).map {
-                        // TODO: 7/4/21 PersistenceProvider types can be improved?
-                        check(it is UTransferItem) {
+                    val items = Transfers.toTransferItemList(params.jsonData).map {
+                        val item = persistenceProvider.createTransferItemFor(
+                            params.transferId, it.id, it.name, it.mimeType, it.size, it.directory, Incoming
+                        )
+
+                        check(item is UTransferItem) {
                             "Unexpected type"
                         }
 
-                        it
+                        item
                     }
 
                     if (items.isNotEmpty()) {

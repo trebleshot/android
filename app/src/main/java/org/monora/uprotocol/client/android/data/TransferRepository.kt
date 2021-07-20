@@ -51,7 +51,7 @@ class TransferRepository @Inject constructor(
         groupId: Long,
         id: Long,
         type: TransferItem.Type,
-    ) = transferItemDao.get(groupId, id, type)
+    ): UTransferItem? = transferItemDao.get(groupId, id, type)
 
     fun getTransferItems(groupId: Long) = transferItemDao.getAll(groupId)
 
@@ -62,8 +62,4 @@ class TransferRepository @Inject constructor(
     suspend fun update(transfer: Transfer) = transferDao.update(transfer)
 
     suspend fun update(transferItem: UTransferItem) = transferItemDao.update(transferItem)
-
-    suspend fun updateTemporaryFailuresAsPending(
-        groupId: Long,
-    ) = transferItemDao.updateTemporaryFailuresAsPending(groupId)
 }

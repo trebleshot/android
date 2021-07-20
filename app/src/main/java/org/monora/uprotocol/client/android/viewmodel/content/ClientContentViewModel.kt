@@ -81,7 +81,7 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 
     fun onRemove(view: View) {
         val activity = view.findActivity()
-        val appEntryPoint = EntryPoints.get(activity, AppEntryPoint::class.java)
+        val appEntryPoint = EntryPoints.get(activity.application, AppEntryPoint::class.java)
         val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
 
         appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {

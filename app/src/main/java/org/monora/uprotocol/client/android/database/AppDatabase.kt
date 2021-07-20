@@ -41,7 +41,10 @@ import org.monora.uprotocol.client.android.database.model.WebClient
     views = [TransferDetail::class],
     version = 1
 )
-@TypeConverters(ClientTypeConverter::class, IOTypeConverter::class, TransferItemTypeConverter::class)
+@TypeConverters(
+    ClientTypeConverter::class, IOTypeConverter::class, TransferItemTypeTypeConverter::class,
+    TransferItemStateTypeConverter::class
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
 

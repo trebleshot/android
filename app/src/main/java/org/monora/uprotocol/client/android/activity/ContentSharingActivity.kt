@@ -50,8 +50,6 @@ import org.monora.uprotocol.client.android.util.Selections
  */
 @AndroidEntryPoint
 class ContentSharingActivity : Activity(), PerformerEngineProvider {
-    private var backPressedListener: OnBackPressedListener? = null
-
     private val performerEngine = PerformerEngine()
 
     private lateinit var progressBar: ProgressBar
@@ -159,12 +157,6 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider {
             return super.onOptionsItemSelected(item)
         }
         return true
-    }
-
-    override fun onBackPressed() {
-        if (backPressedListener?.onBackPressed() != true && canExit()) {
-            super.onBackPressed()
-        }
     }
 
     private fun canExit(): Boolean {

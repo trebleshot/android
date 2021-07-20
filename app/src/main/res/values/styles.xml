@@ -166,6 +166,7 @@
         <item name="android:textSize">@dimen/font_size_secondary</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
+        <item name="fontFamily">@font/roundies</item>
     </style>
 
     <style name="TextAppearance.Secondary.SingleLine">
@@ -199,8 +200,8 @@
 
     <style name="OverflowButton">
         <item name="srcCompat">@drawable/ic_more_vert_white_24dp</item>
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_width">@dimen/icon_size_list_big</item>
+        <item name="android:layout_height">@dimen/icon_size_list_big</item>
         <item name="android:scaleType">center</item>
         <item name="android:background">?roundSelector</item>
         <item name="android:focusableInTouchMode">false</item>

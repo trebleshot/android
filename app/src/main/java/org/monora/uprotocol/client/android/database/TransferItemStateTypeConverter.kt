@@ -21,10 +21,10 @@ package org.monora.uprotocol.client.android.database
 import androidx.room.TypeConverter
 import org.monora.uprotocol.core.transfer.TransferItem
 
-class TransferItemTypeConverter {
+class TransferItemStateTypeConverter {
     @TypeConverter
-    fun fromType(value: TransferItem.Type): String = value.protocolValue
+    fun fromType(value: TransferItem.State): String = value.toString()
 
     @TypeConverter
-    fun toType(value: String): TransferItem.Type = TransferItem.Type.from(value)
+    fun toType(value: String): TransferItem.State = TransferItem.State.valueOf(value)
 }

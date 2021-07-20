@@ -17,7 +17,14 @@
  */
 package org.monora.uprotocol.client.android.app
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -309,11 +316,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                 } != null
             ) break
         }
-    }
-
-    @Deprecated("Do not use this! Thanks!")
-    interface OnBackPressedListener {
-        fun onBackPressed(): Boolean
     }
 
     companion object {

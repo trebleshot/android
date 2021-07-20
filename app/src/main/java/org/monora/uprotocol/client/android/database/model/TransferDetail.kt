@@ -19,14 +19,14 @@
 package org.monora.uprotocol.client.android.database.model
 
 import androidx.room.DatabaseView
-import org.monora.uprotocol.core.persistence.PersistenceProvider.STATE_DONE
 import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.TransferItem.State.Constants.DONE
 
 @DatabaseView(
     viewName = "transferDetail",
     value = "SELECT transfer.id, transfer.location, transfer.clientUid, transfer.type, transfer.dateCreated, " +
-            "client.nickname AS clientNickname, SUM(items.size) AS size, " +
-            "SUM(CASE WHEN items.state == $STATE_DONE THEN items.size END) as sizeOfDone FROM transfer " +
+            "client.nickname AS clientNickname, COUNT(items.id) AS itemsCount, SUM(items.size) AS size, " +
+            "SUM(CASE WHEN items.state == '$DONE' THEN items.size END) as sizeOfDone FROM transfer " +
             "INNER JOIN client ON client.uid = transfer.clientUid " +
             "INNER JOIN transferItem items ON items.groupId = transfer.id GROUP BY items.groupId"
 )
@@ -38,5 +38,6 @@ data class TransferDetail(
     val type: TransferItem.Type,
     val size: Long,
     val sizeOfDone: Long,
+    val itemsCount: Int,
     val dateCreated: Long,
 )

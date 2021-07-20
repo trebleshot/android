@@ -36,7 +36,7 @@ import java.util.*
  * Created by: veli
  * Date: 5/30/17 10:47 AM
  */
-class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener {
+class FileExplorerFragment : FileListFragment() {
     lateinit var pathView: RecyclerView
         private set
 
@@ -73,7 +73,7 @@ class FileExplorerFragment : FileListFragment(), Activity.OnBackPressedListener 
         if (requestedPath != null) requestPath(requestedPath)
     }
 
-    override fun onBackPressed(): Boolean {
+    fun onBackPressed(): Boolean {
         val path = adapter.path ?: return false
         val parentFile = getReadableFolder(path)
         if (parentFile == null || File.separator == parentFile.getName()) goPath(null) else goPath(parentFile)

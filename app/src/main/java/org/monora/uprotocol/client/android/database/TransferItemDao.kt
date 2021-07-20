@@ -25,8 +25,8 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.core.persistence.PersistenceProvider.STATE_PENDING
 import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.TransferItem.State.Constants.PENDING
 
 @Dao
 interface TransferItemDao {
@@ -36,7 +36,7 @@ interface TransferItemDao {
     @Query("SELECT * FROM transferItem WHERE groupId = :groupId ORDER BY name")
     fun getAll(groupId: Long): LiveData<List<UTransferItem>>
 
-    @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND state == $STATE_PENDING ORDER BY name LIMIT 1")
+    @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND state == '$PENDING' ORDER BY name LIMIT 1")
     suspend fun getReceivable(groupId: Long): UTransferItem?
 
     @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND id = :id AND type = :type LIMIT 1")
@@ -50,7 +50,4 @@ interface TransferItemDao {
 
     @Update
     suspend fun update(transferItem: UTransferItem)
-
-    @Query("UPDATE transferItem SET state = $STATE_PENDING WHERE groupId = :groupId")
-    suspend fun updateTemporaryFailuresAsPending(groupId: Long)
 }

@@ -128,9 +128,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun getFirstReceivableItem(groupId: Long) = runBlocking {
-        transferRepository.getReceivable(groupId).also {
-            Log.d(TAG, "getFirstReceivableItem: $groupId $it")
-        }
+        transferRepository.getReceivable(groupId)
     }
 
     override fun getNetworkPin(): Int {
@@ -262,7 +260,7 @@ class MainPersistenceProvider @Inject constructor(
         Log.d(TAG, "saveRequestForInvalidationOfCredentials: $clientUid")
     }
 
-    override fun setState(clientUid: String, item: TransferItem, state: Int, e: Exception?) {
+    override fun setState(clientUid: String, item: TransferItem, state: TransferItem.State, e: Exception?) {
         if (item is UTransferItem) {
             item.state = state
         } else {
