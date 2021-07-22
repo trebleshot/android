@@ -21,6 +21,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel" />
@@ -41,18 +43,32 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
+            <TextView
+                android:id="@+id/waitingApprovalText"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/waiting_approval"
+                android:visibility="@{viewModel.waitingApproval ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
-                android:layout_width="@dimen/icon_size_list_big"
-                android:layout_height="@dimen/icon_size_list_big"
+                android:layout_width="@dimen/icon_size_list_normal"
+                android:layout_height="@dimen/icon_size_list_normal"
+                android:layout_margin="8dp"
                 android:max="100"
-                android:progress="@{viewModel.percentageInt}"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:progress="@{viewModel.progress}"
+                app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
                 app:layout_constraintEnd_toStartOf="@+id/text"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/barrierTop" />
 
             <ImageView
                 android:id="@+id/image"
@@ -62,6 +78,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/text_image"
                 android:padding="8dp"
+                android:visibility="@{viewModel.needsApproval ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="@+id/progressBar"
                 app:layout_constraintEnd_toEndOf="@+id/progressBar"
                 app:layout_constraintStart_toStartOf="@+id/progressBar"
@@ -79,7 +96,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/text2"
                 app:layout_constraintEnd_toStartOf="@+id/text1"
                 app:layout_constraintStart_toEndOf="@+id/progressBar"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrierTop"
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:text="@tools:sample/full_names" />
 
@@ -91,9 +108,9 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:text="@{viewModel.sizeText}"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/imageView5"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/progressBar"
                 tools:text="@tools:sample/date/mmddyy" />
 
             <TextView
@@ -102,7 +119,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@{@plurals/text_files(viewModel.count, viewModel.count)}"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
                 app:layout_constraintEnd_toEndOf="@+id/text"
                 app:layout_constraintStart_toStartOf="@+id/text"
                 app:layout_constraintTop_toBottomOf="@+id/text"
@@ -112,10 +129,55 @@
                 android:id="@+id/imageView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 app:imageResource="@{viewModel.icon}"
+                app:layout_constraintBottom_toBottomOf="@+id/text1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text1" />
+
+            <Button
+                android:id="@+id/button4"
+                style="?borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/butn_reject"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/button5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/butn_receive"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/button4" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="@{viewModel.needsApproval ? View.VISIBLE : View.GONE}"
+                app:constraint_referenced_ids="button4, button5"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="16dp" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierBottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="top"
+                app:constraint_referenced_ids="button4, button5" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="waitingApprovalText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

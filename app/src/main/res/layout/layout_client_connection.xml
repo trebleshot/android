@@ -32,13 +32,15 @@
 
         <ImageView
             android:id="@+id/image"
+            pictureOf="@{client}"
             android:layout_width="@dimen/icon_size_list_giant"
             android:layout_height="@dimen/icon_size_list_giant"
+            app:layout_constraintBottom_toTopOf="@+id/text"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            pictureOf="@{client}"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
@@ -49,9 +51,11 @@
             android:layout_marginTop="16dp"
             android:text="@{client.nickname}"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintTop_toBottomOf="@+id/image"
             tools:text="@tools:sample/date/ddmmyy" />
 
         <TextView
@@ -61,11 +65,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/mesg_clientOffline"
-            app:layout_constraintTop_toBottomOf="@id/text"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:text="@tools:sample/date/ddmmyy"
-            android:visibility="gone" />
+            app:layout_constraintTop_toBottomOf="@id/text"
+            tools:text="@tools:sample/date/ddmmyy" />
 
         <ProgressBar
             android:id="@+id/progress"
@@ -79,12 +83,12 @@
         <ImageView
             android:id="@+id/retryButton"
             style="@style/OverflowButton"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text"
-            app:srcCompat="@drawable/ic_refresh_white_24dp"
-            android:visibility="gone"/>
+            app:srcCompat="@drawable/ic_refresh_white_24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

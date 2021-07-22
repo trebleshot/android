@@ -22,6 +22,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.fragment.ItemContentViewModel" />
@@ -31,7 +33,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:padding="8dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <ImageView
             android:id="@+id/imageView3"
@@ -50,10 +55,13 @@
             thumbnailOf="@{viewModel.transferItem}"
             android:layout_width="@dimen/icon_size_list_big"
             android:layout_height="@dimen/icon_size_list_big"
-            android:layout_margin="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/name"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,12 +70,11 @@
             style="@style/TextAppearance.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="2dp"
             android:gravity="start"
             android:text="@{viewModel.name}"
             app:layout_constraintBottom_toTopOf="@+id/size"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView6"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
@@ -78,7 +85,7 @@
             style="@style/TextAppearance.Secondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:gravity="start"
             android:text="@{viewModel.size}"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -97,11 +104,19 @@
             android:gravity="start"
             android:text="@{viewModel.state}"
             app:layout_constraintBottom_toBottomOf="@+id/size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/imageView6"
             app:layout_constraintStart_toEndOf="@+id/size"
             app:layout_constraintTop_toTopOf="@+id/size"
             tools:text="@tools:sample/cities" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            style="@style/OverflowButton"
+            android:visibility="@{viewModel.shouldRecover ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_refresh_white_24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

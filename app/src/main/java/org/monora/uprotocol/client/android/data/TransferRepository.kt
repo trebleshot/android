@@ -41,9 +41,11 @@ class TransferRepository @Inject constructor(
 
     suspend fun getReceivable(groupId: Long) = transferItemDao.getReceivable(groupId)
 
-    suspend fun getTransfer(transferId: Long): Transfer? = transferDao.get(transferId)
+    suspend fun getTransfer(groupId: Long): Transfer? = transferDao.get(groupId)
 
-    fun getTransferDetail(transferId: Long): LiveData<TransferDetail> = transferDao.getDetail(transferId)
+    fun getTransferDetail(groupId: Long): LiveData<TransferDetail> = transferDao.getDetail(groupId)
+
+    fun getTransferDetailDirect(groupId: Long): TransferDetail? = transferDao.getDetailDirect(groupId)
 
     fun getTransferDetails(): LiveData<List<TransferDetail>> = transferDao.getDetails()
 

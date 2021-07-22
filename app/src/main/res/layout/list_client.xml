@@ -54,9 +54,10 @@
             <ImageView
                 android:id="@+id/image"
                 pictureOf="@{viewModel.client}"
-                android:layout_width="@dimen/icon_size_list_big"
-                android:layout_height="@dimen/icon_size_list_big"
+                android:layout_width="@dimen/icon_size_list_normal"
+                android:layout_height="@dimen/icon_size_list_normal"
                 android:contentDescription="@string/text_image"
+                android:layout_margin="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/text1"
                 app:layout_constraintStart_toStartOf="parent"

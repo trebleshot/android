@@ -109,8 +109,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
         userProfileBinding.executePendingBindings()
 
-        /*
-        backend.subscribeToTask {
+        /*backend.subscribeToTask {
             if (it.params is TransferParams && it.params.id == 1L) it.params else null
         }.observe(this) {
             if (it == null) {
@@ -121,7 +120,10 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         if (!backend.hasTask { it.params is TransferParams && it.params.id == 1L }) {
-            backend.register("Grinding", TransferParams(1)) { applicationScope, params, state ->
+            backend.register(
+                "Grinding",
+                TransferParams(1, userProfileViewModel.clientStatic)
+            ) { applicationScope, params, state ->
                 applicationScope.launch {
                     repeat(600) {
                         delay(50)
@@ -131,7 +133,10 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             }
         }
 
-        backend.register("Powdering", TransferParams(2)) { applicationScope, params, state ->
+        backend.register(
+            "Powdering",
+            TransferParams(2, userProfileViewModel.clientStatic)
+        ) { applicationScope, params, state ->
             applicationScope.launch {
                 repeat(600) {
                     delay(50)

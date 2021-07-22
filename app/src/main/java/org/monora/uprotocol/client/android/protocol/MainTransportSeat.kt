@@ -38,6 +38,7 @@ import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
+import org.monora.uprotocol.core.persistence.PersistenceException
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
@@ -63,12 +64,30 @@ class MainTransportSeat @Inject constructor(
         groupId: Long,
         type: TransferItem.Type,
     ) {
-        val transferOperation = MainTransferOperation(backend)
+        val incoming = type == Incoming
+        val transfer = runBlocking {
+            transferRepository.getTransfer(groupId) ?: throw IllegalStateException("Missing group $groupId")
+        }
+        val detail = runBlocking {
+            transferRepository.getTransferDetailDirect(groupId) ?: throw PersistenceException("Missing detail $groupId")
+        }
+        val task = backend.register(
+            context.getString(if (incoming) R.string.text_receiving else R.string.text_sending),
+            TransferParams(transfer, client, detail.size, detail.sizeOfDone),
+        ) { applicationScope, params, state ->
+            applicationScope.launch(Dispatchers.IO) {
+                val transferOperation = MainTransferOperation(backend, params, transferRepository, state)
 
-        if (type == Incoming) {
-            Transfers.receive(bridge, transferOperation, groupId)
-        } else {
-            Transfers.send(bridge, transferOperation, groupId)
+                if (incoming) {
+                    Transfers.receive(bridge, transferOperation, groupId)
+                } else {
+                    Transfers.send(bridge, transferOperation, groupId)
+                }
+            }
+        }
+
+        runBlocking {
+            task.job.join()
         }
     }
 
@@ -87,10 +106,10 @@ class MainTransportSeat @Inject constructor(
             applicationScope.launch(Dispatchers.IO) {
                 try {
                     val saveLocation = Files.getApplicationDirectory(context).getUri().toString()
-                    val transfer = Transfer(params.transferId, client.clientUid, Incoming, saveLocation)
+                    val transfer = Transfer(params.groupId, client.clientUid, Incoming, saveLocation)
                     val items = Transfers.toTransferItemList(params.jsonData).map {
                         val item = persistenceProvider.createTransferItemFor(
-                            params.transferId, it.id, it.name, it.mimeType, it.size, it.directory, Incoming
+                            params.groupId, it.id, it.name, it.mimeType, it.size, it.directory, Incoming
                         )
 
                         check(item is UTransferItem) {
@@ -118,12 +137,18 @@ class MainTransportSeat @Inject constructor(
     }
 
     override fun handleFileTransferState(client: Client, groupId: Long, isAccepted: Boolean) {
-        if (!isAccepted) {
-            runBlocking {
-                val transfer = transferRepository.getTransfer(groupId)
-                if (transfer != null && transfer.clientUid == client.clientUid) {
-                    transferRepository.delete(transfer)
-                }
+        runBlocking {
+            val transfer = transferRepository.getTransfer(groupId)
+
+            if (transfer == null || transfer.clientUid != client.clientUid) {
+                return@runBlocking
+            }
+
+            if (isAccepted) {
+                transfer.accepted = true
+                transferRepository.update(transfer)
+            } else {
+                transferRepository.delete(transfer)
             }
         }
     }
@@ -143,11 +168,11 @@ class MainTransportSeat @Inject constructor(
     }
 
     override fun hasOngoingTransferFor(groupId: Long, clientUid: String, type: TransferItem.Type): Boolean {
-        return taskRepository.contains { it.params is TransferParams && it.params.id == groupId }
+        return taskRepository.contains { it.params is TransferParams && it.params.transfer.id == groupId }
     }
 
     override fun hasOngoingIndexingFor(groupId: Long): Boolean {
-        return taskRepository.contains { it.params is IndexingParams && it.params.transferId == groupId }
+        return taskRepository.contains { it.params is IndexingParams && it.params.groupId == groupId }
     }
 
     override fun notifyClientCredentialsChanged(client: Client) {

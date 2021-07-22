@@ -35,11 +35,14 @@ interface TransferDao {
     @Delete
     suspend fun delete(transfer: Transfer)
 
-    @Query("SELECT * FROM transfer WHERE id = :transferId")
-    suspend fun get(transferId: Long): Transfer?
+    @Query("SELECT * FROM transfer WHERE id = :groupId")
+    suspend fun get(groupId: Long): Transfer?
 
-    @Query("SELECT * FROM transferDetail WHERE id = :transferId")
-    fun getDetail(transferId: Long): LiveData<TransferDetail>
+    @Query("SELECT * FROM transferDetail WHERE id = :groupId")
+    fun getDetail(groupId: Long): LiveData<TransferDetail>
+
+    @Query("SELECT * FROM transferDetail WHERE id = :groupId")
+    fun getDetailDirect(groupId: Long): TransferDetail?
 
     @Query("SELECT * FROM transferDetail ORDER BY dateCreated DESC")
     fun getDetails(): LiveData<List<TransferDetail>>

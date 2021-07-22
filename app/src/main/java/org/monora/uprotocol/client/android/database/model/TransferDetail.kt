@@ -25,7 +25,8 @@ import org.monora.uprotocol.core.transfer.TransferItem.State.Constants.DONE
 @DatabaseView(
     viewName = "transferDetail",
     value = "SELECT transfer.id, transfer.location, transfer.clientUid, transfer.type, transfer.dateCreated, " +
-            "client.nickname AS clientNickname, COUNT(items.id) AS itemsCount, SUM(items.size) AS size, " +
+            "transfer.accepted, client.nickname AS clientNickname, COUNT(items.id) AS itemsCount, " +
+            "SUM(items.size) AS size, " +
             "SUM(CASE WHEN items.state == '$DONE' THEN items.size END) as sizeOfDone FROM transfer " +
             "INNER JOIN client ON client.uid = transfer.clientUid " +
             "INNER JOIN transferItem items ON items.groupId = transfer.id GROUP BY items.groupId"
@@ -37,6 +38,7 @@ data class TransferDetail(
     val location: String,
     val type: TransferItem.Type,
     val size: Long,
+    val accepted: Boolean,
     val sizeOfDone: Long,
     val itemsCount: Int,
     val dateCreated: Long,

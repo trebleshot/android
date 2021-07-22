@@ -24,5 +24,5 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException
  * date: 06.04.2018 11:20
  */
 class TargetNotFoundException(val clientUid: String, val groupId: Long) : ReconstructionFailedException(
-    "Member with deviceId=${clientUid} and transferId=${groupId} is not valid"
+    "Member with deviceId=${clientUid} and groupId=${groupId} is not valid"
 )

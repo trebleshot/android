@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
@@ -94,10 +95,14 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         }
 
         binding.floatingActionButton.setOnClickListener {
+            val detail = viewModel.transferDetail.value ?: return@setOnClickListener
+            val bytesTotal = detail.size
+            val bytesDone = detail.sizeOfDone
+
             viewModel.client.value?.let { client ->
                 backend.register(
                     "Send files",
-                    TransferParams(args.transfer.id)
+                    TransferParams(args.transfer, client, bytesTotal, bytesDone)
                 ) { applicationScope, params, state ->
                     applicationScope.launch(Dispatchers.IO) {
                         state.postValue(Task.State.Running("Starting"))
@@ -107,29 +112,31 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
                         }
 
                         try {
-                            val bridge = CommunicationBridge.Builder(
+                            CommunicationBridge.Builder(
                                 connectionFactory, persistenceProvider, addresses
                             ).apply {
                                 setClearBlockedStatus(true)
                                 setClientUid(client.clientUid)
-                            }.connect()
+                            }.connect().use {
+                                Log.d(TAG, "onViewCreated: Start transfer ${args.transfer.id}")
 
-                            Log.d(TAG, "onViewCreated: Start transfer ${args.transfer.id}")
+                                if (it.requestFileTransferStart(args.transfer.id, args.transfer.type)) {
+                                    val transferOperation = MainTransferOperation(
+                                        backend, params, transferRepository, state
+                                    )
 
-                            if (bridge.requestFileTransferStart(args.transfer.id, args.transfer.type)) {
-                                val transferOperation = MainTransferOperation(backend)
+                                    Log.d(TAG, "onViewCreated: It was okay!")
 
-                                Log.d(TAG, "onViewCreated: It was okay!")
-
-                                if (args.transfer.type == TransferItem.Type.Incoming) {
-                                    Log.d(TAG, "onViewCreated: Receiving")
-                                    Transfers.receive(bridge, transferOperation, args.transfer.id)
+                                    if (args.transfer.type == TransferItem.Type.Incoming) {
+                                        Log.d(TAG, "onViewCreated: Receiving")
+                                        Transfers.receive(it, transferOperation, args.transfer.id)
+                                    } else {
+                                        Log.d(TAG, "onViewCreated: Sending")
+                                        Transfers.send(it, transferOperation, args.transfer.id)
+                                    }
                                 } else {
-                                    Log.d(TAG, "onViewCreated: Sending")
-                                    Transfers.send(bridge, transferOperation, args.transfer.id)
+                                    Log.d(TAG, "onViewCreated: Returned false")
                                 }
-                            } else {
-                                Log.d(TAG, "onViewCreated: Returned false")
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -138,33 +145,61 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
                 }
             }
         }
+        binding.rejectButton.setOnClickListener { button ->
+            val client = viewModel.client.value ?: return@setOnClickListener
+
+            button.isEnabled = false
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val addresses = clientRepository.getAddresses(client.clientUid).map {
+                        it.inetAddress
+                    }
+
+                    CommunicationBridge.Builder(
+                        connectionFactory, persistenceProvider, addresses
+                    ).apply {
+                        setClearBlockedStatus(true)
+                        setClientUid(client.clientUid)
+                    }.connect().use {
+                        if (it.requestNotifyTransferState(args.transfer.id, false)) {
+                            transferRepository.delete(args.transfer)
+                            Log.d(TAG, "onViewCreated: Reported successfully")
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    lifecycleScope.launch {
+                        button.isEnabled = true
+                    }
+                }
+            }
+        }
 
         viewModel.transferDetail.observe(viewLifecycleOwner) {
-            if (it != null) {
+            if (it == null) {
+                findNavController().popBackStack()
+            } else {
                 binding.transferViewModel = TransferDetailContentViewModel(it)
                 binding.executePendingBindings()
             }
         }
 
         viewModel.client.observe(viewLifecycleOwner) {
-            if (it == null) {
-                findNavController().popBackStack()
-            } else {
+            if (it != null) {
                 binding.clientViewModel = ClientContentViewModel(it)
                 binding.executePendingBindings()
             }
         }
 
         viewModel.state.observe(viewLifecycleOwner) {
-            binding.stateViewModel = TransferStateContentViewModel(it)
-            binding.executePendingBindings()
-
-            when (val state = it?.state) {
-                is Task.State.Progress -> {
-                    binding.progressBar.max = state.total
-                    binding.progressBar.progress = state.progress
-                }
+            binding.stateViewModel = when (val state = it?.state) {
+                is Task.State.Progress -> TransferStateContentViewModel(it, state.total, state.progress)
+                else -> TransferStateContentViewModel(it)
             }
+
+            binding.executePendingBindings()
         }
     }
 }

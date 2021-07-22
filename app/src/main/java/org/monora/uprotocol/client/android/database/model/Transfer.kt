@@ -43,5 +43,6 @@ data class Transfer(
     val clientUid: String,
     val type: TransferItem.Type,
     var location: String,
+    var accepted: Boolean = false,
     val dateCreated: Long = System.currentTimeMillis(),
 ) : Parcelable

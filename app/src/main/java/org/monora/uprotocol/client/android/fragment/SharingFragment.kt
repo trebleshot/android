@@ -18,7 +18,6 @@
 
 package org.monora.uprotocol.client.android.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +39,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
@@ -48,11 +48,12 @@ import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
 import org.monora.uprotocol.client.android.itemcallback.UTransferItemCallback
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
+import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
 import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.persistence.PersistenceException
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.net.ProtocolException
 import javax.inject.Inject
 
@@ -79,7 +80,14 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
             statefulBridge.consume()?.let {
-                sharingViewModel.consume(it, args.transferId, args.contents.toList())
+                val transfer = Transfer(
+                    args.groupId,
+                    it.remoteClient.clientUid,
+                    TransferItem.Type.Outgoing,
+                    Files.getApplicationDirectory(requireContext()).getUri().toString(),
+                )
+
+                sharingViewModel.consume(it, transfer, args.contents.toList())
             }
         }
 
@@ -113,15 +121,18 @@ class SharingViewModel @Inject internal constructor(
         emitSource(_state)
     }
 
-    fun consume(bridge: CommunicationBridge, transferId: Long, contents: List<UTransferItem>) {
+    fun consume(bridge: CommunicationBridge, transfer: Transfer, contents: List<UTransferItem>) {
         if (consumer != null) return
 
         consumer = viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (bridge.requestFileTransfer(transferId, contents)) {
-                    val transfer = transferRepository.getTransfer(transferId,) ?: throw PersistenceException(
-                        "The transfer object should exist after success"
-                    )
+                val result = bridge.requestFileTransfer(transfer.id, contents) {
+                    runBlocking {
+                        transferRepository.insert(transfer)
+                    }
+                }
+
+                if (result) {
                     _state.postValue(SharingState.Success(transfer))
                 } else {
                     throw ProtocolException()

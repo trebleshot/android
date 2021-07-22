@@ -34,7 +34,7 @@ object Transfers {
     private val TAG = Transfers::class.simpleName
 
     fun createFolderStructure(
-        list: MutableList<TransferItem>, transferId: Long, folder: DocumentFile,
+        list: MutableList<TransferItem>, groupId: Long, folder: DocumentFile,
         directory: String?, task: Task,
     ) {
         val files = folder.listFiles()
@@ -46,12 +46,12 @@ object Transfers {
             taskRegistry.ongoingContent = file.getName()
             taskRegistry.progress.increaseBy(1)
             if (file.isDirectory()) createFolderStructure(
-                list, transferId, file, directory?.let { it + separator + file.getName() }, taskRegistry
+                list, groupId, file, directory?.let { it + separator + file.getName() }, taskRegistry
             ) else {
                 list.add(
                     UTransferItem(
                         0,
-                        transferId,
+                        groupId,
                         file.getName(),
                         file.getType(),
                         file.getLength(),
@@ -68,18 +68,18 @@ object Transfers {
     }
 
     @SuppressLint("DefaultLocale")
-    fun createUniqueTransferId(transferId: Long, deviceId: String, type: TransferItem.Type): Int {
-        return ObjectsCompat.hash(transferId, deviceId, type)
+    fun createUniqueTransferId(groupId: Long, deviceId: String, type: TransferItem.Type): Int {
+        return ObjectsCompat.hash(groupId, deviceId, type)
     }
 
     fun pauseTransfer(activity: Activity, transfer: Transfer) {
         pauseTransfer(activity, transfer.id, transfer.clientUid, transfer.type)
     }
 
-    fun pauseTransfer(activity: Activity, transferId: Long, deviceId: String, type: TransferItem.Type) {
+    fun pauseTransfer(activity: Activity, groupId: Long, deviceId: String, type: TransferItem.Type) {
         // TODO: 2/26/21 Give this backend, please
         /*App.interruptTasksBy(
-            activity, FileTransferTask.identifyWith(transferId, deviceId, type), true
+            activity, FileTransferTask.identifyWith(groupId, deviceId, type), true
         )*/
     }
 }

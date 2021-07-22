@@ -41,8 +41,8 @@ import javax.inject.Singleton
 @Singleton
 class Services @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val transportSession: TransportSession,
     private val nsdDaemon: NsdDaemon,
+    private val transportSession: TransportSession,
     val webShareServer: WebShareServer,
 ) {
     val hotspotManager = HotspotManager.newInstance(context)
@@ -113,7 +113,9 @@ class Services @Inject constructor(
     }
 
     fun toggleHotspot() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || !Settings.System.canWrite(context)) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+            && !Settings.System.canWrite(context)
+        ) return
 
         if (hotspotManager.enabled) {
             hotspotManager.disable()

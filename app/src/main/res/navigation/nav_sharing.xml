@@ -48,7 +48,7 @@
             android:name="contents"
             app:argType="org.monora.uprotocol.client.android.database.model.UTransferItem[]" />
         <argument
-            android:name="transferId"
+            android:name="groupId"
             app:argType="long" />
         <action
             android:id="@+id/action_sharingFragment_to_nav_transfer_details"

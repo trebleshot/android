@@ -29,7 +29,6 @@ import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.data.UserDataRepository
-import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -222,27 +221,8 @@ class MainPersistenceProvider @Inject constructor(
     override fun persist(clientUid: String, itemList: MutableList<out TransferItem>) {
         if (itemList.isEmpty()) return
 
-        val usableItemList = ArrayList<UTransferItem>()
-        val exemplar = itemList[0]
-        val transfer = Transfer(
-            exemplar.itemGroupId,
-            clientUid,
-            exemplar.itemType,
-            Files.getApplicationDirectory(context).getUri().toString(),
-        )
-
         runBlocking {
-            transferRepository.insert(transfer)
-        }
-
-        itemList.forEach {
-            if (it is UTransferItem) {
-                usableItemList.add(it)
-            }
-        }
-
-        runBlocking {
-            transferRepository.insert(usableItemList)
+            transferRepository.insert(itemList.filterIsInstance(UTransferItem::class.java))
         }
     }
 
@@ -273,4 +253,4 @@ class MainPersistenceProvider @Inject constructor(
     }
 }
 
-fun uniqueFileName() = "." + UUID.randomUUID().toString() + AppConfig.EXT_FILE_PART
+fun uniqueFileName() = ".${UUID.randomUUID()}.${AppConfig.EXT_FILE_PART}"

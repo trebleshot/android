@@ -461,7 +461,7 @@ class WebShareServer @Inject constructor(
                         item.name + " " + com.genonbeta.android.framework.util.Files.formatLength(
                             item.length,
                             false
-                        ), R.string.butn_download, "download", item.transferId,
+                        ), R.string.butn_download, "download", item.groupId,
                         item.id, item.name
                     )
                 )

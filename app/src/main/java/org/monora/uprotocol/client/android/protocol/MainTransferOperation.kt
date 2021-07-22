@@ -19,50 +19,68 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.runBlocking
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
+import org.monora.uprotocol.client.android.data.TransferRepository
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferOperation
 
-class MainTransferOperation(val backend: Backend) : TransferOperation {
-    private var ongoing: TransferItem? = null
+class MainTransferOperation(
+    private val backend: Backend,
+    private val transferParams: TransferParams,
+    private val transferRepository: TransferRepository,
+    private val state: MutableLiveData<Task.State>,
+) : TransferOperation {
+    var speedCalcTime = 0L
 
-    private var bytesOngoing: Long = 0
-
-    private var bytesTotal: Long = 0
-
-    private var count = 0
+    var bytesIncreaseInSec = 0L
 
     override fun clearBytesOngoing() {
-        bytesOngoing = 0
+        transferParams.bytesOngoing = 0
     }
 
     override fun clearOngoing() {
-        ongoing = null
+        transferParams.ongoing = null
     }
 
     override fun finishOperation() {
-        Log.d(TAG, "finishOperation: ")
         if (count > 0) {
-            // TODO: 7/16/21 Fix transfer completed notification
-            //backend.notifications.notifyFileReceived(task, Files.getSavePath(task.context, task.transfer))
+            backend.services.notifications.notifyFileReceived(transferParams)
         }
     }
 
-    override fun getBytesOngoing(): Long = bytesOngoing
+    override fun getBytesOngoing(): Long = transferParams.bytesOngoing
 
-    override fun getBytesTotal(): Long = bytesTotal
+    override fun getBytesTotal(): Long = transferParams.bytesSessionTotal
 
-    override fun getCount(): Int = count
+    override fun getCount(): Int = transferParams.count
 
-    override fun getOngoing(): TransferItem? = ongoing
+    override fun getOngoing(): TransferItem? = transferParams.ongoing
 
     override fun installReceivedContent(descriptor: StreamDescriptor) {
-        Log.d(TAG, "installReceivedContent: $descriptor")
-        if (descriptor is DocumentFileStreamDescriptor) {
+        val ongoing = ongoing
+        val savePath = Files.getSavePath(backend.context, transferParams.transfer)
 
+        when {
+            ongoing == null -> Log.d(TAG, "installReceivedContent: Ongoing item was empty!")
+            descriptor is DocumentFileStreamDescriptor -> {
+                Files.saveReceivedFile(savePath, descriptor.documentFile, ongoing)
+
+                if (ongoing is UTransferItem) runBlocking {
+                    transferRepository.update(ongoing)
+                    Log.d(TAG, "installReceivedContent: Saved $ongoing")
+                }
+            }
+            else -> Log.d(TAG, "installReceivedContent: Unknown descriptor type to save: $descriptor")
         }
     }
 
@@ -75,22 +93,38 @@ class MainTransferOperation(val backend: Backend) : TransferOperation {
     }
 
     override fun publishProgress() {
+        val total = transferParams.bytesTotal.takeIf { it > 0 } ?: return
+        val transferred = (bytesTotal + bytesOngoing).takeIf { it > 0 } ?: return
+        val progress = Task.State.Progress(
+            ongoing?.itemName ?: backend.context.getString(R.string.mesg_waiting),
+            1000,
+            ((transferred.toDouble() / total) * 1000).toInt()
+        )
 
+        state.postValue(progress)
     }
 
     override fun setBytesOngoing(bytes: Long, bytesIncrease: Long) {
-        bytesOngoing = bytes
+        transferParams.bytesOngoing = bytes
+
+        if (System.nanoTime() - speedCalcTime > 1e9) {
+            transferParams.averageSpeed = bytesIncreaseInSec
+            bytesIncreaseInSec = 0
+            speedCalcTime = System.nanoTime()
+        } else {
+            bytesIncreaseInSec += bytesIncrease
+        }
     }
 
     override fun setBytesTotal(bytes: Long) {
-        bytesTotal = bytes
+        transferParams.bytesSessionTotal = bytes
     }
 
     override fun setCount(count: Int) {
-        this.count = count
+        transferParams.count = count
     }
 
     override fun setOngoing(transferItem: TransferItem) {
-        ongoing = transferItem
+        transferParams.ongoing = transferItem
     }
 }

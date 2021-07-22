@@ -116,6 +116,8 @@ class ItemContentViewModel(val transferItem: UTransferItem) {
 
     val size = Files.formatLength(transferItem.size, false)
 
+    val shouldRecover = transferItem.state == TransferItem.State.InvalidatedTemporarily
+
     val state = when (transferItem.state) {
         TransferItem.State.InvalidatedTemporarily -> "Interrupted"
         TransferItem.State.Invalidated -> "Removed"

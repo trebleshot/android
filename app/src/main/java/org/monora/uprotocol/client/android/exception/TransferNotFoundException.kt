@@ -23,6 +23,6 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException
  * created by: Veli
  * date: 6.01.2018 22:26
  */
-class TransferNotFoundException(val transferId: Long) : ReconstructionFailedException(
-    "Transfer for $transferId group not found"
+class TransferNotFoundException(val groupId: Long) : ReconstructionFailedException(
+    "Transfer for $groupId group not found"
 )

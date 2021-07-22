@@ -23,13 +23,16 @@ import androidx.databinding.BindingAdapter
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.util.MimeIcons
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.transfer.TransferItem.State.Done
+import org.monora.uprotocol.core.transfer.TransferItem.Type.Outgoing
 
 @BindingAdapter("thumbnailOf")
-fun loadThumbnailOf(imageView: ImageView, transferItem: UTransferItem) {
-    if (transferItem.type == TransferItem.Type.Outgoing) {
+fun loadThumbnailOf(imageView: ImageView, item: UTransferItem) {
+    if (item.mimeType.startsWith("image/") || item.mimeType.startsWith("video/")
+        && (item.type == Outgoing || item.state == Done)
+    ) {
         GlideApp.with(imageView)
-            .load(transferItem.location)
+            .load(item.location)
             .circleCrop()
             .into(imageView)
     }

@@ -77,12 +77,12 @@ class FileTransferStarterTask(
             persistenceProvider: PersistenceProvider,
             clientRepository: ClientRepository,
             transferRepository: TransferRepository,
-            transferId: Long,
+            groupId: Long,
             clientUid: String,
             type: TransferItem.Type,
         ): FileTransferStarterTaskRegistry {
             val client = clientRepository.getSingle(clientUid) ?: throw DeviceNotFoundException(clientUid)
-            val transfer = transferRepository.getTransfer(transferId) ?: throw TransferNotFoundException(transferId)
+            val transfer = transferRepository.getTransfer(groupId) ?: throw TransferNotFoundException(groupId)
 
             return createFrom(connectionFactory, persistenceProvider, clientRepository, transfer, client, type)
         }

@@ -182,7 +182,7 @@ object Files {
         // FIXME: 7/30/19 The rename always fails when renaming TreeDocumentFile (changed the rename method, did it fix?)
         // also don't forget to use moveDocument functions.
         if (transferItem is UTransferItem) {
-            transferItem.location = name
+            transferItem.location = renamedFile.getUri().toString()
         }
         return renamedFile
     }

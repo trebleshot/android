@@ -42,7 +42,7 @@ class TransferDetailsViewModel @AssistedInject internal constructor(
     val transferDetail = transferRepository.getTransferDetail(transfer.id)
 
     val state = taskRepository.subscribeToTask {
-        if (it.params is TransferParams && it.params.id == transfer.id) it.params else null
+        if (it.params is TransferParams && it.params.transfer.id == transfer.id) it.params else null
     }
 
     @AssistedFactory

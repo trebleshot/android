@@ -196,7 +196,7 @@ class FileListAdapter(
                    )) transferMap[transfer.id] = transfer
                    var errorLimit = 3
                    for (item in objects) {
-                       val transfer = transferMap[item.transferId]
+                       val transfer = transferMap[item.groupId]
                        if (pickedRecentFiles.size >= 20 || errorLimit == 0 || transfer == null) break
                        try {
                            val documentFile = Files.getIncomingPseudoFile(

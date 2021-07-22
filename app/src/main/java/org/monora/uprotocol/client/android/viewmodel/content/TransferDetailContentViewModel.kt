@@ -21,16 +21,16 @@ import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.text.NumberFormat
+import kotlin.math.max
 
-class TransferDetailContentViewModel(transferDetail: TransferDetail) {
-    val clientNickname = transferDetail.clientNickname
+class TransferDetailContentViewModel(detail: TransferDetail) {
+    val clientNickname = detail.clientNickname
 
-    val sizeText = Files.formatLength(transferDetail.size, false)
+    val sizeText = Files.formatLength(detail.size, false)
 
-    val isReceiving = transferDetail.type == TransferItem.Type.Incoming
+    val isReceiving = detail.type == TransferItem.Type.Incoming
 
-    val count = transferDetail.itemsCount
+    val count = detail.itemsCount
 
     val icon = if (isReceiving) {
         R.drawable.ic_arrow_down_white_24dp
@@ -38,13 +38,15 @@ class TransferDetailContentViewModel(transferDetail: TransferDetail) {
         R.drawable.ic_arrow_up_white_24dp
     }
 
-    val percentage: Double = if (transferDetail.sizeOfDone <= 0) {
-        if (transferDetail.size <= 0) 1.0 else 0.01
-    } else {
-        transferDetail.sizeOfDone.toDouble() / transferDetail.size
+    val needsApproval = !detail.accepted && isReceiving
+
+    private val percentage = with(detail) {
+        if (sizeOfDone <= 0) 0 else ((sizeOfDone.toDouble() / size) * 100).toInt()
     }
 
-    val percentageInt = (percentage * 100).toInt()
+    val progress = max(1, percentage)
 
-    val percentageText = percentageInt.toString()
+    val percentageText = percentage.toString()
+
+    val waitingApproval = !detail.accepted && !isReceiving
 }

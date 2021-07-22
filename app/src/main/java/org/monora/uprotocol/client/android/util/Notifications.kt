@@ -42,9 +42,10 @@ import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver.Companio
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
-import org.monora.uprotocol.client.android.task.FileTransferTaskRegistry
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.text.NumberFormat
+import com.genonbeta.android.framework.util.Files as FwFiles
 
 /**
  * created by: Veli
@@ -222,70 +223,31 @@ class Notifications(val backend: NotificationBackend) {
         notification.show()
     }
 
-    fun notifyFileReceived(task: FileTransferTaskRegistry, saveLocation: DocumentFile) {
-        // FIXME: 2/25/21 We no longer have the file and lastItem attributes to generate a notification.
-        /*
-        val file = task.file ?: return
-        val lastItem = task.lastItem ?: return
-        val notification = utils.buildDynamicNotification(
-            Transfers.createUniqueTransferId(task.transfer.id, task.client.clientUid, task.type),
-            Notifications.NOTIFICATION_CHANNEL_HIGH
+    fun notifyFileReceived(transferParams: TransferParams) {
+        val notification = backend.buildDynamicNotification(
+            transferParams.transfer.id.toInt(), NotificationBackend.NOTIFICATION_CHANNEL_HIGH
         )
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentInfo(task.client.clientNickname)
+            .setContentInfo(transferParams.client.clientNickname)
             .setAutoCancel(true)
-            .setDefaults(utils.notificationSettings)
+            .setDefaults(backend.notificationSettings)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentText(
                 context.getString(
                     R.string.text_receivedTransfer,
-                    Files.formatLength(task.transferOperation.bytesTotal, false),
-                    TimeUtils.getFriendlyElapsedTime(
-                        context, System.currentTimeMillis() - task.startTime
-                    )
+                    FwFiles.formatLength(transferParams.bytesTotal),
+                    Time.formatElapsedTime(context, System.currentTimeMillis() - transferParams.startTime)
                 )
             )
-        if (task.transferOperation.count == 1) {
-            try {
-                val openIntent = Files.getOpenIntent(context, file)
-                notification.setContentIntent(
-                    PendingIntent.getActivity(
-                        context, AppUtils.uniqueNumber, openIntent, 0
-                    )
+            .setContentTitle(
+                context.resources.getQuantityString(
+                    R.plurals.text_fileReceiveCompletedSummary,
+                    transferParams.count,
+                    transferParams.count
                 )
-            } catch (ignored: Exception) {
-            }
-            notification
-                .setContentTitle(lastItem.name)
-                .addAction(
-                    R.drawable.ic_folder_white_24dp_static, context.getString(R.string.butn_showFiles),
-                    PendingIntent.getActivity(
-                        context, AppUtils.uniqueNumber,
-                        Intent(context, FileExplorerActivity::class.java)
-                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, saveLocation.getUri()), 0
-                    )
-                )
-        } else {
-            notification
-                .setContentTitle(
-                    context.resources.getQuantityString(
-                        R.plurals.text_fileReceiveCompletedSummary,
-                        task.transferOperation.count,
-                        task.transferOperation.count
-                    )
-                )
-                .setContentIntent(
-                    PendingIntent.getActivity(
-                        context, AppUtils.uniqueNumber,
-                        Intent(context, FileExplorerActivity::class.java)
-                            .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, saveLocation.getUri()), 0
-                    )
-                )
-        }
+            )
         notification.show()
-
-         */
     }
 
     fun notifyTasksNotification(

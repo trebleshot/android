@@ -29,5 +29,5 @@ class TransfersViewModel @Inject internal constructor(
 ) : ViewModel() {
     val transferDetails = transferRepository.getTransferDetails()
 
-    suspend fun getTransfer(transferId: Long): Transfer? = transferRepository.getTransfer(transferId)
+    suspend fun getTransfer(groupId: Long): Transfer? = transferRepository.getTransfer(groupId)
 }
