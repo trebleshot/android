@@ -36,6 +36,7 @@ import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
@@ -91,11 +92,7 @@ class Connections(contextLocal: Context) {
         return bssid?.equals(wifiInfo.bssid, ignoreCase = true) ?: (ssid == tgSsid)
     }
 
-    fun isLocationServiceEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        this.locationManager.isLocationEnabled
-    } else {
-        this.locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
+    fun isLocationServiceEnabled(): Boolean = LocationManagerCompat.isLocationEnabled(locationManager)
 
     @Deprecated("Do not use this method above 9, there is a better method in-place.")
     fun isMobileDataActive(): Boolean {
