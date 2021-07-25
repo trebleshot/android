@@ -52,15 +52,15 @@ class MainConnectionFactory @Inject constructor(
 
     override fun openConnection(address: InetAddress): ActiveConnection {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val manager: ConnectivityManager = context
-                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            return run {
-                val callback = NetworkBinderCallback(manager, address)
-                val builder: NetworkRequest.Builder = NetworkRequest.Builder()
-                builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                manager.requestNetwork(builder.build(), callback)
-                callback.waitForConnection()
-            }
+            val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val callback = NetworkBinderCallback(manager, address)
+            val builder = NetworkRequest.Builder()
+
+            builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            builder.addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+            manager.requestNetwork(builder.build(), callback)
+
+            return callback.waitForConnection()
         }
         return CommunicationBridge.openConnection(address)
     }
@@ -99,11 +99,11 @@ private class NetworkBinderCallback(
     }
 
     fun bindNetwork(network: Network?): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) connectivityManager.bindProcessToNetwork(
-            network
-        ) else ConnectivityManager.setProcessDefaultNetwork(
-            network
-        )
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            connectivityManager.bindProcessToNetwork(network)
+        } else {
+            ConnectivityManager.setProcessDefaultNetwork(network)
+        }
     }
 
     @Throws(IOException::class)
@@ -111,7 +111,6 @@ private class NetworkBinderCallback(
         try {
             synchronized(lock) { lock.wait(AppConfig.DEFAULT_TIMEOUT_SOCKET.toLong()) }
         } catch (e: InterruptedException) {
-            e.printStackTrace()
             exception = IOException(e)
         }
 

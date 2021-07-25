@@ -81,10 +81,4 @@ class SharingActivity : Activity() {
 
         return super.onOptionsItemSelected(item)
     }
-
-    companion object {
-        private val TAG = SharingActivity::class.simpleName
-
-        const val EXTRA_DEVICE_ID = "extraDeviceId"
-    }
 }

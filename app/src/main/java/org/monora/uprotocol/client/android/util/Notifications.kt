@@ -27,7 +27,6 @@ import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.ContentSharingActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
@@ -37,6 +36,7 @@ import org.monora.uprotocol.client.android.activity.TransferHistoryActivity
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver.Companion.ACTION_STOP_ALL_TASKS
 import org.monora.uprotocol.client.android.service.BackgroundService
@@ -137,12 +137,28 @@ class Notifications(val backend: NotificationBackend) {
         notification.show()
     }
 
-    fun notifyTransferRequest(
-        client: UClient, transfer: Transfer, acceptIntent: Intent, rejectIntent: Intent,
-        transferDetail: Intent?, message: String?,
-    ) {
-        val hash = Transfers.createUniqueTransferId(transfer.id, client.uid, TransferItem.Type.Incoming)
+    fun notifyTransferError() {
+
+    }
+
+    fun notifyTransferRequest(client: UClient, transfer: Transfer, items: List<UTransferItem>) {
+        val hash = transfer.id.toInt()
         val notification = backend.buildDynamicNotification(hash, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
+
+        val numberOfFiles = items.size
+        val acceptIntent: Intent = Intent(context, BgBroadcastReceiver::class.java)
+            .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
+            .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
+            .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
+        val rejectIntent = (acceptIntent.clone() as Intent)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
+        // TODO: 7/16/21 This should also have the 'transfer' extra.
+        val transferDetail: Intent = Intent(context, TransferHistoryActivity::class.java)
+        val message = if (numberOfFiles > 1) context.resources.getQuantityString(
+            R.plurals.ques_receiveMultipleFiles,
+            numberOfFiles, numberOfFiles
+        ) else items[0].name
         acceptIntent.putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
         rejectIntent.putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
         val positiveIntent: PendingIntent = PendingIntent.getService(
@@ -310,6 +326,9 @@ class Notifications(val backend: NotificationBackend) {
                 }
                 is Task.State.Running -> {
                     content = state.message
+                }
+                is Task.State.Error -> {
+                    content = state.error.message ?: context.getString(R.string.text_error)
                 }
                 is Task.State.Progress -> {
                     content = state.message

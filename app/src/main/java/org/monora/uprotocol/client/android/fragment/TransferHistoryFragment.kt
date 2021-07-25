@@ -17,6 +17,7 @@
  */
 package org.monora.uprotocol.client.android.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,8 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
+import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
+import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.viewholder.TransferDetailViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransfersViewModel
@@ -47,13 +50,32 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = TransferHistoryAdapter { transferDetail ->
+        val adapter = TransferHistoryAdapter { detail, clickType ->
             lifecycleScope.launch {
-                viewModel.getTransfer(transferDetail.id)?.let {
-                    findNavController().navigate(
-                        TransferHistoryFragmentDirections.actionTransferHistoryFragmentToNavTransferDetails(it)
+                val transfer = viewModel.getTransfer(detail.id) ?: return@launch
+                when (clickType) {
+                    ClickType.Default -> findNavController().navigate(
+                        TransferHistoryFragmentDirections.actionTransferHistoryFragmentToNavTransferDetails(transfer)
                     )
+                    ClickType.Reject -> {
+                        val client = viewModel.getClient(transfer.clientUid) ?: return@launch
+
+                        context?.let {
+                            it.sendBroadcast(
+                                Intent(it, BgBroadcastReceiver::class.java)
+                                    .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
+                                    .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
+                                    .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
+                                    .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
+                            )
+                        }
+                    }
+                    else -> {
+                        TODO("Implement task toggler")
+                    }
                 }
+
+
             }
         }
         val emptyContentViewModel = EmptyContentViewModel()
@@ -73,7 +95,7 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
 }
 
 class TransferHistoryAdapter(
-    private val clickListener: (TransferDetail) -> Unit
+    private val clickListener: (detail: TransferDetail, clickType: ClickType) -> Unit
 ) : ListAdapter<TransferDetail, ViewHolder>(TransferDetailItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         if (viewType == VIEW_TYPE_TRANSFER) {
@@ -93,6 +115,12 @@ class TransferHistoryAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return VIEW_TYPE_TRANSFER
+    }
+
+    enum class ClickType {
+        Default,
+        ToggleTask,
+        Reject,
     }
 
     companion object {

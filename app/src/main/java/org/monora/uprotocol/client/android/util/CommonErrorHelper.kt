@@ -19,6 +19,7 @@ package org.monora.uprotocol.client.android.util
 
 import android.content.Context
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.protocol.NoAddressException
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
 import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.core.io.DefectiveAddressListException
@@ -32,6 +33,7 @@ import java.net.ConnectException
 import java.net.NoRouteToHostException
 
 object CommonErrorHelper {
+    // TODO: 7/24/21 Return a string that only contains the message, and then remove the TaskMessage class
     fun messageOf(context: Context, exception: Exception): TaskMessage {
         val title: String
         val message: String
@@ -57,6 +59,10 @@ object CommonErrorHelper {
                     )
                     else -> context.getString(R.string.mesg_unknownErrorOccurred)
                 }
+            }
+            is NoAddressException -> {
+                title = context.getString(R.string.text_communicationError)
+                message = context.getString(R.string.mesg_clientOffline)
             }
             is DifferentRemoteClientException -> {
                 title = context.getString(R.string.text_communicationError)

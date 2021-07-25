@@ -153,15 +153,17 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
             }
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
-            val bridge = it.consume() ?: return@observe
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
+            val bridge = statefulBridge.consume() ?: return@observe
 
             createSnackbar(R.string.text_sending).show()
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    if (bridge.requestTextTransfer(this@TextEditorFragment.text)) {
-                        lifecycleScope.launch {
-                            createSnackbar(R.string.mesg_sent).show()
+                    bridge.use {
+                        if (it.requestTextTransfer(this@TextEditorFragment.text)) {
+                            lifecycleScope.launch {
+                                createSnackbar(R.string.mesg_sent).show()
+                            }
                         }
                     }
                 } catch (e: Exception) {

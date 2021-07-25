@@ -17,17 +17,29 @@
  */
 package org.monora.uprotocol.client.android.viewholder
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
+import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
 import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
 
 class TransferDetailViewHolder(private val binding: ListTransferBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(transferDetail: TransferDetail, clickListener: (TransferDetail) -> Unit) {
+    fun bind(transferDetail: TransferDetail, clickListener: (TransferDetail, ClickType) -> Unit) {
         binding.viewModel = TransferDetailContentViewModel(transferDetail)
         binding.container.setOnClickListener {
-            clickListener(transferDetail)
+            clickListener(transferDetail, ClickType.Default)
         }
+        binding.rejectButton.setOnClickListener {
+            clickListener(transferDetail, ClickType.Reject)
+        }
+
+        val toggleListener = View.OnClickListener {
+            clickListener(transferDetail, ClickType.ToggleTask)
+        }
+        binding.acceptButton.setOnClickListener(toggleListener)
+        binding.toggleButton.setOnClickListener(toggleListener)
+
         binding.executePendingBindings()
     }
 }

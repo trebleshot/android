@@ -27,7 +27,6 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
-import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,12 +49,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class NsdDaemon @Inject constructor(
-    @ApplicationContext val context: Context,
-    val appDatabase: AppDatabase,
+    @ApplicationContext context: Context,
     val persistenceProvider: PersistenceProvider,
     val connectionFactory: ConnectionFactory,
-    val bgBackend: Lazy<Backend>,
+    val backend: Backend,
 ) {
+
     private val onlineClientMap = ArrayMap<String, ClientRoute>()
 
     private val _onlineClients: MutableLiveData<List<ClientRoute>> = MutableLiveData()
@@ -224,7 +223,7 @@ class NsdDaemon @Inject constructor(
                 Log.v(TAG, "Resolved '$serviceName' on '$host'")
             }
 
-            bgBackend.get().applicationScope.launch(Dispatchers.IO) {
+            backend.applicationScope.launch(Dispatchers.IO) {
                 try {
                     val client = ClientLoader.load(connectionFactory, persistenceProvider, serviceInfo.host)
 

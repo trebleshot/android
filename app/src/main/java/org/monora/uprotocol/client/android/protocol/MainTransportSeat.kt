@@ -33,6 +33,7 @@ import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.IndexingParams
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Files
@@ -43,6 +44,7 @@ import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.communication.ContentException
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import org.monora.uprotocol.core.transfer.Transfers
@@ -51,8 +53,8 @@ import javax.inject.Inject
 class MainTransportSeat @Inject constructor(
     @ApplicationContext val context: Context,
     private val connectionFactory: ConnectionFactory,
-    private val persistenceProvider: PersistenceProvider,
     private val clientRepository: ClientRepository,
+    private val persistenceProvider: PersistenceProvider,
     private val transferRepository: TransferRepository,
     private val sharedTextRepository: SharedTextRepository,
     private val taskRepository: TaskRepository,
@@ -64,25 +66,17 @@ class MainTransportSeat @Inject constructor(
         groupId: Long,
         type: TransferItem.Type,
     ) {
-        val incoming = type == Incoming
         val transfer = runBlocking {
             transferRepository.getTransfer(groupId) ?: throw IllegalStateException("Missing group $groupId")
         }
         val detail = runBlocking {
             transferRepository.getTransferDetailDirect(groupId) ?: throw PersistenceException("Missing detail $groupId")
         }
-        val task = backend.register(
-            context.getString(if (incoming) R.string.text_receiving else R.string.text_sending),
+        val task = backend.registerTransfer(
             TransferParams(transfer, client, detail.size, detail.sizeOfDone),
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {
-                val transferOperation = MainTransferOperation(backend, params, transferRepository, state)
-
-                if (incoming) {
-                    Transfers.receive(bridge, transferOperation, groupId)
-                } else {
-                    Transfers.send(bridge, transferOperation, groupId)
-                }
+                runFileTransfer(bridge, backend, transferRepository, params, state)
             }
         }
 
@@ -106,11 +100,18 @@ class MainTransportSeat @Inject constructor(
             applicationScope.launch(Dispatchers.IO) {
                 try {
                     val saveLocation = Files.getApplicationDirectory(context).getUri().toString()
-                    val transfer = Transfer(params.groupId, client.clientUid, Incoming, saveLocation)
-                    val items = Transfers.toTransferItemList(params.jsonData).map {
+                    val transfer = Transfer(
+                        params.groupId, client.clientUid, Incoming, saveLocation, accepted = hasPin
+                    )
+                    val total: Int
+                    val items = Transfers.toTransferItemList(params.jsonData).also {
+                        total = it.size
+                    }.mapIndexed { index, it ->
                         val item = persistenceProvider.createTransferItemFor(
                             params.groupId, it.id, it.name, it.mimeType, it.size, it.directory, Incoming
                         )
+
+                        state.postValue(Task.State.Progress(it.name, total, index))
 
                         check(item is UTransferItem) {
                             "Unexpected type"
@@ -124,7 +125,32 @@ class MainTransportSeat @Inject constructor(
                         transferRepository.insert(items)
 
                         if (hasPin) {
-                            // TODO: 7/19/21 File transfer operation should be started when has PIN.
+                            val detail = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
+
+                            backend.registerTransfer(
+                                TransferParams(transfer, client, detail.size, detail.sizeOfDone)
+                            ) { applicationScope, params, state ->
+                                applicationScope.launch(Dispatchers.IO) {
+                                    state.postValue(
+                                        Task.State.Running(backend.context.getString(R.string.text_connectingToClient))
+                                    )
+
+                                    try {
+                                        val addresses = clientRepository.getInetAddresses(params.client.clientUid)
+
+                                        CommunicationBridge.Builder(
+                                            connectionFactory, persistenceProvider, addresses
+                                        ).apply {
+                                            setClearBlockedStatus(true)
+                                            setClientUid(params.client.clientUid)
+                                        }.connect().use {
+                                            it.startTransfer(backend, transferRepository, params, state)
+                                        }
+                                    } catch (e: Exception) {
+                                        state.postValue(Task.State.Error(e))
+                                    }
+                                }
+                            }
                         } else {
                             backend.notifyFileRequest(client, transfer, items)
                         }
@@ -136,20 +162,19 @@ class MainTransportSeat @Inject constructor(
         }
     }
 
-    override fun handleFileTransferState(client: Client, groupId: Long, isAccepted: Boolean) {
-        runBlocking {
-            val transfer = transferRepository.getTransfer(groupId)
+    override fun handleFileTransferRejection(client: Client, groupId: Long): Boolean {
+        return runBlocking {
+            val transfer = transferRepository.getTransfer(groupId) ?: throw ContentException(
+                ContentException.Error.NotFound
+            )
 
-            if (transfer == null || transfer.clientUid != client.clientUid) {
-                return@runBlocking
-            }
-
-            if (isAccepted) {
-                transfer.accepted = true
-                transferRepository.update(transfer)
-            } else {
+            if (transfer.clientUid != client.clientUid) {
+                throw ContentException(ContentException.Error.NotAccessible)
+            } else if (!transfer.accepted) {
                 transferRepository.delete(transfer)
+                return@runBlocking true
             }
+            false
         }
     }
 

@@ -96,12 +96,13 @@ abstract class DocumentFile(private val parent: DocumentFile?, val originalUri: 
 
         @Throws(FileNotFoundException::class)
         fun fromUri(context: Context, uri: Uri, prepareTree: Boolean): DocumentFile {
-            if (Build.VERSION.SDK_INT >= 21)
+            if (Build.VERSION.SDK_INT >= 21) {
                 try {
                     return TreeDocumentFile.from(null, context, if (prepareTree) prepareUri(uri) else uri, uri)
                 } catch (ignored: Exception) {
                     // expected because it might not be TreeDocumentFile
                 }
+            }
 
             try {
                 return StreamDocumentFile(StreamInfo.from(context, uri), uri)

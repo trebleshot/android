@@ -36,8 +36,8 @@ import org.monora.uprotocol.core.transfer.TransferOperation
 
 class MainTransferOperation(
     private val backend: Backend,
-    private val transferParams: TransferParams,
     private val transferRepository: TransferRepository,
+    private val transferParams: TransferParams,
     private val state: MutableLiveData<Task.State>,
 ) : TransferOperation {
     var speedCalcTime = 0L

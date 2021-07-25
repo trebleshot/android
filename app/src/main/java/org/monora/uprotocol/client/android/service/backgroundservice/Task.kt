@@ -33,6 +33,8 @@ class Task(val name: String, val params: Any, val job: Job, state: LiveData<Stat
 
         class Progress(val message: String, val total: Int, val progress: Int) : State(running = true)
 
+        class Error(val error: Exception): State()
+
         object Finished : State()
     }
 

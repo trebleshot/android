@@ -108,42 +108,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         userProfileBinding.executePendingBindings()
-
-        /*backend.subscribeToTask {
-            if (it.params is TransferParams && it.params.id == 1L) it.params else null
-        }.observe(this) {
-            if (it == null) {
-                Log.d(TAG, "onCreate: The task doesn't exist yet")
-            } else {
-                Log.d(TAG, "onCreate: Change on task ${it.task.name} with params.id=${it.exported.id}")
-            }
-        }
-
-        if (!backend.hasTask { it.params is TransferParams && it.params.id == 1L }) {
-            backend.register(
-                "Grinding",
-                TransferParams(1, userProfileViewModel.clientStatic)
-            ) { applicationScope, params, state ->
-                applicationScope.launch {
-                    repeat(600) {
-                        delay(50)
-                        state.postValue(Task.State.Progress("Hello", 600, it))
-                    }
-                }
-            }
-        }
-
-        backend.register(
-            "Powdering",
-            TransferParams(2, userProfileViewModel.clientStatic)
-        ) { applicationScope, params, state ->
-            applicationScope.launch {
-                repeat(600) {
-                    delay(50)
-                    state.postValue(Task.State.Running("Miyazaki"))
-                }
-            }
-        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

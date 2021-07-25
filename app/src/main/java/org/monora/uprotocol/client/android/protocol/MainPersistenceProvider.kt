@@ -63,7 +63,10 @@ class MainPersistenceProvider @Inject constructor(
     private val transferRepository: TransferRepository,
 ) : PersistenceProvider {
     override fun approveInvalidationOfCredentials(client: Client): Boolean {
-        Log.d(TAG, "approveInvalidationOfCredentials: ${client.clientUid}")
+        check(client is UClient) {
+            "Unexpected implementation type"
+        }
+
         return false
     }
 
@@ -103,7 +106,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getClient(): UClient = userDataRepository.clientStatic()
 
-    override fun getClientFor(uid: String): UClient? = runBlocking { clientRepository.getSingle(uid) }
+    override fun getClientFor(uid: String): UClient? = runBlocking { clientRepository.getDirect(uid) }
 
     override fun getClientNickname(): String = userDataRepository.clientNicknameStatic()
 

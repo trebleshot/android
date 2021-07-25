@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
+import org.monora.uprotocol.client.android.protocol.NoAddressException
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -49,19 +50,19 @@ class ClientConnectionViewModel @Inject internal constructor(
 
         try {
             if (addresses.isEmpty()) {
-                state.postValue(ConnectionState.NoAddress())
-            } else {
-                state.postValue(ConnectionState.Connecting())
-
-                val bridge = CommunicationBridge.Builder(
-                    connectionFactory, persistenceProvider, addresses
-                ).apply {
-                    setClearBlockedStatus(true)
-                    setClientUid(client.clientUid)
-                }
-
-                state.postValue(ConnectionState.Connected(bridge.connect()))
+                throw NoAddressException()
             }
+
+            state.postValue(ConnectionState.Connecting())
+
+            val bridge = CommunicationBridge.Builder(
+                connectionFactory, persistenceProvider, addresses
+            ).apply {
+                setClearBlockedStatus(true)
+                setClientUid(client.clientUid)
+            }
+
+            state.postValue(ConnectionState.Connected(bridge.connect()))
         } catch (e: Exception) {
             state.postValue(ConnectionState.Error(e))
         } finally {
@@ -74,8 +75,6 @@ sealed class ConnectionState(val isConnecting: Boolean = false, val isError: Boo
     class Connected(val bridge: CommunicationBridge) : ConnectionState()
 
     class Error(val e: Exception) : ConnectionState(isError = true)
-
-    class NoAddress : ConnectionState(isError = true)
 
     class Connecting : ConnectionState(isConnecting = true)
 }

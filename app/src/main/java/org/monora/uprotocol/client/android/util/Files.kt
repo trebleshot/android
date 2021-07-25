@@ -41,6 +41,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
+import java.util.*
 
 object Files {
     @Throws(Exception::class)
@@ -101,14 +102,15 @@ object Files {
             return context.externalCacheDir!!
 
         var primaryDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        if (!primaryDir.isDirectory && !primaryDir.mkdirs() || !primaryDir.canWrite()) primaryDir =
-            Environment.getExternalStorageDirectory()
+        if (!primaryDir.isDirectory && !primaryDir.mkdirs() || !primaryDir.canWrite()) {
+            primaryDir = Environment.getExternalStorageDirectory()
+        }
         return File(primaryDir.toString() + File.separator + context.getString(R.string.text_appName))
     }
 
     fun getFileFormat(fileName: String): String? {
         val lastDot = fileName.lastIndexOf('.')
-        return if (lastDot >= 0) fileName.substring(lastDot + 1).toLowerCase() else null
+        return if (lastDot >= 0) fileName.substring(lastDot + 1).lowercase(Locale.getDefault()) else null
     }
 
     @Throws(IOException::class)

@@ -201,11 +201,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/butn_reject"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/waitingApprovalText"
             app:layout_constraintEnd_toEndOf="@+id/optionsButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/showFilesButton"
             app:layout_constraintTop_toBottomOf="@+id/floatingActionButton" />
+
+        <TextView
+            style="@style/TextAppearance.Primary"
+            android:id="@+id/waitingApprovalText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/waiting_approval"
+            android:gravity="center"
+            android:visibility="@{transferViewModel.waitingApproval ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/optionsButton"
+            app:layout_constraintTop_toBottomOf="@+id/rejectButton"
+            app:layout_constraintStart_toStartOf="@+id/showFilesButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

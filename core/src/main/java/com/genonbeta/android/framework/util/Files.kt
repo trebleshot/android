@@ -25,7 +25,11 @@ import android.os.Build
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
-import com.genonbeta.android.framework.io.*
+import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.LocalDocumentFile
+import com.genonbeta.android.framework.io.StreamDocumentFile
+import com.genonbeta.android.framework.io.StreamInfo
+import com.genonbeta.android.framework.io.TreeDocumentFile
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -128,13 +132,11 @@ object Files {
     @Throws(FileNotFoundException::class)
     fun fromUri(context: Context, uri: Uri): DocumentFile {
         val uriType = uri.toString()
-        return if (uriType.startsWith("file")) DocumentFile.fromFile(
-            File(
-                URI.create(
-                    uriType
-                )
-            )
-        ) else DocumentFile.fromUri(context, uri, false)
+        return if (uriType.startsWith("file")) {
+            DocumentFile.fromFile(File(URI.create(uriType)))
+        } else {
+            DocumentFile.fromUri(context, uri, false)
+        }
     }
 
     fun formatLength(length: Long, kilo: Boolean = false): String {
@@ -147,7 +149,7 @@ object Files {
         )
     }
 
-    fun geActionTypeToView(type: String?): String {
+    fun getActionTypeToView(type: String?): String {
         return if ("application/vnd.android.package-archive" == type && Build.VERSION.SDK_INT >= 14) {
             Intent.ACTION_INSTALL_PACKAGE
         } else {
@@ -175,7 +177,7 @@ object Files {
 
     fun getOpenIntent(context: Context, file: DocumentFile): Intent {
         return if (Build.VERSION.SDK_INT >= 24 || Build.VERSION.SDK_INT == 23
-            && Intent.ACTION_INSTALL_PACKAGE != geActionTypeToView(file.getType())
+            && Intent.ACTION_INSTALL_PACKAGE != getActionTypeToView(file.getType())
         ) {
             getOpenIntent(getSecureUriSilently(context, file), file.getType())
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -184,7 +186,7 @@ object Files {
     }
 
     fun getOpenIntent(url: Uri?, type: String?): Intent {
-        return Intent(geActionTypeToView(type)).setDataAndType(url, type)
+        return Intent(getActionTypeToView(type)).setDataAndType(url, type)
     }
 
     @Throws(IOException::class)
@@ -264,7 +266,7 @@ object Files {
     }
 
     fun openUri(context: Context, uri: Uri): Boolean {
-        return openUri(context, getOpenIntent(uri, context.getContentResolver().getType(uri)))
+        return openUri(context, getOpenIntent(uri, context.contentResolver.getType(uri)))
     }
 
     fun openUri(context: Context, intent: Intent): Boolean {

@@ -70,9 +70,6 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
                     it.e.printStackTrace()
                     binding.textOffline.text = CommonErrorHelper.messageOf(requireContext(), it.e).message
                 }
-                is ConnectionState.NoAddress -> {
-                    binding.textOffline.text = getString(R.string.mesg_clientOffline)
-                }
                 is ConnectionState.Connecting -> {
                 }
             }

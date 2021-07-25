@@ -65,7 +65,6 @@ class StreamInfo private constructor(
                     uri, null, null, null, null
                 )?.use { cursor ->
                     if (cursor.moveToFirst()) {
-
                         val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                         val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
 

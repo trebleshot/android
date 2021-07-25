@@ -126,16 +126,18 @@ class SharingViewModel @Inject internal constructor(
 
         consumer = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = bridge.requestFileTransfer(transfer.id, contents) {
-                    runBlocking {
-                        transferRepository.insert(transfer)
+                bridge.use {
+                    val result = it.requestFileTransfer(transfer.id, contents) {
+                        runBlocking {
+                            transferRepository.insert(transfer)
+                        }
                     }
-                }
 
-                if (result) {
-                    _state.postValue(SharingState.Success(transfer))
-                } else {
-                    throw ProtocolException()
+                    if (result) {
+                        _state.postValue(SharingState.Success(transfer))
+                    } else {
+                        throw ProtocolException()
+                    }
                 }
             } catch (e: Exception) {
                 _state.postValue(SharingState.Error(e))

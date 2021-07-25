@@ -50,8 +50,8 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
             )
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
-            val bridge = it.consume() ?: return@observe
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
+            val bridge = statefulBridge.consume() ?: return@observe
 
             binding.progressBar.visibility = View.VISIBLE
             binding.button.isEnabled = false
@@ -59,7 +59,9 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
 
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val result = bridge.requestAcquaintance()
+                    val result = bridge.use {
+                        it.requestAcquaintance()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 } finally {

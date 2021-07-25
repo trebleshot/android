@@ -18,68 +18,63 @@
 
 package org.monora.uprotocol.client.android.util
 
-import android.annotation.SuppressLint
-import androidx.core.util.ObjectsCompat
 import com.genonbeta.android.framework.io.DocumentFile
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.transfer.TransferItem
+import java.io.File
 
 /**
  * created by: veli
  * date: 06.04.2018 17:01
  */
 object Transfers {
-    private val TAG = Transfers::class.simpleName
-
-    fun createFolderStructure(
-        list: MutableList<TransferItem>, groupId: Long, folder: DocumentFile,
-        directory: String?, task: Task,
+    fun createStructure(
+        list: MutableList<UTransferItem>,
+        progress: Progress,
+        groupId: Long,
+        contextFile: DocumentFile,
+        directory: String? = null,
+        progressCallback: (progress: Progress, file: DocumentFile) -> Unit
     ) {
-        val files = folder.listFiles()
-        if (files.isEmpty()) return
-        /*
-        taskRegistry.progress.increaseTotalBy(files.size)
-        for (file in files) {
-            taskRegistry.throwIfStopped()
-            taskRegistry.ongoingContent = file.getName()
-            taskRegistry.progress.increaseBy(1)
-            if (file.isDirectory()) createFolderStructure(
-                list, groupId, file, directory?.let { it + separator + file.getName() }, taskRegistry
-            ) else {
-                list.add(
-                    UTransferItem(
-                        0,
-                        groupId,
-                        file.getName(),
-                        file.getType(),
-                        file.getLength(),
-                        directory,
-                        file.getUri().toString(),
-                        TransferItem.Type.Outgoing,
-                        PersistenceProvider.STATE_PENDING,
-                    )
+        if (contextFile.isFile()) {
+            progress.index += 1
+            progressCallback(progress, contextFile)
+
+            val id = progress.index.toLong() // With 'groupId', this will become unique (enough).
+
+            list.add(
+                UTransferItem(
+                    id,
+                    groupId,
+                    contextFile.getName(),
+                    contextFile.getType(),
+                    contextFile.getLength(),
+                    directory,
+                    contextFile.getUri().toString(),
+                    TransferItem.Type.Outgoing,
                 )
-            }
+            )
+        } else if (!contextFile.isDirectory()) {
+            return
         }
 
-         */
-    }
+        val files = contextFile.listFiles()
+        progress.total += files.size
+        progressCallback(progress, contextFile)
 
-    @SuppressLint("DefaultLocale")
-    fun createUniqueTransferId(groupId: Long, deviceId: String, type: TransferItem.Type): Int {
-        return ObjectsCompat.hash(groupId, deviceId, type)
-    }
-
-    fun pauseTransfer(activity: Activity, transfer: Transfer) {
-        pauseTransfer(activity, transfer.id, transfer.clientUid, transfer.type)
-    }
-
-    fun pauseTransfer(activity: Activity, groupId: Long, deviceId: String, type: TransferItem.Type) {
-        // TODO: 2/26/21 Give this backend, please
-        /*App.interruptTasksBy(
-            activity, FileTransferTask.identifyWith(groupId, deviceId, type), true
-        )*/
+        for (file in files) {
+            createStructure(
+                list,
+                progress,
+                groupId,
+                file,
+                directory?.let {
+                    it + File.separator + file.getName()
+                },
+                progressCallback,
+            )
+        }
     }
 }
+
+data class Progress(var total: Int, var index: Int = 0)

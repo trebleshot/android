@@ -26,6 +26,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.lifecycle.LifecycleService
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
@@ -33,72 +35,68 @@ import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.protocol.registerTransfer
+import org.monora.uprotocol.client.android.protocol.rejectTransfer
+import org.monora.uprotocol.client.android.protocol.startTransfer
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.NotificationBackend
+import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
-import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class BgBroadcastReceiver : BroadcastReceiver() {
     @Inject
+    lateinit var backend: Backend
+
+    @Inject
     lateinit var clientRepository: ClientRepository
 
     @Inject
-    lateinit var transferRepository: TransferRepository
-
-    @Inject
-    lateinit var backend: Backend
+    lateinit var connectionFactory: ConnectionFactory
 
     @Inject
     lateinit var persistenceProvider: PersistenceProvider
 
     @Inject
-    lateinit var connectionFactory: ConnectionFactory
+    lateinit var transferRepository: TransferRepository
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ACTION_FILE_TRANSFER -> {
-                val device: UClient? = intent.getParcelableExtra(EXTRA_CLIENT)
+                val client: UClient? = intent.getParcelableExtra(EXTRA_CLIENT)
                 val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
                 val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
                 val isAccepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
 
                 backend.services.notifications.backend.cancel(notificationId)
 
-                if (device != null && transfer != null) try {
-                    /*
-                    GlobalScope.launch(Dispatchers.IO) {
-                        val task = FileTransferStarterTaskRegistry.createFrom(
-                            connectionFactory,
-                            persistenceProvider,
-                            clientRepository,
-                            transfer,
-                            device,
-                            TransferItem.Type.Incoming
-                        )
+                if (client != null && transfer != null) backend.applicationScope.launch(Dispatchers.IO) {
+                    val details = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
 
-                        try {
-                            CommunicationBridge.Builder(
-                                connectionFactory, persistenceProvider, task.addressList
-                            ).apply {
-                                setClientUid(device.clientUid)
-                            }.connect().use { bridge ->
-                                bridge.requestNotifyTransferState(transfer.id, isAccepted)
+                    backend.registerTransfer(
+                        TransferParams(transfer, client, details.size, details.sizeOfDone)
+                    ) { applicationScope, params, state ->
+                        applicationScope.launch(Dispatchers.IO) {
+                            try {
+                                val addresses = clientRepository.getInetAddresses(client.clientUid)
+
+                                CommunicationBridge.Builder(connectionFactory, persistenceProvider, addresses).apply {
+                                    setClearBlockedStatus(true)
+                                    setClientUid(client.clientUid)
+                                }.connect().use {
+                                    if (isAccepted) {
+                                        it.startTransfer(backend, transferRepository, params, state)
+                                    } else {
+                                        it.rejectTransfer(transferRepository, transfer)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                state.postValue(Task.State.Error(e))
                             }
-                        } catch (ignored: Exception) {
                         }
-
-                        if (isAccepted) {
-                            backend.run(task)
-                        }
-                    }
-
-                     */
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    if (isAccepted) {
-                        backend.services.notifications.showToast(R.string.mesg_somethingWentWrong)
                     }
                 }
             }
@@ -127,36 +125,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                     Toast.makeText(context, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
                 }
             }
-            ACTION_START_TRANSFER -> {
-                val client: UClient? = intent.getParcelableExtra(EXTRA_CLIENT)
-                val transfer: Transfer? = intent.getParcelableExtra(EXTRA_TRANSFER)
-                val type = intent.getSerializableExtra(EXTRA_TRANSFER_TYPE) as TransferItem.Type?
-
-                if (client != null && transfer != null && type != null) try {
-                    /*
-                    val task = backend.findTaskBy(
-                        FileTransferTaskRegistry.identifyWith(transfer.id, client.uid, type)
-                    ) as FileTransferTaskRegistry?
-
-                    if (task == null) taskManager.applicationScope.launch {
-                        backend.run(
-                            FileTransferStarterTaskRegistry.createFrom(
-                                connectionFactory, persistenceProvider, clientRepository, transfer, client, type
-                            )
-                        )
-                    } else task.operation.ongoing?.let {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.mesg_groupOngoingNotice, it.itemName),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                     */
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
             ACTION_STOP_ALL_TASKS -> backend.cancelAllTasks()
         }
     }
@@ -170,8 +138,6 @@ class BgBroadcastReceiver : BroadcastReceiver() {
 
         const val ACTION_PIN_USED = "org.monora.uprotocol.client.android.transaction.action.PIN_USED"
 
-        const val ACTION_START_TRANSFER = "org.monora.uprotocol.client.android.transaction.action.START_TRANSFER"
-
         const val ACTION_STOP_ALL_TASKS = "org.monora.uprotocol.client.android.transaction.action.STOP_ALL_TASKS"
 
         const val EXTRA_TEXT_MODEL = "extraText"
@@ -181,7 +147,5 @@ class BgBroadcastReceiver : BroadcastReceiver() {
         const val EXTRA_TRANSFER = "extraTransfer"
 
         const val EXTRA_ACCEPTED = "extraAccepted"
-
-        const val EXTRA_TRANSFER_TYPE = "extraTransferType"
     }
 }

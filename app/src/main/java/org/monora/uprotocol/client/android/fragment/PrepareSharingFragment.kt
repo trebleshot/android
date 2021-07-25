@@ -27,10 +27,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import com.genonbeta.android.framework.io.StreamInfo
+import com.genonbeta.android.framework.util.Files
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +38,8 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutPrepareSharingBinding
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.client.android.util.Progress
+import org.monora.uprotocol.client.android.util.Transfers
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -77,7 +77,6 @@ class PrepareSharingFragment : Fragment(R.layout.layout_prepare_sharing) {
                 }
             }
         }
-
     }
 }
 
@@ -92,21 +91,24 @@ class PreparationViewModel @Inject internal constructor() : ViewModel() {
         if (consumer != null) return
 
         consumer = viewModelScope.launch(Dispatchers.IO) {
-            val id = Random.nextLong()
+            val groupId = Random.nextLong()
             val list = mutableListOf<UTransferItem>()
+            val progress = Progress(contents.size)
 
-            contents.forEachIndexed { index, it ->
-                StreamInfo.from(context, it).runCatching {
-                    shared.postValue(PreparationState.Progress(index, contents.size, name))
-                    list.add(
-                        UTransferItem(
-                            index.toLong(), id, name, mimeType, size, null, uri.toString(), TransferItem.Type.Outgoing
-                        )
-                    )
+            contents.forEach {
+                Files.fromUri(context, it).runCatching {
+                    Transfers.createStructure(
+                        list,
+                        progress,
+                        groupId,
+                        this,
+                    ) { progress, file ->
+                        shared.postValue(PreparationState.Progress(progress.index, progress.total, file.getName()))
+                    }
                 }
             }
 
-            shared.postValue(PreparationState.Ready(id, list))
+            shared.postValue(PreparationState.Ready(groupId, list))
 
             consumer = null
         }

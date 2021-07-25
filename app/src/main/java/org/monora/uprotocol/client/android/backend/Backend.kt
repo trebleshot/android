@@ -136,40 +136,12 @@ class Backend @Inject constructor(
 
     fun notifyFileRequest(client: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
         val activity = foregroundActivity
-        val numberOfFiles = itemList.size
-        val acceptIntent: Intent = Intent(context, BgBroadcastReceiver::class.java)
-            .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
-            .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
-            .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
-            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
-        val rejectIntent = (acceptIntent.clone() as Intent)
-            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
-        // TODO: 7/16/21 This should also have the 'transfer' extra.
-        val transferDetail: Intent = Intent(context, TransferHistoryActivity::class.java)
-        val message = if (numberOfFiles > 1) context.resources.getQuantityString(
-            R.plurals.ques_receiveMultipleFiles,
-            numberOfFiles, numberOfFiles
-        ) else itemList[0].name
 
         if (activity == null) {
-            services.notifications.notifyTransferRequest(
-                client, transfer, acceptIntent, rejectIntent, transferDetail, message
-            )
+            services.notifications.notifyTransferRequest(client, transfer, itemList)
         } else {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-                .setTitle(context.getString(R.string.text_deviceFileTransferRequest, client.clientNickname))
-                .setMessage(message)
-                .setCancelable(false)
-                .setNeutralButton(R.string.butn_show) { _: DialogInterface?, _: Int ->
-                    activity.startActivity(transferDetail)
-                }
-                .setNegativeButton(R.string.butn_reject) { _: DialogInterface?, _: Int ->
-                    ContextCompat.startForegroundService(activity, rejectIntent)
-                }
-                .setPositiveButton(R.string.butn_accept) { _: DialogInterface?, _: Int ->
-                    ContextCompat.startForegroundService(activity, acceptIntent)
-                }
-            activity.runOnUiThread(Runnable { builder.show() })
+            // TODO: 7/25/21 Also insert the transfer details and navigate to transfer details fragment
+            activity.startActivity(Intent(activity, TransferHistoryActivity::class.java))
         }
     }
 
@@ -220,6 +192,9 @@ class Backend @Inject constructor(
                                 }
                                 is Task.State.Running, is Task.State.Progress -> {
                                     changesPosted = publishTaskNotifications(false)
+                                }
+                                is Task.State.Error -> {
+                                    changesPosted = false
                                 }
                             }
 
