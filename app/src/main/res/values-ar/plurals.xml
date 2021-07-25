@@ -1,19 +1,75 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
-<resources></resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="text_gridRow">
+        <item quantity="zero">صف واحد</item>
+        <item quantity="one">صف واحد</item>
+        <item quantity="two">صفين</item>
+        <item quantity="few">%d صفوف</item>
+        <item quantity="many">%d صفوف</item>
+        <item quantity="other">%d صفوف</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="zero">تم حذف ملف</item>
+        <item quantity="one">تم حذف ملف واحد</item>
+        <item quantity="two">تم حذف ملفان</item>
+        <item quantity="few">تم حذف %d ملفات</item>
+        <item quantity="many">تم حذف %d ملف</item>
+        <item quantity="other">تم حذف %d ملف</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="zero">منذ دقيقة</item>
+        <item quantity="one">منذ دقيقة واحدة</item>
+        <item quantity="two">منذ دقيقتان</item>
+        <item quantity="few">منذ %d دقائق</item>
+        <item quantity="many">منذ %d دقيقة</item>
+        <item quantity="other">منذ %d دقيقة</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="zero">منذ ثانية</item>
+        <item quantity="one">منذ ثانية</item>
+        <item quantity="two">منذ ثانيتان</item>
+        <item quantity="few">منذ %d ثانية</item>
+        <item quantity="many">منذ %d ثانية</item>
+        <item quantity="other">منذ %d ثانية</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="zero">ملف واحد</item>
+        <item quantity="one">ملف واحد</item>
+        <item quantity="two">ملفين</item>
+        <item quantity="few">%d ملف</item>
+        <item quantity="many">%d ملف</item>
+        <item quantity="other">%d ملف</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="zero">هل تتلقى هذا الملف؟</item>
+        <item quantity="one">هل تريد تلقى هذا الملف؟</item>
+        <item quantity="two">هل تريد تلقى هذا الملفين؟</item>
+        <item quantity="few">هل تريد تلقى %d ملف؟</item>
+        <item quantity="many">هل تريد تلقى %d ملف؟</item>
+        <item quantity="other">هل تريد تلقى %d ملف؟</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="zero">%d اتصال متاح</item>
+        <item quantity="one">%d اتصال متاح</item>
+        <item quantity="two">%d اتصال متاح</item>
+        <item quantity="few">%d اتصال متاح</item>
+        <item quantity="many">%d اتصال متاح</item>
+        <item quantity="other">%d اتصال متاح</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="zero">ستتم إزالة هذا المهمة المعلقة</item>
+        <item quantity="one">ستتم إزالة هذا المهمة المعلقة</item>
+        <item quantity="two">ستتم إزالة هذه المهمتين المعلقتان</item>
+        <item quantity="few">ستتم إزالة %d مهمة معلقة</item>
+        <item quantity="many">ستتم إزالة %d مهمة معلقة</item>
+        <item quantity="other">ستتم إزالة %d مهمة معلقة</item>
+    </plurals>
+    <plurals name="ques_deleteFile">
+        <item quantity="zero">هل تريد حذف هذا الملف؟</item>
+        <item quantity="one">هل تريد حذف هذا الملف؟</item>
+        <item quantity="two">هل تريد حذف هذا الملف؟</item>
+        <item quantity="few">هل تريد حذف %d ملف؟</item>
+        <item quantity="many">هل تريد حذف %d ملف؟</item>
+        <item quantity="other">هل تريد حذف هذا الملف؟</item>
+    </plurals>
+</resources>

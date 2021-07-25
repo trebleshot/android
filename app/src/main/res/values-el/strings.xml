@@ -1,19 +1,199 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
-<resources></resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="butn_showAsQrCode">Προβολή ως κωδικός QR</string>
+    <string name="mesg_qrScannerTextMode">Οι κωδικοί QR θα εμφανίζονται ως κείμενο</string>
+    <string name="mesg_textStreamSaved">Κείμενο Αποθηκεύτηκε</string>
+    <string name="text_interfaceVPN">Διακομιστής VPN</string>
+    <string name="butn_asLink">Ως ένα σύνδεσμο</string>
+    <string name="butn_asApk">Ως APK</string>
+    <string name="ques_shareAsApkOrLink">Κοινοποίηση ως APK ή σύνδεσμο;</string>
+    <string name="text_listEmptyConnection">Τα δίκτυα που συνδέεστε θα εμφανίζονται εδώ</string>
+    <string name="text_or">ή</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_transferSharedOnBrowser">Κοινοποίηση στον περιηγητή</string>
+    <string name="butn_shareOnBrowser">Κοινοποιήστε στον περιηγητή</string>
+    <string name="butn_webShare">Κοινοποιήστε μέσω περιηγητή</string>
+    <string name="butn_enterIpAddress">Εισάγετε Διεύθυνση IP</string>
+    <string name="text_welcome">Καλωσήρθατε</string>
+    <string name="butn_change">Αλλαγή</string>
+    <string name="mesg_added">Προστέθηκε</string>
+    <string name="mesg_removed">Αφαιρέθηκε</string>
+    <string name="butn_never">Ποτέ</string>
+    <string name="butn_fixConnection">Διόρθωση σύνδεσης</string>
+    <string name="butn_choose">Επιλέξτε</string>
+    <string name="butn_help">Βοήθεια</string>
+    <string name="text_search">Αναζήτηση</string>
+    <string name="butn_no">Όχι</string>
+    <string name="butn_yes">Ναι</string>
+    <string name="text_send">Αποστολή</string>
+    <string name="text_recentFiles">Πρόσφατα Αρχεία</string>
+    <string name="text_documents">Έγγραφα</string>
+    <string name="text_downloads">Λήψεις</string>
+    <string name="butn_start">Αρχή</string>
+    <string name="text_sendText">Αποστολή κειμένου</string>
+    <string name="mesg_sent">Αποστολή</string>
+    <string name="butn_scanQrCode">Σάρωση κωδικό QR</string>
+    <string name="text_transfers">Μεταφορές</string>
+    <string name="butn_retry">Ξαναδοκίμασε</string>
+    <string name="butn_pause">Παύση</string>
+    <string name="mesg_donationSuccessful">Ευχαριστούμε!</string>
+    <string name="text_file">Αρχείο</string>
+    <string name="text_connect">Σύνδεση</string>
+    <string name="text_network">Δίκτυο</string>
+    <string name="text_connectDevices">Σύνδεση συσκευών</string>
+    <string name="butn_addDevices">Προσθήκη συσκευών</string>
+    <string name="text_files">Αρχεία</string>
+    <string name="text_default">Προεπιλογή</string>
+    <string name="text_groupByFolder">Φάκελος</string>
+    <string name="text_groupByArtist">Καλλιτέχνης</string>
+    <string name="text_groupByAlbum">Άλμπουμ</string>
+    <string name="text_groupByDate">Ημερομηνία</string>
+    <string name="text_groupByNothing">Τίποτα</string>
+    <string name="text_photo">Φωτογραφία</string>
+    <string name="butn_groupBy">Ομαδοποίηση κατά</string>
+    <string name="text_contributors">Έγινε δυνατό από</string>
+    <string name="text_translateTrebleshot">Βοηθήστε να μεταφραστεί</string>
+    <string name="butn_copyHere">Αντιγραφή εδώ</string>
+    <string name="butn_rename">Μετονομασία</string>
+    <string name="text_rename">Μετονομασία</string>
+    <string name="text_renameMultipleItems">Μετονομασία πολλαπλών στοιχείων</string>
+    <string name="text_notificationSettings">Ρυθμίσεις ειδοποιήσεων</string>
+    <string name="text_emptySearchResult">Κανένα αποτέλεσμα για το %s;</string>
+    <string name="text_internalStorage">Εσωτερική αποθήκευση</string>
+    <string name="text_listEmptyVideo">Κανένα βίντεο εδώ</string>
+    <string name="text_listEmptyApp">Καμία εφαρμογή εδώ</string>
+    <string name="text_listEmptyImage">Καμία φωτογραφία εδώ</string>
+    <string name="text_listEmptyFiles">Κανένα αρχείο εδώ</string>
+    <string name="butn_exit">Έξοδος</string>
+    <string name="text_secondCountShort">%d δευ</string>
+    <string name="text_minuteCountShort">%d λεπ</string>
+    <string name="text_hourCountShort">%d ωρ</string>
+    <string name="text_dayCountShort">%d ημ</string>
+    <string name="text_monthCountShort">%d μην</string>
+    <string name="text_yearCountShort">%d χρ</string>
+    <string name="text_deletingFilesOngoing">Διαγραφή επιλεγμένων αρχείων</string>
+    <string name="butn_resetToDefault">Επαναφορά στο προεπιλεγμένο</string>
+    <string name="text_sortBySize">Μέγεθος</string>
+    <string name="text_sortByDate">Ημερομηνία</string>
+    <string name="text_sortByName">Όνομα</string>
+    <string name="butn_sortBy">Ταξινόμηση κατά</string>
+    <string name="mesg_fileSaved">Αρχείο αποθηκεύτηκε</string>
+    <string name="text_location">Τοποθεσία</string>
+    <string name="butn_selectAll">Επιλογή όλων</string>
+    <string name="butn_check">Έλεγχος</string>
+    <string name="butn_locationSettings">Τοποθεσία</string>
+    <string name="butn_enable">Ενεργοποίηση</string>
+    <string name="butn_skip">Παράβλεψη</string>
+    <string name="butn_disconnect">Αποσύνδεση</string>
+    <string name="butn_connect">Σύνδεση</string>
+    <string name="text_timeJustNow">Μόλις τώρα</string>
+    <string name="mesg_textShareLimit">Μόνο ένα κείμενο μπορεί να μοιραστεί ανά φορά</string>
+    <string name="butn_save">Αποθήκευση</string>
+    <string name="butn_update">Αναβάθμιση</string>
+    <string name="mesg_textSaveNotice">Αποθηκεύστε το κείμενο ή πατήστε ξανά για έξοδο</string>
+    <string name="butn_download">Λήψη</string>
+    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="butn_copyToClipboard">Αντιγραφή στο πρόχειρο</string>
+    <string name="text_flagRemoved">Αφαιρέθηκε</string>
+    <string name="text_requestPermissionStorage">Άδεια αποθήκευσης</string>
+    <string name="butn_ask">Ρωτήστε</string>
+    <string name="butn_connectionList">Συνδέσεις</string>
+    <string name="text_shareTextShort">Κείμενο</string>
+    <string name="text_interfaceEthernet">Ethernet</string>
+    <string name="text_interfaceBluetooth">Bluetooth</string>
+    <string name="text_interfaceWireless">Wi-Fi</string>
+    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
+    <string name="text_unknown">Άγνωστο</string>
+    <string name="text_version">Έκδοση</string>
+    <string name="text_savingDetails">Αποθήκευση λεπτομέρειων</string>
+    <string name="butn_show">Προβολή</string>
+    <string name="ques_checkOldFiles">Μετακίνηση αρχείων;</string>
+    <string name="text_chooseFile">Επιλογή αρχείου</string>
+    <string name="text_chooseFolder">Επιλογή φακέλου</string>
+    <string name="butn_createFolder">Δημιουργία φακέλου</string>
+    <string name="text_transactionDetails">Λεπτομέρειες</string>
+    <string name="text_fileMime">Τύπος αρχείου</string>
+    <string name="text_fileSize">Μέγεθος αρχείου</string>
+    <string name="text_fileName">Όνομα αρχείου</string>
+    <string name="butn_search">Αναζήτηση</string>
+    <string name="text_storage">Αποθήκευση</string>
+    <string name="mesg_currentPathUnavailable">Ο συγκεκριμένος φάκελος δεν μπορεί να χρησιμοποιηθεί</string>
+    <string name="butn_newFile">Νέο αρχείο</string>
+    <string name="butn_settings">Ρυθμίσεις</string>
+    <string name="mesg_fileAlreadyExists">Το αρχείο ήδη υπάρχει</string>
+    <string name="text_createFolder">Δημιουργία φακέλου</string>
+    <string name="butn_create">Δημιουργία</string>
+    <string name="mesg_secureExit">Πατήστε ξανά για έξοδο</string>
+    <string name="butn_saveTo">Αποθήκευση σε</string>
+    <string name="ques_why">Γιατί;</string>
+    <string name="text_error">Σφάλμα</string>
+    <string name="text_communicationService">Υπηρεσία επικοινωνίας</string>
+    <string name="mesg_organizingFiles">Οργανώστε τα αρχείο σας</string>
+    <string name="text_folder">Φάκελος</string>
+    <string name="text_newVersionAvailable">Νέα έκδοση διαθέσιμη!</string>
+    <string name="text_noNetworkAvailable">Μη διαθέσιμο δίκτυο</string>
+    <string name="text_availableNetworks">Επιλέξτε δίκτυο - %s</string>
+    <string name="ques_removeAll">Αφαίρεση όλων;</string>
+    <string name="ques_removeDevice">Αφαίρεση της συσκευής;</string>
+    <string name="butn_removeAll">Αφαίρεση όλων</string>
+    <string name="butn_remove">Αφαίρεση</string>
+    <string name="ques_removeQueue">Αφαίρεση μεταφοράς;</string>
+    <string name="butn_wifiSettings">Wi-Fi</string>
+    <string name="text_empty">(κενό)</string>
+    <string name="butn_done">Έτοιμο</string>
+    <string name="text_textEditor">Επεξεργαστής κειμένου</string>
+    <string name="butn_seeSourceCode">Δείτε τον πηγαίου κώδικα</string>
+    <string name="butn_checkForUpdates">Έλεγχος για νέα έκδοση</string>
+    <string name="ques_copyToClipboard">Αντιγραφή στο πρόχειρο;</string>
+    <string name="mesg_textCopiedToClipboard">Το κείμενο αντιγράφηκε στο πρόχειρο</string>
+    <string name="butn_receive">Λάβετε</string>
+    <string name="mesg_connectionProblem">Πρόβλημα σύνδεσης</string>
+    <string name="mesg_notAllowed">Δεν επιτρέπεται</string>
+    <string name="butn_showSystemApps">εφαρμογή εδώ</string>
+    <string name="text_showSystemApps">εφαρμογή εδώ</string>
+    <string name="text_video">Βίντεο</string>
+    <string name="text_music">Μουσική</string>
+    <string name="text_image">Εικόνα</string>
+    <string name="text_application">Εφαρμογή</string>
+    <string name="text_autoStart">Αυτόματη εκκίνηση</string>
+    <string name="mesg_scanCompleted">Σάρωση ολοκληρώθηκε</string>
+    <string name="text_useLightSummary">Χρήση φώτων</string>
+    <string name="text_useLights">Φώτα</string>
+    <string name="text_useSoundsSummary">Χρήση ήχων</string>
+    <string name="text_useSounds">Ήχοι</string>
+    <string name="text_notification">Ειδοποίηση</string>
+    <string name="text_allowToConnect">Επιτροπή για σύνδεση</string>
+    <string name="text_ipAddress">Διεύθυνση IP</string>
+    <string name="mesg_somethingWentWrong">Κάτι πήγε στραβά</string>
+    <string name="text_deviceModelInfo">Όνομα συσκευής</string>
+    <string name="butn_close">Κλείσιμο</string>
+    <string name="text_about">Σχετικά</string>
+    <string name="butn_refresh">Ανανέωση</string>
+    <string name="butn_cancel">Άκυρο</string>
+    <string name="text_deleteConfirm">Επιβεβαίωση διαγραφής</string>
+    <string name="butn_delete">Διαγραφή</string>
+    <string name="butn_share">Κοινοποίηση</string>
+    <string name="butn_edit">Επεξεργασία</string>
+    <string name="text_fileOpenAppChoose">Άνοιγμα με</string>
+    <string name="text_deviceList">Συσκευές</string>
+    <string name="mesg_formatNotSupported">Μη υποστηριζόμενη μορφή αρχείου</string>
+    <string name="text_deviceNameTitle">Είσαγετε όνομα συσκευής</string>
+    <string name="text_deviceNameSummary">Αυτό το όνομα θα φανεί σε άλλες συσκευές</string>
+    <string name="text_deviceName">Όνομα συσκευής</string>
+    <string name="text_listEmpty">Κανένα στοιχείο</string>
+    <string name="butn_scan">Σάρωση</string>
+    <string name="text_receiving">Λαμβάνει</string>
+    <string name="butn_cancelSending">Ακύρωση αποστολής</string>
+    <string name="text_sending">Αποστολή</string>
+    <string name="butn_stop">Διακοπή</string>
+    <string name="butn_reject">Απόρριψη</string>
+    <string name="butn_accept">Αποδοχή</string>
+    <string name="ques_receiveFile">Λήψη φακέλου;</string>
+    <string name="mesg_noNetwork">Καμία σύνδεση όπως Wi-Fi για να βρεθούν κοντινές συσκευές</string>
+    <string name="mesg_connectionFailure">Σύνδεση απέτυχε</string>
+    <string name="text_preferences">Προτιμήσεις</string>
+    <string name="mesg_errorNotAnIpAddress">Δεν είναι διεύθυνση IP 
+\n(όπως 192.168.1.2)</string>
+    <string name="text_transferStatusFiles">%1d των %2d</string>
+    <string name="text_emptySymbol">-</string>
+</resources>

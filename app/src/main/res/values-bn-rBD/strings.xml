@@ -1,21 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_navigationDrawerOpen">নেভিগেশন ড্রয়ার খোল</string>n
     <string name="text_navigationDrawerClose">নেভিগেশন ড্রয়ার বন্ধ করো</string>
@@ -31,8 +14,29 @@
     <string name="butn_cancelSending">পাঠানো বাতিল করো</string>
     <string name="text_receiving">গ্রহণ করা হচ্ছে</string>
     <string name="butn_cancelReceiving">গ্রহণ বাতিল করুন</string>
-    <string name="mesg_fileReceived">%s প্রাপ্ত হয়েছে</string>
+    <string name="mesg_fileReceived">% s প্রাপ্ত হয়েছে</string>
     <string name="butn_scan">স্ক্যান</string>
     <string name="mesg_fileSendError">ফাইল পাঠানো যায়নি। %s</string>
-    <string name="mesg_notAllowed">"আপনাকে অনুমতি দেওয়া হয় না"</string>
+    <string name="mesg_notAllowed">"আপনাকে  অনুমতি দেওয়া হয় না"</string>
+    <string name="butn_shareTrebleshot">এই অ্যাপ্লিকেশন অন্যকে দিন</string>
+    <string name="butn_refresh">রিফ্রেশ করুন</string>
+    <string name="butn_cancel">বাতিল</string>
+    <string name="text_deleteConfirm">মোছার বিষয়টি নিশ্চিত করুন</string>
+    <string name="butn_delete">মুছে ফেলুন</string>
+    <string name="butn_share">শেয়ার করুন</string>
+    <string name="butn_edit">সম্পাদন করুন</string>
+    <string name="text_receivedFiles">প্রাপ্ত ফাইলস</string>
+    <string name="ques_resetToDefault">ডিফল্ট এ পুনরায় সেট করবেন\?</string>
+    <string name="text_fileShareAppChoose">শেয়ার করার জন্য অ্যাপ্লিকেশন নির্বাচন করুন</string>
+    <string name="text_fileOpenAppChoose">সঙ্গে খুলুন</string>
+    <string name="text_deviceList">ডিভাইসগুলো</string>
+    <string name="text_multipleFileReceiveCompleted">ফাইল পাওয়া সম্পুর্ন হয়েছে</string>
+    <string name="mesg_fileReceiveError">রিসিভ করতে পারেনি %s.</string>
+    <string name="mesg_formatNotSupported">অসমর্থিত ফরমেট</string>
+    <string name="text_deviceNameTitle">ডিভাইসের নাম লিখুন</string>
+    <string name="text_deviceNameSummary">এই নামটি অন্যান্য ডিভাইসে প্রদর্শিত হবে</string>
+    <string name="text_deviceName">ডিভাইসের নাম</string>
+    <string name="text_developerModeSummary">ব্যবহারকারীর কনফিগারেশন বন্ধ করুন</string>
+    <string name="text_developerMode">ডেভেলপার মোড</string>
+    <string name="text_listEmpty">কোনো আইটেম নেই</string>
 </resources>

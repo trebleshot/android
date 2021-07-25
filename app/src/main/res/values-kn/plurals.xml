@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="text_devicesShared">
+        <item quantity="one">ಒಬ್ಬರೊಂದಿಗೆ ಹಂಚಿ</item>
+        <item quantity="other">%d ಸಾಧನಗಳೊಂದಿಗೆ ಹಂಚಿ</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">ಒಂದೇ ಸಾಲು</item>
+        <item quantity="other">%d ಸಾಲುಗಳು</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d ಕಡತವನ್ನು ಅಳಿಸಲಾಗಿದೆ</item>
+        <item quantity="other">%d ಕಡತಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">ಒಂದು ನಿಮಿಷದ ಹಿಂದೆ</item>
+        <item quantity="other">%d ನಿಮಿಷಗಳ ಹಿಂದೆ</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">ಒಂದು ಸೆಕೆಂಡ್ ಹಿಂದೆ</item>
+        <item quantity="other">%d ಸೆಕೆಂಡುಗಳ ಹಿಂದೆ</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">ಈ ಕಡತವನ್ನು ಸ್ವೀಕರಿಸುವುದೇ\?</item>
+        <item quantity="other">%d ಕಡತಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದೇ\?</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d ಕಡತ ಆಯ್ಕೆಯಾಗಿದೆ</item>
+        <item quantity="other">%d ಕಡತಗಳು ಆಯ್ಕೆಯಾಗಿದೆ</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d ಕಡತವನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</item>
+        <item quantity="other">%d ಕಡತಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</item>
+    </plurals>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">ಈ ಕಡತವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ\?</item>
+        <item quantity="other">%d ಕಡತಗಳನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ\?</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d ಕಡತ</item>
+        <item quantity="other">%d ಕಡತಗಳು</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d ಸಂಪರ್ಕ</item>
+        <item quantity="other">%d ಸಂಪರ್ಕಗಳು</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">ಬಾಕಿ ಇರುವ ಈ ವರ್ಗಾವಣೆಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</item>
+        <item quantity="other">ಬಾಕಿ ಇರುವ %d ವರ್ಗಾವಣೆಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</item>
+    </plurals>
+</resources>

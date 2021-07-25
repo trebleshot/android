@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="text_devicesShared">
+        <item quantity="one">പങ്കുവയ്ക്കുക</item>
+        <item quantity="other">%d ഡിവൈസുകളുമായി പങ്കുവയ്ക്കുക</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">ഒരു നിര</item>
+        <item quantity="other">%d നിരകള്‍</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d ഫയല്‍ നീക്കം ചെയ്തു</item>
+        <item quantity="other">%d ഫയലുകള്‍ നീക്കം ചെയ്തു</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">ഒരു മിനുട്ട് മുന്‍പ്</item>
+        <item quantity="other">%d മിനുട്ടുകള്‍ക്ക് മുന്‍പ്</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">ഒരു സെക്കന്‍ഡ് മുന്‍പ്</item>
+        <item quantity="other">%d സെക്കന്‍ഡുകള്‍ക്ക് മുന്‍പ്</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d ഫയല്‍</item>
+        <item quantity="other">%d ഫയലുകള്‍</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">ഈ ഫയല്‍ സ്വീകരിക്കട്ടെ\?</item>
+        <item quantity="other">%d ഫയലുകള്‍ സ്വീകരിക്കട്ടെ\?</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d സമ്പര്‍ക്കം</item>
+        <item quantity="other">%d സമ്പര്‍ക്കങ്ങള്‍</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">പൂര്‍ത്തിയാകാത്ത കൈമാറ്റം നീക്കം ചെയ്യും</item>
+        <item quantity="other">%d പൂര്‍ത്തിയാകാത്ത കൈമാറ്റങ്ങള്‍ നീക്കം ചെയ്യും</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d ഫയല്‍ തിരഞ്ഞെടുത്തു</item>
+        <item quantity="other">%d ഫയലുകള്‍ തിരഞ്ഞെടുത്തു</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d ഫയല്‍ സ്വീകരിച്ചു</item>
+        <item quantity="other">%d ഫയലുകള്‍ സ്വീകരിച്ചു</item>
+    </plurals>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">നിങ്ങള്‍ക്ക് ഈ ഫയല്‍ നീക്കം ചെയ്യണോ\?</item>
+        <item quantity="other">നിങ്ങള്‍ക്ക് %d ഫയലുകള്‍ നീക്കം ചെയ്യണോ\?</item>
+    </plurals>
+</resources>

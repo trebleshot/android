@@ -1,21 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_preferences">设置</string>
     <string name="text_connected">已连接</string>
@@ -116,12 +99,12 @@
     <string name="text_cancellingTransfer">正在取消任务…</string>
     <string name="butn_killNow">现在中止</string>
     <string name="mesg_groupOngoingNotice">等待%s完成再传输这个文件</string>
-    <string name="ques_removeTransfer">移除传输？</string>
+    <string name="ques_removeQueue">移除传输？</string>
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除这个设备吗？</string>
     <string name="text_removeDeviceNotice">移除设备会同时移除它的传输</string>
-    <string name="text_removeTransferSummary">这将从队列中移除%s</string>
+    <string name="text_removePendingTransferSummary">这将从队列中移除%s</string>
     <string name="ques_removeAll">全部移除？</string>
     <string name="text_savedConnections">已保存连接</string>
     <string name="text_newVersionAvailable">新版本可用！</string>
@@ -158,15 +141,14 @@
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">正在等待的传输</string>
     <string name="butn_proceed">确认继续</string>
-    <string name="text_removeTransferGroupSummary">这将会移除这里可见的所有等待的传输</string>
+    <string name="text_removeCertainPendingTransfersSummary">这将会移除这里可见的所有等待的传输</string>
     <string name="text_availableNetworks">选择网络 - %s</string>
     <string name="text_noNetworkAvailable">无可用的网络</string>
     <string name="mesg_organizingFiles">整理您的文件</string>
     <string name="text_communicationService">通信服务</string>
     <string name="text_notAllowedHelp">检查您是否在 %1$s 上被允许
-        \n
-        \n设备 &gt; %2$s &gt; 允许连接 &gt; （打勾）
-    </string>
+\n 
+\n设备 &gt; %2$s &gt; 允许连接 &gt; （打勾）</string>
     <string name="mesg_pathSaved">该文件夹已保存</string>
     <string name="butn_search">搜索</string>
     <string name="butn_changeConnection">更改连接</string>
@@ -234,7 +216,7 @@
     <string name="text_communicationServiceStop">轻触以停止</string>
     <string name="text_remainingTime">剩余时间 %s</string>
     <string name="butn_showFiles">显示文件</string>
-    <string name="butn_trustDevice">设置为信任域设备</string>
+    <string name="butn_trustZoneDevice">设置为信任域设备</string>
     <string name="butn_turnTrustZoneOn">打开信任域</string>
     <string name="butn_turnTrustZoneOff">关闭信任域</string>
     <string name="text_trustZoneEnabled">信任域</string>
@@ -262,7 +244,7 @@
     <string name="mesg_fileSaved">文件已保存</string>
     <string name="butn_sortBy">排序方式</string>
     <string name="butn_sortOrder">顺序/倒序</string>
-    <string name="text_sortOrderAscending">"顺序排列 ↑"</string>
+    <string name="text_sortOrderAscending">顺序排列</string>
     <string name="text_sortOrderDescending">倒序排列 ↓</string>
     <string name="text_sortByName">文件名</string>
     <string name="text_sortByDate">日期</string>
@@ -307,7 +289,7 @@
     <string name="butn_saveAnyway">仍然保存</string>
     <string name="text_taskOngoing">正在进行的任务</string>
     <string name="butn_queueCounted">队列 (%d)</string>
-    <string name="mesg_updateDownloadComplete">更新接收完毕并已保存至已收到的文件</string>
+    <string name="mesg_updateDownloadComplete">更新已接收并已保存至已收到的文件</string>
     <string name="text_listEmptyFiles">此处无文件</string>
     <string name="text_listEmptyImage">此处无图片</string>
     <string name="text_listEmptyApp">此处无应用</string>
@@ -347,7 +329,7 @@
     <string name="text_hotspotStartsTrustZoneSummary">信任域也会相应的被启用</string>
     <string name="text_qrCodeAvailableHelp">扫描二维码来分享并连接设备</string>
     <string name="text_qrCodeHotspotDisabledHelp">建立热点以允许其他设备连接</string>
-    <string name="help_scanQRCode">扫描主设备屏幕上的二维码</string>
+    <string name="text_scanQRCodeHelp">扫描主设备屏幕上的二维码</string>
     <string name="butn_qrScanToSend">扫描二维码以发送</string>
     <string name="butn_qrToggle">工作服务</string>
     <string name="text_notificationSettingsSummary">打开通知设置</string>
@@ -382,7 +364,7 @@
     <string name="text_killServiceAfterLeavingSummary">如果没有正在进行的任务将停止通讯</string>
     <string name="text_killServiceAfterLeaving">关闭应用时停止服务</string>
     <string name="text_emptySymbol">-</string>
-    <string name="text_transferStatusFiles">"已传输 %1d 共 %2d"</string>
+    <string name="text_transferStatusFiles">已传输 %1d 共 %2d</string>
     <string name="text_donate">帮助开发</string>
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
     <string name="butn_donate">帮助开发</string>
@@ -391,10 +373,9 @@
     <string name="butn_pause">暂停</string>
     <string name="butn_retry">重试</string>
     <string name="mesg_noPendingTransferObjectExists">无正在等待的传输。使用“重试接收”选项以继续被中断的传输。</string>
-    <string name="mesg_notSavingToChosenLocation">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。
-        \n
-        \n %s
-    </string>
+    <string name="mesg_notSavingToChosenLocation">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。 
+\n 
+\n %s</string>
     <string name="butn_changelog">更新日志</string>
     <string name="text_changelog">更新日志</string>
     <string name="mesg_versionUpdatedChangelog">你已经更新TrebleShot，您想要查看更新了什么吗？</string>
@@ -403,7 +384,7 @@
     <string name="text_applyDarkTheme">暗黑风格</string>
     <string name="text_applyDarkThemeSummary">使用黑色风格的主题</string>
     <string name="butn_allow">允许</string>
-    <string name="butn_telegram">Telegram频道</string>
+    <string name="butn_telegram_channel">Telegram频道</string>
     <string name="text_listEmptyTransfer">所有的传输在此出现</string>
     <string name="text_transfers">传输</string>
     <string name="butn_connectionDetails">连接详情</string>
@@ -467,10 +448,10 @@
     <string name="mesg_waiting">等待中</string>
     <string name="text_amoledOptimizedBlackTheme">为AMOLED屏优化</string>
     <string name="text_amoledOptimizedBlackThemeSummary">使用更黑的配色</string>
-    <string name="mesg_errorNotTrusted">将本设备在接收方设置为信任域设备方可进行此操作。</string>
+    <string name="mesg_errorNotTrustZoneDevice">将本设备在接收方设置为信任域设备方可进行此操作。</string>
     <string name="butn_enterIpAddress">输入IP地址</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
-    <string name="butn_webShare">通过浏览器(网页)分享</string>
+    <string name="butn_webShare">通过浏览器分享</string>
     <string name="text_webShare">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">使用“在浏览器中分享”以在此处查看传输！</string>
     <string name="butn_shareOnBrowser">在浏览器中分享</string>
@@ -483,8 +464,7 @@
     <string name="text_dowloadTrebleshotAndroid">下载运行于Android的TrebleShot</string>
     <string name="text_listEmptyConnection">你连接的网络在此出现</string>
     <string name="mesg_errorNotAnIpAddress">不是IP地址
-        \n(如 192.168.1.2)
-    </string>
+\n(如 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">以链接分享还是以安装包分享？</string>
     <string name="butn_asApk">作为安装包</string>
     <string name="butn_asLink">作为链接</string>

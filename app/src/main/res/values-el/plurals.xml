@@ -1,61 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="ques_deleteFile">
         <item quantity="one">Θέλετε να διαγράψετε αυτό το αρχείο\?</item>
         <item quantity="other">Θέλετε να διαγράψετε %d αρχεία\?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">"λήφθηκε %d αρχείο "</item>
-        <item quantity="other">"λήφθηκαν %d αρχεία "</item>
+        <item quantity="one">λήφθηκε %d αρχείο</item>
+        <item quantity="other">λήφθηκαν %d αρχεία</item>
     </plurals>
     <plurals name="text_itemSelected">
-        <item quantity="one">"επιλέχθηκε %d αρχείο "</item>
-        <item quantity="other">"επιλέχθηκαν %d αρχεία "</item>
+        <item quantity="one">%d αρχείο επιλέχθηκε</item>
+        <item quantity="other">%d αρχεία επιλέχθηκαν</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="one">η εκκρεμούσα μεταφορά θα ακυρωθή</item>
-        <item quantity="other">"οι %d εκκρεμούσες μεταφορές θα ακυρωθούν "</item>
+        <item quantity="one">Αυτή η εκκρεμής μεταφορά θα ακυρωθεί</item>
+        <item quantity="other">%d εκκρεμείς μεταφορές θα ακυρωθούν</item>
     </plurals>
     <plurals name="text_availableConnections">
-        <item quantity="one">"%d σύνδεση "</item>
-        <item quantity="other">"%d συνδέσεις "</item>
+        <item quantity="one">%d σύνδεση</item>
+        <item quantity="other">%d συνδέσεις</item>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="one">Λήψη αυτού του αρχείου\?</item>
-        <item quantity="other">Λήψη αυτών των αρχείων\?</item>
+        <item quantity="other">Λήψη %d αρχείων\?</item>
     </plurals>
     <plurals name="text_files">
-        <item quantity="one">"%d αρχείο "</item>
-        <item quantity="other">"%d αρχεία "</item>
+        <item quantity="one">%d αρχείο</item>
+        <item quantity="other">%d αρχεία</item>
     </plurals>
     <plurals name="text_secondsAgo">
         <item quantity="one">πρίν από ένα δευτερόλεπτο</item>
         <item quantity="other">%d δευτερόλεπτα πρίν</item>
     </plurals>
     <plurals name="text_minutesAgo">
-        <item quantity="one">"πρίν από ένα λεπτό "</item>
-        <item quantity="other">"%d λεπτά πρίν "</item>
+        <item quantity="one">Πρίν από ένα λεπτό</item>
+        <item quantity="other">%d λεπτά πρίν</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">"%d αρχείο διαγράφηκε "</item>
-        <item quantity="other">"%d αρχεία διαγράφηκαν "</item>
+        <item quantity="one">%d αρχείο διαγράφηκε</item>
+        <item quantity="other">%d αρχεία διαγράφηκαν</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">μονή σειρά</item>
@@ -63,6 +46,6 @@
     </plurals>
     <plurals name="text_devicesShared">
         <item quantity="one">μεμονομένη κοινή χρήση</item>
-        <item quantity="other">"κοινή χρήση με %d συσκευές "</item>
+        <item quantity="other">κοινή χρήση με %d συσκευές</item>
     </plurals>
 </resources>

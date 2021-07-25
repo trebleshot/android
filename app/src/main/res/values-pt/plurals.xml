@@ -63,6 +63,6 @@
     </plurals>
     <plurals name="text_devicesShared">
         <item quantity="one">Uma partilha</item>
-        <item quantity="other">A partilhar com %d dispositivos</item>
+        <item quantity="other">A partilhar com %d aparelhos</item>
     </plurals>
 </resources>

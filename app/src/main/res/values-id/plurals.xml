@@ -18,12 +18,39 @@
 
 <resources>
     <plurals name="ques_deleteFile">
-        <item quantity="other">Apakah Anda ingin menghapus file %d ini\?</item>
+        <item quantity="other">Apa kamu ingin menghapus berkas %d ini\?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="other">%d file telah diterima</item>
+        <item quantity="other">%d berkas telah diterima</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="other">%d file telah dihapus</item>
+        <item quantity="other">%d berkas telah dihapus</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="other">Berbagi dengan %d perangkat</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="other">%d baris</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="other">%d menit yang lalu</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="other">%d detik yang lalu</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="other">berkas %d</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="other">terima berkas %d\?</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="other">%d koneksi</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="other">%d transfer tertunda akan dihapus</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="other">%d berkas dipilih</item>
     </plurals>
 </resources>

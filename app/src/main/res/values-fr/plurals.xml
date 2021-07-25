@@ -19,7 +19,7 @@
 
 <resources>
     <plurals name="ques_deleteFile">
-        <item quantity="one">Souhaitez-vous supprimer ce fichiers \?</item>
+        <item quantity="one">Souhaitez-vous supprimer ce fichier \?</item>
         <item quantity="other">Souhaitez-vous supprimer %d fichiers \?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">

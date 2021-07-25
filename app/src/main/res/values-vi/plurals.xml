@@ -18,10 +18,10 @@
 
 <resources>
     <plurals name="text_removeQueueSummary">
-        <item quantity="other">%d file đang chuyển sẽ bị xoá</item>
+        <item quantity="other">%d lượt chuyển đang chờ sẽ bị xoá</item>
     </plurals>
     <plurals name="text_files">
-        <item quantity="other">%d file</item>
+        <item quantity="other">%d tệp</item>
     </plurals>
     <plurals name="text_secondsAgo">
         <item quantity="other">%d giây trước</item>
@@ -30,22 +30,22 @@
         <item quantity="other">%d phút trước</item>
     </plurals>
     <plurals name="ques_deleteFile">
-        <item quantity="other">Xoá %d file\?</item>
+        <item quantity="other">Bạn có muốn xoá %d tệp không\?</item>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
-        <item quantity="other">Nhận %d file\?</item>
+        <item quantity="other">Nhận %d tệp\?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="other">Đã nhận %d file</item>
+        <item quantity="other">Đã nhận %d tệp</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="other">Đã xoá %d file</item>
+        <item quantity="other">Đã xoá %d tệp</item>
     </plurals>
     <plurals name="text_devicesShared">
         <item quantity="other">Đang chia sẻ với %d thiết bị</item>
     </plurals>
     <plurals name="text_itemSelected">
-        <item quantity="other">Đã chọn %d file</item>
+        <item quantity="other">Đã chọn %d tệp</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="other">%d hàng</item>

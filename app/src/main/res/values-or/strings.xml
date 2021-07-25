@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="butn_reject">ପ୍ରତ୍ୟାଖ୍ୟାନ କରନ୍ତୁ</string>
+    <string name="butn_scan">ସ୍କାନ୍ କରନ୍ତୁ</string>
+    <string name="butn_stop">ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="butn_accept">ଗ୍ରହଣ କରନ୍ତୁ</string>
+    <string name="mesg_connectionFailure">ସଂଯୋଗ ବିଫଳ</string>
+    <string name="text_preferences">ପସନ୍ଦ</string>
+    <string name="text_navigationDrawerClose">ନାଭିଗେସନ୍ ଡ୍ରୟର ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="text_navigationDrawerOpen">ନାଭିଗେସନ୍ ଡ୍ରୟର ଖୋଲନ୍ତୁ</string>n
+    </resources>

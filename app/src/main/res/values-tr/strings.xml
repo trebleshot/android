@@ -1,21 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_navigationDrawerOpen">Gezinti çekmecesini aç</string>
     <string name="text_navigationDrawerClose">Gezinti çekmecesini kapa</string>
@@ -96,8 +79,7 @@
     <string name="butn_multiSelect">Çoklu seçim</string>
     <string name="butn_receive">Al</string>
     <string name="butn_block">Engelle</string>
-    <string name="text_aboutSummary">Bu yazılım Genonbeta Açık Kaynak Yazılım Örgütü tarafından geliştirilmiştir
-    </string>
+    <string name="text_aboutSummary">Bu yazılım Genonbeta Açık Kaynak Yazılım Örgütü tarafından geliştirilmiştir</string>
     <string name="butn_appLaunch">Başlat</string>
     <string name="ques_launchApplication">Uygulamayı başlatmak istiyor musunuz?</string>
     <string name="mesg_launchApplicationError">Bu uygulama başlatılamaz</string>
@@ -117,19 +99,18 @@
     <string name="text_pendingTransfers">Bekleyen aktarımlar</string>
     <string name="text_cancellingTransfer">İşlem iptal ediliyor…</string>
     <string name="text_noNetworkAvailable">Kullanılabilir ağ yok</string>
-    <string name="text_removeTransferGroupSummary">Bu, burada görmüş olduğunuz bekleyen aktarımlar kaldıracak</string>
-    <string name="text_removeDeviceNotice">Bir cihazı sildiğinizde alakalı gereksiz şeyler de beraberinde silinir
-    </string>
+    <string name="text_removeCertainPendingTransfersSummary">Bu, burada görmüş olduğunuz bekleyen aktarımlar kaldıracak</string>
+    <string name="text_removeDeviceNotice">Bir cihazı sildiğinizde alakalı gereksiz şeyler de beraberinde silinir</string>
     <string name="text_availableNetworks">Ağ seçin - %s</string>
     <string name="ques_removeAll">Hepsini kaldır?</string>
     <string name="ques_removeDevice">Bu cihazı kaldır?</string>
-    <string name="ques_removeTransfer">İş kuyruğunu kaldır?</string>
+    <string name="ques_removeQueue">İş kuyruğunu kaldır?</string>
     <string name="butn_killNow">Şimdi durdur</string>
     <string name="butn_proceed">Devam et</string>
     <string name="butn_remove">Kaldır</string>
     <string name="butn_removeAll">Hepsini kaldır</string>
     <string name="text_stopping">Durduruluyor!</string>
-    <string name="text_removeTransferSummary">Bu %s aktarımını kuyruktan silecek</string>
+    <string name="text_removePendingTransferSummary">Bu %s aktarımını kuyruktan silecek</string>
     <string name="mesg_groupOngoingNotice">Bu dosya, %s dosyası alındıktan sonra alınacak</string>
     <string name="text_newVersionAvailable">Yeni sürüm mevcut!</string>
     <string name="text_folder">Klasör</string>
@@ -138,10 +119,9 @@
     <string name="text_chooserTargetService">Hızlı Paylaşım Servisi</string>
     <string name="text_communicationService">Haberleşme servisi</string>
     <string name="text_transactionViewer">Bekleyen aktarımlar</string>
-    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin
-        \n
-        \nCihazlar &gt; %2$s &gt; Erişime izin ver &gt; (etkin)
-    </string>
+    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin 
+\n 
+\nCihazlar &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
     <string name="ques_why">Neden?</string>
     <string name="butn_saveTo">Kaydetme yeri</string>
     <string name="mesg_secureExit">Çıkmak için tekrar basın</string>
@@ -164,9 +144,7 @@
     <string name="text_chooseFile">Dosya seçin</string>
     <string name="mesg_pathSameError">Seçeceğiniz klasör şu ankinden farklı olmalıdır</string>
     <string name="ques_checkOldFiles">Dosyaları taşı?</string>
-    <string name="text_checkOldFiles">"Alakalı tamamlanmış ve tamamlanacak dosyaları bu klasöre taşıyabilirsiniz ve bu
-        işlem yeni konuma ve boyutlara göre zaman alabilir "
-    </string>
+    <string name="text_checkOldFiles">Tamamlanan ve kısmen tamamlanan ilişkili dosyaları bu klasöre taşıyabilirsiniz ve bu, boyutlara bağlı olarak biraz zaman alabilir</string>
     <string name="mesg_newFilesReceived">Yeni dosyalar var</string>
     <string name="butn_show">Göster</string>
     <string name="text_preparingFiles">Dosyalar hazırlanıyor</string>
@@ -194,18 +172,14 @@
     <string name="text_interfaceUnknown">Bilinmeyen bağlantı</string>
     <string name="text_shareTextShort">Metin</string>
     <string name="butn_connectionList">Bağlantılar</string>
-    <string name="text_automaticNetworkConnectionFailed">Hiçbir bağlantı cihaza ulaşmıyor. Bağlantı konumu değişmiş
-        olabilir. TrebleShot açıkken ağa tekrar bağlanmayı deneyin.
-    </string>
+    <string name="text_automaticNetworkConnectionFailed">Hiçbir bağlantı cihaza ulaşmıyor. Bağlantı konumu değişmiş olabilir. TrebleShot açıkken ağa tekrar bağlanmayı deneyin.</string>
     <string name="text_automaticNetworkConnectionOngoing">En iyi bağlantıyı seçiyoruz</string>
     <string name="butn_retryReceiving">Almayı dene</string>
     <string name="butn_ask">Sor</string>
     <string name="text_permissionRequest">İzin isteği</string>
     <string name="text_requestPermissionStorage">Depolama izni</string>
     <string name="text_requestPermissionReadPhoneState">Telefon durumunu oku</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">"TrebleShot\'un diğer cihazlar tarafından tanınmanızı
-        sağlayan cihazınızın seri numarasına erişmesi gerekiyor "
-    </string>
+    <string name="text_requestPermissionReadPhoneStateSummary">Diğer cihazların sizi tanımasına yardımcı olacak uzun vadeli bir kimlik numarası oluşturmak için TrebleShot\'ın cihazınızın seri numarasına erişmesi gerekiyor</string>
     <string name="text_mediaDirectory">Medya klasörü</string>
     <string name="text_emulatedMediaDirectory">Yansıma (%s)</string>
     <string name="mesg_notEnoughSpace">Yeterli alan yok</string>
@@ -218,7 +192,7 @@
     <string name="text_communicationServiceStop">Sona erdirmek için dokunun</string>
     <string name="text_remainingTime">Kalan %s</string>
     <string name="butn_showFiles">Dosyaları göster</string>
-    <string name="butn_trustDevice">GüvenliBölge cihazı</string>
+    <string name="butn_trustZoneDevice">GüvenliBölge cihazı</string>
     <string name="butn_turnTrustZoneOn">GüvenliBölge\'yi etkinleştir</string>
     <string name="butn_turnTrustZoneOff">GüvenliBölge\'yi sonlandır</string>
     <string name="text_trustZoneEnabled">GüvenliBölge</string>
@@ -236,22 +210,16 @@
     <string name="text_trebleshotHotspot">TrebleShot Hotspot</string>
     <string name="butn_connect">Bağlan</string>
     <string name="butn_disconnect">Bağlantıyı kes</string>
-    <string name="text_trebleshotHotspotDescription">Bu açık ağ yakınınızdaki TrebleShot kullanan bir cihaz tarafından
-        oluşturuldu. Bununla direkt olarak dosyalar gönderebilirsiniz.
-    </string>
+    <string name="text_trebleshotHotspotDescription">Bu açık ağ yakınınızdaki TrebleShot kullanan bir cihaz tarafından oluşturuldu. Bununla direkt olarak dosyalar gönderebilirsiniz.</string>
     <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot\'una bağlanıyor</string>
-    <string name="mesg_warningHotspotMobileActive">Bağlanan cihazlar mobil verinizi kullanabilir. Kapatmak
-        isteyebilirsiniz.
-    </string>
+    <string name="mesg_warningHotspotMobileActive">Bağlanan cihazlar mobil verinizi kullanabilir. Kapatmak isteyebilirsiniz.</string>
     <string name="butn_skip">Atla</string>
     <string name="mesg_scanningSelfHotspot">TrebleShot Hotspot\'u aranıyor</string>
     <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuzu etkinleştirebilirsiniz</string>
     <string name="butn_enable">Etkinleştir</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Hotspot bulmak ve başlatmak için konum izni gerekli
-    </string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Hotspot bulmak ve başlatmak için konum izni gerekli</string>
     <string name="butn_locationSettings">Konum</string>
-    <string name="mesg_locationDisabledSelfHotspot">Hotspot bulmak ve başlatmak için konum servisini etkinleştirin
-    </string>
+    <string name="mesg_locationDisabledSelfHotspot">Hotspot bulmak ve başlatmak için konum servisini etkinleştirin</string>
     <string name="mesg_scanningDevicesSelfHotspot">TrebleShot Hotspot\'u üzerinde cihazlar aranıyor</string>
     <string name="mesg_stoppingSelfHotspot">TrebleShot Hotspot\'unuz devre dışı bırakılıyor</string>
     <string name="mesg_startingSelfHotspot">TrebleShot Hotspot\'unuz başlatılıyor</string>
@@ -260,16 +228,13 @@
     <string name="text_uncheckedItemsNotice">Seçili olmayan nesneler atlanacak</string>
     <string name="text_previewAndEditList">Önizle ve düzenle</string>
     <string name="text_fileRoot">Dosya kökü</string>
-    <string name="mesg_versionNotSupported">Bu cihaz artık desteklenmeyen eski bir sürüm kullanıyor. Lütfen ilk önce
-        güncelleyin ve cihazları yeniden tarayın.
-    </string>
+    <string name="mesg_versionNotSupported">Bu cihaz artık desteklenmeyen eski bir sürüm kullanıyor. Lütfen ilk önce güncelleyin ve cihazları yeniden tarayın.</string>
     <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
     <string name="mesg_connectionUpdated">İletişim \"%s\" bağlantısı üzerinden gerçekleştirilecek</string>
     <string name="mesg_ongoingUpdateDownload">Güncelleme indiriliyor</string>
     <string name="butn_gotIt">Anladım</string>
     <string name="mesg_helpFolderSelection">Bir klasörü seçmek için simgesine dokunun</string>
-    <string name="mesg_hotspotCreatedInfo">\"%s\" ağına bağlanın veya TrebleShot ile \"%s\" adıyla dosya gönderin
-    </string>
+    <string name="mesg_hotspotCreatedInfo">\"%s\" ağına bağlanın veya TrebleShot ile \"%s\" adıyla dosya gönderin</string>
     <string name="butn_selectAll">Tümünü seç</string>
     <string name="butn_selectNone">Seçimleri kaldır</string>
     <string name="butn_previewSelections">Seçimleri önizle</string>
@@ -282,8 +247,7 @@
     <string name="text_receivedSize">Alınmış boyut</string>
     <string name="mesg_notValidTransfer">Bu aktarım artık geçerli değil</string>
     <string name="ques_saveAnyway">Yinede kaydet?</string>
-    <string name="text_saveAnywaySummary">Gönderen dosyanın yerini bilmiyor, ancak dosyayı yine de kaydedebilirsiniz
-    </string>
+    <string name="text_saveAnywaySummary">Gönderen dosyanın yerini bilmiyor, ancak dosyayı yine de kaydedebilirsiniz</string>
     <string name="mesg_fileSaved">Dosya kaydedildi</string>
     <string name="butn_sortBy">Şununla sırala</string>
     <string name="butn_sortOrder">Sıralama düzeni</string>
@@ -313,8 +277,7 @@
     <string name="text_secondCountShort">%d sn</string>
     <string name="butn_exit">Çıkış</string>
     <string name="butn_queueCounted">Kuyruk (%d)</string>
-    <string name="mesg_updateDownloadComplete">Güncelleme başarıyla alındı ve alınan dosyalar klasörünüze kaydedildi
-    </string>
+    <string name="mesg_updateDownloadComplete">Güncelleme başarıyla alındı ve alınan dosyalar klasörünüze kaydedildi</string>
     <string name="text_listEmptyFiles">Burada dosya yok</string>
     <string name="text_listEmptyImage">Burada fotoğraf yok</string>
     <string name="text_listEmptyApp">Burada uygulama yok</string>
@@ -332,10 +295,8 @@
     <string name="text_hotspotStartsTrustZone">Hotspot, GüvenliBölge\'yi de başlatır</string>
     <string name="text_hotspotStartsTrustZoneSummary">GüvenliBölge duruma göre başlatılacak</string>
     <string name="text_qrCodeAvailableHelp">Paylaşmak ve bağlanmak için bu kodu tarayın</string>
-    <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın veya hızlı bağlantı için bir ağa
-        bağlanın
-    </string>
-    <string name="help_scanQRCode">Bağlanılacak cihazın ekranı üzerindeki QR kodunu tarayın</string>
+    <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın veya hızlı bağlantı için bir ağa bağlanın</string>
+    <string name="text_scanQRCodeHelp">Bağlanılacak cihazın ekranı üzerindeki QR kodunu tarayın</string>
     <string name="butn_qrScanToSend">Göndermek için QR tara</string>
     <string name="butn_qrToggle">QR Kod gösterimi</string>
     <string name="text_notificationSettingsSummary">Bildirim ayarlarını aç</string>
@@ -387,26 +348,19 @@
     <string name="butn_open">Aç</string>
     <string name="butn_pause">Duraklat</string>
     <string name="butn_retry">Yeniden dene</string>
-    <string name="mesg_noPendingTransferObjectExists">Bekleyen aktarım kalmadı. Yarım kalmışları devam ettirmek için
-        \'Almayı dene\' seçeneğini seçin.
-    </string>
-    <string name="mesg_notSavingToChosenLocation">Belirtmiş olduğunuz klasöre erişilemediği için dosyalar oraya
-        kaydedilmeyecek.
-        \n
-        \n%s
-    </string>
+    <string name="mesg_noPendingTransferObjectExists">Bekleyen aktarım kalmadı. Yarım kalmışları devam ettirmek için \'Almayı dene\' seçeneğini seçin.</string>
+    <string name="mesg_notSavingToChosenLocation">Belirtmiş olduğunuz klasöre erişilemediği için dosyalar oraya kaydedilmeyecek.
+\n 
+\n%s</string>
     <string name="butn_changelog">Değişiklik günlüğü</string>
     <string name="text_changelog">Değişiklik günlüğü</string>
-    <string name="mesg_versionUpdatedChangelog">TrebleShot\'u güncellediniz, neler yeni göz atmak ister misiniz\?
-    </string>
-    <string name="mesg_versionUpdatedChangelogRejected">\'Değişiklik günlüğü\' ne \'Hakkında\' sekmesi üzerinden her
-        zaman ulaşabilirsiniz
-    </string>
+    <string name="mesg_versionUpdatedChangelog">TrebleShot\'u güncellediniz, neler yeni göz atmak ister misiniz\?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">\'Değişiklik günlüğü\' ne \'Hakkında\' sekmesi üzerinden her zaman ulaşabilirsiniz</string>
     <string name="mesg_noInternetConnection">Bu internet bağlantısı gerektirir</string>
     <string name="text_applyDarkTheme">Koyu görünüm</string>
     <string name="butn_allow">İzin ver</string>
     <string name="text_applyDarkThemeSummary">Koyu biçimli temayı kullan</string>
-    <string name="butn_telegram">Telegram kanalı</string>
+    <string name="butn_telegram_channel">Telegram kanalı</string>
     <string name="butn_choose">Seç</string>
     <string name="butn_connectionDetails">Bağlantı detayları</string>
     <string name="butn_changeSavePath">Kayıt yerini değiştir</string>
@@ -426,26 +380,14 @@
     <string name="mesg_sent">Gönderildi</string>
     <string name="mesg_turningWiFiOn">Wi-Fi etkinleştiriliyor</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi açılmıyor.</string>
-    <string name="ques_connectionWizardIsOtherDeviceReady">Diğer cihazda gerekli şeyleri daha şimdi ayarladınız mı?
-    </string>
-    <string name="ques_connectionWizardIsThereQRCode">Diğer cihazın ekranında bir QR Kod (karekod) görüyor musunuz\?
-    </string>
-    <string name="ques_connectionWizardUseHotspot">Diğer cihazın bu cihaza hotspot ile bağlanmasını istiyor musunuz\?
-        Hotspot nedir bilmiyorsanız, \'Evet\' deyin.
-    </string>
-    <string name="ques_connectionWizardUseKnownDevices">Daha önce bağlantıya geçtiğiniz cihazlara erişmek istiyor
-        musunuz?
-    </string>
-    <string name="ques_connectionWizardUseNetwork">Sizin ve arkadaşınızın bağlı olduğu bir Wi-Fi ağınızı mı kullanmak
-        istiyorsunuz?
-    </string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Diğer cihazda gerekli şeyleri daha şimdi ayarladınız mı?</string>
+    <string name="ques_connectionWizardIsThereQRCode">Diğer cihazın ekranında bir QR Kod (karekod) görüyor musunuz\?</string>
+    <string name="ques_connectionWizardUseHotspot">Diğer cihazın bu cihaza hotspot ile bağlanmasını istiyor musunuz\? Hotspot nedir bilmiyorsanız, \'Evet\' deyin.</string>
+    <string name="ques_connectionWizardUseKnownDevices">Daha önce bağlantıya geçtiğiniz cihazlara erişmek istiyor musunuz?</string>
+    <string name="ques_connectionWizardUseNetwork">Sizin ve arkadaşınızın bağlı olduğu bir Wi-Fi ağınızı mı kullanmak istiyorsunuz?</string>
     <string name="ques_needHelp">Yardım lazım mı?</string>
-    <string name="text_addDeviceHelp">Cihazlar ekleyerek aynı dosyaları birden fazla cihaz ile paylaşırsınız.
-        Tamamlandığında geri döneceksiniz.
-    </string>
-    <string name="text_connectionHelp">Diğer cihaza bağlanmak için bir şeçeneğe gidin. Örneğin, diğer cihaz bir QR Kod
-        (karekod) gösteriyor ise, \'QR Kodu tara\' seçeneğine gidin.
-    </string>
+    <string name="text_addDeviceHelp">Cihazlar ekleyerek aynı dosyaları birden fazla cihaz ile paylaşırsınız. Tamamlandığında geri döneceksiniz.</string>
+    <string name="text_connectionHelp">Diğer cihaza bağlanmak için bir şeçeneğe gidin. Örneğin, diğer cihaz bir QR Kod (karekod) gösteriyor ise, \'QR Kodu tara\' seçeneğine gidin.</string>
     <string name="text_connectionWizard">Bağlantı sihirbazı</string>
     <string name="text_documents">Belgeler</string>
     <string name="text_downloads">İndirmeler</string>
@@ -475,45 +417,34 @@
     <string name="butn_addShortcut">Kısayollara ekle</string>
     <string name="butn_removeShortcut">Kısayolu kaldır</string>
     <string name="text_shortcut">Kısayol</string>
-    <string name="text_hotspotStartedExternallyNotice">Hotspot harici olarak başlatıldı. QR Kodu\'nu kullanmak için
-        buradan başlatın.
-    </string>
+    <string name="text_hotspotStartedExternallyNotice">Hotspot harici olarak başlatıldı. QR Kodu\'nu kullanmak için buradan başlatın.</string>
     <string name="butn_revokePin">Kodu kaldır</string>
     <string name="const_text_useAppFonts">Tavsiye edilen yazı tipini kullan</string>
     <string name="const_text_useAppFontsSummary">Birlikte gelen yazı tipi</string>
     <string name="mesg_waiting">Bekliyor</string>
     <string name="text_amoledOptimizedBlackTheme">AMOLED Ekranlar için iyileştir</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Daha karanlık renkler kullan</string>
-    <string name="mesg_errorNotTrusted">Bu cihaz, bu işlemi gerçekleştimek için alıcı cihaz üzerinde GüvenliBölge cihazı
-        olarak işaretlenmelidir.
-    </string>
-    <string name="butn_enterIpAddress">"IP Adresi girin "</string>
+    <string name="mesg_errorNotTrustZoneDevice">Bu cihaz, bu işlemi gerçekleştimek için alıcı cihaz üzerinde GüvenliBölge cihazı olarak işaretlenmelidir.</string>
+    <string name="butn_enterIpAddress">IP Adresi girin</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Tarayıcı ile gönder</string>
     <string name="text_webShare">@string/butn_webShare</string>
-    <string name="text_webShareNoContentNotice">Gönderileri burada görmek için \'Tarayıcı ile gönder\' seçeneğini
-        kullanın!
-    </string>
+    <string name="text_webShareNoContentNotice">Gönderileri burada görmek için \'Tarayıcı ile gönder\' seçeneğini kullanın!</string>
     <string name="butn_shareOnBrowser">Tarayıcıda paylaş</string>
     <string name="butn_hideOnBrowser">Tarayıcıda gizle</string>
     <string name="text_transferSharedOnBrowser">Tarayıcıda paylaşıldı</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">veya</string>
     <string name="text_visitWebShareAddress">Tarayıcınızla bu bağlantıyı ziyaret edin</string>
-    <string name="text_webShareInfo">Aktarımlar için ağ paylaşımını bireysel olarak etkinleştirin ve aşağıdaki herhangi
-        bir web adresini aynı ağa bağlı bir cihazla ziyaret edin.
-    </string>
+    <string name="text_webShareInfo">Aktarımlar için ağ paylaşımını bireysel olarak etkinleştirin ve aşağıdaki herhangi bir web adresini aynı ağa bağlı bir cihazla ziyaret edin.</string>
     <string name="text_dowloadTrebleshotAndroid">Android için TrebleShot\'u İndirin</string>
     <string name="text_listEmptyConnection">Bağlandığınız ağlar burada görünür</string>
     <string name="mesg_errorNotAnIpAddress">Bir IP Adresi değil
-        \n(192.168.1.2 gibi)
-    </string>
+\n(192.168.1.2 gibi)</string>
     <string name="ques_shareAsApkOrLink">Bağlantı veya APK olarak\?</string>
     <string name="butn_asApk">APK olrk</string>
     <string name="butn_asLink">Bağlntı olrk</string>
-    <string name="text_linkTrebleshot">TrebleShot ile dosyalarınızı güvenle paylaşırsınız! Tümüyle ücretsiz ve reklam
-        içermez. Şuradan edinin: %s
-    </string>
+    <string name="text_linkTrebleshot">TrebleShot ile dosyalarınızı güvenle paylaşırsınız! Tümüyle ücretsiz ve reklam içermez. Şuradan edinin: %s</string>
     <string name="butn_downloadAllAsZip">Hepsini ZIP olarak indir (tek, sıkıştırılmamış)</string>
     <string name="text_interfaceVPN">VPN Sunucusu</string>
     <string name="text_unrecognizedQrCode">Tanınmayan kod</string>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_deviceName">උපාංගයේ නම</string>
+    <string name="butn_stop">නවත්වන්න</string>
+</resources>
