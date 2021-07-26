@@ -72,7 +72,7 @@ class MainTransportSeat @Inject constructor(
         val detail = runBlocking {
             transferRepository.getTransferDetailDirect(groupId) ?: throw PersistenceException("Missing detail $groupId")
         }
-        val task = backend.registerTransfer(
+        val task = taskRepository.registerTransfer(
             TransferParams(transfer, client, detail.size, detail.sizeOfDone),
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {
@@ -127,7 +127,7 @@ class MainTransportSeat @Inject constructor(
                         if (hasPin) {
                             val detail = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
 
-                            backend.registerTransfer(
+                            taskRepository.registerTransfer(
                                 TransferParams(transfer, client, detail.size, detail.sizeOfDone)
                             ) { applicationScope, params, state ->
                                 applicationScope.launch(Dispatchers.IO) {

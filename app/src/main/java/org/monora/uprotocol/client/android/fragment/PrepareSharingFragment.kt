@@ -40,6 +40,7 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutPrepareSharingBinding
 import org.monora.uprotocol.client.android.util.Progress
 import org.monora.uprotocol.client.android.util.Transfers
+import java.text.Collator
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -107,6 +108,9 @@ class PreparationViewModel @Inject internal constructor() : ViewModel() {
                     }
                 }
             }
+
+            val collator = Collator.getInstance()
+            list.sortWith { o1, o2 -> collator.compare(o1.name, o2.name) }
 
             shared.postValue(PreparationState.Ready(groupId, list))
 

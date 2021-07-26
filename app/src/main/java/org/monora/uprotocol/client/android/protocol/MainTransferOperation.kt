@@ -20,6 +20,9 @@ package org.monora.uprotocol.client.android.protocol
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.NonCancellable.isCancelled
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
@@ -100,6 +103,10 @@ class MainTransferOperation(
             1000,
             ((transferred.toDouble() / total) * 1000).toInt()
         )
+
+        runBlocking {
+            Log.d(TAG, "publishProgress: $isActive")
+        }
 
         state.postValue(progress)
     }

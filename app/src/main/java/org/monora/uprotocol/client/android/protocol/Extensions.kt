@@ -17,11 +17,13 @@
  */
 package org.monora.uprotocol.client.android.protocol
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.backend.TaskRegistry
+import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
@@ -56,12 +58,6 @@ fun CommunicationBridge.rejectTransfer(transferRepository: TransferRepository, t
     }
     return false
 }
-
-fun Backend.registerTransfer(params: TransferParams, taskRegistry: TaskRegistry<TransferParams>) = this.register(
-    context.getString(if (params.transfer.type.isIncoming) R.string.text_receiving else R.string.text_sending),
-    params,
-    taskRegistry
-)
 
 fun runFileTransfer(
     bridge: CommunicationBridge,

@@ -628,4 +628,6 @@
     <string name="client_model">Model</string>
     <string name="percent_sign">%</string>
     <string name="waiting_approval">Waiting for the approval of receiver</string>
+    <string name="incoming">Incoming</string>
+    <string name="outgoing">Outgoing</string>
 </resources>

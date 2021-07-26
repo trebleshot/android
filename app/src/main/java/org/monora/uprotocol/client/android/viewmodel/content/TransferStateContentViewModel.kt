@@ -31,6 +31,8 @@ class TransferStateContentViewModel(change: Task.Change<TransferParams>?, val to
         get() = (if (total > 0 && progress > 0) ((progress.toDouble() / total) * 100).toInt() else 0).toString()
 
     val averageSpeedText = if (change != null && running) {
-        Files.formatLength(change.exported.averageSpeed, true)
+        "${Files.formatLength(change.exported.averageSpeed, true)}/s"
     } else null
+
+    val ongoing = change?.exported?.ongoing?.itemName
 }

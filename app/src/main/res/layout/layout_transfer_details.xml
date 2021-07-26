@@ -81,7 +81,7 @@
             style="@style/TextAppearance.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{transferViewModel.isReceiving ? @string/text_receiving : @string/text_sending}"
+            android:text="@{stateViewModel.ongoing ?? (transferViewModel.isReceiving ? @string/incoming : @string/outgoing)}"
             app:layout_constraintBottom_toTopOf="@+id/progressBar"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
             app:layout_constraintHorizontal_bias="0.5"
@@ -167,7 +167,7 @@
             tools:text="@tools:sample/date/hhmmss" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
+            android:id="@+id/toggleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:imageResource="@{stateViewModel.buttonIcon}"
@@ -180,19 +180,20 @@
         <ImageView
             android:id="@+id/showFilesButton"
             style="@style/OverflowButton"
-            app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
-            app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
+            app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
+            app:layout_constraintEnd_toStartOf="@+id/toggleButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/floatingActionButton"
+            app:layout_constraintTop_toTopOf="@+id/toggleButton"
             app:srcCompat="@drawable/ic_file_document_box_white_24dp" />
 
         <ImageView
             android:id="@+id/optionsButton"
             style="@style/OverflowButton"
-            app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
+            android:onClick="@{transferViewModel::showPopupMenu}"
+            app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/floatingActionButton"
-            app:layout_constraintTop_toTopOf="@+id/floatingActionButton" />
+            app:layout_constraintStart_toEndOf="@+id/toggleButton"
+            app:layout_constraintTop_toTopOf="@+id/toggleButton" />
 
         <Button
             android:id="@+id/rejectButton"
@@ -205,7 +206,7 @@
             app:layout_constraintEnd_toEndOf="@+id/optionsButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/showFilesButton"
-            app:layout_constraintTop_toBottomOf="@+id/floatingActionButton" />
+            app:layout_constraintTop_toBottomOf="@+id/toggleButton" />
 
         <TextView
             style="@style/TextAppearance.Primary"

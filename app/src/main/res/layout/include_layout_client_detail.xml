@@ -32,90 +32,62 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="24dp"
-        android:paddingTop="32dp"
-        android:paddingRight="24dp">
+        android:paddingTop="24dp">
 
         <ImageView
             android:id="@+id/image"
             pictureOf="@{viewModel.client}"
             android:layout_width="@dimen/icon_size_list_giant"
             android:layout_height="@dimen/icon_size_list_giant"
-            android:layout_gravity="center_horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/text1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
             android:id="@+id/text1"
             style="@style/TextAppearance.Primary.Big.SingleLine"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginTop="16dp"
             android:text="@{viewModel.nickname}"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView13"
+            app:layout_constraintEnd_toStartOf="@+id/versionText"
+            app:layout_constraintStart_toEndOf="@+id/image"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="@tools:sample/cities" />
-
-        <TextView
-            android:id="@+id/notSupportedText"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:maxLines="5"
-            android:text="@string/text_versionNotSupported"
-            android:visibility="@{viewModel.supported ? View.GONE : View.VISIBLE }"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text1" />
-
-        <TextView
-            android:id="@+id/textDeviceName"
-            style="@style/TextAppearance.Primary.SingleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/client_model"
-            app:layout_constraintEnd_toStartOf="@+id/textView13"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notSupportedText" />
 
         <TextView
             android:id="@+id/textView13"
             style="@style/TextAppearance.Secondary.SingleLine"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.product}"
-            app:layout_constraintBottom_toBottomOf="@+id/textDeviceName"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
+            app:layout_constraintEnd_toEndOf="@+id/text1"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textDeviceName"
-            app:layout_constraintTop_toTopOf="@+id/textDeviceName"
+            app:layout_constraintStart_toStartOf="@+id/text1"
+            app:layout_constraintTop_toBottomOf="@+id/text1"
             tools:text="@tools:sample/lorem" />
 
         <TextView
-            android:id="@+id/textView14"
-            style="@style/TextAppearance.Primary.SingleLine"
-            android:layout_width="wrap_content"
+            android:id="@+id/notSupportedText"
+            style="@style/TextAppearance.Secondary"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/text_version"
-            app:layout_constraintEnd_toStartOf="@+id/versionText"
+            android:layout_marginTop="24dp"
+            android:maxLines="5"
+            android:gravity="center"
+            android:text="@string/text_versionNotSupported"
+            android:visibility="@{viewModel.supported ? View.GONE : View.VISIBLE }"
+            app:layout_constraintBottom_toTopOf="@+id/switchCompat"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textDeviceName" />
+            app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@+id/profileBarrier" />
 
         <TextView
             android:id="@+id/versionText"
@@ -123,38 +95,69 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{viewModel.version}"
-            app:layout_constraintBottom_toBottomOf="@+id/textView14"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView14"
-            app:layout_constraintTop_toTopOf="@+id/textView14"
+            app:layout_constraintStart_toEndOf="@id/text1"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintTop_toTopOf="@+id/image"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
             tools:text="@tools:sample/lorem" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchCompat"
             style="@style/TextAppearance.Primary"
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:checked="@={viewModel.blocked}"
             android:onCheckedChanged="@{viewModel::onBlockedChanged}"
             android:text="@string/butn_block"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView14" />
+            app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintBottom_toTopOf="@+id/switchCompat2"
+            app:layout_constraintTop_toBottomOf="@+id/notSupportedText" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchCompat2"
             style="@style/TextAppearance.Primary"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:checked="@{viewModel.trusted}"
             android:enabled="@{!viewModel.blocked}"
             android:onCheckedChanged="@{viewModel::onTrustChanged}"
             android:text="@string/butn_trustDevice"
+            app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/switchCompat" />
+            app:layout_constraintTop_toBottomOf="@+id/switchCompat" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/profileBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="24dp"
+            app:constraint_referenced_ids="image, textView13"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="32dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?colorDivider"
+            app:layout_constraintBottom_toBottomOf="@id/profileBarrier" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="24dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

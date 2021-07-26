@@ -19,11 +19,9 @@
 package org.monora.uprotocol.client.android.backend
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.wifi.WifiConfiguration
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.collection.ArraySet
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
@@ -39,14 +37,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.TransferHistoryActivity
+import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.util.DynamicNotification
@@ -102,6 +98,21 @@ class Backend @Inject constructor(
         applicationScope.coroutineContext.cancelChildren(CancellationException("Application exited"))
     }
 
+    fun cancelMatchingTasks(filter: TaskFilter): Boolean {
+        return synchronized(taskSet) {
+            var cancelledAny = false
+
+            taskSet.forEach {
+                if (filter(it)) {
+                    it.job.cancel()
+                    cancelledAny = true
+                }
+            }
+
+            cancelledAny
+        }
+    }
+
     fun getHotspotConfig(): WifiConfiguration? {
         return services.hotspotManager.configuration
     }
@@ -141,7 +152,7 @@ class Backend @Inject constructor(
             services.notifications.notifyTransferRequest(client, transfer, itemList)
         } else {
             // TODO: 7/25/21 Also insert the transfer details and navigate to transfer details fragment
-            activity.startActivity(Intent(activity, TransferHistoryActivity::class.java))
+            activity.startActivity(Intent(activity, HomeActivity::class.java))
         }
     }
 

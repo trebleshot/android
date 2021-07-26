@@ -108,6 +108,7 @@
         <item name="strokeWidth">1dp</item>
         <item name="cardElevation">0dp</item>
         <item name="cardBackgroundColor">@android:color/transparent</item>
+        <item name="cardCornerRadius">8dp</item>
     </style>
 
     <style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval" parent="Widget.AppCompat.ProgressBar.Horizontal">
@@ -128,6 +129,11 @@
         <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
         <item name="android:textSize">@dimen/font_size_primary</item>
         <item name="fontFamily">@font/roundies</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Rounded" parent="">
+        <item name="cornerSize">8dp</item>
+        <item name="cornerFamily">rounded</item>
     </style>
 
     <style name="TextAppearance.Primary.SingleLine">

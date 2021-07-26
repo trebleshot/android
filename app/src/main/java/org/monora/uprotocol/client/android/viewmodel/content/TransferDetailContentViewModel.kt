@@ -17,6 +17,8 @@
  */
 package org.monora.uprotocol.client.android.viewmodel.content
 
+import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.TransferDetail
@@ -40,6 +42,8 @@ class TransferDetailContentViewModel(detail: TransferDetail) {
 
     val needsApproval = !detail.accepted && isReceiving
 
+    var onRemove: (() -> Unit)? = null
+
     private val percentage = with(detail) {
         if (sizeOfDone <= 0) 0 else ((sizeOfDone.toDouble() / size) * 100).toInt()
     }
@@ -49,4 +53,19 @@ class TransferDetailContentViewModel(detail: TransferDetail) {
     val percentageText = percentage.toString()
 
     val waitingApproval = !detail.accepted && !isReceiving
+
+    fun showPopupMenu(view: View) {
+        PopupMenu(view.context, view).apply {
+            inflate(R.menu.transfer_details)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.remove -> onRemove?.invoke()
+                    else -> return@setOnMenuItemClickListener false
+                }
+
+                true
+            }
+            show()
+        }
+    }
 }

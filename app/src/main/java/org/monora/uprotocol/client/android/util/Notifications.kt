@@ -32,7 +32,6 @@ import org.monora.uprotocol.client.android.activity.ContentSharingActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
-import org.monora.uprotocol.client.android.activity.TransferHistoryActivity
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -43,7 +42,6 @@ import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.BackgroundService.Companion.ACTION_STOP_ALL
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.core.transfer.TransferItem
 import java.text.NumberFormat
 import com.genonbeta.android.framework.util.Files as FwFiles
 
@@ -154,7 +152,7 @@ class Notifications(val backend: NotificationBackend) {
         val rejectIntent = (acceptIntent.clone() as Intent)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
         // TODO: 7/16/21 This should also have the 'transfer' extra.
-        val transferDetail: Intent = Intent(context, TransferHistoryActivity::class.java)
+        val transferDetail: Intent = Intent(context, HomeActivity::class.java)
         val message = if (numberOfFiles > 1) context.resources.getQuantityString(
             R.plurals.ques_receiveMultipleFiles,
             numberOfFiles, numberOfFiles
@@ -278,7 +276,7 @@ class Notifications(val backend: NotificationBackend) {
             val transfersIntent: PendingIntent = PendingIntent.getActivity(
                 context,
                 ID_BG_SERVICE + 1,
-                Intent(context, TransferHistoryActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
             val stopAllTasksAction = NotificationCompat.Action(

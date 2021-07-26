@@ -33,17 +33,21 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.ContentSharingActivity
+import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
 import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
-import org.monora.uprotocol.client.android.receiver.BgBroadcastReceiver
 import org.monora.uprotocol.client.android.viewholder.TransferDetailViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransfersViewModel
 
 @AndroidEntryPoint
 class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
+    private val managerViewModel: TransferManagerViewModel by viewModels()
+
     private val viewModel: TransfersViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,23 +63,13 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
                     )
                     ClickType.Reject -> {
                         val client = viewModel.getClient(transfer.clientUid) ?: return@launch
-
-                        context?.let {
-                            it.sendBroadcast(
-                                Intent(it, BgBroadcastReceiver::class.java)
-                                    .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
-                                    .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
-                                    .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
-                                    .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
-                            )
-                        }
+                        managerViewModel.rejectTransferRequest(client, transfer)
                     }
                     else -> {
-                        TODO("Implement task toggler")
+                        val client = viewModel.getClient(transfer.clientUid) ?: return@launch
+                        managerViewModel.toggleTransferOperation(client, transfer, detail)
                     }
                 }
-
-
             }
         }
         val emptyContentViewModel = EmptyContentViewModel()
@@ -86,6 +80,13 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
+
+        view.findViewById<View>(R.id.sendButton).setOnClickListener {
+            startActivity(Intent(it.context, ContentSharingActivity::class.java))
+        }
+        view.findViewById<View>(R.id.receiveButton).setOnClickListener {
+            startActivity(Intent(it.context, ReceiveActivity::class.java))
+        }
 
         viewModel.transferDetails.observe(viewLifecycleOwner) {
             adapter.submitList(it)

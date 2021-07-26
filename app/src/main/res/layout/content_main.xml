@@ -22,45 +22,17 @@
     android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/short_content_width_padding_border"
-    android:paddingRight="@dimen/short_content_width_padding_border"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.monora.uprotocol.client.android.activity.HomeActivity"
     tools:showIn="@layout/activity_main">
 
-    <Button
-        android:id="@+id/sendLayoutButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/butn_send"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/receiveLayoutButton"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/receiveLayoutButton"
-        style="?materialButtonOutlinedStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/butn_receive"
-        app:layout_constraintBottom_toBottomOf="@+id/sendLayoutButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sendLayoutButton"
-        app:layout_constraintTop_toTopOf="@+id/sendLayoutButton" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="200dip"
-        android:layout_height="200dip"
-        android:contentDescription="@string/text_appLogo"
-        app:layout_constraintBottom_toTopOf="@+id/receiveLayoutButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_uprotocol"
-        app:tint="?colorPassive" />
-
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_transfer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

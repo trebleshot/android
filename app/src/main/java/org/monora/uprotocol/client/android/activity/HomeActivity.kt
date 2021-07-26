@@ -20,7 +20,6 @@ package org.monora.uprotocol.client.android.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,19 +29,15 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
-import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Graphics
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 
 @AndroidEntryPoint
@@ -100,28 +95,12 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         if (BuildConfig.FLAVOR == "googlePlay") {
             navigationView.menu.findItem(R.id.menu_activity_main_donate).isVisible = true
         }
-        findViewById<View>(R.id.sendLayoutButton).setOnClickListener {
-            startActivity(Intent(it.context, ContentSharingActivity::class.java))
-        }
-        findViewById<View>(R.id.receiveLayoutButton).setOnClickListener {
-            startActivity(Intent(it.context, ReceiveActivity::class.java))
-        }
 
         userProfileBinding.executePendingBindings()
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.actions_home, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.actions_home_transfer_history) {
-            startActivity(Intent(this, TransferHistoryActivity::class.java))
-        } else {
-            return super.onOptionsItemSelected(item)
+        navController(R.id.nav_host_fragment).addOnDestinationChangedListener { _, destination, _ ->
+            title = destination.label
         }
-        return true
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

@@ -31,11 +31,11 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.protocol.registerTransfer
 import org.monora.uprotocol.client.android.protocol.rejectTransfer
 import org.monora.uprotocol.client.android.protocol.startTransfer
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
@@ -61,6 +61,9 @@ class BgBroadcastReceiver : BroadcastReceiver() {
     lateinit var persistenceProvider: PersistenceProvider
 
     @Inject
+    lateinit var taskRepository: TaskRepository
+
+    @Inject
     lateinit var transferRepository: TransferRepository
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -76,7 +79,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                 if (client != null && transfer != null) backend.applicationScope.launch(Dispatchers.IO) {
                     val details = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
 
-                    backend.registerTransfer(
+                    taskRepository.registerTransfer(
                         TransferParams(transfer, client, details.size, details.sizeOfDone)
                     ) { applicationScope, params, state ->
                         applicationScope.launch(Dispatchers.IO) {

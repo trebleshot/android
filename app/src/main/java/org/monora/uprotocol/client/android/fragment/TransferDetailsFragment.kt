@@ -19,10 +19,10 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,9 +30,9 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewmodel.RejectionState
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
+import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
@@ -48,6 +48,8 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
 
     private val args: TransferDetailsFragmentArgs by navArgs()
 
+    private val managerViewModel: TransferManagerViewModel by viewModels()
+
     private val viewModel: TransferDetailsViewModel by viewModels {
         TransferDetailsViewModel.ModelFactory(factory, args.transfer)
     }
@@ -56,6 +58,7 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = LayoutTransferDetailsBinding.bind(view)
+        val rejectionState = MutableLiveData<RejectionState>()
 
         binding.image.setOnClickListener {
             viewModel.client.value?.let {
@@ -69,18 +72,24 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
                 TransferDetailsFragmentDirections.actionTransferDetailsFragmentToTransferItemFragment(args.transfer)
             )
         }
-        binding.floatingActionButton.setOnClickListener {
-            viewModel.toggleTransferOperation()
+        binding.toggleButton.setOnClickListener {
+            val client = viewModel.client.value ?: return@setOnClickListener
+            val detail = viewModel.transferDetail.value ?: return@setOnClickListener
+
+            managerViewModel.toggleTransferOperation(client, args.transfer, detail)
         }
-        binding.rejectButton.setOnClickListener { button ->
-            viewModel.rejectTransferRequest()
+        binding.rejectButton.setOnClickListener {
+            val client = viewModel.client.value ?: return@setOnClickListener
+            managerViewModel.rejectTransferRequest(client, args.transfer, rejectionState)
         }
 
         viewModel.transferDetail.observe(viewLifecycleOwner) {
             if (it == null) {
                 findNavController().navigateUp()
             } else {
-                binding.transferViewModel = TransferDetailContentViewModel(it)
+                binding.transferViewModel = TransferDetailContentViewModel(it).apply {
+                    onRemove = viewModel::remove
+                }
                 binding.executePendingBindings()
             }
         }
@@ -101,7 +110,7 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             binding.executePendingBindings()
         }
 
-        viewModel.rejectionState.observe(viewLifecycleOwner) {
+        rejectionState.observe(viewLifecycleOwner) {
             binding.rejectButton.isEnabled = it !is RejectionState.Running
         }
     }
