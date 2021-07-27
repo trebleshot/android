@@ -185,9 +185,9 @@ class MainPersistenceProvider @Inject constructor(
         if (descriptor is StreamInfoStreamDescriptor) {
             return descriptor.streamInfo.openOutputStream(context)
         } else if (descriptor is DocumentFileStreamDescriptor) {
-            return context.contentResolver.openOutputStream(descriptor.documentFile.getUri()) ?: throw IOException(
-                "Supported resource did not open"
-            )
+            return context.contentResolver.openOutputStream(
+                descriptor.documentFile.getUri(), "wa"
+            ) ?: throw IOException("Supported resource did not open")
         }
 
         throw RuntimeException("Unsupported descriptor.")
