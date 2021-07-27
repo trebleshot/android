@@ -19,12 +19,14 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -36,6 +38,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
@@ -44,9 +48,9 @@ import org.monora.uprotocol.client.android.databinding.LayoutTransferItemBinding
 import org.monora.uprotocol.client.android.databinding.ListSectionTitleBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferItemBinding
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
+import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
-import org.monora.uprotocol.core.persistence.PersistenceProvider.*
 import org.monora.uprotocol.core.transfer.TransferItem
 import javax.inject.Inject
 
@@ -68,7 +72,16 @@ class TransferItemFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = ItemAdapter()
+        val adapter = ItemAdapter { item, clickType ->
+            when(clickType) {
+                ItemAdapter.ClickType.Default -> {
+
+                }
+                ItemAdapter.ClickType.Recover -> {
+                    viewModel.recover(item)
+                }
+            }
+        }
         val binding = LayoutTransferItemBinding.bind(view)
         val emptyContentViewModel = EmptyContentViewModel()
 
@@ -87,10 +100,19 @@ class TransferItemFragment : BottomSheetDialogFragment() {
 }
 
 class ItemViewModel @AssistedInject internal constructor(
-    transferRepository: TransferRepository,
-    @Assisted val transfer: Transfer,
+    private val transferRepository: TransferRepository,
+    @Assisted private val transfer: Transfer,
 ) : ViewModel() {
     val items = transferRepository.getTransferItems(transfer.id)
+
+    fun recover(item: UTransferItem) {
+        if (item.state == TransferItem.State.InvalidatedTemporarily) {
+            viewModelScope.launch(Dispatchers.IO) {
+                item.state = TransferItem.State.Pending
+                transferRepository.update(item)
+            }
+        }
+    }
 
     @AssistedFactory
     interface Factory {
@@ -126,9 +148,18 @@ class ItemContentViewModel(val transferItem: UTransferItem) {
     }
 }
 
-class ItemViewHolder(private val binding: ListTransferItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class ItemViewHolder(
+    private val clickListener: (item: UTransferItem, clickType: ItemAdapter.ClickType) -> Unit,
+    private val binding: ListTransferItemBinding
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(transferItem: UTransferItem) {
         binding.viewModel = ItemContentViewModel(transferItem)
+        binding.root.setOnClickListener {
+            clickListener(transferItem, ItemAdapter.ClickType.Default)
+        }
+        binding.recoverButton.setOnClickListener {
+            clickListener(transferItem, ItemAdapter.ClickType.Recover)
+        }
         binding.executePendingBindings()
     }
 }
@@ -143,9 +174,12 @@ class ItemCallback : DiffUtil.ItemCallback<Any>() {
     }
 }
 
-class ItemAdapter : ListAdapter<Any, ViewHolder>(ItemCallback()) {
+class ItemAdapter(
+    private val clickListener: (item: UTransferItem, clickType: ClickType) -> Unit,
+) : ListAdapter<Any, ViewHolder>(ItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_TRANSFER_ITEM -> ItemViewHolder(
+            clickListener,
             ListTransferItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
         VIEW_TYPE_SECTION -> TitleSectionViewHolder(
@@ -169,6 +203,11 @@ class ItemAdapter : ListAdapter<Any, ViewHolder>(ItemCallback()) {
 
     override fun getItemId(position: Int): Long {
         return getItem(position).hashCode().toLong()
+    }
+
+    enum class ClickType {
+        Default,
+        Recover,
     }
 
     companion object {
