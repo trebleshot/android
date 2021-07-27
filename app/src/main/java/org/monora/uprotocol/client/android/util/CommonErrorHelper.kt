@@ -20,8 +20,6 @@ package org.monora.uprotocol.client.android.util
 import android.content.Context
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.protocol.NoAddressException
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage
-import org.monora.uprotocol.client.android.service.backgroundservice.TaskMessage.Tone
 import org.monora.uprotocol.core.io.DefectiveAddressListException
 import org.monora.uprotocol.core.protocol.communication.CommunicationException
 import org.monora.uprotocol.core.protocol.communication.ContentException
@@ -33,57 +31,32 @@ import java.net.ConnectException
 import java.net.NoRouteToHostException
 
 object CommonErrorHelper {
-    // TODO: 7/24/21 Return a string that only contains the message, and then remove the TaskMessage class
-    fun messageOf(context: Context, exception: Exception): TaskMessage {
-        val title: String
-        val message: String
-        var action: TaskMessage.Action? = null
-
-        when (exception) {
-            is CommunicationException -> {
-                title = context.getString(R.string.text_communicationError)
-                message = when (exception) {
-                    is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
-                    is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
-                    is UndefinedErrorCodeException -> context.getString(
-                        R.string.mesg_unknownErrorOccurredWithCode,
-                        exception.errorCode
-                    )
-                    is ContentException -> context.getString(
-                        when (exception.error) {
-                            ContentException.Error.NotAccessible -> R.string.text_contentNotAccessible
-                            ContentException.Error.AlreadyExists -> R.string.text_contentAlreadyExists
-                            ContentException.Error.NotFound -> R.string.text_contentNotFound
-                            else -> R.string.mesg_unknownErrorOccurred
-                        }
-                    )
-                    else -> context.getString(R.string.mesg_unknownErrorOccurred)
-                }
-            }
-            is NoAddressException -> {
-                title = context.getString(R.string.text_communicationError)
-                message = context.getString(R.string.mesg_clientOffline)
-            }
-            is DifferentRemoteClientException -> {
-                title = context.getString(R.string.text_communicationError)
-                message = context.getString(R.string.mesg_errorDifferentDevice)
-            }
-            is ConnectException, is DefectiveAddressListException -> {
-                title = context.getString(R.string.text_communicationError)
-                message = context.getString(R.string.mesg_socketConnectionError)
-            }
-            is NoRouteToHostException -> {
-                title = context.getString(R.string.text_communicationError)
-                message = context.getString(R.string.mesg_noRouteToHostError)
-            }
-            else -> {
-                title = context.getString(R.string.mesg_somethingWentWrong)
-                message = context.getString(R.string.mesg_unknownErrorOccurred)
+    fun messageOf(context: Context, exception: Exception): String = when (exception) {
+        is CommunicationException -> {
+            when (exception) {
+                is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
+                is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
+                is UndefinedErrorCodeException -> context.getString(
+                    R.string.mesg_unknownErrorOccurredWithCode,
+                    exception.errorCode
+                )
+                is ContentException -> context.getString(
+                    when (exception.error) {
+                        ContentException.Error.NotAccessible -> R.string.text_contentNotAccessible
+                        ContentException.Error.AlreadyExists -> R.string.text_contentAlreadyExists
+                        ContentException.Error.NotFound -> R.string.text_contentNotFound
+                        else -> R.string.mesg_unknownErrorOccurred
+                    }
+                )
+                else -> context.getString(R.string.mesg_unknownErrorOccurred)
             }
         }
-
-        val taskMessage = TaskMessage.newInstance(title, message, Tone.Negative)
-        if (action != null) taskMessage.addAction(action)
-        return taskMessage
+        is NoAddressException -> context.getString(R.string.mesg_clientOffline)
+        is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
+        is ConnectException, is DefectiveAddressListException -> context.getString(
+            R.string.mesg_socketConnectionError
+        )
+        is NoRouteToHostException -> context.getString(R.string.mesg_noRouteToHostError)
+        else -> context.getString(R.string.mesg_unknownErrorOccurred)
     }
 }

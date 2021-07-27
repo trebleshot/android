@@ -101,7 +101,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                     )
                 }
                 is SharingState.Error -> {
-                    val msg = CommonErrorHelper.messageOf(requireContext(), it.exception).message
+                    val msg = CommonErrorHelper.messageOf(requireContext(), it.exception)
                     Snackbar.make(binding.fab, msg, Snackbar.LENGTH_LONG).show()
                 }
             }

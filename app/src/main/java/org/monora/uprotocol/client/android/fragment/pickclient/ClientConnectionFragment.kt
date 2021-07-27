@@ -68,7 +68,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
                 }
                 is ConnectionState.Error -> {
                     it.e.printStackTrace()
-                    binding.textOffline.text = CommonErrorHelper.messageOf(requireContext(), it.e).message
+                    binding.textOffline.text = CommonErrorHelper.messageOf(requireContext(), it.e)
                 }
                 is ConnectionState.Connecting -> {
                 }
