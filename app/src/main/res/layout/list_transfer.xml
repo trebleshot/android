@@ -24,6 +24,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="feederModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.TransferStateFeederViewModel" />
+
+        <variable
             name="viewModel"
             type="org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel" />
     </data>
@@ -61,10 +65,10 @@
                 style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
                 android:layout_width="@dimen/icon_size_list_normal"
                 android:layout_height="@dimen/icon_size_list_normal"
-                android:layout_marginRight="16dp"
                 android:layout_marginEnd="16dp"
-                android:max="100"
-                android:progress="@{viewModel.progress}"
+                android:layout_marginRight="16dp"
+                android:max="@{feederModel.state.running ? feederModel.state.total : 100 }"
+                android:progress="@{feederModel.state.running ? feederModel.state.progress : viewModel.progress }"
                 app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
                 app:layout_constraintEnd_toStartOf="@+id/text"
                 app:layout_constraintStart_toStartOf="parent"
@@ -79,11 +83,11 @@
                 android:contentDescription="@string/text_image"
                 android:padding="8dp"
                 android:visibility="@{viewModel.needsApproval ? View.GONE : View.VISIBLE}"
+                app:imageResource="@{feederModel.state.buttonIcon}"
                 app:layout_constraintBottom_toBottomOf="@+id/progressBar"
                 app:layout_constraintEnd_toEndOf="@+id/progressBar"
                 app:layout_constraintStart_toStartOf="@+id/progressBar"
-                app:layout_constraintTop_toTopOf="@+id/progressBar"
-                app:srcCompat="@drawable/ic_play_arrow_white_24dp" />
+                app:layout_constraintTop_toTopOf="@+id/progressBar" />
 
             <TextView
                 android:id="@+id/text"
@@ -104,10 +108,10 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:text="@{viewModel.sizeText}"
-                app:layout_constraintStart_toEndOf="@id/text"
-                app:layout_constraintEnd_toStartOf="@+id/imageView5"
-                app:layout_constraintTop_toBottomOf="@id/barrierTop"
                 app:layout_constraintBottom_toTopOf="@id/barrierBottom"
+                app:layout_constraintEnd_toStartOf="@+id/imageView5"
+                app:layout_constraintStart_toEndOf="@id/text"
+                app:layout_constraintTop_toBottomOf="@id/barrierTop"
                 tools:text="@tools:sample/date/mmddyy" />
 
             <TextView
@@ -115,7 +119,7 @@
                 style="@style/TextAppearance.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{@plurals/text_files(viewModel.count, viewModel.count)}"
+                android:text="@{feederModel.state.running ? feederModel.state.averageSpeedText : @plurals/text_files(viewModel.count, viewModel.count)}"
                 app:layout_constraintEnd_toEndOf="@+id/text"
                 app:layout_constraintStart_toStartOf="@+id/text"
                 app:layout_constraintTop_toBottomOf="@+id/text"
@@ -126,9 +130,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:imageResource="@{viewModel.icon}"
-                app:layout_constraintTop_toBottomOf="@id/barrierTop"
                 app:layout_constraintBottom_toTopOf="@id/barrierBottom"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrierTop" />
+
+
 
             <Button
                 android:id="@+id/rejectButton"
@@ -136,8 +142,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="@string/butn_reject"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -149,8 +155,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="@string/butn_receive"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -169,7 +175,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="progressBar,text2, text1,imageView5" />
+                app:constraint_referenced_ids="progressBar,text2,text1,imageView5"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="94dp" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrierTop"

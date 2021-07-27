@@ -104,10 +104,6 @@ class MainTransferOperation(
             ((transferred.toDouble() / total) * 1000).toInt()
         )
 
-        runBlocking {
-            Log.d(TAG, "publishProgress: $isActive")
-        }
-
         state.postValue(progress)
     }
 

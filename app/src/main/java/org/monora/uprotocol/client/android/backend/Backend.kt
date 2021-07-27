@@ -244,14 +244,13 @@ class Backend @Inject constructor(
 
         return Transformations.switchMap(tasks) { list ->
             if (previous == null || Task.State.Finished == previous?.first?.state?.value) {
-                Log.d(TAG, "subscribeToTask: Recreating a live data instance")
                 previous = null
 
                 for (task in list) {
-                    val result = condition(task)
-                    if (result != null) {
+                    val exported = condition(task)
+                    if (exported != null) {
                         previous = task to Transformations.map(task.state) {
-                            Task.Change(task, result, it)
+                            Task.Change(task, exported, it)
                         }
                         break
                     }
@@ -259,6 +258,23 @@ class Backend @Inject constructor(
             }
 
             previous?.second ?: dummyLiveData
+        }
+    }
+
+    fun <T> subscribeToTasks(condition: TaskSubscriber<T>): LiveData<List<Task.Change<T>>> {
+        return Transformations.switchMap(tasks) { list ->
+            liveData<List<Task.Change<T>>> {
+                val filtered = mutableListOf<Task.Change<T>>()
+
+                for (task in list) {
+                    val exported = condition(task)
+                    if (exported != null) {
+                        filtered.add(Task.Change(task, exported, task.state.value ?: Task.State.Pending))
+                    }
+                }
+
+                emit(filtered)
+            }
         }
     }
 

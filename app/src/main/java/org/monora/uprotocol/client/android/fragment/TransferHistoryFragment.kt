@@ -19,12 +19,16 @@ package org.monora.uprotocol.client.android.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.liveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -39,10 +43,14 @@ import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
 import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewholder.TransferDetailViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransfersViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 
 @AndroidEntryPoint
 class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
@@ -54,7 +62,10 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = TransferHistoryAdapter { detail, clickType ->
+        val gibSubscriberListener = { transferDetail: TransferDetail ->
+            viewModel.subscribe(transferDetail)
+        }
+        val adapter = TransferHistoryAdapter(gibSubscriberListener) { detail, clickType ->
             lifecycleScope.launch {
                 val transfer = viewModel.getTransfer(detail.id) ?: return@launch
                 when (clickType) {
@@ -96,11 +107,14 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
 }
 
 class TransferHistoryAdapter(
+    private val gibSubscriberListener: (detail: TransferDetail) -> LiveData<TransferStateContentViewModel>,
     private val clickListener: (detail: TransferDetail, clickType: ClickType) -> Unit
 ) : ListAdapter<TransferDetail, ViewHolder>(TransferDetailItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         if (viewType == VIEW_TYPE_TRANSFER) {
             return TransferDetailViewHolder(
+                gibSubscriberListener,
+                clickListener,
                 ListTransferBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         } else {
@@ -110,12 +124,22 @@ class TransferHistoryAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is TransferDetailViewHolder) {
-            holder.bind(getItem(position), clickListener)
+            holder.bind(getItem(position))
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return VIEW_TYPE_TRANSFER
+    override fun onViewAttachedToWindow(holder: ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        if (holder is TransferDetailViewHolder) {
+            holder.onAppear()
+        }
+    }
+
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        if (holder is TransferDetailViewHolder) {
+            holder.onDisappear()
+        }
     }
 
     enum class ClickType {

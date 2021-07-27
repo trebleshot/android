@@ -17,17 +17,27 @@
  */
 package org.monora.uprotocol.client.android.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.task.transfer.TransferState
+import org.monora.uprotocol.client.android.util.TAG
+import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class TransfersViewModel @Inject internal constructor(
     private val clientRepository: ClientRepository,
+    private val taskRepository: TaskRepository,
     private val transferRepository: TransferRepository,
 ) : ViewModel() {
     val transferDetails = transferRepository.getTransferDetails()
@@ -35,4 +45,10 @@ class TransfersViewModel @Inject internal constructor(
     suspend fun getTransfer(groupId: Long): Transfer? = transferRepository.getTransfer(groupId)
 
     suspend fun getClient(clientUid: String): UClient? = clientRepository.getDirect(clientUid)
+
+    fun subscribe(transferDetail: TransferDetail) = taskRepository.subscribeToTask {
+        if (it.params is TransferParams && it.params.transfer.id == transferDetail.id) it.params else null
+    }.map {
+        TransferStateContentViewModel.from(it)
+    }
 }

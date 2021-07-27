@@ -29,13 +29,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.viewmodel.RejectionState
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
-import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -102,11 +100,7 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         }
 
         viewModel.state.observe(viewLifecycleOwner) {
-            binding.stateViewModel = when (val state = it?.state) {
-                is Task.State.Progress -> TransferStateContentViewModel(it, state.total, state.progress)
-                else -> TransferStateContentViewModel(it)
-            }
-
+            binding.stateViewModel = it
             binding.executePendingBindings()
         }
 

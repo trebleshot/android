@@ -19,6 +19,7 @@ package org.monora.uprotocol.client.android.viewmodel.content
 
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.LiveData
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.TransferDetail

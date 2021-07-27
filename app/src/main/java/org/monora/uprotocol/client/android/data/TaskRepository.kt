@@ -56,4 +56,6 @@ class TaskRepository @Inject constructor(
     )
 
     fun <T : Any> subscribeToTask(condition: TaskSubscriber<T>) = backend.subscribeToTask(condition)
+
+    fun <T : Any> subscribeToTasks(condition: TaskSubscriber<T>) = backend.subscribeToTasks(condition)
 }

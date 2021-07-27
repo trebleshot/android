@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -31,6 +32,7 @@ import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 
 class TransferDetailsViewModel @AssistedInject internal constructor(
     userRepository: ClientRepository,
@@ -44,6 +46,8 @@ class TransferDetailsViewModel @AssistedInject internal constructor(
 
     val state = taskRepository.subscribeToTask {
         if (it.params is TransferParams && it.params.transfer.id == transfer.id) it.params else null
+    }.map {
+        TransferStateContentViewModel.from(it)
     }
 
     fun remove() {
