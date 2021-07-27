@@ -79,7 +79,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                 if (client != null && transfer != null) backend.applicationScope.launch(Dispatchers.IO) {
                     val details = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
 
-                    taskRepository.registerTransfer(
+                    taskRepository.register(
                         TransferParams(transfer, client, details.size, details.sizeOfDone)
                     ) { applicationScope, params, state ->
                         applicationScope.launch(Dispatchers.IO) {

@@ -46,14 +46,16 @@ class TaskRepository @Inject constructor(
         name, params, registry
     )
 
-    fun registerTransfer(
+    fun register(
         params: TransferParams,
         taskRegistry: TaskRegistry<TransferParams>
     ) = this.register(
         context.getString(if (params.transfer.type.isIncoming) R.string.text_receiving else R.string.text_sending),
         params,
         taskRegistry
-    )
+    ).also {
+        params.job = it.job
+    }
 
     fun <T : Any> subscribeToTask(condition: TaskSubscriber<T>) = backend.subscribeToTask(condition)
 

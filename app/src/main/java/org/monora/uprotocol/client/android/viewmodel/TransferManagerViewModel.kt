@@ -87,7 +87,7 @@ class TransferManagerViewModel @Inject internal constructor(
             return
         }
 
-        taskRepository.registerTransfer(
+        taskRepository.register(
             TransferParams(transfer, client, bytesTotal, bytesDone)
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {

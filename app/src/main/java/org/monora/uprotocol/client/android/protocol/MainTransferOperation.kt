@@ -20,11 +20,7 @@ package org.monora.uprotocol.client.android.protocol
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.NonCancellable.isCancelled
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -33,6 +29,7 @@ import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.TAG
+import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferOperation
@@ -42,10 +39,11 @@ class MainTransferOperation(
     private val transferRepository: TransferRepository,
     private val transferParams: TransferParams,
     private val state: MutableLiveData<Task.State>,
+    private val cancellationCallback: () -> Unit,
 ) : TransferOperation {
-    var speedCalcTime = 0L
+    private var speedCalcTime = 0L
 
-    var bytesIncreaseInSec = 0L
+    private var bytesIncreaseInSec = 0L
 
     override fun clearBytesOngoing() {
         transferParams.bytesOngoing = 0
@@ -80,7 +78,6 @@ class MainTransferOperation(
 
                 if (ongoing is UTransferItem) runBlocking {
                     transferRepository.update(ongoing)
-                    Log.d(TAG, "installReceivedContent: Saved $ongoing")
                 }
             }
             else -> Log.d(TAG, "installReceivedContent: Unknown descriptor type to save: $descriptor")
@@ -88,23 +85,24 @@ class MainTransferOperation(
     }
 
     override fun onCancelOperation() {
-        Log.d(TAG, "onCancelOperation: ")
+        Log.d(TAG, "Operation cancelled by one of the two sides")
     }
 
     override fun onUnhandledException(e: Exception) {
-        e.printStackTrace()
+        state.postValue(Task.State.Error(e))
     }
 
     override fun publishProgress() {
         val total = transferParams.bytesTotal.takeIf { it > 0 } ?: return
         val transferred = (bytesTotal + bytesOngoing).takeIf { it > 0 } ?: return
-        val progress = Task.State.Progress(
-            ongoing?.itemName ?: backend.context.getString(R.string.mesg_waiting),
-            1000,
-            ((transferred.toDouble() / total) * 1000).toInt()
-        )
+        val itemName = ongoing?.itemName ?: return
+        val progress = Task.State.Progress(itemName, 1000, ((transferred.toDouble() / total) * 1000).toInt())
 
         state.postValue(progress)
+
+        transferParams.job?.let {
+            if (it.isCancelled) cancellationCallback()
+        }
     }
 
     override fun setBytesOngoing(bytes: Long, bytesIncrease: Long) {

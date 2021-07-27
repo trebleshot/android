@@ -17,13 +17,9 @@
  */
 package org.monora.uprotocol.client.android.protocol
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.runBlocking
-import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
-import org.monora.uprotocol.client.android.backend.TaskRegistry
-import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
@@ -32,6 +28,9 @@ import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.Transfers
 import java.net.ProtocolException
+
+val CommunicationBridge.cancellationCallback: () -> Unit
+    get() = { activeConnection.cancel() }
 
 val TransferItem.Type.isIncoming
     get() = this == TransferItem.Type.Incoming
@@ -73,7 +72,7 @@ fun runFileTransfer(
         }
     }
 
-    val operation = MainTransferOperation(backend, transferRepository, params, state)
+    val operation = MainTransferOperation(backend, transferRepository, params, state, bridge.cancellationCallback)
 
     if (params.transfer.type.isIncoming) {
         Transfers.receive(bridge, operation, params.transfer.id)
