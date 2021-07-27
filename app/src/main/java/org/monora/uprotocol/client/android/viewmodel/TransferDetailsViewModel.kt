@@ -18,6 +18,7 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
@@ -31,6 +32,7 @@ import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 

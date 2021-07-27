@@ -29,33 +29,27 @@ import org.monora.uprotocol.core.protocol.communication.client.UnauthorizedClien
 import org.monora.uprotocol.core.protocol.communication.client.UntrustedClientException
 import java.net.ConnectException
 import java.net.NoRouteToHostException
+import java.net.ProtocolException
 
 object CommonErrorHelper {
     fun messageOf(context: Context, exception: Exception): String = when (exception) {
-        is CommunicationException -> {
-            when (exception) {
-                is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
-                is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
-                is UndefinedErrorCodeException -> context.getString(
-                    R.string.mesg_unknownErrorOccurredWithCode,
-                    exception.errorCode
-                )
-                is ContentException -> context.getString(
-                    when (exception.error) {
-                        ContentException.Error.NotAccessible -> R.string.text_contentNotAccessible
-                        ContentException.Error.AlreadyExists -> R.string.text_contentAlreadyExists
-                        ContentException.Error.NotFound -> R.string.text_contentNotFound
-                        else -> R.string.mesg_unknownErrorOccurred
-                    }
-                )
-                else -> context.getString(R.string.mesg_unknownErrorOccurred)
-            }
-        }
-        is NoAddressException -> context.getString(R.string.mesg_clientOffline)
-        is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
-        is ConnectException, is DefectiveAddressListException -> context.getString(
-            R.string.mesg_socketConnectionError
+        is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
+        is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
+        is UndefinedErrorCodeException -> context.getString(
+            R.string.mesg_unknownErrorOccurredWithCode, exception.errorCode
         )
+        is ContentException -> context.getString(
+            when (exception.error) {
+                ContentException.Error.NotAccessible -> R.string.text_contentNotAccessible
+                ContentException.Error.AlreadyExists -> R.string.text_contentAlreadyExists
+                ContentException.Error.NotFound -> R.string.text_contentNotFound
+            }
+        )
+        is CommunicationException -> context.getString(R.string.error_communication_unknown)
+        is NoAddressException -> context.getString(R.string.error_client_no_address)
+        is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
+        is ProtocolException -> context.getString(R.string.error_protocol_unknown)
+        is ConnectException, is DefectiveAddressListException -> context.getString(R.string.mesg_socketConnectionError)
         is NoRouteToHostException -> context.getString(R.string.mesg_noRouteToHostError)
         else -> context.getString(R.string.mesg_unknownErrorOccurred)
     }

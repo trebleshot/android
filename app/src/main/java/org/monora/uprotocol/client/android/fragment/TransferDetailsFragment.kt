@@ -25,10 +25,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
+import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.client.android.viewmodel.RejectionState
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
@@ -102,6 +105,14 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         viewModel.state.observe(viewLifecycleOwner) {
             binding.stateViewModel = it
             binding.executePendingBindings()
+
+            if (it.state is Task.State.Error) context?.let { context ->
+                Snackbar.make(
+                    binding.root,
+                    CommonErrorHelper.messageOf(context, it.state.error),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
 
         rejectionState.observe(viewLifecycleOwner) {

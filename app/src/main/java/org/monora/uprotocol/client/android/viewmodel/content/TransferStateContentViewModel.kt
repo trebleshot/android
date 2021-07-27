@@ -36,6 +36,8 @@ class TransferStateContentViewModel(change: Task.Change<TransferParams>?, val to
 
     val ongoing = change?.exported?.ongoing?.itemName
 
+    val state = change?.state ?: Task.State.Pending
+
     companion object {
         fun from(change: Task.Change<TransferParams>?) = when (val state = change?.state) {
             is Task.State.Progress -> TransferStateContentViewModel(change, state.total, state.progress)

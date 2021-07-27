@@ -560,13 +560,13 @@
     <string name="mesg_enterValidHostAddress">Please enter an internet address!</string>
     <string name="text_deviceKeyChanged">Device key changed</string>
     <string name="ques_acceptNewDeviceKey">Do you accept the new key for %s?</string>
-    <string name="mesg_errorDifferentDevice">The connected device was different.</string>
-    <string name="mesg_unknownErrorOccurred">An unknown error occurred!</string>
-    <string name="mesg_unknownErrorOccurredWithCode">The error %s occurred.</string>
+    <string name="mesg_errorDifferentDevice">The connected device was different</string>
+    <string name="mesg_unknownErrorOccurred">An unknown error occurred</string>
+    <string name="mesg_unknownErrorOccurredWithCode">The error %s occurred</string>
     <string name="text_networkSuggestionError">Network Suggestion Error</string>
     <string name="text_communicationError">Communication Error</string>
-    <string name="mesg_socketConnectionError">Failed to connect to the service!</string>
-    <string name="mesg_noRouteToHostError">This address is unreachable!</string>
+    <string name="mesg_socketConnectionError">Failed to connect to the service</string>
+    <string name="mesg_noRouteToHostError">This address is unreachable</string>
     <string name="text_allDevices">All Devices</string>
     <string name="text_noOnlineDevices">Online clients appear here</string>
     <string name="text_online">Online</string>
@@ -630,4 +630,7 @@
     <string name="waiting_approval">Waiting for the approval of receiver</string>
     <string name="incoming">Incoming</string>
     <string name="outgoing">Outgoing</string>
+    <string name="error_communication_unknown">An unknown communication error occurred</string>
+    <string name="error_client_no_address">The client has no address (try manually connecting)</string>
+    <string name="error_protocol_unknown">An unknown protocol error occurred</string>
 </resources>

@@ -19,7 +19,6 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +47,7 @@ import org.monora.uprotocol.client.android.databinding.LayoutTransferItemBinding
 import org.monora.uprotocol.client.android.databinding.ListSectionTitleBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferItemBinding
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
-import org.monora.uprotocol.client.android.util.TAG
+import org.monora.uprotocol.client.android.protocol.isIncoming
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -73,7 +72,7 @@ class TransferItemFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter = ItemAdapter { item, clickType ->
-            when(clickType) {
+            when (clickType) {
                 ItemAdapter.ClickType.Default -> {
 
                 }
@@ -138,7 +137,7 @@ class ItemContentViewModel(val transferItem: UTransferItem) {
 
     val size = Files.formatLength(transferItem.size, false)
 
-    val shouldRecover = transferItem.state == TransferItem.State.InvalidatedTemporarily
+    val shouldRecover = transferItem.type.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
 
     val state = when (transferItem.state) {
         TransferItem.State.InvalidatedTemporarily -> "Interrupted"
