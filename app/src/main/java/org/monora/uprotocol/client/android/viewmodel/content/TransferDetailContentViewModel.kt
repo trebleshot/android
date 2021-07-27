@@ -31,6 +31,8 @@ class TransferDetailContentViewModel(detail: TransferDetail) {
 
     val sizeText = Files.formatLength(detail.size, false)
 
+    val isFinished = detail.itemsCount == detail.itemsDoneCount
+
     val isReceiving = detail.type == TransferItem.Type.Incoming
 
     val count = detail.itemsCount
@@ -40,6 +42,8 @@ class TransferDetailContentViewModel(detail: TransferDetail) {
     } else {
         R.drawable.ic_arrow_up_white_24dp
     }
+
+    val finishedIcon = R.drawable.ic_done_white_24dp
 
     val needsApproval = !detail.accepted && isReceiving
 

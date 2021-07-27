@@ -46,8 +46,9 @@ class TransferDetailViewHolder(
     }
 
     fun onDisappear() {
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
     fun bind(transferDetail: TransferDetail) {

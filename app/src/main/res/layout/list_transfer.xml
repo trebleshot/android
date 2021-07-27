@@ -67,6 +67,7 @@
                 android:layout_height="@dimen/icon_size_list_normal"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
+                android:visibility="@{viewModel.finished ? View.INVISIBLE : View.VISIBLE}"
                 android:max="@{feederModel.state.running ? feederModel.state.total : 100 }"
                 android:progress="@{feederModel.state.running ? feederModel.state.progress : viewModel.progress }"
                 app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
@@ -83,7 +84,7 @@
                 android:contentDescription="@string/text_image"
                 android:padding="8dp"
                 android:visibility="@{viewModel.needsApproval ? View.GONE : View.VISIBLE}"
-                app:imageResource="@{feederModel.state.buttonIcon}"
+                app:imageResource="@{viewModel.finished ? viewModel.finishedIcon : feederModel.state.buttonIcon}"
                 app:layout_constraintBottom_toBottomOf="@+id/progressBar"
                 app:layout_constraintEnd_toEndOf="@+id/progressBar"
                 app:layout_constraintStart_toStartOf="@+id/progressBar"
@@ -133,7 +134,6 @@
                 app:layout_constraintBottom_toTopOf="@id/barrierBottom"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/barrierTop" />
-
 
 
             <Button
