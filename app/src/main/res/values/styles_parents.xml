@@ -31,6 +31,8 @@
         <item name="popupMenuBackground">?backgroundPopupMenu</item>
         <!--<item name="snackbarStyle">@style/Widget.TrebleShot.Snackbar</item>-->
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearanceOverlay.Rounded</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearanceOverlay.Rounded</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearanceOverlay.Rounded</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
         <item name="toolbarStyle">@style/Widget.TrebleShot.Toolbar</item>
