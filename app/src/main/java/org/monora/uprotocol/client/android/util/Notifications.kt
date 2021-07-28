@@ -129,8 +129,8 @@ class Notifications(val backend: NotificationBackend) {
             )
             .setDefaults(backend.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_accept), positiveIntent)
-            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_reject), negativeIntent)
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_yes), positiveIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
             .setTicker(context.getString(R.string.text_connectionPermission))
         notification.show()
     }
@@ -178,10 +178,10 @@ class Notifications(val backend: NotificationBackend) {
             .setDeleteIntent(negativeIntent)
             .addAction(
                 R.drawable.ic_check_white_24dp_static,
-                context.getString(R.string.butn_receive),
+                context.getString(R.string.butn_yes),
                 positiveIntent
             )
-            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_reject), negativeIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
             .setTicker(context.getString(R.string.ques_receiveFile)).priority = NotificationCompat.PRIORITY_HIGH
         notification.show()
     }
@@ -226,12 +226,8 @@ class Notifications(val backend: NotificationBackend) {
             )
             .setDefaults(backend.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(
-                R.drawable.ic_check_white_24dp_static, context.getString(android.R.string.copy), positiveIntent
-            )
-            .addAction(
-                R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent
-            )
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_yes), positiveIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
             .setTicker(context.getString(R.string.text_receivedTextSummary)).priority =
             NotificationCompat.PRIORITY_HIGH
         notification.show()
@@ -372,10 +368,6 @@ class Notifications(val backend: NotificationBackend) {
             .setOngoing(true)
 
         return notification
-    }
-
-    fun showToast(toastTextRes: Int) {
-        Toast.makeText(context, toastTextRes, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
