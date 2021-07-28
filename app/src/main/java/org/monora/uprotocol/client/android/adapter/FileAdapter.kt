@@ -32,7 +32,9 @@ import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import org.monora.uprotocol.client.android.viewholder.FileViewHolder
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 
-class FileAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
+class FileAdapter(
+    private val clickListener: (contentModel: ContentModel) -> Unit
+) : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_FILE -> FileViewHolder(
             ListFileNouveauBinding.inflate(LayoutInflater.from(parent.context), parent, false)

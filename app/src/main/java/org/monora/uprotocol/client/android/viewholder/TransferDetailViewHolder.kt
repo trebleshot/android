@@ -35,6 +35,7 @@ class TransferDetailViewHolder(
     private val clickListener: (TransferDetail, ClickType) -> Unit,
     private val binding: ListTransferBinding,
 ) : RecyclerView.ViewHolder(binding.root), LifecycleOwner {
+    // FIXME: 7/28/21 ViewHolder lifecycle isn't called when user leaves the activity
     private val lifecycleRegistry = LifecycleRegistry(this).apply {
         currentState = Lifecycle.State.INITIALIZED
     }
@@ -48,7 +49,11 @@ class TransferDetailViewHolder(
     fun onDisappear() {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+    }
+
+    fun onDestroy() {
+        // FIXME: 7/28/21 Recycled views are still being used for some reason and destroyed state is not reusable
+        //lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
     fun bind(transferDetail: TransferDetail) {

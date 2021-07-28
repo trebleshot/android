@@ -142,6 +142,13 @@ class TransferHistoryAdapter(
         }
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is TransferDetailViewHolder) {
+            holder.onDestroy()
+        }
+    }
+
     enum class ClickType {
         Default,
         ToggleTask,

@@ -42,7 +42,9 @@ class FileFragment : Fragment(R.layout.layout_file_fragment) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = FileAdapter()
+        val adapter = FileAdapter() {
+
+        }
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel

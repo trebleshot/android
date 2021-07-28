@@ -18,6 +18,7 @@
 
 package org.monora.uprotocol.client.android.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -85,8 +86,8 @@ class TransferItemFragment : BottomSheetDialogFragment() {
         val emptyContentViewModel = EmptyContentViewModel()
 
         binding.emptyView.viewModel = emptyContentViewModel
-        binding.emptyView.emptyText.setText(R.string.text_listEmptyTextStream)
-        binding.emptyView.emptyImage.setImageResource(R.drawable.ic_short_text_white_24dp)
+        binding.emptyView.emptyText.setText(R.string.text_listEmptyFiles)
+        binding.emptyView.emptyImage.setImageResource(R.drawable.ic_insert_drive_file_white_24dp)
         binding.emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         binding.recyclerView.adapter = adapter
@@ -132,19 +133,21 @@ class ItemViewModel @AssistedInject internal constructor(
     }
 }
 
-class ItemContentViewModel(val transferItem: UTransferItem) {
+class ItemContentViewModel(val transferItem: UTransferItem, context: Context) {
     val name = transferItem.name
 
     val size = Files.formatLength(transferItem.size, false)
 
     val shouldRecover = transferItem.type.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
 
-    val state = when (transferItem.state) {
-        TransferItem.State.InvalidatedTemporarily -> "Interrupted"
-        TransferItem.State.Invalidated -> "Removed"
-        TransferItem.State.Done -> "Completed"
-        else -> "Pending"
-    }
+    val state = context.getString(
+        when (transferItem.state) {
+            TransferItem.State.InvalidatedTemporarily -> R.string.text_flagInterrupted
+            TransferItem.State.Invalidated -> R.string.text_flagRemoved
+            TransferItem.State.Done -> R.string.completed
+            else -> R.string.text_flagPending
+        }
+    )
 }
 
 class ItemViewHolder(
@@ -152,7 +155,7 @@ class ItemViewHolder(
     private val binding: ListTransferItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(transferItem: UTransferItem) {
-        binding.viewModel = ItemContentViewModel(transferItem)
+        binding.viewModel = ItemContentViewModel(transferItem, binding.root.context)
         binding.root.setOnClickListener {
             clickListener(transferItem, ItemAdapter.ClickType.Default)
         }

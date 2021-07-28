@@ -54,13 +54,12 @@ class PrepareSharingFragment : Fragment(R.layout.layout_prepare_sharing) {
         val binding = LayoutPrepareSharingBinding.bind(view)
 
         binding.button.setOnClickListener {
-            findNavController().navigateUp()
+            if (!findNavController().navigateUp()) activity?.finish()
         }
 
         preparationViewModel.shared.observe(viewLifecycleOwner) {
             when (it) {
                 is PreparationState.Progress -> {
-                    binding.textMain.text = it.title
                     binding.progressBar.max = it.total
 
                     if (Build.VERSION.SDK_INT >= 24) {

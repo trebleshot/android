@@ -40,11 +40,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="@dimen/short_content_width_padding"
-        android:paddingTop="16dp"
-        android:paddingRight="@dimen/short_content_width_padding"
-        android:paddingBottom="16dp">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/image"
@@ -159,7 +155,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@{stateViewModel.averageSpeedText}"
+            android:text="@{transferViewModel.finished ? @string/completed : stateViewModel.averageSpeedText}"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
             app:layout_constraintStart_toStartOf="@+id/progressBar"
@@ -170,56 +166,55 @@
             android:id="@+id/toggleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="@{!transferViewModel.finished}"
             app:imageResource="@{stateViewModel.buttonIcon}"
-            app:layout_constraintBottom_toTopOf="@+id/rejectButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+            app:layout_constraintEnd_toStartOf="@id/optionsButton"
+            app:layout_constraintStart_toEndOf="@id/showFilesButton"
+            app:layout_constraintTop_toBottomOf="@id/progressBar"
+            app:layout_constraintBottom_toTopOf="@id/rejectButton" />
 
         <ImageView
             android:id="@+id/showFilesButton"
             style="@style/OverflowButton"
-            app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
-            app:layout_constraintEnd_toStartOf="@+id/toggleButton"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/toggleButton"
             app:layout_constraintTop_toTopOf="@+id/toggleButton"
+            app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
             app:srcCompat="@drawable/ic_file_document_box_white_24dp" />
 
         <ImageView
             android:id="@+id/optionsButton"
             style="@style/OverflowButton"
             android:onClick="@{transferViewModel::showPopupMenu}"
-            app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/toggleButton"
-            app:layout_constraintTop_toTopOf="@+id/toggleButton" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/toggleButton"
+            app:layout_constraintBottom_toBottomOf="@+id/toggleButton" />
 
         <Button
             android:id="@+id/rejectButton"
             style="?borderlessButtonStyle"
-            android:visibility="@{transferViewModel.needsApproval ? View.VISIBLE : View.GONE}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/butn_reject"
-            app:layout_constraintBottom_toTopOf="@id/waitingApprovalText"
-            app:layout_constraintEnd_toEndOf="@+id/optionsButton"
-            app:layout_constraintHorizontal_bias="0.5"
+            android:visibility="@{transferViewModel.needsApproval ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="@+id/showFilesButton"
-            app:layout_constraintTop_toBottomOf="@+id/toggleButton" />
+            app:layout_constraintEnd_toEndOf="@+id/optionsButton"
+            app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+            app:layout_constraintBottom_toTopOf="@id/waitingApprovalText" />
 
         <TextView
-            style="@style/TextAppearance.Primary"
             android:id="@+id/waitingApprovalText"
+            style="@style/TextAppearance.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/waiting_approval"
             android:gravity="center"
+            android:text="@string/waiting_approval"
             android:visibility="@{transferViewModel.waitingApproval ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/showFilesButton"
             app:layout_constraintEnd_toEndOf="@+id/optionsButton"
             app:layout_constraintTop_toBottomOf="@+id/rejectButton"
-            app:layout_constraintStart_toStartOf="@+id/showFilesButton" />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

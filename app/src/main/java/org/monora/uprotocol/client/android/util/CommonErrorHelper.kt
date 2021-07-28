@@ -33,8 +33,8 @@ import java.net.ProtocolException
 
 object CommonErrorHelper {
     fun messageOf(context: Context, exception: Exception): String = when (exception) {
-        is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
         is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
+        is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
         is UndefinedErrorCodeException -> context.getString(
             R.string.mesg_unknownErrorOccurredWithCode, exception.errorCode
         )
