@@ -41,6 +41,7 @@ import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
 import org.monora.uprotocol.client.android.fragment.SharedTextFragment
+import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.FileFragment
 import org.monora.uprotocol.client.android.util.Selections
 
@@ -83,35 +84,23 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider {
                 }
             }
         }
-        val arguments = Bundle()
-        arguments.putBoolean(ListingFragment.ARG_SELECT_BY_CLICK, true)
-        arguments.putBoolean(ListingFragment.ARG_HAS_BOTTOM_SPACE, false)
-        // FIXME: 2/21/21 Sharing fragments were here
         pagerAdapter.add(
             PageItem(
                 0,
                 R.drawable.ic_short_text_white_24dp,
-                getString(R.string.text_sharedTexts),
-                SharedTextFragment::class.qualifiedName!!,
-                arguments
+                getString(R.string.text_files),
+                FileFragment::class.java.name
             )
         )
         pagerAdapter.add(
             PageItem(
                 1,
-                R.drawable.ic_short_text_white_24dp,
-                getString(R.string.text_files),
-                FileFragment::class.qualifiedName!!,
-                arguments
+                R.drawable.ic_music_note_white_24dp,
+                getString(R.string.text_music),
+                AudioBrowserFragment::class.java.name
             )
         )
-        /*pagerAdapter.add(StableItem(0, ApplicationListFragment::class.qualifiedName!!, arguments))
-        pagerAdapter.add(
-            StableItem(1, FileExplorerFragment::class.qualifiedName!!, arguments, getString(R.string.text_files))
-        )
-        pagerAdapter.add(StableItem(2, AudioListFragment::class.qualifiedName!!, arguments))
-        pagerAdapter.add(StableItem(3, ImageListFragment::class.qualifiedName!!, arguments))
-        pagerAdapter.add(StableItem(4, VideoListFragment::class.qualifiedName!!, arguments))*/
+
         pagerAdapter.createTabs(tabLayout, withIcon = false, withText = true)
         viewPager.adapter = pagerAdapter
 

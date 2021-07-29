@@ -17,10 +17,13 @@
  */
 package org.monora.uprotocol.client.android.fragment.content
 
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import org.monora.uprotocol.client.android.R
 
-class PhotoBrowserFragment : Fragment(R.layout.layout_photo_content_fragment) {
-
-
+class PhotoBrowserFragment : Fragment(R.layout.layout_photo_browser) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
 }

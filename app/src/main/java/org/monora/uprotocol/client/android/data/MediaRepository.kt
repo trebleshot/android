@@ -20,14 +20,14 @@ package org.monora.uprotocol.client.android.data
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.monora.uprotocol.client.android.content.AudioStore
 import org.monora.uprotocol.client.android.model.FileModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MediaRepository @Inject constructor(
-    @ApplicationContext
-    context: Context
+    private val audioStore: AudioStore,
 ) {
-
+    fun getAllSongs() = audioStore.getAll()
 }

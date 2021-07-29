@@ -54,7 +54,6 @@ class NsdDaemon @Inject constructor(
     val connectionFactory: ConnectionFactory,
     val backend: Backend,
 ) {
-
     private val onlineClientMap = ArrayMap<String, ClientRoute>()
 
     private val _onlineClients: MutableLiveData<List<ClientRoute>> = MutableLiveData()
