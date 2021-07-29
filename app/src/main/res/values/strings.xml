@@ -633,4 +633,5 @@
     <string name="error_client_no_address">The client has no address (try manually connecting)</string>
     <string name="error_protocol_unknown">An unknown protocol error occurred</string>
     <string name="completed">Completed</string>
+    <string name="run_in_background">Run in Background</string>
 </resources>

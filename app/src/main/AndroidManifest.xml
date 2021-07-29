@@ -241,14 +241,14 @@
             android:exported="false"
             android:label="@string/text_backgroundService" />
 
-        <!--<service
-            android:name="org.monora.uprotocol.client.android.service.CommunicationToggleTile"
+        <service
+            android:name=".service.TogglingTileService"
             android:icon="@drawable/ic_uprotocol"
-            android:label="@string/text_shareFiles"
+            android:label="@string/run_in_background"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-        </service>-->
+        </service>
     </application>
 </manifest>

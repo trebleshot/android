@@ -94,6 +94,14 @@ class Backend @Inject constructor(
 
     private var taskNotificationTime: Long = 0
 
+    private var tileEnabled = false
+
+    private var _tileState = MutableLiveData(false)
+
+    var tileState = liveData {
+        emitSource(_tileState)
+    }
+
     fun cancelAllTasks() {
         applicationScope.coroutineContext.cancelChildren(CancellationException("Application exited"))
     }
@@ -111,6 +119,14 @@ class Backend @Inject constructor(
 
             cancelledAny
         }
+    }
+
+    private fun ensureStarted() = services.start()
+
+    fun ensureStopped() {
+        services.stop()
+        notifyTileState(false)
+        cancelAllTasks()
     }
 
     fun getHotspotConfig(): WifiConfiguration? {
@@ -134,15 +150,14 @@ class Backend @Inject constructor(
         if (!inForeground && foregroundActivitiesCount == 0) return
         val wasInForeground = foregroundActivitiesCount > 0
         foregroundActivitiesCount += if (inForeground) 1 else -1
-        val inBg = wasInForeground && foregroundActivitiesCount == 0
-        val newlyInFg = !wasInForeground && foregroundActivitiesCount == 1
+        val isInForeground = foregroundActivitiesCount > 0
+        val newlySwitchedGrounds = isInForeground != wasInForeground
 
         if (Permissions.checkRunningConditions(context)) {
-            takeBgServiceFgIfNeeded(newlyInFg, inBg)
+            takeBgServiceFgIfNeeded(newlySwitchedGrounds)
         }
 
-        foregroundActivity = if (inBg) null else if (inForeground) activity else foregroundActivity
-        Log.d(TAG, "notifyActivityInForeground: Count: $foregroundActivitiesCount")
+        foregroundActivity = if (newlySwitchedGrounds) null else if (inForeground) activity else foregroundActivity
     }
 
     fun notifyFileRequest(client: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
@@ -156,11 +171,16 @@ class Backend @Inject constructor(
         }
     }
 
+    private fun notifyTileState(newState: Boolean) {
+        tileEnabled = newState
+        _tileState.value = newState
+    }
+
     fun publishTaskNotifications(force: Boolean): Boolean {
         val notified = System.nanoTime()
         if (notified <= taskNotificationTime && !force) return false
         if (!hasTasks()) {
-            takeBgServiceFgIfNeeded(newlyInFg = false, newlyInBg = false, byOthers = true)
+            takeBgServiceFgIfNeeded(newlySwitchedGrounds = false)
             return false
         }
 
@@ -229,13 +249,6 @@ class Backend @Inject constructor(
         }
     }
 
-    private fun start() = services.start()
-
-    fun stop() {
-        services.stop()
-        cancelAllTasks()
-    }
-
     fun <T> subscribeToTask(condition: TaskSubscriber<T>): LiveData<Task.Change<T>?> {
         val dummyLiveData = liveData<Task.Change<T>?> {
             emit(null)
@@ -278,39 +291,43 @@ class Backend @Inject constructor(
         }
     }
 
-    fun toggleHotspot() = services.toggleHotspot()
-
     fun takeBgServiceFgIfNeeded(
-        newlyInFg: Boolean,
-        newlyInBg: Boolean,
-        byOthers: Boolean = false,
+        newlySwitchedGrounds: Boolean,
         forceStop: Boolean = false,
     ) {
         // Do not try to tweak this!!!
-        val hasTasks = hasTasks() && !forceStop
-        val hasServices = (services.hotspotManager.started || services.webShareServer.hadClients) && !forceStop
-        val inFgNow = foregroundActivitiesCount > 0
-        val inBgNow = !inFgNow
+        val hasTasks = hasTasks()
+        val hasServices = (services.hotspotManager.started || services.webShareServer.hadClients || tileEnabled)
+        val inForeground = foregroundActivitiesCount > 0
+        val newlyInForeground = newlySwitchedGrounds && inForeground
+        val newlyInBackground = newlySwitchedGrounds && !inForeground
+        val keepRunning = (hasServices || hasTasks) && !forceStop
 
-        if (newlyInFg) {
-            start()
-        } else if (inBgNow && !hasServices && !hasTasks) {
-            stop()
-        } else if (newlyInBg && (hasServices || hasTasks)) {
-            ContextCompat.startForegroundService(context, bgIntent)
+        if (newlyInForeground || (tileEnabled && !forceStop)) {
+            ensureStarted()
+        } else if (!inForeground && !keepRunning) {
+            ensureStopped()
         }
 
-        // Fg checking is for avoiding unnecessary invocation by activities in fg
-        if (newlyInFg || (inFgNow && byOthers) || (inBgNow && !hasServices && !hasTasks)) {
+        if (newlyInBackground && keepRunning) {
+            ContextCompat.startForegroundService(context, bgIntent)
+        } else if (newlyInForeground || (!inForeground && !keepRunning)) {
             ContextCompat.startForegroundService(context, bgStopIntent)
         }
 
-        if (!hasTasks) {
-            if (hasServices && inBgNow) {
+        if (!forceStop && !hasTasks) {
+            if (hasServices && !inForeground) {
                 services.notifications.foregroundNotification.show()
             } else {
                 services.notifications.foregroundNotification.cancel()
             }
         }
     }
+
+    fun takeBgServiceFgThroughTogglingTile() {
+        notifyTileState(!tileEnabled)
+        takeBgServiceFgIfNeeded(newlySwitchedGrounds = false)
+    }
+
+    fun toggleHotspot() = services.toggleHotspot()
 }

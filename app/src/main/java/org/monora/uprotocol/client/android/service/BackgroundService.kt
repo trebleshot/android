@@ -52,7 +52,7 @@ class BackgroundService : LifecycleService() {
             stopSelf()
             return START_NOT_STICKY
         } else if (intent.action == ACTION_STOP_ALL) {
-            backend.takeBgServiceFgIfNeeded(newlyInFg = false, newlyInBg = false, byOthers = true, forceStop = true)
+            backend.takeBgServiceFgIfNeeded(newlySwitchedGrounds = false, forceStop = true)
             return START_NOT_STICKY
         }
 
