@@ -27,12 +27,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileAdapter
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
-import org.monora.uprotocol.client.android.model.ContentModel
-import org.monora.uprotocol.client.android.model.FileModel
-import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
-import java.text.Collator
 
 @AndroidEntryPoint
 class FileFragment : Fragment(R.layout.layout_file_fragment) {

@@ -32,7 +32,7 @@ class FileRepository @Inject constructor() {
         }
 
         return file.listFiles()?.map {
-            FileModel((it))
+            FileModel(it, it?.takeIf { it.isDirectory }?.list()?.size ?: 0)
         } ?: listOf()
     }
 }

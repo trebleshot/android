@@ -25,4 +25,6 @@ class TransferItemContentViewModel(val transferItem: UTransferItem) {
     val name = transferItem.name
 
     val size = Files.formatLength(transferItem.size)
+
+    val mimeType = transferItem.mimeType
 }

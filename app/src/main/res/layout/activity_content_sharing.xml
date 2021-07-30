@@ -21,7 +21,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context="org.monora.uprotocol.client.android.activity.ContentSharingActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -38,53 +37,16 @@
             android:id="@+id/activity_content_sharing_tab_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:minHeight="?attr/actionBarSize"
             app:tabMode="scrollable" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <RelativeLayout
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/activity_content_sharing_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/activity_content_sharing">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <FrameLayout
-            android:layout_alignParentBottom="true"
-            android:id="@+id/activity_content_sharing_cardview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
-
-            <ProgressBar
-                android:id="@+id/activity_content_sharing_progress_bar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:indeterminate="false"
-                android:visibility="gone" />
-
-            <androidx.appcompat.widget.ActionMenuView
-                android:id="@+id/menu_view"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu"
-                android:layout_height="wrap_content" />
-        </FrameLayout>
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_above="@id/activity_content_sharing_cardview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/activity_content_sharing_view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

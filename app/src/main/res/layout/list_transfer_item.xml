@@ -40,7 +40,7 @@
 
         <ImageView
             android:id="@+id/imageView3"
-            iconOf="@{viewModel.transferItem}"
+            iconOf="@{viewModel.mimeType}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constrainedHeight="true"

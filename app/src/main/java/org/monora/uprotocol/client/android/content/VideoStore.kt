@@ -22,78 +22,70 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
-import android.provider.MediaStore.Audio.Media
+import android.provider.MediaStore.Video.Media
 import androidx.lifecycle.liveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-class AudioStore @Inject constructor(
+class VideoStore @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    fun getSongs(selection: String, selectionArgs: Array<String>) = liveData<List<Song>>(Dispatchers.IO) {
+    fun getAll() = liveData<List<Video>>(Dispatchers.IO) {
         context.contentResolver.query(
             Media.EXTERNAL_CONTENT_URI,
             arrayOf(
                 Media._ID,
-                Media.ARTIST,
-                Media.ALBUM,
                 Media.TITLE,
-                Media.DISPLAY_NAME,
-                Media.MIME_TYPE,
                 Media.SIZE,
-                Media.DATE_MODIFIED
+                Media.DURATION,
+                Media.MIME_TYPE,
+                Media.DATE_MODIFIED,
             ),
-            selection,
-            selectionArgs,
-            Media.TITLE
+            null,
+            null,
+            Media.DATE_MODIFIED
         )?.use {
             if (it.moveToFirst()) {
-                val idIndex: Int = it.getColumnIndex(Media._ID)
-                val artistIndex: Int = it.getColumnIndex(Media.ARTIST)
-                val albumIndex: Int = it.getColumnIndex(Media.ALBUM)
-                val titleIndex: Int = it.getColumnIndex(Media.TITLE)
-                val displayNameIndex: Int = it.getColumnIndex(Media.DISPLAY_NAME)
-                val mimeTypeIndex: Int = it.getColumnIndex(Media.MIME_TYPE)
-                val sizeIndex: Int = it.getColumnIndex(Media.SIZE)
-                val dateModifiedIndex: Int = it.getColumnIndex(Media.DATE_MODIFIED)
+                val idIndex = it.getColumnIndex(Media._ID)
+                val titleIndex = it.getColumnIndex(Media.TITLE)
+                val sizeIndex = it.getColumnIndex(Media.SIZE)
+                val durationIndex = it.getColumnIndex(Media.DURATION)
+                val mimeTypeIndex = it.getColumnIndex(Media.MIME_TYPE)
+                val dateModifiedIndex = it.getColumnIndex(Media.DATE_MODIFIED)
 
-                val result = ArrayList<Song>(it.count)
+                val list = ArrayList<Video>(it.count)
 
                 do {
                     val id = it.getLong(idIndex)
 
-                    result.add(
-                        Song(
+                    list.add(
+                        Video(
                             id,
-                            it.getString(artistIndex),
-                            it.getString(albumIndex),
                             it.getString(titleIndex),
-                            it.getString(displayNameIndex),
-                            it.getString(mimeTypeIndex),
                             it.getLong(sizeIndex),
+                            it.getInt(durationIndex),
+                            it.getString(mimeTypeIndex),
                             it.getLong(dateModifiedIndex),
                             ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id)
                         )
                     )
-                } while (it.moveToNext());
+                } while (it.moveToNext())
 
-                emit(result)
+                emit(list)
             }
         }
     }
 }
 
 @Parcelize
-data class Song(
+data class Video(
     val id: Long,
-    val artist: String,
-    val album: String,
     val title: String,
-    val displayName: String,
-    val mimeType: String,
     val size: Long,
+    val duration: Int,
+    val mimeType: String,
     val dateModified: Long,
     val uri: Uri,
 ) : Parcelable

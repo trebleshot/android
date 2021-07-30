@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.monora.uprotocol.client.android.fragment.content
 
 import android.os.Bundle
@@ -28,81 +27,80 @@ import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.genonbeta.android.framework.util.Files
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.content.Song
+import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
-import org.monora.uprotocol.client.android.databinding.ListSongBinding
+import org.monora.uprotocol.client.android.databinding.ListVideoBinding
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
-    private val browserViewModel: AudioBrowserViewModel by viewModels()
+class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
+    private val browserViewModel: VideoBrowserViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = AudioBrowserAdapter()
+        val adapter = VideoBrowserAdapter()
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyMusic)
-        emptyView.emptyImage.setImageResource(R.drawable.ic_music_note_white_24dp)
+        emptyView.emptyText.setText(R.string.text_listEmptyVideo)
+        emptyView.emptyImage.setImageResource(R.drawable.ic_photo_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
 
-        browserViewModel.allSongs.observe(viewLifecycleOwner) {
+        browserViewModel.allVideos.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
     }
 }
 
-class AudioBrowserAdapter : ListAdapter<Song, SongViewHolder>(SongItemCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        return SongViewHolder(ListSongBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+class VideoBrowserAdapter : ListAdapter<Video, VideoViewHolder>(VideoItemCallback()) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
+        return VideoViewHolder(ListVideoBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
-    override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 }
 
-class SongItemCallback : DiffUtil.ItemCallback<Song>() {
-    override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
+class VideoItemCallback : DiffUtil.ItemCallback<Video>() {
+    override fun areItemsTheSame(oldItem: Video, newItem: Video): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
+    override fun areContentsTheSame(oldItem: Video, newItem: Video): Boolean {
         return oldItem == newItem
     }
 }
 
-class SongContentViewModel(song: Song) {
-    val artist = song.artist
+class VideoContentViewModel(video: Video) {
+    val title = video.title
 
-    val title = song.title
+    val size = Files.formatLength(video.size, false)
 
-    val mimeType = song.mimeType
-
-    val uri = song.uri
+    val uri = video.uri
 }
 
-class SongViewHolder(private val binding: ListSongBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(song: Song) {
-        binding.viewModel = SongContentViewModel(song)
+class VideoViewHolder(private val binding: ListVideoBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(video: Video) {
+        binding.viewModel = VideoContentViewModel(video)
         binding.executePendingBindings()
     }
 }
 
 @HiltViewModel
-class AudioBrowserViewModel @Inject internal constructor(
+class VideoBrowserViewModel @Inject internal constructor(
     mediaRepository: MediaRepository,
 ) : ViewModel() {
-    val allSongs = mediaRepository.getAllSongs()
+    val allVideos = mediaRepository.getAllVideos()
 }

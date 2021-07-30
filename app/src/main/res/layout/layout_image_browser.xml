@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="5"/>
+        app:spanCount="@integer/genfw_dynamic_grid_span_count"/>
 
     <include
         layout="@layout/layout_empty_content"

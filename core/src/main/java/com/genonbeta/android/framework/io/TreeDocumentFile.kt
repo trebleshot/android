@@ -33,6 +33,7 @@ import java.io.IOException
  * created by: Veli
  * date: 17.02.2018 22:01
  */
+// FIXME: 7/30/21 Memory leak caused by the context given to the file.
 @RequiresApi(21)
 class TreeDocumentFile private constructor(
     val parent: DocumentFile?, val context: Context, original: Uri, private val uri: Uri, val data: Data,

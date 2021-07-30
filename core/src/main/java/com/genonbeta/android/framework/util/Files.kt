@@ -157,7 +157,7 @@ object Files {
         }
     }
 
-    fun getFileContentType(fileUrl: String?): String {
+    fun getFileContentType(fileUrl: String): String {
         val nameMap = URLConnection.getFileNameMap()
         val fileType = nameMap.getContentTypeFor(fileUrl)
         return fileType ?: "*/*"

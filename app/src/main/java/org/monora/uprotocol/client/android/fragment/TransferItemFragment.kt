@@ -138,6 +138,8 @@ class ItemContentViewModel(val transferItem: UTransferItem, context: Context) {
 
     val size = Files.formatLength(transferItem.size, false)
 
+    val mimeType = transferItem.mimeType
+
     val shouldRecover = transferItem.type.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
 
     val state = context.getString(

@@ -10,7 +10,7 @@
                 android:right="1dp"
                 android:top="1dp" />
 
-            <solid android:color="#BF000000" />
+            <!--<solid android:color="#BF000000" />-->
         </shape>
     </item>
     <item android:gravity="center">

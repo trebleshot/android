@@ -22,10 +22,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
-import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
@@ -38,11 +35,11 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter
 import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter.PageItem
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.fragment.SharedTextFragment
 import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.FileFragment
+import org.monora.uprotocol.client.android.fragment.content.ImageBrowserFragment
+import org.monora.uprotocol.client.android.fragment.content.VideoBrowserFragment
 import org.monora.uprotocol.client.android.util.Selections
 
 /**
@@ -53,18 +50,9 @@ import org.monora.uprotocol.client.android.util.Selections
 class ContentSharingActivity : Activity(), PerformerEngineProvider {
     private val performerEngine = PerformerEngine()
 
-    private lateinit var progressBar: ProgressBar
-
-    private lateinit var cardView: ViewGroup
-
-    private lateinit var actionMenuView: ActionMenuView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_content_sharing)
-        actionMenuView = findViewById(R.id.menu_view)
-        cardView = findViewById(R.id.activity_content_sharing_cardview)
-        progressBar = findViewById(R.id.activity_content_sharing_progress_bar)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)
@@ -87,7 +75,7 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider {
         pagerAdapter.add(
             PageItem(
                 0,
-                R.drawable.ic_short_text_white_24dp,
+                R.drawable.ic_file_document_box_white_24dp,
                 getString(R.string.text_files),
                 FileFragment::class.java.name
             )
@@ -98,6 +86,22 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider {
                 R.drawable.ic_music_note_white_24dp,
                 getString(R.string.text_music),
                 AudioBrowserFragment::class.java.name
+            )
+        )
+        pagerAdapter.add(
+            PageItem(
+                2,
+                R.drawable.ic_photo_white_24dp,
+                getString(R.string.text_image),
+                ImageBrowserFragment::class.java.name
+            )
+        )
+        pagerAdapter.add(
+            PageItem(
+                3,
+                R.drawable.ic_video_library_white_24dp,
+                getString(R.string.text_video),
+                VideoBrowserFragment::class.java.name
             )
         )
 

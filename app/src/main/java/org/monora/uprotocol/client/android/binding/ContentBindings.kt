@@ -18,8 +18,11 @@
 
 package org.monora.uprotocol.client.android.binding
 
+import android.net.Uri
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.util.MimeIcons
@@ -33,12 +36,24 @@ fun loadThumbnailOf(imageView: ImageView, item: UTransferItem) {
     ) {
         GlideApp.with(imageView)
             .load(item.location)
+            .override(300)
             .circleCrop()
+            .transition(DrawableTransitionOptions.withCrossFade())
             .into(imageView)
     }
 }
 
+@BindingAdapter("thumbnailOf")
+fun loadThumbnailOf(imageView: ImageView, uri: Uri) {
+    GlideApp.with(imageView)
+        .load(uri)
+        .override(300)
+        .apply(RequestOptions.centerCropTransform())
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .into(imageView)
+}
+
 @BindingAdapter("iconOf")
-fun loadIconOf(imageView: ImageView, transferItem: UTransferItem) {
-    imageView.setImageResource(MimeIcons.loadMimeIcon(transferItem.mimeType))
+fun loadIconOf(imageView: ImageView, mimeType: String) {
+    imageView.setImageResource(MimeIcons.loadMimeIcon(mimeType))
 }

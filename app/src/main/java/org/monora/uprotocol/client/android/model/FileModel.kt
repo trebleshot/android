@@ -19,6 +19,8 @@
 package org.monora.uprotocol.client.android.model
 
 import android.os.Parcelable
+import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.util.Files
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.client.android.backend.Destination
@@ -28,8 +30,11 @@ import java.io.File
 
 @Parcelize
 class FileModel(
-    val file: File
+    val file: File,
+    val indexCount: Int = 0
 ) : ContentModel, Parcelable {
+    val mimeType = Files.getFileContentType(file.absolutePath)
+
     @IgnoredOnParcel
     var selected = false
 

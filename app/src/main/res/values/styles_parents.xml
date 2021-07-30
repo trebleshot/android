@@ -64,20 +64,14 @@
         <item name="snackbarBackground">@drawable/background_snackbar</item>
         <item name="stateSelectedImage">@drawable/state_selected_image</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded</item>
-        <item name="stateSelectedImageRoundedGuiding">
-            @drawable/state_selected_image_rounded_guiding
-        </item>
+        <item name="stateSelectedImageRoundedGuiding">@drawable/state_selected_image_rounded_guiding</item>
         <item name="stateSelectedImageSquare">@drawable/state_selected_image_square</item>
         <item name="statusBarColor">@android:color/transparent</item>
         <item name="useLightStatusBar">true</item>
 
         <!--styling framework-->
-        <item name="genfw_customListFragmentEmptyImageStyle">
-            @style/CustomListFragmentEmptyImageStyle
-        </item>
-        <item name="genfw_customListFragmentEmptyTextStyle">
-            @style/CustomListFragmentEmptyTextStyle
-        </item>
+        <item name="genfw_customListFragmentEmptyImageStyle">@style/CustomListFragmentEmptyImageStyle</item>
+        <item name="genfw_customListFragmentEmptyTextStyle">@style/CustomListFragmentEmptyTextStyle</item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonStyle</item>
     </style>
 
@@ -128,20 +122,14 @@
         <item name="snackbarBackground">@drawable/background_snackbar_dark</item>
         <item name="stateSelectedImage">@drawable/state_selected_image_dark</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded_dark</item>
-        <item name="stateSelectedImageRoundedGuiding">
-            @drawable/state_selected_image_rounded_guiding_dark
-        </item>
+        <item name="stateSelectedImageRoundedGuiding">@drawable/state_selected_image_rounded_guiding_dark</item>
         <item name="stateSelectedImageSquare">@drawable/state_selected_image_square_dark</item>
         <item name="statusBarColor">@android:color/transparent</item>
         <item name="useLightStatusBar">false</item>
 
         <!--styling framework-->
-        <item name="genfw_customListFragmentEmptyImageStyle">
-            @style/CustomListFragmentEmptyImageStyle
-        </item>
-        <item name="genfw_customListFragmentEmptyTextStyle">
-            @style/CustomListFragmentEmptyTextStyle
-        </item>
+        <item name="genfw_customListFragmentEmptyImageStyle">@style/CustomListFragmentEmptyImageStyle</item>
+        <item name="genfw_customListFragmentEmptyTextStyle">@style/CustomListFragmentEmptyTextStyle</item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonStyle</item>
     </style>
     <!-- prototype end -->

@@ -16,82 +16,59 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/visitView"
-        style="@style/OverflowButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+    <data>
 
-    <FrameLayout
-        android:id="@+id/layout_image"
-        style="@style/ListContentIconStyle"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:background="?contentShowingBackground">
+        <variable
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.fragment.content.VideoContentViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPassive"
+        android:layout_marginBottom="8dp">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center" />
-
-        <include layout="@layout/generic_view_selection" />
-
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/visitView"
-        android:layout_toLeftOf="@+id/visitView"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toRightOf="@id/layout_image"
-        android:orientation="vertical">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/text_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/selection"
+            app:layout_constraintDimensionRatio="1:1"
+            thumbnailOf="@{viewModel.uri}"/>
 
         <TextView
-            android:id="@+id/text"
             style="@style/TextAppearance.Primary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxLines="3" />
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:gravity="end"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:text="@{viewModel.size}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/selection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            tools:text="@tools:sample/date/day_of_week" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
+        <ImageView
+            android:id="@+id/selection"
+            style="@style/OverflowButton"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:srcCompat="?stateSelectedImageRoundedGuiding" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text2"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                style="@style/TextSeparatorMiddleDot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/text3"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-    </LinearLayout>
-</RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

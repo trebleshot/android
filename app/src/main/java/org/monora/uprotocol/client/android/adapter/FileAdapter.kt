@@ -26,7 +26,6 @@ import org.monora.uprotocol.client.android.databinding.ListFileNouveauBinding
 import org.monora.uprotocol.client.android.databinding.ListSectionTitleBinding
 import org.monora.uprotocol.client.android.itemcallback.ContentModelItemCallback
 import org.monora.uprotocol.client.android.model.ContentModel
-import org.monora.uprotocol.client.android.model.DateSectionContentModel
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import org.monora.uprotocol.client.android.viewholder.FileViewHolder
@@ -55,7 +54,7 @@ class FileAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is FileModel -> VIEW_TYPE_FILE
         is TitleSectionContentModel -> VIEW_TYPE_SECTION
-        else -> throw java.lang.UnsupportedOperationException()
+        else -> throw UnsupportedOperationException()
     }
 
     override fun getItemId(position: Int): Long {
