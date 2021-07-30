@@ -18,18 +18,8 @@
 
 package org.monora.uprotocol.client.android.task
 
-import android.content.Context
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.data.ClientRepository
-import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.exception.ConnectionNotFoundException
-import org.monora.uprotocol.client.android.exception.DeviceNotFoundException
-import org.monora.uprotocol.client.android.exception.TargetNotFoundException
-import org.monora.uprotocol.client.android.exception.TransferNotFoundException
-import org.monora.uprotocol.client.android.util.CommonErrorHelper
-import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.transfer.TransferItem

@@ -30,22 +30,18 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.util.Files
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileListAdapter
 import org.monora.uprotocol.client.android.adapter.FileListAdapter.FileHolder
 import org.monora.uprotocol.client.android.app.ListingFragment
 import org.monora.uprotocol.client.android.app.ListingFragmentBase
-import org.monora.uprotocol.client.android.util.Views
-import com.genonbeta.android.database.KuickDb
-import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.ui.PerformerMenu
-import com.genonbeta.android.framework.util.Files
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
-import com.genonbeta.android.framework.util.actionperformer.SelectionModel
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter.ViewHolder
-import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.model.ContentModel
+import org.monora.uprotocol.client.android.util.Views
 import java.io.FileNotFoundException
 
 @AndroidEntryPoint
@@ -107,7 +103,6 @@ abstract class FileListFragment : ListingFragment<FileHolder, ViewHolder, FileLi
         super.onActivityCreated(savedInstanceState)
         intentFilter.addAction(ACTION_FILE_LIST_CHANGED)
         intentFilter.addAction(ACTION_FILE_RENAME_COMPLETED)
-        intentFilter.addAction(KuickDb.ACTION_DATABASE_CHANGE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
