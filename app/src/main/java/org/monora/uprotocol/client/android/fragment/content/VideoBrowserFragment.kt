@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
@@ -31,6 +32,7 @@ import com.genonbeta.android.framework.util.Files
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.SharingSelectionViewModel
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
@@ -42,11 +44,21 @@ import javax.inject.Inject
 class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
     private val browserViewModel: VideoBrowserViewModel by viewModels()
 
+    private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = VideoBrowserAdapter()
+        val adapter = VideoBrowserAdapter { video, clickType ->
+            when (clickType) {
+                VideoBrowserAdapter.ClickType.Default -> {
+                }
+                VideoBrowserAdapter.ClickType.ToggleSelect -> {
+                    selectionViewModel.setSelected(video.uri, video.isSelected)
+                }
+            }
+        }
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
@@ -57,19 +69,44 @@ class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
         recyclerView.adapter = adapter
 
         browserViewModel.allVideos.observe(viewLifecycleOwner) {
+            it.forEach { video ->
+                if (selectionViewModel.contains(video.uri)) video.isSelected = true
+            }
+
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
     }
 }
 
-class VideoBrowserAdapter : ListAdapter<Video, VideoViewHolder>(VideoItemCallback()) {
+class VideoBrowserAdapter(
+    private val clickListener: (Video, ClickType) -> Unit,
+) : ListAdapter<Video, VideoViewHolder>(VideoItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
-        return VideoViewHolder(ListVideoBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return VideoViewHolder(
+            clickListener, ListVideoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return VIEW_TYPE_VIDEO
+    }
+
+    enum class ClickType {
+        Default,
+        ToggleSelect,
+    }
+
+    companion object {
+        const val VIEW_TYPE_VIDEO = 0
     }
 }
 
@@ -91,9 +128,21 @@ class VideoContentViewModel(video: Video) {
     val uri = video.uri
 }
 
-class VideoViewHolder(private val binding: ListVideoBinding) : RecyclerView.ViewHolder(binding.root) {
+class VideoViewHolder(
+    private val clickListener: (Video, VideoBrowserAdapter.ClickType) -> Unit,
+    private val binding: ListVideoBinding,
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(video: Video) {
         binding.viewModel = VideoContentViewModel(video)
+        binding.root.setOnClickListener {
+            clickListener(video, VideoBrowserAdapter.ClickType.Default)
+        }
+        binding.selection.setOnClickListener {
+            video.isSelected = !video.isSelected
+            it.isSelected = video.isSelected
+            clickListener(video, VideoBrowserAdapter.ClickType.ToggleSelect)
+        }
+        binding.selection.isSelected = video.isSelected
         binding.executePendingBindings()
     }
 }

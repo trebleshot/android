@@ -20,7 +20,6 @@ package org.monora.uprotocol.client.android.adapter
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
@@ -30,20 +29,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 /**
  * created by: veli
  * date: 11/04/18 21:53
  */
-open class MainFragmentStateAdapter(
+class MainFragmentStateAdapter(
     val context: Context, fm: FragmentManager, lifecycle: Lifecycle,
 ) : FragmentStateAdapter(fm, lifecycle) {
     private val fragments: MutableList<PageItem> = ArrayList()
 
     private val fragmentFactory: FragmentFactory = fm.fragmentFactory
-
-    open fun onItemInstantiated(item: PageItem) {}
 
     fun add(fragment: PageItem) {
         fragments.add(fragment)
@@ -78,8 +74,6 @@ open class MainFragmentStateAdapter(
         val fragment = item.fragment ?: fragmentFactory.instantiate(context.classLoader, item.clazz).apply {
             arguments = item.arguments
         }
-        Log.d(MainFragmentStateAdapter::class.simpleName, "createFragment: " + fragment.javaClass.name)
-        onItemInstantiated(item)
 
         return fragment
     }

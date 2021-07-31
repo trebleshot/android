@@ -23,9 +23,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore.Audio.Media
+import android.util.Log
 import androidx.lifecycle.liveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -96,4 +98,7 @@ data class Song(
     val size: Long,
     val dateModified: Long,
     val uri: Uri,
-) : Parcelable
+) : Parcelable {
+    @IgnoredOnParcel
+    var isSelected = false
+}

@@ -23,8 +23,15 @@ import org.monora.uprotocol.client.android.databinding.ListFileNouveauBinding
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.viewmodel.content.FileContentViewModel
 
-class FileViewHolder(private val binding: ListFileNouveauBinding) : RecyclerView.ViewHolder(binding.root) {
+class FileViewHolder(
+    private val clickListener: (FileModel) -> Unit,
+    private val binding: ListFileNouveauBinding,
+    ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(fileModel: FileModel) {
         binding.viewModel = FileContentViewModel(fileModel)
+        binding.root.setOnClickListener {
+            clickListener(fileModel)
+        }
+        binding.executePendingBindings()
     }
 }

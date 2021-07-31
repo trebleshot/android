@@ -32,10 +32,11 @@ import org.monora.uprotocol.client.android.viewholder.FileViewHolder
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 
 class FileAdapter(
-    private val clickListener: (contentModel: ContentModel) -> Unit
+    private val clickListener: (FileModel) -> Unit
 ) : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_FILE -> FileViewHolder(
+            clickListener,
             ListFileNouveauBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
         VIEW_TYPE_SECTION -> TitleSectionViewHolder(
@@ -51,14 +52,14 @@ class FileAdapter(
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id()
+    }
+
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is FileModel -> VIEW_TYPE_FILE
         is TitleSectionContentModel -> VIEW_TYPE_SECTION
         else -> throw UnsupportedOperationException()
-    }
-
-    override fun getItemId(position: Int): Long {
-        return getItem(position).id()
     }
 
     companion object {

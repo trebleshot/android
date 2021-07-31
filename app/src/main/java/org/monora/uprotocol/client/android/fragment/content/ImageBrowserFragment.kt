@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
@@ -31,12 +32,11 @@ import com.genonbeta.android.framework.util.Files
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.SharingSelectionViewModel
 import org.monora.uprotocol.client.android.content.Image
-import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListImageBinding
-import org.monora.uprotocol.client.android.databinding.ListSongBinding
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import javax.inject.Inject
 
@@ -44,11 +44,21 @@ import javax.inject.Inject
 class ImageBrowserFragment : Fragment(R.layout.layout_image_browser) {
     private val browserViewModel: ImageBrowserViewModel by viewModels()
 
+    private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = ImageBrowserAdapter()
+        val adapter = ImageBrowserAdapter { image, clickType ->
+            when (clickType) {
+                ImageBrowserAdapter.ClickType.Default -> {
+                }
+                ImageBrowserAdapter.ClickType.ToggleSelect -> {
+                    selectionViewModel.setSelected(image.uri, image.isSelected)
+                }
+            }
+        }
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
@@ -59,19 +69,44 @@ class ImageBrowserFragment : Fragment(R.layout.layout_image_browser) {
         recyclerView.adapter = adapter
 
         browserViewModel.allImages.observe(viewLifecycleOwner) {
+            it.forEach { image ->
+                if (selectionViewModel.contains(image.uri)) image.isSelected = true
+            }
+
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
     }
 }
 
-class ImageBrowserAdapter : ListAdapter<Image, ImageViewHolder>(ImageItemCallback()) {
+class ImageBrowserAdapter(
+    private val clickListener: (Image, ClickType) -> Unit,
+) : ListAdapter<Image, ImageViewHolder>(ImageItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        return ImageViewHolder(ListImageBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return ImageViewHolder(
+            clickListener, ListImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return VIEW_TYPE_IMAGE
+    }
+
+    enum class ClickType {
+        Default,
+        ToggleSelect,
+    }
+
+    companion object {
+        const val VIEW_TYPE_IMAGE = 0
     }
 }
 
@@ -93,9 +128,21 @@ class ImageContentViewModel(image: Image) {
     val uri = image.uri
 }
 
-class ImageViewHolder(private val binding: ListImageBinding) : RecyclerView.ViewHolder(binding.root) {
+class ImageViewHolder(
+    private val clickListener: (Image, ImageBrowserAdapter.ClickType) -> Unit,
+    private val binding: ListImageBinding,
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(image: Image) {
         binding.viewModel = ImageContentViewModel(image)
+        binding.root.setOnClickListener {
+            clickListener(image, ImageBrowserAdapter.ClickType.Default)
+        }
+        binding.selection.setOnClickListener {
+            image.isSelected = !image.isSelected
+            it.isSelected = image.isSelected
+            clickListener(image, ImageBrowserAdapter.ClickType.ToggleSelect)
+        }
+        binding.selection.isSelected = image.isSelected
         binding.executePendingBindings()
     }
 }

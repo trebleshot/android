@@ -44,6 +44,7 @@ abstract class PathResolverRecyclerAdapter<T>(val context: Context) : RecyclerVi
     abstract fun onFirstItem(): Index<T>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder<T> {
+        // TODO: 7/31/21 Does providing the root cause problems?
         return Holder(LayoutInflater.from(parent.context).inflate(R.layout.list_pathresolver, null))
     }
 

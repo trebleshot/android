@@ -26,6 +26,7 @@ import android.provider.MediaStore.Video.Media
 import androidx.lifecycle.liveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -88,4 +89,7 @@ data class Video(
     val mimeType: String,
     val dateModified: Long,
     val uri: Uri,
-) : Parcelable
+) : Parcelable {
+    @IgnoredOnParcel
+    var isSelected = false
+}

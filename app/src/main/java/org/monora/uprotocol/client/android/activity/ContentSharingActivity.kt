@@ -17,20 +17,20 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.DialogInterface
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.MenuItem
-import androidx.appcompat.app.AlertDialog
+import android.view.Menu
+import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.viewpager2.widget.ViewPager2
-import com.genonbeta.android.framework.util.actionperformer.IPerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngine
-import com.genonbeta.android.framework.util.actionperformer.PerformerEngineProvider
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter
 import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter.PageItem
@@ -40,15 +40,15 @@ import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.FileFragment
 import org.monora.uprotocol.client.android.fragment.content.ImageBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.VideoBrowserFragment
-import org.monora.uprotocol.client.android.util.Selections
+import javax.inject.Inject
 
 /**
  * created by: veli
  * date: 13/04/18 19:45
  */
 @AndroidEntryPoint
-class ContentSharingActivity : Activity(), PerformerEngineProvider {
-    private val performerEngine = PerformerEngine()
+class ContentSharingActivity : Activity() {
+    private val selectionViewModel: SharingSelectionViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,20 +58,10 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val tabLayout: TabLayout = findViewById(R.id.activity_content_sharing_tab_layout)
-        val viewPager: ViewPager2 = findViewById(R.id.activity_content_sharing_view_pager)
-        val pagerAdapter: MainFragmentStateAdapter = object : MainFragmentStateAdapter(
-            this, supportFragmentManager, lifecycle
-        ) {
-            override fun onItemInstantiated(item: PageItem) {
-                val fragment: Fragment? = item.fragment
-                if (fragment is ListingFragmentBase<*>) {
-                    if (viewPager.currentItem == item.currentPosition) {
+        val tabLayout = findViewById<TabLayout>(R.id.activity_content_sharing_tab_layout)
+        val viewPager = findViewById<ViewPager2>(R.id.activity_content_sharing_view_pager)
+        val pagerAdapter = MainFragmentStateAdapter(this, supportFragmentManager, lifecycle)
 
-                    }
-                }
-            }
-        }
         pagerAdapter.add(
             PageItem(
                 0,
@@ -143,28 +133,44 @@ class ContentSharingActivity : Activity(), PerformerEngineProvider {
         )
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            if (canExit()) finish()
-        } else {
-            return super.onOptionsItemSelected(item)
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.sharing, menu)
+
+        val selections = menu.findItem(R.id.selections)
+        val share = menu.findItem(R.id.share)
+
+        selectionViewModel.selectionState.observe(this) {
+            val enable = it.isNotEmpty()
+
+            selections.title = it.size.toString()
+            selections.isEnabled = enable
+            share.isEnabled = enable
         }
+
         return true
     }
+}
 
-    private fun canExit(): Boolean {
-        if (Selections.getTotalSize(performerEngine) > 0) {
-            AlertDialog.Builder(this)
-                .setMessage(R.string.ques_cancelSelection)
-                .setNegativeButton(R.string.butn_no, null)
-                .setPositiveButton(R.string.butn_yes) { dialog: DialogInterface?, which: Int -> finish() }
-                .show()
-            return false
-        }
-        return true
+@HiltViewModel
+class SharingSelectionViewModel @Inject internal constructor() : ViewModel() {
+    private val selections = mutableListOf<Uri>()
+
+    private val _selectionState = MutableLiveData<List<Uri>>(emptyList())
+
+    val selectionState = liveData {
+        emitSource(_selectionState)
     }
 
-    override fun getPerformerEngine(): IPerformerEngine {
-        return performerEngine
+    fun contains(uri: Uri) = selections.contains(uri)
+
+    fun setSelected(uri: Uri, selected: Boolean) {
+        synchronized(selections) {
+            val result = if (selected) selections.add(uri) else selections.remove(uri)
+
+            if (result) {
+                _selectionState.postValue(selections)
+            }
+        }
     }
 }

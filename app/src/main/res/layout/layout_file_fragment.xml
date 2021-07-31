@@ -32,4 +32,18 @@
         layout="@layout/layout_empty_content"
         android:id="@+id/emptyView" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pathRecyclerView"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:clipToPadding="false"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:scrollbars="none"
+        android:layout_gravity="bottom|center"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

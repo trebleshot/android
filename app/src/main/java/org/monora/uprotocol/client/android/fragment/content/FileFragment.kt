@@ -26,7 +26,9 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileAdapter
+import org.monora.uprotocol.client.android.adapter.PathResolverRecyclerAdapter
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
+import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
 
@@ -38,10 +40,13 @@ class FileFragment : Fragment(R.layout.layout_file_fragment) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = FileAdapter() {
-
+        val adapter = FileAdapter {
+            if (it.file.isDirectory) {
+                viewModel.requestPath(it.file.absolutePath)
+            }
         }
         val emptyContentViewModel = EmptyContentViewModel()
+        val pathRecyclerView = view.findViewById<RecyclerView>(R.id.pathRecyclerView)
 
         emptyView.viewModel = emptyContentViewModel
         emptyView.emptyText.setText(R.string.text_listEmptyFiles)
@@ -49,6 +54,11 @@ class FileFragment : Fragment(R.layout.layout_file_fragment) {
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
+        pathRecyclerView.adapter = object : PathResolverRecyclerAdapter<FileModel?>(requireContext()) {
+            override fun onFirstItem(): Index<FileModel?> {
+                return Index("Home", null, R.drawable.ic_photo_white_24dp)
+            }
+        }
 
         viewModel.files.observe(viewLifecycleOwner) {
             adapter.submitList(it)
