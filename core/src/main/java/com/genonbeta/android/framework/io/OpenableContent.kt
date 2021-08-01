@@ -35,7 +35,7 @@ import java.util.*
  * created by: Veli
  * date: 4.10.2017 12:36
  */
-class StreamInfo private constructor(
+class OpenableContent private constructor(
     val name: String,
     val mimeType: String,
     val uri: Uri,
@@ -58,9 +58,18 @@ class StreamInfo private constructor(
 
     companion object {
         @Throws(IOException::class, FileNotFoundException::class)
-        fun from(context: Context, uri: Uri): StreamInfo {
+        fun from(context: Context, uri: Uri): OpenableContent {
             val uriAsString = uri.toString()
-            if (uriAsString.startsWith("content")) {
+            if (uriAsString.startsWith("file")) {
+                val file = File(URI.create(uriAsString))
+                if (file.canRead()) {
+                    if (file.isDirectory) {
+                        throw IOException("Tried to encapsulate a directory.")
+                    }
+
+                    return OpenableContent(file.name, Files.getFileContentType(file.name), uri, file.length(), file)
+                }
+            } else if (uriAsString.startsWith("content")) {
                 context.contentResolver.query(
                     uri, null, null, null, null
                 )?.use { cursor ->
@@ -72,18 +81,9 @@ class StreamInfo private constructor(
                             val name = cursor.getString(nameIndex) ?: UUID.randomUUID().toString()
                             val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
 
-                            return StreamInfo(name, mimeType, uri, cursor.getLong(sizeIndex))
+                            return OpenableContent(name, mimeType, uri, cursor.getLong(sizeIndex))
                         }
                     }
-                }
-            } else if (uriAsString.startsWith("file")) {
-                val file = File(URI.create(uriAsString))
-                if (file.canRead()) {
-                    if (file.isDirectory) {
-                        throw IOException("Tried to encapsulate a directory.")
-                    }
-
-                    return StreamInfo(file.name, Files.getFileContentType(file.name), uri, file.length(), file)
                 }
             }
 

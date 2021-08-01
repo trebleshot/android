@@ -60,9 +60,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ProgressBar
+            <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progressBar"
-                style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
                 android:layout_width="@dimen/icon_size_list_normal"
                 android:layout_height="@dimen/icon_size_list_normal"
                 android:layout_marginEnd="16dp"
@@ -70,6 +69,10 @@
                 android:visibility="@{viewModel.finished ? View.INVISIBLE : View.VISIBLE}"
                 android:max="@{feederModel.state.running ? feederModel.state.total : 100 }"
                 android:progress="@{feederModel.state.running ? feederModel.state.progress : viewModel.progress }"
+                app:indicatorSize="36dp"
+                app:indicatorInset="0dp"
+                app:trackThickness="3dp"
+                app:trackColor="?colorPassive"
                 app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
                 app:layout_constraintEnd_toStartOf="@+id/text"
                 app:layout_constraintStart_toStartOf="parent"

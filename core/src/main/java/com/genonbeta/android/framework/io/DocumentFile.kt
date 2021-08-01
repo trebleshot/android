@@ -18,37 +18,101 @@
 package com.genonbeta.android.framework.io
 
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Parcelable
 import android.provider.DocumentsContract
+import android.provider.DocumentsContract.Document.*
+import android.util.Log
+import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
-import java.io.Closeable
+import com.genonbeta.android.framework.util.Files
+import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
+import java.net.URI
 
 /**
  * created by: Veli
  * date: 17.02.2018 22:36
  */
-abstract class DocumentFile(private val parent: DocumentFile?, val originalUri: Uri) {
-    abstract fun canRead(): Boolean
+@Parcelize
+class DocumentFile private constructor(
+    val originalUri: Uri,
+    private val data: Data?,
+    private val file: File?,
+) : Parcelable {
+    val parent: DocumentFile?
+        get() = data?.parent ?: file?.parentFile?.let { DocumentFile(it) }
 
-    abstract fun canWrite(): Boolean
+    private constructor(originalUri: Uri, data: Data) : this(originalUri, data = data, file = null)
 
-    abstract fun delete(): Boolean
+    private constructor(file: File) : this(Uri.fromFile(file), file = file, data = null)
 
-    override fun equals(other: Any?): Boolean {
-        return other is DocumentFile && hashCode() == other.hashCode()
+    fun canRead(): Boolean = file?.canRead() ?: data?.canRead() ?: false
+
+    fun canWrite(): Boolean = file?.canWrite() ?: data?.canWrite() ?: false
+
+    fun createDirectory(context: Context, displayName: String): DocumentFile? {
+        if (SDK_INT > 19 && data != null) {
+            return createFile(context, MIME_TYPE_DIR, displayName)
+        } else if (file != null) {
+            val target = File(file, displayName)
+
+            if (target.isDirectory || (!target.exists() && target.mkdirs())) {
+                return DocumentFile(target)
+            }
+        }
+
+        return null
     }
 
-    abstract fun exists(): Boolean
+    fun createFile(context: Context, mimeType: String, displayName: String): DocumentFile? {
+        if (SDK_INT >= 21 && data != null) {
+            DocumentsContract.createDocument(context.contentResolver, originalUri, mimeType, displayName)?.let {
+                return from(this, context, it, it)
+            }
+        } else if (file != null) {
+            val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+            val target = File(file, extension?.let { "$displayName.$it" } ?: displayName)
 
-    abstract fun createDirectory(displayName: String): DocumentFile?
+            try {
+                if (target.createNewFile()) {
+                    return DocumentFile(target)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
 
-    abstract fun createFile(mimeType: String, displayName: String): DocumentFile?
+        return null
+    }
 
-    open fun findFile(displayName: String): DocumentFile? {
-        for (doc in listFiles()) {
+    fun delete(context: Context): Boolean {
+        if (SDK_INT >= 19 && data != null) {
+            try {
+                return DocumentsContract.deleteDocument(context.contentResolver, data.uri)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        } else if (file != null) {
+            return deleteContentsIfPossible(file)
+        }
+
+        return false
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is DocumentFile && originalUri == other.originalUri
+    }
+
+    fun exists(): Boolean = data?.exists ?: file?.exists() ?: false
+
+    fun findFile(context: Context, displayName: String): DocumentFile? {
+        for (doc in listFiles(context)) {
             if (displayName == doc.getName()) {
                 return doc
             }
@@ -60,60 +124,234 @@ abstract class DocumentFile(private val parent: DocumentFile?, val originalUri: 
         return originalUri.hashCode()
     }
 
-    abstract fun getName(): String
+    fun isDirectory(): Boolean = data?.isDirectory() ?: file?.isDirectory ?: throw IllegalStateException()
 
-    open fun getParentFile(): DocumentFile? {
-        return parent
+    fun isFile(): Boolean = data?.isFile() ?: file?.isFile ?: throw IllegalStateException()
+
+    fun isTreeDocument(): Boolean = data != null
+
+    fun isVirtual(): Boolean = data?.isVirtual() ?: false
+
+    fun getLastModified(): Long = data?.lastModified ?: file?.lastModified() ?: throw IllegalStateException()
+
+    fun getLength(): Long = data?.length ?: file?.length() ?: throw IllegalStateException()
+
+    fun getName(): String = data?.name ?: file?.name ?: throw IllegalStateException()
+
+    fun getSecureUri(context: Context): Uri {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || data != null) {
+            return getUri()
+        } else if (file != null) {
+            return Files.getSelfProviderFile(context, file)
+        }
+
+        throw IllegalStateException()
     }
 
-    abstract fun getType(): String
+    fun getUri(): Uri = data?.uri ?: originalUri
 
-    abstract fun getUri(): Uri
+    fun getType(): String = data?.type ?: file?.let { getMimeType(getName()) } ?: throw IllegalStateException()
 
-    abstract fun isDirectory(): Boolean
+    fun listFiles(context: Context): Array<DocumentFile> {
+        if (SDK_INT >= 21 && data != null) {
+            val treeUri = DocumentsContract.buildChildDocumentsUriUsingTree(data.uri, data.id)
 
-    abstract fun isFile(): Boolean
+            resolve(context, treeUri)?.use {
+                if (it.moveToFirst()) {
+                    val resultFiles = ArrayList<DocumentFile>(it.count)
+                    val index = CursorIndex(it)
 
-    abstract fun isVirtual(): Boolean
+                    do {
+                        resultFiles[it.position] = from(this, it, index)
+                    } while (it.moveToNext())
 
-    abstract fun getLastModified(): Long
+                    return resultFiles.toTypedArray()
+                }
+            }
+        } else if (file != null) {
+            file.listFiles()?.let { list ->
+                return list.map { DocumentFile(it) }.toTypedArray()
+            }
+        }
 
-    abstract fun getLength(): Long
+        return emptyArray()
+    }
 
-    abstract fun listFiles(): Array<DocumentFile>
+    fun renameTo(context: Context, displayName: String): DocumentFile? {
+        if (SDK_INT >= 21 && data != null) {
+            try {
+                DocumentsContract.renameDocument(context.contentResolver, data.uri, displayName)?.also {
+                    return from(parent, context, it, it)
+                }
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        } else if (file != null) {
+            val target = File(file.parentFile, displayName)
 
-    abstract fun renameTo(displayName: String): DocumentFile?
+            if (file.renameTo(target)) {
+                return fromFile(target)
+            }
+        }
 
-    @Throws(Exception::class)
-    abstract fun sync()
+        return null
+    }
+
+    fun sync(context: Context) {
+        if (SDK_INT >= 19 && data != null) {
+            data.exists = false
+
+            resolve(context, data.uri)?.use {
+                if (it.moveToFirst()) {
+                    return data.update(it, CursorIndex(it))
+                }
+            }
+
+            throw IOException("Syncing with latest data failed")
+        }
+    }
+
+    @Parcelize
+    data class Data(
+        val parent: DocumentFile?,
+        val uri: Uri,
+        var id: String,
+        var name: String,
+        var type: String,
+        var length: Long,
+        var flags: Int,
+        var lastModified: Long,
+        var exists: Boolean = true,
+    ) : Parcelable {
+        fun canRead(): Boolean = exists
+
+        fun canWrite(): Boolean = SDK_INT >= 19 && (flags and FLAG_SUPPORTS_WRITE) != 0
+
+        fun isDirectory(): Boolean = SDK_INT >= 19 && MIME_TYPE_DIR == type
+
+        fun isFile(): Boolean = !isDirectory() && type.isNotEmpty()
+
+        fun isVirtual(): Boolean = SDK_INT >= 24 && flags and FLAG_VIRTUAL_DOCUMENT != 0
+
+        fun update(cursor: Cursor, index: CursorIndex) {
+            id = cursor.getString(index.id)
+            name = cursor.getString(index.name)
+            type = cursor.getString(index.type)
+            length = cursor.getLong(index.size)
+            flags = cursor.getInt(index.flags)
+            lastModified = cursor.getLong(index.lastModified)
+            exists = true
+        }
+
+        companion object {
+            fun from(parent: DocumentFile?, uri: Uri, cursor: Cursor, index: CursorIndex): Data = Data(
+                parent,
+                uri,
+                cursor.getString(index.id),
+                cursor.getString(index.name),
+                cursor.getString(index.type),
+                cursor.getLong(index.size),
+                cursor.getInt(index.flags),
+                cursor.getLong(index.lastModified),
+            )
+        }
+    }
+
+    @RequiresApi(19)
+    data class CursorIndex(
+        val id: Int,
+        val name: Int,
+        val size: Int,
+        val type: Int,
+        val flags: Int,
+        val lastModified: Int,
+    ) {
+        constructor(cursor: Cursor) : this(
+            cursor.getColumnIndex(COLUMN_DOCUMENT_ID),
+            cursor.getColumnIndex(COLUMN_DISPLAY_NAME),
+            cursor.getColumnIndex(COLUMN_SIZE),
+            cursor.getColumnIndex(COLUMN_MIME_TYPE),
+            cursor.getColumnIndex(COLUMN_FLAGS),
+            cursor.getColumnIndex(COLUMN_LAST_MODIFIED)
+        )
+    }
 
     companion object {
         val TAG = DocumentFile::class.simpleName
 
-        fun fromFile(file: File): DocumentFile {
-            return LocalDocumentFile(null, file)
+        private fun deleteContentsIfPossible(parentFile: File): Boolean {
+            if (!parentFile.isDirectory) {
+                return parentFile.delete()
+            } else if (!parentFile.canWrite()) {
+                Log.w(TAG, "Folder is not writable: $parentFile")
+                return false
+            }
+
+            val files = parentFile.listFiles() ?: return false
+            for (file in files) {
+                if (!deleteContentsIfPossible(file)) {
+                    Log.w(TAG, "Failed to delete $file")
+                }
+            }
+            return true
         }
 
-        @Throws(FileNotFoundException::class)
-        fun fromUri(context: Context, uri: Uri, prepareTree: Boolean): DocumentFile {
-            if (Build.VERSION.SDK_INT >= 21) {
-                try {
-                    return TreeDocumentFile.from(null, context, if (prepareTree) prepareUri(uri) else uri, uri)
-                } catch (ignored: Exception) {
-                    // expected because it might not be TreeDocumentFile
+        private fun getMimeType(name: String): String {
+            val lastDot = name.lastIndexOf('.')
+            if (lastDot >= 0) {
+                val extension = name.substring(lastDot + 1).lowercase()
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)?.let {
+                    return it
+                }
+            }
+            return "application/octet-stream"
+        }
+
+        @RequiresApi(19)
+        fun from(parent: DocumentFile?, context: Context, original: Uri, uri: Uri): DocumentFile {
+            resolve(context, uri)?.use {
+                if (it.moveToFirst()) {
+                    val index = CursorIndex(it)
+                    return DocumentFile(original, Data.from(parent, uri, it, index))
                 }
             }
 
-            try {
-                return StreamDocumentFile(StreamInfo.from(context, uri), uri)
-            } catch (ignored: Exception) {
-            }
-            throw FileNotFoundException("Failed to encapsulate the given Uri $uri")
+            throw IOException("Could not encapsulate the data.")
         }
 
         @RequiresApi(21)
-        protected fun prepareUri(treeUri: Uri): Uri {
+        private fun from(parent: DocumentFile, cursor: Cursor, index: CursorIndex): DocumentFile {
+            val id = cursor.getString(index.id)
+            val uri = DocumentsContract.buildDocumentUriUsingTree(parent.getUri(), id)
+            return DocumentFile(uri, Data.from(parent, uri, cursor, index))
+        }
+
+        fun fromFile(file: File): DocumentFile {
+            return DocumentFile(file)
+        }
+
+        @Throws(FileNotFoundException::class)
+        fun fromUri(context: Context, uri: Uri, prepareTree: Boolean = false): DocumentFile {
+            val uriType = uri.toString()
+            if (uriType.startsWith("file")) {
+                return fromFile(File(URI.create(uriType)))
+            } else if (SDK_INT >= 21) {
+                try {
+                    return from(null, context, if (prepareTree) prepareUri(uri) else uri, uri)
+                } catch (ignored: Exception) {
+                }
+            }
+
+            throw FileNotFoundException("Failed to encapsulate the given uri: $uri")
+        }
+
+        @RequiresApi(21)
+        private fun prepareUri(treeUri: Uri): Uri {
             return DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
         }
+
+        private fun resolve(context: Context, uri: Uri) = context.contentResolver.query(
+            uri, null, null, null, null
+        )
     }
 }
