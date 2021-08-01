@@ -55,7 +55,7 @@ class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
                 VideoBrowserAdapter.ClickType.Default -> {
                 }
                 VideoBrowserAdapter.ClickType.ToggleSelect -> {
-                    selectionViewModel.setSelected(video.uri, video.isSelected)
+                    selectionViewModel.setSelected(video, video.isSelected)
                 }
             }
         }
@@ -70,7 +70,7 @@ class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
 
         browserViewModel.allVideos.observe(viewLifecycleOwner) {
             it.forEach { video ->
-                if (selectionViewModel.contains(video.uri)) video.isSelected = true
+                if (selectionViewModel.contains(video)) video.isSelected = true
             }
 
             adapter.submitList(it)

@@ -29,9 +29,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import com.genonbeta.android.framework.util.Files
+import com.genonbeta.android.framework.io.DocumentFile
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutPrepareSharingBinding
 import org.monora.uprotocol.client.android.util.Progress
 import org.monora.uprotocol.client.android.util.Transfers
+import java.lang.ref.WeakReference
 import java.text.Collator
 import javax.inject.Inject
 import kotlin.random.Random
@@ -81,13 +83,17 @@ class PrepareSharingFragment : Fragment(R.layout.layout_prepare_sharing) {
 }
 
 @HiltViewModel
-class PreparationViewModel @Inject internal constructor() : ViewModel() {
+class PreparationViewModel @Inject internal constructor(
+    @ApplicationContext context: Context,
+) : ViewModel() {
     private var consumer: Job? = null
+
+    private val context = WeakReference(context)
 
     val shared = MutableLiveData<PreparationState>()
 
     @Synchronized
-    fun consume(context: Context, contents: List<Uri>) {
+    fun consume(contents: List<Uri>) {
         if (consumer != null) return
 
         consumer = viewModelScope.launch(Dispatchers.IO) {
@@ -96,15 +102,19 @@ class PreparationViewModel @Inject internal constructor() : ViewModel() {
             val progress = Progress(contents.size)
 
             contents.forEach {
-                Files.fromUri(context, it).runCatching {
-                    Transfers.createStructure(
-                        list,
-                        progress,
-                        groupId,
-                        this,
-                    ) { progress, file ->
-                        shared.postValue(PreparationState.Progress(progress.index, progress.total, file.getName()))
+                context.get()?.let { context ->
+                    DocumentFile.fromUri(context, it).runCatching {
+                        Transfers.createStructure(
+                            context,
+                            list,
+                            progress,
+                            groupId,
+                            this,
+                        ) { progress, file ->
+                            shared.postValue(PreparationState.Progress(progress.index, progress.total, file.getName()))
+                        }
                     }
+
                 }
             }
 

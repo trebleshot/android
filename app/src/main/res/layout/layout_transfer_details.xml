@@ -85,20 +85,23 @@
             app:layout_constraintTop_toBottomOf="@+id/text"
             tools:text="@tools:sample/lorem" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progressBar"
-            style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:max="@{stateViewModel.running ? stateViewModel.total : 100 }"
             android:progress="@{stateViewModel.running ? stateViewModel.progress : transferViewModel.progress }"
+            app:trackColor="?colorPassive"
+            app:indicatorSize="260dp"
+            app:indicatorInset="0dp"
+            app:trackThickness="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="320dp" />
+            app:layout_constraintWidth_max="260dp" />
 
         <TextView
             android:id="@+id/textView15"

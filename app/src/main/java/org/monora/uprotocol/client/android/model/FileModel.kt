@@ -20,23 +20,19 @@ package org.monora.uprotocol.client.android.model
 
 import android.os.Parcelable
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.Files
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.client.android.backend.Destination
 import org.monora.uprotocol.client.android.backend.OperationBackend
 import org.monora.uprotocol.client.android.backend.SharingBackend
-import java.io.File
 
 @Parcelize
 class FileModel(
-    val file: File,
+    val file: DocumentFile,
     val indexCount: Int = 0
 ) : ContentModel, Parcelable {
-    val mimeType = Files.getFileContentType(file.absolutePath)
-
     @IgnoredOnParcel
-    var selected = false
+    var isSelected = false
 
     override fun canCopy(): Boolean = file.canRead()
 
@@ -52,18 +48,26 @@ class FileModel(
         TODO("Not yet implemented")
     }
 
-    override fun dateCreated(): Long = file.lastModified()
+    override fun dateCreated(): Long = file.getLastModified()
 
-    override fun dateModified(): Long = file.lastModified()
+    override fun dateModified(): Long = file.getLastModified()
 
     override fun dateSupported(): Boolean = true
 
-    override fun filter(charSequence: CharSequence): Boolean = file.name.contains(charSequence)
+    override fun equals(other: Any?): Boolean {
+        return other is FileModel && file == other.file
+    }
+
+    override fun filter(charSequence: CharSequence): Boolean = file.getName().contains(charSequence)
+
+    override fun hashCode(): Int {
+        return file.hashCode()
+    }
 
     // TODO: 6/26/21 Absolute path may not be enough to create unique ids.
-    override fun id(): Long = file.absolutePath.hashCode().toLong()
+    override fun id(): Long = file.getUri().hashCode().toLong()
 
-    override fun length(): Long = file.length()
+    override fun length(): Long = file.getLength()
 
     override fun lengthSupported(): Boolean = true
 
@@ -81,11 +85,11 @@ class FileModel(
 
     override fun canSelect(): Boolean = true
 
-    override fun selected(): Boolean = selected
+    override fun selected(): Boolean = isSelected
 
     override fun select(selected: Boolean) {
-        this.selected = selected
+        isSelected = selected
     }
 
-    override fun name(): String = file.name
+    override fun name(): String = file.getName()
 }

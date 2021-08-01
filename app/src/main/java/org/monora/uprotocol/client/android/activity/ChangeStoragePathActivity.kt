@@ -29,41 +29,6 @@ import org.monora.uprotocol.client.android.util.Files
  * Date: 5/30/17 6:57 PM
  */
 class ChangeStoragePathActivity : Activity() {
-    override fun onStart() {
-        super.onStart()
-        val currentSavePath = Files.getApplicationDirectory(applicationContext)
-        startActivityForResult(
-            Intent(this, FilePickerActivity::class.java)
-                .setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
-                .putExtra(FilePickerActivity.EXTRA_START_PATH, currentSavePath.getUri().toString())
-                .putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.text_storagePath)),
-            REQUEST_CHOOSE_FOLDER
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (data != null) {
-            if (resultCode == RESULT_OK) {
-                when (requestCode) {
-                    REQUEST_CHOOSE_FOLDER -> if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
-                        defaultPreferences
-                            .edit()
-                            .putString(
-                                "storage_path",
-                                data.getParcelableExtra<Parcelable>(FilePickerActivity.EXTRA_CHOSEN_PATH)
-                                    .toString()
-                            )
-                            .apply()
-                        Toast.makeText(this, "\uD83D\uDC4D", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-
-        finish()
-    }
-
     companion object {
         const val REQUEST_CHOOSE_FOLDER = 1
     }

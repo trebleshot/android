@@ -18,6 +18,7 @@
 
 package org.monora.uprotocol.client.android.util
 
+import android.content.Context
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -29,6 +30,7 @@ import java.io.File
  */
 object Transfers {
     fun createStructure(
+        context: Context,
         list: MutableList<UTransferItem>,
         progress: Progress,
         groupId: Long,
@@ -58,12 +60,13 @@ object Transfers {
             return
         }
 
-        val files = contextFile.listFiles()
+        val files = contextFile.listFiles(context)
         progress.total += files.size
         progressCallback(progress, contextFile)
 
         for (file in files) {
             createStructure(
+                context,
                 list,
                 progress,
                 groupId,

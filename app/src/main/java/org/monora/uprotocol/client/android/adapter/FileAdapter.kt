@@ -32,7 +32,7 @@ import org.monora.uprotocol.client.android.viewholder.FileViewHolder
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 
 class FileAdapter(
-    private val clickListener: (FileModel) -> Unit
+    private val clickListener: (FileModel, ClickType) -> Unit
 ) : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_FILE -> FileViewHolder(
@@ -60,6 +60,11 @@ class FileAdapter(
         is FileModel -> VIEW_TYPE_FILE
         is TitleSectionContentModel -> VIEW_TYPE_SECTION
         else -> throw UnsupportedOperationException()
+    }
+
+    enum class ClickType {
+        Default,
+        ToggleSelect
     }
 
     companion object {

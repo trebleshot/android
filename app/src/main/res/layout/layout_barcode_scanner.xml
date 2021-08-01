@@ -17,7 +17,8 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -41,37 +42,40 @@
             app:zxing_autoFocusButtonVisible="true"
             app:zxing_flashButtonColor="@android:color/white"
             app:zxing_flashButtonVisible="true"
-            app:zxing_frameColor="@android:color/white"
-            app:zxing_frameCornersSize="50dp"
-            app:zxing_frameCornersRadius="0dp"
-            app:zxing_frameAspectRatioWidth="1"
             app:zxing_frameAspectRatioHeight="1"
+            app:zxing_frameAspectRatioWidth="1"
+            app:zxing_frameColor="@android:color/white"
+            app:zxing_frameCornersRadius="0dp"
+            app:zxing_frameCornersSize="50dp"
             app:zxing_frameSize="0.75"
             app:zxing_frameThickness="2dp"
-            app:zxing_maskColor="#30000000" />
+            app:zxing_maskColor="#30000000"
+            tools:visibility="gone" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_margin="8dp"
             android:padding="4dp"
             android:visibility="@{viewModel.running ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toTopOf="@+id/text"
+            app:layout_constraintBottom_toTopOf="@+id/image"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <ImageView
             android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:visibility="@{viewModel.needsAccess ? View.VISIBLE : View.GONE}"
             android:imageResource="@{viewModel.stateImage}"
+            android:visibility="@{viewModel.needsAccess ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressBar"
             app:tint="?colorPassive" />
 
         <TextView
@@ -79,15 +83,14 @@
             style="@style/TextAppearance.Primary.Normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/progressBar"
             android:gravity="center_horizontal"
             android:padding="8dp"
             android:text="@{viewModel.running ? @string/mesg_completing : viewModel.stateText}"
             android:visibility="@{viewModel.running || viewModel.needsAccess ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/image" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button"
@@ -100,6 +103,7 @@
             android:onClick="@{viewModel.clickListener}"
             android:text="@{viewModel.running ? @string/butn_cancel : viewModel.stateButtonText}"
             android:visibility="@{viewModel.running || viewModel.needsAccess ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text" />

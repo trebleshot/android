@@ -88,4 +88,8 @@ data class Image(
 ) : Parcelable {
     @IgnoredOnParcel
     var isSelected = false
+
+    override fun equals(other: Any?): Boolean {
+        return other is Image && uri == other.uri
+    }
 }

@@ -41,7 +41,7 @@ class FolderCreationDialog(
             override fun onProceedClick(dialog: AlertDialog): Boolean {
                 val fileName = editText.text.toString()
                 if (fileName.isEmpty()) return false
-                val createdFile = currentFolder.createDirectory(fileName)
+                val createdFile = currentFolder.createDirectory(context, fileName)
                 if (createdFile == null) {
                     Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show()
                     return false

@@ -74,7 +74,7 @@ class MainTransferOperation(
         when {
             ongoing == null -> Log.d(TAG, "installReceivedContent: Ongoing item was empty!")
             descriptor is DocumentFileStreamDescriptor -> {
-                Files.saveReceivedFile(savePath, descriptor.documentFile, ongoing)
+                Files.saveReceivedFile(backend.context, savePath, descriptor.documentFile, ongoing)
 
                 if (ongoing is UTransferItem) runBlocking {
                     transferRepository.update(ongoing)

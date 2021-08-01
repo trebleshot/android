@@ -33,9 +33,6 @@ import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.util.Updater
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AboutActivity : Activity() {
@@ -77,7 +74,6 @@ class AboutActivity : Activity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.actions_about_feedback -> Activities.startFeedbackActivity(this)
             R.id.actions_about_changelog -> {
                 startActivity(Intent(this, ChangelogActivity::class.java))
             }

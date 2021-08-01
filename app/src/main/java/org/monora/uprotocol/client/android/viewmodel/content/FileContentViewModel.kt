@@ -28,9 +28,9 @@ class FileContentViewModel(fileModel: FileModel) {
 
     val count = fileModel.indexCount
 
-    val isDirectory = fileModel.file.isDirectory
+    val isDirectory = fileModel.file.isDirectory()
 
-    val mimeType = fileModel.mimeType
+    val mimeType = fileModel.file.getType()
 
     val icon = if (isDirectory) R.drawable.ic_folder_white_24dp else MimeIcons.loadMimeIcon(mimeType)
 

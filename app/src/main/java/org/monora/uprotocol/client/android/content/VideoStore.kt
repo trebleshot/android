@@ -92,4 +92,8 @@ data class Video(
 ) : Parcelable {
     @IgnoredOnParcel
     var isSelected = false
+
+    override fun equals(other: Any?): Boolean {
+        return other is Video && uri == other.uri
+    }
 }

@@ -132,7 +132,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
             }
-            R.id.menu_activity_feedback -> Activities.startFeedbackActivity(this)
         }
 
         pendingMenuItemId = 0

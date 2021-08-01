@@ -84,7 +84,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                     args.groupId,
                     it.remoteClient.clientUid,
                     TransferItem.Type.Outgoing,
-                    Files.getApplicationDirectory(requireContext()).getUri().toString(),
+                    Files.getAppDirectory(requireContext()).getUri().toString(),
                 )
 
                 sharingViewModel.consume(it, transfer, args.contents.toList())

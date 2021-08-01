@@ -18,21 +18,29 @@
 
 package org.monora.uprotocol.client.android.data
 
+import android.content.Context
+import com.genonbeta.android.framework.io.DocumentFile
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.model.FileModel
-import java.io.File
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FileRepository @Inject constructor() {
-    fun getFileList(path: String): List<FileModel> {
-        val file = File(path)
-        check(file.isDirectory) {
-            "$path is not a directory."
+class FileRepository @Inject constructor(
+    @ApplicationContext context: Context,
+) {
+    private val context = WeakReference(context)
+
+    fun getFileList(file: DocumentFile): List<FileModel> {
+        val context = context.get() ?: return emptyList()
+
+        check(file.isDirectory()) {
+            "${file.originalUri} is not a directory."
         }
 
-        return file.listFiles()?.map {
-            FileModel(it, it?.takeIf { it.isDirectory }?.list()?.size ?: 0)
-        } ?: listOf()
+        return file.listFiles(context).map {
+            FileModel(it, it.takeIf { it.isDirectory() }?.listFiles(context)?.size ?: 0)
+        }
     }
 }

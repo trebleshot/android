@@ -28,12 +28,8 @@ import androidx.preference.PreferenceManager
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.Files.fetchFile
-import com.genonbeta.android.framework.util.Files.fromUri
 import com.genonbeta.android.framework.util.Files.getUniqueFileName
-import com.genonbeta.android.framework.util.Stoppable
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.config.AppConfig.BUFFER_LENGTH_DEFAULT
-import org.monora.uprotocol.client.android.config.AppConfig.DEFAULT_TIMEOUT_SOCKET
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -44,25 +40,21 @@ import java.io.InputStreamReader
 import java.util.*
 
 object Files {
-    @Throws(Exception::class)
-    fun copy(context: Context, source: DocumentFile, destination: DocumentFile, stoppable: Stoppable) = Files.copy(
-        context, source, destination, stoppable, BUFFER_LENGTH_DEFAULT, DEFAULT_TIMEOUT_SOCKET
-    )
-
     fun createLog(context: Context): DocumentFile? {
-        val saveDirectory = getApplicationDirectory(context)
-        val logFile = saveDirectory.createFile("text/plain", "trebleshot_log") ?: return null
+        val target = getAppDirectory(context)
+        val logFile = target.createFile(context, "text/plain", "trebleshot_log") ?: return null
         val activityManager = context.getSystemService(Service.ACTIVITY_SERVICE) as ActivityManager
 
-        if (logFile.exists()) logFile.delete()
+        if (logFile.exists()) logFile.delete(context)
 
         try {
             val processList = activityManager.runningAppProcesses
             val command = "logcat -d -v threadtime *:*"
             val process = Runtime.getRuntime().exec(command)
             val reader = BufferedReader(InputStreamReader(process.inputStream))
-            val outputStream = context.contentResolver
-                .openOutputStream(logFile.getUri(), "w") ?: throw IOException("Open failed " + logFile.getName())
+            val outputStream = context.contentResolver.openOutputStream(
+                logFile.getUri(), "w"
+            ) ?: throw IOException("Open failed " + logFile.getName())
             var readLine: String
             while (reader.readLine().also { readLine = it } != null)
                 for (processInfo in processList) if (readLine.contains(processInfo.pid.toString())) {
@@ -79,13 +71,13 @@ object Files {
         return null
     }
 
-    fun getApplicationDirectory(context: Context): DocumentFile {
+    fun getAppDirectory(context: Context): DocumentFile {
         val defaultPath = getDefaultApplicationDirectoryPath(context)
         val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         if (defaultPreferences.contains("storage_path")) {
             try {
-                val savePath = fromUri(
-                    context, Uri.parse(defaultPreferences.getString("storage_path", null))
+                val savePath = DocumentFile.fromUri(
+                    context, Uri.parse(defaultPreferences.getString("storage_path", null)), false
                 )
                 if (savePath.isDirectory() && savePath.canWrite()) return savePath
             } catch (e: Exception) {
@@ -117,7 +109,7 @@ object Files {
     fun getIncomingPseudoFile(
         context: Context, item: UTransferItem, transfer: Transfer, createIfNeeded: Boolean,
     ): DocumentFile = fetchFile(
-        getSavePath(context, transfer), item.itemDirectory, item.itemMimeType, item.location, createIfNeeded
+        context, getSavePath(context, transfer), item.itemDirectory, item.itemMimeType, item.location, createIfNeeded
     )
 
     @Throws(IOException::class)
@@ -129,30 +121,11 @@ object Files {
         return pseudoFile
     }
 
-    fun getReadableUri(uri: String): String {
-        return getReadableUri(Uri.parse(uri), uri)
-    }
-
-    fun getReadableUri(uri: Uri): String {
-        return getReadableUri(uri, uri.toString())
-    }
-
-    fun getReadableUri(uri: Uri, defaultValue: String): String {
-        return uri.path ?: defaultValue
-    }
-
-    @Throws(Exception::class)
-    fun move(
-        context: Context, targetFile: DocumentFile, destinationFile: DocumentFile, stoppable: Stoppable?,
-    ): Boolean = Files.move(
-        context, targetFile, destinationFile, stoppable, BUFFER_LENGTH_DEFAULT, DEFAULT_TIMEOUT_SOCKET
-    )
-
     fun getSavePath(context: Context, transfer: Transfer): DocumentFile {
-        val defaultFolder = getApplicationDirectory(context)
+        val defaultFolder = getAppDirectory(context)
 
         try {
-            val saveLocation = fromUri(context, Uri.parse(transfer.location))
+            val saveLocation = DocumentFile.fromUri(context, Uri.parse(transfer.location), false)
             if (saveLocation.isDirectory() && saveLocation.canWrite()) {
                 return saveLocation
             }
@@ -174,12 +147,13 @@ object Files {
 
     @Throws(Exception::class)
     fun saveReceivedFile(
+        context: Context,
         savePath: DocumentFile,
         currentFile: DocumentFile,
         transferItem: TransferItem,
     ): DocumentFile {
-        val name = getUniqueFileName(savePath, transferItem.itemName, true)
-        val renamedFile = currentFile.renameTo(name) ?: throw IOException("Failed to rename object: $currentFile")
+        val name = getUniqueFileName(context, savePath, transferItem.itemName, true)
+        val renamedFile = currentFile.renameTo(context, name) ?: throw IOException("Failed to rename: $currentFile")
 
         // FIXME: 7/30/19 The rename always fails when renaming TreeDocumentFile (changed the rename method, did it fix?)
         // also don't forget to use moveDocument functions.

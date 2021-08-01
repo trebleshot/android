@@ -23,6 +23,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.genonbeta.android.framework.io.DocumentFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,7 @@ import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
+import org.monora.uprotocol.client.android.util.Files
 import java.text.Collator
 import javax.inject.Inject
 
@@ -40,6 +42,8 @@ class FilesViewModel @Inject internal constructor(
     @ApplicationContext context: Context,
     private val fileRepository: FileRepository
 ) : ViewModel() {
+    private val appDirectory = Files.getAppDirectory(context)
+
     private val textFolder = context.getString(R.string.text_folder)
 
     private val textFile = context.getString(R.string.text_file)
@@ -47,12 +51,28 @@ class FilesViewModel @Inject internal constructor(
     private val _files = MutableLiveData<List<ContentModel>>()
 
     val files = liveData {
-        requestPath("/sdcard/Download")
+        requestPath(appDirectory)
         emitSource(_files)
     }
 
-    private fun createOrderedFileList(path: String): List<ContentModel> {
-        val list = fileRepository.getFileList(path)
+    private val _path = MutableLiveData<List<FileModel>>()
+
+    val path = liveData {
+        emitSource(_path)
+    }
+
+    private fun createOrderedFileList(file: DocumentFile): List<ContentModel> {
+        val pathTree = mutableListOf<FileModel>()
+
+        var pathChild = file
+        do {
+            pathTree.add(FileModel(pathChild))
+        } while (pathChild.parent?.also { pathChild = it } != null)
+
+        pathTree.reverse()
+        _path.postValue(pathTree)
+
+        val list = fileRepository.getFileList(file)
 
         if (list.isEmpty()) return list
 
@@ -67,8 +87,8 @@ class FilesViewModel @Inject internal constructor(
         val files = ArrayList<FileModel>(0)
 
         sortedList.forEach {
-            if (it.file.isDirectory) contents.add(it)
-            else if (it.file.isFile) files.add(it)
+            if (it.file.isDirectory()) contents.add(it)
+            else if (it.file.isFile()) files.add(it)
         }
 
         if (contents.isNotEmpty()) {
@@ -83,9 +103,9 @@ class FilesViewModel @Inject internal constructor(
         return contents
     }
 
-    fun requestPath(path: String) {
+    fun requestPath(file: DocumentFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            _files.postValue(createOrderedFileList(path))
+            _files.postValue(createOrderedFileList(file))
         }
     }
 }

@@ -87,6 +87,7 @@
                 android:contentDescription="@string/text_image"
                 android:padding="8dp"
                 android:visibility="@{viewModel.needsApproval ? View.GONE : View.VISIBLE}"
+                app:tint="?colorPrimary"
                 app:imageResource="@{viewModel.finished ? viewModel.finishedIcon : feederModel.state.buttonIcon}"
                 app:layout_constraintBottom_toBottomOf="@+id/progressBar"
                 app:layout_constraintEnd_toEndOf="@+id/progressBar"

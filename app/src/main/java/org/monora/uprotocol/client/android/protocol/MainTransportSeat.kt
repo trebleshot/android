@@ -99,7 +99,7 @@ class MainTransportSeat @Inject constructor(
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {
                 try {
-                    val saveLocation = Files.getApplicationDirectory(context).getUri().toString()
+                    val saveLocation = Files.getAppDirectory(context).getUri().toString()
                     val transfer = Transfer(
                         params.groupId, client.clientUid, Incoming, saveLocation, accepted = hasPin
                     )

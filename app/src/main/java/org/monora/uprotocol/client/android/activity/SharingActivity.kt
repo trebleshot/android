@@ -62,7 +62,7 @@ class SharingActivity : Activity() {
             return
         }
 
-        preparationViewModel.consume(applicationContext, list)
+        preparationViewModel.consume(list)
 
         setContentView(R.layout.activity_sharing)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

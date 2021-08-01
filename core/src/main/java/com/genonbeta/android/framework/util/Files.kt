@@ -26,10 +26,7 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.io.LocalDocumentFile
-import com.genonbeta.android.framework.io.StreamDocumentFile
-import com.genonbeta.android.framework.io.StreamInfo
-import com.genonbeta.android.framework.io.TreeDocumentFile
+import com.genonbeta.android.framework.io.OpenableContent
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -46,43 +43,13 @@ import kotlin.math.pow
 object Files {
     private val TAG = Files::class.simpleName
 
-    @Throws(Exception::class)
-    fun copy(
-        context: Context, source: DocumentFile, destination: DocumentFile, stoppable: Stoppable?,
-        bufferLength: Int, socketTimeout: Int,
-    ) {
-        // TODO: 2/8/21 DocumentContract has copyDocument feature but it doesn't show the progress
-        val resolver = context.contentResolver
-        val inputStream = resolver.openInputStream(source.getUri())
-        val outputStream = resolver.openOutputStream(destination.getUri())
-        if (inputStream == null || outputStream == null) {
-            throw IOException("Failed to open streams to start copying")
-        }
-
-        val buffer = ByteArray(bufferLength)
-        var len = 0
-        var time = System.currentTimeMillis()
-        var lastRead = time
-
-        while (len != -1) {
-            time = System.currentTimeMillis()
-
-            if (inputStream.read(buffer).also { len = it } > 0) {
-                outputStream.write(buffer, 0, len)
-                outputStream.flush()
-                lastRead = time
-            }
-
-            if (time - lastRead > socketTimeout || stoppable?.interrupted() == true)
-                throw Exception("Timed out or interrupted. Exiting!")
-        }
-
-        outputStream.close()
-        inputStream.close()
-    }
-
     @Throws(IOException::class)
-    fun fetchDirectories(directory: DocumentFile, path: String, createIfNeeded: Boolean = true): DocumentFile {
+    fun fetchDirectories(
+        context: Context,
+        directory: DocumentFile,
+        path: String,
+        createIfNeeded: Boolean = true,
+    ): DocumentFile {
         var current: DocumentFile? = directory
         val pathArray: Array<String> = path.split(File.separator.toRegex()).toTypedArray()
 
@@ -90,7 +57,7 @@ object Files {
             if (current == null)
                 throw IOException("Failed to create directories: $path")
 
-            val existing = current.findFile(currentPath)
+            val existing = current.findFile(context, currentPath)
 
             existing?.let {
                 if (!it.isDirectory()) {
@@ -98,7 +65,11 @@ object Files {
                 }
             }
 
-            current = if (existing == null && createIfNeeded) current.createDirectory(currentPath) else existing
+            current = if (existing == null && createIfNeeded) {
+                current.createDirectory(context, currentPath)
+            } else {
+                existing
+            }
         }
 
         return current as DocumentFile
@@ -106,37 +77,28 @@ object Files {
 
     @Throws(IOException::class)
     fun fetchFile(
+        context: Context,
         directory: DocumentFile,
         path: String?,
         mimeType: String,
         fileName: String,
         createIfNeeded: Boolean = true,
     ): DocumentFile {
-        val documentFile = if (path == null) directory else fetchDirectories(directory, path, createIfNeeded)
-        val existing = documentFile.findFile(fileName)
+        val documentFile = if (path == null) directory else fetchDirectories(context, directory, path, createIfNeeded)
+        val existing = documentFile.findFile(context, fileName)
 
         if (existing != null) {
             if (!existing.isFile())
                 throw IOException("An entity in the same directory with the same name already exists.")
             return existing
         } else if (createIfNeeded) {
-            val createdFile = documentFile.createFile(mimeType, fileName)
+            val createdFile = documentFile.createFile(context, mimeType, fileName)
             if (createdFile != null) {
                 return createdFile
             }
         }
 
         throw IOException("Failed to create file: $path")
-    }
-
-    @Throws(FileNotFoundException::class)
-    fun fromUri(context: Context, uri: Uri): DocumentFile {
-        val uriType = uri.toString()
-        return if (uriType.startsWith("file")) {
-            DocumentFile.fromFile(File(URI.create(uriType)))
-        } else {
-            DocumentFile.fromUri(context, uri, false)
-        }
     }
 
     fun formatLength(length: Long, kilo: Boolean = false): String {
@@ -189,43 +151,30 @@ object Files {
         return Intent(getActionTypeToView(type)).setDataAndType(url, type)
     }
 
-    @Throws(IOException::class)
-    fun getSecureUri(context: Context, documentFile: DocumentFile): Uri {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || documentFile is TreeDocumentFile)
-            return documentFile.getUri()
-
-        if (documentFile is StreamDocumentFile)
-            return getSecureUri(context, documentFile.stream)
-        if (documentFile is LocalDocumentFile)
-            return getSelfProviderFile(context, documentFile.file)
-        throw IOException("Cannot gather right method to create uri")
-    }
-
     fun getSecureUriSilently(context: Context, documentFile: DocumentFile): Uri {
         try {
-            return getSecureUri(context, documentFile)
+            return documentFile.getSecureUri(context)
         } catch (e: Throwable) {
-            // do nothing
-            Log.d(
-                TAG, String.format(
-                    Locale.US, "Cannot create secure uri for the file %s with error message '%s'",
-                    documentFile.getName(), e.message
-                )
-            )
+            e.printStackTrace()
         }
         return documentFile.getUri()
     }
 
-    fun getSecureUri(context: Context, streamInfo: StreamInfo): Uri {
-        return if (streamInfo.file != null) getSelfProviderFile(context, streamInfo.file) else streamInfo.uri
+    fun getSecureUri(context: Context, openable: OpenableContent): Uri {
+        return if (openable.file != null) getSelfProviderFile(context, openable.file) else openable.uri
     }
 
     fun getSelfProviderFile(context: Context, file: File): Uri {
         return FileProvider.getUriForFile(context, "${context.applicationContext.packageName}.fileprovider", file)
     }
 
-    fun getUniqueFileName(directory: DocumentFile, fileName: String, tryOriginalFirst: Boolean): String {
-        if (tryOriginalFirst && directory.findFile(fileName) == null)
+    fun getUniqueFileName(
+        context: Context,
+        directory: DocumentFile,
+        fileName: String,
+        tryOriginalFirst: Boolean
+    ): String {
+        if (tryOriginalFirst && directory.findFile(context, fileName) == null)
             return fileName
 
         val pathStartPosition = fileName.lastIndexOf(".")
@@ -237,28 +186,9 @@ object Files {
         }
         for (exceed in 1..998) {
             val newName = "$mergedName ($exceed)$fileExtension"
-            if (directory.findFile(newName) == null) return newName
+            if (directory.findFile(context, newName) == null) return newName
         }
         return fileName
-    }
-
-    @Throws(Exception::class)
-    fun move(
-        context: Context, target: DocumentFile, destination: DocumentFile,
-        stoppable: Stoppable?, bufferLength: Int, socketTimeout: Int,
-    ): Boolean {
-        if (target !is LocalDocumentFile || destination !is LocalDocumentFile || target.file.renameTo(destination.file)) {
-            copy(context, target, destination, stoppable, bufferLength, socketTimeout)
-        }
-
-        // syncs the file with latest data if it is database based
-        destination.sync()
-
-        if (target.getLength() == destination.getLength()) {
-            target.delete()
-            return true
-        }
-        return false
     }
 
     fun openUri(context: Context, file: DocumentFile): Boolean {

@@ -56,7 +56,7 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
                 AudioBrowserAdapter.ClickType.Default -> {
                 }
                 AudioBrowserAdapter.ClickType.ToggleSelect -> {
-                    selectionViewModel.setSelected(song.uri, song.isSelected)
+                    selectionViewModel.setSelected(song, song.isSelected)
                 }
             }
         }
@@ -71,7 +71,7 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
 
         browserViewModel.allSongs.observe(viewLifecycleOwner) {
             it.forEach { song ->
-                if (selectionViewModel.contains(song.uri)) song.isSelected = true
+                if (selectionViewModel.contains(song)) song.isSelected = true
             }
 
             adapter.submitList(it)

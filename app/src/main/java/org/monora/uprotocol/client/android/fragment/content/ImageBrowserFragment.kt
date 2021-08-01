@@ -55,7 +55,7 @@ class ImageBrowserFragment : Fragment(R.layout.layout_image_browser) {
                 ImageBrowserAdapter.ClickType.Default -> {
                 }
                 ImageBrowserAdapter.ClickType.ToggleSelect -> {
-                    selectionViewModel.setSelected(image.uri, image.isSelected)
+                    selectionViewModel.setSelected(image, image.isSelected)
                 }
             }
         }
@@ -70,7 +70,7 @@ class ImageBrowserFragment : Fragment(R.layout.layout_image_browser) {
 
         browserViewModel.allImages.observe(viewLifecycleOwner) {
             it.forEach { image ->
-                if (selectionViewModel.contains(image.uri)) image.isSelected = true
+                if (selectionViewModel.contains(image)) image.isSelected = true
             }
 
             adapter.submitList(it)

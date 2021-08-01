@@ -22,7 +22,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.genonbeta.android.framework.io.StreamInfo
+import com.genonbeta.android.framework.io.OpenableContent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.config.AppConfig
@@ -125,7 +125,7 @@ class MainPersistenceProvider @Inject constructor(
         return if (transferItem.itemType == TransferItem.Type.Incoming) {
             DocumentFileStreamDescriptor(Files.getIncomingFile(context, transferItem, transfer))
         } else {
-            StreamInfoStreamDescriptor(StreamInfo.from(context, Uri.parse(transferItem.location)))
+            StreamInfoStreamDescriptor(OpenableContent.from(context, Uri.parse(transferItem.location)))
         }
     }
 
@@ -171,7 +171,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun openInputStream(descriptor: StreamDescriptor): InputStream {
         if (descriptor is StreamInfoStreamDescriptor) {
-            return descriptor.streamInfo.openInputStream(context)
+            return descriptor.openableContent.openInputStream(context)
         } else if (descriptor is DocumentFileStreamDescriptor) {
             return context.contentResolver.openInputStream(descriptor.documentFile.getUri()) ?: throw IOException(
                 "Supported resource did not open"
@@ -183,7 +183,7 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun openOutputStream(descriptor: StreamDescriptor): OutputStream {
         if (descriptor is StreamInfoStreamDescriptor) {
-            return descriptor.streamInfo.openOutputStream(context)
+            return descriptor.openableContent.openOutputStream(context)
         } else if (descriptor is DocumentFileStreamDescriptor) {
             return context.contentResolver.openOutputStream(
                 descriptor.documentFile.getUri(), "wa"

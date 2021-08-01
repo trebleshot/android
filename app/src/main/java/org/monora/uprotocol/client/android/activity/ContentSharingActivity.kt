@@ -154,19 +154,19 @@ class ContentSharingActivity : Activity() {
 
 @HiltViewModel
 class SharingSelectionViewModel @Inject internal constructor() : ViewModel() {
-    private val selections = mutableListOf<Uri>()
+    private val selections = mutableListOf<Any>()
 
-    private val _selectionState = MutableLiveData<List<Uri>>(emptyList())
+    private val _selectionState = MutableLiveData<List<Any>>(emptyList())
 
     val selectionState = liveData {
         emitSource(_selectionState)
     }
 
-    fun contains(uri: Uri) = selections.contains(uri)
+    fun contains(obj: Any) = selections.contains(obj)
 
-    fun setSelected(uri: Uri, selected: Boolean) {
+    fun setSelected(obj: Any, selected: Boolean) {
         synchronized(selections) {
-            val result = if (selected) selections.add(uri) else selections.remove(uri)
+            val result = if (selected) selections.add(obj) else selections.remove(obj)
 
             if (result) {
                 _selectionState.postValue(selections)
