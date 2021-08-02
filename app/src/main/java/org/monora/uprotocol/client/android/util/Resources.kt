@@ -35,4 +35,6 @@ object Resources {
     }
 
     fun Int.resToColor(context: Context) = ContextCompat.getColor(context, this)
+
+    fun Int.resToDrawable(context: Context) = ContextCompat.getDrawable(context, this)
 }

@@ -39,8 +39,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="org.monora.uprotocol.client.android.activity.ContentSharingActivity"
-        tools:showIn="@layout/activity_content_sharing">
+        tools:context="org.monora.uprotocol.client.android.activity.ContentBrowserActivity"
+        tools:showIn="@layout/activity_content_browser">
 
         <fragment
             android:id="@+id/activity_file_explorer_fragment_files"

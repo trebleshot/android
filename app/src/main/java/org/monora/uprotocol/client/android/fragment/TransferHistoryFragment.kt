@@ -19,16 +19,13 @@ package org.monora.uprotocol.client.android.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.liveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -37,15 +34,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.ContentSharingActivity
+import org.monora.uprotocol.client.android.activity.ContentBrowserActivity
 import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
 import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
-import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewholder.TransferDetailViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
@@ -93,7 +87,7 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         recyclerView.adapter = adapter
 
         view.findViewById<View>(R.id.sendButton).setOnClickListener {
-            startActivity(Intent(it.context, ContentSharingActivity::class.java))
+            startActivity(Intent(it.context, ContentBrowserActivity::class.java))
         }
         view.findViewById<View>(R.id.receiveButton).setOnClickListener {
             startActivity(Intent(it.context, ReceiveActivity::class.java))

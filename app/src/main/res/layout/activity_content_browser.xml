@@ -21,7 +21,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.monora.uprotocol.client.android.activity.ContentSharingActivity">
+    tools:context="org.monora.uprotocol.client.android.activity.ContentBrowserActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -33,20 +33,15 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/activity_content_sharing_tab_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:minHeight="?attr/actionBarSize"
-            app:tabMode="scrollable" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/activity_content_sharing_view_pager"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_content_browser" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

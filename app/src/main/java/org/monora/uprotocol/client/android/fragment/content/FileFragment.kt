@@ -31,13 +31,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.SharingSelectionViewModel
 import org.monora.uprotocol.client.android.adapter.FileAdapter
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListPathBinding
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import java.io.File
 
 @AndroidEntryPoint

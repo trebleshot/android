@@ -19,7 +19,6 @@
 package org.monora.uprotocol.client.android.fragment.content
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,12 +32,12 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.SharingSelectionViewModel
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListSongBinding
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint

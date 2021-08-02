@@ -25,10 +25,9 @@ import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.ContentSharingActivity
+import org.monora.uprotocol.client.android.activity.ContentBrowserActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
@@ -64,7 +63,7 @@ class Notifications(val backend: NotificationBackend) {
         val sendIntent: PendingIntent = PendingIntent.getActivity(
             context,
             ID_BG_SERVICE + 1,
-            Intent(context, ContentSharingActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            Intent(context, ContentBrowserActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val receiveIntent: PendingIntent = PendingIntent.getActivity(

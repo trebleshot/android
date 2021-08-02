@@ -32,12 +32,12 @@ import com.genonbeta.android.framework.util.Files
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.SharingSelectionViewModel
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListVideoBinding
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint

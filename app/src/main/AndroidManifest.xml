@@ -95,7 +95,7 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.ContentSharingActivity"
+            android:name="org.monora.uprotocol.client.android.activity.ContentBrowserActivity"
             android:label="@string/text_send"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
