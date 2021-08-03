@@ -25,23 +25,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
@@ -50,12 +40,11 @@ import org.monora.uprotocol.client.android.itemcallback.UTransferItemCallback
 import org.monora.uprotocol.client.android.util.CommonErrorHelper
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharingState
+import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
-import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.net.ProtocolException
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SharingFragment : Fragment(R.layout.layout_sharing) {
@@ -93,6 +82,12 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 
         sharingViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
+                is SharingState.Initial -> if (it.consume()) findNavController().navigate(
+                    SharingFragmentDirections.pickClient()
+                )
+                is SharingState.Running -> {
+
+                }
                 is SharingState.Success -> {
                     findNavController().navigate(
                         SharingFragmentDirections.actionSharingFragmentToNavTransferDetails(
@@ -107,51 +102,6 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
             }
         }
     }
-}
-
-@HiltViewModel
-class SharingViewModel @Inject internal constructor(
-    val transferRepository: TransferRepository,
-) : ViewModel() {
-    private var consumer: Job? = null
-
-    private val _state = MutableLiveData<SharingState>()
-
-    val state = liveData {
-        emitSource(_state)
-    }
-
-    fun consume(bridge: CommunicationBridge, transfer: Transfer, contents: List<UTransferItem>) {
-        if (consumer != null) return
-
-        consumer = viewModelScope.launch(Dispatchers.IO) {
-            try {
-                bridge.use {
-                    val result = it.requestFileTransfer(transfer.id, contents) {
-                        runBlocking {
-                            transferRepository.insert(transfer)
-                        }
-                    }
-
-                    if (result) {
-                        _state.postValue(SharingState.Success(transfer))
-                    } else {
-                        throw ProtocolException()
-                    }
-                }
-            } catch (e: Exception) {
-                _state.postValue(SharingState.Error(e))
-            } finally {
-                consumer = null
-            }
-        }
-    }
-}
-
-sealed class SharingState {
-    class Success(val transfer: Transfer) : SharingState()
-
-    class Error(val exception: Exception) : SharingState()
 }
 
 class SharingContentAdapter : ListAdapter<UTransferItem, SharingViewHolder>(UTransferItemCallback()) {

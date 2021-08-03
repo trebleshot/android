@@ -24,5 +24,44 @@
     <fragment
         android:id="@+id/contentBrowserFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ContentBrowserFragment"
-        android:label="@string/text_send" />
+        android:label="@string/text_send">
+        <action
+            android:id="@+id/action_contentBrowserFragment_to_prepareIndexFragment"
+            app:destination="@id/prepareIndexFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/prepareIndexFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment"
+        android:label="@string/preparing" >
+        <action
+            android:id="@+id/action_prepareIndexFragment_to_sendFragment"
+            app:destination="@id/sendFragment"
+            app:popUpTo="@id/prepareIndexFragment"
+            app:popUpToInclusive="true" />
+    </dialog>
+    <fragment
+        android:id="@+id/sendFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.content.transfer.SendFragment"
+        android:label="@string/text_connectingToClient" >
+        <argument
+            android:name="groupId"
+            app:argType="long" />
+        <argument
+            android:name="items"
+            app:argType="org.monora.uprotocol.client.android.database.model.UTransferItem[]" />
+        <action
+            android:id="@+id/pick_client"
+            app:destination="@id/pick_client.xml" />
+        <action
+            android:id="@+id/action_sendFragment_to_nav_transfer_details"
+            app:destination="@id/nav_transfer_details"
+            app:popUpTo="@id/sendFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="transfer"
+                app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+        </action>
+    </fragment>
+    <include app:graph="@navigation/nav_transfer_details" />
+    <include app:graph="@navigation/nav_pick_client" />
 </navigation>

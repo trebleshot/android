@@ -21,6 +21,8 @@ package org.monora.uprotocol.client.android.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -35,6 +37,8 @@ class SharingSelectionViewModel @Inject internal constructor() : ViewModel() {
     }
 
     fun contains(obj: Any) = selections.contains(obj)
+
+    fun getSelections() = selections.toList()
 
     fun setSelected(obj: Any, selected: Boolean) {
         synchronized(selections) {

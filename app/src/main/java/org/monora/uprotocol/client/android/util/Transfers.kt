@@ -60,22 +60,17 @@ object Transfers {
             return
         }
 
+        val path = if (directory == null) {
+            contextFile.getName()
+        } else {
+            directory + File.separator + contextFile.getName()
+        }
         val files = contextFile.listFiles(context)
         progress.total += files.size
         progressCallback(progress, contextFile)
 
         for (file in files) {
-            createStructure(
-                context,
-                list,
-                progress,
-                groupId,
-                file,
-                directory?.let {
-                    it + File.separator + file.getName()
-                },
-                progressCallback,
-            )
+            createStructure(context, list, progress, groupId, file, path, progressCallback)
         }
     }
 }

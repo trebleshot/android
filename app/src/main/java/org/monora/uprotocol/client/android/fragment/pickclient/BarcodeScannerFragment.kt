@@ -352,7 +352,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
     }
 
     companion object {
-        val TAG = BarcodeScannerFragment::class.simpleName
+        private const val TAG = "BarcodeScannerFragment"
     }
 }
 

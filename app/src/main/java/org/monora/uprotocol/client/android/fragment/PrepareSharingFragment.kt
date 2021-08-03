@@ -29,7 +29,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import com.genonbeta.android.framework.io.DocumentFile
+import com.genonbeta.android.framework.io.OpenableContent
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -39,8 +39,7 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutPrepareSharingBinding
-import org.monora.uprotocol.client.android.util.Progress
-import org.monora.uprotocol.client.android.util.Transfers
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.lang.ref.WeakReference
 import java.text.Collator
 import javax.inject.Inject
@@ -99,22 +98,15 @@ class PreparationViewModel @Inject internal constructor(
         consumer = viewModelScope.launch(Dispatchers.IO) {
             val groupId = Random.nextLong()
             val list = mutableListOf<UTransferItem>()
-            val progress = Progress(contents.size)
+            val type = TransferItem.Type.Outgoing
 
-            contents.forEach {
-                context.get()?.let { context ->
-                    DocumentFile.fromUri(context, it).runCatching {
-                        Transfers.createStructure(
-                            context,
-                            list,
-                            progress,
-                            groupId,
-                            this,
-                        ) { progress, file ->
-                            shared.postValue(PreparationState.Progress(progress.index, progress.total, file.getName()))
-                        }
-                    }
+            contents.forEachIndexed { index, uri ->
+                val context = context.get() ?: return@launch
+                val id = index.toLong()
 
+                OpenableContent.from(context, uri).runCatching {
+                    shared.postValue(PreparationState.Progress(index, contents.size, name))
+                    list.add(UTransferItem(id, groupId, name, mimeType, size, null, uri.toString(), type))
                 }
             }
 

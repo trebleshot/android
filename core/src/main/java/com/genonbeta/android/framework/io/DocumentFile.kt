@@ -80,7 +80,7 @@ class DocumentFile private constructor(
             val target = File(file, extension?.let { "$displayName.$it" } ?: displayName)
 
             try {
-                if (target.createNewFile()) {
+                if (target.isFile || target.createNewFile()) {
                     return DocumentFile(target)
                 }
             } catch (e: IOException) {

@@ -53,7 +53,10 @@ class ContentBrowserActivity : Activity() {
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             title = destination.label
 
-            val bg = if (destination.id == R.id.contentBrowserFragment) null else toolbarDefaultBg
+            val bg = when (destination.id) {
+                R.id.contentBrowserFragment, R.id.prepareIndexFragment  -> null
+                else -> toolbarDefaultBg
+            }
             if (Build.VERSION.SDK_INT < 16) {
                 appBarLayout.setBackgroundDrawable(bg)
             } else {

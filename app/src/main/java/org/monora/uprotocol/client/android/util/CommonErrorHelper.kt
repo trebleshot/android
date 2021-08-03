@@ -18,6 +18,7 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
+import android.util.Log
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.protocol.NoAddressException
 import org.monora.uprotocol.core.io.DefectiveAddressListException
@@ -52,5 +53,7 @@ object CommonErrorHelper {
         is ConnectException, is DefectiveAddressListException -> context.getString(R.string.mesg_socketConnectionError)
         is NoRouteToHostException -> context.getString(R.string.mesg_noRouteToHostError)
         else -> context.getString(R.string.mesg_unknownErrorOccurred)
+    }.also {
+        exception.printStackTrace()
     }
 }

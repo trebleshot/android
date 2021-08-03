@@ -41,7 +41,7 @@ import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import java.io.File
 
 @AndroidEntryPoint
-class FileFragment : Fragment(R.layout.layout_file_fragment) {
+class FileBrowserFragment : Fragment(R.layout.layout_file_browser_fragment) {
     private val viewModel: FilesViewModel by viewModels()
 
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()

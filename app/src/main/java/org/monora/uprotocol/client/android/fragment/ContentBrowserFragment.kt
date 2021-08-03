@@ -21,23 +21,30 @@ package org.monora.uprotocol.client.android.fragment
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter
 import org.monora.uprotocol.client.android.databinding.LayoutContentBrowserBinding
 import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
-import org.monora.uprotocol.client.android.fragment.content.FileFragment
+import org.monora.uprotocol.client.android.fragment.content.FileBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.ImageBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.VideoBrowserFragment
+import org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 
 @AndroidEntryPoint
 class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +62,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
                 0,
                 R.drawable.ic_file_document_box_white_24dp,
                 getString(R.string.text_files),
-                FileFragment::class.java.name
+                FileBrowserFragment::class.java.name
             )
         )
         pagerAdapter.add(
@@ -105,5 +112,15 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
             selections.isEnabled = enable
             share.isEnabled = enable
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.share) {
+            findNavController().navigate(
+                ContentBrowserFragmentDirections.actionContentBrowserFragmentToPrepareIndexFragment()
+            )
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

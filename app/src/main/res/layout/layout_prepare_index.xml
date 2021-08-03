@@ -16,22 +16,20 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_transfer"
-    app:startDestination="@id/transferHistoryFragment">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="80dp"
+    android:paddingBottom="80dp">
 
-    <fragment
-        android:id="@+id/transferHistoryFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.TransferHistoryFragment"
-        android:label="@string/text_transfer_history">
-        <action
-            android:id="@+id/action_transferHistoryFragment_to_nav_transfer_details"
-            app:destination="@id/nav_transfer_details">
-            <argument
-                android:name="transfer"
-                app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
-        </action>
-    </fragment>
-    <include app:graph="@navigation/nav_transfer_details" />
-</navigation>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

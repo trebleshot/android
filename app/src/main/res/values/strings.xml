@@ -636,4 +636,5 @@
     <string name="run_in_background">Run in Background</string>
     <string name="share">Share</string>
     <string name="selections">Selections</string>
+    <string name="preparing">Preparing</string>
 </resources>
