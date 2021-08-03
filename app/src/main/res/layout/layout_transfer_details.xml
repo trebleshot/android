@@ -75,9 +75,12 @@
         <TextView
             android:id="@+id/transferTypeText"
             style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{stateViewModel.ongoing ?? (transferViewModel.isReceiving ? @string/incoming : @string/outgoing)}"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:gravity="center"
             app:layout_constraintBottom_toTopOf="@+id/progressBar"
             app:layout_constraintEnd_toEndOf="@+id/progressBar"
             app:layout_constraintHorizontal_bias="0.5"

@@ -24,19 +24,31 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/pathRecyclerView"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:clipToPadding="false"
+        android:paddingBottom="90dp"
+        android:layout_marginLeft="@dimen/short_content_width_padding_between"
+        android:layout_marginRight="@dimen/short_content_width_padding_between"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <include
         android:id="@+id/emptyView"
         layout="@layout/layout_empty_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/pathRecyclerView"
+        app:layout_constraintBottom_toTopOf="@id/pathRecyclerViewContainer"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/pathRecyclerViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/short_content_width_padding"
+        android:layout_marginRight="@dimen/short_content_width_padding"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardBackgroundColor="?android:windowBackground">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pathRecyclerView"
@@ -48,9 +60,8 @@
         android:paddingRight="30dp"
         android:scrollbars="none"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:stackFromEnd="true" />
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

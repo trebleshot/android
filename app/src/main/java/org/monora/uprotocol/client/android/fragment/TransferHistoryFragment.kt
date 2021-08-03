@@ -35,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.ContentBrowserActivity
-import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
@@ -90,7 +89,7 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
             startActivity(Intent(it.context, ContentBrowserActivity::class.java))
         }
         view.findViewById<View>(R.id.receiveButton).setOnClickListener {
-            startActivity(Intent(it.context, ReceiveActivity::class.java))
+            findNavController().navigate(TransferHistoryFragmentDirections.actionTransferHistoryFragmentToNavReceive())
         }
 
         viewModel.transferDetails.observe(viewLifecycleOwner) {
@@ -163,4 +162,3 @@ class TransferDetailItemCallback : DiffUtil.ItemCallback<TransferDetail>() {
         return oldItem == newItem
     }
 }
-

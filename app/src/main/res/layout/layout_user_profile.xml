@@ -32,51 +32,95 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
         android:fitsSystemWindows="true">
 
         <ImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
-            android:layout_width="@dimen/icon_size_list_giant"
-            android:layout_height="@dimen/icon_size_list_giant"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
             android:foreground="?roundSelector"
             android:onClick="@{editProfileClickListener}"
-            app:layout_constraintBottom_toTopOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintBottom_toTopOf="@id/profileBottomBarrier"
+            app:layout_constraintEnd_toStartOf="@id/nickname"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profileTopBarrier"
             tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/nickname"
+            style="@style/TextAppearance.Primary.Big.SingleLine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@{viewModel.client.clientNickname}"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/versionText"
+            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintStart_toEndOf="@+id/picture"
+            app:layout_constraintTop_toBottomOf="@id/profileTopBarrier"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="@tools:sample/cities" />
+
+        <TextView
+            android:id="@+id/versionText"
+            style="@style/TextAppearance.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.client.versionName}"
+            app:layout_constraintBottom_toTopOf="@id/profileBottomBarrier"
+            app:layout_constraintEnd_toEndOf="@id/nickname"
+            app:layout_constraintStart_toStartOf="@id/nickname"
+            app:layout_constraintTop_toBottomOf="@id/nickname"
+            tools:text="@tools:sample/cities" />
 
         <ImageButton
             android:id="@+id/button"
             style="@style/OverflowButton"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:onClick="@{editProfileClickListener}"
-            app:layout_constraintBottom_toBottomOf="@+id/textView5"
+            app:layout_constraintBottom_toBottomOf="@+id/picture"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toTopOf="@+id/textView5"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/nickname"
+            app:layout_constraintTop_toTopOf="@+id/picture"
             app:srcCompat="@drawable/ic_outline_edit_24"
             tools:srcCompat="@drawable/ic_outline_edit_24" />
 
-        <TextView
-            android:id="@+id/textView5"
-            style="@style/TextAppearance.Primary.Big.SingleLine"
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/profileTopBarrier"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.client.clientNickname}"
-            android:textStyle="bold"
+            app:barrierDirection="top"
+            app:barrierMargin="16dp"
+            app:constraint_referenced_ids="picture,button,nickname" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/profileBottomBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="16dp"
+            app:constraint_referenced_ids="picture,button,nickname" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toTopOf="@id/profileTopBarrier"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?colorDivider"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@+id/picture"
-            tools:text="@tools:sample/cities" />
+            app:layout_constraintTop_toBottomOf="@id/profileBottomBarrier" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

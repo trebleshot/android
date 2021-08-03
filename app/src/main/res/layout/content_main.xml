@@ -24,7 +24,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.monora.uprotocol.client.android.activity.HomeActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_home">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
@@ -33,6 +33,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_transfer" />
+        app:navGraph="@navigation/nav_home" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,7 +29,6 @@ import androidx.core.app.NotificationCompat
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.ContentBrowserActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
-import org.monora.uprotocol.client.android.activity.ReceiveActivity
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
@@ -69,7 +68,7 @@ class Notifications(val backend: NotificationBackend) {
         val receiveIntent: PendingIntent = PendingIntent.getActivity(
             context,
             ID_BG_SERVICE + 2,
-            Intent(context, ReceiveActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val exitAction = NotificationCompat.Action(

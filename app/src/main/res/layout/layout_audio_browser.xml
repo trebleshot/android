@@ -26,6 +26,8 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:visibility="gone"
+        android:layout_marginLeft="@dimen/short_content_width_padding_between"
+        android:layout_marginRight="@dimen/short_content_width_padding_between"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <include

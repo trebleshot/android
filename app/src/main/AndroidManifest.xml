@@ -80,11 +80,6 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.FileExplorerActivity"
-            android:label="@string/text_fileExplorer"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.SharedTextActivity"
             android:label="@string/text_sharedTexts"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
@@ -98,7 +93,7 @@
             android:name="org.monora.uprotocol.client.android.activity.ContentBrowserActivity"
             android:label="@string/text_send"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
+            android:theme="@style/Theme.TrebleShot.NoActionBar"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
             tools:targetApi="jelly_bean">
             <meta-data
@@ -107,13 +102,9 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.FilePickerActivity"
-            android:label="@string/text_fileExplorer" />
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.TransferDetailActivity"
             android:label="@string/text_transactionViewer"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
+            android:theme="@style/Theme.TrebleShot.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -174,7 +165,7 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.AboutActivity"
             android:label="@string/text_about"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
+            android:theme="@style/Theme.TrebleShot.NoActionBar"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
             tools:targetApi="jelly_bean">
             <meta-data
@@ -204,27 +195,6 @@
         <activity
             android:name="org.monora.uprotocol.client.android.activity.WebShareActivity"
             android:label="@string/text_webShare" />
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.TransferHistoryActivity"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            android:label="@string/text_transfer_history"
-            android:launchMode="singleTask"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
-            android:name=".activity.ReceiveActivity"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean"
-            android:label="@string/text_receive">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

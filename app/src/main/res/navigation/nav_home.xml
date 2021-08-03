@@ -18,7 +18,7 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_transfer"
+    android:id="@+id/nav_home"
     app:startDestination="@id/transferHistoryFragment">
 
     <fragment
@@ -32,6 +32,10 @@
                 android:name="transfer"
                 app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
         </action>
+        <action
+            android:id="@+id/action_transferHistoryFragment_to_nav_receive"
+            app:destination="@id/nav_receive" />
     </fragment>
     <include app:graph="@navigation/nav_transfer_details" />
+    <include app:graph="@navigation/nav_receive" />
 </navigation>

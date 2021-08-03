@@ -25,16 +25,18 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginLeft="@dimen/short_content_width_padding_between"
         android:layout_marginRight="@dimen/short_content_width_padding_between"
         android:clipToPadding="false"
         android:paddingTop="12dp"
-        android:paddingBottom="120dp"
+        android:paddingBottom="12dp"
         android:visibility="gone"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/barrierBottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -92,6 +94,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="@dimen/short_content_width_padding" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorDivider"
+        app:layout_constraintBottom_toTopOf="@id/barrierBottom"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
