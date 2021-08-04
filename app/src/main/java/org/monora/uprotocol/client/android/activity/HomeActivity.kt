@@ -31,16 +31,23 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.yanzhenjie.andserver.Server
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
+import org.monora.uprotocol.client.android.di.WebShareServer
 import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
+    @WebShareServer
+    @Inject
+    public lateinit var webShareServer: Server
+
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
     private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -99,6 +106,13 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         if (BuildConfig.FLAVOR == "googlePlay") {
             navigationView.menu.findItem(R.id.menu_activity_main_donate).isVisible = true
         }
+
+        webShareServer.startup()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webShareServer.shutdown()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

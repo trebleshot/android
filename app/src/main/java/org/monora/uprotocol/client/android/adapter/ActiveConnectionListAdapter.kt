@@ -41,10 +41,7 @@ class ActiveConnectionListAdapter(
 ) : ListingAdapter<NetworkInterfaceModel, ViewHolder>(fragment) {
     override fun onLoad(): MutableList<NetworkInterfaceModel> {
         val resultList: MutableList<NetworkInterfaceModel> = ArrayList()
-        val interfaceList: List<NetworkInterface> = Networks.getInterfaces(
-            true,
-            AppConfig.DEFAULT_DISABLED_INTERFACES
-        )
+        val interfaceList: List<NetworkInterface> = Networks.getInterfaces()
         val filteringDelegate = fragment.filteringDelegate
         for (networkInterface in interfaceList) {
             val editableInterface = NetworkInterfaceModel(

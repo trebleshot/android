@@ -17,6 +17,7 @@
  */
 package org.monora.uprotocol.client.android.util
 
+import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.model.NetworkInterfaceModel
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -36,7 +37,10 @@ object Networks {
         return null
     }
 
-    fun getInterfaces(ipV4only: Boolean, avoidedInterfaces: Array<String>?): List<NetworkInterface> {
+    fun getInterfaces(
+        ipV4only: Boolean = true,
+        avoidedInterfaces: Array<String>? = AppConfig.DEFAULT_DISABLED_INTERFACES
+    ): List<NetworkInterface> {
         val filteredInterfaceList: MutableList<NetworkInterface> = ArrayList()
         try {
             val networkInterfaces = NetworkInterface.getNetworkInterfaces()

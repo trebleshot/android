@@ -16,14 +16,11 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<div class="layout_help">
-    <div class="content">${help_title}</div>
-    <br>
-    <span style="height: 70px;"> </span>
-    <br>
-    <span class="content_detail"><a href="${apk_link}">${apk_filename}</a></span>
-    <br>
-    <span style="height: 70px;"> </span>
-    <br>
-    <span class="content_detail">${licence_text}</span>
+<div class="col-12 col-md-6 col-lg-4 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <a class="card-title card-link font-weight-bold" href="/download/${id}/${name}">${name}</a>
+            <p class="card-text text-secondary">${size}</p>
+        </div>
+    </div>
 </div>

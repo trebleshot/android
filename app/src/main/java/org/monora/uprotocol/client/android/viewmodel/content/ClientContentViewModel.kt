@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.AppEntryPoint
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.util.findActivity
@@ -56,6 +57,12 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 
     @Bindable
     val trusted = ObservableBoolean(client.isClientTrusted)
+
+    val accessLevelIcon = if (clientImpl.isClientBlocked) {
+        R.drawable.ic_block_white_24dp
+    } else {
+        R.drawable.ic_vpn_key_white_24dp
+    }
 
     fun onBlockedChanged(buttonView: CompoundButton, isChecked: Boolean) {
         val activity = buttonView.findActivity()

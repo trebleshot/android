@@ -16,10 +16,13 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<div class="layout_not_found">
-    <span class="content">${content}</span>
-    <br>
-    <span style="height: 70px;"> </span>
-    <br>
-    <span class="content_detail">${detail}</span>
+<div class="col-12 col-md-6 col-lg-4 mb-4">
+    <div class="card h-100">
+        <img src="/thumbnail/${id}" class="card-img-top img-cover" alt="${title}">
+        <div class="card-body">
+            <h5 class="card-title">${title}</h5>
+            <p class="card-text">${size}</p>
+            <a href="/download/${id}/${name}" class="btn btn-primary">Download</a>
+        </div>
+    </div>
 </div>

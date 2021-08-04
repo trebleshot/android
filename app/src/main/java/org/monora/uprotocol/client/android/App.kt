@@ -87,7 +87,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         }
 
         // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
-        // So we will disable it for them and it will still remain as an option for the user.
+        // So we will disable it for them, and it will still remain as an option for the user.
         if (!hasNsdSet) preferences.edit {
             putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
         }

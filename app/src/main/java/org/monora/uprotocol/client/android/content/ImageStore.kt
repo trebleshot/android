@@ -39,6 +39,7 @@ class ImageStore @Inject constructor(
             arrayOf(
                 Media._ID,
                 Media.TITLE,
+                Media.DISPLAY_NAME,
                 Media.SIZE,
                 Media.MIME_TYPE,
                 Media.DATE_MODIFIED,
@@ -50,6 +51,7 @@ class ImageStore @Inject constructor(
             if (it.moveToFirst()) {
                 val idIndex = it.getColumnIndex(Media._ID)
                 val titleIndex = it.getColumnIndex(Media.TITLE)
+                val displayNameIndex = it.getColumnIndex(Media.DISPLAY_NAME)
                 val sizeIndex = it.getColumnIndex(Media.SIZE)
                 val mimeTypeIndex = it.getColumnIndex(Media.MIME_TYPE)
                 val dateModifiedIndex = it.getColumnIndex(Media.DATE_MODIFIED)
@@ -58,11 +60,14 @@ class ImageStore @Inject constructor(
 
                 do {
                     val id = it.getLong(idIndex)
+                    val title = it.getString(titleIndex)
+                    val displayName = it.getString(displayNameIndex) ?: title
 
                     list.add(
                         Image(
                             id,
-                            it.getString(titleIndex),
+                            title,
+                            displayName,
                             it.getLong(sizeIndex),
                             it.getString(mimeTypeIndex),
                             it.getLong(dateModifiedIndex),
@@ -81,6 +86,7 @@ class ImageStore @Inject constructor(
 data class Image(
     val id: Long,
     val title: String,
+    val displayName: String,
     val size: Long,
     val mimeType: String,
     val dateModified: Long,

@@ -22,6 +22,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="clickListener"
             type="android.view.View.OnClickListener" />
@@ -40,10 +42,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?rectSelector"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:onClick="@{clickListener}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,7 +59,6 @@
                 android:layout_width="@dimen/icon_size_list_normal"
                 android:layout_height="@dimen/icon_size_list_normal"
                 android:contentDescription="@string/text_image"
-                android:layout_margin="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/text1"
                 app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +74,7 @@
                 android:layout_marginRight="16dp"
                 android:text="@{viewModel.nickname}"
                 app:layout_constraintBottom_toTopOf="@+id/text2"
-                app:layout_constraintEnd_toStartOf="@+id/overflowButton"
+                app:layout_constraintEnd_toStartOf="@+id/accessStatusIcon"
                 app:layout_constraintStart_toEndOf="@+id/image"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
@@ -92,12 +93,28 @@
                 tools:text="@tools:sample/lorem" />
 
             <ImageView
+                android:id="@+id/accessStatusIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="@{viewModel.trusted || viewModel.blocked ? View.VISIBLE : View.GONE}"
+                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
+                app:imageResource="@{viewModel.accessLevelIcon}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/text1"
+                app:layout_constraintEnd_toStartOf="@id/overflowButton"
+                app:tint="?colorPrimary" />
+
+            <ImageView
                 android:id="@+id/overflowButton"
                 style="@style/OverflowButton"
+                android:layout_width="@dimen/icon_size_list_normal"
+                android:layout_height="@dimen/icon_size_list_normal"
                 android:onClick="@{detailsClickListener}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/text1"
+                app:layout_constraintStart_toEndOf="@+id/accessStatusIcon"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

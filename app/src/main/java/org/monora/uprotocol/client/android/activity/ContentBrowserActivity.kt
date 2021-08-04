@@ -54,7 +54,7 @@ class ContentBrowserActivity : Activity() {
             title = destination.label
 
             val bg = when (destination.id) {
-                R.id.contentBrowserFragment, R.id.prepareIndexFragment  -> null
+                R.id.contentBrowserFragment, R.id.prepareIndexFragment, R.id.webShareLauncherFragment -> null
                 else -> toolbarDefaultBg
             }
             if (Build.VERSION.SDK_INT < 16) {

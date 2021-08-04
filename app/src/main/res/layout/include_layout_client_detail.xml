@@ -50,14 +50,14 @@
             style="@style/TextAppearance.Primary.Big.SingleLine"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.nickname}"
-            android:textStyle="bold"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:text="@{viewModel.nickname}"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView13"
             app:layout_constraintEnd_toStartOf="@+id/versionText"
             app:layout_constraintStart_toEndOf="@+id/image"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/image"
             tools:text="@tools:sample/cities" />
 
         <TextView

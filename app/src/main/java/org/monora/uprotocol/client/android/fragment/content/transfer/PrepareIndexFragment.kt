@@ -125,12 +125,11 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
                         is Song -> UTransferItem(
                             id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type
                         )
-                        // TODO: 8/2/21 The next two should use a display name but sometimes it may be empty
                         is Image -> UTransferItem(
-                            id, groupId, it.title, it.mimeType, it.size, null, it.uri.toString(), type
+                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type
                         )
                         is Video -> UTransferItem(
-                            id, groupId, it.title, it.mimeType, it.size, null, it.uri.toString(), type
+                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type
                         )
                         else -> {
                             progress.index -= 1
@@ -167,7 +166,7 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
     }
 
     companion object {
-        private const val TAG = "PrepareIndexFragment"
+        private const val TAG = "PrepareIndexViewModel"
     }
 }
 

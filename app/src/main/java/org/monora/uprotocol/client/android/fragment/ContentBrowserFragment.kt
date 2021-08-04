@@ -44,8 +44,6 @@ import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
 
-    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -104,6 +102,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
 
         val selections = menu.findItem(R.id.selections)
         val share = menu.findItem(R.id.share)
+        val shareOnWeb = menu.findItem(R.id.shareOnWeb)
 
         selectionViewModel.selectionState.observe(this) {
             val enable = it.isNotEmpty()
@@ -111,6 +110,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
             selections.title = it.size.toString()
             selections.isEnabled = enable
             share.isEnabled = enable
+            shareOnWeb.isEnabled = enable
         }
     }
 
@@ -118,6 +118,10 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
         if (item.itemId == R.id.share) {
             findNavController().navigate(
                 ContentBrowserFragmentDirections.actionContentBrowserFragmentToPrepareIndexFragment()
+            )
+        } else if (item.itemId == R.id.shareOnWeb) {
+            findNavController().navigate(
+                ContentBrowserFragmentDirections.actionContentBrowserFragmentToWebShareLauncherFragment()
             )
         }
 

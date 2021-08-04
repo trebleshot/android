@@ -39,6 +39,7 @@ class VideoStore @Inject constructor(
             arrayOf(
                 Media._ID,
                 Media.TITLE,
+                Media.DISPLAY_NAME,
                 Media.SIZE,
                 Media.DURATION,
                 Media.MIME_TYPE,
@@ -51,6 +52,7 @@ class VideoStore @Inject constructor(
             if (it.moveToFirst()) {
                 val idIndex = it.getColumnIndex(Media._ID)
                 val titleIndex = it.getColumnIndex(Media.TITLE)
+                val displayNameIndex = it.getColumnIndex(Media.DISPLAY_NAME)
                 val sizeIndex = it.getColumnIndex(Media.SIZE)
                 val durationIndex = it.getColumnIndex(Media.DURATION)
                 val mimeTypeIndex = it.getColumnIndex(Media.MIME_TYPE)
@@ -60,11 +62,14 @@ class VideoStore @Inject constructor(
 
                 do {
                     val id = it.getLong(idIndex)
+                    val title = it.getString(titleIndex)
+                    val displayName = it.getString(displayNameIndex) ?: title
 
                     list.add(
                         Video(
                             id,
-                            it.getString(titleIndex),
+                            title,
+                            displayName,
                             it.getLong(sizeIndex),
                             it.getInt(durationIndex),
                             it.getString(mimeTypeIndex),
@@ -84,6 +89,7 @@ class VideoStore @Inject constructor(
 data class Video(
     val id: Long,
     val title: String,
+    val displayName: String,
     val size: Long,
     val duration: Int,
     val mimeType: String,
