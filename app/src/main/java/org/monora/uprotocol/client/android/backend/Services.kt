@@ -24,10 +24,11 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.yanzhenjie.andserver.Server
 import dagger.hilt.android.qualifiers.ApplicationContext
-import fi.iki.elonen.NanoHTTPD
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.service.WebShareServer
+import org.monora.uprotocol.client.android.data.WebDataRepository
+import org.monora.uprotocol.client.android.di.WebShareServer
 import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.NotificationBackend
 import org.monora.uprotocol.client.android.util.Notifications
@@ -43,9 +44,13 @@ class Services @Inject constructor(
     @ApplicationContext private val context: Context,
     private val nsdDaemon: NsdDaemon,
     private val transportSession: TransportSession,
-    val webShareServer: WebShareServer,
+    private val webDataRepository: WebDataRepository,
+    @WebShareServer private val webShareServer: Server,
 ) {
     val hotspotManager = HotspotManager.newInstance(context)
+
+    val isServingAnything
+        get() = webDataRepository.isServing
 
     val notifications = Notifications(NotificationBackend(context))
 
@@ -55,7 +60,7 @@ class Services @Inject constructor(
         get() = hotspotManager.wifiManager
 
     fun start() {
-        val webServerRunning = webShareServer.isAlive
+        val webServerRunning = webShareServer.isRunning
         val commServerRunning = transportSession.isListening
 
         if (webServerRunning && commServerRunning) {
@@ -77,11 +82,7 @@ class Services @Inject constructor(
             }
 
             if (!webServerRunning) {
-                // TODO: 2/26/21 Fix bound runner
-                /*backend.webShareServer.setAsyncRunner(
-                    BoundRunner(Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX))
-                )*/
-                webShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
+                webShareServer.startup()
             }
 
             nsdDaemon.registerService()
@@ -105,7 +106,7 @@ class Services @Inject constructor(
 
         nsdDaemon.unregisterService()
         nsdDaemon.stopDiscovering()
-        webShareServer.stop()
+        webShareServer.shutdown()
 
         if (hotspotManager.unloadPreviousConfig()) {
             Log.d(TAG, "onDestroy: Stopping hotspot (previously started)=" + hotspotManager.disable())

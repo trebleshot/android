@@ -44,10 +44,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
-    @WebShareServer
-    @Inject
-    public lateinit var webShareServer: Server
-
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
     private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -106,13 +102,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         if (BuildConfig.FLAVOR == "googlePlay") {
             navigationView.menu.findItem(R.id.menu_activity_main_donate).isVisible = true
         }
-
-        webShareServer.startup()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        webShareServer.shutdown()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

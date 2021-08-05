@@ -18,7 +18,6 @@
 package org.monora.uprotocol.client.android.util
 
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.model.NetworkInterfaceModel
 import java.net.Inet4Address
 import java.net.NetworkInterface
 

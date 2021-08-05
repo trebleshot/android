@@ -123,7 +123,7 @@ class Backend @Inject constructor(
 
     private fun ensureStarted() = services.start()
 
-    fun ensureStopped() {
+    private fun ensureStopped() {
         services.stop()
         notifyTileState(false)
         cancelAllTasks()
@@ -297,7 +297,7 @@ class Backend @Inject constructor(
     ) {
         // Do not try to tweak this!!!
         val hasTasks = hasTasks()
-        val hasServices = (services.hotspotManager.started || services.webShareServer.hadClients || tileEnabled)
+        val hasServices = (services.hotspotManager.started || services.isServingAnything || tileEnabled)
         val inForeground = foregroundActivitiesCount > 0
         val newlyInForeground = newlySwitchedGrounds && inForeground
         val newlyInBackground = newlySwitchedGrounds && !inForeground

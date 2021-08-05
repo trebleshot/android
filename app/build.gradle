@@ -175,7 +175,6 @@ dependencies {
     implementation 'org.apache.maven:maven-artifact:3.8.1'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation 'com.yanzhenjie.andserver:api:2.1.9'
     kapt 'com.yanzhenjie.andserver:processor:2.1.9'
