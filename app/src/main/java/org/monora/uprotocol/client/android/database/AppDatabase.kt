@@ -28,6 +28,7 @@ import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.database.model.WebClient
+import org.monora.uprotocol.client.android.database.model.WebTransfer
 
 @Database(
     entities = [
@@ -36,14 +37,15 @@ import org.monora.uprotocol.client.android.database.model.WebClient
         UTransferItem::class,
         SharedText::class,
         Transfer::class,
-        WebClient::class
+        WebClient::class,
+        WebTransfer::class,
     ],
     views = [TransferDetail::class],
     version = 1
 )
 @TypeConverters(
     ClientTypeConverter::class, IOTypeConverter::class, TransferItemTypeTypeConverter::class,
-    TransferItemStateTypeConverter::class
+    TransferItemStateTypeConverter::class, WebTransferTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
@@ -57,4 +59,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun transferItemDao(): TransferItemDao
 
     abstract fun webClientDao(): WebClientDao
+
+    abstract fun webTransferDao(): WebTransferDao
 }

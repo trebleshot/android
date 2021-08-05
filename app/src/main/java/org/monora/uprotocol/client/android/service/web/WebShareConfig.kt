@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android.service.web
 
 import android.content.Context
 import com.yanzhenjie.andserver.annotation.Config
+import com.yanzhenjie.andserver.framework.config.Multipart
 import com.yanzhenjie.andserver.framework.config.WebConfig
 import com.yanzhenjie.andserver.framework.website.AssetsWebsite
 

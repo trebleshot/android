@@ -18,11 +18,16 @@
 
 package org.monora.uprotocol.client.android.data
 
+import org.monora.uprotocol.client.android.database.WebTransferDao
+import org.monora.uprotocol.client.android.database.model.WebTransfer
+import org.monora.uprotocol.client.android.util.Networks
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WebDataRepository @Inject constructor()  {
+class WebDataRepository @Inject constructor(
+    private val webTransferDao: WebTransferDao,
+)  {
     private val sharedContents = mutableListOf<Any>()
 
     fun clear() {
@@ -32,6 +37,10 @@ class WebDataRepository @Inject constructor()  {
     }
 
     fun getList() = sharedContents.toList()
+
+    suspend fun insert(webTransfer: WebTransfer) = webTransferDao.insert(webTransfer)
+
+    fun getNetworkInterfaces() = Networks.getInterfaces()
 
     fun serve(list: List<Any>) {
         synchronized(sharedContents) {

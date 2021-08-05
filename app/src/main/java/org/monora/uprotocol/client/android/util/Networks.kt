@@ -21,15 +21,10 @@ import org.monora.uprotocol.client.android.config.AppConfig
 import org.monora.uprotocol.client.android.model.NetworkInterfaceModel
 import java.net.Inet4Address
 import java.net.NetworkInterface
-import java.util.*
 
 object Networks {
-    fun getFirstInet4Address(model: NetworkInterfaceModel): Inet4Address? {
-        return getFirstInet4Address(model.networkInterface)
-    }
-
-    fun getFirstInet4Address(networkInterface: NetworkInterface): Inet4Address? {
-        val addresses = networkInterface.inetAddresses
+    fun NetworkInterface.getFirstInet4Address(): Inet4Address? {
+        val addresses = this.inetAddresses
         while (addresses.hasMoreElements()) {
             val address = addresses.nextElement()
             if (address is Inet4Address) return address

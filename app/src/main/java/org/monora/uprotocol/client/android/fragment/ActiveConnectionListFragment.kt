@@ -106,12 +106,6 @@ class ActiveConnectionListFragment :
     }
 
     override fun performDefaultLayoutClick(holder: ViewHolder, target: NetworkInterfaceModel): Boolean {
-        WebShareDetailsDialog(
-            requireActivity(), TextManipulators.makeWebShareLink(
-                requireContext(),
-                Networks.getFirstInet4Address(target)?.hostAddress
-            )
-        ).show()
         return true
     }
 
@@ -119,16 +113,7 @@ class ActiveConnectionListFragment :
         holder: ViewHolder,
         target: NetworkInterfaceModel,
     ): Boolean {
-        if (!super.performLayoutClickOpen(holder, target)) startActivity(
-            Intent(Intent.ACTION_VIEW).setData(
-                Uri.parse(
-                    TextManipulators.makeWebShareLink(
-                        requireContext(),
-                        Networks.getFirstInet4Address(target)?.hostAddress
-                    )
-                )
-            )
-        )
+
         return true
     }
 }

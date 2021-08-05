@@ -152,7 +152,7 @@ object Files {
         currentFile: DocumentFile,
         transferItem: TransferItem,
     ): DocumentFile {
-        val name = getUniqueFileName(context, savePath, transferItem.itemName, true)
+        val name = getUniqueFileName(context, savePath, transferItem.itemName)
         val renamedFile = currentFile.renameTo(context, name) ?: throw IOException("Failed to rename: $currentFile")
 
         // FIXME: 7/30/19 The rename always fails when renaming TreeDocumentFile (changed the rename method, did it fix?)

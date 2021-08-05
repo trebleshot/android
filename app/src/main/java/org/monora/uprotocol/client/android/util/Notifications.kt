@@ -26,6 +26,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import androidx.core.app.NotificationCompat
+import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.ContentBrowserActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
@@ -351,6 +352,27 @@ class Notifications(val backend: NotificationBackend) {
         notificationLocal.setContentText(summary)
             .setStyle(textStyle)
         return notificationLocal.show()
+    }
+
+    fun notifyReceivingOnWeb(file: DocumentFile): DynamicNotification {
+        val notification = backend.buildDynamicNotification(
+            file.getUri().hashCode(), NotificationBackend.NOTIFICATION_CHANNEL_LOW
+        )
+        val homeIntent = PendingIntent.getActivity(
+            context,
+            ID_BG_SERVICE + 1,
+            Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        notification
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentText(file.getName())
+            .setContentTitle(context.getString(R.string.receiving_through_web))
+            .setContentIntent(homeIntent)
+        notification.show()
+
+        return notification
     }
 
     fun createAddingWifiNetworkNotification(ssid: String, password: String?): DynamicNotification {

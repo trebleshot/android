@@ -42,4 +42,5 @@
     <string name="butn_temp_doIt" translatable="false">Do it</string>
     <string name="mesg_temp_noBrowser" translatable="false">You have no browser to open this link!</string>
     <string name="text_org" translatable="false">monora</string>
+    <string name="web_share_address" translatable="false">http://%s:%d/</string>
 </resources>

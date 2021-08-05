@@ -16,18 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.service.web.di
+package org.monora.uprotocol.client.android.database
 
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import org.monora.uprotocol.client.android.backend.Services
-import org.monora.uprotocol.client.android.data.WebDataRepository
+import android.net.Uri
+import androidx.room.TypeConverter
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface WebEntryPoint {
-    fun services(): Services
+class WebTransferTypeConverter {
+    @TypeConverter
+    fun fromType(uri: Uri): String = uri.toString()
 
-    fun webDataRepository(): WebDataRepository
+    @TypeConverter
+    fun toType(uriString: String): Uri = Uri.parse(uriString)
 }

@@ -25,7 +25,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.monora.uprotocol.client.android.database.*
+import org.monora.uprotocol.client.android.database.AppDatabase
+import org.monora.uprotocol.client.android.database.ClientAddressDao
+import org.monora.uprotocol.client.android.database.ClientDao
+import org.monora.uprotocol.client.android.database.SharedTextDao
+import org.monora.uprotocol.client.android.database.TransferDao
+import org.monora.uprotocol.client.android.database.TransferItemDao
+import org.monora.uprotocol.client.android.database.WebTransferDao
 import javax.inject.Singleton
 
 @Module
@@ -61,5 +67,10 @@ object RoomModule {
     @Provides
     fun provideTransferItemDao(appDatabase: AppDatabase): TransferItemDao {
         return appDatabase.transferItemDao()
+    }
+
+    @Provides
+    fun provideWebTransferDao(appDatabase: AppDatabase): WebTransferDao {
+        return appDatabase.webTransferDao()
     }
 }

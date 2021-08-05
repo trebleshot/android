@@ -68,8 +68,8 @@ class ActiveConnectionListAdapter(
         val item = getItem(position)
         val text1: TextView = holder.itemView.findViewById(R.id.text)
         val text2: TextView = holder.itemView.findViewById(R.id.text2)
-        val firstAddress = Networks.getFirstInet4Address(item)
+        //val firstAddress = Networks.getFirstInet4Address(item)
         text1.text = item.name()
-        text2.text = firstAddress?.let { TextManipulators.makeWebShareLink(context, it.hostAddress) }
+        //text2.text = firstAddress?.let { TextManipulators.makeWebShareLink(context, it.hostAddress) }
     }
 }

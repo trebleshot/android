@@ -42,9 +42,12 @@ import org.monora.uprotocol.client.android.service.web.response.ZipBody
 import org.monora.uprotocol.client.android.service.web.template.Templates
 import org.monora.uprotocol.client.android.service.web.template.renderContents
 import org.monora.uprotocol.client.android.service.web.template.renderHome
+import org.monora.uprotocol.client.android.util.Files
+import org.monora.uprotocol.client.android.util.NotificationBackend
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.File
+import java.io.InputStream
+import com.genonbeta.android.framework.util.Files as FilesExt
 
 @Controller
 class SharingController {
@@ -86,7 +89,32 @@ class SharingController {
 
     @PostMapping("/upload")
     fun upload(context: Context, @RequestParam("content") content: MultipartFile): String {
-        content.transferTo(File("/sdcard/${content.filename}"))
+        val fileName = content.filename ?: throw IllegalStateException("File name cannot be empty")
+        val type = content.contentType.type
+        val savePath = Files.getAppDirectory(context)
+        val uniqueName = FilesExt.getUniqueFileName(context, savePath, fileName)
+
+        val file = FilesExt.fetchFile(context, savePath, null, type, uniqueName, true)
+        val inputStream: InputStream = content.stream
+
+        val webEntryPoint = EntryPoints.get(context, WebEntryPoint::class.java)
+        val services = webEntryPoint.services()
+        val notification = services.notifications.notifyReceivingOnWeb(file)
+
+        try {
+            context.contentResolver.openOutputStream(file.getUri())?.use {
+                inputStream.copyTo(it)
+            }
+
+            notification.setAutoCancel(true)
+                .setChannelId(NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
+                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setContentTitle(context.getString(R.string.received_through_web))
+            notification.show()
+        } catch (e: Exception) {
+            file.delete(context)
+        }
+
         return "redirect:/index.html?uploaded=${content.filename}#uploader"
     }
 

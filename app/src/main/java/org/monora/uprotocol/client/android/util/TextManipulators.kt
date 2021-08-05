@@ -22,14 +22,15 @@ import androidx.collection.ArrayMap
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 import java.net.NetworkInterface
+import java.util.*
 
 /**
  * created by: Veli
  * date: 12.11.2017 11:14
  */
 object TextManipulators {
-    fun makeWebShareLink(context: Context, address: String?): String {
-        return context.getString(R.string.mode_webShareAddress, address, AppConfig.SERVER_PORT_WEBSHARE)
+    fun getWebShareAddress(context: Context, address: String?): String {
+        return context.getString(R.string.web_share_address, address, AppConfig.SERVER_PORT_WEBSHARE)
     }
 
     fun getLetters(text: String = "?", length: Int): String {
@@ -40,7 +41,7 @@ object TextManipulators {
             if (letter.isEmpty()) continue
             stringBuilder.append(letter[0])
         }
-        return stringBuilder.toString().toUpperCase()
+        return stringBuilder.toString().uppercase(Locale.getDefault())
     }
 
     fun String.toFriendlySsid() = this.replace("\"", "").let {

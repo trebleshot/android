@@ -172,9 +172,8 @@ object Files {
         context: Context,
         directory: DocumentFile,
         fileName: String,
-        tryOriginalFirst: Boolean
     ): String {
-        if (tryOriginalFirst && directory.findFile(context, fileName) == null)
+        if (directory.findFile(context, fileName) == null)
             return fileName
 
         val pathStartPosition = fileName.lastIndexOf(".")

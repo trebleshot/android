@@ -479,7 +479,6 @@
     <string name="butn_shareOnBrowser">Share on Browser</string>
     <string name="butn_hideOnBrowser">Hide from Browser</string>
     <string name="text_transferSharedOnBrowser">Sharing on Browser</string>
-    <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
     <string name="text_webShareInfo">Enable web-sharing for transfers individually and visit any web-link shown below
@@ -647,4 +646,6 @@
     <string name="folders">Folders</string>
     <string name="web_share_empty">Nothing is being shared yet. Share something on the app and come back here!</string>
     <string name="content_sent">Successfully sent \'%s\'</string>
+    <string name="receiving_through_web">Receiving through Web</string>
+    <string name="received_through_web">Received through Web</string>
 </resources>

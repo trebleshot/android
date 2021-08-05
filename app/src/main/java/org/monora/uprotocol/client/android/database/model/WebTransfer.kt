@@ -16,18 +16,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package org.monora.uprotocol.client.android.service.web.di
+package org.monora.uprotocol.client.android.database.model
 
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import org.monora.uprotocol.client.android.backend.Services
-import org.monora.uprotocol.client.android.data.WebDataRepository
+import android.net.Uri
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface WebEntryPoint {
-    fun services(): Services
-
-    fun webDataRepository(): WebDataRepository
-}
+@Parcelize
+@Entity(
+    tableName = "webTransfer"
+)
+data class WebTransfer(
+    @PrimaryKey
+    val uri: Uri,
+    val name: String,
+    val mimeType: String,
+    val size: Long,
+) : Parcelable
