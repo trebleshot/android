@@ -62,7 +62,24 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+
+                <data android:host="*" />
+                <!-- expected file name pattern .5435-4543-4354-ewrw.tshare[.txt] -->
+                <data android:pathPattern=".*\\.tshare" />
+                <data android:pathPattern=".*\\.tshare\\.*" />
+                <data android:pathPattern=".*\\..*\\.tshare" />
+            </intent-filter>
         </activity>
+
         <activity
             android:name="org.monora.uprotocol.client.android.activity.SharingActivity"
             android:label="@string/text_appName">
@@ -99,27 +116,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.TransferDetailActivity"
-            android:label="@string/text_transactionViewer"
-            android:theme="@style/Theme.TrebleShot.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
-
-                <data android:host="*" />
-                <!-- expected file name pattern .5435-4543-4354-ewrw.tshare -->
-                <data android:pathPattern=".*\\.tshare" />
-                <data android:pathPattern=".*\\..*\\.tshare" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -215,7 +211,7 @@
             android:label="@string/text_backgroundService" />
 
         <service
-            android:name=".service.TogglingTileService"
+            android:name="org.monora.uprotocol.client.android.service.TogglingTileService"
             android:icon="@drawable/ic_uprotocol"
             android:label="@string/run_in_background"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

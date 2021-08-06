@@ -1,4 +1,6 @@
 /app/build
+/app/fossReliant
+/app/googlePlay
 /build
 /.gradle
 /.idea

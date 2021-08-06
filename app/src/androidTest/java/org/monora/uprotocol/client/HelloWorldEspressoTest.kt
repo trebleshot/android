@@ -40,6 +40,6 @@ class HelloWorldEspressoTest {
 
     @Test
     fun listGoesOverTheFold() {
-        onView(withText("uprotocol client")).check(ViewAssertions.matches(isDisplayed()))
+        onView(withText("TrebleShot")).check(ViewAssertions.matches(isDisplayed()))
     }
 }
