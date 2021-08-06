@@ -47,7 +47,6 @@ import org.monora.uprotocol.client.android.service.BackgroundService
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.util.DynamicNotification
 import org.monora.uprotocol.client.android.util.Permissions
-import org.monora.uprotocol.client.android.util.TAG
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -330,4 +329,8 @@ class Backend @Inject constructor(
     }
 
     fun toggleHotspot() = services.toggleHotspot()
+
+    companion object {
+        private const val TAG = "Backend"
+    }
 }

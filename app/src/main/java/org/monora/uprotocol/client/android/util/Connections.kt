@@ -206,7 +206,7 @@ class Connections(contextLocal: Context) {
     }
 
     companion object {
-        private val TAG = Connections::class.simpleName
+        private const val TAG = "Connections"
 
         fun getCleanSsid(ssid: String?): String {
             return ssid?.trim()?.replace("\"", "") ?: ""

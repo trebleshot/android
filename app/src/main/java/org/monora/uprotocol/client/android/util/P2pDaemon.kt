@@ -231,7 +231,7 @@ class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: C
     }
 
     companion object {
-        private val TAG = P2pDaemon::class.simpleName
+        private const val TAG = "P2pDaemon"
     }
 
     init {

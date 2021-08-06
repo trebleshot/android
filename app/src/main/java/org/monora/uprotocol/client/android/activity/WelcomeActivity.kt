@@ -238,6 +238,6 @@ class WelcomeActivity : Activity() {
     }
 
     companion object {
-        private val TAG = WelcomeActivity::class.simpleName
+        private const val TAG = "WelcomeActivity"
     }
 }

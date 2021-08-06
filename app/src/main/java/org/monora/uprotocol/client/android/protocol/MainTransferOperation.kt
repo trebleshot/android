@@ -28,8 +28,6 @@ import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.Files
-import org.monora.uprotocol.client.android.util.TAG
-import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferOperation
@@ -127,5 +125,9 @@ class MainTransferOperation(
 
     override fun setOngoing(transferItem: TransferItem) {
         transferParams.ongoing = transferItem
+    }
+
+    companion object {
+        private const val TAG = "MainTransferOperation"
     }
 }

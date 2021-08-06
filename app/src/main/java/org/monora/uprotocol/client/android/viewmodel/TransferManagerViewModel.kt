@@ -36,7 +36,6 @@ import org.monora.uprotocol.client.android.protocol.rejectTransfer
 import org.monora.uprotocol.client.android.protocol.startTransfer
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
@@ -109,6 +108,10 @@ class TransferManagerViewModel @Inject internal constructor(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "TransferManagerViewMode"
     }
 }
 

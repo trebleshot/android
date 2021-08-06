@@ -146,6 +146,6 @@ class DonationsFragment : RecyclerViewFragment<SkuDetails, ViewHolder, DefaultAd
     }
 
     companion object {
-        private val TAG = DonationsFragment::class.simpleName
+        private const val TAG = "DonationsFragment"
     }
 }

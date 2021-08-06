@@ -41,7 +41,7 @@ import kotlin.math.pow
  * date: 7/31/18 8:14 AM
  */
 object Files {
-    private val TAG = Files::class.simpleName
+    private const val TAG = "Files"
 
     @Throws(IOException::class)
     fun fetchDirectories(

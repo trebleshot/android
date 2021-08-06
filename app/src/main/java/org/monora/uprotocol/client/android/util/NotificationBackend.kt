@@ -56,7 +56,7 @@ class NotificationBackend(val context: Context) {
     }
 
     companion object {
-        const val TAG = "NotificationUtils"
+        private const val TAG = "NotificationBackend"
 
         const val NOTIFICATION_CHANNEL_HIGH = "tsHighPriority"
 

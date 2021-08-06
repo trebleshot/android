@@ -108,10 +108,6 @@ class SelectionEditorDialog(activity: Activity, provider: PerformerEngineProvide
         var list: MutableList<T> = if (list == null) ArrayList() else ArrayList(list)
     }
 
-    companion object {
-        private val TAG = SelectionEditorDialog::class.simpleName
-    }
-
     init {
         if (engine != null) {
             for (baseEngineConnection in engine.getConnectionList()) {

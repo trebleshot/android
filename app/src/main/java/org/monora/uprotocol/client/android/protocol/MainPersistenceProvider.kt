@@ -252,7 +252,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     companion object {
-        private val TAG = MainPersistenceProvider::class.simpleName
+        private const val TAG = "MainPersistenceProvider"
     }
 }
 

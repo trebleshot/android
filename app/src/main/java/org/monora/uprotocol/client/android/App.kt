@@ -129,7 +129,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
     }
 
     companion object {
-        private val TAG = App::class.simpleName
+        private const val TAG = "App"
 
         private const val MIGRATION_NONE = -1
 

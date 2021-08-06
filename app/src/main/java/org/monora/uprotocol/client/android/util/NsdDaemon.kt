@@ -248,6 +248,6 @@ class NsdDaemon @Inject constructor(
     }
 
     companion object {
-        private val TAG = NsdDaemon::class.simpleName
+        private const val TAG = "NsdDaemon"
     }
 }

@@ -277,7 +277,7 @@ class DocumentFile private constructor(
     }
 
     companion object {
-        val TAG = DocumentFile::class.simpleName
+        private const val TAG = "DocumentFile"
 
         private fun deleteContentsIfPossible(parentFile: File): Boolean {
             if (!parentFile.isDirectory) {

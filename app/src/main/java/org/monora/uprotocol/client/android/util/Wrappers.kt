@@ -23,9 +23,6 @@ import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.core.CommunicationBridge
 
-val Any.TAG: String
-    get() = this.javaClass.simpleName
-
 val CommunicationBridge.clientRoute: ClientRoute
     get() {
         val client = this.remoteClient

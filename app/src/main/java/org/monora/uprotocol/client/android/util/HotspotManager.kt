@@ -234,7 +234,7 @@ abstract class HotspotManager internal constructor(context: Context) {
     }
 
     companion object {
-        private val TAG = HotspotManager::class.simpleName
+        private const val TAG = "HotspotManager"
 
         val supported: Boolean
             get() = Build.VERSION.SDK_INT >= 26 || OldHotspotManager.supported()

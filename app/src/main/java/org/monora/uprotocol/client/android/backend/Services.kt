@@ -34,7 +34,6 @@ import org.monora.uprotocol.client.android.util.NotificationBackend
 import org.monora.uprotocol.client.android.util.Notifications
 import org.monora.uprotocol.client.android.util.NsdDaemon
 import org.monora.uprotocol.client.android.util.Permissions
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.core.TransportSession
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -137,6 +136,8 @@ class Services @Inject constructor(
     }
 
     companion object {
+        private const val TAG = "Services"
+
         const val ACTION_OREO_HOTSPOT_STARTED = "org.monora.trebleshot.intent.action.HOTSPOT_STARTED"
 
         const val EXTRA_HOTSPOT_CONFIG = "hotspotConfig"

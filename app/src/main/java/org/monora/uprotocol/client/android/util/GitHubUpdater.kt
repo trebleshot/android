@@ -32,7 +32,7 @@ import org.monora.uprotocol.client.android.remote.model.Release
  */
 
 object GitHubUpdater {
-    private val TAG = GitHubUpdater::class.simpleName
+    private const val TAG = "GitHubUpdater"
 
     suspend fun checkForUpdates(gitHubDataRepository: GitHubDataRepository): Release? {
         Log.d(TAG, "Checking for updates")

@@ -148,7 +148,7 @@ class SwipeSelectionListener<T : ContentModel>(
     }
 
     companion object {
-        private val TAG = SwipeSelectionListener::class.simpleName
+        private const val TAG = "SwipeSelectionListener"
     }
 
     init {

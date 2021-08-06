@@ -17,7 +17,6 @@
  */
 package org.monora.uprotocol.client.android.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,10 +26,7 @@ import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.client.android.task.transfer.TransferState
-import org.monora.uprotocol.client.android.util.TAG
 import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 import javax.inject.Inject
 

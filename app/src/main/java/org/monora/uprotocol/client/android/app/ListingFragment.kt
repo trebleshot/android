@@ -467,7 +467,7 @@ abstract class ListingFragment<T : ContentModel, V : ViewHolder, E : ListingAdap
     }
 
     companion object {
-        private val TAG = ListingFragment::class.simpleName
+        private const val TAG = "ListingFragment"
 
         const val ARG_SELECT_BY_CLICK = "argSelectByClick"
 

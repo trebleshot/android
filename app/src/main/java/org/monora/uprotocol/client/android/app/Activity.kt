@@ -319,7 +319,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
     }
 
     companion object {
-        private val TAG = Activity::class.simpleName
+        private const val TAG = "Activity (monora)"
 
         const val ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED"
     }
