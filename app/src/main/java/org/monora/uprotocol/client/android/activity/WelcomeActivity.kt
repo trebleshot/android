@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils.*
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatImageView
@@ -37,10 +38,12 @@ import androidx.transition.TransitionManager
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
 import org.monora.uprotocol.client.android.util.Graphics
@@ -123,6 +126,7 @@ class WelcomeActivity : Activity() {
 
         pagerAdapter.addView(splashView)
 
+        val permissionPosition = pagerAdapter.count
         if (Build.VERSION.SDK_INT >= 23) {
             pagerAdapter.addView(permissionsView)
             checkPermissionsState()
@@ -149,14 +153,20 @@ class WelcomeActivity : Activity() {
         }
 
         nextButton.setOnClickListener {
-            if (viewPager.currentItem + 1 < pagerAdapter.count) viewPager.currentItem =
-                viewPager.currentItem + 1 else {
-                // end presentation
-                defaultPreferences.edit {
-                    putBoolean("introduction_shown", true)
+            if (viewPager.currentItem + 1 < pagerAdapter.count) viewPager.currentItem = viewPager.currentItem + 1 else {
+                if (checkPermissionsState()) {
+                    // end presentation
+                    defaultPreferences.edit {
+                        putBoolean("introduction_shown", true)
+                    }
+                    backend.ensureStartedAfterWelcoming()
+                    startActivity(Intent(this@WelcomeActivity, HomeActivity::class.java))
+
+                    finish()
+                } else {
+                    viewPager.setCurrentItem(permissionPosition, true)
+                    Toast.makeText(this, R.string.warning_permissions_not_accepted, Toast.LENGTH_LONG).show()
                 }
-                startActivity(Intent(this@WelcomeActivity, HomeActivity::class.java))
-                finish()
             }
         }
 
@@ -219,12 +229,13 @@ class WelcomeActivity : Activity() {
         checkPermissionsState()
     }
 
-    private fun checkPermissionsState() {
-        if (Build.VERSION.SDK_INT < 23) return
+    private fun checkPermissionsState(): Boolean {
+        if (Build.VERSION.SDK_INT < 23) return true
 
-        val ok = Permissions.checkRunningConditions(this)
-        permissionsView.findViewById<View>(R.id.okImage).visibility = if (ok) View.VISIBLE else View.GONE
-        permissionsView.findViewById<View>(R.id.requestButton).visibility = if (ok) View.GONE else View.VISIBLE
+        val isOk = Permissions.checkRunningConditions(this)
+        permissionsView.findViewById<View>(R.id.okImage).visibility = if (isOk) View.VISIBLE else View.GONE
+        permissionsView.findViewById<View>(R.id.requestButton).visibility = if (isOk) View.GONE else View.VISIBLE
+        return isOk
     }
 
     private fun slideSplashView() {

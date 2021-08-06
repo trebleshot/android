@@ -122,6 +122,10 @@ class Backend @Inject constructor(
 
     private fun ensureStarted() = services.start()
 
+    fun ensureStartedAfterWelcoming() {
+        takeBgServiceFgIfNeeded(true)
+    }
+
     private fun ensureStopped() {
         services.stop()
         notifyTileState(false)

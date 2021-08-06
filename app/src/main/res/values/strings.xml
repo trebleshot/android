@@ -648,4 +648,5 @@
     <string name="content_sent">Successfully sent \'%s\'</string>
     <string name="receiving_through_web">Receiving through Web</string>
     <string name="received_through_web">Received through Web</string>
+    <string name="warning_permissions_not_accepted">You haven\'t set up the permissions yet!</string>
 </resources>
