@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:onClick="@{viewModel.deletePictureListener}"
             android:text="@string/butn_remove"
-            android:visibility="@{viewModel.client.hasPicture() ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.hasPicture ? View.VISIBLE : View.GONE}"
             app:layout_constraintBaseline_toBaselineOf="@id/button3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button3"

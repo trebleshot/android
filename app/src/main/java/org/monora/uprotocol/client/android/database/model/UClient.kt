@@ -24,7 +24,6 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientType
-import java.io.File
 import java.io.FileInputStream
 import java.security.cert.X509Certificate
 
@@ -41,13 +40,12 @@ data class UClient(
     var versionCode: Int,
     var protocolVersion: Int,
     var protocolVersionMin: Int,
+    var revisionOfPicture: Long,
     var lastUsageTime: Long = System.currentTimeMillis(),
     var blocked: Boolean = false,
     var local: Boolean = false,
     var trusted: Boolean = false,
     var certificate: X509Certificate? = null,
-    var pictureFile: File? = null,
-    var checksum: Int = 0,
 ) : Client, Parcelable {
     override fun getClientCertificate(): X509Certificate? = certificate
 
@@ -71,13 +69,7 @@ data class UClient(
 
     override fun getClientVersionName(): String = versionName
 
-    override fun getClientPictureData(): ByteArray = FileInputStream(pictureFile).use {
-        it.readBytes()
-    }
-
-    override fun getClientPictureChecksum(): Int = checksum
-
-    override fun hasPicture(): Boolean = pictureFile?.isFile == true
+    override fun getClientRevisionOfPicture(): Long = revisionOfPicture
 
     override fun isClientBlocked(): Boolean = blocked
 
@@ -119,6 +111,10 @@ data class UClient(
 
     override fun setClientProtocolVersionMin(protocolVersionMin: Int) {
         this.protocolVersionMin = protocolVersionMin
+    }
+
+    override fun setClientRevisionOfPicture(revision: Long) {
+        this.revisionOfPicture = revision
     }
 
     override fun setClientTrusted(trusted: Boolean) {

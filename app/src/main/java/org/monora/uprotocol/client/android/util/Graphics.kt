@@ -22,17 +22,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.drawable.TextDrawable
@@ -50,102 +45,36 @@ object Graphics {
         shapeColor = R.attr.colorPassive.attrToRes(context).resToColor(context)
     }
 
-    fun deleteLocalClientPicture(context: Context) {
-        context.deleteFile(UserDataRepository.FILE_CLIENT_PICTURE)
-        changeLocalClientPictureChecksum(context, 0)
-    }
-
-    fun saveClientPictureLocal(context: Context, uri: Uri) {
-        GlideApp.with(context).load(uri)
-            .centerCrop()
-            .override(200, 200)
-            .into(LocalPictureTarget(context))
-    }
-
-    suspend fun saveClientPicture(
-        context: Context,
-        clientRepository: ClientRepository,
-        client: Client,
-        data: ByteArray?,
-        checksum: Int,
-    ) {
+    fun saveClientPicture(context: Context, client: Client, data: ByteArray?) {
         if (client !is UClient) throw UnsupportedOperationException()
 
         if (data == null) {
-            clientRepository.update(
-                client.also {
-                    it.pictureFile?.delete()
-                    it.pictureFile = null
-                    it.checksum = checksum
-                }
-            )
+            context.deleteFile(client.picturePath)
+        } else {
+            GlideApp.with(context)
+                .load(data)
+                .centerCrop()
+                .override(200, 200)
+                .into(PictureTarget(context, client))
         }
-
-        val path = UUID.randomUUID().toString()
-
-        GlideApp.with(context)
-            .load(data)
-            .centerCrop()
-            .override(200, 200)
-            .into(PictureTarget(context, clientRepository, client, checksum, path))
     }
 }
 
-private fun changeLocalClientPictureChecksum(context: Context, checksum: Int) {
-    PreferenceManager.getDefaultSharedPreferences(context).edit {
-        putInt(UserDataRepository.KEY_PICTURE_CHECKSUM, checksum)
-    }
-}
-
-private fun processNewPicture(context: Context, path: String, resource: Drawable): Boolean {
-    if (resource !is BitmapDrawable) throw IllegalStateException()
-
-    try {
-        context.openFileOutput(path, Context.MODE_PRIVATE).use { outputStream ->
-            resource.bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        }
-
-        return true
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-    return false
-}
-
-private class PictureTarget(
-    private val context: Context,
-    private val clientRepository: ClientRepository,
-    private val client: UClient,
-    private val checksum: Int,
-    private val path: String,
-) : CustomTarget<Drawable>() {
+private class PictureTarget(private val context: Context, private val client: UClient) : CustomTarget<Drawable>() {
     override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-        if (processNewPicture(context, path, resource)) {
-            GlobalScope.launch(Dispatchers.IO) {
-                clientRepository.update(
-                    client.also {
-                        it.pictureFile = context.getFileStreamPath(path)
-                        it.checksum = checksum
-                    }
-                )
+        if (resource !is BitmapDrawable) throw IllegalStateException()
+
+        try {
+            context.openFileOutput(client.picturePath, Context.MODE_PRIVATE).use { outputStream ->
+                resource.bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     override fun onLoadCleared(placeholder: Drawable?) {}
 }
 
-private class LocalPictureTarget(private val context: Context) : CustomTarget<Drawable>() {
-    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-        if (processNewPicture(context, UserDataRepository.FILE_CLIENT_PICTURE, resource)) {
-            GlobalScope.launch(Dispatchers.IO) {
-                context.openFileInput(UserDataRepository.FILE_CLIENT_PICTURE).use {
-                    changeLocalClientPictureChecksum(context, it.readBytes().contentHashCode())
-                }
-            }
-        }
-    }
-
-    override fun onLoadCleared(placeholder: Drawable?) {}
-}
+val Client.picturePath: String
+    get() = "picture_${clientUid.hashCode()}.png"

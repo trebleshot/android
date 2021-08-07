@@ -22,12 +22,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.util.Base64
-import androidx.lifecycle.LiveData
+import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.util.picturePath
 import org.monora.uprotocol.core.protocol.ClientType
 import org.monora.uprotocol.core.spec.v1.Config
 import org.spongycastle.asn1.x500.X500Name
@@ -59,48 +59,8 @@ class UserDataRepository @Inject constructor(
 ) {
     private val bouncyCastleProvider: BouncyCastleProvider = BouncyCastleProvider()
 
-    private val client by lazy {
-        MutableLiveData(clientStatic())
-    }
-
-    private val clientNickname by lazy {
-        MutableLiveData(clientNicknameStatic())
-    }
-
-    private val preferencesListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == KEY_NICKNAME || key == KEY_PICTURE_CHECKSUM) {
-            client.postValue(clientStatic())
-            clientNickname.postValue(clientNicknameStatic())
-        }
-    }
-
-    private val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context).also {
-        it.registerOnSharedPreferenceChangeListener(preferencesListener)
-    }
-
-    val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
-
-    val keyPair: KeyPair by lazy {
-        val publicKey = preferences.getString(KEY_PUBLIC_KEY, null)
-        val privateKey = preferences.getString(KEY_PRIVATE_KEY, null)
-
-        if (publicKey == null || privateKey == null) {
-            val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-            keyPairGenerator.initialize(2048)
-            val keyPair = keyPairGenerator.genKeyPair()
-
-            preferences.edit()
-                .putString(KEY_PUBLIC_KEY, Base64.encodeToString(keyPair.public.encoded, Base64.DEFAULT))
-                .putString(KEY_PRIVATE_KEY, Base64.encodeToString(keyPair.private.encoded, Base64.DEFAULT))
-                .apply()
-
-            return@lazy keyPair
-        }
-
-        return@lazy KeyPair(
-            keyFactory.generatePublic(X509EncodedKeySpec(Base64.decode(publicKey, Base64.DEFAULT))),
-            keyFactory.generatePrivate(PKCS8EncodedKeySpec(Base64.decode(privateKey, Base64.DEFAULT))),
-        )
+    private val preferences: SharedPreferences by lazy {
+        context.getSharedPreferences(PREFERENCES_CREDENTIALS_STORE, Context.MODE_PRIVATE)
     }
 
     val certificate: X509Certificate by lazy {
@@ -117,7 +77,7 @@ class UserDataRepository @Inject constructor(
                 val rdn = x500name.getRDNs(BCStyle.CN)[0]
                 val commonName = IETFUtils.valueToString(rdn.first.value)
 
-                if (clientUid() != commonName) {
+                if (clientUid != commonName) {
                     throw IllegalArgumentException("The client uid changed. The certificate should be regenerated.")
                 }
 
@@ -131,7 +91,7 @@ class UserDataRepository @Inject constructor(
         //  Persian to fix the issue: https://issuetracker.google.com/issues/37095309
         val nameBuilder = X500NameBuilder(BCStyle.INSTANCE)
 
-        nameBuilder.addRDN(BCStyle.CN, clientUid())
+        nameBuilder.addRDN(BCStyle.CN, clientUid)
         nameBuilder.addRDN(BCStyle.OU, "uprotocol")
         nameBuilder.addRDN(BCStyle.O, "monora")
         val localDate = LocalDate.now().minusYears(1)
@@ -146,65 +106,102 @@ class UserDataRepository @Inject constructor(
         val cert = JcaX509CertificateConverter().setProvider(bouncyCastleProvider)
             .getCertificate(certificateBuilder.build(contentSigner))
 
-        preferences.edit()
-            .putString(KEY_CERTIFICATE, Base64.encodeToString(cert.encoded, Base64.DEFAULT))
-            .apply()
+        preferences.edit {
+            putString(KEY_CERTIFICATE, Base64.encodeToString(cert.encoded, Base64.DEFAULT))
+        }
 
         return@lazy cert
     }
 
-    fun client(): LiveData<UClient> = client
+    val clientStatic
+        get() = UClient(
+            clientUid,
+            clientNickname,
+            Build.MANUFACTURER,
+            Build.MODEL,
+            ClientType.Portable,
+            BuildConfig.VERSION_NAME,
+            BuildConfig.VERSION_CODE,
+            Config.VERSION_UPROTOCOL,
+            Config.VERSION_UPROTOCOL_MIN,
+            clientRevisionOfPicture,
+            System.currentTimeMillis(),
+            blocked = false,
+            local = true,
+            trusted = true,
+            certificate,
+        )
 
-    fun clientStatic() = UClient(
-        clientUid(),
-        clientNicknameStatic(),
-        Build.MANUFACTURER,
-        Build.MODEL,
-        ClientType.Portable,
-        BuildConfig.VERSION_NAME,
-        BuildConfig.VERSION_CODE,
-        Config.VERSION_UPROTOCOL,
-        Config.VERSION_UPROTOCOL_MIN,
-        System.currentTimeMillis(),
-        blocked = false,
-        local = true,
-        trusted = true,
-        certificate,
-        clientPictureFile(),
-        clientPictureChecksum()
-    )
-
-    fun clientNickname(): LiveData<String> = clientNickname
-
-    fun clientNicknameStatic() = preferences.getString(
-        KEY_NICKNAME, null
-    ) ?: Build.MODEL.toUpperCase(Locale.getDefault())
-
-    fun clientUid() = preferences.getString(KEY_UUID, null) ?: UUID.randomUUID().toString().also {
-        preferences.edit()
-            .putString(KEY_UUID, it)
-            .apply()
+    val client by lazy {
+        MutableLiveData(clientStatic)
     }
 
-    private fun clientPictureFile() = with(context.getFileStreamPath(FILE_CLIENT_PICTURE)) {
-        if (isFile) this else null
+    var clientNickname: String
+        get() = preferences.getString(KEY_NICKNAME, null) ?: Build.MODEL.uppercase(Locale.getDefault())
+        set(value) = preferences.edit {
+            putString(KEY_NICKNAME, value)
+            client.postValue(clientStatic)
+        }
+
+    var clientRevisionOfPicture: Long
+        get() = preferences.getLong(KEY_REVISION_OF_PICTURE, 0)
+        set(value) = preferences.edit {
+            putLong(KEY_REVISION_OF_PICTURE, value)
+            client.postValue(clientStatic)
+        }
+
+    val clientUid: String
+        get() = preferences.getString(KEY_UUID, null) ?: UUID.randomUUID().toString().also {
+            preferences.edit {
+                putString(KEY_UUID, it)
+            }
+        }
+
+    val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
+
+    val keyPair: KeyPair by lazy {
+        val publicKey = preferences.getString(KEY_PUBLIC_KEY, null)
+        val privateKey = preferences.getString(KEY_PRIVATE_KEY, null)
+
+        if (publicKey == null || privateKey == null) {
+            val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
+            keyPairGenerator.initialize(2048)
+            val keyPair = keyPairGenerator.genKeyPair()
+
+            preferences.edit {
+                putString(KEY_PUBLIC_KEY, Base64.encodeToString(keyPair.public.encoded, Base64.DEFAULT))
+                putString(KEY_PRIVATE_KEY, Base64.encodeToString(keyPair.private.encoded, Base64.DEFAULT))
+            }
+
+            return@lazy keyPair
+        }
+
+        return@lazy KeyPair(
+            keyFactory.generatePublic(X509EncodedKeySpec(Base64.decode(publicKey, Base64.DEFAULT))),
+            keyFactory.generatePrivate(PKCS8EncodedKeySpec(Base64.decode(privateKey, Base64.DEFAULT))),
+        )
     }
 
-    private fun clientPictureChecksum() = preferences.getInt(KEY_PICTURE_CHECKSUM, 0)
+    fun deletePicture() {
+        context.deleteFile(clientStatic.picturePath)
+        clientRevisionOfPicture = System.currentTimeMillis()
+    }
+
+    fun hasPicture() = context.getFileStreamPath(clientStatic.picturePath).exists()
 
     companion object {
+        private const val PREFERENCES_CREDENTIALS_STORE = "credentials_store"
+
         private const val KEY_CERTIFICATE = "certificate"
 
-        const val KEY_NICKNAME = "client_nickname"
+        private const val KEY_NICKNAME = "client_nickname"
 
-        const val KEY_PICTURE_CHECKSUM = "picture_checksum"
+        private const val KEY_REVISION_OF_PICTURE = "revision_of_picture"
 
         private const val KEY_PRIVATE_KEY = "private_key"
 
         private const val KEY_PUBLIC_KEY = "public_key"
 
         private const val KEY_UUID = "uuid"
-
-        const val FILE_CLIENT_PICTURE = "localPicture"
     }
 }

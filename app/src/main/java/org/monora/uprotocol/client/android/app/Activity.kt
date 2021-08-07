@@ -207,7 +207,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         backend.notifyActivityInForeground(this, false)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         if ("custom_fonts" == key || "theme" == key || "amoled_theme" == key) {
             checkForThemeChange()
         }

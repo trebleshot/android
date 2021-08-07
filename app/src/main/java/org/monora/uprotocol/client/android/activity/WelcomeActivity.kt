@@ -21,10 +21,11 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils.*
+import android.view.animation.AnimationUtils.loadAnimation
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -38,15 +39,12 @@ import androidx.transition.TransitionManager
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
-import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.Permissions
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
@@ -67,7 +65,7 @@ class WelcomeActivity : Activity() {
 
     private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            Graphics.saveClientPictureLocal(applicationContext, uri)
+            userProfileViewModel.saveProfilePicture(uri)
         }
     }
 

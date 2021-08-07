@@ -21,6 +21,7 @@ package org.monora.uprotocol.client.android.protocol
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.genonbeta.android.framework.io.OpenableContent
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -36,6 +37,7 @@ import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.io.StreamInfoStreamDescriptor
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Graphics
+import org.monora.uprotocol.client.android.util.picturePath
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.persistence.PersistenceException
 import org.monora.uprotocol.core.persistence.PersistenceProvider
@@ -88,8 +90,18 @@ class MainPersistenceProvider @Inject constructor(
         versionCode: Int,
         protocolVersion: Int,
         protocolVersionMin: Int,
+        revisionOfPicture: Long
     ) = UClient(
-        uid, nickname, manufacturer, product, type, versionName, versionCode, protocolVersion, protocolVersionMin,
+        uid,
+        nickname,
+        manufacturer,
+        product,
+        type,
+        versionName,
+        versionCode,
+        protocolVersion,
+        protocolVersionMin,
+        revisionOfPicture
     )
 
     override fun createTransferItemFor(
@@ -104,13 +116,21 @@ class MainPersistenceProvider @Inject constructor(
 
     override fun getCertificate(): X509Certificate = userDataRepository.certificate
 
-    override fun getClient(): UClient = userDataRepository.clientStatic()
+    override fun getClient(): UClient = userDataRepository.clientStatic
 
     override fun getClientFor(uid: String): UClient? = runBlocking { clientRepository.getDirect(uid) }
 
-    override fun getClientNickname(): String = userDataRepository.clientNicknameStatic()
+    override fun getClientNickname(): String = userDataRepository.clientNickname
 
-    override fun getClientUid(): String = userDataRepository.clientUid()
+    override fun getClientPicture(client: Client): ByteArray? {
+        context.runCatching {
+            return openFileInput(client.picturePath).readBytes()
+        }
+
+        return null
+    }
+
+    override fun getClientUid(): String = userDataRepository.clientUid
 
     override fun getDescriptorFor(transferItem: TransferItem): StreamDescriptor {
         check(transferItem is UTransferItem) {
@@ -161,10 +181,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun loadTransferItem(
-        clientUid: String,
-        groupId: Long,
-        id: Long,
-        type: TransferItem.Type,
+        clientUid: String, groupId: Long, id: Long, type: TransferItem.Type,
     ): TransferItem = runBlocking {
         transferRepository.getTransferItem(groupId, id, type) ?: throw PersistenceException("Item does not exist")
     }
@@ -229,14 +246,14 @@ class MainPersistenceProvider @Inject constructor(
         }
     }
 
-    override fun persistClientPicture(client: Client, data: ByteArray?, checksum: Int) = runBlocking {
-        Graphics.saveClientPicture(context, clientRepository, client, data, checksum)
+    override fun persistClientPicture(client: Client, data: ByteArray?) = runBlocking {
+        Graphics.saveClientPicture(context, client, data)
     }
 
     override fun revokeNetworkPin() {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putInt("pin", 0)
-            .apply()
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putInt("pin", 0)
+        }
     }
 
     override fun saveRequestForInvalidationOfCredentials(clientUid: String) {

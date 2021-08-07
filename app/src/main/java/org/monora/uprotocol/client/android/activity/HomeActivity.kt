@@ -48,7 +48,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
     private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            Graphics.saveClientPictureLocal(applicationContext, uri)
+            userProfileViewModel.saveProfilePicture(uri)
         }
     }
 

@@ -22,22 +22,17 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.monora.uprotocol.client.android.GlideApp
-import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.util.Graphics
+import org.monora.uprotocol.client.android.util.picturePath
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import org.monora.uprotocol.core.protocol.Client
 
 @BindingAdapter("listenNicknameChanges")
 fun listenNicknameChanges(editText: EditText, viewModel: UserProfileViewModel) {
     editText.addTextChangedListener { editable ->
-        val nickname = editable.toString().also { if (it.isEmpty()) return@addTextChangedListener }
-
-        PreferenceManager.getDefaultSharedPreferences(editText.context).edit()
-            .putString(UserDataRepository.KEY_NICKNAME, nickname)
-            .apply()
+        viewModel.clientNickname = editable.toString().also { if (it.isEmpty()) return@addTextChangedListener }
     }
 }
 
@@ -48,17 +43,13 @@ fun loadPictureOfClient(imageView: ImageView, client: Client?) {
     try {
         val default = Graphics.createIconBuilder(imageView.context).buildRound(client.clientNickname)
 
-        if (client.hasPicture()) {
-            GlideApp.with(imageView)
-                .load(client.clientPictureData)
-                .circleCrop()
-                .placeholder(default)
-                .error(default)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(imageView)
-        } else {
-            imageView.setImageDrawable(default)
-        }
+        GlideApp.with(imageView)
+            .load(client.picturePath)
+            .circleCrop()
+            .placeholder(default)
+            .error(default)
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .into(imageView)
     } catch (ignored: Exception) {
     }
 }
