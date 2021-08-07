@@ -103,6 +103,28 @@ class FilesViewModel @Inject internal constructor(
         return contents
     }
 
+    fun goUp(): Boolean {
+        val paths = path.value ?: return false
+
+        if (paths.size < 2) {
+            return false
+        }
+
+        val iterator = paths.asReversed().listIterator()
+        if (iterator.hasNext()) {
+            iterator.next() // skip the first one that is already visible
+            do {
+                val next = iterator.next()
+                if (next.file.canRead()) {
+                    requestPath(next.file)
+                    return true
+                }
+            } while(iterator.hasNext())
+        }
+
+        return false
+    }
+
     fun requestPath(file: DocumentFile) {
         viewModelScope.launch(Dispatchers.IO) {
             _files.postValue(createOrderedFileList(file))

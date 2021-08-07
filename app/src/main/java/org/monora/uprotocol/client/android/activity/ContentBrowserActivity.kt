@@ -20,6 +20,7 @@ package org.monora.uprotocol.client.android.activity
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.appbar.AppBarLayout
@@ -38,6 +39,10 @@ import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 class ContentBrowserActivity : Activity() {
     private val selectionViewModel: SharingSelectionViewModel by viewModels()
 
+    private val navController by lazy {
+        navController(R.id.nav_host_fragment)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_content_browser)
@@ -47,8 +52,6 @@ class ContentBrowserActivity : Activity() {
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val navController = navController(R.id.nav_host_fragment)
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             title = destination.label
@@ -63,5 +66,13 @@ class ContentBrowserActivity : Activity() {
                 appBarLayout.background = bg
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            return navController.navigateUp()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -18,15 +18,18 @@
 
 package org.monora.uprotocol.client.android.fragment.content
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -87,8 +90,20 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         }
 
         viewModel.path.observe(viewLifecycleOwner) {
+            // FIXME: 8/7/21 Doesn't scroll to end when it goes downwards
             pathAdapter.submitList(it)
         }
+
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!viewModel.goUp()) {
+                        isEnabled = false
+                        activity?.onBackPressedDispatcher?.onBackPressed()
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -111,6 +126,7 @@ class FilePathViewHolder constructor(
         binding.button.setOnClickListener {
             clickListener(fileModel)
         }
+        binding.button.isEnabled = fileModel.file.canRead()
         binding.executePendingBindings()
     }
 }

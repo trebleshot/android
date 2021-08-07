@@ -94,6 +94,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
 
             null
         }
+
         val backPressedDispatcher = requireActivity().onBackPressedDispatcher
         val backPressedCallback = object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
