@@ -269,7 +269,7 @@
     <string name="text_saveAnywaySummary">فرستنده نمی‌داند پرونده کجاست، اما شما همچنان می‌توانید آن را ذخیره کنید</string>
     <string name="butn_sortOrder">ترتیب چینش</string>
     <string name="text_networkServiceDiscovery">فعال‌کردن NSD</string>
-    <string name="mesg_updateDownloadComplete">به‌روزرسانی با موفقیت دریافت و در پرونده‌های دریافتی‌تان دخیر ه شد</string>
+    <string name="mesg_updateDownloadComplete">به‌روزرسانی با موفقیت دریافت و در پرونده‌های دریافتی‌تان ذخیره شد</string>
     <string name="mesg_listRefreshSnoozed">سیاهه به محض دردسترس بودن تازه‌سازی خواهند شد</string>
     <string name="mesg_errorReadFolder">دسترسی امکان پذیر نیست «%s»</string>
     <string name="mesg_mountDirectoryHelp">پوشه مورد نظر خود را انتخاب کنید</string>
@@ -410,7 +410,7 @@
     <string name="text_introSetUpProfile">پروفایل خود را تکمیل کنید</string>
     <string name="mesg_openFailure">امکان مشاهده نیست «%s»</string>
     <string name="text_connectionTest">آزمایش اتصال - %s</string>
-    <string name="butn_connectionTest">آزمایش اتصال</string>
+    <string name="butn_connectionTest">تست اتصال</string>
     <string name="text_textMillisecond">%s میلی ثانیه</string>
     <string name="const_text_useAppFonts">تنظیم فونت پیشنهادی</string>
     <string name="const_text_useAppFontsSummary">از فونت سفارشی ارائه شده استفاده کنید</string>
@@ -419,7 +419,7 @@
     <string name="text_amoledOptimizedBlackThemeSummary">استفاده از رنگ های تیره تر</string>
     <string name="butn_enterIpAddress">آدرس IP را وارد کنید</string>
     <string name="butn_webShare">اشتراک گذاری بوسیله مرورگر</string>
-    <string name="text_webShareNoContentNotice">"از گزینه  «اشتراک گذاری بوسیله مرورگر» برای دیدن نقل و انتقالات استفاده کنید!"</string>
+    <string name="text_webShareNoContentNotice">برای مشاهده نقل و انتقالات در اینجا از گزینه \"اشتراک گذاری در مرورگر\" استفاده کنید!</string>
     <string name="butn_shareOnBrowser">اشتراک گذاری روی مرورگر</string>
     <string name="butn_hideOnBrowser">مخفی کردن روی مرورگر</string>
     <string name="text_transferSharedOnBrowser">اشتراک گذاری شده روی مرورگر</string>
@@ -455,11 +455,11 @@
     <string name="text_webShare">@string/butn_webShare</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">یا</string>
-    <string name="text_webShareInfo">در زیر پیوندهایی می‌بینید که دستگاه‌های در شبکهٔ مشترک می‌توانند به یک مرورگر وصل شوند. در ادامه، اشتراک‌گذاری وبی را برای تک‌تک انتقال‌ها فعال کنید.</string>
+    <string name="text_webShareInfo">اشتراک گذاری وب را برای انتقال به صورت جداگانه فعال کنید و از هر پیوند وب نشان داده شده در زیر با دستگاهی که به همان شبکه متصل است ، دیدن کنید.</string>
     <string name="ques_shareAsApkOrLink">هم‌رسانی به صورت پیوند یا APK؟</string>
     <string name="butn_asApk">به صورت APK</string>
     <string name="butn_asLink">به صورت یک پیوند</string>
-    <string name="text_linkTrebleshot">"با تربل‌شات پرونده‌ها را هم‌رسانی کنید! بارگیری از:  %s"</string>
+    <string name="text_linkTrebleshot">فایل ها را با TrebleShot به اشتراک بگذارید! از اینجا بارگیری کنید: %s</string>
     <string name="butn_downloadAllAsZip">همه را به صورت ZIP بارگیری کنید (تکی، فشرده‌نشده)</string>
     <string name="text_interfaceVPN">سرور VPN</string>
     <string name="text_unrecognizedQrCode">کد شناسایی نشده</string>
