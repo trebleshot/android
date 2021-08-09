@@ -22,8 +22,11 @@ import android.content.Context
 import android.net.Uri
 import android.view.View
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.data.UserDataRepository
 import org.monora.uprotocol.client.android.util.Graphics
 import java.lang.ref.WeakReference
@@ -48,13 +51,20 @@ class UserProfileViewModel @Inject internal constructor(
         userDataRepository.deletePicture()
     }
 
-    val hasPicture = userDataRepository.hasPicture()
+    val hasPicture = userDataRepository.hasPicture
 
     fun saveProfilePicture(uri: Uri) {
-        context.get()?.runCatching {
-            val imageBytes = contentResolver.openInputStream(uri)?.readBytes() ?: return
-            Graphics.saveClientPicture(this, userDataRepository.clientStatic, imageBytes)
-            userDataRepository.clientRevisionOfPicture = System.currentTimeMillis()
+        val context = context.get() ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val imageBytes = context.contentResolver.openInputStream(uri)?.readBytes() ?: return@launch
+
+                Graphics.saveLocalClientPicture(context, userDataRepository.clientStatic, imageBytes)
+                userDataRepository.notifyPictureChanges()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }

@@ -36,37 +36,31 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp">
+        android:padding="24dp">
 
         <ImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
             android:foreground="?roundSelector"
             android:onClick="@{pickPhotoClickListener}"
-            app:layout_constraintBottom_toTopOf="@+id/button3"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/textInputLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
             tools:srcCompat="@tools:sample/avatars" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/short_content_width_padding"
-            android:layout_marginRight="@dimen/short_content_width_padding"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/picture"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button3"
-            app:layout_constraintWidth_max="160dp">
+            app:layout_constraintStart_toEndOf="@+id/picture"
+            app:layout_constraintTop_toTopOf="@+id/picture">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editText"
@@ -74,26 +68,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="none"
-                android:gravity="center_horizontal"
                 android:hint="@string/text_deviceName"
                 android:inputType="textPersonName"
                 android:maxLength="@integer/length_max_username"
                 android:text="@{viewModel.client.clientNickname}" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?colorDivider"
+            app:layout_constraintTop_toBottomOf="@id/editorBottomBarrier"/>
+
         <Button
             android:id="@+id/button3"
             style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="24dp"
             android:onClick="@{pickPhotoClickListener}"
-            android:text="@string/butn_change"
-            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+            android:text="@string/change_picture"
             app:layout_constraintEnd_toStartOf="@+id/button2"
-            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/picture" />
+            app:layout_constraintTop_toBottomOf="@+id/editorBottomBarrier" />
 
         <Button
             android:id="@+id/button2"
@@ -101,12 +99,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{viewModel.deletePictureListener}"
-            android:text="@string/butn_remove"
+            android:text="@string/remove_picture"
             android:visibility="@{viewModel.hasPicture ? View.VISIBLE : View.GONE}"
             app:layout_constraintBaseline_toBaselineOf="@id/button3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button3"
-            tools:layout_editor_absoluteY="120dp" />
+            app:layout_constraintStart_toEndOf="@+id/button3" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/editorBottomBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="24dp"
+            app:constraint_referenced_ids="picture, textInputLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

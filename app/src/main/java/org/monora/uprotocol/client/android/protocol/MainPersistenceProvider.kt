@@ -247,7 +247,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun persistClientPicture(client: Client, data: ByteArray?) = runBlocking {
-        Graphics.saveClientPicture(context, client, data)
+        Graphics.saveRemoteClientPicture(context, client, data)
     }
 
     override fun revokeNetworkPin() {

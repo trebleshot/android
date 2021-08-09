@@ -649,4 +649,9 @@
     <string name="receiving_through_web">Receiving through Web</string>
     <string name="received_through_web">Received through Web</string>
     <string name="warning_permissions_not_accepted">You haven\'t set up the permissions yet!</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="remove_picture">Remove picture</string>
+    <string name="change_picture">Change picture</string>
+    <string name="grant">Grant</string>
+    <string name="granted">Granted</string>
 </resources>

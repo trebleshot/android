@@ -20,12 +20,12 @@ package org.monora.uprotocol.client.android.fragment
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.fragment.inner.LookPreferencesFragment
+import org.monora.uprotocol.client.android.activity.IntroductionPrefsFragment
 
 class PreferencesFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences_main_app)
         addPreferencesFromResource(R.xml.preferences_main_notification)
-        LookPreferencesFragment.loadThemeOptionsTo(requireContext(), findPreference("theme"))
+        IntroductionPrefsFragment.loadThemeOptionsTo(requireContext(), findPreference("theme"))
     }
 }

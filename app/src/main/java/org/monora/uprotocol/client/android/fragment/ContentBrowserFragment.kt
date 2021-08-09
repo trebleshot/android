@@ -18,26 +18,31 @@
 
 package org.monora.uprotocol.client.android.fragment
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.adapter.MainFragmentStateAdapter
 import org.monora.uprotocol.client.android.databinding.LayoutContentBrowserBinding
+import org.monora.uprotocol.client.android.fragment.ContentFragmentStateAdapter.PageItem
 import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.FileBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.ImageBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.VideoBrowserFragment
-import org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment
-import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 
 @AndroidEntryPoint
@@ -53,42 +58,13 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = LayoutContentBrowserBinding.bind(view)
-        val pagerAdapter = MainFragmentStateAdapter(requireContext(), childFragmentManager, lifecycle)
+        val pagerAdapter = ContentFragmentStateAdapter(requireContext(), childFragmentManager, lifecycle)
 
-        pagerAdapter.add(
-            MainFragmentStateAdapter.PageItem(
-                0,
-                R.drawable.ic_file_document_box_white_24dp,
-                getString(R.string.text_files),
-                FileBrowserFragment::class.java.name
-            )
-        )
-        pagerAdapter.add(
-            MainFragmentStateAdapter.PageItem(
-                1,
-                R.drawable.ic_music_note_white_24dp,
-                getString(R.string.text_music),
-                AudioBrowserFragment::class.java.name
-            )
-        )
-        pagerAdapter.add(
-            MainFragmentStateAdapter.PageItem(
-                2,
-                R.drawable.ic_photo_white_24dp,
-                getString(R.string.text_image),
-                ImageBrowserFragment::class.java.name
-            )
-        )
-        pagerAdapter.add(
-            MainFragmentStateAdapter.PageItem(
-                3,
-                R.drawable.ic_video_library_white_24dp,
-                getString(R.string.text_video),
-                VideoBrowserFragment::class.java.name
-            )
-        )
+        pagerAdapter.add(PageItem(getString(R.string.text_files), FileBrowserFragment::class.java.name))
+        pagerAdapter.add(PageItem(getString(R.string.text_music), AudioBrowserFragment::class.java.name))
+        pagerAdapter.add(PageItem(getString(R.string.text_image), ImageBrowserFragment::class.java.name))
+        pagerAdapter.add(PageItem(getString(R.string.text_video), VideoBrowserFragment::class.java.name))
 
-        pagerAdapter.createTabs(binding.tabLayout, withIcon = false, withText = true)
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -126,5 +102,40 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+}
+
+class ContentFragmentStateAdapter(
+    val context: Context, fm: FragmentManager, lifecycle: Lifecycle,
+) : FragmentStateAdapter(fm, lifecycle) {
+    private val fragments: MutableList<PageItem> = ArrayList()
+
+    private val fragmentFactory: FragmentFactory = fm.fragmentFactory
+
+    fun add(fragment: PageItem) {
+        fragments.add(fragment)
+    }
+
+    override fun createFragment(position: Int): Fragment {
+        val item = getItem(position)
+        val fragment = item.fragment ?: fragmentFactory.instantiate(context.classLoader, item.clazz)
+
+        item.fragment = fragment
+
+        return fragment
+    }
+
+    override fun getItemCount(): Int = fragments.size
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    fun getItem(position: Int): PageItem = synchronized(fragments) { fragments[position] }
+
+    @Parcelize
+    data class PageItem(var title: String, var clazz: String) : Parcelable {
+        @IgnoredOnParcel
+        var fragment: Fragment? = null
     }
 }

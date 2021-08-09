@@ -22,8 +22,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.util.Base64
+import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -138,15 +140,19 @@ class UserDataRepository @Inject constructor(
 
     var clientNickname: String
         get() = preferences.getString(KEY_NICKNAME, null) ?: Build.MODEL.uppercase(Locale.getDefault())
-        set(value) = preferences.edit {
-            putString(KEY_NICKNAME, value)
+        set(value) {
+            preferences.edit {
+                putString(KEY_NICKNAME, value)
+            }
             client.postValue(clientStatic)
         }
 
-    var clientRevisionOfPicture: Long
+    private var clientRevisionOfPicture: Long
         get() = preferences.getLong(KEY_REVISION_OF_PICTURE, 0)
-        set(value) = preferences.edit {
-            putLong(KEY_REVISION_OF_PICTURE, value)
+        set(value) {
+            preferences.edit {
+                putLong(KEY_REVISION_OF_PICTURE, value)
+            }
             client.postValue(clientStatic)
         }
 
@@ -156,6 +162,16 @@ class UserDataRepository @Inject constructor(
                 putString(KEY_UUID, it)
             }
         }
+
+    private val _hasPicture by lazy {
+        MutableLiveData(pictureFile.exists())
+    }
+
+    val hasPicture by lazy {
+        liveData {
+            emitSource(_hasPicture)
+        }
+    }
 
     val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
 
@@ -182,12 +198,19 @@ class UserDataRepository @Inject constructor(
         )
     }
 
-    fun deletePicture() {
-        context.deleteFile(clientStatic.picturePath)
-        clientRevisionOfPicture = System.currentTimeMillis()
+    private val pictureFile by lazy {
+        context.getFileStreamPath(clientStatic.picturePath)
     }
 
-    fun hasPicture() = context.getFileStreamPath(clientStatic.picturePath).exists()
+    fun deletePicture() {
+        context.deleteFile(clientStatic.picturePath)
+        notifyPictureChanges()
+    }
+
+    fun notifyPictureChanges() {
+        clientRevisionOfPicture = System.currentTimeMillis()
+        _hasPicture.postValue(pictureFile.exists())
+    }
 
     companion object {
         private const val PREFERENCES_CREDENTIALS_STORE = "credentials_store"

@@ -18,12 +18,11 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.IdRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -31,40 +30,35 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.yanzhenjie.andserver.Server
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.BuildConfig
+import org.monora.uprotocol.client.android.NavHomeDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
-import org.monora.uprotocol.client.android.di.WebShareServer
-import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
     private val userProfileViewModel: UserProfileViewModel by viewModels()
-
-    private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null) {
-            userProfileViewModel.saveProfilePicture(uri)
-        }
-    }
 
     private val userProfileBinding by lazy {
         LayoutUserProfileBinding.bind(navigationView.getHeaderView(0)).also {
             it.viewModel = userProfileViewModel
             it.lifecycleOwner = this
             it.editProfileClickListener = View.OnClickListener {
-                editProfile(userProfileViewModel, pickPhoto, this)
+                openItem(R.id.edit_profile)
             }
         }
     }
 
-    private lateinit var navigationView: NavigationView
+    private val navigationView: NavigationView by lazy {
+        findViewById(R.id.nav_view)
+    }
 
-    private lateinit var drawerLayout: DrawerLayout
+    private val drawerLayout: DrawerLayout by lazy {
+        findViewById(R.id.drawer_layout)
+    }
 
     private var pendingMenuItemId = 0
 
@@ -76,8 +70,6 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        navigationView = findViewById(R.id.nav_view)
-        drawerLayout = findViewById(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)
@@ -100,13 +92,12 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         userProfileBinding.executePendingBindings()
 
         if (BuildConfig.FLAVOR == "googlePlay") {
-            navigationView.menu.findItem(R.id.menu_activity_main_donate).isVisible = true
+            navigationView.menu.findItem(R.id.donate).isVisible = true
         }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        pendingMenuItemId = item.itemId
-        drawerLayout.closeDrawer(GravityCompat.START)
+        openItem(item.itemId)
         return true
     }
 
@@ -116,14 +107,11 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         when (pendingMenuItemId) {
-            R.id.menu_activity_main_manage_devices -> {
-                startActivity(Intent(this, ManageDevicesActivity::class.java))
-            }
-            R.id.menu_activity_main_about -> startActivity(Intent(this, AboutActivity::class.java))
-            R.id.menu_activity_main_preferences -> {
-                startActivity(Intent(this, PreferencesActivity::class.java))
-            }
-            R.id.menu_activity_main_donate -> try {
+            R.id.edit_profile -> navController.navigate(NavHomeDirections.actionToProfileEditorFragment())
+            R.id.manage_devices -> startActivity(Intent(this, ManageDevicesActivity::class.java))
+            R.id.about -> startActivity(Intent(this, AboutActivity::class.java))
+            R.id.preferences -> startActivity(Intent(this, PreferencesActivity::class.java))
+            R.id.donate -> try {
                 startActivity(
                     Intent(
                         applicationContext,
@@ -138,7 +126,8 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         pendingMenuItemId = 0
     }
 
-    companion object {
-        const val REQUEST_PERMISSION_ALL = 1
+    private fun openItem(@IdRes id: Int) {
+        pendingMenuItemId = id
+        drawerLayout.close()
     }
 }

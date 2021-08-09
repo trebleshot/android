@@ -23,43 +23,36 @@
     <group android:id="@+id/nav_group_other">
 
         <item
-            android:id="@+id/menu_activity_main_manage_devices"
+            android:id="@+id/manage_devices"
             android:icon="@drawable/ic_devices_white_24dp"
-            android:orderInCategory="1"
+            android:orderInCategory="2"
             android:title="@string/text_manageDevices" />
 
         <item
-            android:id="@+id/menu_activity_main_preferences"
+            android:id="@+id/preferences"
             android:icon="@drawable/ic_settings_white_24dp"
-            android:orderInCategory="12"
+            android:orderInCategory="3"
             android:title="@string/text_preferences" />
 
         <item
-            android:id="@+id/menu_activity_main_dev_survey"
-            android:icon="@drawable/ic_poll_box_white_24dp"
-            android:orderInCategory="13"
-            android:title="@string/text_developmentSurvey"
-            android:visible="false" />
-
-        <item
-            android:id="@+id/menu_activity_main_about"
+            android:id="@+id/about"
             android:icon="@drawable/ic_info_white_24dp"
-            android:orderInCategory="13"
+            android:orderInCategory="4"
             android:title="@string/text_about" />
 
     </group>
 
     <group android:id="@+id/nav_group_support">
         <item
-            android:id="@+id/menu_activity_main_donate"
+            android:id="@+id/donate"
             android:icon="@drawable/ic_favorite_white_24dp"
-            android:orderInCategory="18"
+            android:orderInCategory="5"
             android:title="@string/butn_donate"
             android:visible="false" />
 
         <item
-            android:id="@+id/menu_activity_main_ts_dt"
-            android:orderInCategory="19"
+            android:id="@+id/ts_dt"
+            android:orderInCategory="6"
             app:actionLayout="@layout/layout_main_navigationview_footer"
             tools:ignore="MenuTitle" />
 

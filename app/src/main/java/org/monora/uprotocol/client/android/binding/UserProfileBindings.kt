@@ -22,6 +22,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.util.Graphics
@@ -44,8 +45,10 @@ fun loadPictureOfClient(imageView: ImageView, client: Client?) {
         val default = Graphics.createIconBuilder(imageView.context).buildRound(client.clientNickname)
 
         GlideApp.with(imageView)
-            .load(client.picturePath)
+            .load(imageView.context.getFileStreamPath(client.picturePath))
             .circleCrop()
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .placeholder(default)
             .error(default)
             .transition(DrawableTransitionOptions.withCrossFade())

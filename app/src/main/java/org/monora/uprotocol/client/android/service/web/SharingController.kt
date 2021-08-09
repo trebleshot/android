@@ -76,6 +76,7 @@ class SharingController {
         val uri = getUri(context, hashCode)
         val bitmap = GlideApp.with(context)
             .asBitmap()
+            .override( 400)
             .load(uri)
             .submit()
             .get()

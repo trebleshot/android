@@ -26,23 +26,20 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
+import androidx.core.app.ActivityCompat.*
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
@@ -53,11 +50,8 @@ import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
-import org.monora.uprotocol.client.android.databinding.LayoutProfileEditorBinding
-import org.monora.uprotocol.client.android.dialog.PermissionRequests
 import org.monora.uprotocol.client.android.util.Permissions
 import org.monora.uprotocol.client.android.util.Updater
-import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 import java.io.FileReader
 import java.io.IOException
 import javax.inject.Inject
@@ -159,7 +153,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                     theme.applyStyle(R.style.BlackPatch, true)
                 }
             }
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (e: NameNotFoundException) {
             e.printStackTrace()
         }
 
@@ -191,6 +185,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         }
 
         if (this is HomeActivity && hasIntroductionShown()) {
+            // TODO: 8/9/21 If they're going to be shown in HomeActivity, move these methods and calls there!
             checkAndShowCrashReport()
             checkAndShowChangelog()
         }
@@ -207,6 +202,11 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         backend.notifyActivityInForeground(this, false)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        ongoingRequest?.takeIf { it.isShowing }?.dismiss()
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         if ("custom_fonts" == key || "theme" == key || "amoled_theme" == key) {
             checkForThemeChange()
@@ -215,8 +215,11 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (!Permissions.checkRunningConditions(this)) {
-            requestRequiredPermissions(!skipPermissionRequest)
+        if (requestCode == REQUEST_PERMISSION && !Permissions.checkRunningConditions(this)) {
+            requestRequiredPermissions(
+                !skipPermissionRequest,
+                permissions.mapIndexed { index, s -> s to (grantResults[index] == PERMISSION_GRANTED) }.toMap()
+            )
         }
     }
 
@@ -281,46 +284,51 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         ) recreate()
     }
 
-    protected fun editProfile(
-        userProfileViewModel: UserProfileViewModel,
-        pickPhoto: ActivityResultLauncher<String>,
-        lifecycleOwner: LifecycleOwner,
-    ) {
-        val binding = LayoutProfileEditorBinding.inflate(
-            LayoutInflater.from(this), null, false
-        )
-
-        val dialog = BottomSheetDialog(this)
-
-        binding.viewModel = userProfileViewModel
-        binding.lifecycleOwner = lifecycleOwner
-        binding.pickPhotoClickListener = View.OnClickListener {
-            pickPhoto.launch("image/*")
-        }
-
-        binding.executePendingBindings()
-
-        dialog.setContentView(binding.root)
-        dialog.show()
-    }
-
     fun hasIntroductionShown(): Boolean {
         return defaultPreferences.getBoolean("introduction_shown", false)
     }
 
-    fun requestRequiredPermissions(finishIfOtherwise: Boolean) {
+    fun requestRequiredPermissions(finishOtherwise: Boolean, results: Map<String, Boolean>? = null) {
         if (ongoingRequest?.isShowing == true) return
-        for (request in Permissions.getRequiredPermissions(this)) {
-            if (PermissionRequests.requestIfNecessary(this, request, finishIfOtherwise).also {
-                    ongoingRequest = it
-                } != null
-            ) break
+        for (permission in Permissions.getAll()) {
+            val id = permission.id
+            val showRationale = shouldShowRequestPermissionRationale(this@Activity, id)
+            val deniedAfterRequest = results?.get(id) == false
+            val granted = checkSelfPermission(this, id) == PERMISSION_GRANTED
+            val request = {
+                requestPermissions(this@Activity, arrayOf(permission.id), REQUEST_PERMISSION)
+            }
+
+            if (granted) continue
+
+            if (deniedAfterRequest && !showRationale) {
+                if (finishOtherwise) finish()
+            } else if (showRationale) {
+                AlertDialog.Builder(this).apply {
+                    setCancelable(false)
+                    setTitle(permission.title)
+                    setMessage(permission.description)
+                    setPositiveButton(R.string.grant) { _: DialogInterface?, _: Int -> request() }
+                    if (finishOtherwise) {
+                        setNegativeButton(R.string.butn_reject) { _: DialogInterface?, _: Int -> finish() }
+                    } else {
+                        setNegativeButton(R.string.butn_close, null)
+                    }
+                    ongoingRequest = show()
+                }
+            } else {
+                request()
+            }
+
+            break
         }
     }
 
     companion object {
         private const val TAG = "Activity (monora)"
 
-        const val ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED"
+        private const val ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED"
+
+        private const val REQUEST_PERMISSION = 1
     }
 }

@@ -21,6 +21,9 @@
     android:id="@+id/nav_home"
     app:startDestination="@id/transferHistoryFragment">
 
+    <action android:id="@+id/action_to_profileEditorFragment"
+        app:destination="@id/profileEditorFragment"/>
+
     <fragment
         android:id="@+id/transferHistoryFragment"
         android:name="org.monora.uprotocol.client.android.fragment.TransferHistoryFragment"
@@ -36,6 +39,13 @@
             android:id="@+id/action_transferHistoryFragment_to_nav_receive"
             app:destination="@id/nav_receive" />
     </fragment>
+
+    <dialog
+        android:id="@+id/profileEditorFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.ProfileEditorFragment"
+        android:label="@string/edit_profile" />
+
     <include app:graph="@navigation/nav_transfer_details" />
     <include app:graph="@navigation/nav_receive" />
+
 </navigation>
