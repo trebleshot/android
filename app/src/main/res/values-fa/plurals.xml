@@ -5,8 +5,8 @@
         <item quantity="other">مایلید فایل های %d را پاک کنید؟</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">%d فایل دریافت شده است</item>
-        <item quantity="other">%d فایل های دریافت شده اند</item>
+        <item quantity="one">%d فایل دریافت شد</item>
+        <item quantity="other">%d فایل ها دریافت شده اند</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d فایل انتخاب شده است</item>
@@ -21,12 +21,12 @@
         <item quantity="other">%d اتصال ها</item>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">دریافت این فایل؟</item>
-        <item quantity="other">"دریافت فایل های  %d ؟"</item>
+        <item quantity="one">این فایل را دریافت می کنید؟</item>
+        <item quantity="other">%d فایل دریافت شود؟</item>
     </plurals>
     <plurals name="text_files">
         <item quantity="one">%d فایل</item>
-        <item quantity="other">%d فایل های</item>
+        <item quantity="other">%d فایل ها</item>
     </plurals>
     <plurals name="text_secondsAgo">
         <item quantity="one">یک ثانیه پیش</item>
@@ -37,8 +37,8 @@
         <item quantity="other">%d دقیقه پیش</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">%d فایل پاک شده است</item>
-        <item quantity="other">%d فایل پاک شده است</item>
+        <item quantity="one">%d فایل حذف شده است</item>
+        <item quantity="other">%d فایل ها حذف شده اند.</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">یک ردیف</item>
