@@ -119,26 +119,6 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.ManageDevicesActivity"
-            android:label="@string/text_manageDevices"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.PreferencesActivity"
-            android:label="@string/text_preferences"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.TextEditorActivity"
             android:label="@string/text_textEditor"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"

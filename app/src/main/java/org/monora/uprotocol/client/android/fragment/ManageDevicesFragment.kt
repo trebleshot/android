@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.fragment.pickclient
+
+package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -30,65 +31,59 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
-import org.monora.uprotocol.client.android.databinding.ListPickClientBinding
+import org.monora.uprotocol.client.android.databinding.ListManageClientBinding
 import org.monora.uprotocol.client.android.itemcallback.UClientItemCallback
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 
 @AndroidEntryPoint
-class PickClientFragment : Fragment(R.layout.layout_clients) {
-    private val clientsViewModel: ClientsViewModel by viewModels()
+class ManageDevicesFragment : Fragment(R.layout.layout_manage_devices) {
+    private val viewModel: ClientsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = Adapter { client, clickType ->
-            when (clickType) {
-                ClientContentViewModel.ClickType.Default -> findNavController().navigate(
-                    PickClientFragmentDirections.actionClientsFragmentToClientConnectionFragment(client)
-                )
-                ClientContentViewModel.ClickType.Details -> findNavController().navigate(
-                    PickClientFragmentDirections.actionClientsFragmentToClientDetailsFragment(client)
-                )
-            }
+        val adapter = Adapter {
+            findNavController().navigate(
+                ManageDevicesFragmentDirections.actionManageDevicesFragment2ToClientDetailsFragment3(it)
+            )
         }
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_noClientList)
-        emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
+        emptyView.emptyText.setText(R.string.text_listEmptyMusic)
+        emptyView.emptyImage.setImageResource(R.drawable.ic_music_note_white_24dp)
+        emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
 
-        emptyView.executePendingBindings()
-        clientsViewModel.clients.observe(viewLifecycleOwner) {
+        viewModel.clients.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
     }
 
     class ClientViewHolder(
-        val binding: ListPickClientBinding,
-        val clickListener: (UClient, ClientContentViewModel.ClickType) -> Unit,
+        val binding: ListManageClientBinding,
+        val clickListener: (UClient) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(client: UClient) {
             binding.viewModel = ClientContentViewModel(client)
-            binding.clickListener =
-                View.OnClickListener { clickListener(client, ClientContentViewModel.ClickType.Default) }
-            binding.detailsClickListener =
-                View.OnClickListener { clickListener(client, ClientContentViewModel.ClickType.Details) }
+            binding.clickListener = View.OnClickListener { clickListener(client) }
+            binding.detailsClickListener = View.OnClickListener { clickListener(client) }
             binding.executePendingBindings()
         }
     }
 
     class Adapter(
-        private val clickListener: (UClient, ClientContentViewModel.ClickType) -> Unit,
+        private val clickListener: (UClient) -> Unit,
     ) : ListAdapter<UClient, ClientViewHolder>(UClientItemCallback()) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientViewHolder {
             return ClientViewHolder(
-                ListPickClientBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+                ListManageClientBinding.inflate(LayoutInflater.from(parent.context), parent, false),
                 clickListener
             )
         }

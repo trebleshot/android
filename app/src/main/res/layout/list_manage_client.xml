@@ -1,0 +1,109 @@
+<!--
+  ~ Copyright (C) 2019 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="detailsClickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?rectSelector"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:onClick="@{clickListener}">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/image"
+                pictureOf="@{viewModel.client}"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/text_image"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/text1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/text1"
+                style="@style/TextAppearance.Primary.Big.SingleLine"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@{viewModel.nickname}"
+                app:layout_constraintBottom_toTopOf="@+id/text2"
+                app:layout_constraintEnd_toStartOf="@+id/accessStatusIcon"
+                app:layout_constraintStart_toEndOf="@+id/image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="@tools:sample/lorem" />
+
+            <TextView
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Secondary.SingleLine"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.product}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/text1"
+                app:layout_constraintStart_toStartOf="@+id/text1"
+                app:layout_constraintTop_toBottomOf="@+id/text1"
+                tools:text="@tools:sample/lorem" />
+
+            <ImageView
+                android:id="@+id/accessStatusIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="@{viewModel.trusted || viewModel.blocked ? View.VISIBLE : View.GONE}"
+                app:imageResource="@{viewModel.accessLevelIcon}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/text1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?colorPrimary" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

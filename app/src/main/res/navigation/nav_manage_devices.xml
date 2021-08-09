@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_manage_devices"
+    app:startDestination="@id/manageDevicesFragment2">
+
+    <fragment
+        android:id="@+id/manageDevicesFragment2"
+        android:name="org.monora.uprotocol.client.android.fragment.ManageDevicesFragment"
+        android:label="@string/text_manageDevices" >
+        <action
+            android:id="@+id/action_manageDevicesFragment2_to_clientDetailsFragment3"
+            app:destination="@id/clientDetailsFragment3" />
+    </fragment>
+    <dialog
+        android:id="@+id/clientDetailsFragment3"
+        android:name="org.monora.uprotocol.client.android.fragment.ClientDetailsFragment"
+        android:label="@string/client_details" >
+        <argument
+            android:name="client"
+            app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
+    </dialog>
+</navigation>

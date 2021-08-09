@@ -107,10 +107,10 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         when (pendingMenuItemId) {
-            R.id.edit_profile -> navController.navigate(NavHomeDirections.actionToProfileEditorFragment())
-            R.id.manage_devices -> startActivity(Intent(this, ManageDevicesActivity::class.java))
+            R.id.edit_profile -> navController.navigate(NavHomeDirections.actionGlobalProfileEditorFragment())
+            R.id.manage_devices -> navController.navigate(NavHomeDirections.actionGlobalNavManageDevices())
             R.id.about -> startActivity(Intent(this, AboutActivity::class.java))
-            R.id.preferences -> startActivity(Intent(this, PreferencesActivity::class.java))
+            R.id.preferences -> navController.navigate(NavHomeDirections.actionGlobalNavPreferences())
             R.id.donate -> try {
                 startActivity(
                     Intent(

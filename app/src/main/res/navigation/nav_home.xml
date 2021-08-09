@@ -18,10 +18,11 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_home"
     app:startDestination="@id/transferHistoryFragment">
 
-    <action android:id="@+id/action_to_profileEditorFragment"
+    <action android:id="@+id/action_global_profileEditorFragment"
         app:destination="@id/profileEditorFragment"/>
 
     <fragment
@@ -47,5 +48,13 @@
 
     <include app:graph="@navigation/nav_transfer_details" />
     <include app:graph="@navigation/nav_receive" />
+    <include app:graph="@navigation/nav_preferences" />
+    <action
+        android:id="@+id/action_global_nav_preferences"
+        app:destination="@id/nav_preferences" />
+    <include app:graph="@navigation/nav_manage_devices" />
+    <action
+        android:id="@+id/action_global_nav_manage_devices"
+        app:destination="@id/nav_manage_devices" />
 
 </navigation>
