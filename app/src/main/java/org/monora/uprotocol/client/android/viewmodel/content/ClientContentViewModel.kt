@@ -28,13 +28,12 @@ import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.AppEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.util.findActivity
+import org.monora.uprotocol.client.android.view.findActivity
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.spec.v1.Config
 

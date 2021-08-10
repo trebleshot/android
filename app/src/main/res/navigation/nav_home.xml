@@ -52,7 +52,7 @@
     <action
         android:id="@+id/action_global_nav_preferences"
         app:destination="@id/nav_preferences" />
-    <include app:graph="@navigation/nav_manage_devices" />
+    <include app:graph="@navigation/nav_manage_clients" />
     <action
         android:id="@+id/action_global_nav_manage_devices"
         app:destination="@id/nav_manage_devices" />

@@ -97,14 +97,15 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
             if (it.isValid()) {
-                findNavController().navigateUp()
+                findNavController().navigate(
+                    ConnectionOptionsFragmentDirections.xmlPop()
+                )
             }
         }
 
         clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())
-            TransitionManager.beginDelayedTransition(connectionOptions.emptyView.root.parent as ViewGroup)
         }
     }
 }

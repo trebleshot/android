@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,12 +33,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
@@ -49,9 +52,11 @@ import org.monora.uprotocol.client.android.databinding.ListSectionTitleBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferItemBinding
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import org.monora.uprotocol.client.android.protocol.isIncoming
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.core.transfer.TransferItem
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -74,12 +79,8 @@ class TransferItemFragment : BottomSheetDialogFragment() {
 
         val adapter = ItemAdapter { item, clickType ->
             when (clickType) {
-                ItemAdapter.ClickType.Default -> {
-
-                }
-                ItemAdapter.ClickType.Recover -> {
-                    viewModel.recover(item)
-                }
+                ItemAdapter.ClickType.Default -> viewModel.open(requireContext(), item)
+                ItemAdapter.ClickType.Recover -> viewModel.recover(item)
             }
         }
         val binding = LayoutTransferItemBinding.bind(view)
@@ -104,6 +105,22 @@ class ItemViewModel @AssistedInject internal constructor(
     @Assisted private val transfer: Transfer,
 ) : ViewModel() {
     val items = transferRepository.getTransferItems(transfer.id)
+
+    fun open(context: Context, item: UTransferItem) {
+        val uri = try {
+            Uri.parse(item.location)
+        } catch (e: Exception) {
+            return
+        }
+
+        if (item.type == TransferItem.Type.Outgoing || item.state == TransferItem.State.Done) {
+            try {
+                Activities.view(context, DocumentFile.fromUri(context, uri))
+            } catch (e: Exception) {
+                Activities.view(context, uri, item.mimeType)
+            }
+        }
+    }
 
     fun recover(item: UTransferItem) {
         if (item.state == TransferItem.State.InvalidatedTemporarily) {

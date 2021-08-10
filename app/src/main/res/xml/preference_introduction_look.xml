@@ -39,12 +39,4 @@
         android:title="@string/const_text_useAppFonts"
         app:icon="@drawable/ic_short_text_white_24dp" />
 
-    <androidx.preference.CheckBoxPreference
-        android:defaultValue="@bool/genfw_screen_isLarge"
-        android:icon="@drawable/ic_view_column_white_24dp"
-        android:key="two_row_layout"
-        android:summary="@string/text_twoRowLayoutSummary"
-        android:title="@string/text_twoRowLayout"
-        app:isPreferenceVisible="@bool/genfw_screen_isLarge" />
-
 </androidx.preference.PreferenceScreen>

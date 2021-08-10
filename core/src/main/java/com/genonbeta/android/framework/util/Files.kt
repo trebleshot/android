@@ -19,18 +19,10 @@
 package com.genonbeta.android.framework.util
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.core.content.FileProvider
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.io.OpenableContent
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
-import java.net.URI
 import java.net.URLConnection
 import java.util.*
 import kotlin.math.ln
@@ -111,14 +103,6 @@ object Files {
         )
     }
 
-    fun getActionTypeToView(type: String?): String {
-        return if ("application/vnd.android.package-archive" == type && Build.VERSION.SDK_INT >= 14) {
-            Intent.ACTION_INSTALL_PACKAGE
-        } else {
-            Intent.ACTION_VIEW
-        }
-    }
-
     fun getFileContentType(fileUrl: String): String {
         val nameMap = URLConnection.getFileNameMap()
         val fileType = nameMap.getContentTypeFor(fileUrl)
@@ -129,43 +113,12 @@ object Files {
         val dotIndex = fileName.lastIndexOf('.')
 
         if (dotIndex >= 0) {
-            val extension = fileName.substring(dotIndex + 1).toLowerCase(Locale.ROOT)
+            val extension = fileName.substring(dotIndex + 1).lowercase(Locale.ROOT)
             val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
             if (mime != null) return ".$extension"
         }
 
         return ""
-    }
-
-    fun getOpenIntent(context: Context, file: DocumentFile): Intent {
-        return if (Build.VERSION.SDK_INT >= 24 || Build.VERSION.SDK_INT == 23
-            && Intent.ACTION_INSTALL_PACKAGE != getActionTypeToView(file.getType())
-        ) {
-            getOpenIntent(getSecureUriSilently(context, file), file.getType())
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        } else
-            getOpenIntent(file.originalUri, file.getType())
-    }
-
-    fun getOpenIntent(url: Uri?, type: String?): Intent {
-        return Intent(getActionTypeToView(type)).setDataAndType(url, type)
-    }
-
-    fun getSecureUriSilently(context: Context, documentFile: DocumentFile): Uri {
-        try {
-            return documentFile.getSecureUri(context)
-        } catch (e: Throwable) {
-            e.printStackTrace()
-        }
-        return documentFile.getUri()
-    }
-
-    fun getSecureUri(context: Context, openable: OpenableContent): Uri {
-        return if (openable.file != null) getSelfProviderFile(context, openable.file) else openable.uri
-    }
-
-    fun getSelfProviderFile(context: Context, file: File): Uri {
-        return FileProvider.getUriForFile(context, "${context.applicationContext.packageName}.fileprovider", file)
     }
 
     fun getUniqueFileName(
@@ -188,23 +141,5 @@ object Files {
             if (directory.findFile(context, newName) == null) return newName
         }
         return fileName
-    }
-
-    fun openUri(context: Context, file: DocumentFile): Boolean {
-        return openUri(context, getOpenIntent(context, file))
-    }
-
-    fun openUri(context: Context, uri: Uri): Boolean {
-        return openUri(context, getOpenIntent(uri, context.contentResolver.getType(uri)))
-    }
-
-    fun openUri(context: Context, intent: Intent): Boolean {
-        try {
-            context.startActivity(intent)
-            return true
-        } catch (e: Throwable) {
-            Log.d(TAG, String.format(Locale.US, "Open uri request failed with error message '%s'", e.message))
-        }
-        return false
     }
 }

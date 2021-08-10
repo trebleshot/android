@@ -32,18 +32,18 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.content.Song
+import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
+import org.monora.uprotocol.client.android.databinding.ListAppBinding
 import org.monora.uprotocol.client.android.databinding.ListSongBinding
-import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
-    private val browserViewModel: AudioBrowserViewModel by viewModels()
+class AppBrowserFragment : Fragment(R.layout.layout_app_browser) {
+    private val browserViewModel: AppBrowserViewModel by viewModels()
 
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
 
@@ -51,24 +51,24 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
-        val adapter = AudioBrowserAdapter { song, clickType ->
+        val adapter = AppBrowserAdapter { app, clickType ->
             when (clickType) {
-                AudioBrowserAdapter.ClickType.Default -> Activities.view(view.context, song.uri, song.mimeType)
-                AudioBrowserAdapter.ClickType.ToggleSelect -> {
-                    selectionViewModel.setSelected(song, song.isSelected)
+                AppBrowserAdapter.ClickType.Launch -> {
+
                 }
+                AppBrowserAdapter.ClickType.ToggleSelect -> selectionViewModel.setSelected(app, app.isSelected)
             }
         }
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyMusic)
-        emptyView.emptyImage.setImageResource(R.drawable.ic_music_note_white_24dp)
+        emptyView.emptyText.setText(R.string.text_listEmptyApp)
+        emptyView.emptyImage.setImageResource(R.drawable.ic_android_head_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
 
-        browserViewModel.allSongs.observe(viewLifecycleOwner) {
+        browserViewModel.allApps.observe(viewLifecycleOwner) {
             it.forEach { song ->
                 if (selectionViewModel.contains(song)) song.isSelected = true
             }
@@ -79,79 +79,77 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
     }
 }
 
-class AudioBrowserAdapter(
-    val clickListener: (Song, ClickType) -> Unit
-) : ListAdapter<Song, SongViewHolder>(SongItemCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        return SongViewHolder(
-            clickListener, ListSongBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+class AppBrowserAdapter(
+    val clickListener: (App, ClickType) -> Unit
+) : ListAdapter<App, AppViewHolder>(AppItemCallback()) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
+        return AppViewHolder(
+            clickListener, ListAppBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AppViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position).id
+        return getItem(position).packageName.hashCode().toLong()
     }
 
     override fun getItemViewType(position: Int): Int {
-        return VIEW_TYPE_SONG
-    }
-
-    enum class ClickType {
-        Default,
-        ToggleSelect,
+        return VIEW_TYPE_APP
     }
 
     companion object {
-        const val VIEW_TYPE_SONG = 0
+        const val VIEW_TYPE_APP = 0
+    }
+
+    enum class ClickType {
+        Launch,
+        ToggleSelect,
     }
 }
 
-class SongItemCallback : DiffUtil.ItemCallback<Song>() {
-    override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
+class AppItemCallback : DiffUtil.ItemCallback<App>() {
+    override fun areItemsTheSame(oldItem: App, newItem: App): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
+    override fun areContentsTheSame(oldItem: App, newItem: App): Boolean {
         return oldItem == newItem
     }
 }
 
-class SongContentViewModel(song: Song) {
-    val artist = song.artist
+class AppContentViewModel(app: App) {
+    val label = app.label
 
-    val title = song.title
+    val version = app.versionName
 
-    val mimeType = song.mimeType
-
-    val uri = song.uri
+    val info = app.info
 }
 
-class SongViewHolder(
-    private val clickListener: (Song, AudioBrowserAdapter.ClickType) -> Unit,
-    private val binding: ListSongBinding
+class AppViewHolder(
+    private val clickListener: (App, AppBrowserAdapter.ClickType) -> Unit,
+    private val binding: ListAppBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(song: Song) {
-        binding.viewModel = SongContentViewModel(song)
+    fun bind(app: App) {
+        binding.viewModel = AppContentViewModel(app)
         binding.root.setOnClickListener {
-            clickListener(song, AudioBrowserAdapter.ClickType.Default)
+            clickListener(app, AppBrowserAdapter.ClickType.Launch)
         }
         binding.selection.setOnClickListener {
-            song.isSelected = !song.isSelected
-            it.isSelected = song.isSelected
-            clickListener(song, AudioBrowserAdapter.ClickType.ToggleSelect)
+            app.isSelected = !app.isSelected
+            it.isSelected = app.isSelected
+            clickListener(app, AppBrowserAdapter.ClickType.ToggleSelect)
         }
-        binding.selection.isSelected = song.isSelected
+        binding.selection.isSelected = app.isSelected
         binding.executePendingBindings()
     }
 }
 
 @HiltViewModel
-class AudioBrowserViewModel @Inject internal constructor(
+class AppBrowserViewModel @Inject internal constructor(
     mediaRepository: MediaRepository,
 ) : ViewModel() {
-    val allSongs = mediaRepository.getAllSongs()
+    val allApps = mediaRepository.getAllApps()
 }

@@ -153,4 +153,9 @@
             android:name="client"
             app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
     </dialog>
+    <action
+        android:id="@+id/xml_pop"
+        app:popUpTo="@id/pick_client.xml"
+        app:popUpToInclusive="true" />
+
 </navigation>

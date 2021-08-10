@@ -36,6 +36,7 @@ import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListImageBinding
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import javax.inject.Inject
@@ -52,8 +53,7 @@ class ImageBrowserFragment : Fragment(R.layout.layout_image_browser) {
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
         val adapter = ImageBrowserAdapter { image, clickType ->
             when (clickType) {
-                ImageBrowserAdapter.ClickType.Default -> {
-                }
+                ImageBrowserAdapter.ClickType.Default -> Activities.view(view.context, image.uri, image.mimeType)
                 ImageBrowserAdapter.ClickType.ToggleSelect -> {
                     selectionViewModel.setSelected(image, image.isSelected)
                 }

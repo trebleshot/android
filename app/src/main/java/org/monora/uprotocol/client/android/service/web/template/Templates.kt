@@ -21,11 +21,13 @@ package org.monora.uprotocol.client.android.service.web.template
 import android.content.Context
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.model.FileModel
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.regex.Pattern
@@ -162,6 +164,7 @@ fun renderContents(templates: Templates, list: List<Any>): String {
 
     val builder = StringBuilder()
 
+    val apps = ArrayList<App>(0)
     val folders = ArrayList<FileModel>(0)
     val files = ArrayList<FileModel>(0)
     val songs = ArrayList<Song>(0)
@@ -170,11 +173,31 @@ fun renderContents(templates: Templates, list: List<Any>): String {
 
     list.forEach {
         when (it) {
+            is App -> apps.add(it)
             is FileModel -> if (it.file.isDirectory()) folders.add(it) else files.add(it)
             is Song -> songs.add(it)
             is Image -> images.add(it)
             is Video -> videos.add(it)
         }
+    }
+
+    if (apps.isNotEmpty()) {
+        builder.append(
+            renderTitle(templates, templates.context.getString(R.string.apps))
+        )
+        builder.append(
+            templates.render("web/template/list/app.html", apps) {
+                mapOf(
+                    "id" to it.hashCode(),
+                    "title" to it.label.escapeHtml(),
+                    "name" to "${it.label}_${it.versionName}.apk".escapeHtml(),
+                    "size" to Files.formatLength(File(it.info.sourceDir).length()),
+                    "downloadType" to if (it.isSplit) "zip" else "download",
+                    "nameSuffix" to if (it.isSplit) ".zip" else "",
+                    "sizeSuffix" to if (it.isSplit) "~ (split)" else "",
+                )
+            }
+        )
     }
 
     if (folders.isNotEmpty()) {

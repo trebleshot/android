@@ -103,8 +103,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/text1"
-                app:layout_constraintEnd_toStartOf="@id/overflowButton"
-                app:tint="?colorPrimary" />
+                app:layout_constraintEnd_toStartOf="@id/overflowButton" />
 
             <ImageView
                 android:id="@+id/overflowButton"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Veli Tasalı
+ * Copyright (C) 2019 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,14 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package org.monora.uprotocol.client.android.view
 
-package org.monora.uprotocol.client.android.activity
-
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import android.app.Activity
+import android.content.ContextWrapper
+import android.view.View
+import androidx.preference.PreferenceManager
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.model.ContentModel
+import java.lang.IllegalStateException
 
-fun FragmentActivity.navController(id: Int): NavController {
-    return (supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
+fun View.findActivity(): Activity {
+    var context = context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+
+    throw IllegalStateException()
 }

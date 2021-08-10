@@ -18,5 +18,5 @@
   -->
 
 <resources>
-    <integer name="genfw_dynamic_grid_span_count">6</integer>
+    <integer name="genfw_dynamic_grid_span_count">3</integer>
 </resources>

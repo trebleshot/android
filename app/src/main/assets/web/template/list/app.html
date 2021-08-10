@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2021 Veli Tasalı
   ~
@@ -17,6 +16,15 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<resources>
-    <integer name="genfw_dynamic_grid_span_count">1</integer>
-</resources>
+<div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100">
+        <div class="card-img-top p-4" style="background-color: #88888822">
+            <img src="/thumbnail/${id}" class="w-100" alt="${title}">
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">${title}</h5>
+            <p class="card-text">${size}${sizeSuffix}</p>
+            <a href="/${downloadType}/${id}/${name}${nameSuffix}" class="btn btn-primary">Download</a>
+        </div>
+    </div>
+</div>

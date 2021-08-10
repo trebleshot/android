@@ -18,7 +18,6 @@
 
 package org.monora.uprotocol.client.android.fragment.content
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,7 +28,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +36,7 @@ import org.monora.uprotocol.client.android.adapter.FileAdapter
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListPathBinding
 import org.monora.uprotocol.client.android.model.FileModel
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
@@ -58,6 +57,8 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
                 FileAdapter.ClickType.Default -> {
                     if (fileModel.file.isDirectory()) {
                         viewModel.requestPath(fileModel.file)
+                    } else {
+                        Activities.view(view.context, fileModel.file)
                     }
                 }
                 FileAdapter.ClickType.ToggleSelect -> {

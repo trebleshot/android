@@ -20,7 +20,10 @@ package org.monora.uprotocol.client.android.service.web
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
 import com.yanzhenjie.andserver.annotation.Controller
 import com.yanzhenjie.andserver.annotation.GetMapping
 import com.yanzhenjie.andserver.annotation.PathVariable
@@ -33,12 +36,14 @@ import com.yanzhenjie.andserver.util.MediaType
 import dagger.hilt.EntryPoints
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.service.web.di.WebEntryPoint
-import org.monora.uprotocol.client.android.service.web.response.ZipBody
+import org.monora.uprotocol.client.android.service.web.response.FileZipBody
+import org.monora.uprotocol.client.android.service.web.response.SplitApkZipBody
 import org.monora.uprotocol.client.android.service.web.template.Templates
 import org.monora.uprotocol.client.android.service.web.template.renderContents
 import org.monora.uprotocol.client.android.service.web.template.renderHome
@@ -46,7 +51,9 @@ import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.NotificationBackend
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.InputStream
+import kotlin.math.max
 import com.genonbeta.android.framework.util.Files as FilesExt
 
 @Controller
@@ -54,17 +61,28 @@ class SharingController {
     @GetMapping("/download/{id}/{dummyName}", produces = ["application/force-download"])
     @ResponseBody
     fun download(context: Context, @PathVariable("id") hashCode: Int): StreamBody {
-        val uri = getUri(context, hashCode)
+        val content = getContent(context, hashCode)
+        val uri = getUri(content)
         return StreamBody(context.contentResolver.openInputStream(uri))
     }
 
     @GetMapping("/zip/{id}/{dummyName}", produces = ["application/force-download"])
     @ResponseBody
-    fun downloadZip(context: Context, @PathVariable("id") hashCode: Int): ZipBody {
+    fun downloadZip(context: Context, @PathVariable("id") hashCode: Int): com.yanzhenjie.andserver.http.ResponseBody {
         val content = getContent(context, hashCode)
 
         if (content is FileModel) {
-            return ZipBody(context, content.file)
+            return FileZipBody(context, content.file)
+        } else if (content is App) {
+            if(Build.VERSION.SDK_INT < 21) {
+                throw IllegalStateException("Cannot download as zip because there is no need for it below API 21")
+            }
+            val splitPaths = content.info.splitSourceDirs ?: throw IllegalStateException("Should have splits")
+            val list = splitPaths.toMutableList()
+
+            list.add(content.info.sourceDir)
+
+            return SplitApkZipBody(list)
         }
 
         throw UnsupportedOperationException("Only file models can be zipped.")
@@ -73,14 +91,34 @@ class SharingController {
     @GetMapping("/thumbnail/{id}", produces = ["image/png"])
     @ResponseBody
     fun thumbnail(context: Context, @PathVariable("id") hashCode: Int): StreamBody {
-        val uri = getUri(context, hashCode)
-        val bitmap = GlideApp.with(context)
-            .asBitmap()
-            .override( 400)
-            .load(uri)
-            .submit()
-            .get()
+        val content = getContent(context, hashCode)
+        val bitmap: Bitmap = if (content is App) {
+            val drawable = GlideApp.with(context)
+                .load(content.info)
+                .override(400)
+                .submit()
+                .get()
 
+            if (drawable is BitmapDrawable) {
+                drawable.bitmap
+            } else {
+                val width = max(drawable.intrinsicWidth, 1)
+                val height = max(drawable.intrinsicHeight, 1)
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.setBounds(0, 0, canvas.width, canvas.height)
+                drawable.draw(canvas)
+
+                bitmap
+            }
+        } else {
+            GlideApp.with(context)
+                .asBitmap()
+                .load(getUri(content))
+                .override(400)
+                .submit()
+                .get()
+        }
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val byteArray = stream.toByteArray()
@@ -110,7 +148,7 @@ class SharingController {
             notification.setAutoCancel(true)
                 .setChannelId(NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                .setContentTitle(context.getString(R.string.received_through_web))
+                .setContentTitle(context.getString(R.string.received_using_web_share))
             notification.show()
         } catch (e: Exception) {
             file.delete(context)
@@ -156,8 +194,9 @@ private fun getContent(context: Context, hashCode: Int): Any {
     throw IllegalArgumentException("Requested an unknown hash code: $hashCode. Check if the content is being served.")
 }
 
-private fun getUri(context: Context, hashCode: Int): Uri {
-    return when (val content = getContent(context, hashCode)) {
+private fun getUri(content: Any): Uri {
+    return when (content) {
+        is App -> Uri.fromFile(File(content.info.sourceDir))
         is FileModel -> content.file.getUri()
         is Song -> content.uri
         is Image -> content.uri

@@ -18,19 +18,15 @@
 
 package org.monora.uprotocol.client.android.service.web.response
 
-import android.content.Context
-import com.genonbeta.android.framework.io.DocumentFile
 import com.yanzhenjie.andserver.http.ResponseBody
 import com.yanzhenjie.andserver.util.MediaType
 import java.io.File
+import java.io.FileInputStream
 import java.io.OutputStream
-import java.lang.ref.WeakReference
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class ZipBody(context: Context, private val file: DocumentFile) : ResponseBody {
-    private val context = WeakReference(context)
-
+class SplitApkZipBody(private val contents: List<String>) : ResponseBody {
     override fun isRepeatable(): Boolean = false
 
     override fun contentLength(): Long = -1L
@@ -39,44 +35,28 @@ class ZipBody(context: Context, private val file: DocumentFile) : ResponseBody {
 
     override fun writeTo(output: OutputStream) {
         val buffer = ByteArray(16 * 1024)
-        val context = context.get() ?: return
         val zipOutputStream = ZipOutputStream(output)
 
         zipOutputStream.setLevel(0)
-        //zipOutputStream.setMethod(ZipEntry.STORED);
 
-        fun travel(file: DocumentFile, path: String? = null) {
-            val childPath = if (path != null) path + File.separator + file.getName() else file.getName()
+        contents.forEach { content ->
+            val file = File(content)
 
-            if (file.isDirectory()) {
-                for (childFile in file.listFiles(context)) {
-                    travel(childFile, childPath)
-                }
+            FileInputStream(file).use { inputStream ->
+                val entry = ZipEntry(file.name)
+                entry.time = file.lastModified()
+                zipOutputStream.putNextEntry(entry)
 
-                return
-            }
-
-            try {
-                context.contentResolver.openInputStream(file.getUri())?.use {
-                    val thisEntry = ZipEntry(childPath)
-                    thisEntry.time = file.getLastModified()
-                    zipOutputStream.putNextEntry(thisEntry)
-
-                    var len: Int
-                    while (it.read(buffer).also { len = it } != -1) {
-                        if (len > 0) {
-                            zipOutputStream.write(buffer, 0, len)
-                            zipOutputStream.flush()
-                        }
+                var len: Int
+                while (inputStream.read(buffer).also { len = it } != -1) {
+                    if (len > 0) {
+                        zipOutputStream.write(buffer, 0, len)
                     }
-                    zipOutputStream.closeEntry()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+
+                zipOutputStream.closeEntry()
             }
         }
-
-        travel(file)
 
         zipOutputStream.finish()
         zipOutputStream.flush()

@@ -28,6 +28,7 @@ import android.provider.DocumentsContract.Document.*
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import com.genonbeta.android.framework.util.Files
 import kotlinx.parcelize.Parcelize
 import java.io.File
@@ -138,11 +139,11 @@ class DocumentFile private constructor(
 
     fun getName(): String = data?.name ?: file?.name ?: throw IllegalStateException()
 
-    fun getSecureUri(context: Context): Uri {
+    fun getSecureUri(context: Context, authority: String): Uri {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || data != null) {
             return getUri()
         } else if (file != null) {
-            return Files.getSelfProviderFile(context, file)
+            return FileProvider.getUriForFile(context, authority, file)
         }
 
         throw IllegalStateException()

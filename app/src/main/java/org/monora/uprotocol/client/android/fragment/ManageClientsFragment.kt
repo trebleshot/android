@@ -38,7 +38,7 @@ import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 
 @AndroidEntryPoint
-class ManageDevicesFragment : Fragment(R.layout.layout_manage_devices) {
+class ManageClientsFragment : Fragment(R.layout.layout_manage_clients) {
     private val viewModel: ClientsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,14 +48,14 @@ class ManageDevicesFragment : Fragment(R.layout.layout_manage_devices) {
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
         val adapter = Adapter {
             findNavController().navigate(
-                ManageDevicesFragmentDirections.actionManageDevicesFragment2ToClientDetailsFragment3(it)
+                ManageClientsFragmentDirections.actionManageDevicesFragment2ToClientDetailsFragment3(it)
             )
         }
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyMusic)
-        emptyView.emptyImage.setImageResource(R.drawable.ic_music_note_white_24dp)
+        emptyView.emptyText.setText(R.string.text_noClientList)
+        emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter

@@ -72,6 +72,7 @@ class ContentBrowserActivity : Activity() {
                 else -> toolbarDefaultBg
             }
             if (Build.VERSION.SDK_INT < 16) {
+                @Suppress("DEPRECATION")
                 appBarLayout.setBackgroundDrawable(bg)
             } else {
                 appBarLayout.background = bg

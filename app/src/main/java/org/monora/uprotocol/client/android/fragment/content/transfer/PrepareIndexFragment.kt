@@ -19,14 +19,13 @@
 package org.monora.uprotocol.client.android.fragment.content.transfer
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import com.genonbeta.android.framework.io.DocumentFile
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -43,20 +43,17 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
-import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.model.FileModel
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Progress
 import org.monora.uprotocol.client.android.util.Transfers
-import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
-import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
-import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.core.transfer.TransferItem
+import java.io.File
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 import kotlin.random.Random
@@ -93,11 +90,9 @@ class PrepareIndexFragment : BottomSheetDialogFragment() {
 }
 
 class PrepareIndexViewModel @AssistedInject internal constructor(
-    @ApplicationContext _context: Context,
+    @ApplicationContext context: Context,
     @Assisted private val list: List<Any>,
 ) : ViewModel() {
-    private val context = WeakReference(_context)
-
     private val _state = MutableLiveData<PreparationState>()
 
     val state = liveData {
@@ -114,13 +109,56 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
             val type = TransferItem.Type.Outgoing
 
             list.forEach {
-                if (it is FileModel) context.get()?.let { context ->
-                    Transfers.createStructure(context, items, progress, groupId, it.file) { progress, file ->
+                if (it is FileModel) {
+                    Transfers.createStructure(context, items, progress, groupId, it.file) { _, _ ->
 
+                    }
+                } else if (it is App) {
+                    val base = DocumentFile.fromFile(File(it.info.sourceDir))
+                    val hasSplit = Build.VERSION.SDK_INT >= 21 && it.info.splitSourceDirs != null
+                    val name = "${it.label}_${it.versionName}"
+                    val baseName = if (hasSplit) base.getName() else "$name.apk"
+                    val directory = if (hasSplit) name else null
+
+                    progress.index += 1
+                    items.add(
+                        UTransferItem(
+                            progress.index.toLong(),
+                            groupId,
+                            baseName,
+                            base.getType(),
+                            base.getLength(),
+                            directory,
+                            base.getUri().toString(),
+                            TransferItem.Type.Outgoing
+                        )
+                    )
+
+                    if (hasSplit) {
+                        it.info.splitSourceDirs?.forEach { splitPath ->
+                            progress.index += 1
+
+                            val split = DocumentFile.fromFile(File(splitPath))
+                            val id = progress.index.toLong()
+
+                            items.add(
+                                UTransferItem(
+                                    id,
+                                    groupId,
+                                    split.getName(),
+                                    split.getType(),
+                                    split.getLength(),
+                                    directory,
+                                    split.getUri().toString(),
+                                    TransferItem.Type.Outgoing
+                                )
+                            )
+                        }
                     }
                 } else {
                     progress.index += 1
                     val id = progress.index.toLong()
+
                     val item = when (it) {
                         is Song -> UTransferItem(
                             id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type

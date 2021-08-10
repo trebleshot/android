@@ -646,12 +646,16 @@
     <string name="folders">Folders</string>
     <string name="web_share_empty">Nothing is being shared yet. Share something on the app and come back here!</string>
     <string name="content_sent">Successfully sent \'%s\'</string>
-    <string name="receiving_through_web">Receiving through Web</string>
-    <string name="received_through_web">Received through Web</string>
+    <string name="receiving_using_web_web_share">Receiving using Web Share</string>
+    <string name="received_using_web_share">Received using Web Share</string>
     <string name="warning_permissions_not_accepted">You haven\'t set up the permissions yet!</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="remove_picture">Remove picture</string>
     <string name="change_picture">Change picture</string>
     <string name="grant">Grant</string>
     <string name="granted">Granted</string>
+    <string name="error_no_activity_to_view">Couldn\'t find an app to opent the content with</string>
+    <string name="manage_clients">Manage Clients</string>
+    <string name="app">App</string>
+    <string name="apps">Apps</string>
 </resources>

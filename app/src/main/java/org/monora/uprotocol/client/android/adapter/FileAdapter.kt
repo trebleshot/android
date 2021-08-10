@@ -69,6 +69,7 @@ class FileAdapter(
 
     companion object {
         const val VIEW_TYPE_SECTION = 0
+
         const val VIEW_TYPE_FILE = 1
     }
 }

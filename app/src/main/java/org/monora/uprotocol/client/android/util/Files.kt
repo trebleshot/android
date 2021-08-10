@@ -23,10 +23,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.genonbeta.android.framework.io.DocumentFile
-import com.genonbeta.android.framework.util.Files
 import com.genonbeta.android.framework.util.Files.fetchFile
 import com.genonbeta.android.framework.util.Files.getUniqueFileName
 import org.monora.uprotocol.client.android.R
@@ -133,16 +131,6 @@ object Files {
             e.printStackTrace()
         }
         return defaultFolder
-    }
-
-    fun openUriForeground(context: Context, file: DocumentFile): Boolean {
-        if (!Files.openUri(context, file)) {
-            Toast.makeText(
-                context, context.getString(R.string.mesg_openFailure, file.getName()), Toast.LENGTH_SHORT
-            ).show()
-            return false
-        }
-        return true
     }
 
     @Throws(Exception::class)

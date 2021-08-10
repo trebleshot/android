@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,21 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.widget
+package org.monora.uprotocol.client.android.activity
 
-import com.genonbeta.android.framework.util.actionperformer.SelectionModelProvider
-import com.genonbeta.android.framework.widget.ListAdapterBase
-import org.monora.uprotocol.client.android.model.ContentModel
-import java.util.*
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import org.monora.uprotocol.client.android.R
 
-/**
- * created by: veli
- * date: 14/04/18 00:51
- */
-interface ListingAdapterBase<T : ContentModel> : ListAdapterBase<T>, SelectionModelProvider<T> {
-    fun getItem(position: Int): T
-
-    fun syncAndNotify(adapterPosition: Int)
-
-    fun syncAllAndNotify()
+fun FragmentActivity.navController(id: Int): NavController {
+    return (supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
 }

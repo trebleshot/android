@@ -168,13 +168,9 @@
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.WebShareActivity"
-            android:label="@string/text_webShare" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
+            android:authorities="@string/file_provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

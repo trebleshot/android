@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.data
 
 import android.provider.MediaStore.Audio.Media.IS_MUSIC
+import org.monora.uprotocol.client.android.content.AppStore
 import org.monora.uprotocol.client.android.content.AudioStore
 import org.monora.uprotocol.client.android.content.ImageStore
 import org.monora.uprotocol.client.android.content.VideoStore
@@ -27,10 +28,13 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaRepository @Inject constructor(
+    private val appStore: AppStore,
     private val audioStore: AudioStore,
     private val imageStore: ImageStore,
     private val videoStore: VideoStore,
 ) {
+    fun getAllApps() = appStore.getAll()
+
     fun getAllSongs() = audioStore.getSongs("$IS_MUSIC = ?", arrayOf("1"))
 
     fun getAllImages() = imageStore.getAll()

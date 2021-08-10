@@ -54,6 +54,7 @@
             android:layout_height="@dimen/icon_size_list_big"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
+            thumbnailOf="@{viewModel}"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"

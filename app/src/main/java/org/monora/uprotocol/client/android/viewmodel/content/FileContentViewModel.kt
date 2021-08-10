@@ -18,10 +18,15 @@
 
 package org.monora.uprotocol.client.android.viewmodel.content
 
+import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.genonbeta.android.framework.util.Files
+import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.util.MimeIcons
+import org.monora.uprotocol.core.transfer.TransferItem
 
 class FileContentViewModel(fileModel: FileModel) {
     val name = fileModel.name()
@@ -39,4 +44,6 @@ class FileContentViewModel(fileModel: FileModel) {
     val sizeText by lazy {
         Files.formatLength(fileModel.length(), false)
     }
+
+    val uri = fileModel.file.getUri()
 }

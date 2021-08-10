@@ -23,21 +23,21 @@
     <group android:id="@+id/nav_group_other">
 
         <item
-            android:id="@+id/manage_devices"
+            android:id="@+id/manage_clients"
             android:icon="@drawable/ic_devices_white_24dp"
-            android:orderInCategory="2"
-            android:title="@string/text_manageDevices" />
+            android:orderInCategory="1"
+            android:title="@string/manage_clients" />
 
         <item
             android:id="@+id/preferences"
             android:icon="@drawable/ic_settings_white_24dp"
-            android:orderInCategory="3"
+            android:orderInCategory="2"
             android:title="@string/text_preferences" />
 
         <item
             android:id="@+id/about"
             android:icon="@drawable/ic_info_white_24dp"
-            android:orderInCategory="4"
+            android:orderInCategory="3"
             android:title="@string/text_about" />
 
     </group>
@@ -46,13 +46,13 @@
         <item
             android:id="@+id/donate"
             android:icon="@drawable/ic_favorite_white_24dp"
-            android:orderInCategory="5"
+            android:orderInCategory="3"
             android:title="@string/butn_donate"
             android:visible="false" />
 
         <item
             android:id="@+id/ts_dt"
-            android:orderInCategory="6"
+            android:orderInCategory="5"
             app:actionLayout="@layout/layout_main_navigationview_footer"
             tools:ignore="MenuTitle" />
 

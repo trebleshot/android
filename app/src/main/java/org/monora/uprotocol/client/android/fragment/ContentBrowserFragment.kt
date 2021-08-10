@@ -39,6 +39,7 @@ import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutContentBrowserBinding
 import org.monora.uprotocol.client.android.fragment.ContentFragmentStateAdapter.PageItem
+import org.monora.uprotocol.client.android.fragment.content.AppBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.FileBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.ImageBrowserFragment
@@ -60,6 +61,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
         val binding = LayoutContentBrowserBinding.bind(view)
         val pagerAdapter = ContentFragmentStateAdapter(requireContext(), childFragmentManager, lifecycle)
 
+        pagerAdapter.add(PageItem(getString(R.string.app), AppBrowserFragment::class.java.name))
         pagerAdapter.add(PageItem(getString(R.string.text_files), FileBrowserFragment::class.java.name))
         pagerAdapter.add(PageItem(getString(R.string.text_music), AudioBrowserFragment::class.java.name))
         pagerAdapter.add(PageItem(getString(R.string.text_image), ImageBrowserFragment::class.java.name))

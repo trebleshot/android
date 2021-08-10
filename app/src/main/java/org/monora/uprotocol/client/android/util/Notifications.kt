@@ -368,7 +368,7 @@ class Notifications(val backend: NotificationBackend) {
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentText(file.getName())
-            .setContentTitle(context.getString(R.string.receiving_through_web))
+            .setContentTitle(context.getString(R.string.receiving_using_web_web_share))
             .setContentIntent(homeIntent)
         notification.show()
 

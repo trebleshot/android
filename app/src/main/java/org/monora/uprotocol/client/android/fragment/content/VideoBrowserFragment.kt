@@ -36,12 +36,13 @@ import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.data.MediaRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListVideoBinding
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
+class VideoBrowserFragment : Fragment(R.layout.layout_video_browser) {
     private val browserViewModel: VideoBrowserViewModel by viewModels()
 
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
@@ -52,8 +53,7 @@ class VideoBrowserFragment : Fragment(R.layout.layout_image_browser) {
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
         val adapter = VideoBrowserAdapter { video, clickType ->
             when (clickType) {
-                VideoBrowserAdapter.ClickType.Default -> {
-                }
+                VideoBrowserAdapter.ClickType.Default -> Activities.view(view.context, video.uri, video.mimeType)
                 VideoBrowserAdapter.ClickType.ToggleSelect -> {
                     selectionViewModel.setSelected(video, video.isSelected)
                 }
