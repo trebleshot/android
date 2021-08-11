@@ -29,7 +29,6 @@ import org.monora.uprotocol.client.android.backend.Destination
 import org.monora.uprotocol.client.android.backend.OperationBackend
 import org.monora.uprotocol.client.android.backend.SharingBackend
 import org.monora.uprotocol.client.android.model.ContentModel
-import retrofit2.http.Field
 
 @Parcelize
 @Entity(tableName = "sharedText")

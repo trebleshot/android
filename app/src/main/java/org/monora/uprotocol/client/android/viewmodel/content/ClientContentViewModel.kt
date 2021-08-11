@@ -29,8 +29,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.AppEntryPoint
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.view.findActivity
@@ -65,32 +65,29 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 
     fun onBlockedChanged(buttonView: CompoundButton, isChecked: Boolean) {
         val activity = buttonView.findActivity()
-        val appEntryPoint = EntryPoints.get(activity.application, AppEntryPoint::class.java)
         val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
         clientImpl.isClientBlocked = isChecked
 
-        appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {
+        contentComponent.backend().applicationScope.launch(Dispatchers.IO) {
             contentComponent.clientRepository().update(clientImpl)
         }
     }
 
     fun onTrustChanged(buttonView: CompoundButton, isChecked: Boolean) {
         val activity = buttonView.findActivity()
-        val appEntryPoint = EntryPoints.get(activity.application, AppEntryPoint::class.java)
         val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
         clientImpl.isClientTrusted = isChecked
 
-        appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {
+        contentComponent.backend().applicationScope.launch(Dispatchers.IO) {
             contentComponent.clientRepository().update(clientImpl)
         }
     }
 
     fun onRemove(view: View) {
         val activity = view.findActivity()
-        val appEntryPoint = EntryPoints.get(activity.application, AppEntryPoint::class.java)
         val contentComponent = EntryPoints.get(activity, ClientContentComponent::class.java)
 
-        appEntryPoint.bgBackend().applicationScope.launch(Dispatchers.IO) {
+        contentComponent.backend().applicationScope.launch(Dispatchers.IO) {
             contentComponent.clientRepository().delete(clientImpl)
         }
     }
@@ -104,5 +101,7 @@ class ClientContentViewModel(private val clientImpl: UClient) : BaseObservable()
 @EntryPoint
 @InstallIn(ActivityComponent::class)
 interface ClientContentComponent {
+    fun backend(): Backend
+
     fun clientRepository(): ClientRepository
 }

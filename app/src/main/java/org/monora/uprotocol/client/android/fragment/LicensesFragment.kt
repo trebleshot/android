@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.fragment.external
+package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,41 +28,40 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.databinding.ListContributorsBinding
-import org.monora.uprotocol.client.android.remote.model.Contributor
-import org.monora.uprotocol.client.android.viewholder.ContributorViewHolder
-import org.monora.uprotocol.client.android.viewmodel.ContributorsViewModel
+import org.monora.uprotocol.client.android.databinding.ListLibraryLicenseBinding
+import org.monora.uprotocol.client.android.model.LibraryLicense
+import org.monora.uprotocol.client.android.viewholder.LibraryLicenseViewHolder
+import org.monora.uprotocol.client.android.viewmodel.LicensesViewModel
 
 /**
- * created by: Veli
- * date: 16.03.2018 15:46
+ * created by: veli
+ * date: 7/20/18 8:56 PM
  */
 @AndroidEntryPoint
-class ContributorsFragment : Fragment(R.layout.layout_contributors) {
-    private val viewModel: ContributorsViewModel by viewModels()
+class LicensesFragment : Fragment(R.layout.layout_licenses) {
+    private val licensesViewModel: LicensesViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        val adapter = ContributorsAdapter()
+        val adapter = LicensesAdapter()
 
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
-        recyclerView.isNestedScrollingEnabled = true
 
-        viewModel.contributors.observe(viewLifecycleOwner) { result ->
-            adapter.submitList(result)
+        licensesViewModel.licenses.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
         }
     }
 
-    class ContributorsAdapter : ListAdapter<Contributor, ContributorViewHolder>(ContributorItemCallback()) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContributorViewHolder {
-            return ContributorViewHolder(
-                ListContributorsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    class LicensesAdapter : ListAdapter<LibraryLicense, LibraryLicenseViewHolder>(LibraryLicenseItemCallback()) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryLicenseViewHolder {
+            return LibraryLicenseViewHolder(
+                ListLibraryLicenseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         }
 
-        override fun onBindViewHolder(holder: ContributorViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: LibraryLicenseViewHolder, position: Int) {
             holder.bind(getItem(position))
         }
 
@@ -72,12 +71,12 @@ class ContributorsFragment : Fragment(R.layout.layout_contributors) {
     }
 }
 
-class ContributorItemCallback : DiffUtil.ItemCallback<Contributor>() {
-    override fun areItemsTheSame(oldItem: Contributor, newItem: Contributor): Boolean {
-        return oldItem == newItem
+class LibraryLicenseItemCallback : DiffUtil.ItemCallback<LibraryLicense>() {
+    override fun areItemsTheSame(oldItem: LibraryLicense, newItem: LibraryLicense): Boolean {
+        return oldItem === newItem
     }
 
-    override fun areContentsTheSame(oldItem: Contributor, newItem: Contributor): Boolean {
-        return oldItem.name == newItem.name && oldItem.urlAvatar == newItem.urlAvatar && oldItem.url == newItem.url
+    override fun areContentsTheSame(oldItem: LibraryLicense, newItem: LibraryLicense): Boolean {
+        return oldItem == newItem
     }
 }

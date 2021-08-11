@@ -27,10 +27,4 @@
         android:id="@+id/actions_about_third_party_licenses"
         android:title="@string/text_thirdPartyLicenses" />
 
-    <item
-        android:id="@+id/actions_about_check_for_updates"
-        android:title="@string/butn_checkForUpdates"
-        android:icon="@drawable/ic_system_update_white_24dp"
-        app:iconTint="?colorSecondary" />
-
 </menu>

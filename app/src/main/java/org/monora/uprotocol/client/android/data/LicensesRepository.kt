@@ -20,13 +20,12 @@ package org.monora.uprotocol.client.android.data
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.monora.uprotocol.client.android.fragment.external.LicensesFragment
+import org.monora.uprotocol.client.android.fragment.LicensesFragment
 import org.monora.uprotocol.client.android.model.LibraryLicense
 import java.io.InputStreamReader
 import javax.inject.Inject
@@ -36,7 +35,7 @@ import javax.inject.Singleton
 class LicensesRepository @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    suspend fun getLicenses(): List<LibraryLicense> = withContext(Dispatchers.IO) {
+    fun getLicenses() = liveData(Dispatchers.IO) {
         val list = mutableListOf<LibraryLicense>()
 
         context.assets.open("licenses.json").use { inputStream ->
@@ -69,6 +68,6 @@ class LicensesRepository @Inject constructor(
             }
         }
 
-        list
+        emit(list)
     }
 }

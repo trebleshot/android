@@ -27,11 +27,8 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.backend.Backend
-import org.monora.uprotocol.client.android.util.Updater
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -44,14 +41,6 @@ import java.util.*
  */
 @HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
-    private val appEntryPoint by lazy {
-        EntryPoints.get(this@App, AppEntryPoint::class.java)
-    }
-
-    private val bgBackend by lazy {
-        appEntryPoint.bgBackend()
-    }
-
     private lateinit var crashFile: File
 
     private var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
@@ -63,16 +52,6 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
-
-        val updater = appEntryPoint.updater()
-
-        if (updater.needsToCheckForUpdates()) bgBackend.applicationScope.launch {
-            try {
-                updater.checkForUpdates()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
     }
 
     private fun initializeSettings() {
@@ -135,12 +114,4 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
         const val FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt"
     }
-}
-
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface AppEntryPoint {
-    fun bgBackend(): Backend
-
-    fun updater(): Updater
 }

@@ -136,26 +136,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
-            <TextView
-                android:id="@+id/textView12"
-                style="@style/CondensedTitleStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="@string/text_contributors"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView11" />
-
-            <fragment
-                android:id="@+id/activity_about_contributors_fragment"
-                android:name="org.monora.uprotocol.client.android.fragment.external.ContributorsFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minWidth="400dp"
-                android:tag="contributorsFragment"
-                app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -172,4 +152,3 @@
         android:layout_height="?attr/actionBarSize" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

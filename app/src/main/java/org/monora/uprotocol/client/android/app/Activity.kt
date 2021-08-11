@@ -51,7 +51,6 @@ import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.util.Permissions
-import org.monora.uprotocol.client.android.util.Updater
 import java.io.FileReader
 import java.io.IOException
 import javax.inject.Inject
@@ -63,9 +62,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
 
     @Inject
     lateinit var sharedTextRepository: SharedTextRepository
-
-    @Inject
-    lateinit var updater: Updater
 
     private var amoledThemeState = false
 
@@ -255,6 +251,8 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
     }
 
     private fun checkAndShowChangelog() {
+        // TODO: 8/11/21 Reimplement showing changelog
+        /*
         if (!updater.isLatestChangelogShown()) {
             AlertDialog.Builder(this)
                 .setMessage(R.string.mesg_versionUpdatedChangelog)
@@ -275,7 +273,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                     ).show()
                 }
                 .show()
-        }
+        }*/
     }
 
     fun checkForThemeChange() {
@@ -288,7 +286,7 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         return defaultPreferences.getBoolean("introduction_shown", false)
     }
 
-    fun requestRequiredPermissions(finishOtherwise: Boolean, results: Map<String, Boolean>? = null) {
+    private fun requestRequiredPermissions(finishOtherwise: Boolean, results: Map<String, Boolean>? = null) {
         if (ongoingRequest?.isShowing == true) return
         for (permission in Permissions.getAll()) {
             val id = permission.id
