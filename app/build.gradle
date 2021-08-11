@@ -63,7 +63,7 @@ android {
 
     defaultConfig {
         applicationId "org.monora.uprotocol.client.android"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 30
         versionCode 99
         versionName "2.0.alpha1"
