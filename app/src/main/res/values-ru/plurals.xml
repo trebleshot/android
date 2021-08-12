@@ -25,8 +25,8 @@
     <plurals name="text_removeQueueSummary">
         <item quantity="one">Эта ожидающая передача будет удалена</item>
         <item quantity="few">%d ожидающие передачи будут удалены</item>
-        <item quantity="many">%d ожидающих передач будут удалено</item>
-        <item quantity="other">%d ожидающих передач будут удалено</item>
+        <item quantity="many">%d ожидающих передач будет удалено</item>
+        <item quantity="other">%d ожидающих передач будет удалено</item>
     </plurals>
     <plurals name="text_availableConnections">
         <item quantity="one">%d соединение</item>
