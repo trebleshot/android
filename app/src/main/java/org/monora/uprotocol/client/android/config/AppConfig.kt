@@ -22,27 +22,9 @@ object AppConfig {
 
     const val DEFAULT_TIMEOUT_SOCKET = 5000
 
-    const val DEFAULT_TIMEOUT_HOTSPOT = 40000
-
     const val DELAY_DEFAULT_NOTIFICATION = 1000
 
-    const val BUFFER_LENGTH_DEFAULT = 8096
-
-    const val DELAY_UPDATE_CHECK = 21600
-
-    const val WEB_SHARE_CONNECTION_MAX = 20
-
-    const val ID_GROUP_WEB_SHARE = 10L
-
     const val EMAIL_DEVELOPER = "trebleshot@monora.org"
-
-    const val URI_API_GITHUB = "https://api.github.com/"
-
-    const val URI_REPO = "repos/trebleshot/android"
-
-    const val URI_REPO_APP_UPDATE = "https://api.github.com/repos/trebleshot/android/releases"
-
-    const val URI_REPO_APP_CONTRIBUTORS = "https://api.github.com/repos/trebleshot/android/contributors"
 
     const val URI_GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=org.monora.uprotocol.client.android"
 
@@ -50,13 +32,9 @@ object AppConfig {
 
     const val URI_REPO_APP = "https://github.com/trebleshot"
 
-    const val URI_REPO_ORG = "https://github.com/monoraorg"
-
-    const val URI_GITHUB_PROFILE = "https://github.com/%s"
-
     const val URI_TRANSLATE = "https://github.com/genonbeta/TrebleShot/wiki/Language-contribution"
 
-    const val URI_TELEGRAM_CHANNEL = "https://t.me/trebleshot"
+    const val URI_TELEGRAM_CHANNEL = "https://t.me/trebleshotNews"
 
     const val PREFIX_ACCESS_POINT = "TS_"
 
