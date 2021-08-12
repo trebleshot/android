@@ -507,10 +507,7 @@
     <string name="butn_none">None</string>
     <string name="text_none" translatable="false">@string/butn_none</string>
     <string name="text_crashReport">Crash Report</string>
-    <string name="text_crashInfo">
-        TrebleShot experienced a crash in a previous session. What would you like to do with the
-        crash log?
-    </string>
+    <string name="text_crashInfo">TrebleShot experienced a crash in a previous session.</string>
     <string name="butn_dismiss">Dismiss</string>
     <string name="text_twoRowLayout">Two-row Layout</string>
     <string name="text_twoRowLayoutSummary">Display two rows next to each other</string>
@@ -658,4 +655,9 @@
     <string name="manage_clients">Manage Clients</string>
     <string name="app">App</string>
     <string name="apps">Apps</string>
+    <string name="generate">Generate</string>
+    <string name="scan">Scan</string>
+    <string name="using_qr_code">Using QR Code</string>
+    <string name="authors">Authors</string>
+    <string name="author">Author</string>
 </resources>

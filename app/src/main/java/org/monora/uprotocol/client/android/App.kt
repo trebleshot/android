@@ -23,12 +23,8 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
-import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.components.SingletonComponent
-import org.monora.uprotocol.client.android.backend.Backend
+import org.monora.uprotocol.client.android.data.ExtrasRepository
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -41,14 +37,14 @@ import java.util.*
  */
 @HiltAndroidApp
 class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
-    private lateinit var crashFile: File
+    private lateinit var crashLogFile: File
 
     private var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
     override fun onCreate() {
         super.onCreate()
 
-        crashFile = applicationContext.getFileStreamPath(FILENAME_UNHANDLED_CRASH_LOG)
+        crashLogFile = ExtrasRepository.getCrashLogFile(applicationContext)
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         initializeSettings()
@@ -80,12 +76,7 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         try {
-            if (crashFile.canWrite()) {
-                Log.d(TAG, "uncaughtException: Check failed")
-                return
-            }
-
-            PrintWriter(FileOutputStream(crashFile)).use { printWriter ->
+            PrintWriter(FileOutputStream(crashLogFile)).use { printWriter ->
                 val stackTrace = e.stackTrace
 
                 printWriter.append("--Uprotocol Client Crash Log ---\n")
@@ -94,10 +85,10 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
                     .append("\nCause: ${e.cause}")
                     .append("\nDate: ")
                     .append(DateFormat.getLongDateFormat(this).format(Date()))
-                    .append("\n\n--Stacktrace--\n\n")
+                    .append("\n\n--Stacktrace--\n")
 
                 if (stackTrace.isNotEmpty()) for (element in stackTrace) with(element) {
-                    printWriter.append("$className.$methodName:$lineNumber\n")
+                    printWriter.append("\n$className.$methodName:$lineNumber")
                 }
             }
         } catch (ex: IOException) {
@@ -111,7 +102,5 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
         private const val TAG = "App"
 
         private const val MIGRATION_NONE = -1
-
-        const val FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt"
     }
 }

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2019 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="@dimen/short_content_width_padding"
+        android:paddingEnd="@dimen/short_content_width_padding"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/monoraImage"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:padding="8dp"
+            app:srcCompat="@drawable/ic_monora_logo_no_background"
+            app:tint="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/authorText"
+            android:textAppearance="?textAppearanceHeadline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/authors" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/authorContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/authorTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/author"
+                    android:textAppearance="?textAppearanceOverline"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toTopOf="@id/author"
+                    app:layout_constraintStart_toStartOf="@id/author"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/author"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Veli Tasalı"
+                    android:textAppearance="?textAppearanceBody1"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/authorWeb"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/authorTitle"
+                    tools:ignore="HardcodedText" />
+
+                <ImageView
+                    android:id="@+id/authorWeb"
+                    style="@style/OverflowButton"
+                    app:layout_constraintStart_toEndOf="@id/author"
+                    app:layout_constraintEnd_toStartOf="@id/authorGit"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:srcCompat="@drawable/ic_web_white_24dp" />
+
+                <ImageView
+                    android:id="@+id/authorGit"
+                    style="@style/OverflowButton"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintStart_toEndOf="@id/authorWeb"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:srcCompat="@drawable/ic_github_circle_white_24dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/joinUsText"
+            android:textAppearance="?textAppearanceHeadline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/text_joinUs" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/monoraHomeButton"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/text_org"
+                app:icon="@drawable/ic_home_white_24dp"
+                app:iconGravity="top"
+                app:layout_constraintEnd_toStartOf="@+id/localizeButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/localizeButton"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/butn_helpLocalize"
+                app:icon="@drawable/ic_translate_white_24dp"
+                app:iconGravity="top"
+                app:layout_constraintBottom_toBottomOf="@+id/monoraHomeButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/monoraHomeButton"
+                app:layout_constraintTop_toTopOf="@+id/monoraHomeButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/telegramButton"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/butn_telegram"
+                app:icon="@drawable/ic_telegram_white_24dp"
+                app:iconGravity="top"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/monoraHomeButton"
+                app:layout_constraintEnd_toStartOf="@+id/githubButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/monoraHomeButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/githubButton"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/butn_github"
+                app:icon="@drawable/ic_github_circle_white_24dp"
+                app:iconGravity="top"
+                app:layout_constraintBottom_toBottomOf="@+id/telegramButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/telegramButton"
+                app:layout_constraintTop_toTopOf="@+id/telegramButton" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/licenseTitleText"
+            android:textAppearance="?textAppearanceHeadline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/text_license" />
+
+        <TextView
+            android:id="@+id/licenseText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/conf_licence" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.core.widget.NestedScrollView>

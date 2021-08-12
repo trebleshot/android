@@ -25,7 +25,6 @@ import androidx.activity.viewModels
 import androidx.annotation.IdRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -36,10 +35,16 @@ import org.monora.uprotocol.client.android.NavHomeDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
+import org.monora.uprotocol.client.android.viewmodel.ChangelogViewModel
+import org.monora.uprotocol.client.android.viewmodel.CrashLogViewModel
 import org.monora.uprotocol.client.android.viewmodel.UserProfileViewModel
 
 @AndroidEntryPoint
 class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener {
+    private val changelogViewModel: ChangelogViewModel by viewModels()
+
+    private val crashLogViewModel: CrashLogViewModel by viewModels()
+
     private val userProfileViewModel: UserProfileViewModel by viewModels()
 
     private val userProfileBinding by lazy {
@@ -94,6 +99,14 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         if (BuildConfig.FLAVOR == "googlePlay") {
             navigationView.menu.findItem(R.id.donate).isVisible = true
         }
+
+        if (hasIntroductionShown()) {
+            if (changelogViewModel.shouldShowChangelog) {
+                navController.navigate(NavHomeDirections.actionGlobalChangelogFragment())
+            } else if (crashLogViewModel.shouldShowCrashLog) {
+                navController.navigate(NavHomeDirections.actionGlobalCrashLogFragment())
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -109,7 +122,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         when (pendingMenuItemId) {
             R.id.edit_profile -> navController.navigate(NavHomeDirections.actionGlobalProfileEditorFragment())
             R.id.manage_clients -> navController.navigate(NavHomeDirections.actionGlobalNavManageDevices())
-            R.id.about -> startActivity(Intent(this, AboutActivity::class.java))
+            R.id.about -> navController.navigate(NavHomeDirections.actionGlobalNavAbout())
             R.id.preferences -> navController.navigate(NavHomeDirections.actionGlobalNavPreferences())
             R.id.donate -> try {
                 startActivity(

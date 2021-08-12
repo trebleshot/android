@@ -42,22 +42,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_begin="@dimen/short_content_width_padding_border" />
+                app:layout_constraintGuide_begin="@dimen/short_content_width_padding" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideEnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_end="@dimen/short_content_width_padding_border" />
+                app:layout_constraintGuide_end="@dimen/short_content_width_padding" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/clientsButton"
                 style="?borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
                 android:text="@string/butn_showAll"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
@@ -65,7 +64,7 @@
 
             <TextView
                 android:id="@+id/textView2"
-                style="@style/CondensedTitleStyle"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
@@ -113,50 +112,50 @@
 
             <TextView
                 android:id="@+id/textView3"
-                style="@style/CondensedTitleStyle"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/text_addNewClient"
+                android:text="@string/using_qr_code"
                 app:layout_constraintStart_toStartOf="@id/guideStart"
                 app:layout_constraintTop_toBottomOf="@id/barrierOnlineList" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/generateQrCodeButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
-                android:text="@string/butn_generateQrCode"
+                android:text="@string/generate"
                 app:layout_constraintEnd_toStartOf="@id/scanQrCodeButton"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toEndOf="@id/guideStart"
                 app:layout_constraintTop_toBottomOf="@id/textView3"
-                app:srcCompat="@drawable/ic_qrcode_white_24dp" />
+                app:icon="@drawable/ic_qrcode_white_24dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/scanQrCodeButton"
                 style="?materialButtonOutlinedStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
-                android:text="@string/text_scanQrCode"
+                android:text="@string/scan"
                 app:layout_constraintBottom_toBottomOf="@+id/generateQrCodeButton"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
                 app:layout_constraintStart_toEndOf="@id/generateQrCodeButton"
-                app:layout_constraintTop_toTopOf="@+id/generateQrCodeButton" />
+                app:layout_constraintTop_toTopOf="@+id/generateQrCodeButton"
+                app:icon="@drawable/round_photo_camera_24" />
 
             <TextView
                 android:id="@+id/textView4"
-                style="@style/TextAppearance.Secondary"
+                android:textAppearance="?textAppearanceHeadline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="@string/help_addDeviceUsingIpAddressHelp"
                 app:layout_constraintBottom_toTopOf="@+id/manualAddressButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideStart"
                 app:layout_constraintTop_toBottomOf="@+id/generateQrCodeButton" />
 
             <com.google.android.material.button.MaterialButton

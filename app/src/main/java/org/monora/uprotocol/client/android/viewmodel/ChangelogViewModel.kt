@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,20 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.activity
 
-import android.os.Bundle
-import android.view.MenuItem
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
+package org.monora.uprotocol.client.android.viewmodel
 
-/**
- * created by: veli
- * date: 9/12/18 6:09 PM
- */
-class ChangelogActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_changelog)
-    }
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import org.monora.uprotocol.client.android.data.ExtrasRepository
+import javax.inject.Inject
+
+@HiltViewModel
+class ChangelogViewModel @Inject internal constructor(
+    private val extrasRepository: ExtrasRepository,
+) : ViewModel() {
+    val changelog = extrasRepository.getChangelog()
+
+    val shouldShowChangelog
+        get() = extrasRepository.shouldShowLatestChangelog()
+
+    fun declareLatestChangelogAsShown() = extrasRepository.declareLatestChangelogAsShown()
 }

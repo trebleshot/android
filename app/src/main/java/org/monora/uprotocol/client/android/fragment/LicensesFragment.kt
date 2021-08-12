@@ -26,6 +26,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.ListLibraryLicenseBinding
@@ -38,8 +39,12 @@ import org.monora.uprotocol.client.android.viewmodel.LicensesViewModel
  * date: 7/20/18 8:56 PM
  */
 @AndroidEntryPoint
-class LicensesFragment : Fragment(R.layout.layout_licenses) {
+class LicensesFragment : BottomSheetDialogFragment() {
     private val licensesViewModel: LicensesViewModel by viewModels()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.layout_licenses, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

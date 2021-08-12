@@ -44,7 +44,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.ChangelogActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.Backend
@@ -179,12 +178,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
         } else if (!Permissions.checkRunningConditions(this) && !skipPermissionRequest) {
             requestRequiredPermissions(true)
         }
-
-        if (this is HomeActivity && hasIntroductionShown()) {
-            // TODO: 8/9/21 If they're going to be shown in HomeActivity, move these methods and calls there!
-            checkAndShowCrashReport()
-            checkAndShowChangelog()
-        }
     }
 
     override fun onPause() {
@@ -217,63 +210,6 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                 permissions.mapIndexed { index, s -> s to (grantResults[index] == PERMISSION_GRANTED) }.toMap()
             )
         }
-    }
-
-    private fun checkAndShowCrashReport() {
-        try {
-            val log = getFileStreamPath(App.FILENAME_UNHANDLED_CRASH_LOG)
-            val report = FileReader(log).use { it.readText() }
-            val streamObject = SharedText(0, report, log.lastModified())
-
-            Log.d(TAG, "checkAndShowCrashReport: $report")
-
-            log.delete()
-
-            AlertDialog.Builder(this)
-                .setTitle(R.string.text_crashReport)
-                .setMessage(R.string.text_crashInfo)
-                .setNegativeButton(R.string.butn_dismiss, null)
-                .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
-                    val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                    clipboardManager.setPrimaryClip(
-                        ClipData.newPlainText(getString(R.string.text_crashReport), report)
-                    )
-                    Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
-                }.setPositiveButton(R.string.butn_save) { _: DialogInterface?, _: Int ->
-                    lifecycleScope.launch {
-                        sharedTextRepository.insert(streamObject)
-                    }
-
-                    Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show()
-                }.show()
-        } catch (ignored: IOException) {
-        }
-    }
-
-    private fun checkAndShowChangelog() {
-        // TODO: 8/11/21 Reimplement showing changelog
-        /*
-        if (!updater.isLatestChangelogShown()) {
-            AlertDialog.Builder(this)
-                .setMessage(R.string.mesg_versionUpdatedChangelog)
-                .setPositiveButton(R.string.butn_yes) { _: DialogInterface?, _: Int ->
-                    updater.declareLatestChangelogAsShown()
-                    startActivity(Intent(this@Activity, ChangelogActivity::class.java))
-                }
-                .setNeutralButton(R.string.butn_never) { _: DialogInterface?, _: Int ->
-                    defaultPreferences.edit()
-                        .putBoolean("show_changelog_dialog", false)
-                        .apply()
-                }
-                .setNegativeButton(R.string.butn_no) { _: DialogInterface?, _: Int ->
-                    updater.declareLatestChangelogAsShown()
-                    Toast.makeText(
-                        this@Activity, R.string.mesg_versionUpdatedChangelogRejected,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                .show()
-        }*/
     }
 
     fun checkForThemeChange() {

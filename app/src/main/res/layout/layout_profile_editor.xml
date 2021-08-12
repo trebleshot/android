@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
             android:layout_width="96dp"

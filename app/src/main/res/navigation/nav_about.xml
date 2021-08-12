@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_about"
+    app:startDestination="@id/aboutFragment">
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.AboutFragment"
+        android:label="@string/text_about" >
+        <action
+            android:id="@+id/action_aboutFragment_to_licensesFragment"
+            app:destination="@id/licensesFragment" />
+        <action
+            android:id="@+id/action_aboutFragment_to_changelogFragment2"
+            app:destination="@id/changelogFragment2" />
+    </fragment>
+    <dialog
+        android:id="@+id/licensesFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.LicensesFragment"
+        android:label="@string/text_thirdPartyLicenses" />
+    <dialog
+        android:id="@+id/changelogFragment2"
+        android:name="org.monora.uprotocol.client.android.fragment.ChangelogFragment"
+        android:label="@string/text_changelog" />
+</navigation>

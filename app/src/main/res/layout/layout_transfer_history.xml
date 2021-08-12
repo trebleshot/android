@@ -50,24 +50,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/sendButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="@string/butn_send"
+        app:icon="@drawable/ic_arrow_up_white_24dp"
+        app:iconGravity="end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/receiveButton"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
         app:layout_constraintTop_toBottomOf="@id/barrierBottom" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/receiveButton"
         style="?materialButtonOutlinedStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="@string/butn_receive"
+        app:icon="@drawable/ic_arrow_down_white_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toEndOf="@+id/sendButton"

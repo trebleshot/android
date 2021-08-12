@@ -139,31 +139,6 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.AboutActivity"
-            android:label="@string/text_about"
-            android:theme="@style/Theme.TrebleShot.NoActionBar"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.LicensesActivity"
-            android:label="@string/text_thirdPartyLicenses" />
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.ChangelogActivity"
-            android:label="@string/text_changelog"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.AboutActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.AboutActivity" />
-        </activity>
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.WelcomeActivity"
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />

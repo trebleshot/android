@@ -56,5 +56,23 @@
     <action
         android:id="@+id/action_global_nav_manage_devices"
         app:destination="@id/nav_manage_devices" />
+    <dialog
+        android:id="@+id/changelogFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.ChangelogFragment"
+        android:label="@string/text_changelog" />
+    <action
+        android:id="@+id/action_global_changelogFragment"
+        app:destination="@id/changelogFragment" />
+    <include app:graph="@navigation/nav_about" />
+    <action
+        android:id="@+id/action_global_nav_about"
+        app:destination="@id/nav_about" />
+    <dialog
+        android:id="@+id/crashLogFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.CrashLogFragment"
+        android:label="@string/text_crashReport" />
+    <action
+        android:id="@+id/action_global_crashLogFragment"
+        app:destination="@id/crashLogFragment" />
 
 </navigation>

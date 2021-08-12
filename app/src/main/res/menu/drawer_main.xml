@@ -20,7 +20,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <group android:id="@+id/nav_group_other">
+    <group android:id="@+id/nav_group_main">
 
         <item
             android:id="@+id/manage_clients"
