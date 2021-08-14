@@ -66,6 +66,7 @@
                     android:text="@string/author"
                     android:textAppearance="?textAppearanceOverline"
                     android:layout_marginTop="16dp"
+                    android:layout_marginBottom="4dp"
                     app:layout_constraintBottom_toTopOf="@id/author"
                     app:layout_constraintStart_toStartOf="@id/author"
                     app:layout_constraintTop_toTopOf="parent"

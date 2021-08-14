@@ -18,7 +18,10 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
+import android.annotation.TargetApi
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -30,19 +33,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.FileRepository
+import org.monora.uprotocol.client.android.database.model.SafFolder
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
-import org.monora.uprotocol.client.android.util.Files
+import java.lang.ref.WeakReference
 import java.text.Collator
 import javax.inject.Inject
 
 @HiltViewModel
 class FilesViewModel @Inject internal constructor(
     @ApplicationContext context: Context,
-    private val fileRepository: FileRepository
+    private val fileRepository: FileRepository,
 ) : ViewModel() {
-    private val appDirectory = Files.getAppDirectory(context)
+
+    private val context = WeakReference(context)
 
     private val textFolder = context.getString(R.string.text_folder)
 
@@ -51,14 +56,51 @@ class FilesViewModel @Inject internal constructor(
     private val _files = MutableLiveData<List<ContentModel>>()
 
     val files = liveData {
-        requestPath(appDirectory)
+        requestPath(fileRepository.appDirectory)
         emitSource(_files)
     }
 
-    private val _path = MutableLiveData<List<FileModel>>()
+    val isCustomStorageFolder: Boolean
+        get() {
+            val context = context.get() ?: return false
+            return Uri.fromFile(fileRepository.defaultAppDirectory) != fileRepository.appDirectory.getUri()
+        }
+
+    private val _path = MutableLiveData<FileModel>()
 
     val path = liveData {
         emitSource(_path)
+    }
+
+    private val _pathTree = MutableLiveData<List<FileModel>>()
+
+    val pathTree = liveData {
+        emitSource(_pathTree)
+    }
+
+    val safFolders = fileRepository.getSafFolders()
+
+    var appDirectory
+        get() = fileRepository.appDirectory
+        set(value) {
+            fileRepository.appDirectory = value
+        }
+
+    fun clearStorageList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fileRepository.clearStorageList()
+        }
+    }
+
+    fun createFolder(displayName: String): Boolean {
+        val currentFolder = path.value ?: return false
+        val context = context.get() ?: return false
+
+        if (currentFolder.file.createDirectory(context, displayName) != null) {
+            requestPath(currentFolder.file)
+            return true
+        }
+        return false
     }
 
     private fun createOrderedFileList(file: DocumentFile): List<ContentModel> {
@@ -70,7 +112,7 @@ class FilesViewModel @Inject internal constructor(
         } while (pathChild.parent?.also { pathChild = it } != null)
 
         pathTree.reverse()
-        _path.postValue(pathTree)
+        _pathTree.postValue(pathTree)
 
         val list = fileRepository.getFileList(file)
 
@@ -104,7 +146,7 @@ class FilesViewModel @Inject internal constructor(
     }
 
     fun goUp(): Boolean {
-        val paths = path.value ?: return false
+        val paths = pathTree.value ?: return false
 
         if (paths.size < 2) {
             return false
@@ -119,15 +161,68 @@ class FilesViewModel @Inject internal constructor(
                     requestPath(next.file)
                     return true
                 }
-            } while(iterator.hasNext())
+            } while (iterator.hasNext())
         }
 
         return false
     }
 
+    @TargetApi(19)
+    fun insertSafFolder(uri: Uri) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val context = context.get() ?: return@launch
+
+                context.contentResolver.takePersistableUriPermission(
+                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+
+                val document = DocumentFile.fromUri(context, uri, true)
+                val safFolder = SafFolder(uri, document.getName())
+
+                fileRepository.insertFolder(safFolder)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun requestDefaultStorageFolder() {
+        viewModelScope.launch(Dispatchers.IO) {
+            context.get()?.let {
+                requestPathInternal(DocumentFile.fromFile(fileRepository.defaultAppDirectory))
+            }
+        }
+    }
+
+    fun requestStorageFolder() {
+        viewModelScope.launch(Dispatchers.IO) {
+            context.get()?.let {
+                requestPathInternal(fileRepository.appDirectory)
+            }
+        }
+    }
+
     fun requestPath(file: DocumentFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            _files.postValue(createOrderedFileList(file))
+            requestPathInternal(file)
         }
+    }
+
+    fun requestPath(folder: SafFolder) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                context.get()?.let {
+                    requestPathInternal(DocumentFile.fromUri(it, folder.uri, true))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun requestPathInternal(file: DocumentFile) {
+        _path.postValue(FileModel(file))
+        _files.postValue(createOrderedFileList(file))
     }
 }

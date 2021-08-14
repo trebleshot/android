@@ -19,6 +19,7 @@ package org.monora.uprotocol.client.android.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -112,6 +113,14 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         openItem(item.itemId)
         return true
+    }
+
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(Gravity.START)) {
+            drawerLayout.close()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     private fun applyAwaitingDrawerAction() {

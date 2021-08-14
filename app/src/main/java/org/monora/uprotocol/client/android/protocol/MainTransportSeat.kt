@@ -26,6 +26,7 @@ import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
@@ -36,7 +37,6 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.IndexingParams
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
 import org.monora.uprotocol.core.persistence.PersistenceException
@@ -54,6 +54,7 @@ class MainTransportSeat @Inject constructor(
     @ApplicationContext val context: Context,
     private val connectionFactory: ConnectionFactory,
     private val clientRepository: ClientRepository,
+    private val fileRepository: FileRepository,
     private val persistenceProvider: PersistenceProvider,
     private val transferRepository: TransferRepository,
     private val sharedTextRepository: SharedTextRepository,
@@ -99,9 +100,9 @@ class MainTransportSeat @Inject constructor(
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {
                 try {
-                    val saveLocation = Files.getAppDirectory(context).getUri().toString()
+                    val storageLocation = fileRepository.appDirectory.originalUri.toString()
                     val transfer = Transfer(
-                        params.groupId, client.clientUid, Incoming, saveLocation, accepted = hasPin
+                        params.groupId, client.clientUid, Incoming, storageLocation, accepted = hasPin
                     )
                     val total: Int
                     val items = Transfers.toTransferItemList(params.jsonData).also {

@@ -74,5 +74,4 @@
     <action
         android:id="@+id/action_global_crashLogFragment"
         app:destination="@id/crashLogFragment" />
-
 </navigation>

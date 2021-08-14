@@ -59,7 +59,7 @@ class Connections(contextLocal: Context) {
     val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     fun canAccessLocation(): Boolean {
-        return hasLocationPermission() && isLocationServiceEnabled()
+        return Build.VERSION.SDK_INT < 23 || (hasLocationPermission() && isLocationServiceEnabled())
     }
 
     private fun canReadScanResults(): Boolean {

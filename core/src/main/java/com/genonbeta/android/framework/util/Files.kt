@@ -33,42 +33,8 @@ import kotlin.math.pow
  * date: 7/31/18 8:14 AM
  */
 object Files {
-    private const val TAG = "Files"
-
     @Throws(IOException::class)
-    fun fetchDirectories(
-        context: Context,
-        directory: DocumentFile,
-        path: String,
-        createIfNeeded: Boolean = true,
-    ): DocumentFile {
-        var current: DocumentFile? = directory
-        val pathArray: Array<String> = path.split(File.separator.toRegex()).toTypedArray()
-
-        for (currentPath in pathArray) {
-            if (current == null)
-                throw IOException("Failed to create directories: $path")
-
-            val existing = current.findFile(context, currentPath)
-
-            existing?.let {
-                if (!it.isDirectory()) {
-                    throw IOException("A file exists for of directory name: $currentPath ; $path")
-                }
-            }
-
-            current = if (existing == null && createIfNeeded) {
-                current.createDirectory(context, currentPath)
-            } else {
-                existing
-            }
-        }
-
-        return current as DocumentFile
-    }
-
-    @Throws(IOException::class)
-    fun fetchFile(
+    fun createFileWithNestedPaths(
         context: Context,
         directory: DocumentFile,
         path: String?,
@@ -76,21 +42,45 @@ object Files {
         fileName: String,
         createIfNeeded: Boolean = true,
     ): DocumentFile {
-        val documentFile = if (path == null) directory else fetchDirectories(context, directory, path, createIfNeeded)
-        val existing = documentFile.findFile(context, fileName)
+        val documentFile = if (path == null) directory else makeDirs(context, directory, path, createIfNeeded)
+        val result = documentFile.findFile(context, fileName) ?: if (createIfNeeded) {
+            documentFile.createFile(context, mimeType, fileName) ?: throw IOException(
+                "Could not create the file: $fileName"
+            )
+        } else {
+            throw IOException("The lookup-only file '$fileName' does not exist")
+        }
 
-        if (existing != null) {
-            if (!existing.isFile())
-                throw IOException("An entity in the same directory with the same name already exists.")
-            return existing
-        } else if (createIfNeeded) {
-            val createdFile = documentFile.createFile(context, mimeType, fileName)
-            if (createdFile != null) {
-                return createdFile
+        if (!result.isFile()) {
+            throw IOException("Found a different type of content where the file should be")
+        }
+
+        return result
+    }
+
+    @Throws(IOException::class)
+    fun makeDirs(
+        context: Context,
+        directory: DocumentFile,
+        path: String,
+        createIfNeeded: Boolean = true,
+    ): DocumentFile {
+        var current = directory
+        val pathArray = path.split(File.separator.toRegex()).toTypedArray()
+
+        for (currentPath in pathArray) {
+            current = current.findFile(context, currentPath) ?: if (createIfNeeded) {
+                current.createDirectory(context, currentPath) ?: throw IOException("Failed to create dirs: $path")
+            } else {
+                throw IOException("Could not find the folder: $path")
+            }
+
+            if (!current.isDirectory()) {
+                throw IOException("Found a non-directory where the directory should be")
             }
         }
 
-        throw IOException("Failed to create file: $path")
+        return current
     }
 
     fun formatLength(length: Long, kilo: Boolean = false): String {

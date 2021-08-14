@@ -28,6 +28,7 @@ import dagger.hilt.components.SingletonComponent
 import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.ClientAddressDao
 import org.monora.uprotocol.client.android.database.ClientDao
+import org.monora.uprotocol.client.android.database.SafFolderDao
 import org.monora.uprotocol.client.android.database.SharedTextDao
 import org.monora.uprotocol.client.android.database.TransferDao
 import org.monora.uprotocol.client.android.database.TransferItemDao
@@ -52,6 +53,11 @@ object RoomModule {
     @Provides
     fun provideClientAddressDao(appDatabase: AppDatabase): ClientAddressDao {
         return appDatabase.clientAddressDao()
+    }
+
+    @Provides
+    fun provideSafFolderDao(appDatabase: AppDatabase): SafFolderDao {
+        return appDatabase.safFolderDao()
     }
 
     @Provides

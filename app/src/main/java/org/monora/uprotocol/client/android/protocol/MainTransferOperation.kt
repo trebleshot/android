@@ -27,7 +27,6 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.core.io.StreamDescriptor
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferOperation
@@ -67,13 +66,11 @@ class MainTransferOperation(
 
     override fun installReceivedContent(descriptor: StreamDescriptor) {
         val ongoing = ongoing
-        val savePath = Files.getSavePath(backend.context, transferParams.transfer)
 
         when {
             ongoing == null -> Log.d(TAG, "installReceivedContent: Ongoing item was empty!")
             descriptor is DocumentFileStreamDescriptor -> {
-                Files.saveReceivedFile(backend.context, savePath, descriptor.documentFile, ongoing)
-
+                transferRepository.saveReceivedFile(transferParams.transfer, descriptor.documentFile, ongoing)
                 if (ongoing is UTransferItem) runBlocking {
                     transferRepository.update(ongoing)
                 }

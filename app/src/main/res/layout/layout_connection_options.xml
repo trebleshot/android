@@ -145,7 +145,7 @@
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
                 app:layout_constraintStart_toEndOf="@id/generateQrCodeButton"
                 app:layout_constraintTop_toTopOf="@+id/generateQrCodeButton"
-                app:icon="@drawable/round_photo_camera_24" />
+                app:icon="@drawable/ic_qrcode_scan_white_24dp" />
 
             <TextView
                 android:id="@+id/textView4"

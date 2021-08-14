@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
+import android.util.Log
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -56,7 +57,7 @@ object Transfers {
                     TransferItem.Type.Outgoing,
                 )
             )
-        } else if (!contextFile.isDirectory()) {
+
             return
         }
 

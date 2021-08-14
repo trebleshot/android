@@ -97,6 +97,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:visibility="@{viewModel.trusted || viewModel.blocked ? View.VISIBLE : View.GONE}"
+                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
                 app:imageResource="@{viewModel.accessLevelIcon}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

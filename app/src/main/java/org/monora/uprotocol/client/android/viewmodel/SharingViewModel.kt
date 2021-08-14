@@ -27,16 +27,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.transfer.TransferItem
 import java.net.ProtocolException
 import javax.inject.Inject
 
 @HiltViewModel
 class SharingViewModel @Inject internal constructor(
     val transferRepository: TransferRepository,
+    val fileRepository: FileRepository,
 ) : ViewModel() {
     private var consumer: Job? = null
 
@@ -46,8 +49,15 @@ class SharingViewModel @Inject internal constructor(
         emitSource(_state)
     }
 
-    fun consume(bridge: CommunicationBridge, transfer: Transfer, contents: List<UTransferItem>) {
+    fun consume(bridge: CommunicationBridge, groupId: Long, contents: List<UTransferItem>) {
         if (consumer != null) return
+
+        val transfer = Transfer(
+            groupId,
+            bridge.remoteClient.clientUid,
+            TransferItem.Type.Outgoing,
+            fileRepository.appDirectory.originalUri.toString(),
+        )
 
         consumer = viewModelScope.launch(Dispatchers.IO) {
             try {

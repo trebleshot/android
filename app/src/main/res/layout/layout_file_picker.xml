@@ -27,7 +27,7 @@
         android:layout_height="match_parent"
         android:visibility="gone"
         android:clipToPadding="false"
-        android:paddingBottom="90dp"
+        android:paddingBottom="120dp"
         android:layout_marginLeft="@dimen/short_content_width_padding_between"
         android:layout_marginRight="@dimen/short_content_width_padding_between"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
@@ -39,6 +39,25 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/pathRecyclerViewContainer"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/floatingViewsContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/guidelineStart"
+        app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pathRecyclerViewContainer">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/approveFolderButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            app:srcCompat="@drawable/round_done_24"
+            android:layout_gravity="bottom|end"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/pathRecyclerViewContainer"

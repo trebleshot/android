@@ -660,4 +660,15 @@
     <string name="invalidate">Invalidate</string>
     <string name="deny">Deny</string>
     <string name="error_communication_security">A security error occurred</string>
+    <string name="nickname">Nickname</string>
+    <string name="root_folder">Root</string>
+    <string name="add_storage_access">Add storage access…</string>
+    <string name="clear_storage_list">Clear storage list</string>
+    <string name="storage_folder">Storage Folder</string>
+    <string name="change_storage_folder">Change Storage Folder</string>
+    <string name="storage_folder_notice">The folder to save contents in</string>
+    <string name="folder_not_writable">The folder is write-protected</string>
+    <string name="default_folder">Default Folder</string>
+    <string name="error_empty_field">Field should not be empty</string>
+    <string name="folder_name">Folder Name</string>
 </resources>

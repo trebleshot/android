@@ -26,14 +26,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils.loadAnimation
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -86,7 +84,6 @@ class WelcomeActivity : Activity() {
         skipPermissionRequest = true
         welcomePageDisallowed = true
 
-        val confettiImageView: ImageView = findViewById(R.id.confetti)
         val titleContainer: FrameLayout = findViewById(R.id.titleContainer)
         val titleText: TextView = findViewById(R.id.title)
         val nextButton: FloatingActionButton = findViewById(R.id.nextButton)
@@ -175,14 +172,6 @@ class WelcomeActivity : Activity() {
                             R.drawable.ic_navigate_next_white_24dp
                         }
                     )
-
-                    if (lastPage) {
-                        GlideApp.with(applicationContext)
-                            .load(R.drawable.confetti)
-                            .into(confettiImageView)
-                    } else {
-                        confettiImageView.setImageDrawable(null)
-                    }
                 }
             }
         )
@@ -309,14 +298,7 @@ class IntroductionPrefsFragment : PreferenceFragmentCompat() {
     }
 }
 
-class IntroductionAllSetFragment : Fragment(R.layout.layout_nyancat) {
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        GlideApp.with(view)
-            .load(R.drawable.nyancat)
-            .into(view.findViewById(R.id.nyancat))
-    }
-}
+class IntroductionAllSetFragment : Fragment(R.layout.layout_introduction_all_set)
 
 class IntroductionFragmentStateAdapter(
     val context: Context, fm: FragmentManager, lifecycle: Lifecycle,

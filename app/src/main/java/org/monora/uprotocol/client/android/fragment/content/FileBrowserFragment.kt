@@ -18,12 +18,18 @@
 
 package org.monora.uprotocol.client.android.fragment.content
 
+import android.annotation.TargetApi
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.MenuCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -44,9 +50,36 @@ import java.io.File
 
 @AndroidEntryPoint
 class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
+    @TargetApi(19)
+    private val addAccess = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+        val context = context
+
+        if (uri != null && context != null && Build.VERSION.SDK_INT >= 21) {
+            viewModel.insertSafFolder(uri)
+        }
+    }
+
     private val viewModel: FilesViewModel by viewModels()
 
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
+
+    private lateinit var pathsPopupMenu: PopupMenu
+
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        private var afterPopup = false
+
+        override fun handleOnBackPressed() {
+            if (viewModel.goUp()) {
+                afterPopup = false
+            } else if (afterPopup) {
+                isEnabled = false
+                activity?.onBackPressedDispatcher?.onBackPressed()
+            } else {
+                afterPopup = true
+                pathsPopupMenu.show()
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,8 +101,21 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         }
         val emptyContentViewModel = EmptyContentViewModel()
         val pathRecyclerView = view.findViewById<RecyclerView>(R.id.pathRecyclerView)
+        val pathSelectorButton = view.findViewById<View>(R.id.pathSelectorButton)
         val pathAdapter = PathAdapter {
             viewModel.requestPath(it.file)
+        }
+
+        pathsPopupMenu = PopupMenu(requireContext(), pathSelectorButton).apply {
+            MenuCompat.setGroupDividerEnabled(menu, true)
+        }
+        pathSelectorButton.setOnClickListener { button ->
+            if (Build.VERSION.SDK_INT < 21) {
+                viewModel.requestStorageFolder()
+                return@setOnClickListener
+            }
+
+            pathsPopupMenu.show()
         }
 
         emptyView.viewModel = emptyContentViewModel
@@ -81,6 +127,15 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         pathAdapter.setHasStableIds(true)
         pathRecyclerView.adapter = pathAdapter
 
+        pathAdapter.registerAdapterDataObserver(
+            object : RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    super.onItemRangeInserted(positionStart, itemCount)
+                    pathRecyclerView.scrollToPosition(pathAdapter.itemCount - 1)
+                }
+            }
+        )
+
         viewModel.files.observe(viewLifecycleOwner) {
             it.forEach { model ->
                 if (model is FileModel && selectionViewModel.contains(model)) model.isSelected = true
@@ -90,26 +145,55 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
 
-        viewModel.path.observe(viewLifecycleOwner) {
-            // FIXME: 8/7/21 Doesn't scroll to end when it goes downwards
+        viewModel.pathTree.observe(viewLifecycleOwner) {
             pathAdapter.submitList(it)
         }
 
-        activity?.onBackPressedDispatcher?.addCallback(
-            viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (!viewModel.goUp()) {
-                        isEnabled = false
-                        activity?.onBackPressedDispatcher?.onBackPressed()
-                    }
+        viewModel.safFolders.observe(viewLifecycleOwner) {
+            pathsPopupMenu.menu.clear()
+            pathsPopupMenu.setOnMenuItemClickListener { menuItem ->
+                if (menuItem.itemId == R.id.storage_folder) {
+                    viewModel.requestStorageFolder()
+                } else if (menuItem.itemId == R.id.default_storage_folder) {
+                    viewModel.requestDefaultStorageFolder()
+                } else if (menuItem.groupId == R.id.locations_custom) {
+                    viewModel.requestPath(it[menuItem.itemId])
+                } else if (menuItem.itemId == R.id.add_storage) {
+                    addAccess.launch(null)
+                } else if (menuItem.itemId == R.id.clear_storage_list) {
+                    viewModel.clearStorageList()
+                } else {
+                    return@setOnMenuItemClickListener false
+                }
+
+                return@setOnMenuItemClickListener true
+            }
+            pathsPopupMenu.inflate(R.menu.file_browser)
+            pathsPopupMenu.menu.findItem(R.id.storage_folder).isVisible = viewModel.isCustomStorageFolder
+            pathsPopupMenu.menu.findItem(R.id.clear_storage_list).isVisible = it.isNotEmpty()
+            it.forEachIndexed { index, safFolder ->
+                pathsPopupMenu.menu.add(R.id.locations_custom, index, Menu.NONE, safFolder.name).apply {
+                    setIcon(R.drawable.ic_save_white_24dp)
                 }
             }
-        )
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        backPressedCallback.remove()
     }
 }
 
 class PathContentViewModel(fileModel: FileModel) {
     val isRoot = fileModel.file.getUri() == ROOT_URI
+
+    val isFirst = fileModel.file.parent == null
 
     val title = fileModel.name()
 

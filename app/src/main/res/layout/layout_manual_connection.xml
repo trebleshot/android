@@ -45,6 +45,7 @@
                 android:layout_height="match_parent"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:inputType="textUri"
                 android:hint="@string/text_hostAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 

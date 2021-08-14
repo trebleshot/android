@@ -265,11 +265,6 @@
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
-    <style name="CondensedTitleStyle">
-        <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="Roundies" />
 
     <style name="DividerStyle">

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,21 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.activity
 
-import android.content.Intent
-import android.os.Parcelable
-import android.widget.Toast
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.util.Files
+package org.monora.uprotocol.client.android.database
 
-/**
- * Created by: veli
- * Date: 5/30/17 6:57 PM
- */
-class ChangeStoragePathActivity : Activity() {
-    companion object {
-        const val REQUEST_CHOOSE_FOLDER = 1
-    }
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import org.monora.uprotocol.client.android.database.model.SafFolder
+
+@Dao
+interface SafFolderDao {
+    @Query("SELECT * FROM safFolder ORDER BY name ASC")
+    fun getAll(): LiveData<List<SafFolder>>
+
+    @Insert
+    suspend fun insert(folder: SafFolder)
+
+    @Query("DELETE FROM safFolder")
+    suspend fun removeAll()
 }

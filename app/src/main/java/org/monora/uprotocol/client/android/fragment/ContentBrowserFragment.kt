@@ -67,6 +67,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
         pagerAdapter.add(PageItem(getString(R.string.text_image), ImageBrowserFragment::class.java.name))
         pagerAdapter.add(PageItem(getString(R.string.text_video), VideoBrowserFragment::class.java.name))
 
+        binding.viewPager.isUserInputEnabled = false
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->

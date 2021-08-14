@@ -36,15 +36,17 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingTop="24dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/picture"
             pictureOf="@{viewModel.client}"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
+            android:layout_width="@dimen/icon_size_list_giant"
+            android:layout_height="@dimen/icon_size_list_giant"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:foreground="?roundSelector"
             android:onClick="@{pickPhotoClickListener}"
             app:layout_constraintEnd_toStartOf="@id/textInputLayout"
@@ -54,9 +56,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="24dp"
+            android:layout_marginEnd="24dp"
             app:layout_constraintBottom_toBottomOf="@+id/picture"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/picture"
@@ -68,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="none"
-                android:hint="@string/text_deviceName"
+                android:hint="@string/nickname"
                 android:inputType="textPersonName"
                 android:maxLength="@integer/length_max_username"
                 android:text="@{viewModel.client.clientNickname}" />
@@ -85,19 +89,21 @@
             style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_margin="8dp"
             android:onClick="@{pickPhotoClickListener}"
             android:text="@string/change_picture"
             app:layout_constraintEnd_toStartOf="@+id/button2"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editorBottomBarrier" />
+            app:layout_constraintTop_toBottomOf="@+id/editorBottomBarrier"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <Button
             android:id="@+id/button2"
             style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:onClick="@{viewModel.deletePictureListener}"
             android:text="@string/remove_picture"
             android:visibility="@{viewModel.hasPicture ? View.VISIBLE : View.GONE}"

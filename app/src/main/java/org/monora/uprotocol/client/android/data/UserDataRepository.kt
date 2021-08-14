@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.util.Base64
+import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
@@ -53,6 +54,7 @@ import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.log
 
 @Singleton
 class UserDataRepository @Inject constructor(
@@ -88,8 +90,12 @@ class UserDataRepository @Inject constructor(
             }
         }
 
-        // TODO: 1/22/21 Don't forget to change the locale to English in production environments when it is set to
-        //  Persian to fix the issue: https://issuetracker.google.com/issues/37095309
+        Log.d(TAG, "certificate: Generating new certificate")
+
+        // Avoid crash in Persian or similar locales: https://issuetracker.google.com/issues/37095309
+        val defaultLocale = Locale.getDefault()
+        Locale.setDefault(Locale.ENGLISH)
+
         val nameBuilder = X500NameBuilder(BCStyle.INSTANCE)
 
         nameBuilder.addRDN(BCStyle.CN, clientUid)
@@ -110,6 +116,8 @@ class UserDataRepository @Inject constructor(
         preferences.edit {
             putString(KEY_CERTIFICATE, Base64.encodeToString(cert.encoded, Base64.DEFAULT))
         }
+
+        Locale.setDefault(defaultLocale)
 
         return@lazy cert
     }
@@ -212,6 +220,8 @@ class UserDataRepository @Inject constructor(
     }
 
     companion object {
+        private const val TAG = "UserDataRepository"
+
         private const val PREFERENCES_CREDENTIALS_STORE = "credentials_store"
 
         private const val KEY_CERTIFICATE = "certificate"

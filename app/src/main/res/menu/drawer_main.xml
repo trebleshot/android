@@ -46,13 +46,13 @@
         <item
             android:id="@+id/donate"
             android:icon="@drawable/ic_favorite_white_24dp"
-            android:orderInCategory="3"
+            android:orderInCategory="5"
             android:title="@string/butn_donate"
             android:visible="false" />
 
         <item
             android:id="@+id/ts_dt"
-            android:orderInCategory="5"
+            android:orderInCategory="6"
             app:actionLayout="@layout/layout_main_navigationview_footer"
             tools:ignore="MenuTitle" />
 

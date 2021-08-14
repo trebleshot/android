@@ -19,35 +19,50 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
-import android.transition.Transition
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
+import com.genonbeta.android.framework.io.DocumentFile
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
 
 @AndroidEntryPoint
 class ReceiveFragment : Fragment(R.layout.layout_receive) {
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
+    private val filesViewModel: FilesViewModel by viewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = LayoutReceiveBinding.bind(view)
 
         binding.button.setOnClickListener {
-            findNavController().navigate(
-                ReceiveFragmentDirections.pickClient()
-            )
+            findNavController().navigate(ReceiveFragmentDirections.pickClient())
+        }
+        binding.changeStorageButton.setOnClickListener {
+            findNavController().navigate(ReceiveFragmentDirections.actionReceiveFragmentToFilePickerFragment())
+        }
+        binding.storageFolderText.text = filesViewModel.appDirectory.getName()
+
+        setFragmentResultListener(FilePickerFragment.RESULT_FILE_PICKED) { _, bundle ->
+            val file = bundle.getParcelable<DocumentFile?>(
+                FilePickerFragment.EXTRA_DOCUMENT_FILE
+            ) ?: return@setFragmentResultListener
+
+            filesViewModel.appDirectory = file
+            binding.storageFolderText.text = filesViewModel.appDirectory.getName()
         }
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->

@@ -24,12 +24,6 @@
     android:fitsSystemWindows="false"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/confetti"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusable="false" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideTitle"
         android:layout_width="wrap_content"

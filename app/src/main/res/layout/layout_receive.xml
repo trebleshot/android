@@ -22,7 +22,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/short_content_width_padding"
+        android:paddingRight="@dimen/short_content_width_padding">
 
         <TextView
             android:id="@+id/text"
@@ -41,20 +43,72 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:indeterminate="true"
-            app:layout_constraintBottom_toTopOf="@+id/button"
+            app:layout_constraintBottom_toTopOf="@+id/storageFolderContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/text" />
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/storageFolderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:layout_constraintBottom_toTopOf="@id/button">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/storageFolderNotice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/storage_folder_notice"
+                    android:textAppearance="?textAppearanceOverline"
+                    app:layout_constraintBottom_toTopOf="@id/storageFolderText"
+                    app:layout_constraintStart_toStartOf="@id/storageFolderText"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/storageFolderText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="TS Debug"
+                    android:textAppearance="?textAppearanceBody1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/changeStorageButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/storageFolderNotice"
+                    tools:text="@tools:sample/cities" />
+
+                <ImageView
+                    android:id="@+id/changeStorageButton"
+                    style="@style/OverflowButton"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/storageFolderText"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_save_white_24dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
         <Button
             android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/short_content_width_padding"
-            android:layout_marginRight="@dimen/short_content_width_padding"
-            android:layout_marginBottom="12dp"
+            android:layout_margin="8dp"
             android:gravity="center"
             android:text="Pick Someone"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -49,6 +49,7 @@ class FileAdapter(
         when (val item = getItem(position)) {
             is FileModel -> if (holder is FileViewHolder) holder.bind(item)
             is TitleSectionContentModel -> if (holder is TitleSectionViewHolder) holder.bind(item)
+            else -> throw IllegalStateException()
         }
     }
 
@@ -59,7 +60,7 @@ class FileAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is FileModel -> VIEW_TYPE_FILE
         is TitleSectionContentModel -> VIEW_TYPE_SECTION
-        else -> throw UnsupportedOperationException()
+        else -> throw IllegalStateException()
     }
 
     enum class ClickType {

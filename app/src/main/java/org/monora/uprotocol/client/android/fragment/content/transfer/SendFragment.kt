@@ -27,14 +27,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.databinding.LayoutSendBinding
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingState
 import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
-import org.monora.uprotocol.core.transfer.TransferItem
 
 @AndroidEntryPoint
 class SendFragment : Fragment(R.layout.layout_send) {
@@ -72,17 +69,10 @@ class SendFragment : Fragment(R.layout.layout_send) {
             }
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) {
-            val bridge = it.consume() ?: return@observe
-            val saveDirectory = Files.getAppDirectory(context ?: return@observe)
-            val transfer = Transfer(
-                args.groupId,
-                bridge.remoteClient.clientUid,
-                TransferItem.Type.Outgoing,
-                saveDirectory.getUri().toString(),
-            )
-
-            sharingViewModel.consume(bridge, transfer, args.items.toList())
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
+            statefulBridge.consume()?.let {
+                sharingViewModel.consume(it, args.groupId, args.items.toList())
+            }
         }
     }
 }

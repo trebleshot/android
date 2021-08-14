@@ -42,11 +42,5 @@
             android:title="@string/const_text_useAppFonts"
             tools:targetApi="16" />
 
-        <androidx.preference.PreferenceScreen
-            android:icon="@drawable/ic_save_white_24dp"
-            android:summary="@string/text_storagePathSummary"
-            android:title="@string/text_storagePath">
-            <intent android:action="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
-        </androidx.preference.PreferenceScreen>
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

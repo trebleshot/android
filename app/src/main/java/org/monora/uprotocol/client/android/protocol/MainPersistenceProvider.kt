@@ -34,7 +34,6 @@ import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
 import org.monora.uprotocol.client.android.io.StreamInfoStreamDescriptor
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.Graphics
 import org.monora.uprotocol.client.android.util.picturePath
 import org.monora.uprotocol.core.io.StreamDescriptor
@@ -153,7 +152,7 @@ class MainPersistenceProvider @Inject constructor(
         }
 
         return if (transferItem.itemType == TransferItem.Type.Incoming) {
-            DocumentFileStreamDescriptor(Files.getIncomingFile(context, transferItem, transfer))
+            DocumentFileStreamDescriptor(transferRepository.getIncomingFile(transferItem, transfer))
         } else {
             StreamInfoStreamDescriptor(OpenableContent.from(context, Uri.parse(transferItem.location)))
         }

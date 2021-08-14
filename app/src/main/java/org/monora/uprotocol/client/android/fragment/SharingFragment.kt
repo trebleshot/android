@@ -38,7 +38,6 @@ import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
 import org.monora.uprotocol.client.android.itemcallback.UTransferItemCallback
 import org.monora.uprotocol.client.android.util.CommonErrors
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingState
 import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
@@ -69,14 +68,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
             statefulBridge.consume()?.let {
-                val transfer = Transfer(
-                    args.groupId,
-                    it.remoteClient.clientUid,
-                    TransferItem.Type.Outgoing,
-                    Files.getAppDirectory(requireContext()).getUri().toString(),
-                )
-
-                sharingViewModel.consume(it, transfer, args.contents.toList())
+                sharingViewModel.consume(it, args.groupId, args.contents.toList())
             }
         }
 

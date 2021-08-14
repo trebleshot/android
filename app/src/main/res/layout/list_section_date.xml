@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/layout_list_title_text"
-        style="@style/CondensedTitleStyle"
+        android:textAppearance="?textAppearanceHeadline6"
         android:text="@{viewModel.dateText}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

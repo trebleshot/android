@@ -47,7 +47,6 @@ import org.monora.uprotocol.client.android.service.web.response.SplitApkZipBody
 import org.monora.uprotocol.client.android.service.web.template.Templates
 import org.monora.uprotocol.client.android.service.web.template.renderContents
 import org.monora.uprotocol.client.android.service.web.template.renderHome
-import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.util.NotificationBackend
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -74,7 +73,7 @@ class SharingController {
         if (content is FileModel) {
             return FileZipBody(context, content.file)
         } else if (content is App) {
-            if(Build.VERSION.SDK_INT < 21) {
+            if (Build.VERSION.SDK_INT < 21) {
                 throw IllegalStateException("Cannot download as zip because there is no need for it below API 21")
             }
             val splitPaths = content.info.splitSourceDirs ?: throw IllegalStateException("Should have splits")
@@ -128,16 +127,17 @@ class SharingController {
 
     @PostMapping("/upload")
     fun upload(context: Context, @RequestParam("content") content: MultipartFile): String {
-        val fileName = content.filename ?: throw IllegalStateException("File name cannot be empty")
-        val type = content.contentType.type
-        val savePath = Files.getAppDirectory(context)
-        val uniqueName = FilesExt.getUniqueFileName(context, savePath, fileName)
-
-        val file = FilesExt.fetchFile(context, savePath, null, type, uniqueName, true)
-        val inputStream: InputStream = content.stream
-
         val webEntryPoint = EntryPoints.get(context, WebEntryPoint::class.java)
         val services = webEntryPoint.services()
+        val fileRepository = webEntryPoint.fileRepository()
+        val fileName = content.filename ?: throw IllegalStateException("File name cannot be empty")
+        val type = content.contentType.type
+        val savePath = fileRepository.appDirectory
+        val uniqueName = FilesExt.getUniqueFileName(context, savePath, fileName)
+
+        val file = FilesExt.createFileWithNestedPaths(context, savePath, null, type, uniqueName, true)
+        val inputStream: InputStream = content.stream
+
         val notification = services.notifications.notifyReceivingOnWeb(file)
 
         try {

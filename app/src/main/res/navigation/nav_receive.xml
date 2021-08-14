@@ -28,6 +28,19 @@
         <action
             android:id="@+id/pick_client"
             app:destination="@id/pick_client.xml" />
+        <action
+            android:id="@+id/action_receiveFragment_to_filePickerFragment"
+            app:destination="@id/filePickerFragment" />
     </fragment>
     <include app:graph="@navigation/nav_pick_client" />
+    <fragment
+        android:id="@+id/filePickerFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.FilePickerFragment"
+        android:label="@string/change_storage_folder" >
+        <argument
+            android:name="selectionType"
+            app:argType="org.monora.uprotocol.client.android.fragment.FilePickerFragment$SelectionType"
+            android:defaultValue="Folder" />
+    </fragment>
+
 </navigation>

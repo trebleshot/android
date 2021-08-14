@@ -29,7 +29,6 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import com.genonbeta.android.framework.util.Files
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.io.FileNotFoundException
@@ -73,7 +72,7 @@ class DocumentFile private constructor(
 
     fun createFile(context: Context, mimeType: String, displayName: String): DocumentFile? {
         if (SDK_INT >= 21 && data != null) {
-            DocumentsContract.createDocument(context.contentResolver, originalUri, mimeType, displayName)?.let {
+            DocumentsContract.createDocument(context.contentResolver, data.uri, mimeType, displayName)?.let {
                 return from(this, context, it, it)
             }
         } else if (file != null) {
@@ -140,7 +139,7 @@ class DocumentFile private constructor(
     fun getName(): String = data?.name ?: file?.name ?: throw IllegalStateException()
 
     fun getSecureUri(context: Context, authority: String): Uri {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || data != null) {
+        if (SDK_INT < Build.VERSION_CODES.M || data != null) {
             return getUri()
         } else if (file != null) {
             return FileProvider.getUriForFile(context, authority, file)
@@ -163,7 +162,9 @@ class DocumentFile private constructor(
                     val index = CursorIndex(it)
 
                     do {
-                        resultFiles[it.position] = from(this, it, index)
+                        val id = it.getString(index.id)
+                        val uri = DocumentsContract.buildDocumentUriUsingTree(data.uri, id)
+                        resultFiles.add(DocumentFile(uri, Data.from(this, uri, it, index)))
                     } while (it.moveToNext())
 
                     return resultFiles.toTypedArray()
@@ -226,7 +227,7 @@ class DocumentFile private constructor(
     ) : Parcelable {
         fun canRead(): Boolean = exists
 
-        fun canWrite(): Boolean = SDK_INT >= 19 && (flags and FLAG_SUPPORTS_WRITE) != 0
+        fun canWrite(): Boolean = SDK_INT >= 19 && (isDirectory() || (flags and FLAG_SUPPORTS_WRITE) != 0)
 
         fun isDirectory(): Boolean = SDK_INT >= 19 && MIME_TYPE_DIR == type
 
@@ -320,13 +321,6 @@ class DocumentFile private constructor(
             throw IOException("Could not encapsulate the data.")
         }
 
-        @RequiresApi(21)
-        private fun from(parent: DocumentFile, cursor: Cursor, index: CursorIndex): DocumentFile {
-            val id = cursor.getString(index.id)
-            val uri = DocumentsContract.buildDocumentUriUsingTree(parent.getUri(), id)
-            return DocumentFile(uri, Data.from(parent, uri, cursor, index))
-        }
-
         fun fromFile(file: File): DocumentFile {
             return DocumentFile(file)
         }
@@ -337,10 +331,7 @@ class DocumentFile private constructor(
             if (uriType.startsWith("file")) {
                 return fromFile(File(URI.create(uriType)))
             } else if (SDK_INT >= 21) {
-                try {
-                    return from(null, context, if (prepareTree) prepareUri(uri) else uri, uri)
-                } catch (ignored: Exception) {
-                }
+                return from(null, context, uri, if (prepareTree) prepareUri(uri) else uri)
             }
 
             throw FileNotFoundException("Failed to encapsulate the given uri: $uri")

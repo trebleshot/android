@@ -125,6 +125,7 @@ abstract class HotspotManager internal constructor(context: Context) {
         }
     }
 
+    @Suppress("DEPRECATION")
     private class OldHotspotManager(context: Context) : HotspotManager(context) {
         override val configuration: WifiConfiguration?
             get() = invokeSilently(getWifiApConfiguration, wifiManager) as WifiConfiguration?

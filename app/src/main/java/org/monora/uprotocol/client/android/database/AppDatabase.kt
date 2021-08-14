@@ -21,6 +21,7 @@ package org.monora.uprotocol.client.android.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import org.monora.uprotocol.client.android.database.model.SafFolder
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.TransferDetail
@@ -35,6 +36,7 @@ import org.monora.uprotocol.client.android.database.model.WebTransfer
         UClient::class,
         UClientAddress::class,
         UTransferItem::class,
+        SafFolder::class,
         SharedText::class,
         Transfer::class,
         WebClient::class,
@@ -51,6 +53,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
 
     abstract fun clientAddressDao(): ClientAddressDao
+
+    abstract fun safFolderDao(): SafFolderDao
 
     abstract fun sharedTextDao(): SharedTextDao
 
