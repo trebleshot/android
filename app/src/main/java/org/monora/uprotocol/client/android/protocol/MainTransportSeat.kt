@@ -201,6 +201,9 @@ class MainTransportSeat @Inject constructor(
     }
 
     override fun notifyClientCredentialsChanged(client: Client) {
-        TODO("Not yet implemented")
+        check(client is UClient) {
+            "Unexpected UClient implementation"
+        }
+        backend.services.notifications.notifyClientCredentialsChanged(client)
     }
 }

@@ -211,10 +211,6 @@
     <string name="butn_ask">Ask</string>
     <string name="text_permissionRequest">Permission request</string>
     <string name="text_requestPermissionStorage">Storage permission</string>
-    <string name="text_requestPermissionReadPhoneState">Permission to read phone state</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot needs to access your device\'s serial number
-        to create a long-term identity number, helping other devices recognize you
-    </string>
     <string name="text_mediaDirectory">Media Directory</string>
     <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
     <string name="mesg_notEnoughSpace">Not enough space</string>
@@ -553,8 +549,8 @@
     <string name="help_qrCodePosition">QR Code will appear here!</string>
     <string name="help_setUpNetwork">Set up a hotspot or connect to Wi-Fi</string>
     <string name="mesg_enterValidHostAddress">Please enter an internet address!</string>
-    <string name="text_deviceKeyChanged">Device key changed</string>
-    <string name="ques_acceptNewDeviceKey">Do you accept the new key for %s?</string>
+    <string name="credentials_mismatch">Credentials Mismatch</string>
+    <string name="credentials_mismatch_notice">\'%s\' needs invalidation of credentials to communicate.</string>
     <string name="mesg_errorDifferentDevice">The connected device was different</string>
     <string name="mesg_unknownErrorOccurred">An unknown error occurred</string>
     <string name="mesg_unknownErrorOccurredWithCode">The error %s occurred</string>
@@ -651,7 +647,7 @@
     <string name="change_picture">Change picture</string>
     <string name="grant">Grant</string>
     <string name="granted">Granted</string>
-    <string name="error_no_activity_to_view">Couldn\'t find an app to opent the content with</string>
+    <string name="error_no_activity_to_view">Could not find an app to open the content with</string>
     <string name="manage_clients">Manage Clients</string>
     <string name="app">App</string>
     <string name="apps">Apps</string>
@@ -660,4 +656,8 @@
     <string name="using_qr_code">Using QR Code</string>
     <string name="authors">Authors</string>
     <string name="author">Author</string>
+    <string name="error_communication_security_credentials">Credentials mismatch (needs pairing)</string>
+    <string name="invalidate">Invalidate</string>
+    <string name="deny">Deny</string>
+    <string name="error_communication_security">A security error occurred</string>
 </resources>

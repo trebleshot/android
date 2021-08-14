@@ -189,10 +189,6 @@ class WelcomeActivity : Activity() {
 
         viewPager.adapter = adapter
     }
-
-    companion object {
-        private const val TAG = "WelcomeActivity"
-    }
 }
 
 class IntroductionSplashFragment : Fragment(R.layout.layout_splash) {
@@ -290,8 +286,6 @@ class IntroductionPrefsFragment : PreferenceFragmentCompat() {
     }
 
     companion object {
-        private const val TAG = "WelcomeActivity"
-
         fun loadThemeOptionsTo(context: Context, themePreference: ListPreference?) {
             if (themePreference == null) return
 

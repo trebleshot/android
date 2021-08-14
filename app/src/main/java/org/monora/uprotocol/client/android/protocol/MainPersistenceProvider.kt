@@ -20,7 +20,6 @@ package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.genonbeta.android.framework.io.OpenableContent
@@ -64,12 +63,23 @@ class MainPersistenceProvider @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val transferRepository: TransferRepository,
 ) : PersistenceProvider {
+    private val invalidationRequests = mutableSetOf<String>()
+
     override fun approveInvalidationOfCredentials(client: Client): Boolean {
         check(client is UClient) {
             "Unexpected implementation type"
         }
 
-        return false
+        if (!invalidationRequests.remove(client.clientUid)) {
+            return false
+        }
+
+        client.certificate = null
+        runBlocking {
+            clientRepository.update(client)
+        }
+
+        return true
     }
 
     override fun containsTransfer(groupId: Long): Boolean = runBlocking {
@@ -176,8 +186,7 @@ class MainPersistenceProvider @Inject constructor(
     )
 
     override fun hasRequestForInvalidationOfCredentials(clientUid: String): Boolean {
-        Log.d(TAG, "hasRequestForInvalidationOfCredentials: $clientUid")
-        return false
+        return invalidationRequests.contains(clientUid)
     }
 
     override fun loadTransferItem(
@@ -257,7 +266,7 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun saveRequestForInvalidationOfCredentials(clientUid: String) {
-        Log.d(TAG, "saveRequestForInvalidationOfCredentials: $clientUid")
+        invalidationRequests.add(clientUid)
     }
 
     override fun setState(clientUid: String, item: TransferItem, state: TransferItem.State, e: Exception?) {
@@ -266,10 +275,6 @@ class MainPersistenceProvider @Inject constructor(
         } else {
             throw UnsupportedOperationException()
         }
-    }
-
-    companion object {
-        private const val TAG = "MainPersistenceProvider"
     }
 }
 

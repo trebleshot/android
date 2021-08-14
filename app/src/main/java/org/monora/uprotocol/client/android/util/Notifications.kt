@@ -18,6 +18,7 @@
 package org.monora.uprotocol.client.android.util
 
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
@@ -25,6 +26,7 @@ import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
@@ -98,7 +100,7 @@ class Notifications(val backend: NotificationBackend) {
         notification.show()
     }
 
-    fun notifyKeyChanged(client: UClient) {
+    fun notifyClientCredentialsChanged(client: UClient) {
         val uidHash = client.clientUid.hashCode()
         val notification = backend.buildDynamicNotification(uidHash, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
         val acceptIntent = Intent(context, BgBroadcastReceiver::class.java)
@@ -106,20 +108,22 @@ class Notifications(val backend: NotificationBackend) {
             .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
             .putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
-        val rejectIntent = (acceptIntent.clone() as Intent)
+        val rejectIntent = Intent(acceptIntent)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
-        val positiveIntent: PendingIntent = PendingIntent.getService(
+        val positiveIntent: PendingIntent = PendingIntent.getBroadcast(
             context, uidHash + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val negativeIntent: PendingIntent = PendingIntent.getService(
-            context, uidHash + REQUEST_CODE_ACCEPT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        val negativeIntent: PendingIntent = PendingIntent.getBroadcast(
+            context, uidHash + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
+        val contentText = context.getString(R.string.credentials_mismatch_notice, client.clientNickname)
+
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
-            .setContentTitle(context.getString(R.string.text_deviceKeyChanged))
-            .setContentText(context.getString(R.string.ques_acceptNewDeviceKey, client.clientNickname))
+            .setContentTitle(context.getString(R.string.credentials_mismatch))
+            .setContentText(contentText)
             .setContentInfo(client.clientNickname)
             .setContentIntent(
-                PendingIntent.getBroadcast(
+                PendingIntent.getActivity(
                     context,
                     uidHash + REQUEST_CODE_NEUTRAL,
                     Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
@@ -128,9 +132,9 @@ class Notifications(val backend: NotificationBackend) {
             )
             .setDefaults(backend.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_yes), positiveIntent)
-            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
-            .setTicker(context.getString(R.string.text_connectionPermission))
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.invalidate), positiveIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.deny), negativeIntent)
+            .setTicker(contentText)
         notification.show()
     }
 
@@ -142,26 +146,26 @@ class Notifications(val backend: NotificationBackend) {
         val hash = transfer.id.toInt()
         val notification = backend.buildDynamicNotification(hash, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
 
-        val numberOfFiles = items.size
+        val itemsSize = items.size
         val acceptIntent: Intent = Intent(context, BgBroadcastReceiver::class.java)
             .setAction(BgBroadcastReceiver.ACTION_FILE_TRANSFER)
             .putExtra(BgBroadcastReceiver.EXTRA_CLIENT, client)
             .putExtra(BgBroadcastReceiver.EXTRA_TRANSFER, transfer)
+            .putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
-        val rejectIntent = (acceptIntent.clone() as Intent)
+        val rejectIntent = Intent(acceptIntent)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
         // TODO: 7/16/21 This should also have the 'transfer' extra.
         val transferDetail: Intent = Intent(context, HomeActivity::class.java)
-        val message = if (numberOfFiles > 1) context.resources.getQuantityString(
-            R.plurals.ques_receiveMultipleFiles,
-            numberOfFiles, numberOfFiles
-        ) else items[0].name
-        acceptIntent.putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
-        rejectIntent.putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
-        val positiveIntent: PendingIntent = PendingIntent.getService(
+        val message = if (itemsSize > 1) {
+            context.resources.getQuantityString(R.plurals.ques_receiveMultipleFiles, itemsSize, itemsSize)
+        } else {
+            items[0].name
+        }
+        val positiveIntent: PendingIntent = PendingIntent.getBroadcast(
             context, hash + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val negativeIntent: PendingIntent = PendingIntent.getService(
+        val negativeIntent: PendingIntent = PendingIntent.getBroadcast(
             context, hash + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
@@ -175,11 +179,7 @@ class Notifications(val backend: NotificationBackend) {
             )
             .setDefaults(backend.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(
-                R.drawable.ic_check_white_24dp_static,
-                context.getString(R.string.butn_yes),
-                positiveIntent
-            )
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_yes), positiveIntent)
             .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
             .setTicker(context.getString(R.string.ques_receiveFile)).priority = NotificationCompat.PRIORITY_HIGH
         notification.show()
@@ -187,24 +187,24 @@ class Notifications(val backend: NotificationBackend) {
 
     fun notifyClipboardRequest(client: UClient, item: SharedText) {
         val notification = backend.buildDynamicNotification(item.id, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
-        val acceptIntent: Intent = Intent(context, BgBroadcastReceiver::class.java)
+        val acceptIntent = Intent(context, BgBroadcastReceiver::class.java)
             .setAction(BgBroadcastReceiver.ACTION_CLIPBOARD)
             .putExtra(BgBroadcastReceiver.EXTRA_TEXT_MODEL, item)
             .putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
-        val activityIntent = Intent(context, TextEditorActivity::class.java)
-        val rejectIntent = acceptIntent.clone() as Intent
-        acceptIntent.putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
-        rejectIntent.putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
-        val positiveIntent: PendingIntent = PendingIntent.getBroadcast(
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
+        val rejectIntent = Intent(acceptIntent)
+            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
+        val positiveIntent = PendingIntent.getBroadcast(
             context, item.id + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val negativeIntent: PendingIntent = PendingIntent.getBroadcast(
+        val negativeIntent = PendingIntent.getBroadcast(
             context, item.id + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
-        activityIntent
+        val activityIntent = Intent(context, TextEditorActivity::class.java)
             .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
             .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, item)
-            .flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setContentTitle(context.getString(R.string.ques_copyToClipboard))
@@ -264,8 +264,7 @@ class Notifications(val backend: NotificationBackend) {
         notification: DynamicNotification?,
     ): DynamicNotification {
         val notificationLocal = notification ?: backend.buildDynamicNotification(
-            ID_BG_SERVICE,
-            NotificationBackend.NOTIFICATION_CHANNEL_LOW
+            ID_BG_SERVICE, NotificationBackend.NOTIFICATION_CHANNEL_LOW
         ).also {
             val transfersString = context.getString(R.string.butn_transfers)
             val transfersIntent: PendingIntent = PendingIntent.getActivity(
@@ -311,21 +310,11 @@ class Notifications(val backend: NotificationBackend) {
                 msg.append(task.name)
             }
 
-            val content: String
-
-            when (state) {
-                is Task.State.Pending, is Task.State.Finished -> {
-                    content = context.getString(R.string.mesg_waiting)
-                }
-                is Task.State.Running -> {
-                    content = state.message
-                }
-                is Task.State.Error -> {
-                    content = state.error.message ?: context.getString(R.string.text_error)
-                }
+            val content: String = when (state) {
+                is Task.State.Pending, is Task.State.Finished -> context.getString(R.string.mesg_waiting)
+                is Task.State.Running -> state.message
+                is Task.State.Error -> state.error.message ?: context.getString(R.string.text_error)
                 is Task.State.Progress -> {
-                    content = state.message
-
                     if (state.progress > 0 && state.total > 0) {
                         msg.append(middleDot)
                         val percentage: String = percentFormat.format(state.progress.toDouble() / state.total)
@@ -335,6 +324,8 @@ class Notifications(val backend: NotificationBackend) {
                             msg.append(percentage)
                         }
                     }
+
+                    state.message
                 }
             }
 

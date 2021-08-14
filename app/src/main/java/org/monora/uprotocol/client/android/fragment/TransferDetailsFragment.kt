@@ -31,7 +31,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
-import org.monora.uprotocol.client.android.util.CommonErrorHelper
+import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.RejectionState
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
@@ -109,7 +109,7 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             if (it.state is Task.State.Error) context?.let { context ->
                 Snackbar.make(
                     binding.root,
-                    CommonErrorHelper.messageOf(context, it.state.error),
+                    CommonErrors.messageOf(context, it.state.error),
                     Snackbar.LENGTH_LONG
                 ).show()
             }

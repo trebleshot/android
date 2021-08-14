@@ -57,7 +57,6 @@
         android:layout_margin="8dp"
         android:text="@string/butn_send"
         app:icon="@drawable/ic_arrow_up_white_24dp"
-        app:iconGravity="end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/receiveButton"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"

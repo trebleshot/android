@@ -30,7 +30,7 @@ import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutClientConnectionBinding
-import org.monora.uprotocol.client.android.util.CommonErrorHelper
+import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientConnectionViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ConnectionState
@@ -68,7 +68,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
                 }
                 is ConnectionState.Error -> {
                     it.e.printStackTrace()
-                    binding.textOffline.text = CommonErrorHelper.messageOf(requireContext(), it.e)
+                    binding.textOffline.text = CommonErrors.messageOf(requireContext(), it.e)
                 }
                 is ConnectionState.Connecting -> {
                 }

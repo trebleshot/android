@@ -18,12 +18,13 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
-import android.util.Log
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.protocol.NoAddressException
 import org.monora.uprotocol.core.io.DefectiveAddressListException
 import org.monora.uprotocol.core.protocol.communication.CommunicationException
 import org.monora.uprotocol.core.protocol.communication.ContentException
+import org.monora.uprotocol.core.protocol.communication.CredentialsException
+import org.monora.uprotocol.core.protocol.communication.SecurityException
 import org.monora.uprotocol.core.protocol.communication.UndefinedErrorCodeException
 import org.monora.uprotocol.core.protocol.communication.client.DifferentRemoteClientException
 import org.monora.uprotocol.core.protocol.communication.client.UnauthorizedClientException
@@ -32,7 +33,7 @@ import java.net.ConnectException
 import java.net.NoRouteToHostException
 import java.net.ProtocolException
 
-object CommonErrorHelper {
+object CommonErrors {
     fun messageOf(context: Context, exception: Exception): String = when (exception) {
         is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
         is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
@@ -46,6 +47,8 @@ object CommonErrorHelper {
                 ContentException.Error.NotFound -> R.string.text_contentNotFound
             }
         )
+        is CredentialsException -> context.getString(R.string.error_communication_security_credentials)
+        is SecurityException -> context.getString(R.string.error_communication_security)
         is CommunicationException -> context.getString(R.string.error_communication_unknown)
         is NoAddressException -> context.getString(R.string.error_client_no_address)
         is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
@@ -53,7 +56,5 @@ object CommonErrorHelper {
         is ConnectException, is DefectiveAddressListException -> context.getString(R.string.mesg_socketConnectionError)
         is NoRouteToHostException -> context.getString(R.string.mesg_noRouteToHostError)
         else -> context.getString(R.string.mesg_unknownErrorOccurred)
-    }.also {
-        exception.printStackTrace()
     }
 }

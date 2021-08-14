@@ -33,7 +33,7 @@ import org.monora.uprotocol.core.transfer.TransferItem.Type.Outgoing
 private fun load(imageView: ImageView, uri: Uri, circle: Boolean = false) {
     GlideApp.with(imageView)
         .load(uri)
-        .override(300)
+        .override(200)
         .also {
             if (circle) {
                 it.circleCrop()

@@ -37,7 +37,7 @@ import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
 import org.monora.uprotocol.client.android.itemcallback.UTransferItemCallback
-import org.monora.uprotocol.client.android.util.CommonErrorHelper
+import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.util.Files
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingState
@@ -96,7 +96,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                     )
                 }
                 is SharingState.Error -> {
-                    val msg = CommonErrorHelper.messageOf(requireContext(), it.exception)
+                    val msg = CommonErrors.messageOf(requireContext(), it.exception)
                     Snackbar.make(binding.fab, msg, Snackbar.LENGTH_LONG).show()
                 }
             }

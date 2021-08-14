@@ -31,13 +31,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.backend.Backend
-import org.monora.uprotocol.client.android.database.AppDatabase
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.core.ClientLoader
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.communication.CredentialsException
+import org.monora.uprotocol.core.protocol.communication.SecurityException
 import org.monora.uprotocol.core.spec.v1.Config
 import java.net.NetworkInterface
 import javax.inject.Inject
@@ -239,6 +240,11 @@ class NsdDaemon @Inject constructor(
                             clients.sortByDescending { it.client.lastUsageTime }
                             _onlineClients.postValue(clients)
                         }
+                    }
+                } catch (e: CredentialsException) {
+                    val client = e.client
+                    if (e.firstTime && client is UClient) {
+                        backend.services.notifications.notifyClientCredentialsChanged(client)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
