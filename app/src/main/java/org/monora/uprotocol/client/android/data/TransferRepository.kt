@@ -29,6 +29,7 @@ import org.monora.uprotocol.client.android.database.TransferItemDao
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.io.IOException
 import java.lang.ref.WeakReference
@@ -82,8 +83,8 @@ class TransferRepository @Inject constructor(
     suspend fun getTransferItem(
         groupId: Long,
         id: Long,
-        type: TransferItem.Type,
-    ): UTransferItem? = transferItemDao.get(groupId, id, type)
+        direction: Direction,
+    ): UTransferItem? = transferItemDao.get(groupId, id, direction)
 
     fun getTransferItems(groupId: Long) = transferItemDao.getAll(groupId)
 

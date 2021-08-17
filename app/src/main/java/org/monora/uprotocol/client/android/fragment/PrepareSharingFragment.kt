@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutPrepareSharingBinding
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import java.lang.ref.WeakReference
 import java.text.Collator
 import javax.inject.Inject
@@ -98,7 +98,7 @@ class PreparationViewModel @Inject internal constructor(
         consumer = viewModelScope.launch(Dispatchers.IO) {
             val groupId = Random.nextLong()
             val list = mutableListOf<UTransferItem>()
-            val type = TransferItem.Type.Outgoing
+            val direction = Direction.Outgoing
 
             contents.forEachIndexed { index, uri ->
                 val context = context.get() ?: return@launch
@@ -106,7 +106,7 @@ class PreparationViewModel @Inject internal constructor(
 
                 OpenableContent.from(context, uri).runCatching {
                     shared.postValue(PreparationState.Progress(index, contents.size, name))
-                    list.add(UTransferItem(id, groupId, name, mimeType, size, null, uri.toString(), type))
+                    list.add(UTransferItem(id, groupId, name, mimeType, size, null, uri.toString(), direction))
                 }
             }
 

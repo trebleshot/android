@@ -37,6 +37,7 @@ import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
+import org.monora.uprotocol.core.protocol.Direction
 
 @AndroidEntryPoint
 class ReceiveFragment : Fragment(R.layout.layout_receive) {
@@ -75,7 +76,7 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     val result = bridge.use {
-                        it.requestAcquaintance()
+                        it.requestAcquaintance(Direction.Incoming)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

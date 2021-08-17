@@ -25,6 +25,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 
 @Parcelize
@@ -41,7 +42,7 @@ data class Transfer(
     val id: Long,
     @ColumnInfo(index = true)
     val clientUid: String,
-    val type: TransferItem.Type,
+    val direction: Direction,
     var location: String,
     var accepted: Boolean = false,
     val dateCreated: Long = System.currentTimeMillis(),

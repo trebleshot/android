@@ -20,13 +20,14 @@ package org.monora.uprotocol.client.android.task
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.protocol.Client
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 
 class FileTransferTaskRegistry(
     private val bridge: CommunicationBridge,
     val transfer: Transfer,
     val client: Client,
-    val type: TransferItem.Type,
+    val direction: Direction,
 ) {
     /*
     // TODO: 2/25/21 Generate via dependency injection

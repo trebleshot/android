@@ -32,7 +32,7 @@ import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import java.net.ProtocolException
 import javax.inject.Inject
 
@@ -55,7 +55,7 @@ class SharingViewModel @Inject internal constructor(
         val transfer = Transfer(
             groupId,
             bridge.remoteClient.clientUid,
-            TransferItem.Type.Outgoing,
+            Direction.Outgoing,
             fileRepository.appDirectory.originalUri.toString(),
         )
 

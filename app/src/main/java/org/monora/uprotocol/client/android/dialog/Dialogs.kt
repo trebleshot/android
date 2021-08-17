@@ -27,6 +27,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.util.*
 
@@ -84,7 +85,7 @@ object Dialogs {
     }
 
     fun showRemoveDialog(activity: Activity, item: TransferItem) {
-        val checkBox = if (TransferItem.Type.Incoming == item.itemType) R.string.text_alsoDeleteReceivedFiles else 0
+        val checkBox = if (Direction.Incoming == item.itemDirection) R.string.text_alsoDeleteReceivedFiles else 0
         showGenericCheckBoxDialog(
             activity,
             R.string.ques_removeTransfer,

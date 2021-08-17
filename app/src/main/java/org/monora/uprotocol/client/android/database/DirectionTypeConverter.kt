@@ -19,12 +19,12 @@
 package org.monora.uprotocol.client.android.database
 
 import androidx.room.TypeConverter
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 
-class TransferItemTypeTypeConverter {
+class DirectionTypeConverter {
     @TypeConverter
-    fun fromType(value: TransferItem.Type): String = value.protocolValue
+    fun fromType(value: Direction): String = value.protocolValue
 
     @TypeConverter
-    fun toType(value: String): TransferItem.Type = TransferItem.Type.from(value)
+    fun toType(value: String): Direction = Direction.from(value)
 }

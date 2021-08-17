@@ -40,7 +40,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
@@ -55,8 +54,8 @@ import org.monora.uprotocol.client.android.protocol.isIncoming
 import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -113,7 +112,7 @@ class ItemViewModel @AssistedInject internal constructor(
             return
         }
 
-        if (item.type == TransferItem.Type.Outgoing || item.state == TransferItem.State.Done) {
+        if (item.direction == Direction.Outgoing || item.state == TransferItem.State.Done) {
             try {
                 Activities.view(context, DocumentFile.fromUri(context, uri))
             } catch (e: Exception) {
@@ -157,7 +156,7 @@ class ItemContentViewModel(val transferItem: UTransferItem, context: Context) {
 
     val mimeType = transferItem.mimeType
 
-    val shouldRecover = transferItem.type.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
+    val shouldRecover = transferItem.direction.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
 
     val state = context.getString(
         when (transferItem.state) {

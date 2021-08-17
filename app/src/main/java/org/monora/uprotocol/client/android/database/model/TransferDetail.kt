@@ -19,12 +19,12 @@
 package org.monora.uprotocol.client.android.database.model
 
 import androidx.room.DatabaseView
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem.State.Constants.DONE
 
 @DatabaseView(
     viewName = "transferDetail",
-    value = "SELECT transfer.id, transfer.location, transfer.clientUid, transfer.type, transfer.dateCreated, " +
+    value = "SELECT transfer.id, transfer.location, transfer.clientUid, transfer.direction, transfer.dateCreated, " +
             "transfer.accepted, client.nickname AS clientNickname, COUNT(items.id) AS itemsCount, " +
             "COUNT(CASE WHEN items.state == '$DONE' THEN items.id END) as itemsDoneCount, SUM(items.size) AS size, " +
             "SUM(CASE WHEN items.state == '$DONE' THEN items.size END) as sizeOfDone FROM transfer " +
@@ -36,7 +36,7 @@ data class TransferDetail(
     val clientUid: String,
     val clientNickname: String,
     val location: String,
-    val type: TransferItem.Type,
+    val direction: Direction,
     val size: Long,
     val accepted: Boolean,
     val sizeOfDone: Long,

@@ -19,11 +19,10 @@ package org.monora.uprotocol.client.android.viewmodel.content
 
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
-import androidx.lifecycle.LiveData
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.TransferDetail
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.client.android.protocol.isIncoming
 import kotlin.math.max
 
 class TransferDetailContentViewModel(detail: TransferDetail) {
@@ -33,7 +32,7 @@ class TransferDetailContentViewModel(detail: TransferDetail) {
 
     val isFinished = detail.itemsCount == detail.itemsDoneCount
 
-    val isReceiving = detail.type == TransferItem.Type.Incoming
+    val isReceiving = detail.direction.isIncoming
 
     val count = detail.itemsCount
 

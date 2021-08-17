@@ -22,6 +22,7 @@ import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.net.InetAddress
 
@@ -30,7 +31,7 @@ class FileTransferStarterTask(
     val persistenceProvider: PersistenceProvider,
     val transfer: Transfer,
     val client: UClient,
-    val type: TransferItem.Type,
+    val direction: Direction,
     val addressList: List<InetAddress>,
 ) {
     /*override fun onRun() {

@@ -19,10 +19,9 @@
 package org.monora.uprotocol.client.android.util
 
 import android.content.Context
-import android.util.Log
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.database.model.UTransferItem
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import java.io.File
 
 /**
@@ -54,7 +53,7 @@ object Transfers {
                     contextFile.getLength(),
                     directory,
                     contextFile.getUri().toString(),
-                    TransferItem.Type.Outgoing,
+                    Direction.Outgoing,
                 )
             )
 

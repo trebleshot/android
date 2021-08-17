@@ -25,6 +25,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 import org.monora.uprotocol.core.transfer.TransferItem.State.Constants.PENDING
 
@@ -39,11 +40,11 @@ interface TransferItemDao {
     @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND state == '$PENDING' ORDER BY name LIMIT 1")
     suspend fun getReceivable(groupId: Long): UTransferItem?
 
-    @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND id = :id AND type = :type LIMIT 1")
-    suspend fun get(groupId: Long, id: Long, type: TransferItem.Type): UTransferItem?
+    @Query("SELECT * FROM transferItem WHERE groupId = :groupId AND id = :id AND direction = :direction LIMIT 1")
+    suspend fun get(groupId: Long, id: Long, direction: Direction): UTransferItem?
 
-    @Query("SELECT * FROM transferItem WHERE location = :location AND type = :type")
-    suspend fun get(location: String, type: TransferItem.Type): UTransferItem?
+    @Query("SELECT * FROM transferItem WHERE location = :location AND direction = :direction")
+    suspend fun get(location: String, direction: Direction): UTransferItem?
 
     @Insert
     suspend fun insert(list: List<UTransferItem>)

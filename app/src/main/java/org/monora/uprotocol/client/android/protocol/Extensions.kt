@@ -25,15 +25,15 @@ import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.Transfers
 import java.net.ProtocolException
 
 val CommunicationBridge.cancellationCallback: () -> Unit
     get() = { activeConnection.cancel() }
 
-val TransferItem.Type.isIncoming
-    get() = this == TransferItem.Type.Incoming
+val Direction.isIncoming
+    get() = this == Direction.Incoming
 
 fun CommunicationBridge.startTransfer(
     backend: Backend,
@@ -41,7 +41,7 @@ fun CommunicationBridge.startTransfer(
     params: TransferParams,
     state: MutableLiveData<Task.State>
 ) {
-    if (requestFileTransferStart(params.transfer.id, params.transfer.type)) {
+    if (requestFileTransferStart(params.transfer.id, params.transfer.direction)) {
         runFileTransfer(this, backend, transferRepository, params, state)
     } else {
         throw ProtocolException("Remote rejected the request without providing the cause.")
@@ -74,7 +74,7 @@ fun runFileTransfer(
 
     val operation = MainTransferOperation(backend, transferRepository, params, state, bridge.cancellationCallback)
 
-    if (params.transfer.type.isIncoming) {
+    if (params.transfer.direction.isIncoming) {
         Transfers.receive(bridge, operation, params.transfer.id)
     } else {
         Transfers.send(bridge, operation, params.transfer.id)

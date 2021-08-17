@@ -42,6 +42,7 @@ import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ClientType
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
 import java.io.IOException
 import java.io.InputStream
@@ -120,8 +121,8 @@ class MainPersistenceProvider @Inject constructor(
         mimeType: String,
         size: Long,
         directory: String?,
-        type: TransferItem.Type,
-    ): TransferItem = UTransferItem(id, groupId, name, mimeType, size, directory, uniqueFileName(), type)
+        direction: Direction,
+    ): TransferItem = UTransferItem(id, groupId, name, mimeType, size, directory, uniqueFileName(), direction)
 
     override fun getCertificate(): X509Certificate = userDataRepository.certificate
 
@@ -151,7 +152,7 @@ class MainPersistenceProvider @Inject constructor(
             transferRepository.getTransfer(transferItem.groupId) ?: throw IOException()
         }
 
-        return if (transferItem.itemType == TransferItem.Type.Incoming) {
+        return if (transferItem.direction == Direction.Incoming) {
             DocumentFileStreamDescriptor(transferRepository.getIncomingFile(transferItem, transfer))
         } else {
             StreamInfoStreamDescriptor(OpenableContent.from(context, Uri.parse(transferItem.location)))
@@ -189,9 +190,9 @@ class MainPersistenceProvider @Inject constructor(
     }
 
     override fun loadTransferItem(
-        clientUid: String, groupId: Long, id: Long, type: TransferItem.Type,
+        clientUid: String, groupId: Long, id: Long, direction: Direction,
     ): TransferItem = runBlocking {
-        transferRepository.getTransferItem(groupId, id, type) ?: throw PersistenceException("Item does not exist")
+        transferRepository.getTransferItem(groupId, id, direction) ?: throw PersistenceException("Item does not exist")
     }
 
     override fun openInputStream(descriptor: StreamDescriptor): InputStream {

@@ -27,8 +27,8 @@ import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.util.MimeIcons
 import org.monora.uprotocol.client.android.viewmodel.content.FileContentViewModel
+import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem.State.Done
-import org.monora.uprotocol.core.transfer.TransferItem.Type.Outgoing
 
 private fun load(imageView: ImageView, uri: Uri, circle: Boolean = false) {
     GlideApp.with(imageView)
@@ -48,7 +48,7 @@ private fun load(imageView: ImageView, uri: Uri, circle: Boolean = false) {
 @BindingAdapter("thumbnailOf")
 fun loadThumbnailOf(imageView: ImageView, item: UTransferItem) {
     if (item.mimeType.startsWith("image/") || item.mimeType.startsWith("video/")
-        && (item.type == Outgoing || item.state == Done)
+        && (item.direction == Direction.Outgoing || item.state == Done)
     ) {
         load(imageView, Uri.parse(item.location), circle = true)
     } else {

@@ -59,6 +59,7 @@ import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.consume
+import org.monora.uprotocol.core.protocol.ClipboardType
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -161,7 +162,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     bridge.use {
-                        if (it.requestTextTransfer(this@TextEditorFragment.text)) {
+                        if (it.requestClipboard(this@TextEditorFragment.text, ClipboardType.Text)) {
                             lifecycleScope.launch {
                                 createSnackbar(R.string.mesg_sent).show()
                             }

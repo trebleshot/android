@@ -52,9 +52,8 @@ import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.util.Progress
 import org.monora.uprotocol.client.android.util.Transfers
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
-import org.monora.uprotocol.core.transfer.TransferItem
+import org.monora.uprotocol.core.protocol.Direction
 import java.io.File
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -106,7 +105,7 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
             val groupId = Random.nextLong()
             val items = mutableListOf<UTransferItem>()
             val progress = Progress(list.size)
-            val type = TransferItem.Type.Outgoing
+            val direction = Direction.Outgoing
 
             list.forEach {
                 if (it is FileModel) {
@@ -130,7 +129,7 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
                             base.getLength(),
                             directory,
                             base.getUri().toString(),
-                            TransferItem.Type.Outgoing
+                            direction,
                         )
                     )
 
@@ -150,7 +149,7 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
                                     split.getLength(),
                                     directory,
                                     split.getUri().toString(),
-                                    TransferItem.Type.Outgoing
+                                    direction,
                                 )
                             )
                         }
@@ -161,13 +160,13 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
 
                     val item = when (it) {
                         is Song -> UTransferItem(
-                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type
+                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), direction
                         )
                         is Image -> UTransferItem(
-                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type
+                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), direction
                         )
                         is Video -> UTransferItem(
-                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), type
+                            id, groupId, it.displayName, it.mimeType, it.size, null, it.uri.toString(), direction
                         )
                         else -> {
                             progress.index -= 1

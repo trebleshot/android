@@ -41,7 +41,6 @@ import org.monora.uprotocol.client.android.util.clientRoute
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
-import org.monora.uprotocol.core.protocol.communication.ProtocolException
 import org.monora.uprotocol.core.protocol.communication.client.UnauthorizedClientException
 import java.net.InetAddress
 import java.net.UnknownHostException
@@ -113,15 +112,10 @@ class ManualConnectionViewModel @Inject internal constructor(
 
         try {
             val inetAddress = InetAddress.getByName(address)
-            val bridge = CommunicationBridge.connect(
-                connectionFactory, persistenceProvider, inetAddress
-            )
-
-            if (!bridge.requestAcquaintance()) {
-                throw ProtocolException()
+            CommunicationBridge.connect(connectionFactory, persistenceProvider, inetAddress).use {
+                it.send(false)
+                _state.postValue(ManualConnectionState.Loaded(it.clientRoute))
             }
-
-            _state.postValue(ManualConnectionState.Loaded(bridge.clientRoute))
         } catch (e: Exception) {
             _state.postValue(ManualConnectionState.Error(e))
         } finally {

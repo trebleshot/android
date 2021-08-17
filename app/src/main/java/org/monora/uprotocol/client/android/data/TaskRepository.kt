@@ -50,7 +50,7 @@ class TaskRepository @Inject constructor(
         params: TransferParams,
         taskRegistry: TaskRegistry<TransferParams>
     ) = this.register(
-        context.getString(if (params.transfer.type.isIncoming) R.string.text_receiving else R.string.text_sending),
+        context.getString(if (params.transfer.direction.isIncoming) R.string.text_receiving else R.string.text_sending),
         params,
         taskRegistry
     ).also {

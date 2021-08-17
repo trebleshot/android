@@ -43,10 +43,11 @@ import org.monora.uprotocol.core.persistence.PersistenceException
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
+import org.monora.uprotocol.core.protocol.ClipboardType
 import org.monora.uprotocol.core.protocol.ConnectionFactory
+import org.monora.uprotocol.core.protocol.Direction
+import org.monora.uprotocol.core.protocol.Direction.Incoming
 import org.monora.uprotocol.core.protocol.communication.ContentException
-import org.monora.uprotocol.core.transfer.TransferItem
-import org.monora.uprotocol.core.transfer.TransferItem.Type.Incoming
 import org.monora.uprotocol.core.transfer.Transfers
 import javax.inject.Inject
 
@@ -65,7 +66,7 @@ class MainTransportSeat @Inject constructor(
         bridge: CommunicationBridge,
         client: Client,
         groupId: Long,
-        type: TransferItem.Type,
+        direction: Direction,
     ) {
         val transfer = runBlocking {
             transferRepository.getTransfer(groupId) ?: throw IllegalStateException("Missing group $groupId")
@@ -87,7 +88,26 @@ class MainTransportSeat @Inject constructor(
     }
 
     // TODO: 7/19/21 Handle acquaintance requests when the client picker fragment is showing
-    override fun handleAcquaintanceRequest(client: Client, clientAddress: ClientAddress): Boolean = true
+    override fun handleAcquaintanceRequest(
+        client: Client,
+        clientAddress: ClientAddress,
+        direction: Direction,
+    ): Boolean = true
+
+    override fun handleClipboardRequest(client: Client, content: String, type: ClipboardType): Boolean {
+        check(client is UClient) {
+            "Expected the UClient implementation"
+        }
+
+        val sharedText = SharedText(0, content)
+
+        runBlocking {
+            sharedTextRepository.insert(sharedText)
+        }
+
+        backend.services.notifications.notifyClipboardRequest(client, sharedText)
+        return true
+    }
 
     override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
         check(client is UClient) {
@@ -179,21 +199,7 @@ class MainTransportSeat @Inject constructor(
         }
     }
 
-    override fun handleTextTransfer(client: Client, text: String) {
-        check(client is UClient) {
-            "Expected the UClient implementation"
-        }
-
-        val sharedText = SharedText(0, text)
-
-        runBlocking {
-            sharedTextRepository.insert(sharedText)
-        }
-
-        backend.services.notifications.notifyClipboardRequest(client, sharedText)
-    }
-
-    override fun hasOngoingTransferFor(groupId: Long, clientUid: String, type: TransferItem.Type): Boolean {
+    override fun hasOngoingTransferFor(groupId: Long, clientUid: String, direction: Direction): Boolean {
         return taskRepository.contains { it.params is TransferParams && it.params.transfer.id == groupId }
     }
 

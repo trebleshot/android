@@ -46,7 +46,7 @@ import org.monora.uprotocol.client.android.database.model.WebTransfer
     version = 1
 )
 @TypeConverters(
-    ClientTypeConverter::class, IOTypeConverter::class, TransferItemTypeTypeConverter::class,
+    ClientTypeConverter::class, IOTypeConverter::class, DirectionTypeConverter::class,
     TransferItemStateTypeConverter::class, WebTransferTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
