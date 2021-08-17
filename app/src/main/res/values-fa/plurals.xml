@@ -1,29 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="ques_deleteFile">
         <item quantity="one">مایلید این فایل را پاک کنید؟</item>
         <item quantity="other">مایلید فایل های %d را پاک کنید؟</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">%d فایل دریافت شده است</item>
-        <item quantity="other">%d فایل های دریافت شده اند</item>
+        <item quantity="one">%d فایل دریافت شد</item>
+        <item quantity="other">%d فایل ها دریافت شده اند</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d فایل انتخاب شده است</item>
@@ -38,12 +21,12 @@
         <item quantity="other">%d اتصال ها</item>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">دریافت این فایل؟</item>
-        <item quantity="other">"دریافت فایل های %d ؟"</item>
+        <item quantity="one">این فایل را دریافت می کنید؟</item>
+        <item quantity="other">%d فایل دریافت شود؟</item>
     </plurals>
     <plurals name="text_files">
         <item quantity="one">%d فایل</item>
-        <item quantity="other">%d فایل های</item>
+        <item quantity="other">%d فایل ها</item>
     </plurals>
     <plurals name="text_secondsAgo">
         <item quantity="one">یک ثانیه پیش</item>
@@ -54,8 +37,8 @@
         <item quantity="other">%d دقیقه پیش</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">%d فایل پاک شده است</item>
-        <item quantity="other">%d فایل پاک شده است</item>
+        <item quantity="one">%d فایل حذف شده است</item>
+        <item quantity="other">%d فایل ها حذف شده اند.</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">یک ردیف</item>
