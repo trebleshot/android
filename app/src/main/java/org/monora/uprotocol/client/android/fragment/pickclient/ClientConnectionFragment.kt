@@ -34,7 +34,6 @@ import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientConnectionViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ConnectionState
-import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
 
 @AndroidEntryPoint
 class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
@@ -61,9 +60,9 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
         clientConnectionViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is ConnectionState.Connected -> {
-                    clientPickerViewModel.bridge.postValue(StatefulBridge.of(false, it.bridge))
+                    clientPickerViewModel.bridge.postValue(it.bridge)
                     findNavController().navigate(
-                        ClientConnectionFragmentDirections.actionClientConnectionFragmentToOptionsFragment2()
+                        PickClientFragmentDirections.xmlPop()
                     )
                 }
                 is ConnectionState.Error -> {

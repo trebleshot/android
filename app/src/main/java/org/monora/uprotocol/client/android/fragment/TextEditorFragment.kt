@@ -58,7 +58,6 @@ import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
-import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.core.protocol.ClipboardType
 import javax.inject.Inject
 
@@ -155,9 +154,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
             }
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
-            val bridge = statefulBridge.consume() ?: return@observe
-
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
             createSnackbar(R.string.text_sending).show()
             lifecycleScope.launch(Dispatchers.IO) {
                 try {

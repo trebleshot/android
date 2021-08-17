@@ -31,7 +31,6 @@ import org.monora.uprotocol.client.android.databinding.LayoutSendBinding
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingState
 import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
-import org.monora.uprotocol.client.android.viewmodel.consume
 
 @AndroidEntryPoint
 class SendFragment : Fragment(R.layout.layout_send) {
@@ -69,10 +68,8 @@ class SendFragment : Fragment(R.layout.layout_send) {
             }
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
-            statefulBridge.consume()?.let {
-                sharingViewModel.consume(it, args.groupId, args.items.toList())
-            }
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
+            sharingViewModel.consume(bridge, args.groupId, args.items.toList())
         }
     }
 }

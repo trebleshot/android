@@ -36,7 +36,6 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
-import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.core.protocol.Direction
 
 @AndroidEntryPoint
@@ -66,9 +65,7 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
             binding.storageFolderText.text = filesViewModel.appDirectory.getName()
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
-            val bridge = statefulBridge.consume() ?: return@observe
-
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
             binding.progressBar.visibility = View.VISIBLE
             binding.button.isEnabled = false
             TransitionManager.beginDelayedTransition(binding.root as ViewGroup)

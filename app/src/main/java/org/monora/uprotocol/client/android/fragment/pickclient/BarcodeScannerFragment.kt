@@ -59,6 +59,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.monora.android.codescanner.CodeScanner
+import org.monora.uprotocol.client.android.NavPickClientDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.config.Keyword
@@ -70,7 +71,6 @@ import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
-import org.monora.uprotocol.client.android.viewmodel.StatefulBridge
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -220,10 +220,8 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                     Toast.makeText(context, "Error ${it.e.message}", Toast.LENGTH_LONG).show()
                 }
                 is State.Result -> {
-                    clientPickerViewModel.bridge.postValue(StatefulBridge.of(false, it.bridge))
-                    findNavController().navigate(
-                        BarcodeScannerFragmentDirections.actionBarcodeScannerFragmentToOptionsFragment()
-                    )
+                    clientPickerViewModel.bridge.postValue(it.bridge)
+                    findNavController().navigate(NavPickClientDirections.xmlPop())
                 }
                 is State.Running -> {
 

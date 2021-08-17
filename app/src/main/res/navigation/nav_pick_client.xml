@@ -19,7 +19,7 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/pick_client.xml"
+    android:id="@+id/nav_pick_client"
     app:startDestination="@id/optionsFragment">
     <fragment
         android:id="@+id/optionsFragment"
@@ -95,11 +95,6 @@
             app:argType="java.net.InetAddress"
             app:nullable="true"
             android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_barcodeScannerFragment_to_optionsFragment"
-            app:destination="@id/optionsFragment"
-            app:popUpTo="@id/optionsFragment"
-            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/wifiConnectFragment"
@@ -128,11 +123,6 @@
             app:argType="org.monora.uprotocol.client.android.database.model.UClientAddress"
             app:nullable="true"
             android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_clientConnectionFragment_to_optionsFragment2"
-            app:destination="@id/optionsFragment"
-            app:popUpTo="@id/optionsFragment"
-            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/acceptClientFragment"
@@ -155,7 +145,7 @@
     </dialog>
     <action
         android:id="@+id/xml_pop"
-        app:popUpTo="@id/pick_client.xml"
+        app:popUpTo="@id/nav_pick_client"
         app:popUpToInclusive="true" />
 
 </navigation>

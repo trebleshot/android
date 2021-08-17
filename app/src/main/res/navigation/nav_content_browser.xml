@@ -54,7 +54,7 @@
             app:argType="org.monora.uprotocol.client.android.database.model.UTransferItem[]" />
         <action
             android:id="@+id/pick_client"
-            app:destination="@id/pick_client.xml" />
+            app:destination="@id/nav_pick_client" />
         <action
             android:id="@+id/action_sendFragment_to_nav_transfer_details"
             app:destination="@id/nav_transfer_details"

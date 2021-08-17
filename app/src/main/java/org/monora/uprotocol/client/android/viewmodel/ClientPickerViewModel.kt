@@ -22,22 +22,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.apache.commons.lang3.tuple.MutablePair
+import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
 import org.monora.uprotocol.core.CommunicationBridge
 import javax.inject.Inject
 
-typealias StatefulBridge = MutablePair<Boolean, CommunicationBridge>
-
 @HiltViewModel
 class ClientPickerViewModel @Inject internal constructor() : ViewModel() {
-    val bridge = MutableLiveData<StatefulBridge>()
+    val bridge = SingleLiveEvent<CommunicationBridge>()
 }
-
-fun StatefulBridge.consume(): CommunicationBridge? {
-    val (used, bridge) = this
-    return if (used) null else {
-        this.setLeft(true)
-        bridge
-    }
-}
-
-fun StatefulBridge.isValid(): Boolean = !this.left

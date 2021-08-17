@@ -27,7 +27,7 @@
         android:label="@string/text_receive" >
         <action
             android:id="@+id/pick_client"
-            app:destination="@id/pick_client.xml" />
+            app:destination="@id/nav_pick_client" />
         <action
             android:id="@+id/action_receiveFragment_to_filePickerFragment"
             app:destination="@id/filePickerFragment" />

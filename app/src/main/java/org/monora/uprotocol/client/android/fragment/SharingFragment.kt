@@ -32,7 +32,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
@@ -41,9 +40,7 @@ import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingState
 import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
-import org.monora.uprotocol.client.android.viewmodel.consume
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
-import org.monora.uprotocol.core.transfer.TransferItem
 
 @AndroidEntryPoint
 class SharingFragment : Fragment(R.layout.layout_sharing) {
@@ -66,10 +63,8 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 
         adapter.submitList(args.contents.toList())
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { statefulBridge ->
-            statefulBridge.consume()?.let {
-                sharingViewModel.consume(it, args.groupId, args.contents.toList())
-            }
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
+            sharingViewModel.consume(bridge, args.groupId, args.contents.toList())
         }
 
         sharingViewModel.state.observe(viewLifecycleOwner) {
