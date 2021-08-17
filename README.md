@@ -1,4 +1,4 @@
-![Build Status](https://github.com/trebleshot/android/actions/workflows/gradle.yml/badge.svg)
+![Build Status](https://github.com/trebleshot/android/actions/workflows/android-test.yml/badge.svg)
 [![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/svg-badge.svg)](https://hosted.weblate.org/engage/trebleshot/)
 
 # TrebleShot - FOSS File & Text Sharing Tool for Android
