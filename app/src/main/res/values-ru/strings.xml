@@ -322,9 +322,9 @@
     <string name="text_groupByNothing">Ничего</string>
     <string name="text_groupByDate">Дата</string>
     <string name="text_groupByAlbum">Альбом</string>
-    <string name="text_groupByArtist">Артист</string>
+    <string name="text_groupByArtist">Исполнитель</string>
     <string name="text_groupByFolder">Папка</string>
-    <string name="text_home">Дом</string>
+    <string name="text_home">Домашняя</string>
     <string name="text_default">По умолчанию</string>
     <string name="text_files">Файлы</string>
     <string name="mesg_noReceiverOrSender">Сначала вы должны добавить устройства</string>
