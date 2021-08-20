@@ -15,19 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.protocol
 
-import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.protocol.Direction
+package org.monora.uprotocol.client.android.viewmodel.content
 
-val CommunicationBridge.cancellationCallback: () -> Unit
-    get() = { activeConnection.cancel() }
+import org.monora.uprotocol.core.protocol.Client
 
-val Direction.isIncoming
-    get() = this == Direction.Incoming
+class SenderClientContentViewModel(val client: Client?) {
+    val hasClient = client != null
 
-fun CommunicationBridge.closeQuietly() {
-    use {
-
-    }
+    val nickname = client?.clientNickname
 }

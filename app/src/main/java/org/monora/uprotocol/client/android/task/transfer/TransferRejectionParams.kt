@@ -15,19 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.protocol
 
-import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.protocol.Direction
+package org.monora.uprotocol.client.android.task.transfer
 
-val CommunicationBridge.cancellationCallback: () -> Unit
-    get() = { activeConnection.cancel() }
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.core.protocol.Client
 
-val Direction.isIncoming
-    get() = this == Direction.Incoming
-
-fun CommunicationBridge.closeQuietly() {
-    use {
-
-    }
-}
+class TransferRejectionParams(
+    val transfer: Transfer,
+    val client: Client,
+)

@@ -40,7 +40,6 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.config.AppConfig
-import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
 import org.monora.uprotocol.client.android.database.model.UTransferItem
@@ -57,6 +56,8 @@ typealias TaskFilter = (Task) -> Boolean
 typealias TaskRegistry<T> = (applicationScope: CoroutineScope, params: T, state: MutableLiveData<Task.State>) -> Job
 
 typealias TaskSubscriber<T> = (Task) -> T?
+
+// is this my new favorite font? I think it is!
 
 @Singleton
 class Backend @Inject constructor(
@@ -103,7 +104,14 @@ class Backend @Inject constructor(
     }
 
     fun cancelAllTasks() {
-        applicationScope.coroutineContext.cancelChildren(CancellationException("Application exited"))
+        val cancellationCause = CancellationException("Application exited")
+        applicationScope.coroutineContext.cancelChildren(cancellationCause)
+
+        synchronized(taskSet) {
+            taskSet.forEach {
+                if (!it.job.isCancelled) it.job.cancel(cancellationCause)
+            }
+        }
     }
 
     fun cancelMatchingTasks(filter: TaskFilter): Boolean {
@@ -162,17 +170,6 @@ class Backend @Inject constructor(
         }
 
         foregroundActivity = if (newlySwitchedGrounds) null else if (inForeground) activity else foregroundActivity
-    }
-
-    fun notifyFileRequest(client: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
-        val activity = foregroundActivity
-
-        if (activity == null) {
-            services.notifications.notifyTransferRequest(client, transfer, itemList)
-        } else {
-            // TODO: 7/25/21 Also insert the transfer details and navigate to transfer details fragment
-            activity.startActivity(Intent(activity, HomeActivity::class.java))
-        }
     }
 
     private fun notifyTileState(newState: Boolean) {

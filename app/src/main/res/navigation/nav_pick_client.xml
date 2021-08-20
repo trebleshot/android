@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2021 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -59,15 +58,40 @@
         <action
             android:id="@+id/action_optionsFragment_to_clientDetailsFragment"
             app:destination="@id/clientDetailsFragment" />
+        <argument
+            android:name="direction"
+            app:argType="org.monora.uprotocol.core.protocol.Direction" />
+        <action
+            android:id="@+id/action_optionsFragment_to_nav_transfer_details"
+            app:destination="@id/nav_transfer_details"
+            app:popUpTo="@id/optionsFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="transfer"
+                app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/networkManagerFragment"
         android:name="org.monora.uprotocol.client.android.fragment.NetworkManagerFragment"
-        android:label="@string/butn_generateQrCode" />
+        android:label="@string/butn_generateQrCode">
+        <argument
+            android:name="direction"
+            app:argType="org.monora.uprotocol.core.protocol.Direction" />
+        <action
+            android:id="@+id/action_networkManagerFragment_to_nav_transfer_details"
+            app:destination="@id/nav_transfer_details"
+            app:popUpTo="@id/networkManagerFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="transfer"
+                app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/clientsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.PickClientFragment"
-        android:label="@string/text_allClients" >
+        android:label="@string/text_allClients">
         <action
             android:id="@+id/action_clientsFragment_to_clientConnectionFragment"
             app:destination="@id/clientConnectionFragment" />
@@ -78,7 +102,7 @@
     <fragment
         android:id="@+id/manualConnectionFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.ManualConnectionFragment"
-        android:label="@string/text_enterAddress" >
+        android:label="@string/text_enterAddress">
         <action
             android:id="@+id/action_manualConnectionFragment_to_acceptClientFragment"
             app:destination="@id/acceptClientFragment" />
@@ -86,7 +110,7 @@
     <fragment
         android:id="@+id/barcodeScannerFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.BarcodeScannerFragment"
-        android:label="@string/text_scanQrCode" >
+        android:label="@string/text_scanQrCode">
         <action
             android:id="@+id/action_barcodeScannerFragment_to_wifiConnectFragment"
             app:destination="@id/wifiConnectFragment" />
@@ -99,7 +123,7 @@
     <dialog
         android:id="@+id/wifiConnectFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.WifiConnectFragment"
-        android:label="@string/text_connectToWifi" >
+        android:label="@string/text_connectToWifi">
         <argument
             android:name="networkDescription"
             app:argType="org.monora.uprotocol.client.android.model.NetworkDescription" />
@@ -114,7 +138,7 @@
     <fragment
         android:id="@+id/clientConnectionFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.ClientConnectionFragment"
-        android:label="@string/text_connectingToClient" >
+        android:label="@string/text_connectingToClient">
         <argument
             android:name="client"
             app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
@@ -127,7 +151,7 @@
     <dialog
         android:id="@+id/acceptClientFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.AcceptClientFragment"
-        android:label="@string/text_verifyClient" >
+        android:label="@string/text_verifyClient">
         <action
             android:id="@+id/action_acceptClientFragment_to_clientConnectionFragment"
             app:destination="@id/clientConnectionFragment" />
@@ -138,7 +162,7 @@
     <dialog
         android:id="@+id/clientDetailsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ClientDetailsFragment"
-        android:label="@string/client_details" >
+        android:label="@string/client_details">
         <argument
             android:name="client"
             app:argType="org.monora.uprotocol.client.android.database.model.UClient" />
@@ -147,5 +171,6 @@
         android:id="@+id/xml_pop"
         app:popUpTo="@id/nav_pick_client"
         app:popUpToInclusive="true" />
+    <include app:graph="@navigation/nav_transfer_details" />
 
 </navigation>

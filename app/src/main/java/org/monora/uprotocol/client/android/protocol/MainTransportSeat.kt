@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
-import org.monora.uprotocol.client.android.data.ClientRepository
+import org.monora.uprotocol.client.android.backend.TransportRegistry
 import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.data.TaskRepository
@@ -33,6 +33,7 @@ import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
+import org.monora.uprotocol.client.android.database.model.UClientAddress
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.IndexingParams
@@ -44,7 +45,6 @@ import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.ClientAddress
 import org.monora.uprotocol.core.protocol.ClipboardType
-import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.protocol.Direction.Incoming
 import org.monora.uprotocol.core.protocol.communication.ContentException
@@ -53,14 +53,13 @@ import javax.inject.Inject
 
 class MainTransportSeat @Inject constructor(
     @ApplicationContext val context: Context,
-    private val connectionFactory: ConnectionFactory,
-    private val clientRepository: ClientRepository,
+    private val backend: Backend,
     private val fileRepository: FileRepository,
     private val persistenceProvider: PersistenceProvider,
-    private val transferRepository: TransferRepository,
     private val sharedTextRepository: SharedTextRepository,
     private val taskRepository: TaskRepository,
-    private val backend: Backend,
+    private val transferRepository: TransferRepository,
+    private val transportRegistry: TransportRegistry,
 ) : TransportSeat {
     override fun beginFileTransfer(
         bridge: CommunicationBridge,
@@ -68,31 +67,40 @@ class MainTransportSeat @Inject constructor(
         groupId: Long,
         direction: Direction,
     ) {
-        val transfer = runBlocking {
-            transferRepository.getTransfer(groupId) ?: throw IllegalStateException("Missing group $groupId")
-        }
-        val detail = runBlocking {
-            transferRepository.getTransferDetailDirect(groupId) ?: throw PersistenceException("Missing detail $groupId")
-        }
-        val task = taskRepository.register(
-            TransferParams(transfer, client, detail.size, detail.sizeOfDone),
-        ) { applicationScope, params, state ->
-            applicationScope.launch(Dispatchers.IO) {
-                runFileTransfer(bridge, backend, transferRepository, params, state)
-            }
-        }
+        bridge.activeConnection.isRoaming = true
 
         runBlocking {
-            task.job.join()
+            val transfer = transferRepository.getTransfer(groupId) ?: throw PersistenceException(
+                "Missing group $groupId"
+            )
+            val detail = transferRepository.getTransferDetailDirect(groupId) ?: throw PersistenceException(
+                "Missing detail $groupId"
+            )
+
+            if (!transfer.accepted) {
+                transfer.accepted = true
+                transferRepository.update(transfer)
+            }
+
+            taskRepository.register(
+                TransferParams(transfer, client, detail.size, detail.sizeOfDone),
+            ) { applicationScope, params, state ->
+                applicationScope.launch(Dispatchers.IO) {
+                    val operation = MainTransferOperation(
+                        backend, transferRepository, params, state, bridge.cancellationCallback
+                    )
+
+                    bridge.use {
+                        if (transfer.direction.isIncoming) {
+                            Transfers.receive(it, operation, transfer.id)
+                        } else {
+                            Transfers.send(it, operation, transfer.id)
+                        }
+                    }
+                }
+            }
         }
     }
-
-    // TODO: 7/19/21 Handle acquaintance requests when the client picker fragment is showing
-    override fun handleAcquaintanceRequest(
-        client: Client,
-        clientAddress: ClientAddress,
-        direction: Direction,
-    ): Boolean = true
 
     override fun handleClipboardRequest(client: Client, content: String, type: ClipboardType): Boolean {
         check(client is UClient) {
@@ -109,78 +117,56 @@ class MainTransportSeat @Inject constructor(
         return true
     }
 
-    override fun handleFileTransferRequest(client: Client, hasPin: Boolean, groupId: Long, jsonArray: String) {
+    override fun handleFileTransferRequest(
+        client: Client,
+        hasPin: Boolean,
+        groupId: Long,
+        jsonArray: String
+    ): Boolean {
         check(client is UClient) {
             "Expected the UClient implementation"
         }
 
-        taskRepository.register(
-            context.getString(R.string.mesg_organizingFiles),
-            IndexingParams(groupId, client, jsonArray, hasPin)
-        ) { applicationScope, params, state ->
-            applicationScope.launch(Dispatchers.IO) {
-                try {
-                    val storageLocation = fileRepository.appDirectory.originalUri.toString()
-                    val transfer = Transfer(
-                        params.groupId, client.clientUid, Incoming, storageLocation, accepted = hasPin
-                    )
-                    val total: Int
-                    val items = Transfers.toTransferItemList(params.jsonData).also {
-                        total = it.size
-                    }.mapIndexed { index, it ->
+        val storageLocation = fileRepository.appDirectory.originalUri.toString()
+        val transfer = Transfer(groupId, client.clientUid, Incoming, storageLocation, accepted = hasPin)
+        var items: List<UTransferItem>? = null
+
+        runBlocking {
+            taskRepository.register(
+                context.getString(R.string.preparing),
+                IndexingParams(groupId, client, jsonArray, hasPin),
+            ) { applicationScope, params, state ->
+                applicationScope.launch(coroutineContext) {
+                    state.postValue(Task.State.Running(context.getString(R.string.mesg_organizingFiles)))
+
+                    Transfers.toTransferItemList(jsonArray).map {
                         val item = persistenceProvider.createTransferItemFor(
                             params.groupId, it.id, it.name, it.mimeType, it.size, it.directory, Incoming
                         )
-
-                        state.postValue(Task.State.Progress(it.name, total, index))
 
                         check(item is UTransferItem) {
                             "Unexpected type"
                         }
 
                         item
-                    }
+                    }.also {
+                        if (it.isNotEmpty()) {
+                            transferRepository.insert(transfer)
+                            transferRepository.insert(it)
 
-                    if (items.isNotEmpty()) {
-                        transferRepository.insert(transfer)
-                        transferRepository.insert(items)
-
-                        if (hasPin) {
-                            val detail = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
-
-                            taskRepository.register(
-                                TransferParams(transfer, client, detail.size, detail.sizeOfDone)
-                            ) { applicationScope, params, state ->
-                                applicationScope.launch(Dispatchers.IO) {
-                                    state.postValue(
-                                        Task.State.Running(backend.context.getString(R.string.text_connectingToClient))
-                                    )
-
-                                    try {
-                                        val addresses = clientRepository.getInetAddresses(params.client.clientUid)
-
-                                        CommunicationBridge.Builder(
-                                            connectionFactory, persistenceProvider, addresses
-                                        ).apply {
-                                            setClearBlockedStatus(true)
-                                            setClientUid(params.client.clientUid)
-                                        }.connect().use {
-                                            it.startTransfer(backend, transferRepository, params, state)
-                                        }
-                                    } catch (e: Exception) {
-                                        state.postValue(Task.State.Error(e))
-                                    }
-                                }
-                            }
-                        } else {
-                            backend.notifyFileRequest(client, transfer, items)
+                            items = it
                         }
                     }
-                } catch (e: Throwable) {
-                    e.printStackTrace()
                 }
             }
         }
+
+        return items?.let {
+            if (!transportRegistry.handleTransferRequest(transfer, hasPin) && !hasPin) {
+                backend.services.notifications.notifyTransferRequest(client, transfer, it)
+            }
+            hasPin
+        } ?: false
     }
 
     override fun handleFileTransferRejection(client: Client, groupId: Long): Boolean {
@@ -197,6 +183,23 @@ class MainTransportSeat @Inject constructor(
             }
             false
         }
+    }
+
+    override fun handleGuidanceRequest(
+        bridge: CommunicationBridge,
+        client: Client,
+        clientAddress: ClientAddress,
+        direction: Direction,
+    ) {
+        check(client is UClient) {
+            "Expected the UClient implementation"
+        }
+
+        check(clientAddress is UClientAddress) {
+            "Expected the UClientAddress implementation"
+        }
+
+        transportRegistry.handleGuidanceRequest(bridge, direction)
     }
 
     override fun hasOngoingTransferFor(groupId: Long, clientUid: String, direction: Direction): Boolean {

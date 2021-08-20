@@ -20,23 +20,64 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.SenderClientContentViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="16dp"
         android:paddingLeft="@dimen/short_content_width_padding"
         android:paddingRight="@dimen/short_content_width_padding">
+
+        <ImageView
+            android:id="@+id/image"
+            pictureOf="@{viewModel.client}"
+            android:layout_width="@dimen/icon_size_list_giant"
+            android:layout_height="@dimen/icon_size_list_giant"
+            app:layout_constraintBottom_toTopOf="@+id/text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/ic_arrow_down_white_24dp"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
             android:id="@+id/text"
             style="@style/TextAppearance.Primary.Big"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Let's set you up!"
-            app:layout_constraintBottom_toTopOf="@+id/progressBar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread"
-            tools:layout_editor_absoluteX="16dp" />
+            android:layout_marginTop="16dp"
+            android:text="@{viewModel.nickname}"
+            android:textStyle="bold"
+            android:visibility="@{viewModel.hasClient ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@id/statusText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image"
+            tools:text="@tools:sample/date/ddmmyy" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:textAppearance="?textAppearanceSubtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/receiver_pending"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text"
+            app:layout_constraintBottom_toTopOf="@id/storageFolderContainer"
+            tools:text="@tools:sample/date/ddmmyy" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -45,10 +86,9 @@
             android:indeterminate="true"
             app:layout_constraintBottom_toTopOf="@+id/storageFolderContainer"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/text" />
+            app:layout_constraintTop_toBottomOf="@+id/statusText" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/storageFolderContainer"

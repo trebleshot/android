@@ -35,7 +35,7 @@
     <dialog
         android:id="@+id/prepareIndexFragment"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment"
-        android:label="@string/preparing" >
+        android:label="@string/preparing">
         <action
             android:id="@+id/action_prepareIndexFragment_to_sendFragment"
             app:destination="@id/sendFragment"
@@ -45,7 +45,7 @@
     <fragment
         android:id="@+id/sendFragment"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.SendFragment"
-        android:label="@string/text_connectingToClient" >
+        android:label="@string/text_connectingToClient">
         <argument
             android:name="groupId"
             app:argType="long" />
@@ -54,7 +54,12 @@
             app:argType="org.monora.uprotocol.client.android.database.model.UTransferItem[]" />
         <action
             android:id="@+id/pick_client"
-            app:destination="@id/nav_pick_client" />
+            app:destination="@id/nav_pick_client">
+            <argument
+                android:name="direction"
+                app:argType="org.monora.uprotocol.core.protocol.Direction"
+                android:defaultValue="Outgoing" />
+        </action>
         <action
             android:id="@+id/action_sendFragment_to_nav_transfer_details"
             app:destination="@id/nav_transfer_details"

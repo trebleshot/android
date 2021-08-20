@@ -24,23 +24,38 @@
     <fragment
         android:id="@+id/receiveFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ReceiveFragment"
-        android:label="@string/text_receive" >
+        android:label="@string/text_receive">
         <action
             android:id="@+id/pick_client"
-            app:destination="@id/nav_pick_client" />
+            app:destination="@id/nav_pick_client">
+            <argument
+                android:name="direction"
+                app:argType="org.monora.uprotocol.core.protocol.Direction"
+                android:defaultValue="Incoming" />
+        </action>
         <action
             android:id="@+id/action_receiveFragment_to_filePickerFragment"
             app:destination="@id/filePickerFragment" />
+        <action
+            android:id="@+id/action_receiveFragment_to_nav_transfer_details"
+            app:destination="@id/nav_transfer_details"
+            app:popUpTo="@id/receiveFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="transfer"
+                app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
+        </action>
     </fragment>
     <include app:graph="@navigation/nav_pick_client" />
     <fragment
         android:id="@+id/filePickerFragment"
         android:name="org.monora.uprotocol.client.android.fragment.FilePickerFragment"
-        android:label="@string/change_storage_folder" >
+        android:label="@string/change_storage_folder">
         <argument
             android:name="selectionType"
             app:argType="org.monora.uprotocol.client.android.fragment.FilePickerFragment$SelectionType"
             android:defaultValue="Folder" />
     </fragment>
+    <include app:graph="@navigation/nav_transfer_details" />
 
 </navigation>

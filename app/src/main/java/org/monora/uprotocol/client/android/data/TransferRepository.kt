@@ -39,9 +39,9 @@ import javax.inject.Singleton
 @Singleton
 class TransferRepository @Inject constructor(
     @ApplicationContext context: Context,
+    private val fileRepository: FileRepository,
     private val transferDao: TransferDao,
     private val transferItemDao: TransferItemDao,
-    private val fileRepository: FileRepository,
 ) {
     private val context = WeakReference(context)
 
@@ -59,7 +59,7 @@ class TransferRepository @Inject constructor(
         return pseudoFile
     }
 
-    fun getIncomingPseudoFile(
+    private fun getIncomingPseudoFile(
         item: UTransferItem, transfer: Transfer, createIfNeeded: Boolean,
     ): DocumentFile = Files.createFileWithNestedPaths(
         context.get()!!,
@@ -106,6 +106,7 @@ class TransferRepository @Inject constructor(
     suspend fun insert(transfer: Transfer) = transferDao.insert(transfer)
 
     suspend fun insert(list: List<UTransferItem>) = transferItemDao.insert(list)
+
 
     fun saveReceivedFile(
         transfer: Transfer,

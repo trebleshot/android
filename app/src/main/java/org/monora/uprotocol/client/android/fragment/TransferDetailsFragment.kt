@@ -22,17 +22,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.util.CommonErrors
-import org.monora.uprotocol.client.android.viewmodel.RejectionState
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
@@ -41,9 +38,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
-    @Inject
-    lateinit var backend: Backend
-
     @Inject
     lateinit var factory: TransferDetailsViewModel.Factory
 
@@ -59,7 +53,6 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = LayoutTransferDetailsBinding.bind(view)
-        val rejectionState = MutableLiveData<RejectionState>()
 
         binding.image.setOnClickListener {
             viewModel.client.value?.let {
@@ -77,11 +70,11 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             val client = viewModel.client.value ?: return@setOnClickListener
             val detail = viewModel.transferDetail.value ?: return@setOnClickListener
 
-            managerViewModel.toggleTransferOperation(client, args.transfer, detail)
+            managerViewModel.toggleTransferOperation(args.transfer, client, detail)
         }
         binding.rejectButton.setOnClickListener {
             val client = viewModel.client.value ?: return@setOnClickListener
-            managerViewModel.rejectTransferRequest(client, args.transfer, rejectionState)
+            managerViewModel.rejectTransferRequest(args.transfer, client)
         }
 
         viewModel.transferDetail.observe(viewLifecycleOwner) {
@@ -115,8 +108,8 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
             }
         }
 
-        rejectionState.observe(viewLifecycleOwner) {
-            binding.rejectButton.isEnabled = it !is RejectionState.Running
+        viewModel.rejectionState.observe(viewLifecycleOwner) {
+            binding.rejectButton.isEnabled = it == null
         }
     }
 

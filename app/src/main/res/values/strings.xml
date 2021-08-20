@@ -671,4 +671,11 @@
     <string name="default_folder">Default Folder</string>
     <string name="error_empty_field">Field should not be empty</string>
     <string name="folder_name">Folder Name</string>
+    <string name="rejecting">Rejecting</string>
+    <string name="receiver_pending">Pick someone who is about to send something</string>
+    <string name="sender_not_expecting">%s was not sending anything</string>
+    <string name="sender_accepted">Sender accepted</string>
+    <string name="sender_finishing">Finishing</string>
+    <string name="starting">Starting</string>
+    <string name="sender_wait_for_receiver_notice">Receivers can pick you here</string>
 </resources>
