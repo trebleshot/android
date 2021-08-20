@@ -19,10 +19,12 @@
 package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -34,13 +36,17 @@ import org.monora.uprotocol.client.android.databinding.LayoutConnectionOptionsBi
 import org.monora.uprotocol.client.android.databinding.ListClientGridBinding
 import org.monora.uprotocol.client.android.model.ClientRoute
 import org.monora.uprotocol.client.android.viewholder.ClientGridViewHolder
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientsViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
+import org.monora.uprotocol.core.protocol.Direction
 
 @AndroidEntryPoint
 class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
     private val clientsViewModel: ClientsViewModel by viewModels()
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,6 +98,11 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
         clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())
+        }
+
+        clientPickerViewModel.registerForAcquaintanceRequests(viewLifecycleOwner, Direction.Outgoing) { bridge ->
+            Log.d("ReceiveFragment", "onViewCreated: Received successfully")
+            bridge.send(false)
         }
     }
 }

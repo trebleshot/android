@@ -56,5 +56,7 @@ object CommonErrors {
         is ConnectException, is DefectiveAddressListException -> context.getString(R.string.mesg_socketConnectionError)
         is NoRouteToHostException -> context.getString(R.string.mesg_noRouteToHostError)
         else -> context.getString(R.string.mesg_unknownErrorOccurred)
+    }.also {
+        exception.printStackTrace()
     }
 }

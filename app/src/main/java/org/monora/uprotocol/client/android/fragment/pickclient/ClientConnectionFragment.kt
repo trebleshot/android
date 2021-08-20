@@ -28,6 +28,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.NavPickClientDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutClientConnectionBinding
 import org.monora.uprotocol.client.android.util.CommonErrors
@@ -61,9 +62,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
             when (it) {
                 is ConnectionState.Connected -> {
                     clientPickerViewModel.bridge.postValue(it.bridge)
-                    findNavController().navigate(
-                        PickClientFragmentDirections.xmlPop()
-                    )
+                    findNavController().navigate(NavPickClientDirections.xmlPop())
                 }
                 is ConnectionState.Error -> {
                     it.e.printStackTrace()

@@ -23,7 +23,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleService
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,17 +31,13 @@ import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.ClientRepository
-import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
+import org.monora.uprotocol.client.android.data.TransferTaskRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
-import org.monora.uprotocol.client.android.protocol.rejectTransfer
-import org.monora.uprotocol.client.android.protocol.startTransfer
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
-import org.monora.uprotocol.client.android.task.transfer.TransferParams
 import org.monora.uprotocol.client.android.util.NotificationBackend
-import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.TransportSeat
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import javax.inject.Inject
@@ -62,10 +57,13 @@ class BgBroadcastReceiver : BroadcastReceiver() {
     lateinit var persistenceProvider: PersistenceProvider
 
     @Inject
-    lateinit var taskRepository: TaskRepository
+    lateinit var transferRepository: TransferRepository
 
     @Inject
-    lateinit var transferRepository: TransferRepository
+    lateinit var transferTaskRepository: TransferTaskRepository
+
+    @Inject
+    lateinit var transportSeat: TransportSeat
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
@@ -77,30 +75,13 @@ class BgBroadcastReceiver : BroadcastReceiver() {
 
                 backend.services.notifications.backend.cancel(notificationId)
 
-                if (client != null && transfer != null) backend.applicationScope.launch(Dispatchers.IO) {
-                    val details = transferRepository.getTransferDetailDirect(transfer.id) ?: return@launch
-
-                    taskRepository.register(
-                        TransferParams(transfer, client, details.size, details.sizeOfDone)
-                    ) { applicationScope, params, state ->
-                        applicationScope.launch(Dispatchers.IO) {
-                            try {
-                                val addresses = clientRepository.getInetAddresses(client.clientUid)
-
-                                CommunicationBridge.Builder(connectionFactory, persistenceProvider, addresses).apply {
-                                    setClearBlockedStatus(true)
-                                    setClientUid(client.clientUid)
-                                }.connect().use {
-                                    if (isAccepted) {
-                                        it.startTransfer(backend, transferRepository, params, state)
-                                    } else {
-                                        it.rejectTransfer(transferRepository, transfer)
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                state.postValue(Task.State.Error(e))
-                            }
+                if (client != null && transfer != null) {
+                    if (isAccepted) backend.applicationScope.launch(Dispatchers.IO) {
+                        transferRepository.getTransferDetailDirect(transfer.id)?.let { transferDetail ->
+                            transferTaskRepository.toggleTransferOperation(transfer, client, transferDetail)
                         }
+                    } else {
+                        transferTaskRepository.rejectTransfer(transfer, client)
                     }
                 }
             }

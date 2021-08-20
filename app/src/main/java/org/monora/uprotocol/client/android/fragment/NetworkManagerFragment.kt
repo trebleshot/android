@@ -39,6 +39,8 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestMultiple
 import androidx.core.view.ViewCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
@@ -48,6 +50,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.NavPickClientDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.backend.Services
@@ -58,7 +61,9 @@ import org.monora.uprotocol.client.android.util.HotspotManager
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToColor
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.core.persistence.PersistenceProvider
+import org.monora.uprotocol.core.protocol.Direction
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -73,6 +78,8 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
 
     @Inject
     lateinit var persistenceProvider: PersistenceProvider
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     private val intentFilter = IntentFilter()
 
@@ -165,6 +172,11 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
         toggleButtonDefaultStateList = ViewCompat.getBackgroundTintList(toggleButton)
         toggleButton.setOnClickListener { v: View -> toggle(v) }
         secondButton.setOnClickListener { v: View -> toggle(v) }
+
+        clientPickerViewModel.registerForAcquaintanceRequests(viewLifecycleOwner, Direction.Outgoing) { bridge ->
+            clientPickerViewModel.bridge.postValue(bridge)
+            findNavController().navigate(NavPickClientDirections.xmlPop())
+        }
     }
 
     override fun onResume() {

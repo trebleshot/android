@@ -18,7 +18,6 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
@@ -32,8 +31,8 @@ import org.monora.uprotocol.client.android.data.ClientRepository
 import org.monora.uprotocol.client.android.data.TaskRepository
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
-import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
+import org.monora.uprotocol.client.android.task.transfer.TransferRejectionParams
 import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 
 class TransferDetailsViewModel @AssistedInject internal constructor(
@@ -50,6 +49,10 @@ class TransferDetailsViewModel @AssistedInject internal constructor(
         if (it.params is TransferParams && it.params.transfer.id == transfer.id) it.params else null
     }.map {
         TransferStateContentViewModel.from(it)
+    }
+
+    val rejectionState = taskRepository.subscribeToTask {
+        if (it.params is TransferRejectionParams && it.params.transfer.id == transfer.id) it.params else null
     }
 
     fun remove() {

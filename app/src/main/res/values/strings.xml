@@ -671,4 +671,5 @@
     <string name="default_folder">Default Folder</string>
     <string name="error_empty_field">Field should not be empty</string>
     <string name="folder_name">Folder Name</string>
+    <string name="rejecting">Rejecting</string>
 </resources>

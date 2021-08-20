@@ -20,29 +20,38 @@ package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import androidx.transition.TransitionManager
 import com.genonbeta.android.framework.io.DocumentFile
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
+import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.TransportSeat
+import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.Direction
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReceiveFragment : Fragment(R.layout.layout_receive) {
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     private val filesViewModel: FilesViewModel by viewModels()
+
+    private val receiverViewModel: ReceiverViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,25 +75,54 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
         }
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
-            binding.progressBar.visibility = View.VISIBLE
-            binding.button.isEnabled = false
-            TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
+            receiverViewModel.consume(bridge)
+        }
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    val result = bridge.use {
-                        it.requestAcquaintance(Direction.Incoming)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    lifecycleScope.launchWhenResumed {
-                        binding.progressBar.visibility = View.GONE
-                        binding.button.isEnabled = true
-                        TransitionManager.beginDelayedTransition(binding.root as ViewGroup)
-                    }
+        receiverViewModel.state.observe(viewLifecycleOwner) {
+            val inProgress = it is GuidanceRequestState.InProgress
+            binding.progressBar.visibility = if (inProgress) View.VISIBLE else View.GONE
+            binding.button.isEnabled = !inProgress
+        }
+    }
+}
+
+@HiltViewModel
+class ReceiverViewModel @Inject internal constructor(
+    private val backend: Backend,
+    private val transportSeat: TransportSeat,
+) : ViewModel() {
+    private val _state = MutableLiveData<GuidanceRequestState>()
+
+    val state = liveData {
+        emitSource(_state)
+    }
+
+    fun consume(bridge: CommunicationBridge) {
+        _state.postValue(GuidanceRequestState.InProgress)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val guidanceResult = bridge.requestGuidance(Direction.Incoming)
+
+                if (guidanceResult.result) {
+                    _state.postValue(GuidanceRequestState.Success(bridge.remoteClient, false))
+                    bridge.proceed(transportSeat, guidanceResult)
+                    _state.postValue(GuidanceRequestState.Success(bridge.remoteClient, true))
+                } else {
+                    bridge.closeSafely()
                 }
+            } catch (e: Exception) {
+                bridge.closeSafely()
+                _state.postValue(GuidanceRequestState.Error(bridge.remoteClient, e))
             }
         }
     }
+}
+
+sealed class GuidanceRequestState {
+    object InProgress : GuidanceRequestState()
+
+    class Success(val client: Client, val finished: Boolean) : GuidanceRequestState()
+
+    class Error(val client: Client, val exception: Exception) : GuidanceRequestState()
 }

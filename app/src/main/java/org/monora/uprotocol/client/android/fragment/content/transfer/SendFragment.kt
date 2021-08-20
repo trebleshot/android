@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment.content.transfer
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels

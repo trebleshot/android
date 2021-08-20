@@ -67,11 +67,11 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
                     )
                     ClickType.Reject -> {
                         val client = viewModel.getClient(transfer.clientUid) ?: return@launch
-                        managerViewModel.rejectTransferRequest(client, transfer)
+                        managerViewModel.rejectTransferRequest(transfer, client)
                     }
                     else -> {
                         val client = viewModel.getClient(transfer.clientUid) ?: return@launch
-                        managerViewModel.toggleTransferOperation(client, transfer, detail)
+                        managerViewModel.toggleTransferOperation(transfer, client, detail)
                     }
                 }
             }

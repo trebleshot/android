@@ -18,15 +18,31 @@
 
 package org.monora.uprotocol.client.android.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.apache.commons.lang3.tuple.MutablePair
+import org.monora.uprotocol.client.android.backend.AcquaintanceCallback
+import org.monora.uprotocol.client.android.backend.TransportRegistry
 import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
 import org.monora.uprotocol.core.CommunicationBridge
+import org.monora.uprotocol.core.protocol.Direction
 import javax.inject.Inject
 
 @HiltViewModel
-class ClientPickerViewModel @Inject internal constructor() : ViewModel() {
+class ClientPickerViewModel @Inject internal constructor(
+    private val transportRegistry: TransportRegistry,
+) : ViewModel() {
     val bridge = SingleLiveEvent<CommunicationBridge>()
+
+    fun requestAcquaintance() {
+
+    }
+
+    fun registerForAcquaintanceRequests(
+        lifecycleOwner: LifecycleOwner,
+        direction: Direction,
+        callback: AcquaintanceCallback
+    ) {
+        transportRegistry.registerForGuidanceRequests(lifecycleOwner, direction, callback)
+    }
 }

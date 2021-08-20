@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +65,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
         adapter.submitList(args.contents.toList())
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
+            Log.d("SendFragment", "Reached")
             sharingViewModel.consume(bridge, args.groupId, args.contents.toList())
         }
 
