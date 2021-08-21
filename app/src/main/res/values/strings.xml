@@ -678,4 +678,11 @@
     <string name="sender_finishing">Finishing</string>
     <string name="starting">Starting</string>
     <string name="sender_wait_for_receiver_notice">Receivers can pick you here</string>
+    <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
+    <string name="about_uprotocol">About uprotocol</string>
+    <string name="about_uprotocol_content"><b>uprotocol</b> is an open content sharing protocol that enables different
+        types of software to communicate and share content with each other. It is secure by default and comes with
+        a consistent set of APIs.\n\nAs a developer, you can easily implement it as it is developed to create consistent
+        ecosystem of apps that can talk to each other!
+    </string>
 </resources>

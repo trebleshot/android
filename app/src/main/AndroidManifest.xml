@@ -155,7 +155,7 @@
 
         <service
             android:name="org.monora.uprotocol.client.android.service.TogglingTileService"
-            android:icon="@drawable/ic_uprotocol"
+            android:icon="@drawable/ic_trebleshot"
             android:label="@string/run_in_background"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>

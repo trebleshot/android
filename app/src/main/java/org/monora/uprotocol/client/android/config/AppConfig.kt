@@ -32,6 +32,8 @@ object AppConfig {
 
     const val URI_REPO_APP = "https://github.com/trebleshot"
 
+    const val URI_GITHUB_UPROTOCOL = "https://github.com/uprotocol"
+
     const val URI_TRANSLATE = "https://hosted.weblate.org/engage/TrebleShot/"
 
     const val URI_TELEGRAM_CHANNEL = "https://t.me/trebleshotNews"

@@ -74,4 +74,11 @@
     <action
         android:id="@+id/action_global_crashLogFragment"
         app:destination="@id/crashLogFragment" />
+    <dialog
+        android:id="@+id/aboutUprotocolFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.AboutUprotocolFragment"
+        android:label="@string/about_uprotocol" />
+    <action
+        android:id="@+id/action_global_aboutUprotocolFragment"
+        app:destination="@id/aboutUprotocolFragment" />
 </navigation>

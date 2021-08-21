@@ -133,6 +133,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
             R.id.manage_clients -> navController.navigate(NavHomeDirections.actionGlobalNavManageDevices())
             R.id.about -> navController.navigate(NavHomeDirections.actionGlobalNavAbout())
             R.id.preferences -> navController.navigate(NavHomeDirections.actionGlobalNavPreferences())
+            R.id.about_uprotocol -> navController.navigate(NavHomeDirections.actionGlobalAboutUprotocolFragment())
             R.id.donate -> try {
                 startActivity(
                     Intent(

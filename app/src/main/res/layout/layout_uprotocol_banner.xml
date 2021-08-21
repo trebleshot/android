@@ -25,11 +25,18 @@
     android:paddingBottom="10dp"
     android:orientation="horizontal">
 
+    <TextView
+        android:textAppearance="?textAppearanceCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/powered_by_uprotocol"
+        android:layout_margin="8dp" />
+
     <ImageView
         android:focusable="false"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        app:srcCompat="@drawable/ic_monora_logo_no_background"
+        app:srcCompat="@drawable/ic_uprotocol"
         app:tint="?colorPassive" />
 
 </LinearLayout>

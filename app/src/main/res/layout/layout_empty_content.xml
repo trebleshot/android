@@ -46,7 +46,7 @@
             android:layout_marginBottom="16dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/ic_uprotocol"
+            app:srcCompat="@drawable/ic_trebleshot"
             app:tint="?colorPassive" />
 
         <TextView

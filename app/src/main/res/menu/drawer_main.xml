@@ -51,9 +51,9 @@
             android:visible="false" />
 
         <item
-            android:id="@+id/ts_dt"
+            android:id="@+id/about_uprotocol"
             android:orderInCategory="6"
-            app:actionLayout="@layout/layout_main_navigationview_footer"
+            app:actionLayout="@layout/layout_uprotocol_banner"
             tools:ignore="MenuTitle" />
 
     </group>
