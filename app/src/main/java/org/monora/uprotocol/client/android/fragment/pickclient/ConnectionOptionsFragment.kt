@@ -19,7 +19,6 @@
 package org.monora.uprotocol.client.android.fragment.pickclient
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,10 +26,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import org.monora.uprotocol.client.android.NavPickClientDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutConnectionOptionsBinding
 import org.monora.uprotocol.client.android.databinding.ListClientGridBinding
@@ -44,13 +45,15 @@ import org.monora.uprotocol.core.protocol.Direction
 
 @AndroidEntryPoint
 class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
+    private val args: ConnectionOptionsFragmentArgs by navArgs()
+
     private val clientsViewModel: ClientsViewModel by viewModels()
 
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val connectionOptions = LayoutConnectionOptionsBinding.bind(view)
+        val binding = LayoutConnectionOptionsBinding.bind(view)
         val adapter = OnlineClientsAdapter { clientRoute, clickType ->
             when (clickType) {
                 ClientContentViewModel.ClickType.Default -> findNavController().navigate(
@@ -66,23 +69,24 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         adapter.setHasStableIds(true)
-        connectionOptions.emptyView.emptyText.setText(R.string.text_noOnlineDevices)
-        connectionOptions.emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
-        connectionOptions.emptyView.viewModel = emptyContentViewModel
-        connectionOptions.recyclerView.adapter = adapter
-        connectionOptions.recyclerView.layoutManager?.let {
+        binding.emptyView.emptyText.setText(R.string.text_noOnlineDevices)
+        binding.emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
+        binding.emptyView.viewModel = emptyContentViewModel
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.orientation = GridLayoutManager.HORIZONTAL
             }
         }
+        binding.senderNoticeViews.visibility = if (args.direction == Direction.Outgoing) View.VISIBLE else View.GONE
 
-        connectionOptions.clickListener = View.OnClickListener { v: View ->
+        binding.clickListener = View.OnClickListener { v: View ->
             when (v.id) {
                 R.id.clientsButton -> findNavController().navigate(
                     ConnectionOptionsFragmentDirections.actionOptionsFragmentToClientsFragment()
                 )
                 R.id.generateQrCodeButton -> findNavController().navigate(
-                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment()
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToNetworkManagerFragment(args.direction)
                 )
                 R.id.manualAddressButton -> findNavController().navigate(
                     ConnectionOptionsFragmentDirections.actionOptionsFragmentToManualConnectionFragment()
@@ -93,16 +97,24 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
             }
         }
 
-        connectionOptions.executePendingBindings()
+        binding.executePendingBindings()
 
         clientsViewModel.onlineClients.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-            emptyContentViewModel.with(connectionOptions.recyclerView, it.isNotEmpty())
+            emptyContentViewModel.with(binding.recyclerView, it.isNotEmpty())
         }
 
-        clientPickerViewModel.registerForAcquaintanceRequests(viewLifecycleOwner, Direction.Outgoing) { bridge ->
-            Log.d("ReceiveFragment", "onViewCreated: Received successfully")
-            bridge.send(false)
+        clientPickerViewModel.registerForGuidanceRequests(viewLifecycleOwner, args.direction) { bridge ->
+            clientPickerViewModel.bridge.postValue(bridge)
+            findNavController().navigate(NavPickClientDirections.xmlPop())
+        }
+
+        clientPickerViewModel.registerForTransferRequests(viewLifecycleOwner) { transfer, _ ->
+            if (args.direction == Direction.Incoming) {
+                findNavController().navigate(
+                    ConnectionOptionsFragmentDirections.actionOptionsFragmentToNavTransferDetails(transfer)
+                )
+            }
         }
     }
 }

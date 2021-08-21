@@ -35,14 +35,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
+import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.SenderClientContentViewModel
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.TransportSeat
 import org.monora.uprotocol.core.protocol.Client
 import org.monora.uprotocol.core.protocol.Direction
+import org.monora.uprotocol.core.protocol.communication.CommunicationException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -78,17 +80,47 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
             receiverViewModel.consume(bridge)
         }
 
+        clientPickerViewModel.registerForTransferRequests(viewLifecycleOwner) { transfer, _ ->
+            findNavController().navigate(
+                ReceiveFragmentDirections.actionReceiveFragmentToNavTransferDetails(transfer)
+            )
+        }
+
         receiverViewModel.state.observe(viewLifecycleOwner) {
-            val inProgress = it is GuidanceRequestState.InProgress
-            binding.progressBar.visibility = if (inProgress) View.VISIBLE else View.GONE
-            binding.button.isEnabled = !inProgress
+            when (it) {
+                is GuidanceRequestState.InProgress -> {
+                    binding.statusText.text = getString(R.string.starting)
+                }
+                is GuidanceRequestState.Success -> {
+                    binding.statusText.text = getString(R.string.sender_accepted)
+                }
+                is GuidanceRequestState.Finishing -> {
+                    binding.statusText.text = getString(R.string.sender_finishing)
+                }
+                is GuidanceRequestState.Error -> {
+                    binding.statusText.text = if (it.exception is NotExpectingException) {
+                        getString(R.string.sender_not_expecting, it.client?.clientNickname)
+                    } else  {
+                        CommonErrors.messageOf(requireContext(), it.exception)
+                    }
+                }
+            }
+
+            val isError = it is GuidanceRequestState.Error
+            val alpha = if (isError) 0.5f else 1.0f
+            binding.image.alpha = alpha
+            binding.text.isEnabled = !isError
+            binding.progressBar.visibility = if (it.isInProgress) View.VISIBLE else View.GONE
+            binding.button.isEnabled = !it.isInProgress
+            binding.viewModel = SenderClientContentViewModel(it.client)
+
+            binding.executePendingBindings()
         }
     }
 }
 
 @HiltViewModel
 class ReceiverViewModel @Inject internal constructor(
-    private val backend: Backend,
     private val transportSeat: TransportSeat,
 ) : ViewModel() {
     private val _state = MutableLiveData<GuidanceRequestState>()
@@ -105,11 +137,11 @@ class ReceiverViewModel @Inject internal constructor(
                 val guidanceResult = bridge.requestGuidance(Direction.Incoming)
 
                 if (guidanceResult.result) {
-                    _state.postValue(GuidanceRequestState.Success(bridge.remoteClient, false))
+                    _state.postValue(GuidanceRequestState.Success(bridge.remoteClient))
                     bridge.proceed(transportSeat, guidanceResult)
-                    _state.postValue(GuidanceRequestState.Success(bridge.remoteClient, true))
+                    _state.postValue(GuidanceRequestState.Finishing(bridge.remoteClient))
                 } else {
-                    bridge.closeSafely()
+                    throw NotExpectingException(bridge.remoteClient)
                 }
             } catch (e: Exception) {
                 bridge.closeSafely()
@@ -119,10 +151,14 @@ class ReceiverViewModel @Inject internal constructor(
     }
 }
 
-sealed class GuidanceRequestState {
-    object InProgress : GuidanceRequestState()
+sealed class GuidanceRequestState(val client: Client? = null, val isInProgress: Boolean = false) {
+    object InProgress : GuidanceRequestState(isInProgress = true)
 
-    class Success(val client: Client, val finished: Boolean) : GuidanceRequestState()
+    class Success(client: Client) : GuidanceRequestState(client, true)
 
-    class Error(val client: Client, val exception: Exception) : GuidanceRequestState()
+    class Finishing(client: Client) : GuidanceRequestState(client, false)
+
+    class Error(client: Client, val exception: Exception) : GuidanceRequestState(client)
 }
+
+class NotExpectingException(client: Client) : CommunicationException(client)

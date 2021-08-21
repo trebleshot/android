@@ -35,6 +35,7 @@ import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientConnectionViewModel
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.ConnectionState
+import org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel
 
 @AndroidEntryPoint
 class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
@@ -48,7 +49,7 @@ class ClientConnectionFragment : Fragment(R.layout.layout_client_connection) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = LayoutClientConnectionBinding.bind(view)
-        binding.client = args.client
+        binding.viewModel = ClientContentViewModel(args.client)
 
         binding.retryButton.setOnClickListener {
             clientConnectionViewModel.start(args.client, args.clientAddress)

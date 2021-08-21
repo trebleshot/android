@@ -172,17 +172,6 @@ class Backend @Inject constructor(
         foregroundActivity = if (newlySwitchedGrounds) null else if (inForeground) activity else foregroundActivity
     }
 
-    fun notifyFileRequest(client: UClient, transfer: Transfer, itemList: List<UTransferItem>) {
-        val activity = foregroundActivity
-
-        if (activity == null) {
-            services.notifications.notifyTransferRequest(client, transfer, itemList)
-        } else {
-            // TODO: 7/25/21 Also insert the transfer details and navigate to transfer details fragment
-            activity.startActivity(Intent(activity, HomeActivity::class.java))
-        }
-    }
-
     private fun notifyTileState(newState: Boolean) {
         tileEnabled = newState
         _tileState.value = newState

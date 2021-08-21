@@ -41,6 +41,7 @@ import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
@@ -78,6 +79,8 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
 
     @Inject
     lateinit var persistenceProvider: PersistenceProvider
+
+    private val args: NetworkManagerFragmentArgs by navArgs()
 
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
@@ -173,9 +176,17 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
         toggleButton.setOnClickListener { v: View -> toggle(v) }
         secondButton.setOnClickListener { v: View -> toggle(v) }
 
-        clientPickerViewModel.registerForAcquaintanceRequests(viewLifecycleOwner, Direction.Outgoing) { bridge ->
+        clientPickerViewModel.registerForGuidanceRequests(viewLifecycleOwner, args.direction) { bridge ->
             clientPickerViewModel.bridge.postValue(bridge)
             findNavController().navigate(NavPickClientDirections.xmlPop())
+        }
+
+        clientPickerViewModel.registerForTransferRequests(viewLifecycleOwner) { transfer, _ ->
+            if (args.direction == Direction.Incoming) {
+                findNavController().navigate(
+                    NetworkManagerFragmentDirections.actionNetworkManagerFragmentToNavTransferDetails(transfer)
+                )
+            }
         }
     }
 

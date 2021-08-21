@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.protocol.Direction
 import javax.inject.Inject
@@ -31,23 +32,40 @@ import javax.inject.Singleton
 
 typealias AcquaintanceCallback = (bridge: CommunicationBridge) -> Unit
 
+typealias TransferRequestCallback = (transfer: Transfer, hasPin: Boolean) -> Unit
+
 @Singleton
 class TransportRegistry @Inject constructor(
     private val backend: Backend,
 ) {
-    private var guidance: GuidanceLifecycleObserver? = null
+    private var guidanceRequest: GuidanceLifecycleObserver? = null
+
+    private var transferRequest: TransferRequestLifecycleObserver? = null
 
     fun handleGuidanceRequest(bridge: CommunicationBridge, direction: Direction) {
-        val acquaintance = guidance
+        val guidanceRequest = guidanceRequest
 
-        if (acquaintance != null && acquaintance.direction != direction && acquaintance.enabled) {
+        if (guidanceRequest != null && guidanceRequest.direction != direction && guidanceRequest.enabled) {
             bridge.activeConnection.isRoaming = true
             backend.applicationScope.launch(Dispatchers.Main) {
-                acquaintance.callback(bridge)
+                guidanceRequest.callback(bridge)
             }
         } else {
             bridge.send(false)
         }
+    }
+
+    fun handleTransferRequest(transfer: Transfer, hasPin: Boolean): Boolean {
+        val transferRequest = transferRequest
+
+        if (transferRequest != null && transferRequest.enabled) {
+            backend.applicationScope.launch(Dispatchers.Main) {
+                transferRequest.callback(transfer, hasPin)
+            }
+            return true
+        }
+
+        return false
     }
 
     fun registerForGuidanceRequests(
@@ -56,14 +74,32 @@ class TransportRegistry @Inject constructor(
         callback: AcquaintanceCallback
     ) {
         lifecycleOwner.lifecycle.addObserver(
-            GuidanceLifecycleObserver(lifecycleOwner, direction, callback).also { guidance = it }
+            GuidanceLifecycleObserver(lifecycleOwner, direction, callback).also { guidanceRequest = it }
         )
     }
 
-    internal data class GuidanceLifecycleObserver(
-        private val lifecycleOwner: LifecycleOwner,
+    fun registerForTransferRequests(
+        lifecycleOwner: LifecycleOwner,
+        callback: TransferRequestCallback,
+    ) {
+        lifecycleOwner.lifecycle.addObserver(
+            TransferRequestLifecycleObserver(lifecycleOwner, callback).also { transferRequest = it }
+        )
+    }
+
+    internal class TransferRequestLifecycleObserver(
+        lifecycleOwner: LifecycleOwner,
+        val callback: TransferRequestCallback,
+    ) : HandlerLifecycleObserver(lifecycleOwner)
+
+    internal class GuidanceLifecycleObserver(
+        lifecycleOwner: LifecycleOwner,
         val direction: Direction,
         val callback: AcquaintanceCallback,
+    ) : HandlerLifecycleObserver(lifecycleOwner)
+
+    internal open class HandlerLifecycleObserver(
+        private val lifecycleOwner: LifecycleOwner
     ) : LifecycleObserver {
         var enabled = false
             private set
@@ -71,7 +107,7 @@ class TransportRegistry @Inject constructor(
         var destroyed = false
             private set
 
-        @OnLifecycleEvent(Lifecycle.Event.ON_START)
+        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
         fun start() {
             enabled = true
         }

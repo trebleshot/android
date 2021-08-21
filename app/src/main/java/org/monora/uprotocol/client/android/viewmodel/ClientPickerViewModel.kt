@@ -22,6 +22,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.backend.AcquaintanceCallback
+import org.monora.uprotocol.client.android.backend.TransferRequestCallback
 import org.monora.uprotocol.client.android.backend.TransportRegistry
 import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
 import org.monora.uprotocol.core.CommunicationBridge
@@ -34,15 +35,18 @@ class ClientPickerViewModel @Inject internal constructor(
 ) : ViewModel() {
     val bridge = SingleLiveEvent<CommunicationBridge>()
 
-    fun requestAcquaintance() {
-
-    }
-
-    fun registerForAcquaintanceRequests(
+    fun registerForGuidanceRequests(
         lifecycleOwner: LifecycleOwner,
         direction: Direction,
         callback: AcquaintanceCallback
     ) {
         transportRegistry.registerForGuidanceRequests(lifecycleOwner, direction, callback)
+    }
+
+    fun registerForTransferRequests(
+        lifecycleOwner: LifecycleOwner,
+        callback: TransferRequestCallback,
+    ) {
+        transportRegistry.registerForTransferRequests(lifecycleOwner, callback)
     }
 }

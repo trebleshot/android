@@ -19,7 +19,6 @@
 package org.monora.uprotocol.client.android.protocol
 
 import android.content.Context
-import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -163,12 +162,10 @@ class MainTransportSeat @Inject constructor(
         }
 
         return items?.let {
-            return if (hasPin) {
-                true
-            } else {
-                backend.notifyFileRequest(client, transfer, it)
-                false
+            if (!transportRegistry.handleTransferRequest(transfer, hasPin) && !hasPin) {
+                backend.services.notifications.notifyTransferRequest(client, transfer, it)
             }
+            hasPin
         } ?: false
     }
 

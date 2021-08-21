@@ -40,6 +40,7 @@ import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
 import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
 import org.monora.uprotocol.client.android.viewholder.TransferDetailViewHolder
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransfersViewModel
@@ -47,6 +48,8 @@ import org.monora.uprotocol.client.android.viewmodel.content.TransferStateConten
 
 @AndroidEntryPoint
 class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
+    private val clientPickerViewModel: ClientPickerViewModel by viewModels()
+
     private val managerViewModel: TransferManagerViewModel by viewModels()
 
     private val viewModel: TransfersViewModel by viewModels()
@@ -95,6 +98,10 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         viewModel.transferDetails.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
+        }
+
+        clientPickerViewModel.registerForTransferRequests(viewLifecycleOwner) { transfer, hasPin ->
+            recyclerView.smoothScrollToPosition(0)
         }
     }
 }

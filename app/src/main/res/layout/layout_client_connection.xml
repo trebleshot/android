@@ -22,8 +22,8 @@
     <data>
 
         <variable
-            name="client"
-            type="org.monora.uprotocol.client.android.database.model.UClient" />
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.ClientContentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,7 +32,7 @@
 
         <ImageView
             android:id="@+id/image"
-            pictureOf="@{client}"
+            pictureOf="@{viewModel.client}"
             android:layout_width="@dimen/icon_size_list_giant"
             android:layout_height="@dimen/icon_size_list_giant"
             app:layout_constraintBottom_toTopOf="@+id/text"
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@{client.nickname}"
+            android:text="@{viewModel.nickname}"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +60,7 @@
 
         <TextView
             android:id="@+id/text_offline"
-            style="@style/TextAppearance.Primary"
+            android:textAppearance="?textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
