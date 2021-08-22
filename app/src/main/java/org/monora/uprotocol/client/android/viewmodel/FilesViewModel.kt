@@ -23,6 +23,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.FileRepository
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.database.model.SafFolder
 import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.FileModel
@@ -45,6 +47,7 @@ import javax.inject.Inject
 class FilesViewModel @Inject internal constructor(
     @ApplicationContext context: Context,
     private val fileRepository: FileRepository,
+    private val selectionRepository: SelectionRepository,
 ) : ViewModel() {
 
     private val context = WeakReference(context)
@@ -55,16 +58,20 @@ class FilesViewModel @Inject internal constructor(
 
     private val _files = MutableLiveData<List<ContentModel>>()
 
-    val files = liveData {
-        requestPath(fileRepository.appDirectory)
-        emitSource(_files)
+    val files = Transformations.map(
+        liveData {
+            requestPath(fileRepository.appDirectory)
+            emitSource(_files)
+        }
+    ) {
+        selectionRepository.whenContains(it) { item, selected ->
+            if (item is FileModel) item.isSelected = selected
+        }
+        it
     }
 
     val isCustomStorageFolder: Boolean
-        get() {
-            val context = context.get() ?: return false
-            return Uri.fromFile(fileRepository.defaultAppDirectory) != fileRepository.appDirectory.getUri()
-        }
+        get() = Uri.fromFile(fileRepository.defaultAppDirectory) != fileRepository.appDirectory.getUri()
 
     private val _path = MutableLiveData<FileModel>()
 

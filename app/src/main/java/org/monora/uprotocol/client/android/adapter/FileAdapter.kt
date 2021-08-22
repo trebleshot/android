@@ -36,8 +36,8 @@ class FileAdapter(
 ) : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_FILE -> FileViewHolder(
-            clickListener,
-            ListFileNouveauBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListFileNouveauBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            clickListener
         )
         VIEW_TYPE_SECTION -> TitleSectionViewHolder(
             ListSectionTitleBinding.inflate(LayoutInflater.from(parent.context), parent, false)

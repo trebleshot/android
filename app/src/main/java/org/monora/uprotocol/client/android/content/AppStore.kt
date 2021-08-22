@@ -79,4 +79,8 @@ data class App(
 
     @IgnoredOnParcel
     val isSplit = Build.VERSION.SDK_INT >= 21 && info.splitSourceDirs != null
+
+    override fun equals(other: Any?): Boolean {
+        return other is App && packageName == other.packageName
+    }
 }

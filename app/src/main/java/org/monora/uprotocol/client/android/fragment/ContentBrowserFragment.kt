@@ -94,13 +94,15 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.share) {
-            findNavController().navigate(
+        when (item.itemId) {
+            R.id.share -> findNavController().navigate(
                 ContentBrowserFragmentDirections.actionContentBrowserFragmentToPrepareIndexFragment()
             )
-        } else if (item.itemId == R.id.shareOnWeb) {
-            findNavController().navigate(
+            R.id.shareOnWeb -> findNavController().navigate(
                 ContentBrowserFragmentDirections.actionContentBrowserFragmentToWebShareLauncherFragment()
+            )
+            R.id.selections -> findNavController().navigate(
+                ContentBrowserFragmentDirections.actionContentBrowserFragmentToSelectionsFragment()
             )
         }
 

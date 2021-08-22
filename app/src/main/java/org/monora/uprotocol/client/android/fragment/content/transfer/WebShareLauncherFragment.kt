@@ -34,18 +34,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.data.WebDataRepository
 import org.monora.uprotocol.client.android.databinding.LayoutWebShareLauncherBinding
 import org.monora.uprotocol.client.android.databinding.ListConnectionBinding
@@ -61,14 +60,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WebShareLauncherFragment : BottomSheetDialogFragment() {
-    @Inject
-    lateinit var factory: WebShareViewModel.Factory
-
-    private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
-
-    private val viewModel: WebShareViewModel by viewModels {
-        WebShareViewModel.ModelFactory(factory, selectionViewModel.getSelections())
-    }
+    private val viewModel: WebShareViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.layout_web_share_launcher, container, false)
@@ -145,10 +137,11 @@ class ConnectionsAdapter : ListAdapter<NamedInterface, ConnectionViewHolder>(Con
     }
 }
 
-class WebShareViewModel @AssistedInject internal constructor(
+@HiltViewModel
+class WebShareViewModel @Inject internal constructor(
     @ApplicationContext context: Context,
+    selectionRepository: SelectionRepository,
     private val webDataRepository: WebDataRepository,
-    @Assisted private val list: List<Any>,
 ) : ViewModel() {
     private val context = WeakReference(context)
 
@@ -159,6 +152,8 @@ class WebShareViewModel @AssistedInject internal constructor(
         addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)
     }
+
+    private val list = selectionRepository.getSelections()
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -193,25 +188,6 @@ class WebShareViewModel @AssistedInject internal constructor(
         super.onCleared()
         context.get()?.unregisterReceiver(receiver)
         webDataRepository.clear()
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(selections: List<Any>): WebShareViewModel
-    }
-
-    class ModelFactory(
-        private val factory: Factory,
-        private val selections: List<Any>,
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            check(modelClass.isAssignableFrom(WebShareViewModel::class.java)) {
-                "Requested unknown view model type"
-            }
-
-            return factory.create(selections) as T
-        }
     }
 }
 

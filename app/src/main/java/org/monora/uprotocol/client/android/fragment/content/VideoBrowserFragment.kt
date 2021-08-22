@@ -24,6 +24,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -34,6 +35,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.data.MediaRepository
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListVideoBinding
 import org.monora.uprotocol.client.android.util.Activities
@@ -69,12 +71,12 @@ class VideoBrowserFragment : Fragment(R.layout.layout_video_browser) {
         recyclerView.adapter = adapter
 
         browserViewModel.allVideos.observe(viewLifecycleOwner) {
-            it.forEach { video ->
-                if (selectionViewModel.contains(video)) video.isSelected = true
-            }
-
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
+        }
+
+        selectionViewModel.externalState.observe(viewLifecycleOwner) {
+            adapter.notifyDataSetChanged()
         }
     }
 }
@@ -84,7 +86,8 @@ class VideoBrowserAdapter(
 ) : ListAdapter<Video, VideoViewHolder>(VideoItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
         return VideoViewHolder(
-            clickListener, ListVideoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListVideoBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            clickListener,
         )
     }
 
@@ -129,8 +132,8 @@ class VideoContentViewModel(video: Video) {
 }
 
 class VideoViewHolder(
-    private val clickListener: (Video, VideoBrowserAdapter.ClickType) -> Unit,
     private val binding: ListVideoBinding,
+    private val clickListener: (Video, VideoBrowserAdapter.ClickType) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(video: Video) {
         binding.viewModel = VideoContentViewModel(video)
@@ -150,6 +153,10 @@ class VideoViewHolder(
 @HiltViewModel
 class VideoBrowserViewModel @Inject internal constructor(
     mediaRepository: MediaRepository,
+    private val selectionRepository: SelectionRepository,
 ) : ViewModel() {
-    val allVideos = mediaRepository.getAllVideos()
+    val allVideos = Transformations.map(mediaRepository.getAllVideos()) {
+        selectionRepository.whenContains(it) { item, selected -> item.isSelected = selected }
+        it
+    }
 }

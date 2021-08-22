@@ -25,8 +25,8 @@ import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.viewmodel.content.FileContentViewModel
 
 class FileViewHolder(
-    private val clickListener: (FileModel, FileAdapter.ClickType) -> Unit,
     private val binding: ListFileNouveauBinding,
+    private val clickListener: (FileModel, FileAdapter.ClickType) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(fileModel: FileModel) {
         binding.viewModel = FileContentViewModel(fileModel)

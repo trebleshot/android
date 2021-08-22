@@ -25,20 +25,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.genonbeta.android.framework.io.DocumentFile
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,26 +43,20 @@ import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.util.Progress
 import org.monora.uprotocol.client.android.util.Transfers
-import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import org.monora.uprotocol.core.protocol.Direction
 import java.io.File
 import javax.inject.Inject
 import kotlin.random.Random
 
 @AndroidEntryPoint
-class PrepareIndexFragment : BottomSheetDialogFragment() {
-    @Inject
-    lateinit var factory: PrepareIndexViewModel.Factory
-
-    private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
-
-    private val viewModel: PrepareIndexViewModel by viewModels {
-        PrepareIndexViewModel.ModelFactory(factory, selectionViewModel.getSelections())
-    }
+class PrepareIndexFragment : BottomSheetDialogFragment(
+) {
+    private val viewModel: PrepareIndexViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.layout_prepare_index, container, false)
@@ -88,9 +78,10 @@ class PrepareIndexFragment : BottomSheetDialogFragment() {
     }
 }
 
-class PrepareIndexViewModel @AssistedInject internal constructor(
+@HiltViewModel
+class PrepareIndexViewModel @Inject internal constructor(
     @ApplicationContext context: Context,
-    @Assisted private val list: List<Any>,
+    private val selectionRepository: SelectionRepository,
 ) : ViewModel() {
     private val _state = MutableLiveData<PreparationState>()
 
@@ -102,6 +93,7 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _state.postValue(PreparationState.Preparing)
 
+            val list = selectionRepository.getSelections()
             val groupId = Random.nextLong()
             val items = mutableListOf<UTransferItem>()
             val progress = Progress(list.size)
@@ -180,25 +172,6 @@ class PrepareIndexViewModel @AssistedInject internal constructor(
             }
 
             _state.postValue(PreparationState.Ready(groupId, items))
-        }
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(selections: List<Any>): PrepareIndexViewModel
-    }
-
-    class ModelFactory(
-        private val factory: Factory,
-        private val selections: List<Any>,
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            check(modelClass.isAssignableFrom(PrepareIndexViewModel::class.java)) {
-                "Requested unknown view model type"
-            }
-
-            return factory.create(selections) as T
         }
     }
 

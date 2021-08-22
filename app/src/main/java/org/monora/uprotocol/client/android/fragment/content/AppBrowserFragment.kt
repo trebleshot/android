@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -34,9 +35,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.data.MediaRepository
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListAppBinding
-import org.monora.uprotocol.client.android.databinding.ListSongBinding
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import javax.inject.Inject
@@ -69,12 +70,12 @@ class AppBrowserFragment : Fragment(R.layout.layout_app_browser) {
         recyclerView.adapter = adapter
 
         browserViewModel.allApps.observe(viewLifecycleOwner) {
-            it.forEach { song ->
-                if (selectionViewModel.contains(song)) song.isSelected = true
-            }
-
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
+        }
+
+        selectionViewModel.externalState.observe(viewLifecycleOwner) {
+            adapter.notifyDataSetChanged()
         }
     }
 }
@@ -84,7 +85,8 @@ class AppBrowserAdapter(
 ) : ListAdapter<App, AppViewHolder>(AppItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
         return AppViewHolder(
-            clickListener, ListAppBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListAppBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            clickListener,
         )
     }
 
@@ -129,8 +131,8 @@ class AppContentViewModel(app: App) {
 }
 
 class AppViewHolder(
-    private val clickListener: (App, AppBrowserAdapter.ClickType) -> Unit,
     private val binding: ListAppBinding,
+    private val clickListener: (App, AppBrowserAdapter.ClickType) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(app: App) {
         binding.viewModel = AppContentViewModel(app)
@@ -150,6 +152,10 @@ class AppViewHolder(
 @HiltViewModel
 class AppBrowserViewModel @Inject internal constructor(
     mediaRepository: MediaRepository,
+    private val selectionRepository: SelectionRepository,
 ) : ViewModel() {
-    val allApps = mediaRepository.getAllApps()
+    val allApps = Transformations.map(mediaRepository.getAllApps()) {
+        selectionRepository.whenContains(it) { item, selected -> item.isSelected = selected }
+        it
+    }
 }

@@ -17,30 +17,16 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import org.monora.uprotocol.client.android.util.Resources.attrToRes
 import org.monora.uprotocol.client.android.util.Resources.resToDrawable
-import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 
 /**
  * created by: veli
@@ -48,8 +34,6 @@ import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
  */
 @AndroidEntryPoint
 class ContentBrowserActivity : Activity() {
-    private val selectionViewModel: SharingSelectionViewModel by viewModels()
-
     private val navController by lazy {
         navController(R.id.nav_host_fragment)
     }
@@ -68,7 +52,8 @@ class ContentBrowserActivity : Activity() {
             title = destination.label
 
             val bg = when (destination.id) {
-                R.id.contentBrowserFragment, R.id.prepareIndexFragment, R.id.webShareLauncherFragment -> null
+                R.id.contentBrowserFragment, R.id.prepareIndexFragment, R.id.webShareLauncherFragment,
+                R.id.selectionsFragment -> null
                 else -> toolbarDefaultBg
             }
             if (Build.VERSION.SDK_INT < 16) {

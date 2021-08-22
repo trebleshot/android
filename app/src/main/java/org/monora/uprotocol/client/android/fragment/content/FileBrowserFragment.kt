@@ -109,7 +109,7 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         pathsPopupMenu = PopupMenu(requireContext(), pathSelectorButton).apply {
             MenuCompat.setGroupDividerEnabled(menu, true)
         }
-        pathSelectorButton.setOnClickListener { button ->
+        pathSelectorButton.setOnClickListener {
             if (Build.VERSION.SDK_INT < 21) {
                 viewModel.requestStorageFolder()
                 return@setOnClickListener
@@ -137,10 +137,6 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         )
 
         viewModel.files.observe(viewLifecycleOwner) {
-            it.forEach { model ->
-                if (model is FileModel && selectionViewModel.contains(model)) model.isSelected = true
-            }
-
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
         }
@@ -176,6 +172,10 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
                     setIcon(R.drawable.ic_save_white_24dp)
                 }
             }
+        }
+
+        selectionViewModel.externalState.observe(viewLifecycleOwner) {
+            adapter.notifyDataSetChanged()
         }
     }
 

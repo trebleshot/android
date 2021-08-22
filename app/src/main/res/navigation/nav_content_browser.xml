@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_contentBrowserFragment_to_webShareLauncherFragment"
             app:destination="@id/webShareLauncherFragment" />
+        <action
+            android:id="@+id/action_contentBrowserFragment_to_selectionsFragment"
+            app:destination="@id/selectionsFragment" />
     </fragment>
     <dialog
         android:id="@+id/prepareIndexFragment"
@@ -76,4 +79,8 @@
         android:id="@+id/webShareLauncherFragment"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.WebShareLauncherFragment"
         android:label="@string/text_webShare" />
+    <dialog
+        android:id="@+id/selectionsFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.content.SelectionsFragment"
+        android:label="@string/selections" />
 </navigation>

@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -34,6 +35,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.data.MediaRepository
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.databinding.LayoutEmptyContentBinding
 import org.monora.uprotocol.client.android.databinding.ListSongBinding
 import org.monora.uprotocol.client.android.util.Activities
@@ -69,12 +71,12 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
         recyclerView.adapter = adapter
 
         browserViewModel.allSongs.observe(viewLifecycleOwner) {
-            it.forEach { song ->
-                if (selectionViewModel.contains(song)) song.isSelected = true
-            }
-
             adapter.submitList(it)
             emptyContentViewModel.with(recyclerView, it.isNotEmpty())
+        }
+
+        selectionViewModel.externalState.observe(viewLifecycleOwner) {
+            adapter.notifyDataSetChanged()
         }
     }
 }
@@ -84,7 +86,8 @@ class AudioBrowserAdapter(
 ) : ListAdapter<Song, SongViewHolder>(SongItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
-            clickListener, ListSongBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListSongBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            clickListener,
         )
     }
 
@@ -131,8 +134,8 @@ class SongContentViewModel(song: Song) {
 }
 
 class SongViewHolder(
-    private val clickListener: (Song, AudioBrowserAdapter.ClickType) -> Unit,
-    private val binding: ListSongBinding
+    private val binding: ListSongBinding,
+    private val clickListener: (Song, AudioBrowserAdapter.ClickType) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(song: Song) {
         binding.viewModel = SongContentViewModel(song)
@@ -152,6 +155,10 @@ class SongViewHolder(
 @HiltViewModel
 class AudioBrowserViewModel @Inject internal constructor(
     mediaRepository: MediaRepository,
+    private val selectionRepository: SelectionRepository,
 ) : ViewModel() {
-    val allSongs = mediaRepository.getAllSongs()
+    val allSongs = Transformations.map(mediaRepository.getAllSongs()) {
+        selectionRepository.whenContains(it) { item, selected -> item.isSelected = selected }
+        it
+    }
 }
