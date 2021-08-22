@@ -392,11 +392,11 @@ class BarcodeScannerViewModel @Inject constructor(
         try {
             _state.postValue(State.Running())
 
-            CommunicationBridge.Builder(connectionFactory, persistenceProvider, inetAddress).apply {
+            val bridge = CommunicationBridge.Builder(connectionFactory, persistenceProvider, inetAddress).apply {
                 setPin(pin)
-            }.connect().use { bridge ->
-                _state.postValue(State.Result(bridge))
-            }
+            }.connect()
+
+            _state.postValue(State.Result(bridge))
         } catch (e: Exception) {
             _state.postValue(State.Error(e))
         } finally {

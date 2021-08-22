@@ -36,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutReceiveBinding
+import org.monora.uprotocol.client.android.protocol.closeQuietly
 import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.FilesViewModel
@@ -144,7 +145,7 @@ class ReceiverViewModel @Inject internal constructor(
                     throw NotExpectingException(bridge.remoteClient)
                 }
             } catch (e: Exception) {
-                bridge.closeSafely()
+                bridge.closeQuietly()
                 _state.postValue(GuidanceRequestState.Error(bridge.remoteClient, e))
             }
         }
