@@ -30,17 +30,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:layout_marginTop="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorPassive"
+            android:background="?colorPassive"
             android:contentDescription="@string/text_image"
-            android:layout_marginTop="6dp"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:foreground="?rectSelector"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rounded"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -50,13 +50,11 @@
             thumbnailOf="@{viewModel.uri}"/>
 
         <TextView
-            style="@style/TextAppearance.Primary"
+            android:textAppearance="?android:textAppearanceSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:layout_marginStart="6dp"
-            android:layout_marginLeft="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             android:text="@{viewModel.size}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/selection"

@@ -22,10 +22,9 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
+import android.provider.MediaStore
 import android.provider.MediaStore.Video.Media
-import androidx.lifecycle.liveData
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -33,7 +32,48 @@ import javax.inject.Inject
 class VideoStore @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    fun getAll() = liveData<List<Video>>(Dispatchers.IO) {
+    fun getBuckets(): List<VideoBucket> {
+        context.contentResolver.query(
+            Media.EXTERNAL_CONTENT_URI,
+            arrayOf(
+                Media.BUCKET_ID,
+                Media.BUCKET_DISPLAY_NAME,
+                Media._ID,
+                Media.DATE_MODIFIED,
+            ),
+            "1) GROUP BY 1,(2",
+            null,
+            "${Media.DATE_MODIFIED} DESC"
+        )?.use {
+            if (it.moveToFirst()) {
+                val idIndex = it.getColumnIndex(Media._ID)
+                val bucketIdIndex = it.getColumnIndex(Media.BUCKET_ID)
+                val bucketDisplayNameIndex = it.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
+                val dateModifiedIndex = it.getColumnIndex(Media.DATE_MODIFIED)
+
+                val list = ArrayList<VideoBucket>(it.count)
+
+                do {
+                    list.add(
+                        VideoBucket(
+                            it.getLong(bucketIdIndex),
+                            it.getString(bucketDisplayNameIndex),
+                            it.getLong(dateModifiedIndex),
+                            ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, it.getLong(idIndex))
+                        )
+                    )
+                } while (it.moveToNext())
+
+                list.sortBy { bucket -> bucket.name }
+
+                return list
+            }
+        }
+
+        return emptyList()
+    }
+
+    fun getVideos(bucket: VideoBucket): List<Video> {
         context.contentResolver.query(
             Media.EXTERNAL_CONTENT_URI,
             arrayOf(
@@ -45,9 +85,9 @@ class VideoStore @Inject constructor(
                 Media.MIME_TYPE,
                 Media.DATE_MODIFIED,
             ),
-            null,
-            null,
-            Media.DATE_MODIFIED
+            "${Media.BUCKET_ID} = ?",
+            arrayOf(bucket.id.toString()),
+            "${Media.DATE_MODIFIED} DESC"
         )?.use {
             if (it.moveToFirst()) {
                 val idIndex = it.getColumnIndex(Media._ID)
@@ -79,11 +119,21 @@ class VideoStore @Inject constructor(
                     )
                 } while (it.moveToNext())
 
-                emit(list)
+                return list
             }
         }
+
+        return emptyList()
     }
 }
+
+@Parcelize
+data class VideoBucket(
+    val id: Long,
+    val name: String,
+    val dateModified: Long,
+    val thumbnailUri: Uri,
+) : Parcelable
 
 @Parcelize
 data class Video(

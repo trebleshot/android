@@ -33,7 +33,48 @@ import javax.inject.Inject
 class ImageStore @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    fun getAll() = liveData<List<Image>>(Dispatchers.IO) {
+    fun getBuckets(): List<ImageBucket> {
+        context.contentResolver.query(
+            Media.EXTERNAL_CONTENT_URI,
+            arrayOf(
+                Media.BUCKET_ID,
+                Media.BUCKET_DISPLAY_NAME,
+                Media._ID,
+                Media.DATE_MODIFIED,
+            ),
+            "1) GROUP BY 1,(2",
+            null,
+            "${Media.DATE_MODIFIED} DESC"
+        )?.use {
+            if (it.moveToFirst()) {
+                val idIndex = it.getColumnIndex(Media._ID)
+                val bucketIdIndex = it.getColumnIndex(Media.BUCKET_ID)
+                val bucketDisplayNameIndex = it.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
+                val dateModifiedIndex = it.getColumnIndex(Media.DATE_MODIFIED)
+
+                val list = ArrayList<ImageBucket>(it.count)
+
+                do {
+                    list.add(
+                        ImageBucket(
+                            it.getLong(bucketIdIndex),
+                            it.getString(bucketDisplayNameIndex),
+                            it.getLong(dateModifiedIndex),
+                            ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, it.getLong(idIndex))
+                        )
+                    )
+                } while (it.moveToNext())
+
+                list.sortBy { bucket -> bucket.name }
+
+                return list
+            }
+        }
+
+        return emptyList()
+    }
+
+    fun getImages(bucket: ImageBucket): List<Image> {
         context.contentResolver.query(
             Media.EXTERNAL_CONTENT_URI,
             arrayOf(
@@ -43,10 +84,11 @@ class ImageStore @Inject constructor(
                 Media.SIZE,
                 Media.MIME_TYPE,
                 Media.DATE_MODIFIED,
+                Media.BUCKET_ID
             ),
-            null,
-            null,
-            Media.DATE_MODIFIED
+            "${Media.BUCKET_ID} = ?",
+            arrayOf(bucket.id.toString()),
+            "${Media.DATE_MODIFIED} DESC"
         )?.use {
             if (it.moveToFirst()) {
                 val idIndex = it.getColumnIndex(Media._ID)
@@ -76,11 +118,21 @@ class ImageStore @Inject constructor(
                     )
                 } while (it.moveToNext())
 
-                emit(list)
+                return list
             }
         }
+
+        return emptyList()
     }
 }
+
+@Parcelize
+data class ImageBucket(
+    val id: Long,
+    val name: String,
+    val dateModified: Long,
+    val thumbnailUri: Uri,
+) : Parcelable
 
 @Parcelize
 data class Image(

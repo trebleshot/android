@@ -26,8 +26,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
+        android:padding="8dp"
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="@integer/genfw_dynamic_grid_span_count"/>

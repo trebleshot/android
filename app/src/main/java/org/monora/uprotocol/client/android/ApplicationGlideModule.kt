@@ -44,10 +44,6 @@ import org.monora.uprotocol.client.android.content.removeId
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 
-fun log(msg: String) {
-    Log.d("GlideYouAreHere", "log: $msg")
-}
-
 /**
  * created by: Veli
  * date: 28.03.2018 17:29
@@ -97,6 +93,8 @@ class ApplicationGlideModule : AppGlideModule() {
                 }
             } catch (e: Exception) {
                 callback.onLoadFailed(e)
+            } catch (ignored: Throwable) {
+
             }
         }
 

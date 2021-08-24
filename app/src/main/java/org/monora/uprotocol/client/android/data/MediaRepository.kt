@@ -18,14 +18,15 @@
 
 package org.monora.uprotocol.client.android.data
 
-import android.provider.MediaStore.Audio.Albums.ARTIST_ID
 import android.provider.MediaStore.Audio.Media.ALBUM_ID
 import android.provider.MediaStore.Audio.Media.IS_MUSIC
 import org.monora.uprotocol.client.android.content.Album
 import org.monora.uprotocol.client.android.content.AppStore
 import org.monora.uprotocol.client.android.content.Artist
 import org.monora.uprotocol.client.android.content.AudioStore
+import org.monora.uprotocol.client.android.content.ImageBucket
 import org.monora.uprotocol.client.android.content.ImageStore
+import org.monora.uprotocol.client.android.content.VideoBucket
 import org.monora.uprotocol.client.android.content.VideoStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,7 +50,11 @@ class MediaRepository @Inject constructor(
 
     fun getArtistAlbums(artist: Artist) = audioStore.getAlbums(artist)
 
-    fun getAllImages() = imageStore.getAll()
+    fun getImageBuckets() = imageStore.getBuckets()
 
-    fun getAllVideos() = videoStore.getAll()
+    fun getImages(bucket: ImageBucket) = imageStore.getImages(bucket)
+
+    fun getVideoBuckets() = videoStore.getBuckets()
+
+    fun getVideos(bucket: VideoBucket) = videoStore.getVideos(bucket)
 }

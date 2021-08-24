@@ -21,16 +21,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:textAppearance="?textAppearanceHeadline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_scrollFlags="scroll|enterAlways" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
+        android:padding="8dp"
         android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="@integer/genfw_dynamic_grid_span_count"/>
+        app:spanCount="@integer/genfw_dynamic_grid_span_count" />
 
     <include
         layout="@layout/layout_empty_content"

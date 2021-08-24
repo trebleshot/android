@@ -23,6 +23,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
@@ -62,6 +63,19 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
     private val browserViewModel: AudioBrowserViewModel by viewModels()
 
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
+
+    private val backPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            when (browserViewModel.showingContent.value) {
+                is AudioBrowserViewModel.Content.AllAlbums, is AudioBrowserViewModel.Content.AllArtists -> {
+                    browserViewModel.showAllSongs()
+                }
+                is AudioBrowserViewModel.Content.ArtistAlbums -> browserViewModel.showArtists()
+                is AudioBrowserViewModel.Content.AlbumSongs -> browserViewModel.showAlbums()
+                else -> isEnabled = false
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -176,6 +190,8 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
                     emptyContentViewModel.with(recyclerView, artistsAdapter.currentList.isNotEmpty())
                 }
             }
+
+            backPressedCallback.isEnabled = it !is AudioBrowserViewModel.Content.AllSongs
         }
 
         selectionViewModel.externalState.observe(viewLifecycleOwner) {
@@ -189,6 +205,16 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
                 R.id.show_artists -> browserViewModel.showArtists()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        backPressedCallback.remove()
     }
 }
 
@@ -411,7 +437,7 @@ class AudioBrowserViewModel @Inject internal constructor(
 
     fun showAlbumSongs(album: Album) {
         viewModelScope.launch(Dispatchers.IO) {
-            _showingContent.postValue(Content.AlbumSongs(album, mediaRepository.getAlbumSongs(album)))
+            _showingContent.postValue(Content.AlbumSongs(album, filterSongs(mediaRepository.getAlbumSongs(album))))
         }
     }
 

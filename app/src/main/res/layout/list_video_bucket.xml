@@ -24,52 +24,47 @@
 
         <variable
             name="viewModel"
-            type="org.monora.uprotocol.client.android.fragment.content.VideoContentViewModel" />
+            type="org.monora.uprotocol.client.android.fragment.content.VideoBucketContentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image"
+            thumbnailOf="@{viewModel.thumbnailUri}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?colorPassive"
-            android:contentDescription="@string/text_image"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:background="?colorPassive"
+            android:contentDescription="@string/image_bucket_thumbnail"
             android:foreground="?rectSelector"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rounded"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/selection"
             app:layout_constraintDimensionRatio="1:1"
-            thumbnailOf="@{viewModel.uri}" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rounded" />
 
         <TextView
-            android:textAppearance="?android:textAppearanceSmall"
+            android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
-            android:text="@{viewModel.size}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/selection"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image"
-            tools:text="@tools:sample/date/day_of_week" />
-
-        <ImageView
-            android:id="@+id/selection"
-            style="@style/OverflowButton"
-            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@{viewModel.name}"
+            android:textAppearance="?textAppearanceListItem"
+            android:textStyle="bold"
+            app:layout_constraintVertical_bias="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image"
-            app:srcCompat="?stateSelectedImageRoundedGuiding" />
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="@tools:sample/date/day_of_week" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

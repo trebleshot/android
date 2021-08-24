@@ -78,6 +78,7 @@ class NsdDaemon @Inject constructor(
     val discovering: Boolean
         get() = discoveryListener != null
 
+    // TODO: 8/24/21 Why are we still disabling nsd?
     val enabled: Boolean
         get() = preferences.getBoolean("nsd_enabled", false)
 
