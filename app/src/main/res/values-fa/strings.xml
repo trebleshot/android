@@ -436,9 +436,9 @@
     <string name="text_qrAllowTrustZone">منطقه امن برای کد QR</string>
     <string name="text_connectionWizard">مراحل اتصال</string>
     <string name="ques_connectionWizardUseNetwork">آیا میخواهید از روتر و یا هر شبکه وای فایی که شما و دوستانتان به آن متصل هستید استفاده شود؟</string>
-    <string name="text_notAllowedHelp">"بررسی کنید آیا به %1$s مجازید
+    <string name="text_notAllowedHelp">بررسی کنید که آیا مجاز به %1$s هستید یا خیر
 \n
-\nدستگاه‌ها &gt;  %2$s &gt; اجازه اتصال &gt; (بررسی کنید)"</string>
+\nدستگاهها %2$s مجاز به اتصال&gt; (آن را بررسی کنید)</string>
     <string name="text_emulatedMediaDirectory">شبیه‌سازی شده (%s)</string>
     <string name="text_networkServiceDiscoverySummary">کشف سرویس شبکه اکتشاف‌پذیری را بهبود می‌بخشد</string>
     <string name="butn_mountDirectory">سوار کردن پوشه</string>
