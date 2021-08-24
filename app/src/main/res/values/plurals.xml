@@ -77,4 +77,8 @@
         <item quantity="one">%d task</item>
         <item quantity="other">%d tasks</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
 </resources>

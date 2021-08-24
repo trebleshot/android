@@ -19,7 +19,14 @@ package org.monora.uprotocol.client.android
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import android.util.Size
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.Registry
@@ -33,6 +40,13 @@ import com.bumptech.glide.load.model.ModelLoaderFactory
 import com.bumptech.glide.load.model.MultiModelLoaderFactory
 import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.signature.ObjectKey
+import org.monora.uprotocol.client.android.content.removeId
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+
+fun log(msg: String) {
+    Log.d("GlideYouAreHere", "log: $msg")
+}
 
 /**
  * created by: Veli
@@ -47,6 +61,82 @@ class ApplicationGlideModule : AppGlideModule() {
             Drawable::class.java,
             AppIconModelLoaderFactory(context)
         )
+        registry.prepend(
+            Uri::class.java,
+            Bitmap::class.java,
+            AlbumArtModelLoaderFactory(context)
+        )
+    }
+
+    internal class AlbumArtDataFetcher(val context: Context, val model: Uri) : DataFetcher<Bitmap> {
+        override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
+            try {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    callback.onDataReady(
+                        context.contentResolver.loadThumbnail(model, Size(500, 500), null)
+                    )
+                } else {
+                    val cursor = context.contentResolver.query(
+                        model, arrayOf(MediaStore.Audio.Albums.ALBUM_ART), null, null, null,
+                    ) ?: throw FileNotFoundException("Could not query the uri: $model")
+
+                    cursor.use {
+                        if (it.moveToFirst()) {
+                            val albumArtIndex = it.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
+                            val albumArt = it.getString(albumArtIndex) ?: throw FileNotFoundException(
+                                "The file path was empty"
+                            )
+                            FileInputStream(albumArt).use { inputStream ->
+                                val artData = inputStream.readBytes()
+                                callback.onDataReady(BitmapFactory.decodeByteArray(artData, 0, artData.size))
+                            }
+                        } else {
+                            throw FileNotFoundException("No row returned after query")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                callback.onLoadFailed(e)
+            }
+        }
+
+        override fun cleanup() {
+            // Empty Implementation
+        }
+
+        override fun cancel() {
+            // Empty Implementation
+        }
+
+        override fun getDataClass(): Class<Bitmap> {
+            return Bitmap::class.java
+        }
+
+        override fun getDataSource(): DataSource {
+            return DataSource.LOCAL
+        }
+    }
+
+    internal class AlbumArtModelLoader(private val context: Context) : ModelLoader<Uri, Bitmap> {
+        override fun buildLoadData(uri: Uri, width: Int, height: Int, options: Options): LoadData<Bitmap> {
+            return LoadData(ObjectKey(uri), AlbumArtDataFetcher(context, uri))
+        }
+
+        override fun handles(uri: Uri): Boolean {
+            return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI == uri.removeId()
+        }
+    }
+
+    internal class AlbumArtModelLoaderFactory(
+        private val context: Context,
+    ) : ModelLoaderFactory<Uri, Bitmap> {
+        override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<Uri, Bitmap> {
+            return AlbumArtModelLoader(context)
+        }
+
+        override fun teardown() {
+            // Empty Implementation.
+        }
     }
 
     internal class AppIconDataFetcher(val context: Context, val model: ApplicationInfo) : DataFetcher<Drawable> {

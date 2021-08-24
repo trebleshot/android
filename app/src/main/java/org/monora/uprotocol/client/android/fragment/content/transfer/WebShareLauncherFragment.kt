@@ -157,7 +157,7 @@ class WebShareViewModel @Inject internal constructor(
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            // We don't check for the intent's action type because all of only triggers a refresh via a life data.
+            // We don't check for the intent's action type because all of them only trigger a refresh via a life data.
             reloadInterfaces()
         }
     }

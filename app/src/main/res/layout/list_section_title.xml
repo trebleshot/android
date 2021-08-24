@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2021 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -32,9 +31,5 @@
         android:text="@{viewModel.title}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_list_content_parent_layout"
-        android:paddingEnd="@dimen/padding_list_content_icon_main_margin_left"
-        android:paddingLeft="@dimen/padding_list_content_icon_main_margin_left"
-        android:paddingRight="@dimen/padding_list_content_icon_main_margin_left"
-        android:paddingStart="@dimen/padding_list_content_icon_main_margin_left" />
+        android:layout_margin="24dp" />
 </layout>

@@ -685,4 +685,11 @@
         a consistent set of APIs.\n\nAs a developer, you can easily implement it as it is developed to create consistent
         ecosystem of apps that can talk to each other!
     </string>
+    <string name="all_songs">All songs</string>
+    <string name="albums">Albums</string>
+    <string name="artists">Artists</string>
+    <string name="album_art">Album art</string>
+    <string name="artist_picture">Artist picture</string>
+    <string name="no_albums">No albums here</string>
+    <string name="no_artists">No artists here</string>
 </resources>

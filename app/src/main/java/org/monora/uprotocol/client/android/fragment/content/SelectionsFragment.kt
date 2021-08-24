@@ -128,7 +128,7 @@ class SelectionsAdapter(
             VIEW_TYPE_SONG -> SongViewHolder(
                 ListSongBinding.inflate(inflater, parent, false)
             ) { song, clickType ->
-                if (clickType == AudioBrowserAdapter.ClickType.ToggleSelect) {
+                if (clickType == SongBrowserAdapter.ClickType.ToggleSelect) {
                     selectionClickListener(song, song.isSelected)
                 }
             }

@@ -21,20 +21,27 @@ package org.monora.uprotocol.client.android.binding
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.monora.uprotocol.client.android.GlideApp
+import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.util.MimeIcons
 import org.monora.uprotocol.client.android.viewmodel.content.FileContentViewModel
 import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem.State.Done
 
-private fun load(imageView: ImageView, uri: Uri, circle: Boolean = false) {
+private fun load(imageView: ImageView, uri: Uri, circle: Boolean = false, @DrawableRes fallback: Int = 0) {
     GlideApp.with(imageView)
         .load(uri)
         .override(200)
         .also {
+            if (fallback != 0) {
+                it.fallback(fallback)
+                    .error(fallback)
+            }
+
             if (circle) {
                 it.circleCrop()
             } else {
@@ -76,6 +83,11 @@ fun loadThumbnailOf(imageView: ImageView, info: ApplicationInfo) {
 @BindingAdapter("thumbnailOf")
 fun loadThumbnailOf(imageView: ImageView, uri: Uri) {
     load(imageView, uri)
+}
+
+@BindingAdapter("albumArtOf")
+fun loadAlbumArtOf(imageView: ImageView, uri: Uri) {
+    load(imageView, uri, false, R.drawable.baseline_album_24)
 }
 
 @BindingAdapter("iconOf")

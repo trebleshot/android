@@ -21,14 +21,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:checkedChip="@id/show_all_songs">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/show_all_songs"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/all_songs"
+                app:chipIcon="@drawable/ic_music_note_white_24dp"
+                app:chipIconEnabled="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/show_albums"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/albums"
+                app:chipIcon="@drawable/baseline_album_24"
+                app:chipIconEnabled="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/show_artists"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/artists"
+                app:chipIcon="@drawable/round_person_24"
+                app:chipIconEnabled="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filter_chip"
+                style="@style/Widget.MaterialComponents.Chip.Entry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:checkable="false"
+                app:chipIconEnabled="true" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:layout_marginLeft="@dimen/short_content_width_padding_between"
-        android:layout_marginRight="@dimen/short_content_width_padding_between"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="@integer/genfw_dynamic_grid_span_count" />
 
     <include
         layout="@layout/layout_empty_content"
