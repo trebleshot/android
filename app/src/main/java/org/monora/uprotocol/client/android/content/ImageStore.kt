@@ -23,9 +23,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore.Images.Media
-import androidx.lifecycle.liveData
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -42,7 +40,7 @@ class ImageStore @Inject constructor(
                 Media._ID,
                 Media.DATE_MODIFIED,
             ),
-            "1) GROUP BY 1,(2",
+            null,
             null,
             "${Media.DATE_MODIFIED} DESC"
         )?.use {
@@ -52,22 +50,24 @@ class ImageStore @Inject constructor(
                 val bucketDisplayNameIndex = it.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
                 val dateModifiedIndex = it.getColumnIndex(Media.DATE_MODIFIED)
 
-                val list = ArrayList<ImageBucket>(it.count)
+                val buckets = mutableMapOf<Long, ImageBucket>()
 
                 do {
-                    list.add(
-                        ImageBucket(
-                            it.getLong(bucketIdIndex),
-                            it.getString(bucketDisplayNameIndex),
-                            it.getLong(dateModifiedIndex),
-                            ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, it.getLong(idIndex))
-                        )
+                    val bucketId = it.getLong(bucketIdIndex)
+                    if (buckets.containsKey(bucketId)) continue
+
+                    buckets[bucketId] = ImageBucket(
+                        bucketId,
+                        it.getString(bucketDisplayNameIndex),
+                        it.getLong(dateModifiedIndex),
+                        ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, it.getLong(idIndex))
                     )
                 } while (it.moveToNext())
 
-                list.sortBy { bucket -> bucket.name }
+                val result = buckets.values.toMutableList()
+                result.sortBy { bucket -> bucket.name }
 
-                return list
+                return result
             }
         }
 

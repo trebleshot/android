@@ -22,7 +22,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
-import android.provider.MediaStore
 import android.provider.MediaStore.Video.Media
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.parcelize.IgnoredOnParcel
@@ -41,7 +40,7 @@ class VideoStore @Inject constructor(
                 Media._ID,
                 Media.DATE_MODIFIED,
             ),
-            "1) GROUP BY 1,(2",
+            null,
             null,
             "${Media.DATE_MODIFIED} DESC"
         )?.use {
@@ -51,22 +50,24 @@ class VideoStore @Inject constructor(
                 val bucketDisplayNameIndex = it.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
                 val dateModifiedIndex = it.getColumnIndex(Media.DATE_MODIFIED)
 
-                val list = ArrayList<VideoBucket>(it.count)
+                val buckets = mutableMapOf<Long, VideoBucket>()
 
                 do {
-                    list.add(
-                        VideoBucket(
-                            it.getLong(bucketIdIndex),
-                            it.getString(bucketDisplayNameIndex),
-                            it.getLong(dateModifiedIndex),
-                            ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, it.getLong(idIndex))
-                        )
+                    val bucketId = it.getLong(bucketIdIndex)
+                    if (buckets.containsKey(bucketId)) continue
+
+                    buckets[bucketId] = VideoBucket(
+                        it.getLong(bucketIdIndex),
+                        it.getString(bucketDisplayNameIndex),
+                        it.getLong(dateModifiedIndex),
+                        ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, it.getLong(idIndex))
                     )
                 } while (it.moveToNext())
 
-                list.sortBy { bucket -> bucket.name }
+                val result = buckets.values.toMutableList()
+                result.sortBy { bucket -> bucket.name }
 
-                return list
+                return result
             }
         }
 
