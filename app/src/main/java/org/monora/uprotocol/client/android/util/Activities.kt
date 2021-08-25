@@ -64,7 +64,7 @@ object Activities {
                 }
             } else {
                 context.startActivity(
-                    Intent()
+                    Intent(Intent.ACTION_VIEW)
                         .setDataAndType(uri, type)
                         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 )

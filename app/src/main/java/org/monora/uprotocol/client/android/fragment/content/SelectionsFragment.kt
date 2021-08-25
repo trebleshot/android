@@ -68,6 +68,8 @@ class SelectionsFragment : BottomSheetDialogFragment() {
             "Grid layout manager is needed!"
         }
 
+        if (layoutManager.spanCount > 4) layoutManager.spanCount = 4
+
         recyclerView.adapter = adapter
 
         selectionViewModel.getEditorList().observe(viewLifecycleOwner) {
