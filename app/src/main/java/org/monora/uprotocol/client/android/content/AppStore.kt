@@ -44,7 +44,9 @@ class AppStore @Inject constructor(
         val list = mutableListOf<App>()
 
         for (info in packages) {
-            if (info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1) continue
+            if (info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
+                && info.applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == 0
+            ) continue
 
             try {
                 list.add(
