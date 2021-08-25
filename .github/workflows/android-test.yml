@@ -20,5 +20,33 @@ jobs:
         java-version: 1.8
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      # See: https://github.com/MuntashirAkon/AppManager/blob/4e7a7d2ae1ec0764b5b9df9e9d642af968a3180f/.github/workflows/debug_build.yml
+    - name: Get app version
+      run: echo "APP_VERSION=$(cat ./app/build.gradle | grep -m1 versionName | awk -F \" '{print $2}')" >> $GITHUB_ENV
+    - name: Get app name
+      run: echo "APP_NAME=TrebleShot_${{ env.APP_VERSION }}-DEBUG#${{ github.run_number }}" >> $GITHUB_ENV
     - name: Build with Gradle
-      run: ./gradlew -Dorg.gradle.jvmargs=-Xms3072m assembleFossReliantDebug lintFossReliantDebug testFossReliantDebugUnitTest
+      run: ./gradlew -Dorg.gradle.jvmargs=-Xms3072m packageFossReliantDebug lintFossReliantDebug testFossReliantDebugUnitTest
+    - name: Rename the APK file
+      run: mv ./app/build/outputs/apk/fossReliant/debug/app-fossReliant-debug.apk ./${{ env.APP_NAME }}.apk
+    - name: Store generated APK file
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ env.APP_NAME }}
+        path: ./${{ env.APP_NAME }}.apk
+    - name: Upload APK to telegram
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        document: ./${{ env.APP_NAME }}.apk
+        format: markdown
+        message: |
+          *Platform:* Android
+          *Version:* ${{ env.APP_VERSION }}
+          *Run:* #${{ github.run_number }}
+
+          New commit by ${{ github.event.head_commit.author.name }}
+
+          *${{ github.event.head_commit.message }}*
+      continue-on-error: true
