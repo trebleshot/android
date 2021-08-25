@@ -117,7 +117,7 @@
     <string name="ques_removeAll">إزالة الكل؟</string>
     <string name="text_navigationDrawerOpen">افتح درج الإنتقال</string>
     <string name="text_navigationDrawerClose">اغلق درج الإنتقال</string>
-    <string name="text_developerModeSummary">تعطيل تكوين المستخدم</string>
+    <string name="text_developerModeSummary">يقوم بتعطيل ضبط المستخدم</string>
     <string name="butn_proceed">المضي قدما</string>
     <string name="text_removeCertainPendingTransfersSummary">يؤدي هذا إلى إزالة كافة عمليات النقل المعلقة التي تراها هنا</string>
     <string name="text_availableNetworks">اختر الشبكة - %s</string>
@@ -226,7 +226,7 @@
     <string name="text_trebleshotHotspot">نقطة وصول تريبليشوت</string>
     <string name="butn_connect">اتصال</string>
     <string name="butn_disconnect">قطع الاتصال</string>
-    <string name="text_trebleshotHotspotDescription">"يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة  التي تم إنشاؤها بواسطة تطبيق تريبليشوت على جهاز قريب."</string>
+    <string name="text_trebleshotHotspotDescription">يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة التي تم إنشاؤها بواسطة تطبيق TrebleShot على جهاز قريب.</string>
     <string name="mesg_connectingToSelfHotspot">الاتصال بواسطة نقطة وصول تريبليشوت</string>
     <string name="mesg_warningHotspotMobileActive">قد تستخدم الأجهزة المتصلة البيانات الخلوية. ربما تحتاج إلى إيقاف تشغيلها.</string>
     <string name="butn_skip">تخطي</string>
@@ -249,7 +249,7 @@
     <string name="mesg_ongoingUpdateDownload">تحميل الإصدار الجديد</string>
     <string name="butn_gotIt">فهمت ذلك</string>
     <string name="mesg_helpFolderSelection">لتحديد مجلد، انقر فوق أيقونته</string>
-    <string name="mesg_hotspotCreatedInfo">إتصل بـ %s في إعدادات الواي فاي أو إرسل ملفات عن طريق %s عبر تريبليشوت</string>
+    <string name="mesg_hotspotCreatedInfo">اتصل بـ \"%s\" في \"إعدادات Wi-Fi\" أو أرسل الملفات عبر \"%s\" داخل TrebleShot</string>
     <string name="butn_selectAll">تحديد الكل</string>
     <string name="butn_selectNone">لا تحدد شيئا</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
@@ -293,7 +293,7 @@
     <string name="butn_exit">خروج</string>
     <string name="butn_queueCounted">قائمة الانتظار (%d)</string>
     <string name="text_previewThenProceedNotice">الرجاء التحقق من التحديدات الخاصة بك بالنقر فوق زر \"قائمة انتظار\" للمتابعة</string>
-    <string name="mesg_updateDownloadComplete">تم تلقي التحديث بنجاح و حفظه في الملفات الواردة</string>
+    <string name="mesg_updateDownloadComplete">تم استلام التحديث وحفظه في ملفاتك المستلمة</string>
     <string name="text_listEmptyFiles">لا توجد ملفات هنا</string>
     <string name="text_listEmptyImage">لا توجد صور هنا</string>
     <string name="text_listEmptyApp">لا توجد تطبيقات هنا</string>
@@ -303,7 +303,7 @@
     <string name="text_listEmptyMusic">لا توجد صوتيات هنا</string>
     <string name="text_internalStorage">الذاكرة الداخلية</string>
     <string name="text_restrictedAccessStorage">%s (وصول مقيد)</string>
-    <string name="text_emptySearchResult">لا توجد نتائج لـ %s</string>
+    <string name="text_emptySearchResult">لا توجد نتائج لـ\"%s\"</string>
     <string name="mesg_listRefreshSnoozed">سيتم تحديث القائمة متى توفرت</string>
     <string name="mesg_errorReadFolder">لا يمكن الوصول إلى %s</string>
     <string name="butn_mountDirectory">تحميل مجلد</string>
@@ -338,7 +338,7 @@
     <string name="text_groupByArtist">الفنان</string>
     <string name="text_home">الصفحة الرئيسية</string>
     <string name="text_default">الافتراضي</string>
-    <string name="text_files">الملفات</string>
+    <string name="text_files">الملف</string>
     <string name="mesg_noReceiverOrSender">يجب عليك إضافة الأجهزة أولاً</string>
     <string name="butn_addDevices">إضافة أجهزة</string>
     <string name="text_connectDevices">قم بتوصيل الأجهزة</string>
@@ -369,17 +369,17 @@
     <string name="text_changelog">سجل التغييرات</string>
     <string name="mesg_noInternetConnection">ذلك يتطلب اتصالا بالإنترنت</string>
     <string name="text_emptySymbol">-</string>
-    <string name="mesg_versionUpdatedChangelogRejected">"يمكنك دائما الإطلاع على \'سجل التغييرات\' في  قسم \'عن التطبيق\'"</string>
+    <string name="mesg_versionUpdatedChangelogRejected">يمكنك دائما الإطلاع على \'سجل التغييرات\' في قسم \'عن التطبيق\'</string>
     <string name="text_applyDarkTheme">الوضع الداكن</string>
     <string name="butn_allow">السماح</string>
     <string name="butn_telegram_channel">قناة تلغرام</string>
     <string name="mesg_noPendingTransferObjectExists">لم يتبقى اي نقل معلق. لاستئناف الملفات التي تمت مقاطعتها ، استخدم الخيار \"أعاده محاولة التلقي\".</string>
-    <string name="mesg_notSavingToChosenLocation">المجلد المطلوب غير قابل للوصول. سيتم حفظ الملفات إلى المجلد الافتراضي. 
-\n 
-\n% s</string>
+    <string name="mesg_notSavingToChosenLocation">لا يمكن الوصول إلى المجلد المطلوب. سيتم حفظ الملفات في المجلد الافتراضي.
+\n
+\n%s</string>
     <string name="mesg_versionUpdatedChangelog">لقد قمتَ بتحديث تريبلشوت ، هل تود استعراض ما الجديد في هذا الإصدار؟</string>
     <string name="text_applyDarkThemeSummary">استخدم سمة داكنة</string>
-    <string name="text_listEmptyTransfer">"كافة التحويلات ستظهر هنا "</string>
+    <string name="text_listEmptyTransfer">كافة التحويلات ستظهر هنا</string>
     <string name="text_transfers">التحويلات</string>
     <string name="butn_connectionDetails">تفاصيل الاتصال</string>
     <string name="butn_useKnownDevice">استخدم أجهزة معروفة</string>
@@ -413,7 +413,7 @@
     <string name="ques_connectionWizardIsThereQRCode">هل ترى رمز الاستجابة السريعة كيو آر على الشاشة؟</string>
     <string name="mesg_wifiEnableFailed">تعذر تشغيل الواي فاي.</string>
     <string name="mesg_locationPermissionRequiredAny">قم بتفعيل خدمة التموقع الجغرافي أولا قبل المواصلة</string>
-    <string name="mesg_removing">الحذف جارٍ. يمكن للعملية أن تستغرق شيئا مِن الوقت…</string>
+    <string name="mesg_removing">الحذف جارٍ. يمكن للعملية أن تستغرق بعضا مِن الوقت</string>
     <string name="butn_never">أبداً</string>
     <string name="text_shortcut">اختصار</string>
     <string name="butn_addShortcut">إضافة اختصار</string>
@@ -451,16 +451,16 @@
     <string name="ques_connectionWizardUseNetwork">هل تريد استخدام جهاز التوجيه الخاص بك أو اي شبكه Wi-fi تتصل بها أنت وصديقك ؟</string>
     <string name="ques_connectionWizardUseKnownDevices">هل تريد الوصول إلى أجهزتك التي تم الاتصال بها مسبقا ؟</string>
     <string name="text_hotspotStartedExternallyNotice">وقد بدات النقطة الساخنة خارجيا. لاستخدام رمز الاستجابة السريعة ، يجب ان تبدا هنا.</string>
-    <string name="text_textMillisecond">% d مللي ثانيه</string>
+    <string name="text_textMillisecond">%d مللي ثانية</string>
     <string name="text_amoledOptimizedBlackTheme">تحسين شاشات AMOLED</string>
-    <string name="mesg_errorNotTrustZoneDevice">"يجب تعيين هذا الجهاز علي انه جهاز trustzone  علي جهاز الاستقبال للقيام بهذه العملية."</string>
+    <string name="mesg_errorNotTrustZoneDevice">يجب تعيين هذا الجهاز علي انه جهاز trustzone على جهاز الاستقبال للقيام بهذه العملية.</string>
     <string name="text_webShareNoContentNotice">استخدم خيار \"مشاركه علي المتصفح\" لرؤية عمليات النقل هنا!</string>
     <string name="text_webShareInfo">تمكين مشاركه الويب لعمليات النقل بشكل فردي وزيارة اي ارتباط ويب موضح أدناه مع جهاز متصل بنفس الشبكة.</string>
     <string name="text_listEmptyConnection">تظهر الشبكات التي تتصل بها هنا</string>
     <string name="ques_shareAsApkOrLink">مشاركة ملف التثبيت او الرابط؟</string>
     <string name="butn_asApk">ملف التثبيت</string>
     <string name="butn_asLink">كرابط</string>
-    <string name="text_linkTrebleshot">مشاركه الملفات مع TrebleShot! تحميل هنا:% s</string>
+    <string name="text_linkTrebleshot">مشاركة الملفات مع TrebleShot! تحميل هنا: %s</string>
     <string name="butn_downloadAllAsZip">تحميل الجميع كملف ZIP (واحد ، غير مضغوط)</string>
     <string name="text_interfaceVPN">خادم VPN</string>
     <string name="text_unrecognizedQrCode">رمز غير معروف</string>
