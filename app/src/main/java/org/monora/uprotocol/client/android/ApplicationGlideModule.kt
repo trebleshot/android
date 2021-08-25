@@ -57,7 +57,7 @@ class ApplicationGlideModule : AppGlideModule() {
             Drawable::class.java,
             AppIconModelLoaderFactory(context)
         )
-        registry.prepend(
+        registry.append(
             Uri::class.java,
             Bitmap::class.java,
             AlbumArtModelLoaderFactory(context)
@@ -94,7 +94,7 @@ class ApplicationGlideModule : AppGlideModule() {
             } catch (e: Exception) {
                 callback.onLoadFailed(e)
             } catch (ignored: Throwable) {
-
+                callback.onLoadFailed(Exception())
             }
         }
 
@@ -121,7 +121,11 @@ class ApplicationGlideModule : AppGlideModule() {
         }
 
         override fun handles(uri: Uri): Boolean {
-            return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI == uri.removeId()
+            try {
+                return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI == uri.removeId()
+            } catch (ignored: Throwable) { }
+
+            return false
         }
     }
 
