@@ -693,4 +693,17 @@
     <string name="no_albums">No albums here</string>
     <string name="no_artists">No artists here</string>
     <string name="image_bucket_thumbnail">Image bucket thumbnail</string>
+    <string name="install_package">Install Package</string>
+    <string name="app_icon">App icon</string>
+    <string name="package_install_success">Package installed successfully</string>
+    <string name="package_install_failure">Failed to install the package</string>
+    <string name="package_install_aborted">Aborted package installation</string>
+    <string name="package_install_blocked">Package installation failed due to the app being blocked</string>
+    <string name="package_install_conflicted">The package conflicted with another package</string>
+    <string name="package_install_incompatible">The package is incompatible</string>
+    <string name="package_install_invalid">The package is invalid or has a different signature</string>
+    <string name="package_install_failure_storage">The installation failed due to insufficient storage space</string>
+    <string name="package_install_failure_unknown">Installation failed due to an unknown reason</string>
+    <string name="installing">Installing</string>
+    <string name="status_icon">Status icon</string>
 </resources>

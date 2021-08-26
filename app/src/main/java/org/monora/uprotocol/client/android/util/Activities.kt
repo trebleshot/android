@@ -18,18 +18,16 @@
 
 package org.monora.uprotocol.client.android.util
 
-import android.app.Service
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.PackageInstallerActivity
 
 object Activities {
     private const val MIME_APK = "application/vnd.android.package-archive"
@@ -53,7 +51,7 @@ object Activities {
         try {
             if (MIME_APK == type) {
                 if (Build.VERSION.SDK_INT >= 29) {
-                    // TODO: 8/10/21 PackageInstaller for API 29
+                    context.startActivity(Intent(context, PackageInstallerActivity::class.java).setData(uri))
                 } else {
                     @Suppress("DEPRECATION")
                     context.startActivity(

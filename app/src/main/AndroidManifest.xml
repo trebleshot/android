@@ -29,7 +29,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -134,6 +135,12 @@
             android:name="org.monora.uprotocol.client.android.activity.WelcomeActivity"
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
+
+        <activity
+            android:name=".activity.PackageInstallerActivity"
+            android:launchMode="singleTop"
+            android:label="@string/install_package"
+            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
