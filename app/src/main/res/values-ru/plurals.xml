@@ -65,4 +65,28 @@
         <item quantity="few">Поделиться с %d устройствами</item>
         <item quantity="many">Поделиться с %d устройствами</item>
     </plurals>
+    <plurals name="items">
+        <item quantity="one">%d элемент</item>
+        <item quantity="few">%d элемента</item>
+        <item quantity="many">%d элементов</item>
+        <item quantity="other">%d элементов</item>
+    </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d альбом</item>
+        <item quantity="few">%d альбома</item>
+        <item quantity="many">%d альбомов</item>
+        <item quantity="other">%d альбомов</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d задача</item>
+        <item quantity="few">%d задачи</item>
+        <item quantity="many">%d задач</item>
+        <item quantity="other">%d задач</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">%d файл выбран</item>
+        <item quantity="few">%d файла выбраны</item>
+        <item quantity="many">%d файлов выбрано</item>
+        <item quantity="other">%d файлов выбрано</item>
+    </plurals>
 </resources>
