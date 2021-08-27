@@ -78,7 +78,7 @@ class FileRepository @Inject constructor(
             primaryDir = Environment.getExternalStorageDirectory()
         }
 
-        File(primaryDir.toString() + File.separator + context.getString(R.string.text_appName))
+        File(primaryDir.toString() + File.separator + context.getString(R.string.app_name))
     }
 
     suspend fun clearStorageList() = safFolderDao.removeAll()

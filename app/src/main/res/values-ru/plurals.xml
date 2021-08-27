@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">Хотите удалить %d файл?</item>
         <item quantity="few">Хотите удалить %d файла?</item>
         <item quantity="many">Хотите удалить %d файлов?</item>
         <item quantity="other"/>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d файл получен</item>
         <item quantity="few">%d файла получено</item>
         <item quantity="many">%d файлов получено</item>
@@ -16,7 +16,7 @@
         <item quantity="few">%d файла выбрано</item>
         <item quantity="many">%d файлов выбрано</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">Принять %d файл?</item>
         <item quantity="few">Принять %d файла?</item>
         <item quantity="many">Принять %d файлов?</item>
@@ -33,17 +33,17 @@
         <item quantity="few">%d соединения</item>
         <item quantity="many">%d соединений</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d файл</item>
         <item quantity="few">%d файла</item>
         <item quantity="many">%d файлов</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">Секунду назад</item>
         <item quantity="few">%d секунды назад</item>
         <item quantity="many">%d секунд назад</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">Минуту назад</item>
         <item quantity="few">%d минуты назад</item>
         <item quantity="many">%d минут назад</item>

@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/ic_qrcode_white_128dp"
-            android:contentDescription="@string/help_scanQRCode" />
+            android:contentDescription="@string/scanner_qr_code_notice" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -42,6 +42,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/help_qrCodePosition" />
+        android:text="@string/qr_code_image_notice" />
 
 </org.monora.uprotocol.client.android.view.ComparativeRelativeLayout>

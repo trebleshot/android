@@ -1,26 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="other">Apa kamu ingin menghapus berkas %d ini\?</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="other">%d berkas telah diterima</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
@@ -32,16 +15,16 @@
     <plurals name="text_gridRow">
         <item quantity="other">%d baris</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="other">%d menit yang lalu</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="other">%d detik yang lalu</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="other">berkas %d</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="other">terima berkas %d\?</item>
     </plurals>
     <plurals name="text_availableConnections">

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">آیا می خواهید این فایل را حذف کنید؟</item>
         <item quantity="other">آیا می خواهید %d فایل را حذف کنید؟</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d فایل دریافت شد</item>
         <item quantity="other">%d فایل دریافت شد</item>
     </plurals>
@@ -20,19 +20,19 @@
         <item quantity="one">%d اتصال</item>
         <item quantity="other">%d اتصال ها</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">این فایل را دریافت می کنید؟</item>
         <item quantity="other">%d فایل دریافت شود؟</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d فایل</item>
         <item quantity="other">%d فایل ها</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">یک ثانیه پیش</item>
         <item quantity="other">%d ثانیه پیش</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">یک دقیقه پیش</item>
         <item quantity="other">%d دقیقه پیش</item>
     </plurals>

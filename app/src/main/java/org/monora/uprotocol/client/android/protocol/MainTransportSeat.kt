@@ -137,7 +137,7 @@ class MainTransportSeat @Inject constructor(
                 IndexingParams(groupId, client, jsonArray, hasPin),
             ) { applicationScope, params, state ->
                 applicationScope.launch(coroutineContext) {
-                    state.postValue(Task.State.Running(context.getString(R.string.mesg_organizingFiles)))
+                    state.postValue(Task.State.Running(context.getString(R.string.organizing_files_notice)))
 
                     Transfers.toTransferItemList(jsonArray).map {
                         val item = persistenceProvider.createTransferItemFor(

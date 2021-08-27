@@ -80,7 +80,7 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
 
         setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose
+            this, drawerLayout, toolbar, R.string.open_navigation_drawer, R.string.close_navigation_drawer
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()

@@ -52,9 +52,9 @@ class FilesViewModel @Inject internal constructor(
 
     private val context = WeakReference(context)
 
-    private val textFolder = context.getString(R.string.text_folder)
+    private val textFolder = context.getString(R.string.folder)
 
-    private val textFile = context.getString(R.string.text_file)
+    private val textFile = context.getString(R.string.file)
 
     private val _files = MutableLiveData<List<ContentModel>>()
 

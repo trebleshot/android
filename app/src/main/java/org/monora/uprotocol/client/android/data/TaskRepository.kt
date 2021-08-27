@@ -20,8 +20,6 @@ package org.monora.uprotocol.client.android.data
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.backend.TaskFilter
@@ -30,10 +28,6 @@ import org.monora.uprotocol.client.android.backend.TaskSubscriber
 import org.monora.uprotocol.client.android.protocol.isIncoming
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
 import org.monora.uprotocol.client.android.task.transfer.TransferParams
-import org.monora.uprotocol.core.CommunicationBridge
-import org.monora.uprotocol.core.TransportSeat
-import org.monora.uprotocol.core.persistence.PersistenceProvider
-import org.monora.uprotocol.core.protocol.ConnectionFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -56,7 +50,7 @@ class TaskRepository @Inject constructor(
         params: TransferParams,
         taskRegistry: TaskRegistry<TransferParams>
     ) = register(
-        context.getString(if (params.transfer.direction.isIncoming) R.string.text_receiving else R.string.text_sending),
+        context.getString(if (params.transfer.direction.isIncoming) R.string.receiving else R.string.sending),
         params,
         taskRegistry
     ).also {

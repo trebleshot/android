@@ -120,7 +120,7 @@ class Services @Inject constructor(
         if (hotspotManager.enabled) {
             hotspotManager.disable()
         } else {
-            val result = hotspotManager.enableConfigured(context.getString(R.string.text_appName), null)
+            val result = hotspotManager.enableConfigured(context.getString(R.string.app_name), null)
             Log.d(TAG, "toggleHotspot: Enabling=$result")
         }
     }

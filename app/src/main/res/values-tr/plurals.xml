@@ -1,27 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <plurals name="ques_deleteFile">
-        <item quantity="one">Bu dosyayı silmek istiyor musunuz?</item>
-        <item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
-    </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="delete_files_question">
+	<item quantity="one">Bu dosyayı silmek istiyor musunuz?</item>
+	<item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
+</plurals>
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d dosya alındı</item>
         <item quantity="other">%d dosya alındı</item>
     </plurals>
@@ -30,39 +13,39 @@
         <item quantity="other">%d dosya seçildi</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="one">Bekleyen bu aktarım kaldırılacak</item>
-        <item quantity="other">%d bekleyen aktarım kaldırılacak</item>
-    </plurals>
+	<item quantity="one">Bekleyen bu aktarım kaldırılacak</item>
+	<item quantity="other">%d bekleyen aktarım kaldırılacak</item>
+</plurals>
     <plurals name="text_availableConnections">
         <item quantity="one">%d bağlantı</item>
         <item quantity="other">%d bağlantı</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">%d dosya alınsın mı?</item>
         <item quantity="other">%d dosya alınsın mı?</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d dosya</item>
         <item quantity="other">%d dosya</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">%d saniye önce</item>
         <item quantity="other">%d saniye önce</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">Bir dakika önce</item>
         <item quantity="other">%d dakika önce</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">%d dosya silindi</item>
-        <item quantity="other">%d dosya silindi</item>
-    </plurals>
-    <plurals name="text_gridRow">
-        <item quantity="one">Tek sütun</item>
-        <item quantity="other">%d sütun</item>
-    </plurals>
+	<item quantity="one">%d dosya silindi</item>
+	<item quantity="other">%d dosya silindi</item>
+</plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Tek sütun</item>
+	<item quantity="other">%d sütun</item>
+</plurals>
     <plurals name="text_devicesShared">
-        <item quantity="one">Tekli paylaşım</item>
-        <item quantity="other">%d cihazla paylaşım</item>
-    </plurals>
+	<item quantity="one">Tekli paylaşım</item>
+	<item quantity="other">%d cihazla paylaşım</item>
+</plurals>
 </resources>

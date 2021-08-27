@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">Θέλετε να διαγράψετε αυτό το αρχείο\?</item>
         <item quantity="other">Θέλετε να διαγράψετε %d αρχεία\?</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">λήφθηκε %d αρχείο</item>
         <item quantity="other">λήφθηκαν %d αρχεία</item>
     </plurals>
@@ -20,19 +20,19 @@
         <item quantity="one">%d σύνδεση</item>
         <item quantity="other">%d συνδέσεις</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">Λήψη αυτού του αρχείου\?</item>
         <item quantity="other">Λήψη %d αρχείων\?</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d αρχείο</item>
         <item quantity="other">%d αρχεία</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">πρίν από ένα δευτερόλεπτο</item>
         <item quantity="other">%d δευτερόλεπτα πρίν</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">Πρίν από ένα λεπτό</item>
         <item quantity="other">%d λεπτά πρίν</item>
     </plurals>

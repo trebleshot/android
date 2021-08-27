@@ -176,7 +176,7 @@ class SharingController {
 
         return renderHome(
             templates,
-            pageTitle = context.getString(R.string.text_webShare),
+            pageTitle = context.getString(R.string.web_share),
             contentBody = renderContents(templates, repository.getList()),
             uploadedContent = uploadedContent
         )

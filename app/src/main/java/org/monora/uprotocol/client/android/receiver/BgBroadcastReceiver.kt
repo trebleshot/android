@@ -107,7 +107,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                         LifecycleService.CLIPBOARD_SERVICE
                     ) as ClipboardManager
                     cbManager.setPrimaryClip(ClipData.newPlainText("receivedText", sharedText.text))
-                    Toast.makeText(context, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.copy_text_to_clipboard_success, Toast.LENGTH_SHORT).show()
                 }
             }
             ACTION_STOP_ALL_TASKS -> backend.cancelAllTasks()

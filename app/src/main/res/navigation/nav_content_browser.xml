@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/contentBrowserFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ContentBrowserFragment"
-        android:label="@string/text_send">
+        android:label="@string/sends">
         <action
             android:id="@+id/action_contentBrowserFragment_to_prepareIndexFragment"
             app:destination="@id/prepareIndexFragment" />
@@ -48,7 +48,7 @@
     <fragment
         android:id="@+id/sendFragment"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.SendFragment"
-        android:label="@string/text_connectingToClient">
+        android:label="@string/connecting_to_client">
         <argument
             android:name="groupId"
             app:argType="long" />
@@ -78,7 +78,7 @@
     <dialog
         android:id="@+id/webShareLauncherFragment"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.WebShareLauncherFragment"
-        android:label="@string/text_webShare" />
+        android:label="@string/web_share" />
     <dialog
         android:id="@+id/selectionsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.content.SelectionsFragment"

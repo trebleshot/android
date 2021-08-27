@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:layout_marginTop="2dp"
-            android:text="@{viewModel.isDirectory ? @plurals/text_files(viewModel.indexCount, viewModel.indexCount) : viewModel.sizeText}"
+            android:text="@{viewModel.isDirectory ? @plurals/files(viewModel.indexCount, viewModel.indexCount) : viewModel.sizeText}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/title"
             app:layout_constraintStart_toStartOf="@id/title"

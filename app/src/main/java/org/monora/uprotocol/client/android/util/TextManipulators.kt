@@ -51,13 +51,13 @@ object TextManipulators {
     }.replace("_", " ")
 
     fun toNetworkTitle(adapterName: String): Int {
-        val unknownInterface = R.string.text_interfaceUnknown
+        val unknownInterface = R.string.unknown_interface
         val associatedNames: MutableMap<String, Int> = ArrayMap()
-        associatedNames["wlan"] = R.string.text_interfaceWireless
-        associatedNames["p2p"] = R.string.text_interfaceWifiDirect
-        associatedNames["bt-pan"] = R.string.text_interfaceBluetooth
-        associatedNames["eth"] = R.string.text_interfaceEthernet
-        associatedNames["tun"] = R.string.text_interfaceVPN
+        associatedNames["wlan"] = R.string.wifi
+        associatedNames["p2p"] = R.string.wifi_direct
+        associatedNames["bt-pan"] = R.string.bluetooth
+        associatedNames["eth"] = R.string.ethernet
+        associatedNames["tun"] = R.string.vpn_interface
         associatedNames["unk"] = unknownInterface
         for (displayName in associatedNames.keys) if (adapterName.startsWith(displayName)) {
             return associatedNames[displayName] ?: unknownInterface

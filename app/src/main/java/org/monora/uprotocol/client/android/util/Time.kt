@@ -60,33 +60,33 @@ object Time {
     fun formatRelativeTime(context: Context, time: Long): String {
         val differ = ((System.currentTimeMillis() - time) / 1000).toInt()
         return when {
-            differ == 0 -> context.getString(R.string.text_timeJustNow)
-            differ < 60 -> context.resources.getQuantityString(R.plurals.text_secondsAgo, differ, differ)
+            differ == 0 -> context.getString(R.string.just_now)
+            differ < 60 -> context.resources.getQuantityString(R.plurals.seconds_ago, differ, differ)
             differ < 3600 -> {
                 val minutes = differ / 60
-                return context.resources.getQuantityString(R.plurals.text_minutesAgo, minutes, minutes)
+                return context.resources.getQuantityString(R.plurals.minutes_ago, minutes, minutes)
             }
-            else -> context.getString(R.string.text_longAgo)
+            else -> context.getString(R.string.long_ago)
         }
     }
 
     fun formatElapsedTime(context: Context, estimatedTime: Long): String {
         val elapsedTime = ElapsedTime.from(estimatedTime)
         val list: MutableList<String> = ArrayList()
-        if (elapsedTime.years > 0) list.add(context.getString(R.string.text_yearCountShort, elapsedTime.years))
-        if (elapsedTime.months > 0) list.add(context.getString(R.string.text_monthCountShort, elapsedTime.months))
+        if (elapsedTime.years > 0) list.add(context.getString(R.string.count_years_short, elapsedTime.years))
+        if (elapsedTime.months > 0) list.add(context.getString(R.string.count_months_short, elapsedTime.months))
         if (elapsedTime.years == 0L) {
-            if (elapsedTime.days > 0) list.add(context.getString(R.string.text_dayCountShort, elapsedTime.days))
+            if (elapsedTime.days > 0) list.add(context.getString(R.string.count_days_short, elapsedTime.days))
             if (elapsedTime.months == 0L) {
-                if (elapsedTime.hours > 0) list.add(context.getString(R.string.text_hourCountShort, elapsedTime.hours))
+                if (elapsedTime.hours > 0) list.add(context.getString(R.string.count_hours_short, elapsedTime.hours))
                 if (elapsedTime.days == 0L) {
                     if (elapsedTime.minutes > 0) {
-                        list.add(context.getString(R.string.text_minuteCountShort, elapsedTime.minutes))
+                        list.add(context.getString(R.string.count_minutes_short, elapsedTime.minutes))
                     }
 
                     if (elapsedTime.hours == 0L) {
                         // always applied
-                        list.add(context.getString(R.string.text_secondCountShort, elapsedTime.seconds))
+                        list.add(context.getString(R.string.count_seconds_short, elapsedTime.seconds))
                     }
 
                 }

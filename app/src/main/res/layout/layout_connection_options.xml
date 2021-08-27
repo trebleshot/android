@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
-                android:text="@string/butn_showAll"
+                android:text="@string/show_all"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/text_onlineClients"
+                android:text="@string/online_clients"
                 android:textAppearance="?textAppearanceHeadline6"
                 app:layout_constraintBottom_toBottomOf="@id/clientsButton"
                 app:layout_constraintStart_toEndOf="@id/guideStart"
@@ -151,7 +151,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/help_addDeviceUsingIpAddressHelp"
+                android:text="@string/nothing_worked_question"
                 android:textAppearance="?textAppearanceHeadline6"
                 app:layout_constraintStart_toStartOf="@id/guideStart"
                 app:layout_constraintTop_toBottomOf="@+id/generateQrCodeButton" />
@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
-                android:text="@string/butn_enterAddress"
+                android:text="@string/enter_address"
                 app:icon="@drawable/ic_ip_white_24dp"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
                 app:layout_constraintStart_toEndOf="@id/guideStart"

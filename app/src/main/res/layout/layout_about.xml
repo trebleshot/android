@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@string/text_joinUs" />
+            android:text="@string/join_us" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -143,7 +143,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/butn_helpLocalize"
+                android:text="@string/help_translate"
                 app:icon="@drawable/ic_translate_white_24dp"
                 app:iconGravity="top"
                 app:layout_constraintBottom_toBottomOf="@+id/monoraHomeButton"
@@ -157,7 +157,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/butn_telegram"
+                android:text="@string/telegram"
                 app:icon="@drawable/ic_telegram_white_24dp"
                 app:iconGravity="top"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -173,7 +173,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/butn_github"
+                android:text="@string/github"
                 app:icon="@drawable/ic_github_circle_white_24dp"
                 app:iconGravity="top"
                 app:layout_constraintBottom_toBottomOf="@+id/telegramButton"
@@ -190,7 +190,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@string/text_license" />
+            android:text="@string/license" />
 
         <TextView
             android:id="@+id/licenseText"

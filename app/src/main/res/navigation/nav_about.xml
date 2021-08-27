@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/aboutFragment"
         android:name="org.monora.uprotocol.client.android.fragment.AboutFragment"
-        android:label="@string/text_about" >
+        android:label="@string/about" >
         <action
             android:id="@+id/action_aboutFragment_to_licensesFragment"
             app:destination="@id/licensesFragment" />
@@ -35,9 +35,9 @@
     <dialog
         android:id="@+id/licensesFragment"
         android:name="org.monora.uprotocol.client.android.fragment.LicensesFragment"
-        android:label="@string/text_thirdPartyLicenses" />
+        android:label="@string/third_party_libraries" />
     <dialog
         android:id="@+id/changelogFragment2"
         android:name="org.monora.uprotocol.client.android.fragment.ChangelogFragment"
-        android:label="@string/text_changelog" />
+        android:label="@string/changelog" />
 </navigation>

@@ -1,28 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2021 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">Souhaitez-vous supprimer ce fichier \?</item>
         <item quantity="other">Souhaitez-vous supprimer %d fichiers \?</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d fichier a été reçu</item>
         <item quantity="other">%d fichiers ont été reçus</item>
     </plurals>
@@ -38,19 +20,19 @@
         <item quantity="one">%d connexion</item>
         <item quantity="other">%d connexions</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">Recevoir ce fichier \?</item>
         <item quantity="other">Recevoir %d fichiers \?</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d fichier</item>
         <item quantity="other">%d fichiers</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">Il y a une seconde</item>
         <item quantity="other">Il y a %d secondes</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">Il y a une minute</item>
         <item quantity="other">Il y a %d minutes</item>
     </plurals>

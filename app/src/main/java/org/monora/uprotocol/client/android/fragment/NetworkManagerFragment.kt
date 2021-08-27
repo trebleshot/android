@@ -278,26 +278,26 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
                     .append(key ?: "")
                 imageView2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp)
                 imageView3.setImageResource(R.drawable.ic_vpn_key_white_24dp)
-                text1.setText(R.string.text_qrCodeAvailableHelp)
+                text1.setText(R.string.scan_qr_code_notice)
                 text2.text = ssid
                 text3.text = key
             } else {
                 activeType = Type.HotspotExternal
-                text1.setText(R.string.text_hotspotStartedExternallyNotice)
+                text1.setText(R.string.externally_started_hotspot_notice)
             }
-            toggleButton.setText(R.string.butn_stopHotspot)
-            secondButton.setText(R.string.butn_wifiSettings)
+            toggleButton.setText(R.string.stop_hotspot)
+            secondButton.setText(R.string.wifi_settings)
         } else if (!connections.canReadWifiInfo() && connections.wifiManager.isWifiEnabled) {
             activeType = Type.LocationAccess
             text1.setText(
                 if (connections.isLocationServiceEnabled()) {
-                    R.string.mesg_locationPermissionRequiredAny
+                    R.string.location_permission_required_notice
                 } else {
-                    R.string.mesg_locationServiceDisabled
+                    R.string.location_service_disabled_notice
                 }
             )
-            toggleButton.setText(R.string.butn_enable)
-            secondButton.setText(R.string.text_startHotspot)
+            toggleButton.setText(R.string.enable)
+            secondButton.setText(R.string.start_hotspot)
         } else if (connections.isConnectedToAnyNetwork()) {
             activeType = Type.WiFi
             val ssid: String? = connectionInfo.ssid
@@ -318,16 +318,16 @@ class NetworkManagerFragment : Fragment(R.layout.layout_network_manager) {
                 .append(hostAddress)
             imageView2.setImageResource(R.drawable.ic_wifi_white_24dp)
             imageView3.setImageResource(R.drawable.ic_ip_white_24dp)
-            text1.setText(R.string.help_scanQRCode)
+            text1.setText(R.string.scanner_qr_code_notice)
             text2.text = Connections.getCleanSsid(connectionInfo.ssid)
             text3.text = hostAddress
-            toggleButton.setText(R.string.butn_wifiSettings)
-            secondButton.setText(R.string.text_startHotspot)
+            toggleButton.setText(R.string.wifi_settings)
+            secondButton.setText(R.string.start_hotspot)
         } else {
             activeType = Type.None
-            text1.setText(R.string.help_setUpNetwork)
-            toggleButton.setText(R.string.text_startHotspot)
-            secondButton.setText(R.string.butn_wifiSettings)
+            text1.setText(R.string.set_up_network_notice)
+            toggleButton.setText(R.string.start_hotspot)
+            secondButton.setText(R.string.wifi_settings)
         }
         when (activeType) {
             Type.Hotspot, Type.WiFi, Type.HotspotExternal -> ViewCompat.setBackgroundTintList(

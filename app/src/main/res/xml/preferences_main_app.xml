@@ -19,11 +19,11 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <androidx.preference.PreferenceCategory android:title="@string/text_application">
+    <androidx.preference.PreferenceCategory android:title="@string/app">
         <androidx.preference.ListPreference
             android:defaultValue="light"
             android:key="theme"
-            android:title="@string/text_uiTheme"
+            android:title="@string/ui_theme"
             android:summary="%s"
             android:icon="@drawable/ic_palette_white_24dp" />
 
@@ -31,15 +31,15 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_invert_colors_black_24dp"
             android:key="amoled_theme"
-            android:summary="@string/text_amoledOptimizedBlackThemeSummary"
-            android:title="@string/text_amoledOptimizedBlackTheme" />
+            android:summary="@string/theme_optimize_summary"
+            android:title="@string/theme_optimize" />
 
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_short_text_white_24dp"
             android:key="custom_fonts"
-            android:summary="@string/const_text_useAppFontsSummary"
-            android:title="@string/const_text_useAppFonts"
+            android:summary="@string/use_recommended_fonts_notice"
+            android:title="@string/use_recommended_fonts"
             tools:targetApi="16" />
 
     </androidx.preference.PreferenceCategory>

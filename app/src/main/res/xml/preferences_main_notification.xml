@@ -17,25 +17,25 @@
   -->
 
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <androidx.preference.PreferenceCategory android:title="@string/text_notification">
+    <androidx.preference.PreferenceCategory android:title="@string/notification">
 
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="notification_vibrate"
-            android:summary="@string/text_useVibrationSummary"
-            android:title="@string/text_useVibration" />
+            android:summary="@string/notifications_use_vibration_summary"
+            android:title="@string/notifications_use_vibration" />
 
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="notification_sound"
-            android:summary="@string/text_useSoundsSummary"
-            android:title="@string/text_useSounds" />
+            android:summary="@string/notifications_use_sounds_summary"
+            android:title="@string/notifications_use_sounds" />
 
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="notification_light"
-            android:summary="@string/text_useLightSummary"
-            android:title="@string/text_useLights" />
+            android:summary="@string/notifications_use_lights_summary"
+            android:title="@string/notifications_use_lights" />
 
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

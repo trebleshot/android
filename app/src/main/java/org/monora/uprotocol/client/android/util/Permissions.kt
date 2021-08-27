@@ -42,8 +42,8 @@ object Permissions {
             permissions.add(
                 Permission(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    R.string.text_requestPermissionStorage,
-                    R.string.text_requestPermissionStorageSummary
+                    R.string.storage_permission,
+                    R.string.storage_permission_summary
                 )
             )
         }

@@ -185,22 +185,22 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
             with(viewModel) {
                 if (!it.camera) {
                     stateImage.set(R.drawable.ic_camera_white_144dp)
-                    stateText.set(getString(R.string.text_cameraPermissionRequired))
-                    stateButtonText.set(getString(R.string.butn_ask))
+                    stateText.set(getString(R.string.camera_permission_notice))
+                    stateButtonText.set(getString(R.string.ask))
                 } else if (!it.location) {
                     stateImage.set(R.drawable.ic_round_location_off_144)
 
                     if (!connections.hasLocationPermission()) {
-                        stateText.set(getString(R.string.mesg_locationPermissionRequiredAny))
-                        stateButtonText.set(getString(R.string.butn_allow))
+                        stateText.set(getString(R.string.location_permission_required_notice))
+                        stateButtonText.set(getString(R.string.allow))
                     } else {
-                        stateText.set(getString(R.string.mesg_locationServiceDisabled))
-                        stateButtonText.set(getString(R.string.butn_enable))
+                        stateText.set(getString(R.string.location_service_disabled_notice))
+                        stateButtonText.set(getString(R.string.enable))
                     }
                 } else if (!it.wifi) {
                     stateImage.set(R.drawable.ic_signal_wifi_off_white_144dp)
-                    stateText.set(getString(R.string.text_wifiDisabled))
-                    stateButtonText.set(getString(R.string.butn_enable))
+                    stateText.set(getString(R.string.wifi_disabled_notice))
+                    stateButtonText.set(getString(R.string.enable))
                 }
             }
 
@@ -304,21 +304,21 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 else -> throw Exception("Request is unknown")
             }
         } catch (e: UnknownHostException) {
-            snackbarPlacementProvider.createSnackbar(R.string.mesg_unknownHostError)?.show()
+            snackbarPlacementProvider.createSnackbar(R.string.error_unknown_host)?.show()
         } catch (e: Exception) {
             e.printStackTrace()
             AlertDialog.Builder(requireActivity())
-                .setTitle(R.string.text_unrecognizedQrCode)
+                .setTitle(R.string.unrecognized_qr_code_notice)
                 .setMessage(code)
-                .setNegativeButton(R.string.butn_close, null)
-                .setPositiveButton(R.string.butn_show) { _: DialogInterface?, _: Int ->
+                .setNegativeButton(R.string.close, null)
+                .setPositiveButton(R.string.show) { _: DialogInterface?, _: Int ->
                     val sharedText = SharedText(0, code)
 
                     lifecycleScope.launch(Dispatchers.IO) {
                         sharedTextRepository.insert(sharedText)
                     }
 
-                    snackbarPlacementProvider.createSnackbar(R.string.mesg_textStreamSaved)?.show()
+                    snackbarPlacementProvider.createSnackbar(R.string.save_text_success)?.show()
 
                     startActivity(
                         Intent(context, TextEditorActivity::class.java)
@@ -329,7 +329,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
                     (context?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?)?.let {
                         it.setPrimaryClip(ClipData.newPlainText("copiedText", code))
-                        snackbarPlacementProvider.createSnackbar(R.string.mesg_textCopiedToClipboard)?.show()
+                        snackbarPlacementProvider.createSnackbar(R.string.copy_text_to_clipboard_success)?.show()
                     }
                 }
                 .setOnDismissListener {

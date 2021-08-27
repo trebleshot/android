@@ -71,20 +71,20 @@ class NotificationBackend(val context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelHigh = NotificationChannel(
                 NOTIFICATION_CHANNEL_HIGH,
-                context.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH
+                context.getString(R.string.high_priority_notifications), NotificationManager.IMPORTANCE_HIGH
             )
             channelHigh.enableLights(preferences.getBoolean("notification_light", false))
             channelHigh.enableVibration(preferences.getBoolean("notification_vibrate", false))
             manager.createNotificationChannel(channelHigh)
             val channelLow = NotificationChannel(
                 NOTIFICATION_CHANNEL_LOW,
-                context.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW
+                context.getString(R.string.low_priority_notifications), NotificationManager.IMPORTANCE_LOW
             )
             manager.createNotificationChannel(channelLow)
 
             val channelInstructive = NotificationChannel(
                 CHANNEL_INSTRUCTIVE,
-                context.getString(R.string.text_instructiveNotifications),
+                context.getString(R.string.notifications_instructive),
                 NotificationManager.IMPORTANCE_MAX
             )
             manager.createNotificationChannel(channelInstructive)

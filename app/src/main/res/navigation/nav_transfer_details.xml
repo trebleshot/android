@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/transferDetailsFragment"
         android:name="org.monora.uprotocol.client.android.fragment.TransferDetailsFragment"
-        android:label="@string/text_transactionDetails">
+        android:label="@string/transfer_details">
         <argument
             android:name="transfer"
             app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
@@ -38,7 +38,7 @@
     <dialog
         android:id="@+id/TransferItemFragment"
         android:name="org.monora.uprotocol.client.android.fragment.TransferItemFragment"
-        android:label="@string/text_files">
+        android:label="@string/files">
         <argument
             android:name="transfer"
             app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />

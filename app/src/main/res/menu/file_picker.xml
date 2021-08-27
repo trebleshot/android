@@ -21,7 +21,7 @@
 
     <item
         android:id="@+id/create_folder"
-        android:title="@string/butn_createFolder"
+        android:title="@string/create_folder"
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="ifRoom" />
 

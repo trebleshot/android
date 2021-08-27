@@ -65,7 +65,7 @@
             style="@style/TextAppearance.Secondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{@plurals/text_files(viewModel.sharedCount, viewModel.sharedCount)}"
+            android:text="@{@plurals/files(viewModel.sharedCount, viewModel.sharedCount)}"
             app:layout_constraintEnd_toEndOf="@id/title"
             app:layout_constraintStart_toStartOf="@id/title"
             app:layout_constraintTop_toBottomOf="@id/title"

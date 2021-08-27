@@ -18,7 +18,6 @@
 package org.monora.uprotocol.client.android.util
 
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
@@ -26,7 +25,6 @@ import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
@@ -60,8 +58,8 @@ class Notifications(val backend: NotificationBackend) {
         val notification = backend.buildDynamicNotification(
             ID_BG_SERVICE, NotificationBackend.NOTIFICATION_CHANNEL_LOW
         )
-        val sendString = context.getString(R.string.butn_send)
-        val receiveString = context.getString(R.string.butn_receive)
+        val sendString = context.getString(R.string.sends)
+        val receiveString = context.getString(R.string.receive)
         val sendIntent: PendingIntent = PendingIntent.getActivity(
             context,
             ID_BG_SERVICE + 1,
@@ -75,7 +73,7 @@ class Notifications(val backend: NotificationBackend) {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val exitAction = NotificationCompat.Action(
-            R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_exit),
+            R.drawable.ic_close_white_24dp_static, context.getString(R.string.exit),
             PendingIntent.getService(
                 context,
                 ID_BG_SERVICE + 3,
@@ -90,8 +88,8 @@ class Notifications(val backend: NotificationBackend) {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
-            .setContentTitle(context.getString(R.string.text_communicationServiceRunning))
-            .setContentText(context.getString(R.string.text_notificationOpenHome))
+            .setContentTitle(context.getString(R.string.service_running_notice))
+            .setContentText(context.getString(R.string.tap_to_launch_notice))
             .setContentIntent(homeIntent)
             .addAction(exitAction)
             .addAction(R.drawable.ic_arrow_up_white_24dp_static, sendString, sendIntent)
@@ -158,7 +156,7 @@ class Notifications(val backend: NotificationBackend) {
         // TODO: 7/16/21 This should also have the 'transfer' extra.
         val transferDetail: Intent = Intent(context, HomeActivity::class.java)
         val message = if (itemsSize > 1) {
-            context.resources.getQuantityString(R.plurals.ques_receiveMultipleFiles, itemsSize, itemsSize)
+            context.resources.getQuantityString(R.plurals.receive_files_question, itemsSize, itemsSize)
         } else {
             items[0].name
         }
@@ -169,7 +167,7 @@ class Notifications(val backend: NotificationBackend) {
             context, hash + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
         notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle(context.getString(R.string.ques_receiveFile))
+            .setContentTitle(context.getString(R.string.receive_file_question))
             .setContentText(message)
             .setContentInfo(client.clientNickname)
             .setContentIntent(
@@ -179,9 +177,9 @@ class Notifications(val backend: NotificationBackend) {
             )
             .setDefaults(backend.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_yes), positiveIntent)
-            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
-            .setTicker(context.getString(R.string.ques_receiveFile)).priority = NotificationCompat.PRIORITY_HIGH
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.yes), positiveIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.no), negativeIntent)
+            .setTicker(context.getString(R.string.receive_file_question)).priority = NotificationCompat.PRIORITY_HIGH
         notification.show()
     }
 
@@ -207,12 +205,12 @@ class Notifications(val backend: NotificationBackend) {
 
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle(context.getString(R.string.ques_copyToClipboard))
-            .setContentText(context.getString(R.string.text_textReceived))
+            .setContentTitle(context.getString(R.string.copy_to_clipboard))
+            .setContentText(context.getString(R.string.receive_text_success))
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(item.text)
-                    .setBigContentTitle(context.getString(R.string.ques_copyToClipboard))
+                    .setBigContentTitle(context.getString(R.string.copy_to_clipboard))
             )
             .setContentInfo(client.clientNickname)
             .setContentIntent(
@@ -225,9 +223,9 @@ class Notifications(val backend: NotificationBackend) {
             )
             .setDefaults(backend.notificationSettings)
             .setDeleteIntent(negativeIntent)
-            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.butn_yes), positiveIntent)
-            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_no), negativeIntent)
-            .setTicker(context.getString(R.string.text_receivedTextSummary)).priority =
+            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.yes), positiveIntent)
+            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.no), negativeIntent)
+            .setTicker(context.getString(R.string.receive_text_summary_success)).priority =
             NotificationCompat.PRIORITY_HIGH
         notification.show()
     }
@@ -244,14 +242,14 @@ class Notifications(val backend: NotificationBackend) {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentText(
                 context.getString(
-                    R.string.text_receivedTransfer,
+                    R.string.receive_success_summary,
                     FwFiles.formatLength(transferParams.bytesTotal),
                     Time.formatElapsedTime(context, System.currentTimeMillis() - transferParams.startTime)
                 )
             )
             .setContentTitle(
                 context.resources.getQuantityString(
-                    R.plurals.text_fileReceiveCompletedSummary,
+                    R.plurals.receive_files_success_summary,
                     transferParams.count,
                     transferParams.count
                 )
@@ -266,7 +264,7 @@ class Notifications(val backend: NotificationBackend) {
         val notificationLocal = notification ?: backend.buildDynamicNotification(
             ID_BG_SERVICE, NotificationBackend.NOTIFICATION_CHANNEL_LOW
         ).also {
-            val transfersString = context.getString(R.string.butn_transfers)
+            val transfersString = context.getString(R.string.transfers)
             val transfersIntent: PendingIntent = PendingIntent.getActivity(
                 context,
                 ID_BG_SERVICE + 1,
@@ -274,7 +272,7 @@ class Notifications(val backend: NotificationBackend) {
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
             val stopAllTasksAction = NotificationCompat.Action(
-                R.drawable.ic_close_white_24dp_static, context.getString(R.string.butn_stopAll),
+                R.drawable.ic_close_white_24dp_static, context.getString(R.string.stop_all),
                 PendingIntent.getBroadcast(
                     context,
                     ID_BG_SERVICE + 2,
@@ -290,7 +288,7 @@ class Notifications(val backend: NotificationBackend) {
             )
 
             it.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
-                .setContentTitle(context.getString(R.string.text_taskOngoing))
+                .setContentTitle(context.getString(R.string.ongoing_task))
                 .setContentIntent(homeIntent)
                 .setOngoing(true)
                 .addAction(stopAllTasksAction)
@@ -300,7 +298,7 @@ class Notifications(val backend: NotificationBackend) {
         val msg = SpannableStringBuilder()
         for (task in taskList) {
             val state: Task.State = task.state.value ?: continue
-            val middleDot = " " + context.getString(R.string.mode_middleDot) + " "
+            val middleDot = " " + context.getString(R.string.middle_dot) + " "
 
             if (msg.isNotEmpty()) msg.append("\n")
 
@@ -311,9 +309,9 @@ class Notifications(val backend: NotificationBackend) {
             }
 
             val content: String = when (state) {
-                is Task.State.Pending, is Task.State.Finished -> context.getString(R.string.mesg_waiting)
+                is Task.State.Pending, is Task.State.Finished -> context.getString(R.string.waiting)
                 is Task.State.Running -> state.message
-                is Task.State.Error -> state.error.message ?: context.getString(R.string.text_error)
+                is Task.State.Error -> state.error.message ?: context.getString(R.string.error)
                 is Task.State.Progress -> {
                     if (state.progress > 0 && state.total > 0) {
                         msg.append(middleDot)
@@ -330,14 +328,14 @@ class Notifications(val backend: NotificationBackend) {
             }
 
             if (content.isNotEmpty()) msg.append(middleDot).append(content)
-            if (msg.isEmpty()) msg.append(context.getString(R.string.text_empty))
+            if (msg.isEmpty()) msg.append(context.getString(R.string.empty_text))
         }
         val summary = context.resources.getQuantityString(
-            R.plurals.text_tasks, taskList.size,
+            R.plurals.tasks, taskList.size,
             taskList.size
         )
         val textStyle: NotificationCompat.BigTextStyle = NotificationCompat.BigTextStyle()
-            .setBigContentTitle(context.getString(R.string.text_taskOngoing))
+            .setBigContentTitle(context.getString(R.string.ongoing_task))
             .setSummaryText(summary)
             .bigText(msg)
         notificationLocal.setContentText(summary)
@@ -373,8 +371,8 @@ class Notifications(val backend: NotificationBackend) {
 
         notification
             .setSmallIcon(R.drawable.ic_help_white_24_static)
-            .setContentTitle(context.getString(R.string.text_connectToWifiTitle, ssid))
-            .setContentText(context.getString(R.string.text_connectToWifiPasswordInstructions, password))
+            .setContentTitle(context.getString(R.string.connect_to_wifi_notice, ssid))
+            .setContentText(context.getString(R.string.enter_wifi_password_notice, password))
             .setAutoCancel(false)
             .setOngoing(true)
 

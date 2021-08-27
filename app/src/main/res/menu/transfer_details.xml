@@ -19,6 +19,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/remove"
-        android:title="@string/butn_remove" />
+        android:title="@string/remove" />
 
 </menu>

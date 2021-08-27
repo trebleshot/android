@@ -59,7 +59,7 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
             val address = binding.editText.text?.trim()?.toString()
 
             if (address.isNullOrEmpty()) {
-                binding.editText.error = getString(R.string.mesg_enterValidHostAddress)
+                binding.editText.error = getString(R.string.host_address_invalid_notice)
             } else {
                 binding.editText.error = null
                 viewModel.connect(address)
@@ -72,8 +72,8 @@ class ManualConnectionFragment : Fragment(R.layout.layout_manual_connection) {
 
                 }
                 is ManualConnectionState.Error -> when (it.exception) {
-                    is UnknownHostException -> binding.editText.error = getString(R.string.mesg_unknownHostError)
-                    is UnauthorizedClientException -> binding.editText.error = getString(R.string.mesg_notAllowed)
+                    is UnknownHostException -> binding.editText.error = getString(R.string.error_unknown_host)
+                    is UnauthorizedClientException -> binding.editText.error = getString(R.string.error_not_allowed)
                     else -> binding.editText.error = it.exception.message
                 }
                 is ManualConnectionState.Loaded -> if (!it.isUsed) {

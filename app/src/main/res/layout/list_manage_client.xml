@@ -58,7 +58,7 @@
                 pictureOf="@{viewModel.client}"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:contentDescription="@string/text_image"
+                android:contentDescription="@string/photo"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/text1"
                 app:layout_constraintStart_toStartOf="parent"

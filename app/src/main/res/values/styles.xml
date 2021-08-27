@@ -219,7 +219,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:text">@string/mode_middleDot</item>
+        <item name="android:text">@string/middle_dot</item>
     </style>
 
     <style name="ListContentLayoutStyle">
@@ -261,7 +261,7 @@
     </style>
 
     <style name="CustomListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">
-        <item name="android:text">@string/text_listEmpty</item>
+        <item name="android:text">@string/empty_list</item>
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 

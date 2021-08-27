@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:maxLines="5"
-            android:text="@string/text_listEmpty"
+            android:text="@string/empty_list"
             android:textColor="?colorPassive"
             android:textSize="22sp"
             app:layout_constraintBottom_toTopOf="@+id/progressBar5"

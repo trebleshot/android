@@ -1,68 +1,50 @@
-<?xml version='1.0' encoding='UTF-8'?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
-<resources>
-    <plurals name="ques_deleteFile">
-        <item quantity="one">Ønsker du å slette denne fila?</item>
-        <item quantity="other">Ønsker du å slette %d filer?</item>
-    </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">Ei fil har blitt mottatt</item>
-        <item quantity="other">%d filer har blitt mottatt</item>
-    </plurals>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="delete_files_question">
+	<item quantity="one">Ønsker du å slette denne fila?</item>
+	<item quantity="other">Ønsker du å slette %d filer?</item>
+</plurals>
+    <plurals name="receive_files_success_summary">
+	<item quantity="one">Ei fil har blitt mottatt</item>
+	<item quantity="other">%d filer har blitt mottatt</item>
+</plurals>
     <plurals name="text_itemSelected">
-        <item quantity="one">Ei fil valgt</item>
-        <item quantity="other">%d filer valgt</item>
-    </plurals>
+	<item quantity="one">Ei fil valgt</item>
+	<item quantity="other">%d filer valgt</item>
+</plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="one">Denne ventende overføringen vil bli fjernet</item>
-        <item quantity="other">%d ventende overføringer vil bli fjernet</item>
-    </plurals>
+	<item quantity="one">Denne ventende overføringen vil bli fjernet</item>
+	<item quantity="other">%d ventende overføringer vil bli fjernet</item>
+</plurals>
     <plurals name="text_availableConnections">
-        <item quantity="one">Én tilkobling</item>
-        <item quantity="other">%d tilkoblinger</item>
-    </plurals>
-    <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">Ta imot denne fila?</item>
-        <item quantity="other">Ta imot %d filer?</item>
-    </plurals>
-    <plurals name="text_files">
-        <item quantity="one">Ei fil</item>
-        <item quantity="other">%d filer</item>
-    </plurals>
-    <plurals name="text_secondsAgo">
-        <item quantity="one">Ett sekund siden</item>
-        <item quantity="other">%d sekunder siden</item>
-    </plurals>
-    <plurals name="text_minutesAgo">
-        <item quantity="one">Ett minutt siden</item>
-        <item quantity="other">%d minutter siden</item>
-    </plurals>
-    <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">Ei fil har blitt slettet</item>
-        <item quantity="other">%d filer har blitt slettet</item>
-    </plurals>
-    <plurals name="text_gridRow">
-        <item quantity="one">Enkelt rad</item>
-        <item quantity="other">%d rader</item>
-    </plurals>
+	<item quantity="one">Én tilkobling</item>
+	<item quantity="other">%d tilkoblinger</item>
+</plurals>
+    <plurals name="receive_files_question">
+	<item quantity="one">Ta imot denne fila?</item>
+	<item quantity="other">Ta imot %d filer?</item>
+</plurals>
+<plurals name="files">
+	<item quantity="one">Ei fil</item>
+	<item quantity="other">%d filer</item>
+</plurals>
+    <plurals name="seconds_ago">
+	<item quantity="one">Ett sekund siden</item>
+	<item quantity="other">%d sekunder siden</item>
+</plurals>
+    <plurals name="minutes_ago">
+	<item quantity="one">Ett minutt siden</item>
+	<item quantity="other">%d minutter siden</item>
+</plurals>
+<plurals name="text_fileDeletionCompleted">
+	<item quantity="one">Ei fil har blitt slettet</item>
+	<item quantity="other">%d filer har blitt slettet</item>
+</plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Enkelt rad</item>
+	<item quantity="other">%d rader</item>
+</plurals>
     <plurals name="text_devicesShared">
-        <item quantity="one">Enkelt deling</item>
-        <item quantity="other">Deler med %d enheter</item>
-    </plurals>
+	<item quantity="one">Enkelt deling</item>
+	<item quantity="other">Deler med %d enheter</item>
+</plurals>
 </resources>

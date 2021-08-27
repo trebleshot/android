@@ -17,63 +17,39 @@
   -->
 
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">Do you want to delete this file?</item>
         <item quantity="other">Do you want to delete %d files?</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d file has been received</item>
         <item quantity="other">%d files have been received</item>
     </plurals>
-    <plurals name="text_itemSelected">
+    <plurals name="selected_files_summary">
         <item quantity="one">%d file is selected</item>
         <item quantity="other">%d files are selected</item>
     </plurals>
-    <plurals name="text_removeQueueSummary">
-        <item quantity="one">This pending transfer will be removed</item>
-        <item quantity="other">%d pending transfers will be removed</item>
-    </plurals>
-    <plurals name="text_availableConnections">
-        <item quantity="one">%d connection</item>
-        <item quantity="other">%d connections</item>
-    </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">Receive this file?</item>
         <item quantity="other">Receive %d files?</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">A second ago</item>
         <item quantity="other">%d seconds ago</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">A minute ago</item>
         <item quantity="other">%d minutes ago</item>
     </plurals>
-    <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">%d file has been deleted</item>
-        <item quantity="other">%d files have been deleted</item>
-    </plurals>
-    <plurals name="text_gridRow">
-        <item quantity="one">Single row</item>
-        <item quantity="other">%d rows</item>
-    </plurals>
-    <plurals name="text_devicesShared">
-        <item quantity="one">Single share</item>
-        <item quantity="other">Sharing with %d devices</item>
-    </plurals>
-    <plurals name="text_devices">
-        <item quantity="one">%d device</item>
-        <item quantity="other">%d devices</item>
-    </plurals>
-    <plurals name="text_items">
+    <plurals name="items">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
     </plurals>
-    <plurals name="text_tasks">
+    <plurals name="tasks">
         <item quantity="one">%d task</item>
         <item quantity="other">%d tasks</item>
     </plurals>

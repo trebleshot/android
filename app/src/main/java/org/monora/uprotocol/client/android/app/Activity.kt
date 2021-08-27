@@ -18,8 +18,6 @@
 package org.monora.uprotocol.client.android.app
 
 import android.content.BroadcastReceiver
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -33,25 +31,17 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.*
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import org.monora.uprotocol.client.android.App
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.activity.WelcomeActivity
 import org.monora.uprotocol.client.android.backend.Backend
 import org.monora.uprotocol.client.android.data.SharedTextRepository
-import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.util.Permissions
-import java.io.FileReader
-import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -244,9 +234,9 @@ abstract class Activity : AppCompatActivity(), OnSharedPreferenceChangeListener 
                     setMessage(permission.description)
                     setPositiveButton(R.string.grant) { _: DialogInterface?, _: Int -> request() }
                     if (finishOtherwise) {
-                        setNegativeButton(R.string.butn_reject) { _: DialogInterface?, _: Int -> finish() }
+                        setNegativeButton(R.string.reject) { _: DialogInterface?, _: Int -> finish() }
                     } else {
-                        setNegativeButton(R.string.butn_close, null)
+                        setNegativeButton(R.string.close, null)
                     }
                     ongoingRequest = show()
                 }

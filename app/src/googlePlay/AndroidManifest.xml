@@ -24,7 +24,7 @@
 
     <application android:name=".App">
         <activity
-            android:label="@string/text_donate"
+            android:label="@string/donate"
             android:name="org.monora.uprotocol.client.android.activity.DonationActivity"
             android:theme="@style/Theme.TrebleShot.NoActionBar"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"

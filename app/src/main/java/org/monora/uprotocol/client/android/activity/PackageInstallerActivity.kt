@@ -89,7 +89,7 @@ class PackageInstallerActivity : Activity() {
                 is PreparationState.Loading -> statusText.setText(R.string.installing)
                 is PreparationState.Error -> {
                     Toast.makeText(
-                        this@PackageInstallerActivity, R.string.mesg_somethingWentWrong, Toast.LENGTH_LONG
+                        this@PackageInstallerActivity, R.string.unknown_failure, Toast.LENGTH_LONG
                     ).show()
                     finish()
                 }

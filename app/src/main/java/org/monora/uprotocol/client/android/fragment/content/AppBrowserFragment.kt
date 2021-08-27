@@ -63,7 +63,7 @@ class AppBrowserFragment : Fragment(R.layout.layout_app_browser) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyApp)
+        emptyView.emptyText.setText(R.string.empty_apps_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_android_head_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)

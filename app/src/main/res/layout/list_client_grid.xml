@@ -66,7 +66,7 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:contentDescription="@string/text_image"
+                    android:contentDescription="@string/photo"
                     pictureOf="@{viewModel.client}" />
 
             </org.monora.uprotocol.client.android.view.ComparativeRelativeLayout>

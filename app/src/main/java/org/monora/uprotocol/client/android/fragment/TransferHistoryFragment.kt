@@ -82,7 +82,7 @@ class TransferHistoryFragment : Fragment(R.layout.layout_transfer_history) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyTransfer)
+        emptyView.emptyText.setText(R.string.empty_transfers_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_compare_arrows_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)

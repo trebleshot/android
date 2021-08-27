@@ -69,7 +69,7 @@ class ConnectionOptionsFragment : Fragment(R.layout.layout_connection_options) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         adapter.setHasStableIds(true)
-        binding.emptyView.emptyText.setText(R.string.text_noOnlineDevices)
+        binding.emptyView.emptyText.setText(R.string.empty_online_clients_list)
         binding.emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
         binding.emptyView.viewModel = emptyContentViewModel
         binding.recyclerView.adapter = adapter

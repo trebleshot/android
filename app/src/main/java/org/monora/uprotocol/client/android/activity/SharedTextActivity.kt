@@ -18,8 +18,6 @@
 package org.monora.uprotocol.client.android.activity
 
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.appcompat.widget.Toolbar
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class SharedTextActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_text_stream)
+        setContentView(R.layout.activity_shared_text)
     }
 }

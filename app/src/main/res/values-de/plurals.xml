@@ -1,68 +1,50 @@
-<?xml version='1.0' encoding='UTF-8'?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
-<resources>
-    <plurals name="ques_deleteFile">
-        <item quantity="one">Diese Datei löschen\?</item>
-        <item quantity="other">%d Dateien löschen\?</item>
-    </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">%d Datei wurde empfangen</item>
-        <item quantity="other">%d Dateien wurden empfangen</item>
-    </plurals>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="delete_files_question">
+	<item quantity="one">Diese Datei löschen\?</item>
+	<item quantity="other">%d Dateien löschen\?</item>
+</plurals>
+    <plurals name="receive_files_success_summary">
+	<item quantity="one">%d Datei wurde empfangen</item>
+	<item quantity="other">%d Dateien wurden empfangen</item>
+</plurals>
     <plurals name="text_itemSelected">
-        <item quantity="one">%d Datei ausgewählt</item>
-        <item quantity="other">%d Dateien ausgewählt</item>
-    </plurals>
+	<item quantity="one">%d Datei ausgewählt</item>
+	<item quantity="other">%d Dateien ausgewählt</item>
+</plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="one">Diese wartende Übertragung wird entfernt</item>
-        <item quantity="other">%d wartende Übertragungen werden entfernt</item>
-    </plurals>
+	<item quantity="one">Diese wartende Übertragung wird entfernt</item>
+	<item quantity="other">%d wartende Übertragungen werden entfernt</item>
+</plurals>
     <plurals name="text_availableConnections">
-        <item quantity="one">%d Verbindung</item>
-        <item quantity="other">%d Verbindungen</item>
-    </plurals>
-    <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">Datei empfangen?</item>
-        <item quantity="other">%d Dateien empfangen?</item>
-    </plurals>
-    <plurals name="text_files">
-        <item quantity="one">%d Datei</item>
-        <item quantity="other">%d Dateien</item>
-    </plurals>
-    <plurals name="text_secondsAgo">
-        <item quantity="one">Vor einer Sekunde</item>
-        <item quantity="other">Vor %d Sekunden</item>
-    </plurals>
-    <plurals name="text_minutesAgo">
-        <item quantity="one">Vor einer Minute</item>
-        <item quantity="other">Vor %d Minuten</item>
-    </plurals>
+	<item quantity="one">%d Verbindung</item>
+	<item quantity="other">%d Verbindungen</item>
+</plurals>
+    <plurals name="receive_files_question">
+	<item quantity="one">Datei empfangen?</item>
+	<item quantity="other">%d Dateien empfangen?</item>
+</plurals>
+    <plurals name="files">
+	<item quantity="one">%d Datei</item>
+	<item quantity="other">%d Dateien</item>
+</plurals>
+    <plurals name="seconds_ago">
+	<item quantity="one">Vor einer Sekunde</item>
+	<item quantity="other">Vor %d Sekunden</item>
+</plurals>
+    <plurals name="minutes_ago">
+	<item quantity="one">Vor einer Minute</item>
+	<item quantity="other">Vor %d Minuten</item>
+</plurals>
     <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">%d Datei gelöscht</item>
-        <item quantity="other">%d Dateien gelöscht</item>
-    </plurals>
-    <plurals name="text_gridRow">
-        <item quantity="one">Eine Zeile</item>
-        <item quantity="other">%d Zeilen</item>
-    </plurals>
+	<item quantity="one">%d Datei gelöscht</item>
+	<item quantity="other">%d Dateien gelöscht</item>
+</plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Eine Zeile</item>
+	<item quantity="other">%d Zeilen</item>
+</plurals>
     <plurals name="text_devicesShared">
-        <item quantity="one">Teile mit einem Gerät</item>
-        <item quantity="other">Teile mit %d Geräten</item>
-    </plurals>
+	<item quantity="one">Teile mit einem Gerät</item>
+	<item quantity="other">Teile mit %d Geräten</item>
+</plurals>
 </resources>

@@ -51,7 +51,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_gravity="center"
-                android:contentDescription="@string/text_image" />
+                android:contentDescription="@string/photo" />
 
         </com.google.android.material.card.MaterialCardView>
 

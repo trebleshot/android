@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/editorFragment"
         android:name="org.monora.uprotocol.client.android.fragment.TextEditorFragment"
-        android:label="@string/text_textEditor">
+        android:label="@string/text_editor">
 
         <action
             android:id="@+id/pick_client"

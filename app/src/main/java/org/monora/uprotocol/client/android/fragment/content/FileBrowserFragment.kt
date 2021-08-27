@@ -119,7 +119,7 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         }
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyFiles)
+        emptyView.emptyText.setText(R.string.empty_files_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_insert_drive_file_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)

@@ -115,18 +115,18 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
 
                 when {
                     checkDeletionNeeded() -> {
-                        createSnackbar(R.string.ques_deleteEmptiedText)
+                        createSnackbar(R.string.delete_empty_text_question)
                             .addCallback(eventListener)
-                            .setAction(R.string.butn_delete) {
+                            .setAction(R.string.delete) {
                                 removeText()
                                 backPressedDispatcher.onBackPressed()
                             }
                             .show()
                     }
                     checkSaveNeeded() -> {
-                        createSnackbar(if (hasObject) R.string.mesg_clipboardUpdateNotice else R.string.mesg_textSaveNotice)
+                        createSnackbar(if (hasObject) R.string.update_clipboard_notice else R.string.save_clipboard_notice)
                             .addCallback(eventListener)
-                            .setAction(if (hasObject) R.string.butn_update else R.string.butn_save) {
+                            .setAction(if (hasObject) R.string.update else R.string.save) {
                                 saveText()
                                 backPressedDispatcher.onBackPressed()
                             }
@@ -155,13 +155,13 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
         }
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
-            createSnackbar(R.string.text_sending).show()
+            createSnackbar(R.string.sending).show()
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     bridge.use {
                         if (it.requestClipboard(this@TextEditorFragment.text, ClipboardType.Text)) {
                             lifecycleScope.launch {
-                                createSnackbar(R.string.mesg_sent).show()
+                                createSnackbar(R.string.send_success).show()
                             }
                         }
                     }
@@ -174,7 +174,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.actions_text_editor, menu)
+        inflater.inflate(R.menu.text_editor, menu)
         shareButton = menu.findItem(R.id.menu_action_share_trebleshot)
     }
 
@@ -191,16 +191,16 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
         val id = item.itemId
         if (id == R.id.menu_action_save) {
             saveText()
-            createSnackbar(R.string.mesg_textStreamSaved).show()
+            createSnackbar(R.string.save_text_success).show()
         } else if (id == R.id.menu_action_copy) {
             (requireContext().getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager)
                 .setPrimaryClip(ClipData.newPlainText("copiedText", text))
-            createSnackbar(R.string.mesg_textCopiedToClipboard).show()
+            createSnackbar(R.string.copy_text_to_clipboard_success).show()
         } else if (id == R.id.menu_action_share) {
             val shareIntent: Intent = Intent(Intent.ACTION_SEND)
                 .putExtra(Intent.EXTRA_TEXT, text)
                 .setType("text/*")
-            startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)))
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.choose_sharing_app)))
         } else if (id == R.id.menu_action_share_trebleshot) {
             findNavController().navigate(TextEditorFragmentDirections.pickClient())
         } else if (id == R.id.menu_action_show_as_qr_code) {
@@ -222,11 +222,11 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
-                    dialog.setTitle(R.string.butn_showAsQrCode)
+                    dialog.setTitle(R.string.show_as_qr_code)
                     dialog.setContentView(view, params)
                     dialog.show()
                 } catch (e: WriterException) {
-                    Toast.makeText(requireContext(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.unknown_failure, Toast.LENGTH_SHORT).show()
                 }
             }
         } else if (id == R.id.menu_action_remove) {

@@ -44,14 +44,14 @@
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/text_appName"
+        android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrebleShot"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.HomeActivity"
-            android:label="@string/text_appName"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar">
             <intent-filter>
@@ -85,7 +85,7 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.SharingActivity"
-            android:label="@string/text_appName">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
@@ -101,7 +101,7 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.SharedTextActivity"
-            android:label="@string/text_sharedTexts"
+            android:label="@string/shared_texts"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
             tools:targetApi="jelly_bean">
             <meta-data
@@ -111,7 +111,7 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.ContentBrowserActivity"
-            android:label="@string/text_send"
+            android:label="@string/sends"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
@@ -123,7 +123,7 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.TextEditorActivity"
-            android:label="@string/text_textEditor"
+            android:label="@string/text_editor"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
             tools:targetApi="jelly_bean">
             <meta-data
@@ -133,7 +133,7 @@
 
         <activity
             android:name="org.monora.uprotocol.client.android.activity.WelcomeActivity"
-            android:label="@string/text_welcome"
+            android:label="@string/welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
         <activity
@@ -158,7 +158,7 @@
             android:name="org.monora.uprotocol.client.android.service.BackgroundService"
             android:enabled="true"
             android:exported="false"
-            android:label="@string/text_backgroundService" />
+            android:label="@string/background_service" />
 
         <service
             android:name="org.monora.uprotocol.client.android.service.TogglingTileService"

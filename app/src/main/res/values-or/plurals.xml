@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d ଫାଇଲ୍ ଗ୍ରହଣ କରାଯାଇଛି</item>
         <item quantity="other">%d ଫାଇଲ୍ ଗୁଡିକ ଗ୍ରହଣ କରାଯାଇଛି</item>
     </plurals>
@@ -12,19 +12,19 @@
         <item quantity="one">%dଟି ଫାଇଲ୍ ଡିଲିଟ୍ ହୋଇଯାଇଛି</item>
         <item quantity="other">%dଟି ଫାଇଲ୍ ଗୁଡିକ ଡିଲିଟ୍ ହୋଇଯାଇଛି</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">ଏକ ମିନିଟ୍ ପୂର୍ବରୁ</item>
         <item quantity="other">%d ମିନିଟ୍ ପୂର୍ବରୁ</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">ଏକ ସେକେଣ୍ଡ ପୂର୍ବରୁ</item>
         <item quantity="other">%d ସେକେଣ୍ଡ ପୂର୍ବରୁ</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d ଫାଇଲ୍</item>
         <item quantity="other">%dଟି ଫାଇଲଗୁଡିକ</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">ଏହି ଫାଇଲ୍ ଗ୍ରହଣ କରିବେ କି\?</item>
         <item quantity="other">%d ଫାଇଲଗୁଡିକ ଗ୍ରହଣ କରିବେ କି\?</item>
     </plurals>
@@ -32,7 +32,7 @@
         <item quantity="one">%d ସଂଯୋଗ</item>
         <item quantity="other">%dଟି ସଂଯୋଗ</item>
     </plurals>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">ଆପଣ ଏହି ଫାଇଲ୍ ଟିକୁ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି\?</item>
         <item quantity="other">ଆପଣ ଏହି ଫାଇଲ୍ ଗୁଡିକୁ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି\?</item>
     </plurals>

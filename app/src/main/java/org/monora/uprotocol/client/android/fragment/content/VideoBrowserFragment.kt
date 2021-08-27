@@ -82,7 +82,7 @@ class VideoBrowserFragment : Fragment(R.layout.layout_video_browser) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyVideo)
+        emptyView.emptyText.setText(R.string.empty_video_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_photo_white_24dp)
         emptyView.executePendingBindings()
         videoAdapter.setHasStableIds(true)

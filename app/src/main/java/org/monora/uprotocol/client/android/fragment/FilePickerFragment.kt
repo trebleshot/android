@@ -81,10 +81,10 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
         val editText = view.findViewById<EditText>(R.id.editText)
 
         AlertDialog.Builder(requireActivity())
-            .setTitle(R.string.butn_createFolder)
+            .setTitle(R.string.create_folder)
             .setView(view)
-            .setNegativeButton(R.string.butn_cancel, null)
-            .setPositiveButton(R.string.butn_create, null)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.create, null)
             .create().also { dialog ->
                 dialog.setOnShowListener {
                     dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
@@ -96,7 +96,7 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
                             editText.text.clear()
                             null
                         } else {
-                            getString(R.string.mesg_folderCreateError)
+                            getString(R.string.create_folder_failure)
                         }
                     }
                 }
@@ -157,7 +157,7 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
         }
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyFiles)
+        emptyView.emptyText.setText(R.string.empty_files_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_insert_drive_file_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)

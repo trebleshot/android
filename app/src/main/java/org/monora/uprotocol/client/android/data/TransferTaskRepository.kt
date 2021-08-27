@@ -92,7 +92,7 @@ class TransferTaskRepository @Inject constructor(
             TransferParams(transfer, client, detail.size)
         ) { applicationScope, params, state ->
             applicationScope.launch(Dispatchers.IO) {
-                state.postValue(Task.State.Running(backend.context.getString(R.string.text_connectingToClient)))
+                state.postValue(Task.State.Running(backend.context.getString(R.string.connecting_to_client)))
 
                 try {
                     val addresses = clientRepository.getInetAddresses(params.client.clientUid)

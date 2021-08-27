@@ -70,7 +70,7 @@ object Activities {
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(context, R.string.error_no_activity_to_view, Toast.LENGTH_LONG).show()
         } catch (e: SecurityException) {
-            Toast.makeText(context, R.string.text_contentNotFound, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.error_content_not_found, Toast.LENGTH_LONG).show()
         }
     }
 }

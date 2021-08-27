@@ -175,7 +175,7 @@ class AudioBrowserFragment : Fragment(R.layout.layout_audio_browser) {
 
             when (it.type) {
                 AudioBrowserViewModel.Content.Type.Songs -> {
-                    emptyView.emptyText.setText(R.string.text_listEmptyMusic)
+                    emptyView.emptyText.setText(R.string.empty_music_list)
                     emptyView.emptyImage.setImageResource(R.drawable.ic_music_note_white_24dp)
                     emptyContentViewModel.with(recyclerView, songsAdapter.currentList.isNotEmpty())
                 }

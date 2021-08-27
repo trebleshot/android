@@ -86,7 +86,7 @@ class TransferItemFragment : BottomSheetDialogFragment() {
         val emptyContentViewModel = EmptyContentViewModel()
 
         binding.emptyView.viewModel = emptyContentViewModel
-        binding.emptyView.emptyText.setText(R.string.text_listEmptyFiles)
+        binding.emptyView.emptyText.setText(R.string.empty_files_list)
         binding.emptyView.emptyImage.setImageResource(R.drawable.ic_insert_drive_file_white_24dp)
         binding.emptyView.executePendingBindings()
         adapter.setHasStableIds(true)
@@ -160,10 +160,10 @@ class ItemContentViewModel(val transferItem: UTransferItem, context: Context) {
 
     val state = context.getString(
         when (transferItem.state) {
-            TransferItem.State.InvalidatedTemporarily -> R.string.text_flagInterrupted
-            TransferItem.State.Invalidated -> R.string.text_flagRemoved
+            TransferItem.State.InvalidatedTemporarily -> R.string.interrupted
+            TransferItem.State.Invalidated -> R.string.removed
             TransferItem.State.Done -> R.string.completed
-            else -> R.string.text_flagPending
+            else -> R.string.pending
         }
     )
 }

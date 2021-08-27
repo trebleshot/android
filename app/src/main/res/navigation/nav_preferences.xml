@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/preferencesFragment2"
         android:name="org.monora.uprotocol.client.android.fragment.PreferencesFragment"
-        android:label="@string/text_preferences" >
+        android:label="@string/preferences" >
         <action
             android:id="@+id/action_preferencesFragment2_to_resetPreferencesFragment"
             app:destination="@id/resetPreferencesFragment" />
@@ -32,5 +32,5 @@
     <dialog
         android:id="@+id/resetPreferencesFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ResetPreferencesFragment"
-        android:label="@string/butn_resetToDefault" />
+        android:label="@string/preferences_reset" />
 </navigation>

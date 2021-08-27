@@ -30,7 +30,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,7 +38,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -53,7 +51,6 @@ import org.monora.uprotocol.client.android.util.Networks.getFirstInet4Address
 import org.monora.uprotocol.client.android.util.TextManipulators
 import org.monora.uprotocol.client.android.util.TextManipulators.toNetworkTitle
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
-import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
 import java.lang.ref.WeakReference
 import java.net.NetworkInterface
 import javax.inject.Inject
@@ -74,7 +71,7 @@ class WebShareLauncherFragment : BottomSheetDialogFragment() {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyConnection)
+        emptyView.emptyText.setText(R.string.empty_connections_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_ip_white_24dp)
         binding.viewModel = viewModel
         binding.executePendingBindings()

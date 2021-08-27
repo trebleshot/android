@@ -19,8 +19,6 @@
 package org.monora.uprotocol.client.android.service.web.template
 
 import android.content.Context
-import android.net.Uri
-import com.genonbeta.android.framework.io.OpenableContent
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.content.App
@@ -148,10 +146,10 @@ fun renderHome(templates: Templates, pageTitle: String, contentBody: String, upl
     return templates.render(
         "web/template/home.html",
         mapOf(
-            "app_name" to templates.context.getString(R.string.text_appName),
+            "app_name" to templates.context.getString(R.string.app_name),
             "page_title" to pageTitle,
             "content_body" to contentBody,
-            "web_share" to templates.context.getString(R.string.text_webShare),
+            "web_share" to templates.context.getString(R.string.web_share),
             "uploaded_content" to if (uploadedContent.isEmpty()) uploadedContent else renderUploadedContent(
                 templates, uploadedContent
             ),
@@ -215,7 +213,7 @@ fun renderContents(templates: Templates, list: List<Any>): String {
                     "id" to it.hashCode(),
                     "name" to it.name().escapeHtml(),
                     "filesCount" to templates.context.resources.getQuantityString(
-                        R.plurals.text_files, it.indexCount, it.indexCount
+                        R.plurals.files, it.indexCount, it.indexCount
                     ),
                 )
             }
@@ -311,8 +309,8 @@ fun renderTitle(templates: Templates, title: String): String {
 fun renderEmptyContent(templates: Templates): String {
     return templates.render(
         "web/template/include/empty_content.html", mapOf(
-            "title" to templates.context.getString(R.string.text_empty),
-            "description" to templates.context.getString(R.string.web_share_empty)
+            "title" to templates.context.getString(R.string.empty_text),
+            "description" to templates.context.getString(R.string.web_share_empty_notice)
         )
     )
 }
@@ -320,7 +318,7 @@ fun renderEmptyContent(templates: Templates): String {
 fun renderUploadedContent(templates: Templates, content: String): String {
     return templates.render(
         "web/template/include/uploaded_content.html", mapOf(
-            "uploaded_content" to templates.context.getString(R.string.content_sent, content.escapeHtml()),
+            "uploaded_content" to templates.context.getString(R.string.send_using_web_share_success_notice, content.escapeHtml()),
         )
     )
 }

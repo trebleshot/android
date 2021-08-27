@@ -114,8 +114,8 @@ class Connections(contextLocal: Context) {
         // in 26
         @RequiresApi(Build.VERSION_CODES.M)
         if (Build.VERSION.SDK_INT in 23..25 && !Settings.System.canWrite(context)) {
-            provider.createSnackbar(R.string.mesg_needsSettingsWritePermission)?.apply {
-                setAction(R.string.butn_settings) {
+            provider.createSnackbar(R.string.write_system_settings_permission_required_notice)?.apply {
+                setAction(R.string.settings) {
                     context.startActivity(
                         Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
                             .setData(Uri.parse("package:" + context.packageName))
@@ -125,15 +125,15 @@ class Connections(contextLocal: Context) {
                 show()
             }
         } else if (Build.VERSION.SDK_INT < 26 && !manager.enabled && isMobileDataActive() && suggestActions) {
-            provider.createSnackbar(R.string.mesg_warningHotspotMobileActive)?.apply {
-                setAction(R.string.butn_skip) {
+            provider.createSnackbar(R.string.set_up_hotspot_mobile_data_notice)?.apply {
+                setAction(R.string.skip) {
                     toggleHotspot(backend, provider, manager, false, permissionsResultLauncher)
                 }
                 show()
             }
         } else {
             val config: WifiConfiguration? = manager.configuration
-            val state = if (manager.enabled) R.string.mesg_stoppingSelfHotspot else R.string.mesg_startingSelfHotspot
+            val state = if (manager.enabled) R.string.starting_hotspot_notice else R.string.stopping_hotspot_notice
 
             if (!manager.enabled || config != null) {
                 provider.createSnackbar(state)?.show()
@@ -152,9 +152,9 @@ class Connections(contextLocal: Context) {
 
         when {
             Build.VERSION.SDK_INT >= 29 -> startSettings()
-            wifiManager.setWifiEnabled(true) -> provider.createSnackbar(R.string.mesg_turningWiFiOn)?.show()
-            else -> provider.createSnackbar(R.string.mesg_wifiEnableFailed)?.apply {
-                setAction(R.string.butn_settings) {
+            wifiManager.setWifiEnabled(true) -> provider.createSnackbar(R.string.turning_wifi_on_notice)?.show()
+            else -> provider.createSnackbar(R.string.enable_wifi_failure)?.apply {
+                setAction(R.string.settings) {
                     startSettings()
                 }
                 show()
@@ -169,15 +169,15 @@ class Connections(contextLocal: Context) {
         if (Build.VERSION.SDK_INT < 23) return true
 
         if (!hasLocationPermission()) {
-            provider.createSnackbar(R.string.mesg_locationPermissionRequiredAny)?.apply {
-                setAction(R.string.butn_allow) {
+            provider.createSnackbar(R.string.location_permission_required_notice)?.apply {
+                setAction(R.string.allow) {
                     permissionsResultLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
                 }
                 show()
             }
         } else if (!isLocationServiceEnabled()) {
-            provider.createSnackbar(R.string.mesg_locationServiceDisabled)?.apply {
-                setAction(R.string.butn_locationSettings) {
+            provider.createSnackbar(R.string.location_service_disabled_notice)?.apply {
+                setAction(R.string.location_settings) {
                     Activities.startLocationServiceSettings(context)
                 }
                 show()

@@ -1,354 +1,308 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="text_navigationDrawerOpen">Abrir el cajón de navegación</string>
-    <string name="text_navigationDrawerClose">Cerrar el cajón de navegación</string>
-    <string name="text_preferences">Preferencias</string>
+    <string name="open_navigation_drawer">Abrir el cajón de navegación</string>
+    <string name="close_navigation_drawer">Cerrar el cajón de navegación</string>
+    <string name="preferences">Preferencias</string>
     <string name="mesg_connectionFailure">Conexión fallida</string>
     <string name="text_notAvailable">No disponible</string>
     <string name="text_deviceListEmpty">Ningún dispositivo</string>
     <string name="mesg_noNetwork">No hay conexión, como Wi-Fi, para encontrar dispositivos cercanos</string>
     <string name="mesg_scanningDevices">Buscando dispositivos cercanos</string>
-    <string name="ques_receiveFile">¿Recibir archivo?</string>
-    <string name="butn_accept">Aceptar</string>
-    <string name="butn_reject">Rechazar</string>
-    <string name="butn_stop">Detener</string>
-    <string name="text_sending">Enviando</string>
-    <string name="butn_cancelSending">Cancelar envío</string>
-    <string name="text_receiving">Recibiendo</string>
-    <string name="butn_cancelReceiving">Cancelar recepción</string>
+    <string name="receive_file_question">¿Recibir archivo?</string>
+    <string name="accept">Aceptar</string>
+    <string name="reject">Rechazar</string>
+    <string name="stop">Detener</string>
+    <string name="sending">Enviando</string>
+    <string name="cancel_sending">Cancelar envío</string>
+    <string name="receiving">Recibiendo</string>
+    <string name="cancel_receiving">Cancelar recepción</string>
     <string name="text_fileReceived">El archivo ha sido recibido</string>
-    <string name="mesg_fileReceived">%s ha sido recibido</string>
+    <string name="receive_file_success">%s ha sido recibido</string>
     <string name="butn_scan">Examinar</string>
-    <string name="text_listEmpty">Sin elementos</string>
+    <string name="empty_list">Sin elementos</string>
     <string name="text_developerMode">Modo de desarrollador</string>
     <string name="text_developerModeSummary">Deshabilita la configuración del usuario</string>
     <string name="text_deviceName">Nombre del dispositivo</string>
-    <string name="text_deviceNameSummary">Este nombre se mostrará a otros dispositivos</string>
+    <string name="nickname_description">Este nombre se mostrará a otros dispositivos</string>
     <string name="text_deviceNameTitle">Ingrese un nombre para el dispositivo</string>
     <string name="mesg_formatNotSupported">Formato no soportado</string>
-    <string name="mesg_fileSendError">No se pudo enviar el archivo. %s</string>
-    <string name="mesg_fileReceiveError">No se pudo recibir %s.</string>
-    <string name="text_multipleFileReceiveCompleted">Archivos recibidos</string>
+    <string name="send_file_failure">No se pudo enviar el archivo. %s</string>
+    <string name="receive_file_failure">No se pudo recibir %s.</string>
+    <string name="receive_files_success">Archivos recibidos</string>
     <string name="text_deviceList">Dispositivos</string>
     <string name="text_fileOpenAppChoose">Abrir con</string>
-    <string name="text_fileShareAppChoose">Escoja una aplicación para compartir</string>
-    <string name="ques_resetToDefault">¿Restablecer a los valores por defecto?</string>
-    <string name="text_receivedFiles">Archivos recibidos</string>
-    <string name="butn_edit">Editar</string>
-    <string name="butn_share">Compartir</string>
-    <string name="butn_delete">Eliminar</string>
-    <string name="text_deleteConfirm">Confirmar eliminación</string>
-    <string name="butn_cancel">Cancelar</string>
+    <string name="choose_sharing_app">Escoja una aplicación para compartir</string>
+    <string name="preferences_reset">¿Restablecer a los valores por defecto?</string>
+    <string name="received_files">Archivos recibidos</string>
+    <string name="edit">Editar</string>
+    <string name="share">Compartir</string>
+    <string name="delete">Eliminar</string>
+    <string name="deletion_confirmation">Confirmar eliminación</string>
+    <string name="cancel">Cancelar</string>
     <string name="text_refresh">Refrescar</string>
-    <string name="butn_refresh">Refrescar</string>
+    <string name="refresh">Refrescar</string>
     <string name="butn_shareTrebleshot">Compartir esta aplicación</string>
-    <string name="text_about">Acerca de</string>
-    <string name="butn_close">Cerrar</string>
+    <string name="about">Acerca de</string>
+    <string name="close">Cerrar</string>
     <string name="text_deviceModelInfo">Nombre de dispositivo</string>
     <string name="butn_clearQueue">Borrar la cola</string>
     <string name="text_pendingTransfersOfDevice">Pendiente en cola - %s</string>
     <string name="butn_pendingTransfers">Cola</string>
     <string name="butn_shareWithTrebleshot">Compartir con TrebleShot</string>
-    <string name="mesg_somethingWentWrong">Ocurrió un error</string>
+    <string name="unknown_failure">Ocurrió un error</string>
     <string name="text_findDevicesHint">No hay dispositivos conocidos</string>
     <string name="text_autoScanDevices">Buscar dispositivos automáticamente</string>
     <string name="text_autoScanDevicesSummary">Busca dispositivos cuando sea necesario</string>
     <string name="mesg_stillScanning">Aún buscando</string>
-    <string name="text_advanced">Avanzado</string>
-    <string name="text_storagePath">Ruta de almacenamiento</string>
+    <string name="advanced">Avanzado</string>
+    <string name="storage_path">Ruta de almacenamiento</string>
     <string name="text_storagePathSummary">Los nuevos archivos serán almacenados en esta carpeta</string>
-    <string name="mesg_pathUnavailable">%s no disponible</string>
+    <string name="path_unavailable_notice">%s no disponible</string>
     <string name="text_ipAddress">Dirección IP</string>
     <string name="text_allowToConnect">Permitir conexión</string>
     <string name="text_connectionPermission">Permiso para conectar</string>
     <string name="ques_allowDeviceToConnect">¿Permitir que este dispositivo se conecte?</string>
-    <string name="mesg_stopping">Deteniendo</string>
-    <string name="text_notification">Notificación</string>
-    <string name="text_useSounds">Sonidos</string>
-    <string name="text_useSoundsSummary">Usar sonidos</string>
-    <string name="text_useVibration">Vibración y alertas</string>
-    <string name="text_useVibrationSummary">Usar vibración y mostrar notificaciones</string>
-    <string name="text_useLights">Luces</string>
-    <string name="text_useLightSummary">Usar luces</string>
+    <string name="stopping">Deteniendo</string>
+    <string name="notification">Notificación</string>
+    <string name="notifications_use_sounds">Sonidos</string>
+    <string name="notifications_use_sounds_summary">Usar sonidos</string>
+    <string name="notifications_use_vibration">Vibración y alertas</string>
+    <string name="notifications_use_vibration_summary">Usar vibración y mostrar notificaciones</string>
+    <string name="notifications_use_lights">Luces</string>
+    <string name="notifications_use_lights_summary">Usar luces</string>
     <string name="mesg_scanCompleted">Búsqueda completa</string>
     <string name="text_autoStart">Iniciar automáticamente</string>
     <string name="text_autoStartSummary">Permitir comunicación cuando se detecte una conexión</string>
-    <string name="text_application">Aplicación</string>
-    <string name="text_image">Imagen</string>
-    <string name="text_music">Música</string>
-    <string name="text_video">Vídeo</string>
-    <string name="text_showSystemApps">Mostrar aplicaciones del sistema</string>
-    <string name="text_showSystemAppsSummary">Mostrar aplicaciones del sistema en la sección de Compartir</string>
+    <string name="app">Aplicación</string>
+    <string name="photo">Imagen</string>
+    <string name="music">Música</string>
+    <string name="video">Vídeo</string>
+    <string name="show_system_apps">Mostrar aplicaciones del sistema</string>
+    <string name="show_system_apps_summary">Mostrar aplicaciones del sistema en la sección de Compartir</string>
     <string name="butn_showSystemApps">Mostrar aplicaciones del sistema</string>
-    <string name="mesg_notAllowed">No posee permisos</string>
+    <string name="error_not_allowed">No posee permisos</string>
     <string name="mesg_connectionProblem">Problema de conexión</string>
     <string name="text_communicationProblem">Problema de comunicación</string>
-    <string name="butn_multiSelect">Selección múltiple</string>
-    <string name="butn_receive">Recibir</string>
-    <string name="butn_block">Bloquear</string>
+    <string name="multi_selection">Selección múltiple</string>
+    <string name="receive">Recibir</string>
+    <string name="block">Bloquear</string>
     <string name="text_aboutSummary">Éste Software es desarrollado por la organización Genonbeta Libre Software</string>
-    <string name="butn_appLaunch">Iniciar</string>
-    <string name="ques_launchApplication">¿Desea iniciar esta aplicación?</string>
-    <string name="mesg_launchApplicationError">Esta aplicación no puede iniciarse</string>
-    <string name="text_enterText">Ingrese el texto aquí…</string>
-    <string name="mesg_textCopiedToClipboard">Texto copiado al portapapeles</string>
-    <string name="ques_copyToClipboard">¿Copiar al portapapeles?</string>
-    <string name="text_textReceived">Texto recibido</string>
-    <string name="text_receivedTextSummary">Texto recibido del portapapeles</string>
+    <string name="launch">Iniciar</string>
+    <string name="launch_question">¿Desea iniciar esta aplicación?</string>
+    <string name="launch_app_failure">Esta aplicación no puede iniciarse</string>
+    <string name="enter_text_notice">Ingrese el texto aquí…</string>
+    <string name="copy_text_to_clipboard_success">Texto copiado al portapapeles</string>
+    <string name="copy_to_clipboard">¿Copiar al portapapeles?</string>
+    <string name="receive_text_success">Texto recibido</string>
+    <string name="receive_text_summary_success">Texto recibido del portapapeles</string>
     <string name="butn_checkForUpdates">Verificar si hay una nueva versión</string>
     <string name="butn_seeSourceCode">Ver el código fuente</string>
-    <string name="text_typeText">Escriba algo para enviar…</string>
-    <string name="text_textEditor">Editor de texto</string>
-    <string name="butn_done">Hecho</string>
-    <string name="text_empty">(vació)</string>
+    <string name="type_text_notice">Escriba algo para enviar…</string>
+    <string name="text_editor">Editor de texto</string>
+    <string name="done">Hecho</string>
+    <string name="empty_text">(vació)</string>
     <string name="text_textStream">Secuencia de texto</string>
-    <string name="butn_wifiSettings">Wi-Fi</string>
+    <string name="wifi_settings">Wi-Fi</string>
     <string name="text_pendingTransfers">Transferencias pendientes</string>
     <string name="text_stopping">¡Deteniendo!</string>
     <string name="text_cancellingTransfer">Deteniendo tarea…</string>
     <string name="butn_killNow">Detener ahora</string>
     <string name="mesg_groupOngoingNotice">Esperando que %s finalice antes de transferir este archivo</string>
-    <string name="butn_proceed">Proceder</string>
-    <string name="ques_removeTransfer">¿Quitar transferencia?</string>
-    <string name="butn_remove">Quitar</string>
-    <string name="butn_removeAll">Quitar todo</string>
-    <string name="ques_removeDevice">¿Quitar este dispositivo?</string>
-    <string name="text_removeDeviceNotice">Cuando se quita un dispositivo, también se quitan sus transferencias</string>
-    <string name="text_removeTransferSummary">Esto quitará %s de la cola</string>
-    <string name="ques_removeAll">¿Quitar todo?</string>
-    <string name="text_removeTransferGroupSummary">Esto quitará todas las transferencias pendientes que ve aquí</string>
+    <string name="proceed">Proceder</string>
+    <string name="ques_removeQueue">¿Quitar transferencia?</string>
+    <string name="remove">Quitar</string>
+    <string name="remove_all">Quitar todo</string>
+    <string name="remove_client_question">¿Quitar este dispositivo?</string>
+    <string name="remove_client_notice">Cuando se quita un dispositivo, también se quitan sus transferencias</string>
+    <string name="text_removePendingTransferSummary">Esto quitará %s de la cola</string>
+    <string name="remove_all_question">¿Quitar todo?</string>
+    <string name="text_removeCertainPendingTransfersSummary">Esto quitará todas las transferencias pendientes que ve aquí</string>
     <string name="text_availableNetworks">Escoger red - %s</string>
     <string name="text_noNetworkAvailable">No hay ninguna red disponible</string>
     <string name="text_savedConnections">Conexiones guardadas</string>
     <string name="text_newVersionAvailable">¡Hay una nueva versión disponible!</string>
     <string name="butn_goUp">Subir</string>
-    <string name="text_folder">Carpeta</string>
-    <string name="mesg_organizingFiles">Organizando sus archivos</string>
+    <string name="folder">Carpeta</string>
+    <string name="organizing_files_notice">Organizando sus archivos</string>
     <string name="mesg_communicating">Comunicando</string>
     <string name="text_communicationService">Servicio de comunicación</string>
     <string name="text_chooserTargetService">Proveedor de opciones de dispositivo</string>
     <string name="text_transactionViewer">Ver transacción</string>
-    <string name="text_error">Error</string>
+    <string name="error">Error</string>
     <string name="ques_why">¿Por qué?</string>
-    <string name="text_notAllowedHelp">Verifique que tiene permisos para %1$s
-        \n
-        \nDispositivos &gt; %2$s &gt; Permitir conectar &gt; (validarlo)
-    </string>
-    <string name="butn_saveTo">Guardar en</string>
-    <string name="mesg_secureExit">Presionar de nuevo para salir</string>
-    <string name="butn_create">Crear</string>
-    <string name="text_createFolder">Crear carpeta</string>
-    <string name="mesg_fileAlreadyExists">El archivo ya existe</string>
-    <string name="mesg_folderCreateError">No se pudo crear la carpeta</string>
-    <string name="text_requestPermissionStorageSummary">Esto permite a TrebleShot leer y escribir en el almacenamiento
-        de su dispositivo para enviar y recibir archivos.
-    </string>
-    <string name="butn_settings">Ajustes</string>
+    <string name="text_notAllowedHelp">Verifique que tiene permisos para %1$s 
+\n
+\nDispositivos &gt; %2$s &gt; Permitir conectar &gt; (validarlo)</string>
+    <string name="save_to">Guardar en</string>
+    <string name="double_click_exit_notice">Presionar de nuevo para salir</string>
+    <string name="create">Crear</string>
+    <string name="create_folder">Crear carpeta</string>
+    <string name="error_file_already_exists">El archivo ya existe</string>
+    <string name="create_folder_failure">No se pudo crear la carpeta</string>
+    <string name="storage_permission_summary">Esto permite a TrebleShot leer y escribir en el almacenamiento de su dispositivo para enviar y recibir archivos.</string>
+    <string name="settings">Ajustes</string>
     <string name="butn_selectThis">Seleccionar esto</string>
-    <string name="butn_newFile">Nuevo archivo</string>
+    <string name="new_file">Nuevo archivo</string>
     <string name="mesg_currentPathUnavailable">Esta carpeta no puede utilizarse</string>
-    <string name="text_defaultFolder">Carpeta por defecto</string>
+    <string name="default_folder">Carpeta por defecto</string>
     <string name="text_storage">Almacenamiento</string>
     <string name="text_shareFiles">Compartir archivos</string>
-    <string name="mesg_pathSaved">El directorio ha sido guardado</string>
-    <string name="butn_search">Buscar</string>
+    <string name="change_storage_path_success">El directorio ha sido guardado</string>
+    <string name="search">Buscar</string>
     <string name="butn_changeConnection">Cambiar conexión</string>
-    <string name="text_fileName">Nombre de archivo</string>
-    <string name="text_fileSize">Tamaño de archivo</string>
-    <string name="text_fileMime">Tipo de archivo</string>
-    <string name="text_fileStatus">Estado de archivo</string>
-    <string name="butn_resume">Reanudar</string>
-    <string name="text_transactionDetails">Detalles</string>
+    <string name="file_name">Nombre de archivo</string>
+    <string name="file_size">Tamaño de archivo</string>
+    <string name="file_mime">Tipo de archivo</string>
+    <string name="file_status">Estado de archivo</string>
+    <string name="resume">Reanudar</string>
+    <string name="transfer_details">Detalles</string>
     <string name="text_fileExplorer">Explorador de archivos</string>
     <string name="butn_createFolder">Crear carpeta</string>
-    <string name="text_chooseFolder">Escoger carpeta</string>
-    <string name="text_chooseFile">Escoger archivo</string>
+    <string name="choose_folder">Escoger carpeta</string>
+    <string name="choose_file">Escoger archivo</string>
     <string name="mesg_pathSameError">No puede seleccionar la carpeta anterior</string>
     <string name="ques_checkOldFiles">¿Mover archivos\?</string>
-    <string name="text_checkOldFiles">Puede mover los archivos asociados completados y parcialmente completados a esta
-        carpeta y esto puede tomar algún tiempo dependiendo de los tamaños
-    </string>
+    <string name="text_checkOldFiles">Puede mover los archivos asociados completados y parcialmente completados a esta carpeta y esto puede tomar algún tiempo dependiendo de los tamaños</string>
     <string name="mesg_newFilesReceived">Se han recibido nuevos archivos</string>
-    <string name="butn_show">Mostrar</string>
-    <string name="text_preparingFiles">Preparando archivos</string>
-    <string name="text_savingDetails">Guardando detalles</string>
-    <string name="text_version">Versión</string>
-    <string name="text_flagPending">Pendiente</string>
-    <string name="text_flagRunning">Ejecutando</string>
-    <string name="text_flagInterrupted">Interrumpido</string>
+    <string name="show">Mostrar</string>
+    <string name="preparing_files">Preparando archivos</string>
+    <string name="saving_details">Guardando detalles</string>
+    <string name="version">Versión</string>
+    <string name="pending">Pendiente</string>
+    <string name="running">Ejecutando</string>
+    <string name="interrupted">Interrumpido</string>
     <string name="text_flagResume">Reanudado</string>
-    <string name="text_unknown">Desconocido</string>
-    <string name="text_longAgo">Hace mucho tiempo</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi Directo</string>
-    <string name="text_interfaceWireless">Wi-Fi</string>
-    <string name="text_interfaceBluetooth">Bluetooth</string>
-    <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">Conexión desconocida</string>
+    <string name="unknown">Desconocido</string>
+    <string name="long_ago">Hace mucho tiempo</string>
+    <string name="wifi_direct">Wi-Fi Directo</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="unknown_interface">Conexión desconocida</string>
     <string name="text_shareTextShort">Texto</string>
     <string name="butn_feelLucky">Me siento con suerte</string>
     <string name="butn_connectionList">Conexiones</string>
-    <string name="text_automaticNetworkConnectionFailed">ninguna de las conexiones funcionó para el dispositivo. Su
-        dirección pudo haber cambiado. Intente conectarse de nuevo a la red mientras TrebleShot está ejecutándose.
-    </string>
+    <string name="text_automaticNetworkConnectionFailed">ninguna de las conexiones funcionó para el dispositivo. Su dirección pudo haber cambiado. Intente conectarse de nuevo a la red mientras TrebleShot está ejecutándose.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot decidirá por usted</string>
-    <string name="butn_retryReceiving">Re intentar todo</string>
-    <string name="butn_ask">Preguntar</string>
+    <string name="retry_receiving">Re intentar todo</string>
+    <string name="ask">Preguntar</string>
     <string name="text_permissionRequest">Solicitud de permiso</string>
-    <string name="text_requestPermissionStorage">Permiso de almacenamiento</string>
+    <string name="storage_permission">Permiso de almacenamiento</string>
     <string name="text_requestPermissionReadPhoneState">Permiso para leer el estado del teléfono</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot necesita acceder al número de serie de su
-        dispositivo para crear un número de identidad de largo plazo, lo que ayuda a que otros dispositivos lo
-        reconozcan
-    </string>
-    <string name="text_mediaDirectory">Directorio de medios</string>
-    <string name="text_emulatedMediaDirectory">Emulado (%s)</string>
-    <string name="mesg_notEnoughSpace">Sin espacio suficiente</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot necesita acceder al número de serie de su dispositivo para crear un número de identidad de largo plazo, lo que ayuda a que otros dispositivos lo reconozcan</string>
+    <string name="media_directory">Directorio de medios</string>
+    <string name="emulated_media_directory">Emulado (%s)</string>
+    <string name="insufficient_space_notice">Sin espacio suficiente</string>
     <string name="text_totalIncomingSize">Tamaño total de los archivos entrantes</string>
     <string name="text_totalOutgoingSize">Tamaño total de los archivos salientes</string>
     <string name="text_availableDiskSpace">Espacio en disco disponible</string>
     <string name="text_savePath">Ruta de almacenamiento</string>
     <string name="text_transactionGroupDetails">Detalles del grupo de transacciones</string>
     <string name="text_usedConnection">Conexión usada</string>
-    <string name="text_flagRemoved">Quitado</string>
+    <string name="removed">Quitado</string>
     <string name="butn_copyToClipboard">Copiar al portapapeles</string>
-    <string name="text_communicationServiceRunning">TrebleShot puede compartir archivos ahora</string>
+    <string name="service_running_notice">TrebleShot puede compartir archivos ahora</string>
     <string name="text_communicationServiceStop">Toque para finalizar la sesión</string>
-    <string name="text_remainingTime">Tiempo estimado de llegada %s</string>
-    <string name="butn_showFiles">Mostrar archivos</string>
-    <string name="butn_trustDevice">Establecer como dispositivo TrustZone</string>
+    <string name="remaining_time">Tiempo estimado de llegada %s</string>
+    <string name="show_files">Mostrar archivos</string>
+    <string name="butn_trustZoneDevice">Establecer como dispositivo TrustZone</string>
     <string name="butn_turnTrustZoneOn">Activar TrustZone</string>
     <string name="butn_turnTrustZoneOff">Desactivar TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
     <string name="text_trustZoneEnabledSummary">TrustZone se activa al iniciar</string>
     <string name="butn_typeNewEntry">Digite la nueva entrada</string>
-    <string name="butn_download">Descargar</string>
-    <string name="mesg_clipboardUpdateNotice">Revise el texto o presione de nuevo para salir</string>
-    <string name="mesg_textSaveNotice">Guarde el texto o presione de nuevo para salir</string>
-    <string name="butn_update">Actualizar</string>
-    <string name="butn_save">Guardar</string>
+    <string name="download">Descargar</string>
+    <string name="update_clipboard_notice">Revise el texto o presione de nuevo para salir</string>
+    <string name="save_clipboard_notice">Guarde el texto o presione de nuevo para salir</string>
+    <string name="update">Actualizar</string>
+    <string name="save">Guardar</string>
     <string name="mesg_textShareLimit">Solo se puede compartir un texto a la vez</string>
-    <string name="text_timeJustNow">Justo ahora</string>
-    <string name="mesg_providerNotAllowedError">La carpeta por defecto no puede ser accedida por otras aplicaciones
-    </string>
-    <string name="mesg_errorHotspotPermission">TrebleShot necesita permiso para establecer un punto de acceso</string>
+    <string name="just_now">Justo ahora</string>
+    <string name="mesg_providerNotAllowedError">La carpeta por defecto no puede ser accedida por otras aplicaciones</string>
+    <string name="error_hotspot_needs_permission">TrebleShot necesita permiso para establecer un punto de acceso</string>
     <string name="text_trebleshotHotspot">Punto de acceso de TrebleShot</string>
-    <string name="butn_connect">Conectar</string>
-    <string name="butn_disconnect">Desconectar</string>
-    <string name="text_trebleshotHotspotDescription">Usted puede enviar archivos directamente por medio de esta red
-        creada por un dispositivo TrebleShot cercano.
-    </string>
+    <string name="connect">Conectar</string>
+    <string name="disconnect">Desconectar</string>
+    <string name="text_trebleshotHotspotDescription">Usted puede enviar archivos directamente por medio de esta red creada por un dispositivo TrebleShot cercano.</string>
     <string name="mesg_connectingToSelfHotspot">Conectando al punto de acceso de TrebleShot</string>
-    <string name="mesg_warningHotspotMobileActive">Los dispositivos conectados pueden utilizar sus datos móviles. Puede
-        que quiera apagarlo.
-    </string>
-    <string name="butn_skip">Omitir</string>
+    <string name="set_up_hotspot_mobile_data_notice">Los dispositivos conectados pueden utilizar sus datos móviles. Puede que quiera apagarlo.</string>
+    <string name="skip">Omitir</string>
     <string name="mesg_scanningSelfHotspot">Buscando punto de acceso de TrebleShot</string>
-    <string name="mesg_suggestSelfHotspot">Usted puede activar el Wi-Fi para buscar puntos de acceso de TrebleShot
-    </string>
-    <string name="butn_enable">Habilitar</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Permitir a TrebleShot buscar y crear un punto de acceso
-    </string>
-    <string name="butn_locationSettings">Ubicación</string>
-    <string name="mesg_locationDisabledSelfHotspot">Habilitar el servicio de ubicación para ver los resultados de
-        búsqueda y crear un punto de acceso
-    </string>
-    <string name="mesg_scanningDevicesSelfHotspot">Buscando dispositivos a través de un punto de acceso TrebleShot
-    </string>
-    <string name="mesg_stoppingSelfHotspot">Deteniendo el punto de acceso TrebleShot</string>
-    <string name="mesg_startingSelfHotspot">Iniciando el punto de acceso de TrebleShot</string>
-    <string name="butn_check">Marcar todo</string>
-    <string name="butn_uncheck">Deshacer todo</string>
+    <string name="mesg_suggestSelfHotspot">Usted puede activar el Wi-Fi para buscar puntos de acceso de TrebleShot</string>
+    <string name="enable">Habilitar</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Permitir a TrebleShot buscar y crear un punto de acceso</string>
+    <string name="location_settings">Ubicación</string>
+    <string name="mesg_locationDisabledSelfHotspot">Habilitar el servicio de ubicación para ver los resultados de búsqueda y crear un punto de acceso</string>
+    <string name="mesg_scanningDevicesSelfHotspot">Buscando dispositivos a través de un punto de acceso TrebleShot</string>
+    <string name="starting_hotspot_notice">Deteniendo el punto de acceso TrebleShot</string>
+    <string name="stopping_hotspot_notice">Iniciando el punto de acceso de TrebleShot</string>
+    <string name="check">Marcar todo</string>
+    <string name="uncheck">Deshacer todo</string>
     <string name="text_previewAndEditList">Vista previa y edición</string>
     <string name="text_uncheckedItemsNotice">Los elementos sin marcar serán omitidos</string>
     <string name="text_fileRoot">Raíz del archivo</string>
-    <string name="mesg_versionNotSupported">Por favor, actualice a una versión soportada y realice la búsqueda de
-        dispositivos nuevamente.
-    </string>
+    <string name="client_not_supported_notice">Por favor, actualice a una versión soportada y realice la búsqueda de dispositivos nuevamente.</string>
     <string name="mesg_connectionUpdated">Ahora comunicando a través de la conexión \"%s\"</string>
     <string name="mesg_ongoingUpdateDownload">Descargando la nueva versión</string>
     <string name="butn_gotIt">Lo tengo</string>
     <string name="mesg_helpFolderSelection">Para escoger una carpeta, toque su icono</string>
-    <string name="mesg_hotspotCreatedInfo">Conectese a \"%s\" en los \"Ajustes de Wi-Fi\" o envíe archivos por medio de
-        \"%s\" desde TrebleShot
-    </string>
-    <string name="butn_selectAll">Seleccionar todo</string>
-    <string name="butn_selectNone">Seleccionar ninguno</string>
-    <string name="butn_previewSelections">Vista previa de las selecciones</string>
+    <string name="mesg_hotspotCreatedInfo">Conectese a \"%s\" en los \"Ajustes de Wi-Fi\" o envíe archivos por medio de \"s%\" desde TrebleShot</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="select_none">Seleccionar ninguno</string>
+    <string name="preview_selections">Vista previa de las selecciones</string>
     <string name="mesg_deviceConnectionError">La conexión con \"%s\" a través de \"%s\" falló</string>
-    <string name="mesg_retryReceivingNotice">TrebleShot intentará recibir las transferencias interrumpidas</string>
+    <string name="retry_receiving_notice">TrebleShot intentará recibir las transferencias interrumpidas</string>
     <string name="mesg_transferConnectionNotSetUpFix">Por favor escoja el método de transferencia primero</string>
-    <string name="butn_setUp">Configurar</string>
-    <string name="text_location">Pseudo ubicación</string>
+    <string name="set_up">Configurar</string>
+    <string name="location">Pseudo ubicación</string>
     <string name="butn_saveAnyway">Guardar de todos modos</string>
-    <string name="text_receivedSize">Tamaño recibido</string>
+    <string name="received_size">Tamaño recibido</string>
     <string name="mesg_notValidTransfer">Transferencia expirada</string>
     <string name="ques_saveAnyway">¿Guardar de todos modos?</string>
-    <string name="text_saveAnywaySummary">El remitente no sabe donde está el archivo, pero aún lo puedes guardar
-    </string>
-    <string name="mesg_fileSaved">Archivo guardado</string>
-    <string name="butn_sortBy">Ordenar por</string>
-    <string name="butn_sortOrder">Orden de clasificación</string>
-    <string name="text_sortOrderAscending">Más grande primero ↑</string>
-    <string name="text_sortOrderDescending">Más pequeño primero ↓</string>
-    <string name="text_sortByName">Nombre</string>
-    <string name="text_sortByDate">Fecha</string>
-    <string name="text_sortBySize">Tamaño</string>
-    <string name="text_trustZoneDeviceNotice">Acepta automáticamente los elementos entrantes cuando TrustZone está
-        activado
-    </string>
+    <string name="text_saveAnywaySummary">El remitente no sabe donde está el archivo, pero aún lo puedes guardar</string>
+    <string name="save_file_success">Archivo guardado</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="sort_order">Orden de clasificación</string>
+    <string name="ascending">Más grande primero ↑</string>
+    <string name="descending">Más pequeño primero ↓</string>
+    <string name="name">Nombre</string>
+    <string name="date">Fecha</string>
+    <string name="size">Tamaño</string>
+    <string name="text_trustZoneDeviceNotice">Acepta automáticamente los elementos entrantes cuando TrustZone está activado</string>
     <string name="text_allowingToConnectNotice">Permitir conexiones desde este dispositivo</string>
     <string name="butn_resetToDefault">Restablecer a los valores por defecto</string>
-    <string name="text_resetPreferencesToDefaultSummary">Esto aplicará la configuración inicial</string>
+    <string name="preferences_reset_notice">Esto aplicará la configuración inicial</string>
     <string name="text_workerService">Servicio trabajador</string>
     <string name="text_taskCompleted">Tarea completada</string>
-    <string name="text_deletingFilesOngoing">Borrando los archivos seleccionados</string>
-    <string name="text_taskOngoing">Tarea continua</string>
+    <string name="deleting_files_notice">Borrando los archivos seleccionados</string>
+    <string name="ongoing_task">Tarea continua</string>
     <string name="text_networkServiceDiscovery">Habilitar NSD</string>
     <string name="text_networkServiceDiscoverySummary">Network Service Discovery mejora la detectabilidad</string>
-    <string name="text_notificationChannelHigh">Notificaciones importantes</string>
-    <string name="text_notificationChannelLow">Notificaciones de prioridad baja</string>
-    <string name="text_receivedTransfer">Recibido %s en %s</string>
-    <string name="text_yearCountShort">%d año</string>
-    <string name="text_monthCountShort">%d mes</string>
-    <string name="text_dayCountShort">%d día</string>
-    <string name="text_hourCountShort">%d hora</string>
-    <string name="text_minuteCountShort">%d minuto</string>
-    <string name="text_secondCountShort">%d segundo</string>
-    <string name="butn_exit">Salir</string>
+    <string name="high_priority_notifications">Notificaciones importantes</string>
+    <string name="low_priority_notifications">Notificaciones de prioridad baja</string>
+    <string name="receive_success_summary">Recibido %s en %s</string>
+    <string name="count_years_short">%d año</string>
+    <string name="count_months_short">%d mes</string>
+    <string name="count_days_short">%d día</string>
+    <string name="count_hours_short">%d hora</string>
+    <string name="count_minutes_short">%d minuto</string>
+    <string name="count_seconds_short">%d segundo</string>
+    <string name="exit">Salir</string>
     <string name="butn_queueCounted">Cola (%d)</string>
-    <string name="text_previewThenProceedNotice">Por favor verifique sus selecciones tocando el botón \"Cola\" para
-        poder continuar
-    </string>
+    <string name="text_previewThenProceedNotice">Por favor verifique sus selecciones tocando el botón \"Cola\" para poder continuar</string>
     <string name="mesg_updateDownloadComplete">Actualización recibida y guardada en sus archivos recibidos</string>
-    <string name="text_listEmptyFiles">No hay archivos aquí</string>
-    <string name="text_listEmptyImage">No hay fotos aquí</string>
-    <string name="text_listEmptyApp">No hay aplicaciones aquí</string>
-    <string name="text_listEmptyVideo">No hay vídeos aquí</string>
+    <string name="empty_files_list">No hay archivos aquí</string>
+    <string name="empty_photos_list">No hay fotos aquí</string>
+    <string name="empty_apps_list">No hay aplicaciones aquí</string>
+    <string name="empty_video_list">No hay vídeos aquí</string>
     <string name="text_listEmptyPendingTransfer">Las transferencias pendientes aparecerán aquí</string>
-    <string name="text_listEmptyTextStream">Los escritos aparecerán aquí</string>
-    <string name="text_listEmptyMusic">No hay canciones aquí</string>
-    <string name="text_internalStorage">Almacenamiento interno</string>
+    <string name="empty_writings_list">Los escritos aparecerán aquí</string>
+    <string name="empty_music_list">No hay canciones aquí</string>
+    <string name="internal_storage">Almacenamiento interno</string>
     <string name="text_restrictedAccessStorage">%s (acceso restringido)</string>
-    <string name="text_emptySearchResult">Sin resultados para \"%s\"</string>
+    <string name="empty_search_result_summary">Sin resultados para \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">La lista será renovada cuando esté disponible</string>
-    <string name="mesg_errorReadFolder">No se puede acceder a \"%s\"</string>
+    <string name="access_failure_notice">No se puede acceder a \"%s\"</string>
     <string name="butn_mountDirectory">Montar carpeta</string>
     <string name="mesg_mountDirectoryHelp">Seleccione la carpeta a la que quiere acceder</string>
     <string name="butn_ejectDirectory">Desmontar carpeta</string>
@@ -356,21 +310,19 @@
     <string name="mesg_wifiEnableRequired">Por favor habilite el Wi-Fi para conectar</string>
     <string name="text_hotspotStartsTrustZone">El punto de acceso habilita la TrustZone</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone también será iniciado en consecuencia</string>
-    <string name="text_qrCodeAvailableHelp">Lea este código para compartir y conectar los dispositivos</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Configura un punto de acceso para que otros puedan conectarse
-        contigo
-    </string>
-    <string name="help_scanQRCode">Lea el código QR en la pantalla del dispositivo anfitrión</string>
+    <string name="scan_qr_code_notice">Lea este código para compartir y conectar los dispositivos</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Configura un punto de acceso para que otros puedan conectarse contigo</string>
+    <string name="text_scanQRCodeHelp">Lea el código QR en la pantalla del dispositivo anfitrión</string>
     <string name="butn_qrScanToSend">Escanea el código QR para enviar</string>
-    <string name="text_notificationSettingsSummary">Abrir los ajustes de notificaciones</string>
-    <string name="text_notificationSettings">Ajustes de notificaciones</string>
+    <string name="notification_settings_summary">Abrir los ajustes de notificaciones</string>
+    <string name="notification_settings">Ajustes de notificaciones</string>
     <string name="text_renameMultipleItems">Renombrar múltiples elementos</string>
-    <string name="text_rename">Renombrar</string>
+    <string name="rename">Renombrar</string>
     <string name="butn_rename">Renombrar</string>
-    <string name="butn_copyHere">Copiar aquí</string>
+    <string name="copy_here">Copiar aquí</string>
     <string name="text_qrAllowTrustZone">TrustZone para Código QR</string>
     <string name="text_qrAllowTrustZoneSummary">Permitir TrustZone para conexiones a través de código QR</string>
-    <string name="text_translateTrebleshot">Ayúdenos a traducir</string>
+    <string name="help_translate">Ayúdenos a traducir</string>
     <string name="text_contributors">Hecho posible por</string>
     <string name="butn_gridSize">Tamaño de la cuadrícula</string>
     <string name="butn_singleRow">Única fila</string>
@@ -381,163 +333,137 @@
     <string name="text_groupByAlbum">Álbum</string>
     <string name="text_groupByArtist">Artista</string>
     <string name="text_groupByFolder">Carpeta</string>
-    <string name="text_home">Inicio</string>
+    <string name="home">Inicio</string>
     <string name="text_default">Por defecto</string>
-    <string name="text_files">Archivos</string>
+    <string name="files">Archivos</string>
     <string name="mesg_noReceiverOrSender">Debe añadir dispositivos primero</string>
     <string name="butn_addDevices">Añadir dispositivos</string>
     <string name="text_connectDevices">Conectar dispositivos</string>
     <string name="text_network">Red</string>
     <string name="text_connect">Conectar</string>
-    <string name="butn_shareWithOtherApps">Compartir con otras aplicaciones</string>
-    <string name="butn_startHotspot">Montar punto de acceso</string>
-    <string name="butn_stopHotspot">Detener punto de acceso</string>
+    <string name="share_with_other_apps">Compartir con otras aplicaciones</string>
+    <string name="start_hotspot">Montar punto de acceso</string>
+    <string name="stop_hotspot">Detener punto de acceso</string>
     <string name="text_easyDiscoveryHelp">Escanee esto si ambos dispositivos se encuentran en la misma red</string>
     <string name="text_scanQRWifiRequired">Para conectarse a dispositivos, el Wi-Fi debe estar habilitado</string>
-    <string name="mesg_completing">Completando</string>
+    <string name="completing">Completando</string>
     <string name="mesg_errorNotSameNetwork">Los dispositivos no se encuentran en la misma red</string>
-    <string name="text_cameraPermissionRequired">Permiso de la cámara requerido</string>
+    <string name="camera_permission_notice">Permiso de la cámara requerido</string>
     <string name="text_addDevicesToTransfer">Añadir dispositivos para transferir</string>
-    <string name="text_file">Archivo</string>
+    <string name="file">Archivo</string>
     <string name="text_noDeviceForTransfer">No se añadió ningún dispositivo para esta transferencia</string>
-    <string name="text_thirdPartyLibraries">Librerías de terceros</string>
+    <string name="third_party_libraries">Librerías de terceros</string>
     <string name="butn_qrToggle">Cambiar la visibilidad del código QR</string>
     <string name="text_killServiceAfterLeaving">Dejar la aplicación detiene el servicio</string>
     <string name="text_transferStatusFiles">%1d de %2d</string>
-    <string name="text_donate">Apoyar el desarrollo</string>
-    <string name="mesg_donationSuccessful">Gracias!</string>
-    <string name="butn_open">Abrir</string>
-    <string name="butn_pause">Pausar</string>
-    <string name="butn_retry">Reintentar</string>
+    <string name="donate">Apoyar el desarrollo</string>
+    <string name="donation_success">Gracias!</string>
+    <string name="open">Abrir</string>
+    <string name="pause">Pausar</string>
+    <string name="retry">Reintentar</string>
     <string name="mesg_versionUpdatedChangelog">Has actualizado TrebleShot, ¿te gustaría ver qué hay de nuevo\?</string>
     <string name="mesg_noInternetConnection">Esto requiere conexión a Internet</string>
     <string name="text_applyDarkTheme">Modo oscuro</string>
-    <string name="butn_allow">Permitir</string>
-    <string name="text_listEmptyTransfer">Todas las transferencias aparecen aquí</string>
-    <string name="text_transfers">Transferencias</string>
+    <string name="allow">Permitir</string>
+    <string name="empty_transfers_list">Todas las transferencias aparecen aquí</string>
+    <string name="transfers">Transferencias</string>
     <string name="butn_useKnownDevice">Usa dispositivos conocidos</string>
-    <string name="butn_scanQrCode">Escanear código QR</string>
+    <string name="scan_qr_code">Escanear código QR</string>
     <string name="butn_useExistingNetwork">Utilizar redes existentes</string>
     <string name="butn_feedbackContact">Comentarios y contacto</string>
-    <string name="mesg_sent">Enviado</string>
-    <string name="text_sendText">Enviar texto</string>
-    <string name="butn_start">Comenzar</string>
-    <string name="text_downloads">Descargas</string>
-    <string name="text_documents">Documentos</string>
-    <string name="text_shortcuts">Atajos</string>
-    <string name="text_recentFiles">Archivos recientes</string>
+    <string name="send_success">Enviado</string>
+    <string name="send_text">Enviar texto</string>
+    <string name="start">Comenzar</string>
+    <string name="downloads">Descargas</string>
+    <string name="documents">Documentos</string>
+    <string name="shortcuts">Atajos</string>
+    <string name="recent_files">Archivos recientes</string>
     <string name="text_killServiceAfterLeavingSummary">Detiene la comunicación si no hay tarea en curso</string>
     <string name="text_emptySymbol">-</string>
     <string name="butn_donate">Ayudar al desarrollo</string>
-    <string name="mesg_noPendingTransferObjectExists">No quedan transferencias pendientes. Para reanudar archivos
-        interrumpidos, use la opción \'Reintentar recepción\'.
-    </string>
-    <string name="mesg_notSavingToChosenLocation">Su carpeta deseada no es accesible. Los archivos se guardarán en la
-        carpeta predeterminada.
-        \n
-        \n%s
-    </string>
+    <string name="interrupted_left_notice">No quedan transferencias pendientes. Para reanudar archivos interrumpidos, use la opción \'Reintentar recepción\'.</string>
+    <string name="storage_path_unavailable_notice">Su carpeta deseada no es accesible. Los archivos se guardarán en la carpeta predeterminada.
+\n
+\n%s</string>
     <string name="butn_changelog">Registro de cambios</string>
-    <string name="text_changelog">Registro de cambios</string>
-    <string name="mesg_versionUpdatedChangelogRejected">Siempre puedes encontrar \'Registro de cambios\' en la sección
-        \'Acerca de\'
-    </string>
+    <string name="changelog">Registro de cambios</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Siempre puedes encontrar \'Registro de cambios\' en la sección \'Acerca de\'</string>
     <string name="text_applyDarkThemeSummary">Usar el tema oscuro</string>
-    <string name="butn_telegram">Canal de Telegram</string>
+    <string name="butn_telegram_channel">Canal de Telegram</string>
     <string name="butn_connectionDetails">Detalles de las conexiones</string>
-    <string name="text_addDeviceHelp">Al agregar dispositivos, compartes los mismos archivos con más dispositivos.
-        Volverás a la transferencia cuando haya terminado.
-    </string>
+    <string name="text_addDeviceHelp">Al agregar dispositivos, compartes los mismos archivos con más dispositivos. Volverás a la transferencia cuando haya terminado.</string>
     <string name="butn_changeSavePath">Cambiar la ruta de guardado</string>
     <string name="mesg_fileReceiveFilesLeftError">Error al recibir algunos archivos</string>
-    <string name="text_send">Enviar</string>
-    <string name="text_connectionHelp">Elija una opción para conectarse al otro dispositivo. Por ejemplo, si el otro
-        dispositivo muestra un código QR, use la opción Escanear código QR.
-    </string>
+    <string name="sends">Enviar</string>
+    <string name="text_connectionHelp">Elija una opción para conectarse al otro dispositivo. Por ejemplo, si el otro dispositivo muestra un código QR, use la opción Escanear código QR.</string>
     <string name="ques_needHelp">¿Necesitas una mano amiga\?</string>
     <string name="text_connectionWizard">Asistente de conexión</string>
-    <string name="ques_connectionWizardIsOtherDeviceReady">¿Acabas de configurar las cosas en el otro dispositivo\?
-    </string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">¿Acabas de configurar las cosas en el otro dispositivo\?</string>
     <string name="ques_connectionWizardIsThereQRCode">¿Ves un código QR (código de barras) en su pantalla\?</string>
-    <string name="ques_connectionWizardUseHotspot">¿Desea que el otro dispositivo se conecte a este dispositivo con un
-        punto de acceso (tethering)\? Si no sabe qué es un punto de acceso, toque Sí.
-    </string>
-    <string name="ques_connectionWizardUseNetwork">¿Desea usar su enrutador o cualquier red Wi-Fi a la que usted y su
-        amigo se hayan conectado\?
-    </string>
-    <string name="ques_connectionWizardUseKnownDevices">¿Quieres acceder a tus dispositivos contactados previamente\?
-    </string>
-    <string name="butn_yes">Sí</string>
-    <string name="butn_no">No</string>
+    <string name="ques_connectionWizardUseHotspot">¿Desea que el otro dispositivo se conecte a este dispositivo con un punto de acceso (tethering)\? Si no sabe qué es un punto de acceso, toque Sí.</string>
+    <string name="ques_connectionWizardUseNetwork">¿Desea usar su enrutador o cualquier red Wi-Fi a la que usted y su amigo se hayan conectado\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">¿Quieres acceder a tus dispositivos contactados previamente\?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
     <string name="text_loadThumbnails">Cargar miniaturas</string>
     <string name="text_loadThumbnailsSummary">Mostrar miniaturas de archivos</string>
     <string name="text_manageDevices">Administrar dispositivos</string>
-    <string name="text_search">Buscar</string>
-    <string name="mesg_wifiEnableFailed">El Wi-Fi no se enciende.</string>
-    <string name="mesg_turningWiFiOn">Activando Wi-Fi</string>
-    <string name="mesg_locationPermissionRequiredAny">Encienda el servicio de ubicación primero para continuar</string>
+    <string name="enable_wifi_failure">El Wi-Fi no se enciende.</string>
+    <string name="turning_wifi_on_notice">Activando Wi-Fi</string>
+    <string name="location_permission_required_notice">Encienda el servicio de ubicación primero para continuar</string>
     <string name="mesg_connectToWiFiNetworkHelp">Conéctate a una red Wi-Fi para continuar</string>
-    <string name="mesg_removing">Eliminando... Puede tomar un tiempo</string>
-    <string name="butn_help">Ayuda</string>
-    <string name="butn_choose">Escoger</string>
+    <string name="removing_notice">Eliminando... Puede tomar un tiempo</string>
+    <string name="help">Ayuda</string>
+    <string name="choose">Escoger</string>
     <string name="butn_fixConnection">Arreglar la conexión</string>
-    <string name="butn_never">Nunca</string>
-    <string name="text_hotspotStartedExternallyNotice">El punto de acceso se inició externamente. Para utilizar el
-        código QR, debe iniciarlo aquí.
-    </string>
+    <string name="never">Nunca</string>
+    <string name="externally_started_hotspot_notice">El punto de acceso se inició externamente. Para utilizar el código QR, debe iniciarlo aquí.</string>
     <string name="text_shortcut">Atajo</string>
     <string name="butn_addShortcut">Añadir atajo</string>
     <string name="butn_removeShortcut">Eliminar atajo</string>
-    <string name="mesg_removed">Eliminado</string>
-    <string name="mesg_added">Añadido</string>
+    <string name="removal_success">Eliminado</string>
+    <string name="add_success">Añadido</string>
     <string name="butn_change">Cambiar</string>
-    <string name="text_welcome">Bienvenido</string>
-    <string name="text_introMakeItYours">Hazlo tuyo</string>
-    <string name="text_introSetUpPermissions">Configurar permisos</string>
-    <string name="text_introAllSet">¡Todo listo!</string>
-    <string name="text_introSetUpProfile">Configura tu perfil</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="introduction_personalize">Hazlo tuyo</string>
+    <string name="introduction_set_up_permissions">Configurar permisos</string>
+    <string name="introduction_finished">¡Todo listo!</string>
+    <string name="introduction_set_up_profile">Configura tu perfil</string>
     <string name="mesg_openFailure">No se puede ver \"%s\"</string>
     <string name="text_connectionTest">Prueba de conexión - %s</string>
     <string name="butn_connectionTest">Prueba de conexión</string>
-    <string name="text_textMillisecond">%d ms</string>
+    <string name="count_milliseconds_short">%d ms</string>
     <string name="butn_revokePin">Revocar PIN</string>
-    <string name="const_text_useAppFonts">Aplicar la fuente recomendada</string>
-    <string name="const_text_useAppFontsSummary">Utilizar la fuente personalizada suministrada</string>
-    <string name="mesg_waiting">Esperando</string>
-    <string name="text_amoledOptimizedBlackTheme">Optimizar para pantallas AMOLED</string>
-    <string name="text_amoledOptimizedBlackThemeSummary">Usar colores más oscuros</string>
-    <string name="mesg_errorNotTrusted">Este dispositivo debe configurarse como dispositivo TrustZone en el dispositivo
-        receptor para realizar esta operación.
-    </string>
+    <string name="use_recommended_fonts">Aplicar la fuente recomendada</string>
+    <string name="use_recommended_fonts_notice">Utilizar la fuente personalizada suministrada</string>
+    <string name="waiting">Esperando</string>
+    <string name="theme_optimize">Optimizar para pantallas AMOLED</string>
+    <string name="theme_optimize_summary">Usar colores más oscuros</string>
+    <string name="mesg_errorNotTrustZoneDevice">Este dispositivo debe configurarse como dispositivo TrustZone en el dispositivo receptor para realizar esta operación.</string>
     <string name="butn_enterIpAddress">Introduzca la dirección IP</string>
-    <string name="butn_webShare">Compartir a través del navegador</string>
-    <string name="text_webShareNoContentNotice">Utilice la opción \'Compartir en el navegador\' para ver las
-        transferencias aquí!
-    </string>
+    <string name="web_share">Compartir a través del navegador</string>
+    <string name="text_webShareNoContentNotice">Utilice la opción \'Compartir en el navegador\' para ver las transferencias aquí!</string>
     <string name="butn_shareOnBrowser">Compartir en el navegador</string>
     <string name="butn_hideOnBrowser">Ocultar del navegador</string>
     <string name="text_transferSharedOnBrowser">Compartido en el navegador</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">o</string>
-    <string name="text_visitWebShareAddress">Visita este enlace con tu navegador</string>
-    <string name="text_webShareInfo">Habilite compartir por web para transferencias individualmente y visite cualquier
-        enlace web que se muestre a continuación con un dispositivo que esté conectado a la misma red.
-    </string>
+    <string name="visit_using_browser_notice">Visita este enlace con tu navegador</string>
+    <string name="text_webShareInfo">Habilite compartir por web para transferencias individualmente y visite cualquier enlace web que se muestre a continuación con un dispositivo que esté conectado a la misma red.</string>
     <string name="text_dowloadTrebleshotAndroid">Descargar TrebleShot para Android</string>
-    <string name="text_listEmptyConnection">Las redes a las que te conectas aparecen aquí</string>
+    <string name="empty_connections_list">Las redes a las que te conectas aparecen aquí</string>
     <string name="mesg_errorNotAnIpAddress">No es una dirección IP
-        \n(como 192.168.1.2)
-    </string>
+\n(como 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">¿Compartir como APK o enlace\?</string>
     <string name="butn_asApk">Como APK</string>
     <string name="butn_asLink">Como enlace</string>
     <string name="text_linkTrebleshot">Comparte archivos con TrebleShot! Descargalo aquí: %s</string>
     <string name="butn_downloadAllAsZip">Descargar todo como un ZIP (sin comprimir)</string>
-    <string name="text_interfaceVPN">Servidor VPN</string>
-    <string name="text_unrecognizedQrCode">Código no reconocido</string>
-    <string name="mesg_textStreamSaved">Texto guardado</string>
+    <string name="vpn_interface">Servidor VPN</string>
+    <string name="unrecognized_qr_code_notice">Código no reconocido</string>
+    <string name="save_text_success">Texto guardado</string>
     <string name="butn_changeMode">Cambiar modo</string>
     <string name="mesg_qrScannerTextMode">Los códigos QR se mostrarán como texto</string>
     <string name="mesg_qrScannerDefaultMode">Volver a las acciones predeterminadas para códigos QR</string>
-    <string name="butn_showAsQrCode">Mostrar como código QR</string>
+    <string name="show_as_qr_code">Mostrar como código QR</string>
 </resources>

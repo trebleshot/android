@@ -37,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="?colorPassive"
-            android:contentDescription="@string/text_image"
+            android:contentDescription="@string/photo"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:foreground="?rectSelector"

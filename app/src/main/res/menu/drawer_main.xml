@@ -32,13 +32,13 @@
             android:id="@+id/preferences"
             android:icon="@drawable/ic_settings_white_24dp"
             android:orderInCategory="2"
-            android:title="@string/text_preferences" />
+            android:title="@string/preferences" />
 
         <item
             android:id="@+id/about"
             android:icon="@drawable/ic_info_white_24dp"
             android:orderInCategory="3"
-            android:title="@string/text_about" />
+            android:title="@string/about" />
 
     </group>
 
@@ -47,7 +47,7 @@
             android:id="@+id/donate"
             android:icon="@drawable/ic_favorite_white_24dp"
             android:orderInCategory="5"
-            android:title="@string/butn_donate"
+            android:title="@string/donate"
             android:visible="false" />
 
         <item

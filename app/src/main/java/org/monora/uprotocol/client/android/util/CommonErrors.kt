@@ -35,27 +35,27 @@ import java.net.ProtocolException
 
 object CommonErrors {
     fun messageOf(context: Context, exception: Exception): String = when (exception) {
-        is UntrustedClientException -> context.getString(R.string.mesg_errorNotTrusted)
-        is UnauthorizedClientException -> context.getString(R.string.mesg_notAllowed)
+        is UntrustedClientException -> context.getString(R.string.error_not_trusted_notice)
+        is UnauthorizedClientException -> context.getString(R.string.error_not_allowed)
         is UndefinedErrorCodeException -> context.getString(
-            R.string.mesg_unknownErrorOccurredWithCode, exception.errorCode
+            R.string.error_unrecognized, exception.errorCode
         )
         is ContentException -> context.getString(
             when (exception.error) {
-                ContentException.Error.NotAccessible -> R.string.text_contentNotAccessible
-                ContentException.Error.AlreadyExists -> R.string.text_contentAlreadyExists
-                ContentException.Error.NotFound -> R.string.text_contentNotFound
+                ContentException.Error.NotAccessible -> R.string.error_content_not_accessible
+                ContentException.Error.AlreadyExists -> R.string.error_content_already_exists
+                ContentException.Error.NotFound -> R.string.error_content_not_found
             }
         )
         is CredentialsException -> context.getString(R.string.error_communication_security_credentials)
         is SecurityException -> context.getString(R.string.error_communication_security)
         is CommunicationException -> context.getString(R.string.error_communication_unknown)
         is NoAddressException -> context.getString(R.string.error_client_no_address)
-        is DifferentRemoteClientException -> context.getString(R.string.mesg_errorDifferentDevice)
+        is DifferentRemoteClientException -> context.getString(R.string.error_different_client)
         is ProtocolException -> context.getString(R.string.error_protocol_unknown)
-        is ConnectException, is DefectiveAddressListException -> context.getString(R.string.mesg_socketConnectionError)
-        is NoRouteToHostException -> context.getString(R.string.mesg_noRouteToHostError)
-        else -> context.getString(R.string.mesg_unknownErrorOccurred)
+        is ConnectException, is DefectiveAddressListException -> context.getString(R.string.error_socket_connection)
+        is NoRouteToHostException -> context.getString(R.string.error_no_route_to_host)
+        else -> context.getString(R.string.error_unknown)
     }.also {
         exception.printStackTrace()
     }

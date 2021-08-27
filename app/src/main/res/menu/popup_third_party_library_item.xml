@@ -19,10 +19,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/popup_visitWebPage"
-        android:title="@string/butn_visitWebPage" />
+        android:title="@string/visit_web_page" />
 
     <item
         android:id="@+id/popup_goToLicenceURL"
-        android:title="@string/butn_visitLicenseUrl" />
+        android:title="@string/visit_license_url" />
 
 </menu>

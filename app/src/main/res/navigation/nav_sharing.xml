@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/prepareSharingFragment"
         android:name="org.monora.uprotocol.client.android.fragment.PrepareSharingFragment"
-        android:label="@string/text_preparingFiles">
+        android:label="@string/preparing_files">
         <action
             android:id="@+id/action_prepareSharingFragment_to_sharingFragment"
             app:destination="@id/sharingFragment"
@@ -35,7 +35,7 @@
     <fragment
         android:id="@+id/sharingFragment"
         android:name="org.monora.uprotocol.client.android.fragment.SharingFragment"
-        android:label="@string/butn_shareWithTrebleshot">
+        android:label="@string/share">
 
         <action
             android:id="@+id/pick_client"
@@ -73,6 +73,6 @@
     <dialog
         android:id="@+id/webShareLauncherFragment2"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.WebShareLauncherFragment"
-        android:label="@string/text_webShare" />
+        android:label="@string/web_share" />
 
 </navigation>

@@ -1,25 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="text_navigationDrawerOpen">Åpne navigasjonsskuff</string>
-    <string name="text_navigationDrawerClose">Lukk navigasjonsskuff</string>
-    <string name="text_preferences">Innstillinger</string>
+    <string name="app_name">TrebleShot</string>
+    <string name="open_navigation_drawer">Åpne navigasjonsskuff</string>
+    <string name="close_navigation_drawer">Lukk navigasjonsskuff</string>
+    <string name="preferences">Innstillinger</string>
     <string name="mesg_loading">Laster…</string>
     <string name="text_unknownUser">Ukjent bruker</string>
     <string name="text_connected">Tilkoblet</string>
@@ -30,254 +14,237 @@
     <string name="text_deviceListEmpty">Ingen enhet</string>
     <string name="mesg_noNetwork">Mangler tilkobling, som Wi-Fi, for å finne enheter i nærheten</string>
     <string name="mesg_scanningDevices">Finner enheter i nærheten</string>
-    <string name="ques_receiveFile">Motta filen?</string>
-    <string name="butn_accept">Godta</string>
-    <string name="butn_reject">Avslå</string>
-    <string name="text_taskOngoing">Pågående</string>
-    <string name="butn_stop">Stopp</string>
-    <string name="text_sending">Sender</string>
-    <string name="butn_cancelSending">Avbryt forsendelse</string>
-    <string name="text_receiving">Mottar</string>
-    <string name="butn_cancelReceiving">Avbryt mottak</string>
+    <string name="receive_file_question">Motta filen?</string>
+    <string name="accept">Godta</string>
+    <string name="reject">Avslå</string>
+    <string name="ongoing_task">Pågående</string>
+    <string name="stop">Stopp</string>
+    <string name="sending">Sender</string>
+    <string name="cancel_sending">Avbryt forsendelse</string>
+    <string name="receiving">Mottar</string>
+    <string name="cancel_receiving">Avbryt mottak</string>
     <string name="text_fileReceived">Filen har blitt mottatt</string>
     <string name="butn_scan">Skann</string>
-    <string name="text_listEmpty">Ingen elementer</string>
+    <string name="empty_list">Ingen elementer</string>
     <string name="text_developerMode">Utviklermodus</string>
     <string name="text_developerModeSummary">Skrur av brukeroppsettet</string>
     <string name="text_deviceName">Enhetsnavn</string>
-    <string name="text_deviceNameSummary">Navnet vil bli vist på andre enheter</string>
+    <string name="nickname_description">Navnet vil bli vist på andre enheter</string>
     <string name="text_deviceNameTitle">Skriv inn enhetsnavnet</string>
     <string name="mesg_formatNotSupported">Ustøttet format</string>
-    <string name="mesg_fileSendError">Kunne ikke sende fil. %s</string>
+    <string name="send_file_failure">Kunne ikke sende fil. %s</string>
     <string name="mesg_fileSent">%s har blitt sendt</string>
     <string name="mesg_fileSendCancelled">Forsendelse av %s har blitt avbrutt</string>
     <string name="mesg_fileNameChanged">Lagrer som %s</string>
-    <string name="mesg_fileReceived">Filen %s har blitt mottatt</string>
-    <string name="mesg_fileReceiveError">Kunne ikke motta %s.</string>
+    <string name="receive_file_success">Filen %s har blitt mottatt</string>
+    <string name="receive_file_failure">Kunne ikke motta %s.</string>
     <string name="mesg_fileReceiveCancelled">Avbrøt mottak av %s</string>
-    <string name="text_multipleFileReceiveCompleted">Filer mottatt</string>
+    <string name="receive_files_success">Filer mottatt</string>
     <string name="text_deviceList">Enheter</string>
     <string name="text_fileOpenAppChoose">Åpne med</string>
-    <string name="text_fileShareAppChoose">Velg et program</string>
-    <string name="text_receivedFiles">Mottatte filer</string>
-    <string name="butn_edit">Rediger</string>
-    <string name="butn_share">Del</string>
-    <string name="butn_delete">Slett</string>
-    <string name="text_deleteConfirm">Bekreft sletting</string>
+    <string name="choose_sharing_app">Velg et program</string>
+    <string name="received_files">Mottatte filer</string>
+    <string name="edit">Rediger</string>
+    <string name="share">Del</string>
+    <string name="delete">Slett</string>
+    <string name="deletion_confirmation">Bekreft sletting</string>
     <string name="mesg_deleteFileStarted">Filer vil bli slettet</string>
-    <string name="butn_cancel">Avbryt</string>
+    <string name="cancel">Avbryt</string>
     <string name="text_refresh">Gjenoppfrisk</string>
-    <string name="butn_refresh">Gjenoppfrisk</string>
+    <string name="refresh">Gjenoppfrisk</string>
     <string name="butn_shareTrebleshot">Del dette programmet</string>
-    <string name="text_about">Om</string>
+    <string name="about">Om</string>
     <string name="text_clearList">Tøm listen</string>
     <string name="mesg_deviceListCleared">Enhetslisten har blitt tømt</string>
-    <string name="butn_close">Lukk</string>
+    <string name="close">Lukk</string>
     <string name="text_deviceModelInfo">Enhetsnavn</string>
     <string name="butn_clearQueue">Tøm køen</string>
     <string name="text_pendingTransfersOfDevice">Ventende kø - %s</string>
     <string name="butn_pendingTransfers">Kø</string>
     <string name="butn_shareWithTrebleshot">Del med TrebleShot</string>
-    <string name="mesg_somethingWentWrong">Noe gikk galt</string>
+    <string name="unknown_failure">Noe gikk galt</string>
     <string name="text_findDevicesHint">Ingen gjenkjente enheter</string>
     <string name="text_autoScanDevices">Skann enheter automatisk</string>
     <string name="text_autoScanDevicesSummary">Skanner enheter når det er nødvendig</string>
     <string name="mesg_stillScanning">Skanner fremdeles</string>
-    <string name="text_advanced">Avansert</string>
-    <string name="text_storagePath">Lagringsti</string>
+    <string name="advanced">Avansert</string>
+    <string name="storage_path">Lagringsti</string>
     <string name="text_storagePathSummary">Nye filer vil bli lagret i denne mappen</string>
     <string name="mesg_enteredPathNotRead">Stien du skrev inn kan ikke brukes</string>
-    <string name="mesg_pathUnavailable">%s for tiden utilgjengelig</string>
+    <string name="path_unavailable_notice">%s for tiden utilgjengelig</string>
     <string name="butn_showOnFileManager">Vis i filbehandler</string>
     <string name="text_chooseFileManager">Velg filbehandler</string>
     <string name="text_ipAddress">IP-adresse</string>
     <string name="text_allowToConnect">Tillat tilgang til</string>
     <string name="text_connectionPermission">Tilkoblingsproblem</string>
     <string name="ques_allowDeviceToConnect">Tillat denne enheten å koble til?</string>
-    <string name="mesg_stopping">Stopper</string>
-    <string name="text_notification">Merknad</string>
-    <string name="text_useSounds">Lyder</string>
-    <string name="text_useSoundsSummary">Bruk lyder</string>
-    <string name="text_useVibration">Vibrasjon og oppsprettsmerknader</string>
-    <string name="text_useVibrationSummary">Bruk vibrasjon og vis oppsprettsmerknader</string>
-    <string name="text_useLights">Lys</string>
-    <string name="text_useLightSummary">Bruk lys</string>
+    <string name="stopping">Stopper</string>
+    <string name="notification">Merknad</string>
+    <string name="notifications_use_sounds">Lyder</string>
+    <string name="notifications_use_sounds_summary">Bruk lyder</string>
+    <string name="notifications_use_vibration">Vibrasjon og oppsprettsmerknader</string>
+    <string name="notifications_use_vibration_summary">Bruk vibrasjon og vis oppsprettsmerknader</string>
+    <string name="notifications_use_lights">Lys</string>
+    <string name="notifications_use_lights_summary">Bruk lys</string>
     <string name="mesg_scanCompleted">Skanning fullført</string>
     <string name="text_autoStart">Automatisk start</string>
     <string name="text_autoStartSummary">Skru på kommunikasjon når en tilkobling oppdages</string>
-    <string name="text_application">Program</string>
-    <string name="text_image">Bilde</string>
-    <string name="text_music">Musikk</string>
-    <string name="text_video">Video</string>
-    <string name="text_showSystemApps">Vis systemprogrammer</string>
-    <string name="text_showSystemAppsSummary">Vis systemprogrammer i seksjonen for deling</string>
+    <string name="app">Program</string>
+    <string name="photo">Bilde</string>
+    <string name="music">Musikk</string>
+    <string name="video">Video</string>
+    <string name="show_system_apps">Vis systemprogrammer</string>
+    <string name="show_system_apps_summary">Vis systemprogrammer i seksjonen for deling</string>
     <string name="butn_showSystemApps">Vis systemprogrammer</string>
-    <string name="mesg_notAllowed">Du har ikke tilgang til</string>
+    <string name="error_not_allowed">Du har ikke tilgang til</string>
     <string name="mesg_connectionProblem">Tilkoblingsproblem</string>
     <string name="text_communicationProblem">Kommunikasjonsproblem</string>
-    <string name="butn_multiSelect">Flervalg</string>
-    <string name="butn_receive">Motta</string>
-    <string name="butn_block">Blokker</string>
+    <string name="multi_selection">Flervalg</string>
+    <string name="receive">Motta</string>
+    <string name="block">Blokker</string>
     <string name="text_aboutSummary">Denne programvaren utvikles av Genonbeta friprog-organisasjonen</string>
-    <string name="butn_appLaunch">Kjør</string>
-    <string name="ques_launchApplication">Ønsker du å kjøre dette programmet?</string>
-    <string name="mesg_launchApplicationError">Programmet kan ikke kjøres</string>
-    <string name="text_enterText">Skriv inn tekst her…</string>
-    <string name="mesg_textCopiedToClipboard">Tekst kopiert til utklippstavle</string>
-    <string name="ques_copyToClipboard">Kopier til utklippstavle?</string>
-    <string name="text_textReceived">Tekst mottatt</string>
-    <string name="text_receivedTextSummary">Mottok tekst fra utklippstavle</string>
+    <string name="launch">Kjør</string>
+    <string name="launch_question">Ønsker du å kjøre dette programmet?</string>
+    <string name="launch_app_failure">Programmet kan ikke kjøres</string>
+    <string name="enter_text_notice">Skriv inn tekst her…</string>
+    <string name="copy_text_to_clipboard_success">Tekst kopiert til utklippstavle</string>
+    <string name="copy_to_clipboard">Kopier til utklippstavle?</string>
+    <string name="receive_text_success">Tekst mottatt</string>
+    <string name="receive_text_summary_success">Mottok tekst fra utklippstavle</string>
     <string name="butn_checkForUpdates">Se etter ny versjon</string>
     <string name="butn_seeSourceCode">Ta kildekoden i øyesyn</string>
-    <string name="text_typeText">Skriv noe å sende…</string>
-    <string name="text_textEditor">Tekstbehandler</string>
-    <string name="butn_done">Ferdig</string>
-    <string name="text_empty">(tom)</string>
+    <string name="type_text_notice">Skriv noe å sende…</string>
+    <string name="text_editor">Tekstbehandler</string>
+    <string name="done">Ferdig</string>
+    <string name="empty_text">(tom)</string>
     <string name="text_textStream">Del tekst</string>
-    <string name="butn_wifiSettings">Wi-Fi</string>
+    <string name="wifi_settings">Wi-Fi</string>
     <string name="text_pendingTransfers">Ventende overføringer</string>
     <string name="text_stopping">Stopper!</string>
     <string name="text_cancellingTransfer">Avbryter jobb…</string>
     <string name="butn_killNow">Drep nå</string>
     <string name="mesg_groupOngoingNotice">Filen vil bli mottatt etter %s</string>
-    <string name="butn_proceed">Fortsett</string>
-    <string name="ques_removeTransfer">Fjern overføring?</string>
-    <string name="butn_remove">Fjern</string>
-    <string name="butn_removeAll">Fjern alle</string>
-    <string name="ques_removeDevice">Fjern denne enheten?</string>
-    <string name="text_removeDeviceNotice">Når du fjerner en enhet, vil dens overføringer også bli fjernet</string>
-    <string name="text_removeTransferSummary">Dette vil fjerne %s fra køen</string>
-    <string name="ques_removeAll">Fjern alle?</string>
-    <string name="text_removeTransferGroupSummary">Dette vil fjerne alle ventende overføringer du ser her</string>
+    <string name="proceed">Fortsett</string>
+    <string name="ques_removeQueue">Fjern overføring?</string>
+    <string name="remove">Fjern</string>
+    <string name="remove_all">Fjern alle</string>
+    <string name="remove_client_question">Fjern denne enheten?</string>
+    <string name="remove_client_notice">Når du fjerner en enhet, vil dens overføringer også bli fjernet</string>
+    <string name="text_removePendingTransferSummary">Dette vil fjerne %s fra køen</string>
+    <string name="remove_all_question">Fjern alle?</string>
+    <string name="text_removeCertainPendingTransfersSummary">Dette vil fjerne alle ventende overføringer du ser her</string>
     <string name="text_availableNetworks">Registrerte tilkoblinger - %s</string>
     <string name="text_noNetworkAvailable">Inget nettverk tilgjengelig</string>
     <string name="mesg_deviceNotExits">Senderen finnes ikke lenger i din enhetsliste</string>
     <string name="text_savedConnections">Lagrede tilkoblinger</string>
     <string name="text_newVersionAvailable">Ny versjon tilgjengelig!</string>
     <string name="butn_goUp">Gå oppover</string>
-    <string name="text_folder">Mappe</string>
-    <string name="mesg_organizingFiles">Organiser filene dine</string>
+    <string name="folder">Mappe</string>
+    <string name="organizing_files_notice">Organiser filene dine</string>
     <string name="mesg_communicating">Kommunikasjon</string>
     <string name="text_clientService">Klienttjeneste</string>
     <string name="text_serverService">Tjenertjeneste</string>
     <string name="text_communicationService">Kommunikasjonstjeneste</string>
     <string name="text_chooserTargetService">Tilbyder for enhetsvalg</string>
     <string name="text_transactionViewer">Vis overføring</string>
-    <string name="text_error">Feil</string>
+    <string name="error">Feil</string>
     <string name="ques_why">Hvorfor?</string>
-    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s
-        \n
-        \nEnheter &gt; %2$s &gt; Tillat tilgang til &gt; (skru det på)
-    </string>
-    <string name="butn_saveTo">Lagre til</string>
-    <string name="mesg_secureExit">Trykk igjen for å avslutte</string>
-    <string name="butn_create">Opprett</string>
-    <string name="text_createFolder">Opprett mappe</string>
-    <string name="mesg_fileAlreadyExists">Filen finnes allerede</string>
-    <string name="mesg_folderCreateError">Mappen kunne ikke opprettes</string>
-    <string name="text_requestPermissionStorageSummary">Denne tilgangen tillater TrebleShot å skrive til skrive og lese
-        til og fra din enhets lagring for å motta og dele filer.
-    </string>
-    <string name="butn_settings">Innstillinger</string>
+    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s 
+\n 
+\nEnheter &gt; %2$s &gt; Tillat tilgang til &gt; (skru det på)</string>
+    <string name="save_to">Lagre til</string>
+    <string name="double_click_exit_notice">Trykk igjen for å avslutte</string>
+    <string name="create">Opprett</string>
+    <string name="create_folder">Opprett mappe</string>
+    <string name="error_file_already_exists">Filen finnes allerede</string>
+    <string name="create_folder_failure">Mappen kunne ikke opprettes</string>
+    <string name="storage_permission_summary">Denne tilgangen tillater TrebleShot å skrive til skrive og lese til og fra din enhets lagring for å motta og dele filer.</string>
+    <string name="settings">Innstillinger</string>
     <string name="butn_selectThis">Velg dette</string>
-    <string name="butn_newFile">Ny fil</string>
+    <string name="new_file">Ny fil</string>
     <string name="butn_keepFile">Behold</string>
     <string name="text_fixFileSaveLocation">Fiks lagringsplassering</string>
-    <string name="text_fileConflictNoChoice">Mappen du valgte for %s-filen er ikke tilgjengelig for øyeblikket, og
-        gjeldende filnavn har problemer med en fil i forvalgt mappe. Hvis det er en delvis mottatt versjon av samme fil,
-        velg \"Behold\", eller velg \"Ny fil\", for å generere ny fil.
-    </string>
-    <string name="text_fileConflictUseDefault" />
+    <string name="text_fileConflictNoChoice">Mappen du valgte for %s-filen er ikke tilgjengelig for øyeblikket, og gjeldende filnavn har problemer med en fil i forvalgt mappe. Hvis det er en delvis mottatt versjon av samme fil, velg \"Behold\", eller velg \"Ny fil\", for å generere ny fil.</string>
+    <string name="text_fileConflictUseDefault"/>
     <string name="mesg_currentPathUnavailable">Mappen kan ikke brukes</string>
-    <string name="text_defaultFolder">Forvalgt mappe</string>
+    <string name="default_folder">Forvalgt mappe</string>
     <string name="text_storage">Lagring</string>
     <string name="text_shareFiles">Motta filer</string>
-    <string name="mesg_pathSaved">Mappen har blitt lagret</string>
-    <string name="butn_search">Søk</string>
+    <string name="change_storage_path_success">Mappen har blitt lagret</string>
+    <string name="search">Søk</string>
     <string name="butn_changeConnection">Endre tilkobling</string>
-    <string name="text_fileName">Filnavn</string>
-    <string name="text_fileSize">Filstørrelse</string>
-    <string name="text_fileMime">Filtype</string>
-    <string name="text_fileStatus">Filstatus</string>
-    <string name="butn_resume">Gjenoppta</string>
-    <string name="text_transactionDetails">Detaljer</string>
+    <string name="file_name">Filnavn</string>
+    <string name="file_size">Filstørrelse</string>
+    <string name="file_mime">Filtype</string>
+    <string name="file_status">Filstatus</string>
+    <string name="resume">Gjenoppta</string>
+    <string name="transfer_details">Detaljer</string>
     <string name="text_fileExplorer">Filutforsker</string>
     <string name="butn_createFolder">Opprett mappe</string>
-    <string name="text_chooseFolder">Velg mappe</string>
-    <string name="text_chooseFile">Velg fil</string>
+    <string name="choose_folder">Velg mappe</string>
+    <string name="choose_file">Velg fil</string>
     <string name="mesg_pathSameError">Du kan ikke velge den gamle mappen</string>
     <string name="ques_checkOldFiles">Flytt filer\?</string>
-    <string name="text_checkOldFiles">Du kan flytte fullførte, og delvis fullførte tilknyttede filer til denne mappen,
-        som kan ta litt tid avhengig av størrelsen på dem.
-    </string>
+    <string name="text_checkOldFiles">Du kan flytte fullførte, og delvis fullførte tilknyttede filer til denne mappen, som kan ta litt tid avhengig av størrelsen på dem.</string>
     <string name="mesg_newFilesReceived">Nye filer mottatt</string>
-    <string name="butn_show">Vis</string>
-    <string name="text_preparingFiles">Forbereder filer</string>
-    <string name="text_savingDetails">Lagrer detaljer</string>
-    <string name="text_version">Versjon</string>
-    <string name="text_flagPending">Ventende</string>
-    <string name="text_flagRunning">Kjører</string>
-    <string name="text_flagInterrupted">Avbrutt</string>
+    <string name="show">Vis</string>
+    <string name="preparing_files">Forbereder filer</string>
+    <string name="saving_details">Lagrer detaljer</string>
+    <string name="version">Versjon</string>
+    <string name="pending">Ventende</string>
+    <string name="running">Kjører</string>
+    <string name="interrupted">Avbrutt</string>
     <string name="text_flagResume">Gjenopptatt</string>
-    <string name="text_unknown">Ukjent</string>
+    <string name="unknown">Ukjent</string>
     <string name="text_importantNotice">Viktig melding</string>
-    <string name="text_migrateNotice49">Takk for at du velger fri programvare og gjør oss sterkere. Les dette hvis du
-        kommer fra en eldre versjon. Denne versjonen av TrebleShot kan ikke kommunisere med enheter som kjører eldre
-        versjoner. Vi har oppgradert kommunikasjonsmekanismen. Oppgrader fra eldre versjoner av TrebleShot til nyeste
-        utgave for å sørge for at det virker.
-    </string>
-    <string name="text_longAgo">Lenge siden</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
-    <string name="text_interfaceWireless">Wi-Fi</string>
-    <string name="text_interfaceBluetooth">Blåtann</string>
-    <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">Ukjent</string>
+    <string name="text_migrateNotice49">Takk for at du velger fri programvare og gjør oss sterkere. Les dette hvis du kommer fra en eldre versjon. Denne versjonen av TrebleShot kan ikke kommunisere med enheter som kjører eldre versjoner. Vi har oppgradert kommunikasjonsmekanismen. Oppgrader fra eldre versjoner av TrebleShot til nyeste utgave for å sørge for at det virker.</string>
+    <string name="long_ago">Lenge siden</string>
+    <string name="wifi_direct">Wi-Fi Direct</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="bluetooth">Blåtann</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="unknown_interface">Ukjent</string>
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Jeg prøver lykken</string>
     <string name="butn_connectionList">Tilkoblinger</string>
-    <string name="text_automaticNetworkConnectionFailed">Ingen av tilkoblingene fungerte for enheten. Dens adresse kan
-        ha endret seg. Prøv å koble til nettverket mens TrebleShot er åpent.
-    </string>
+    <string name="text_automaticNetworkConnectionFailed">Ingen av tilkoblingene fungerte for enheten. Dens adresse kan ha endret seg. Prøv å koble til nettverket mens TrebleShot er åpent.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot vil avgjøre for deg</string>
-    <string name="butn_retryReceiving">Prøv alle på nytt</string>
-    <string name="butn_ask">Spør</string>
+    <string name="retry_receiving">Prøv alle på nytt</string>
+    <string name="ask">Spør</string>
     <string name="text_permissionRequest">Tilgangsforespørsel</string>
-    <string name="text_requestPermissionStorage">Lagringstilgang</string>
+    <string name="storage_permission">Lagringstilgang</string>
     <string name="text_requestPermissionReadPhoneState">Tilgang til lesing av telefontilstand</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot trenger tilgang til din telefons serienummer
-        til å opprette et identitetsnummer på lang sikt for deg, noe som hjelper andre enehter som kjører TrebleShot å
-        gjenkjenne enheten din.
-    </string>
-    <string name="text_mediaDirectory">Mediamappe</string>
-    <string name="text_emulatedMediaDirectory">Emulert (%s)</string>
-    <string name="mesg_notEnoughSpace">Ikke nok plass</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot trenger tilgang til din telefons serienummer til å opprette et identitetsnummer på lang sikt for deg, noe som hjelper andre enehter som kjører TrebleShot å gjenkjenne enheten din.</string>
+    <string name="media_directory">Mediamappe</string>
+    <string name="emulated_media_directory">Emulert (%s)</string>
+    <string name="insufficient_space_notice">Ikke nok plass</string>
     <string name="text_totalIncomingSize">Total størrelse på innkommende filer</string>
     <string name="text_totalOutgoingSize">Total størrelse på utgående filer</string>
     <string name="text_availableDiskSpace">Tilgjengelig lagringsplass</string>
     <string name="text_savePath">Lagringssti</string>
     <string name="text_transactionGroupDetails">Gruppedetaljer for overføring</string>
     <string name="text_usedConnection">Brukt tilkobling</string>
-    <string name="text_flagRemoved">Fjernet</string>
+    <string name="removed">Fjernet</string>
     <string name="butn_copyToClipboard">Kopier til utklippstavle</string>
-    <string name="text_communicationServiceRunning">TrebleShot kan dele filer nå</string>
+    <string name="service_running_notice">TrebleShot kan dele filer nå</string>
     <string name="text_communicationServiceStop">Trykk for å sluttføre økt</string>
-    <string name="butn_showFiles">Vis filer</string>
-    <string name="butn_trustDevice">Sett som TrustZone-enhet</string>
+    <string name="show_files">Vis filer</string>
+    <string name="butn_trustZoneDevice">Sett som TrustZone-enhet</string>
     <string name="butn_turnTrustZoneOn">Skru på TrustZone</string>
     <string name="butn_turnTrustZoneOff">Skru av TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="butn_download">Last ned</string>
-    <string name="mesg_clipboardUpdateNotice">Gjennomse teksten eller trykk igjen for å avslutte</string>
-    <string name="mesg_textSaveNotice">Lagre teksten eller trykk igjen for å avslutte</string>
-    <string name="butn_update">Oppdater</string>
-    <string name="butn_save">Lagre</string>
+    <string name="download">Last ned</string>
+    <string name="update_clipboard_notice">Gjennomse teksten eller trykk igjen for å avslutte</string>
+    <string name="save_clipboard_notice">Lagre teksten eller trykk igjen for å avslutte</string>
+    <string name="update">Oppdater</string>
+    <string name="save">Lagre</string>
     <string name="mesg_textShareLimit">Kun én tekst kan deles om gangen</string>
-    <string name="text_timeJustNow">Akkurat nå</string>
-    <string name="butn_connect">Koble til</string>
-    <string name="butn_disconnect">Koble fra</string>
-    <string name="butn_skip">Hopp over</string>
-    <string name="butn_enable">Skru på</string>
-    <string name="butn_locationSettings">Plassering</string>
+    <string name="just_now">Akkurat nå</string>
+    <string name="connect">Koble til</string>
+    <string name="disconnect">Koble fra</string>
+    <string name="skip">Hopp over</string>
+    <string name="enable">Skru på</string>
+    <string name="location_settings">Plassering</string>
     <string name="butn_gotIt">Skjønner</string>
     <string name="mesg_helpFolderSelection">For å velge en mappe, trykk på dens ikon</string>
     <string name="butn_typeNewEntry">Skriv inn ny oppføring</string>
@@ -285,96 +252,82 @@
     <string name="text_previewAndEditList">Forhåndsvis og rediger</string>
     <string name="text_uncheckedItemsNotice">Umarkerte elementer vil bli hoppet over</string>
     <string name="mesg_ongoingUpdateDownload">Laster ned den nye versjonen</string>
-    <string name="mesg_hotspotCreatedInfo">Koble til \"%s\" i \"Wi-Fi -innstillinger\" eller send filer via \"%s\" inne
-        i TrebleShot
-    </string>
-    <string name="butn_selectAll">Velg alt</string>
-    <string name="butn_selectNone">Ikke velg noe</string>
-    <string name="butn_previewSelections">Forhåndsvis utvalg</string>
+    <string name="mesg_hotspotCreatedInfo">Koble til \"%s\" i \"Wi-Fi -innstillinger\" eller send filer via \"%s\" inne i TrebleShot</string>
+    <string name="select_all">Velg alt</string>
+    <string name="select_none">Ikke velg noe</string>
+    <string name="preview_selections">Forhåndsvis utvalg</string>
     <string name="mesg_deviceConnectionError">Tilkobling med \"%s\" over \"%s\" mislyktes</string>
-    <string name="mesg_retryReceivingNotice">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
+    <string name="retry_receiving_notice">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Velg tilkoblingsmetode først</string>
-    <string name="butn_setUp">Sett opp</string>
-    <string name="text_location">Tenkt plassering</string>
+    <string name="set_up">Sett opp</string>
+    <string name="location">Tenkt plassering</string>
     <string name="butn_saveAnyway">Lagre uansett</string>
-    <string name="text_receivedSize">Mottatt størrelse</string>
+    <string name="received_size">Mottatt størrelse</string>
     <string name="mesg_notValidTransfer">Overføringen utløp</string>
     <string name="ques_saveAnyway">Lagre uansett?</string>
     <string name="text_saveAnywaySummary">Senderen vet ikke hvor filen er, men du kan fremdeles lagre den</string>
-    <string name="mesg_fileSaved">Fil lagret</string>
-    <string name="butn_sortBy">Sorter etter</string>
-    <string name="butn_sortOrder">Sorteringsforordning</string>
-    <string name="text_sortByName">Navn</string>
-    <string name="text_sortByDate">Dato</string>
-    <string name="text_sortBySize">Størrelse</string>
+    <string name="save_file_success">Fil lagret</string>
+    <string name="sort_by">Sorter etter</string>
+    <string name="sort_order">Sorteringsforordning</string>
+    <string name="name">Navn</string>
+    <string name="date">Dato</string>
+    <string name="size">Størrelse</string>
     <string name="butn_resetToDefault">Tilbakestill til forvalg</string>
-    <string name="ques_resetToDefault">Tilbakestill til forvalg?</string>
-    <string name="text_resetPreferencesToDefaultSummary">Dette vil gjenopprette forvalgte innstillinger</string>
+    <string name="preferences_reset">Tilbakestill til forvalg?</string>
+    <string name="preferences_reset_notice">Dette vil gjenopprette forvalgte innstillinger</string>
     <string name="text_taskCompleted">Oppgave fullført</string>
-    <string name="text_deletingFilesOngoing">Sletter valgte filer</string>
-    <string name="text_remainingTime">%s gjenstår</string>
+    <string name="deleting_files_notice">Sletter valgte filer</string>
+    <string name="remaining_time">%s gjenstår</string>
     <string name="text_trustZoneEnabledSummary">TrustZone er aktivert ved oppstart</string>
-    <string name="mesg_errorHotspotPermission">TrebleShot trenger tilgang for å sette opp et lokalt trådløsnett</string>
+    <string name="error_hotspot_needs_permission">TrebleShot trenger tilgang for å sette opp et lokalt trådløsnett</string>
     <string name="text_trebleshotHotspot">Trebleshot-trådløsnett</string>
-    <string name="text_trebleshotHotspotDescription">Du kan sende filer direkte via dette åpne nettverket som har blitt
-        opprettet av en TrebleShot-enhet i nærheten.
-    </string>
+    <string name="text_trebleshotHotspotDescription">Du kan sende filer direkte via dette åpne nettverket som har blitt opprettet av en TrebleShot-enhet i nærheten.</string>
     <string name="mesg_connectingToSelfHotspot">Kobler til et lokalt TrebleShot-trådløsnett</string>
-    <string name="mesg_warningHotspotMobileActive">Tilkoblede enheter kan bruke din trådløsdata. Det kan hende du ønsker
-        å skru av trådløsdata.
-    </string>
+    <string name="set_up_hotspot_mobile_data_notice">Tilkoblede enheter kan bruke din trådløsdata. Det kan hende du ønsker å skru av trådløsdata.</string>
     <string name="mesg_scanningSelfHotspot">Søker etter lokalt TrebleShot-trådløsnett</string>
-    <string name="mesg_suggestSelfHotspot">Duk kan skru på Wi-Fi for å søke etter et lokalt TrebleShot-trådløsnett
-    </string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Tillat TrebleShot å søke etter og opprette lokale
-        trådløsnett
-    </string>
-    <string name="mesg_locationDisabledSelfHotspot">Innvilg tilgang til plassering for å vise søkeresultater og opprette
-        lokalt trådløsnett
-    </string>
+    <string name="mesg_suggestSelfHotspot">Duk kan skru på Wi-Fi for å søke etter et lokalt TrebleShot-trådløsnett</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Tillat TrebleShot å søke etter og opprette lokale trådløsnett</string>
+    <string name="mesg_locationDisabledSelfHotspot">Innvilg tilgang til plassering for å vise søkeresultater og opprette lokalt trådløsnett</string>
     <string name="mesg_scanningDevicesSelfHotspot">Ser etter enheter på et lokalt TrebleShot-nettverk</string>
-    <string name="mesg_stoppingSelfHotspot">Stopper det lokale TrebleShot-trådløsnettet</string>
-    <string name="mesg_startingSelfHotspot">Starter det lokale TrebleShot-trådløsnettet</string>
-    <string name="butn_check">Velg alle</string>
-    <string name="butn_uncheck">Angre alt</string>
+    <string name="starting_hotspot_notice">Stopper det lokale TrebleShot-trådløsnettet</string>
+    <string name="stopping_hotspot_notice">Starter det lokale TrebleShot-trådløsnettet</string>
+    <string name="check">Velg alle</string>
+    <string name="uncheck">Angre alt</string>
     <string name="text_fileRoot">Filrot</string>
-    <string name="mesg_versionNotSupported">Oppgrader til en støttet versjon og se etter enheter igjen.</string>
+    <string name="client_not_supported_notice">Oppgrader til en støttet versjon og se etter enheter igjen.</string>
     <string name="mesg_connectionUpdated">Kommuniserer nå over \"%s\"-tilkoblingen</string>
-    <string name="text_sortOrderAscending">Største først ↑</string>
-    <string name="text_sortOrderDescending">Minste først↓</string>
+    <string name="ascending">Største først ↑</string>
+    <string name="descending">Minste først↓</string>
     <string name="text_trustZoneDeviceNotice">Godtar innkommende filer automatisk når TrustZone er på</string>
     <string name="text_allowingToConnectNotice">Tillat tilkoblinger fra denne enheten</string>
     <string name="text_workerService">Arbeider-tjeneste</string>
     <string name="text_networkServiceDiscovery">Skru på NSD</string>
-    <string name="text_networkServiceDiscoverySummary">Oppdagelse av nettverkstjenester forbedrer sjansen for å
-        oppdage
-    </string>
-    <string name="text_notificationChannelHigh">Viktige merknader</string>
-    <string name="text_notificationChannelLow">Lavprioritetsmerknader</string>
-    <string name="text_receivedTransfer">Mottatt %s i %s</string>
-    <string name="text_yearCountShort">%d år</string>
-    <string name="text_monthCountShort">%d mnd</string>
-    <string name="text_dayCountShort">%d dag</string>
-    <string name="text_hourCountShort">%d t</string>
-    <string name="text_minuteCountShort">%d min</string>
-    <string name="text_secondCountShort">%d sek</string>
-    <string name="butn_exit">Avslutt</string>
+    <string name="text_networkServiceDiscoverySummary">Oppdagelse av nettverkstjenester forbedrer sjansen for å oppdage</string>
+    <string name="high_priority_notifications">Viktige merknader</string>
+    <string name="low_priority_notifications">Lavprioritetsmerknader</string>
+    <string name="receive_success_summary">Mottatt %s i %s</string>
+    <string name="count_years_short">%d år</string>
+    <string name="count_months_short">%d mnd</string>
+    <string name="count_days_short">%d dag</string>
+    <string name="count_hours_short">%d t</string>
+    <string name="count_minutes_short">%d min</string>
+    <string name="count_seconds_short">%d sek</string>
+    <string name="exit">Avslutt</string>
     <string name="butn_queueCounted">Kø (%d)</string>
-    <string name="text_previewThenProceedNotice">Sjekk utvalgene dine ved å trykke på \"Kø\"-knappen for å fortsette
-    </string>
+    <string name="text_previewThenProceedNotice">Sjekk utvalgene dine ved å trykke på \"Kø\"-knappen for å fortsette</string>
     <string name="mesg_updateDownloadComplete">Oppdatering mottatt og lagret i mottatte filer</string>
-    <string name="text_listEmptyFiles">Ingen filer her</string>
-    <string name="text_listEmptyImage">Ingen bilder her</string>
-    <string name="text_listEmptyApp">Ingen programmer her</string>
-    <string name="text_listEmptyVideo">Ingen videoer her</string>
+    <string name="empty_files_list">Ingen filer her</string>
+    <string name="empty_photos_list">Ingen bilder her</string>
+    <string name="empty_apps_list">Ingen programmer her</string>
+    <string name="empty_video_list">Ingen videoer her</string>
     <string name="text_listEmptyPendingTransfer">Ventende overføringer vil vises her</string>
-    <string name="text_listEmptyTextStream">Skriverier vil vises her</string>
-    <string name="text_listEmptyMusic">Ingen sanger her</string>
-    <string name="text_internalStorage">Internt lagringsmedium</string>
+    <string name="empty_writings_list">Skriverier vil vises her</string>
+    <string name="empty_music_list">Ingen sanger her</string>
+    <string name="internal_storage">Internt lagringsmedium</string>
     <string name="text_restrictedAccessStorage">%s (begrenset tilgang)</string>
-    <string name="text_emptySearchResult">Inget resultat for \"%s\"</string>
+    <string name="empty_search_result_summary">Inget resultat for \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">Listen vil bli gjenoppfrisket når tilgjengelig</string>
-    <string name="mesg_errorReadFolder">Får ikke tilgang til \"%s\"</string>
+    <string name="access_failure_notice">Får ikke tilgang til \"%s\"</string>
     <string name="butn_mountDirectory">Avmonter mappe</string>
     <string name="mesg_mountDirectoryHelp">Velg mappen du ønsker å åpne</string>
     <string name="butn_ejectDirectory">Avmonter mappe</string>
@@ -382,21 +335,20 @@
     <string name="mesg_wifiEnableRequired">Skru på Wi-Fi for å koble til</string>
     <string name="text_hotspotStartsTrustZone">Lokalt trådløsnett slår på TrustZone</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone vil også bli startet opp behovsvis</string>
-    <string name="text_qrCodeAvailableHelp">Skann denne koden for å dele og koble til enheter</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Sett opp et lokalt trådløsnett slik at andre kan koble seg til deg
-    </string>
-    <string name="help_scanQRCode">Skann QR-koden på vertenhetens skjerm</string>
+    <string name="scan_qr_code_notice">Skann denne koden for å dele og koble til enheter</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Sett opp et lokalt trådløsnett slik at andre kan koble seg til deg</string>
+    <string name="text_scanQRCodeHelp">Skann QR-koden på vertenhetens skjerm</string>
     <string name="butn_qrScanToSend">Skann QR-koden for å sende</string>
     <string name="butn_qrToggle">Veksle visning av QR-kode</string>
-    <string name="text_notificationSettingsSummary">Åpne merknadsinnstillinger</string>
-    <string name="text_notificationSettings">Merknadsinnstillinger</string>
+    <string name="notification_settings_summary">Åpne merknadsinnstillinger</string>
+    <string name="notification_settings">Merknadsinnstillinger</string>
     <string name="text_renameMultipleItems">Gi nytt navn til flere elementer</string>
-    <string name="text_rename">Gi nytt navn</string>
+    <string name="rename">Gi nytt navn</string>
     <string name="butn_rename">Gi nytt navn</string>
-    <string name="butn_copyHere">Kopier her</string>
+    <string name="copy_here">Kopier her</string>
     <string name="text_qrAllowTrustZone">TrustZone for QR-kode</string>
     <string name="text_qrAllowTrustZoneSummary">Tillat TrustZone for tilkoblinger med QR-kode</string>
-    <string name="text_translateTrebleshot">Hjelp til i oversettelsen</string>
+    <string name="help_translate">Hjelp til i oversettelsen</string>
     <string name="text_contributors">Muliggjort av</string>
     <string name="butn_gridSize">Rutenettstørrelse</string>
     <string name="butn_singleRow">Enkelt rad</string>
@@ -407,159 +359,137 @@
     <string name="text_groupByAlbum">Album</string>
     <string name="text_groupByArtist">Artist</string>
     <string name="text_groupByFolder">Mappe</string>
-    <string name="text_home">Hjem</string>
+    <string name="home">Hjem</string>
     <string name="text_default">Forvalg</string>
-    <string name="text_files">Filer</string>
+    <string name="files">Filer</string>
     <string name="mesg_noReceiverOrSender">Du må legge til enheter først</string>
     <string name="butn_addDevices">Legg til enheter</string>
     <string name="text_connectDevices">Koble til enheter</string>
     <string name="text_network">Nettverk</string>
     <string name="text_connect">Koble til</string>
-    <string name="butn_shareWithOtherApps">Del med andre programmer</string>
-    <string name="butn_startHotspot">Sett opp lokalt trådløsnett</string>
-    <string name="butn_stopHotspot">Stopp lokalt trådløsnett</string>
+    <string name="share_with_other_apps">Del med andre programmer</string>
+    <string name="start_hotspot">Sett opp lokalt trådløsnett</string>
+    <string name="stop_hotspot">Stopp lokalt trådløsnett</string>
     <string name="text_easyDiscoveryHelp">Skann dette hvis begge enhetene befinner seg på samme nettverk</string>
-    <string name="mesg_completing">Fullfører</string>
+    <string name="completing">Fullfører</string>
     <string name="mesg_errorNotSameNetwork">Enhetene er ikke på samme nettverk</string>
-    <string name="text_cameraPermissionRequired">Kamaeratilgang kreves</string>
+    <string name="camera_permission_notice">Kamaeratilgang kreves</string>
     <string name="text_addDevicesToTransfer">Legg til enheter i overføring</string>
-    <string name="text_file">Fil</string>
+    <string name="file">Fil</string>
     <string name="text_noDeviceForTransfer">Ingen enhet lagt til for denne overføringen</string>
-    <string name="text_thirdPartyLibraries">Tredjepartsbiblioteker</string>
+    <string name="third_party_libraries">Tredjepartsbiblioteker</string>
     <string name="text_scanQRWifiRequired">For å koble til enheter må trådløskommunikasjon være påslått</string>
     <string name="text_killServiceAfterLeavingSummary">Stopper kommunikasjon hvis ingen oppgave er underveis</string>
     <string name="text_killServiceAfterLeaving">Å forlate programmet stopper tjenesten</string>
     <string name="butn_donate">Hjelp utviklingen</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d av %2d</string>
-    <string name="text_donate">Hjelp utviklingen</string>
-    <string name="mesg_donationSuccessful">Takk!</string>
+    <string name="donate">Hjelp utviklingen</string>
+    <string name="donation_success">Takk!</string>
     <string name="msg">Doner</string>
-    <string name="butn_open">Åpne</string>
-    <string name="butn_pause">Pause</string>
-    <string name="butn_retry">Prøv igjen</string>
-    <string name="mesg_noPendingTransferObjectExists">Ingen ventende overføring gjenstår. For å gjenoppta forstyrrede
-        filer, bruk \"Prøv alle på nytt\"-valget.
-    </string>
-    <string name="mesg_notSavingToChosenLocation">Filer vil bli lagret i forvalgt mappe, siden den angitte mappen ikke
-        er tilgjengelig nå.
-        \n
-        \n %s
-    </string>
+    <string name="open">Åpne</string>
+    <string name="pause">Pause</string>
+    <string name="retry">Prøv igjen</string>
+    <string name="interrupted_left_notice">Ingen ventende overføring gjenstår. For å gjenoppta forstyrrede filer, bruk \"Prøv alle på nytt\"-valget.</string>
+    <string name="storage_path_unavailable_notice">Filer vil bli lagret i forvalgt mappe, siden den angitte mappen ikke er tilgjengelig nå.
+\n
+\n %s</string>
     <string name="butn_changelog">Endringslogg</string>
-    <string name="text_changelog">Endringslogg</string>
-    <string name="mesg_versionUpdatedChangelog">Du har oppgradert TrebleShot til en nyere versjon, ønsker du å se hva
-        som har endret seg siden du installerte forrige versjon?
-    </string>
+    <string name="changelog">Endringslogg</string>
+    <string name="mesg_versionUpdatedChangelog">Du har oppgradert TrebleShot til en nyere versjon, ønsker du å se hva som har endret seg siden du installerte forrige versjon?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Du finner alltid endringsloggen i \"Om\"-delen</string>
     <string name="mesg_noInternetConnection">Dette krever internettilknytning</string>
     <string name="text_applyDarkTheme">Mørk drakt</string>
     <string name="text_applyDarkThemeSummary">Bruk mørkt stilsett</string>
-    <string name="butn_allow">Tillat</string>
-    <string name="butn_telegram">Telegram-kanal</string>
-    <string name="text_listEmptyTransfer">Alle overføringer vises her</string>
-    <string name="text_transfers">Overføringer</string>
+    <string name="allow">Tillat</string>
+    <string name="butn_telegram_channel">Telegram-kanal</string>
+    <string name="empty_transfers_list">Alle overføringer vises her</string>
+    <string name="transfers">Overføringer</string>
     <string name="butn_connectionDetails">Tilkoblingsdetaljer</string>
     <string name="butn_useKnownDevice">Bruk kjente enheter</string>
-    <string name="butn_scanQrCode">Skann QR-kode</string>
+    <string name="scan_qr_code">Skann QR-kode</string>
     <string name="butn_useExistingNetwork">Bruk eksisterende nettverk</string>
     <string name="butn_feedbackContact">Tilbakemeldinger og kontakt</string>
-    <string name="mesg_sent">Sendt</string>
-    <string name="text_sendText">Send tekst</string>
-    <string name="butn_start">Start</string>
-    <string name="text_addDeviceHelp">Ved å legge til enheter, deler du de samme filene med flere enheter. Du vil bli
-        tatt tilbake til overføringen når det er gjort.
-    </string>
-    <string name="text_downloads">Nedlastinger</string>
-    <string name="text_documents">Dokumenter</string>
-    <string name="text_shortcuts">Snarveier</string>
-    <string name="text_recentFiles">Nylige filer</string>
+    <string name="send_success">Sendt</string>
+    <string name="send_text">Send tekst</string>
+    <string name="start">Start</string>
+    <string name="text_addDeviceHelp">Ved å legge til enheter, deler du de samme filene med flere enheter. Du vil bli tatt tilbake til overføringen når det er gjort.</string>
+    <string name="downloads">Nedlastinger</string>
+    <string name="documents">Dokumenter</string>
+    <string name="shortcuts">Snarveier</string>
+    <string name="recent_files">Nylige filer</string>
     <string name="butn_changeSavePath">Endre lagringssti</string>
     <string name="mesg_fileReceiveFilesLeftError">Klarte ikke å legge til noen filer.</string>
-    <string name="text_send">Send</string>
-    <string name="text_connectionHelp">Ta et valg i tilkoblingen til en annen enhet. For eksempel, hvis enheten viser en
-        QR-kode, bruk \"Skann QR-kode\"-valget.
-    </string>
+    <string name="sends">Send</string>
+    <string name="text_connectionHelp">Ta et valg i tilkoblingen til en annen enhet. For eksempel, hvis enheten viser en QR-kode, bruk \"Skann QR-kode\"-valget.</string>
     <string name="ques_needHelp">Trenger du en hjelpende hånd\?</string>
     <string name="text_connectionWizard">Tilkoblingsveiviser</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Har du akkurat satt opp ting på den andre enheten\?</string>
     <string name="ques_connectionWizardIsThereQRCode">Ser du en QR-kode (strekkkode) på dens skjerm\?</string>
-    <string name="ques_connectionWizardUseHotspot">Ønsker du at den andre enheten skal koble til denne enheten med
-        lokalt nettverk (tjudring)\? Hvis du ikke vet hva lokalt nettverk er, trykk for Ja.
-    </string>
-    <string name="ques_connectionWizardUseNetwork">Ønsker du å bruke din ruter eller et Wi-Fi-nettverk som du og din
-        venn har koblet dere til\?
-    </string>
+    <string name="ques_connectionWizardUseHotspot">Ønsker du at den andre enheten skal koble til denne enheten med lokalt nettverk (tjudring)\? Hvis du ikke vet hva lokalt nettverk er, trykk for Ja.</string>
+    <string name="ques_connectionWizardUseNetwork">Ønsker du å bruke din ruter eller et Wi-Fi-nettverk som du og din venn har koblet dere til\?</string>
     <string name="ques_connectionWizardUseKnownDevices">Ønsker du tilgang til tidligere kontaktede enheter\?</string>
-    <string name="butn_yes">Ja</string>
-    <string name="butn_no">Nei</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nei</string>
     <string name="text_loadThumbnails">Last inn miniatyrbilder</string>
     <string name="text_loadThumbnailsSummary">Vis miniatyrbilder for filer</string>
     <string name="text_manageDevices">Behandle enheter</string>
-    <string name="text_search">Søk</string>
-    <string name="mesg_wifiEnableFailed">Wi-Fi vil ikke skru seg på.</string>
-    <string name="mesg_turningWiFiOn">Skrur på Wi-Fi</string>
-    <string name="mesg_locationPermissionRequiredAny">Skru på plasseringstjeneste for å fortsette.</string>
+    <string name="enable_wifi_failure">Wi-Fi vil ikke skru seg på.</string>
+    <string name="turning_wifi_on_notice">Skrur på Wi-Fi</string>
+    <string name="location_permission_required_notice">Skru på plasseringstjeneste for å fortsette.</string>
     <string name="mesg_connectToWiFiNetworkHelp">Koble til et Wi-Fi-nettverk for å fortsette</string>
-    <string name="mesg_removing">Fjerner… Kan ta sin tid.</string>
-    <string name="butn_help">Hjelp</string>
-    <string name="butn_choose">Velg</string>
+    <string name="removing_notice">Fjerner… Kan ta sin tid.</string>
+    <string name="help">Hjelp</string>
+    <string name="choose">Velg</string>
     <string name="butn_fixConnection">Fiks tilkobling</string>
-    <string name="butn_never">Aldri</string>
-    <string name="text_hotspotStartedExternallyNotice">Det lokale trådløsnettet ble startet eksternt. For å bruke en
-        QR-kode, start det her.
-    </string>
+    <string name="never">Aldri</string>
+    <string name="externally_started_hotspot_notice">Det lokale trådløsnettet ble startet eksternt. For å bruke en QR-kode, start det her.</string>
     <string name="text_shortcut">Snarvei</string>
     <string name="butn_addShortcut">Legg til snarvei</string>
     <string name="butn_removeShortcut">Fjern snarvei</string>
-    <string name="mesg_removed">Fjernet</string>
-    <string name="mesg_added">Lagt til</string>
+    <string name="removal_success">Fjernet</string>
+    <string name="add_success">Lagt til</string>
     <string name="butn_change">Endre</string>
-    <string name="text_welcome">Velkommen</string>
-    <string name="text_introMakeItYours">Gjør det til ditt eget</string>
-    <string name="text_introSetUpPermissions">Sett opp tilganger</string>
-    <string name="text_introAllSet">Alt klart.</string>
-    <string name="text_introSetUpProfile">Sett opp profilen din.</string>
+    <string name="welcome">Velkommen</string>
+    <string name="introduction_personalize">Gjør det til ditt eget</string>
+    <string name="introduction_set_up_permissions">Sett opp tilganger</string>
+    <string name="introduction_finished">Alt klart.</string>
+    <string name="introduction_set_up_profile">Sett opp profilen din.</string>
     <string name="mesg_openFailure">Kan ikke vise \"%s\"</string>
     <string name="text_connectionTest">Tilkoblingstest - %s</string>
     <string name="butn_connectionTest">Tilkoblingstest</string>
-    <string name="text_textMillisecond">%d ms</string>
+    <string name="count_milliseconds_short">%d ms</string>
     <string name="butn_revokePin">Tilbakekall PIN</string>
-    <string name="const_text_useAppFonts">Bruk anbefalt skrift</string>
-    <string name="const_text_useAppFontsSummary">Bruk medfølgende tilpasset skrift</string>
-    <string name="mesg_waiting">Venter</string>
-    <string name="text_amoledOptimizedBlackTheme">Optimaliser for AMOLED-skjermer</string>
-    <string name="text_amoledOptimizedBlackThemeSummary">Bruk mørkere farger</string>
+    <string name="use_recommended_fonts">Bruk anbefalt skrift</string>
+    <string name="use_recommended_fonts_notice">Bruk medfølgende tilpasset skrift</string>
+    <string name="waiting">Venter</string>
+    <string name="theme_optimize">Optimaliser for AMOLED-skjermer</string>
+    <string name="theme_optimize_summary">Bruk mørkere farger</string>
     <string name="butn_enterIpAddress">Skriv inn IP-adresse</string>
-    <string name="butn_webShare">Del via nettleser</string>
+    <string name="web_share">Del via nettleser</string>
     <string name="butn_asApk">Som APK</string>
     <string name="butn_asLink">Som en lenke</string>
     <string name="text_linkTrebleshot">Del filer med TrebleShot. Last ned her: %s</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">eller</string>
-    <string name="text_visitWebShareAddress">Besøk denne lenken i din nettleser</string>
+    <string name="visit_using_browser_notice">Besøk denne lenken i din nettleser</string>
     <string name="text_dowloadTrebleshotAndroid">Last ned TrebleShot for Android</string>
-    <string name="text_listEmptyConnection">Nettverk du kobler til vises her</string>
+    <string name="empty_connections_list">Nettverk du kobler til vises her</string>
     <string name="mesg_errorNotAnIpAddress">Ikke en IP-adresse
-        \n(som f.eks. 192.168.1.2)
-    </string>
+\n(som f.eks. 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Del som APK eller lenke\?</string>
-    <string name="mesg_errorNotTrusted">Denne enheten må settes som TrustZone-enhet på mottakerenheten for å gjøre
-        dette.
-    </string>
+    <string name="mesg_errorNotTrustZoneDevice">Denne enheten må settes som TrustZone-enhet på mottakerenheten for å gjøre dette.</string>
     <string name="text_webShareNoContentNotice">Bruk \"Del på nettleser\"-valget for å se overføringer her.</string>
     <string name="butn_shareOnBrowser">Del på nettleser</string>
     <string name="butn_hideOnBrowser">Skjul på nettleser</string>
     <string name="text_transferSharedOnBrowser">Delt på nettleser</string>
-    <string name="text_webShareInfo">Nedenfor ser du lenkede enheter på samme nettverk du kan koble til med en
-        nettleser. Deretter slår du på nettdeling for overføringer individuelt.
-    </string>
+    <string name="text_webShareInfo">Nedenfor ser du lenkede enheter på samme nettverk du kan koble til med en nettleser. Deretter slår du på nettdeling for overføringer individuelt.</string>
     <string name="butn_downloadAllAsZip">Last ned alle som ZIP (én, komprimert)</string>
-    <string name="text_interfaceVPN">VPN-tjener</string>
-    <string name="text_unrecognizedQrCode">Ugjenkjent kode</string>
-    <string name="mesg_textStreamSaved">Tekst lagret</string>
+    <string name="vpn_interface">VPN-tjener</string>
+    <string name="unrecognized_qr_code_notice">Ugjenkjent kode</string>
+    <string name="save_text_success">Tekst lagret</string>
     <string name="butn_changeMode">Endre modus</string>
     <string name="mesg_qrScannerTextMode">QR-koder vil bli vist som tekst</string>
     <string name="mesg_qrScannerDefaultMode">Tilbake til forvalgte handlinger for QR-koder</string>
-    <string name="butn_showAsQrCode">Vis som QR-kode</string>
+    <string name="show_as_qr_code">Vis som QR-kode</string>
 </resources>

@@ -82,7 +82,7 @@ class ImageBrowserFragment : Fragment(R.layout.layout_image_browser) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyImage)
+        emptyView.emptyText.setText(R.string.empty_photos_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_photo_white_24dp)
         emptyView.executePendingBindings()
         imageAdapter.setHasStableIds(true)

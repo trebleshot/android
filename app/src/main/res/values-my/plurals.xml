@@ -9,16 +9,16 @@
     <plurals name="text_fileDeletionCompleted">
         <item quantity="other">ဖိုင် %d ခု ဖျက်ပြီးပါပြီ</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="other">%d မိနစ်ခန့်က</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="other">%d စက္ကန့်အကြာက</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="other">ဖိုင် %d ခု</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="other">ဖိုင် %d ခု လက်ခံမည်လား\?</item>
     </plurals>
     <plurals name="text_availableConnections">
@@ -30,10 +30,10 @@
     <plurals name="text_itemSelected">
         <item quantity="other">ဖိုင် %d ခု ရွေးထားသည်</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="other">ဖိုင် %d ခု ရရှိပြီးပါပြီ</item>
     </plurals>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="other">ဖိုင် %d ခု ကို ဖျက်လိုပါသလား\?</item>
     </plurals>
 </resources>

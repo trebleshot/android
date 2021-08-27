@@ -58,7 +58,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.IntroductionFragmentStateAdapter.PageItem
 import org.monora.uprotocol.client.android.app.Activity
@@ -102,16 +101,16 @@ class WelcomeActivity : Activity() {
 
         val adapter = IntroductionFragmentStateAdapter(this, supportFragmentManager, lifecycle)
 
-        adapter.add(PageItem(getString(R.string.text_welcome), IntroductionSplashFragment::class.java.name))
+        adapter.add(PageItem(getString(R.string.welcome), IntroductionSplashFragment::class.java.name))
 
         val permissionPosition = adapter.itemCount
         if (Build.VERSION.SDK_INT >= 23) adapter.add(
-            PageItem(getString(R.string.text_introSetUpPermissions), IntroductionPermissionFragment::class.java.name)
+            PageItem(getString(R.string.introduction_set_up_permissions), IntroductionPermissionFragment::class.java.name)
         )
 
-        adapter.add(PageItem(getString(R.string.text_introSetUpProfile), IntroductionProfileFragment::class.java.name))
-        adapter.add(PageItem(getString(R.string.text_introMakeItYours), IntroductionPrefsFragment::class.java.name))
-        adapter.add(PageItem(getString(R.string.text_introAllSet), IntroductionAllSetFragment::class.java.name))
+        adapter.add(PageItem(getString(R.string.introduction_set_up_profile), IntroductionProfileFragment::class.java.name))
+        adapter.add(PageItem(getString(R.string.introduction_personalize), IntroductionPrefsFragment::class.java.name))
+        adapter.add(PageItem(getString(R.string.introduction_finished), IntroductionAllSetFragment::class.java.name))
 
         progressBar.max = (adapter.itemCount - 1) * 100
 
@@ -280,16 +279,16 @@ class IntroductionPrefsFragment : PreferenceFragmentCompat() {
 
             val valueList: MutableList<String> = arrayListOf("light", "dark")
             val titleList: MutableList<String> = arrayListOf(
-                context.getString(R.string.text_lightTheme),
-                context.getString(R.string.text_darkTheme)
+                context.getString(R.string.light_theme),
+                context.getString(R.string.dark_theme)
             )
 
             if (Build.VERSION.SDK_INT >= 26) {
                 valueList.add("system")
-                titleList.add(context.getString(R.string.text_followSystemTheme))
+                titleList.add(context.getString(R.string.follow_system_theme))
             } else if (Build.VERSION.SDK_INT >= 21) {
                 valueList.add("battery")
-                titleList.add(context.getString(R.string.text_batterySaverTheme))
+                titleList.add(context.getString(R.string.battery_saver_theme))
             }
 
             themePreference.entries = titleList.toTypedArray()

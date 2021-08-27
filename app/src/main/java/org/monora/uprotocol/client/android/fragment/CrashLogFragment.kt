@@ -22,7 +22,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,9 +54,9 @@ class CrashLogFragment : BottomSheetDialogFragment() {
 
             copyButton.setOnClickListener {
                 val clipboardManager = it.context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.text_crashReport), report))
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.crash_report), report))
 
-                Toast.makeText(it.context, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show()
+                Toast.makeText(it.context, R.string.copy_text_to_clipboard_success, Toast.LENGTH_SHORT).show()
 
                 findNavController().navigateUp()
             }

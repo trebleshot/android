@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/receiveFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ReceiveFragment"
-        android:label="@string/text_receive">
+        android:label="@string/receive">
         <action
             android:id="@+id/pick_client"
             app:destination="@id/nav_pick_client">

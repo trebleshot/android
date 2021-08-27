@@ -20,7 +20,6 @@ package org.monora.uprotocol.client.android.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +47,7 @@ class SharedTextFragment : Fragment(R.layout.layout_shared_text) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_listEmptyTextStream)
+        emptyView.emptyText.setText(R.string.empty_writings_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_short_text_white_24dp)
         emptyView.executePendingBindings()
         adapter.setHasStableIds(true)

@@ -28,7 +28,7 @@
     <fragment
         android:id="@+id/transferHistoryFragment"
         android:name="org.monora.uprotocol.client.android.fragment.TransferHistoryFragment"
-        android:label="@string/text_transfer_history">
+        android:label="@string/transfer_history">
         <action
             android:id="@+id/action_transferHistoryFragment_to_nav_transfer_details"
             app:destination="@id/nav_transfer_details">
@@ -59,7 +59,7 @@
     <dialog
         android:id="@+id/changelogFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ChangelogFragment"
-        android:label="@string/text_changelog" />
+        android:label="@string/changelog" />
     <action
         android:id="@+id/action_global_changelogFragment"
         app:destination="@id/changelogFragment" />
@@ -70,7 +70,7 @@
     <dialog
         android:id="@+id/crashLogFragment"
         android:name="org.monora.uprotocol.client.android.fragment.CrashLogFragment"
-        android:label="@string/text_crashReport" />
+        android:label="@string/crash_report" />
     <action
         android:id="@+id/action_global_crashLogFragment"
         app:destination="@id/crashLogFragment" />

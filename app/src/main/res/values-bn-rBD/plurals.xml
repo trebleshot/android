@@ -1,33 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">এই ফাইল মুছতে চান\?</item>
         <item quantity="other">%dটি ফাইল মুছতে চান\?</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%dটি ফাইল গ্রহণ করা হয়েছে</item>
         <item quantity="other">%dটি ফাইল গ্রহণ করা হয়েছে</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d ফাইল নির্বাচন করা হয়েছে</item>
-        <item quantity="other">"%d ফাইলটি নির্বাচন করা হয়েছে"</item>
+        <item quantity="other">"%d ফাইলটি  নির্বাচন করা হয়েছে"</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
         <item quantity="one">এই মুলতুবি স্থানান্তর সরানো হবে</item>
@@ -37,25 +20,25 @@
         <item quantity="one">%d সংযোগ</item>
         <item quantity="other">%d সংযোগগুলি</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">এই ফাইলটি পাবেন\?</item>
         <item quantity="other">%d ফাইল পাবেন\?</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d ফাইল</item>
         <item quantity="other">%d ফাইলগুলো</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">এক সেকেন্ড আগে</item>
         <item quantity="other">%d সেকেন্ড আগে</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">এক মিনিট আগে</item>
         <item quantity="other">%d মিনিট আগে</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
         <item quantity="one">%d ফাইল মোছা হয়েছে</item>
-        <item quantity="other">"%d ফাইলগুলো মোছা হয়েছে"</item>
+        <item quantity="other">"%d ফাইলগুলো  মোছা হয়েছে"</item>
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">একক সারি</item>

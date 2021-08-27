@@ -12,15 +12,15 @@
         <item quantity="one">%d ಕಡತವನ್ನು ಅಳಿಸಲಾಗಿದೆ</item>
         <item quantity="other">%d ಕಡತಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">ಒಂದು ನಿಮಿಷದ ಹಿಂದೆ</item>
         <item quantity="other">%d ನಿಮಿಷಗಳ ಹಿಂದೆ</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">ಒಂದು ಸೆಕೆಂಡ್ ಹಿಂದೆ</item>
         <item quantity="other">%d ಸೆಕೆಂಡುಗಳ ಹಿಂದೆ</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">ಈ ಕಡತವನ್ನು ಸ್ವೀಕರಿಸುವುದೇ\?</item>
         <item quantity="other">%d ಕಡತಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದೇ\?</item>
     </plurals>
@@ -28,15 +28,15 @@
         <item quantity="one">%d ಕಡತ ಆಯ್ಕೆಯಾಗಿದೆ</item>
         <item quantity="other">%d ಕಡತಗಳು ಆಯ್ಕೆಯಾಗಿದೆ</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d ಕಡತವನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</item>
         <item quantity="other">%d ಕಡತಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</item>
     </plurals>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">ಈ ಕಡತವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ\?</item>
         <item quantity="other">%d ಕಡತಗಳನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ\?</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d ಕಡತ</item>
         <item quantity="other">%d ಕಡತಗಳು</item>
     </plurals>

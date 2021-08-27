@@ -12,11 +12,11 @@
         <item quantity="one">%d फाइल समाप्त कर दी गयी है</item>
         <item quantity="other">फाइलें समाप्त कर दी गयी हैं</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">एक मिनट पहले</item>
         <item quantity="other">%d मिनट पहले</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">एक सेकंड पहले</item>
         <item quantity="other">%d सेकंड पहले</item>
     </plurals>
@@ -24,7 +24,7 @@
         <item quantity="one">यह अपूर्ण ट्रांसफर समाप्त हो जाएगा</item>
         <item quantity="other">%d अपूर्ण ट्रांसफर समाप्त हो जाएंगे</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d फाइल</item>
         <item quantity="other">%d फाइलें</item>
     </plurals>
@@ -32,7 +32,7 @@
         <item quantity="one">%d संपर्क</item>
         <item quantity="other">%d संपर्क</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d फाइल प्राप्त हुई है</item>
         <item quantity="other">%d फाइलें प्राप्त हुई हैं</item>
     </plurals>
@@ -40,11 +40,11 @@
         <item quantity="one">%d फाइल चुनी हुई है</item>
         <item quantity="other">%d फाइलें चुनी हुई हैं</item>
     </plurals>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">क्या आप ये फ़ाइल हटाना चाहते हैं \?</item>
         <item quantity="other">क्या आप ये %d फ़ाइलें हटाना चाहते हैं \?</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">क्या यह फाइल प्राप्त की जाये\?</item>
         <item quantity="other">क्या %d फाइलें प्राप्त की जाये\?</item>
     </plurals>

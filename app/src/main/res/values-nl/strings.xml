@@ -1,25 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="text_navigationDrawerOpen">Navigatiemenu openen</string>
-    <string name="text_navigationDrawerClose">Navigatiemenu sluiten</string>
-    <string name="text_preferences">Instellingen</string>
+    <string name="app_name">TrebleShot</string>
+    <string name="open_navigation_drawer">Navigatiemenu openen</string>
+    <string name="close_navigation_drawer">Navigatiemenu sluiten</string>
+    <string name="preferences">Instellingen</string>
     <string name="mesg_loading">Bezig met laden…</string>
     <string name="text_unknownUser">Onbekende gebruiker</string>
     <string name="text_connected">Verbonden</string>
@@ -30,367 +14,323 @@
     <string name="text_deviceListEmpty">Geen apparaat</string>
     <string name="mesg_noNetwork">Een verbinding, zoals bijv. Wi-Fi, is benodigd om apparaten te kunnen vinden</string>
     <string name="mesg_scanningDevices">Bezig met zoeken naar apparaten</string>
-    <string name="ques_receiveFile">Wil je het bestand ontvangen?</string>
-    <string name="butn_accept">Accepteren</string>
-    <string name="butn_reject">Afwijzen</string>
-    <string name="text_taskOngoing">Lopende taak</string>
-    <string name="butn_stop">Stoppen</string>
-    <string name="text_sending">Bezig met versturen</string>
-    <string name="butn_cancelSending">Versturen annuleren</string>
-    <string name="text_receiving">Bezig met ontvangen</string>
-    <string name="butn_cancelReceiving">Ontvangen annuleren</string>
+    <string name="receive_file_question">Wil je het bestand ontvangen?</string>
+    <string name="accept">Accepteren</string>
+    <string name="reject">Afwijzen</string>
+    <string name="ongoing_task">Lopende taak</string>
+    <string name="stop">Stoppen</string>
+    <string name="sending">Bezig met versturen</string>
+    <string name="cancel_sending">Versturen annuleren</string>
+    <string name="receiving">Bezig met ontvangen</string>
+    <string name="cancel_receiving">Ontvangen annuleren</string>
     <string name="text_fileReceived">Het bestand is ontvangen</string>
     <string name="butn_scan">Scannen</string>
-    <string name="text_listEmpty">Geen items</string>
+    <string name="empty_list">Geen items</string>
     <string name="text_developerMode">Ontwikkelaarsmodus</string>
     <string name="text_developerModeSummary">Schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
-    <string name="text_deviceNameSummary">Deze naam wordt getoond op andere apparaten</string>
+    <string name="nickname_description">Deze naam wordt getoond op andere apparaten</string>
     <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
     <string name="mesg_formatNotSupported">Niet-ondersteund formaat</string>
-    <string name="mesg_fileSendError">Bestand kan niet worden verstuurd. %s</string>
+    <string name="send_file_failure">Bestand kan niet worden verstuurd. %s</string>
     <string name="mesg_fileSent">%s is verstuurd</string>
     <string name="mesg_fileSendCancelled">Het versturen van %s is geannuleerd</string>
     <string name="mesg_fileNameChanged">Bezig met opslaan als %s</string>
-    <string name="mesg_fileReceived">%s is ontvangen</string>
-    <string name="mesg_fileReceiveError">%s kan niet worden ontvangen.</string>
+    <string name="receive_file_success">%s is ontvangen</string>
+    <string name="receive_file_failure">%s kan niet worden ontvangen.</string>
     <string name="mesg_fileReceiveCancelled">Ontvangen van %s geannuleerd</string>
-    <string name="text_multipleFileReceiveCompleted">Bestanden ontvangen</string>
+    <string name="receive_files_success">Bestanden ontvangen</string>
     <string name="text_deviceList">Apparaten</string>
     <string name="text_fileOpenAppChoose">Openen met</string>
-    <string name="text_fileShareAppChoose">Kies een app om mee te delen</string>
-    <string name="text_receivedFiles">Ontvangen bestanden</string>
-    <string name="butn_edit">Bewerken</string>
-    <string name="butn_share">Delen</string>
-    <string name="butn_delete">Verwijderen</string>
-    <string name="text_deleteConfirm">Verwijderen bevestigen</string>
+    <string name="choose_sharing_app">Kies een app om mee te delen</string>
+    <string name="received_files">Ontvangen bestanden</string>
+    <string name="edit">Bewerken</string>
+    <string name="share">Delen</string>
+    <string name="delete">Verwijderen</string>
+    <string name="deletion_confirmation">Verwijderen bevestigen</string>
     <string name="mesg_deleteFileStarted">De bestanden worden verwijderd</string>
-    <string name="butn_cancel">Annuleren</string>
+    <string name="cancel">Annuleren</string>
     <string name="text_refresh">Verversen</string>
     <string name="butn_shareTrebleshot">Deze app delen</string>
-    <string name="text_about">Over</string>
+    <string name="about">Over</string>
     <string name="text_clearList">Lijst wissen</string>
     <string name="mesg_deviceListCleared">De apparaatlijst is gewist</string>
-    <string name="butn_close">Sluiten</string>
+    <string name="close">Sluiten</string>
     <string name="text_deviceModelInfo">Apparaatnaam</string>
     <string name="butn_clearQueue">Wachtrij leegmaken</string>
     <string name="text_pendingTransfersOfDevice">Wachtrij - %s</string>
     <string name="butn_pendingTransfers">Wachtrij</string>
     <string name="butn_shareWithTrebleshot">Delen met TrebleShot</string>
-    <string name="mesg_somethingWentWrong">Er is iets misgegaan</string>
+    <string name="unknown_failure">Er is iets misgegaan</string>
     <string name="text_findDevicesHint">Geen bekende apparaten</string>
     <string name="text_autoScanDevices">Automatisch zoeken naar apparaten</string>
     <string name="text_autoScanDevicesSummary">Zoekt, indien nodig, naar apparaten</string>
     <string name="mesg_stillScanning">Nog steeds bezig met scannen</string>
-    <string name="text_advanced">Geavanceerd</string>
-    <string name="text_storagePath">Opslagpad</string>
+    <string name="advanced">Geavanceerd</string>
+    <string name="storage_path">Opslagpad</string>
     <string name="text_storagePathSummary">Nieuwe bestanden worden opgeslagen in deze map</string>
     <string name="mesg_enteredPathNotRead">Het ingevoerde pad kan niet worden gebruikt</string>
-    <string name="mesg_pathUnavailable">%s is momenteel niet beschikbaar</string>
+    <string name="path_unavailable_notice">%s is momenteel niet beschikbaar</string>
     <string name="butn_showOnFileManager">Weergeven in bestandsbeheerder</string>
     <string name="text_chooseFileManager">Kies bestandsbeheerder</string>
     <string name="text_ipAddress">IP-adres</string>
     <string name="text_allowToConnect">Verbinden toestaan</string>
     <string name="text_connectionPermission">Verbindingsmachtiging</string>
     <string name="ques_allowDeviceToConnect">Wil je dit apparaat laten verbinden?</string>
-    <string name="mesg_stopping">Bezig met stoppen</string>
-    <string name="text_notification">Melding</string>
-    <string name="text_useSounds">Geluiden</string>
-    <string name="text_useSoundsSummary">Geluiden gebruiken</string>
-    <string name="text_useVibration">Trillen en meldingen</string>
-    <string name="text_useVibrationSummary">Trilling gebruiken en pop-upmeldingen tonen</string>
-    <string name="text_useLights">Meldingslampje</string>
-    <string name="text_useLightSummary">Meldingslampje gebruiken</string>
+    <string name="stopping">Bezig met stoppen</string>
+    <string name="notification">Melding</string>
+    <string name="notifications_use_sounds">Geluiden</string>
+    <string name="notifications_use_sounds_summary">Geluiden gebruiken</string>
+    <string name="notifications_use_vibration">Trillen en meldingen</string>
+    <string name="notifications_use_vibration_summary">Trilling gebruiken en pop-upmeldingen tonen</string>
+    <string name="notifications_use_lights">Meldingslampje</string>
+    <string name="notifications_use_lights_summary">Meldingslampje gebruiken</string>
     <string name="mesg_scanCompleted">Scannen voltooid</string>
     <string name="text_autoStart">Automatisch starten</string>
     <string name="text_autoStartSummary">Dienst starten zodra er een verbinding is gedetecteerd</string>
-    <string name="text_application">App</string>
-    <string name="text_image">Afbeelding</string>
-    <string name="text_music">Muziek</string>
-    <string name="text_video">Video</string>
-    <string name="text_showSystemApps">Systeemapps tonen</string>
-    <string name="text_showSystemAppsSummary">Systeemapps tonen in het menu \"Delen\"</string>
+    <string name="app">App</string>
+    <string name="photo">Afbeelding</string>
+    <string name="music">Muziek</string>
+    <string name="video">Video</string>
+    <string name="show_system_apps">Systeemapps tonen</string>
+    <string name="show_system_apps_summary">Systeemapps tonen in het menu \"Delen\"</string>
     <string name="butn_showSystemApps">Systeemapps tonen</string>
-    <string name="mesg_notAllowed">Je bent niet gemachtigd</string>
+    <string name="error_not_allowed">Je bent niet gemachtigd</string>
     <string name="mesg_connectionProblem">Verbindingsprobleem</string>
     <string name="text_communicationProblem">Communicatieprobleem</string>
-    <string name="butn_multiSelect">Meerdere selecteren</string>
-    <string name="butn_receive">Ontvangen</string>
-    <string name="butn_block">Blokkeren</string>
+    <string name="multi_selection">Meerdere selecteren</string>
+    <string name="receive">Ontvangen</string>
+    <string name="block">Blokkeren</string>
     <string name="text_aboutSummary">Deze software is ontwikkeld door de Genonbeta Libre Software Org</string>
-    <string name="butn_appLaunch">Starten</string>
-    <string name="ques_launchApplication">Wil je deze app starten?</string>
-    <string name="mesg_launchApplicationError">Deze app kan niet worden gestart</string>
-    <string name="text_enterText">Voer een tekst in…</string>
-    <string name="mesg_textCopiedToClipboard">Tekst gekopieerd naar klembord</string>
-    <string name="ques_copyToClipboard">Kopiëren naar klembord?</string>
-    <string name="text_textReceived">Tekst ontvangen</string>
-    <string name="text_receivedTextSummary">Klembordtekst ontvangen</string>
+    <string name="launch">Starten</string>
+    <string name="launch_question">Wil je deze app starten?</string>
+    <string name="launch_app_failure">Deze app kan niet worden gestart</string>
+    <string name="enter_text_notice">Voer een tekst in…</string>
+    <string name="copy_text_to_clipboard_success">Tekst gekopieerd naar klembord</string>
+    <string name="copy_to_clipboard">Kopiëren naar klembord?</string>
+    <string name="receive_text_success">Tekst ontvangen</string>
+    <string name="receive_text_summary_success">Klembordtekst ontvangen</string>
     <string name="butn_checkForUpdates">Controleren op updates</string>
     <string name="butn_seeSourceCode">Bekijk de broncode</string>
-    <string name="text_typeText">Schrijf een tekst…</string>
-    <string name="text_textEditor">Tekstbewerker</string>
-    <string name="butn_done">Afgerond</string>
-    <string name="text_empty">(leeg)</string>
+    <string name="type_text_notice">Schrijf een tekst…</string>
+    <string name="text_editor">Tekstbewerker</string>
+    <string name="done">Afgerond</string>
+    <string name="empty_text">(leeg)</string>
     <string name="text_textStream">Tekst delen</string>
-    <string name="butn_wifiSettings">Wi-Fi</string>
+    <string name="wifi_settings">Wi-Fi</string>
     <string name="text_pendingTransfers">Overdrachten in wachtrij</string>
     <string name="text_stopping">Bezig met stoppen!</string>
     <string name="text_cancellingTransfer">Bezig met annuleren van taak…</string>
     <string name="butn_killNow">Nu vernietigen</string>
     <string name="mesg_groupOngoingNotice">Bezig met wachten op %s alvorens het bestand over te dragen</string>
-    <string name="butn_proceed">Doorgaan</string>
-    <string name="ques_removeTransfer">Overdracht verwijderen?</string>
-    <string name="butn_remove">Verwijderen</string>
-    <string name="butn_removeAll">Alles verwijderen</string>
-    <string name="ques_removeDevice">Dit apparaat verwijderen?</string>
-    <string name="text_removeDeviceNotice">Als je een apparaat verwijdert, dan worden de bijbehorende overdrachten ook
-        verwijderd
-    </string>
-    <string name="text_removeTransferSummary">Dit verwijdert %s uit de wachtrij</string>
-    <string name="ques_removeAll">Alles verwijderen?</string>
-    <string name="text_removeTransferGroupSummary">Dit verwijdert alle overdrachten op deze lijst uit de wachtrij
-    </string>
+    <string name="proceed">Doorgaan</string>
+    <string name="ques_removeQueue">Overdracht verwijderen?</string>
+    <string name="remove">Verwijderen</string>
+    <string name="remove_all">Alles verwijderen</string>
+    <string name="remove_client_question">Dit apparaat verwijderen?</string>
+    <string name="remove_client_notice">Als je een apparaat verwijdert, dan worden de bijbehorende overdrachten ook verwijderd</string>
+    <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
+    <string name="remove_all_question">Alles verwijderen?</string>
+    <string name="text_removeCertainPendingTransfersSummary">Dit verwijdert alle overdrachten op deze lijst uit de wachtrij</string>
     <string name="text_availableNetworks">Geregistreerde netwerken - %s</string>
     <string name="text_noNetworkAvailable">Geen netwerk beschikbaar</string>
     <string name="mesg_deviceNotExits">De verstuurder bestaat niet meer in uw apparaatlijst</string>
     <string name="text_savedConnections">Opgeslagen verbindingen</string>
     <string name="text_newVersionAvailable">Nieuwe versie beschikbaar!</string>
     <string name="butn_goUp">Ga omhoog</string>
-    <string name="text_folder">Map</string>
-    <string name="mesg_organizingFiles">Bezig met organiseren van je bestanden</string>
+    <string name="folder">Map</string>
+    <string name="organizing_files_notice">Bezig met organiseren van je bestanden</string>
     <string name="mesg_communicating">Bezig met communiceren</string>
     <string name="text_clientService">Cliëntdienst</string>
     <string name="text_serverService">Serverdienst</string>
     <string name="text_communicationService">Communicatiedienst</string>
     <string name="text_chooserTargetService">Apparaatkiezer</string>
     <string name="text_transactionViewer">Overdracht bekijken</string>
-    <string name="text_error">Fout</string>
+    <string name="error">Fout</string>
     <string name="ques_why">Waarom?</string>
-    <string name="text_notAllowedHelp">Controleer of je gemachtigd bent op %1$s
-        \n
-        \nApparaten &gt; %2$s &gt; Verbinden toestaan &gt; (vink het aan)
-    </string>
-    <string name="butn_saveTo">Opslaan naar</string>
-    <string name="mesg_secureExit">Druk nogmaals om af te sluiten</string>
-    <string name="butn_create">Creëren</string>
-    <string name="text_createFolder">Map creëren</string>
-    <string name="mesg_fileAlreadyExists">Bestand bestaat al</string>
-    <string name="mesg_folderCreateError">De map kan niet worden gecreëerd</string>
-    <string name="text_requestPermissionStorageSummary">Deze machtiging geeft TrebleShot lees- en schrijfrechten op je
-        opslagruimte. Dit is nodig voor het ontvangen en delen van bestanden.
-    </string>
-    <string name="butn_settings">Instellingen</string>
+    <string name="text_notAllowedHelp">Controleer of je gemachtigd bent op %1$s 
+\n 
+\nApparaten &gt; %2$s &gt; Verbinden toestaan &gt; (vink het aan)</string>
+    <string name="save_to">Opslaan naar</string>
+    <string name="double_click_exit_notice">Druk nogmaals om af te sluiten</string>
+    <string name="create">Creëren</string>
+    <string name="create_folder">Map creëren</string>
+    <string name="error_file_already_exists">Bestand bestaat al</string>
+    <string name="create_folder_failure">De map kan niet worden gecreëerd</string>
+    <string name="storage_permission_summary">Deze machtiging geeft TrebleShot lees- en schrijfrechten op je opslagruimte. Dit is nodig voor het ontvangen en delen van bestanden.</string>
+    <string name="settings">Instellingen</string>
     <string name="butn_selectThis">Selecteer dit</string>
-    <string name="butn_newFile">Nieuw bestand</string>
+    <string name="new_file">Nieuw bestand</string>
     <string name="butn_keepFile">Behouden</string>
     <string name="text_fixFileSaveLocation">Opslaglocatie repareren</string>
-    <string name="text_fileConflictNoChoice">De map die u gekozen heeft voor het bestand %s is momenteel niet
-        beschikbaar en de huidige bestandsnaam conflicteert met een bestand in de standaard map. Als het een
-        gedeeltelijk ontvangen bestand betreft van hetzelfde bestand, selecteer dan \'Behouden\' of selecteer \'Nieuw
-        bestand\' om een nieuw bestand te genereren
-    </string>
-    <string name="text_fileConflictUseDefault">De map die u gekozen heeft voor het bestand %s is momenteel niet
-        beschikbaar. Ga door met de standaard map
-    </string>
+    <string name="text_fileConflictNoChoice">De map die u gekozen heeft voor het bestand %s is momenteel niet beschikbaar en de huidige bestandsnaam conflicteert met een bestand in de standaard map. Als het een gedeeltelijk ontvangen bestand betreft van hetzelfde bestand, selecteer dan \'Behouden\' of selecteer \'Nieuw bestand\' om een nieuw bestand te genereren</string>
+    <string name="text_fileConflictUseDefault">De map die u gekozen heeft voor het bestand %s is momenteel niet beschikbaar. Ga door met de standaard map</string>
     <string name="mesg_currentPathUnavailable">Deze map kan niet worden gebruikt</string>
-    <string name="text_defaultFolder">Standaardmap</string>
+    <string name="default_folder">Standaardmap</string>
     <string name="text_storage">Opslag</string>
     <string name="text_shareFiles">Bestanden ontvangen</string>
-    <string name="butn_refresh">Verversen</string>
-    <string name="mesg_pathSaved">De map is opgeslagen</string>
-    <string name="butn_search">Zoeken</string>
+    <string name="refresh">Verversen</string>
+    <string name="change_storage_path_success">De map is opgeslagen</string>
+    <string name="search">Zoeken</string>
     <string name="butn_changeConnection">Verbinding wijzigen</string>
-    <string name="text_fileName">Bestandsnaam</string>
-    <string name="text_fileSize">Bestandsgrootte</string>
-    <string name="text_fileMime">Bestandssoort</string>
-    <string name="text_fileStatus">Bestandsstatus</string>
-    <string name="butn_resume">Hervatten</string>
-    <string name="text_transactionDetails">Details</string>
+    <string name="file_name">Bestandsnaam</string>
+    <string name="file_size">Bestandsgrootte</string>
+    <string name="file_mime">Bestandssoort</string>
+    <string name="file_status">Bestandsstatus</string>
+    <string name="resume">Hervatten</string>
+    <string name="transfer_details">Details</string>
     <string name="text_fileExplorer">Bestandsverkenner</string>
     <string name="butn_createFolder">Map creëren</string>
-    <string name="text_chooseFolder">Map kiezen</string>
-    <string name="text_chooseFile">Bestand kiezen</string>
+    <string name="choose_folder">Map kiezen</string>
+    <string name="choose_file">Bestand kiezen</string>
     <string name="mesg_pathSameError">Je kunt de oude map niet selecteren</string>
     <string name="ques_checkOldFiles">Bestanden verplaatsen?</string>
-    <string name="text_checkOldFiles">Je kunt toegewezen voltooide en deels voltooide bestanden verplaatsen naar deze
-        map; dit kan, afhankelijk van de grootte, even duren
-    </string>
+    <string name="text_checkOldFiles">Je kunt toegewezen voltooide en deels voltooide bestanden verplaatsen naar deze map; dit kan, afhankelijk van de grootte, even duren</string>
     <string name="mesg_newFilesReceived">Nieuwe bestanden ontvangen</string>
-    <string name="butn_show">Tonen</string>
-    <string name="text_preparingFiles">Bezig met voorbereiden van bestanden</string>
-    <string name="text_savingDetails">Bezig met opslaan van gegevens</string>
-    <string name="text_version">Versie</string>
-    <string name="text_flagPending">In wachtrij</string>
-    <string name="text_flagRunning">Lopend</string>
-    <string name="text_flagInterrupted">Onderbroken</string>
+    <string name="show">Tonen</string>
+    <string name="preparing_files">Bezig met voorbereiden van bestanden</string>
+    <string name="saving_details">Bezig met opslaan van gegevens</string>
+    <string name="version">Versie</string>
+    <string name="pending">In wachtrij</string>
+    <string name="running">Lopend</string>
+    <string name="interrupted">Onderbroken</string>
     <string name="text_flagResume">Hervat</string>
-    <string name="text_unknown">Onbekend</string>
+    <string name="unknown">Onbekend</string>
     <string name="text_importantNotice">Belangrijke mededeling</string>
-    <string name="text_migrateNotice49">Bedankt voor het kiezen voor een open bron-applicatie en dat u helpt ons sterker
-        te maken. Lees dit bericht als u een oude versie heeft geüpdatet. Deze versie van TrebleShot kan niet
-        communiceren met apparaten die een oudere versie draaien. We hebben TrebleShot\'s communicatiemechanisme
-        bijgewerkt. Werk apparaten die een oudere versie draaien bij naar de nieuwste versie zodat TrebleShot goed kan
-        blijven werken.
-    </string>
-    <string name="text_longAgo">Lang geleden</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
-    <string name="text_interfaceWireless">Wi-Fi</string>
-    <string name="text_interfaceBluetooth">Bluetooth</string>
-    <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">Onbekende verbinding</string>
+    <string name="text_migrateNotice49">Bedankt voor het kiezen voor een open bron-applicatie en dat u helpt ons sterker te maken. Lees dit bericht als u een oude versie heeft geüpdatet. Deze versie van TrebleShot kan niet communiceren met apparaten die een oudere versie draaien. We hebben TrebleShot\'s communicatiemechanisme bijgewerkt. Werk apparaten die een oudere versie draaien bij naar de nieuwste versie zodat TrebleShot goed kan blijven werken.</string>
+    <string name="long_ago">Lang geleden</string>
+    <string name="wifi_direct">Wi-Fi Direct</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="unknown_interface">Onbekende verbinding</string>
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Een gokje wagen</string>
     <string name="butn_connectionList">Verbindingen</string>
-    <string name="text_automaticNetworkConnectionFailed">Alle verbindingen zijn mislukt; mogelijk is het adres
-        gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.
-    </string>
+    <string name="text_automaticNetworkConnectionFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot zal voor jou beslissen</string>
-    <string name="butn_retryReceiving">Alles opnieuw proberen</string>
-    <string name="butn_ask">Vragen</string>
+    <string name="retry_receiving">Alles opnieuw proberen</string>
+    <string name="ask">Vragen</string>
     <string name="text_permissionRequest">Machtigingsverzoek</string>
-    <string name="text_requestPermissionStorage">Opslagmachtiging</string>
+    <string name="storage_permission">Opslagmachtiging</string>
     <string name="text_requestPermissionReadPhoneState">Machtiging om telefoonstatus uit te lezen</string>
-    <string name="text_mediaDirectory">Mediamap</string>
-    <string name="text_emulatedMediaDirectory">Geëmuleerd (%s)</string>
-    <string name="mesg_notEnoughSpace">Onvoldoende ruimte</string>
+    <string name="media_directory">Mediamap</string>
+    <string name="emulated_media_directory">Geëmuleerd (%s)</string>
+    <string name="insufficient_space_notice">Onvoldoende ruimte</string>
     <string name="text_totalIncomingSize">Totale grootte van inkomende bestanden</string>
     <string name="text_totalOutgoingSize">Totale grootte van uitgaande bestanden</string>
     <string name="text_availableDiskSpace">Beschikbare schijfruimte</string>
     <string name="text_savePath">Opslagpad</string>
     <string name="text_transactionGroupDetails">Details van overdrachtsgroep</string>
     <string name="text_usedConnection">Gebruikte verbinding</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot heeft toegang nodig tot het serienummer van je
-        apparaat, zodat er een langetermijnsnummer kan worden gecreëerd. Dit helpt andere apparaten om jouw apparaat te
-        herkennen.
-    </string>
-    <string name="text_flagRemoved">Verwijderd</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot heeft toegang nodig tot het serienummer van je apparaat, zodat er een langetermijnsnummer kan worden gecreëerd. Dit helpt andere apparaten om jouw apparaat te herkennen.</string>
+    <string name="removed">Verwijderd</string>
     <string name="butn_copyToClipboard">Kopiëren naar klembord</string>
-    <string name="text_communicationServiceRunning">TrebleShot kan nu bestanden delen</string>
+    <string name="service_running_notice">TrebleShot kan nu bestanden delen</string>
     <string name="text_communicationServiceStop">Raak aan om sessie te beëindigen</string>
     <string name="text_reaminingTime">Verwacht over %s</string>
-    <string name="butn_showFiles">Bestanden tonen</string>
-    <string name="text_remainingTime">Afgerond over %s</string>
-    <string name="butn_trustDevice">Instellen als TrustZone-apparaat</string>
+    <string name="show_files">Bestanden tonen</string>
+    <string name="remaining_time">Afgerond over %s</string>
+    <string name="butn_trustZoneDevice">Instellen als TrustZone-apparaat</string>
     <string name="butn_turnTrustZoneOn">TrustZone inschakelen</string>
     <string name="butn_turnTrustZoneOff">TrustZone uitschakelen</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
     <string name="text_trustZoneEnabledSummary">TrustZone wordt automatisch opgestart</string>
     <string name="butn_typeNewEntry">Nieuwe invoer</string>
-    <string name="butn_download">Downloaden</string>
-    <string name="mesg_clipboardUpdateNotice">Werk de tekst bij of druk opnieuw om af te sluiten</string>
-    <string name="mesg_textSaveNotice">Sla de tekst op of druk opnieuw om af te sluiten</string>
-    <string name="butn_update">Bijwerken</string>
-    <string name="butn_save">Opslaan</string>
+    <string name="download">Downloaden</string>
+    <string name="update_clipboard_notice">Werk de tekst bij of druk opnieuw om af te sluiten</string>
+    <string name="save_clipboard_notice">Sla de tekst op of druk opnieuw om af te sluiten</string>
+    <string name="update">Bijwerken</string>
+    <string name="save">Opslaan</string>
     <string name="mesg_textShareLimit">Er kan slechts één tekst per keer worden gedeeld</string>
-    <string name="text_timeJustNow">Zojuist</string>
+    <string name="just_now">Zojuist</string>
     <string name="mesg_providerNotAllowedError">De standaardmap is ontoegankelijk voor andere apps</string>
-    <string name="mesg_errorHotspotPermission">TrebleShot moet worden gemachtigd om een hotspot te creëren</string>
+    <string name="error_hotspot_needs_permission">TrebleShot moet worden gemachtigd om een hotspot te creëren</string>
     <string name="text_trebleshotHotspot">TrebleShot-hotspot</string>
-    <string name="butn_connect">Verbinden</string>
-    <string name="butn_disconnect">Verbinding verbreken</string>
-    <string name="text_trebleshotHotspotDescription">Je kunt bestanden direct versturen via dit openbare netwerk dat
-        gecreëerd is door een TrebleShot-apparaat.
-    </string>
+    <string name="connect">Verbinden</string>
+    <string name="disconnect">Verbinding verbreken</string>
+    <string name="text_trebleshotHotspotDescription">Je kunt bestanden direct versturen via dit openbare netwerk dat gecreëerd is door een TrebleShot-apparaat.</string>
     <string name="mesg_connectingToSelfHotspot">Bezig met verbinden met TrebleShot-hotspot</string>
-    <string name="mesg_warningHotspotMobileActive">Gekoppelde apparaten kunnen je mobiel internet gebruiken; mogelijk
-        wil je dit uitschakelen.
-    </string>
-    <string name="butn_skip">Overslaan</string>
+    <string name="set_up_hotspot_mobile_data_notice">Gekoppelde apparaten kunnen je mobiel internet gebruiken; mogelijk wil je dit uitschakelen.</string>
+    <string name="skip">Overslaan</string>
     <string name="mesg_scanningSelfHotspot">Bezig met zoeken naar TrebleShot-hotspot</string>
     <string name="mesg_suggestSelfHotspot">Je kunt Wi-Fi inschakelen om te zoeken naar een TrebleShot-hotspot</string>
-    <string name="butn_enable">Inschakelen</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">TrebleShot machtigen om hotspots te creëren en te zoeken
-    </string>
-    <string name="butn_locationSettings">Locatie</string>
-    <string name="mesg_locationDisabledSelfHotspot">Schakel de locatiedienst in om scanresultaten te zien en een hotspot
-        te creëren
-    </string>
+    <string name="enable">Inschakelen</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">TrebleShot machtigen om hotspots te creëren en te zoeken</string>
+    <string name="location_settings">Locatie</string>
+    <string name="mesg_locationDisabledSelfHotspot">Schakel de locatiedienst in om scanresultaten te zien en een hotspot te creëren</string>
     <string name="mesg_scanningDevicesSelfHotspot">Bezig met zoeken naar apparaten via TrebleShot-hotspot</string>
-    <string name="mesg_stoppingSelfHotspot">Bezig met uitschakelen van TrebleShot-hotspot</string>
-    <string name="mesg_startingSelfHotspot">Bezig met inschakelen van TrebleShot-hotspot</string>
+    <string name="starting_hotspot_notice">Bezig met uitschakelen van TrebleShot-hotspot</string>
+    <string name="stopping_hotspot_notice">Bezig met inschakelen van TrebleShot-hotspot</string>
     <string name="text_shareWithTrebleshot">@string/butn_shareWithTrebleshot</string>
-    <string name="butn_check">Alles controleren</string>
-    <string name="butn_uncheck">Alles ongedaan maken</string>
+    <string name="check">Alles controleren</string>
+    <string name="uncheck">Alles ongedaan maken</string>
     <string name="text_previewAndEditList">Voorvertonen en bewerken</string>
     <string name="text_uncheckedItemsNotice">Ongemarkeerde items zullen worden overgeslagen</string>
     <string name="text_fileRoot">Hoofdmap</string>
-    <string name="mesg_versionNotSupported">Werk de app bij naar een ondersteunde versie en zoek dan opnieuw naar
-        apparaten.
-    </string>
-    <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
+    <string name="client_not_supported_notice">Werk de app bij naar een ondersteunde versie en zoek dan opnieuw naar apparaten.</string>
+    <string name="text_versionNotSupported">@string/client_not_supported_notice</string>
     <string name="mesg_connectionUpdated">De communicatie loopt over de verbinding \"%s\"</string>
     <string name="mesg_ongoingUpdateDownload">Bezig met downloaden van nieuwe versie</string>
     <string name="butn_gotIt">Ik begrijp het</string>
     <string name="mesg_helpFolderSelection">Druk op een mappictogram om deze te selecteren</string>
-    <string name="mesg_hotspotCreatedInfo">Maak verbinding met \"%s\" in de \"Wi-Fi-instellingen\" of verstuur bestanden
-        via \"%s\" binnen TrebleShot
-    </string>
-    <string name="butn_selectAll">Alles selecteren</string>
-    <string name="butn_selectNone">Niks selecteren</string>
-    <string name="butn_previewSelections">Selectievoorbeeld</string>
+    <string name="mesg_hotspotCreatedInfo">Maak verbinding met \"%s\" in de \"Wi-Fi-instellingen\" of verstuur bestanden via \"%s\" binnen TrebleShot</string>
+    <string name="select_all">Alles selecteren</string>
+    <string name="select_none">Niks selecteren</string>
+    <string name="preview_selections">Selectievoorbeeld</string>
     <string name="mesg_deviceConnectionError">De verbinding met \"%s\" via \"%s\" is mislukt</string>
-    <string name="mesg_retryReceivingNotice">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen
-    </string>
+    <string name="retry_receiving_notice">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Kies eerst de verbindingsmethode</string>
-    <string name="butn_setUp">Instellen</string>
-    <string name="text_location">Neplocatie</string>
+    <string name="set_up">Instellen</string>
+    <string name="location">Neplocatie</string>
     <string name="butn_saveAnyway">Tóch opslaan</string>
-    <string name="text_receivedSize">Grootte bij ontvangen</string>
+    <string name="received_size">Grootte bij ontvangen</string>
     <string name="mesg_notValidTransfer">Overdracht is verlopen</string>
     <string name="ques_saveAnyway">Tóch opslaan?</string>
-    <string name="text_saveAnywaySummary">De afzender weet niet meer waar het bestand is, maar je kunt het nog steeds
-        opslaan
-    </string>
-    <string name="mesg_fileSaved">Bestand opgeslagen</string>
-    <string name="butn_sortBy">Sorteren op</string>
-    <string name="butn_sortOrder">Sorteervolgorde</string>
-    <string name="text_sortOrderAscending">Oplopend↑</string>
-    <string name="text_sortOrderDescending">Aflopend↓</string>
-    <string name="text_sortByName">Naam</string>
-    <string name="text_sortByDate">Datum</string>
-    <string name="text_sortBySize">Grootte</string>
-    <string name="text_trustZoneDeviceNotice">Accepteert inkomende items automatisch als TrustZone is ingeschakeld
-    </string>
+    <string name="text_saveAnywaySummary">De afzender weet niet meer waar het bestand is, maar je kunt het nog steeds opslaan</string>
+    <string name="save_file_success">Bestand opgeslagen</string>
+    <string name="sort_by">Sorteren op</string>
+    <string name="sort_order">Sorteervolgorde</string>
+    <string name="ascending">Oplopend↑</string>
+    <string name="descending">Aflopend↓</string>
+    <string name="name">Naam</string>
+    <string name="date">Datum</string>
+    <string name="size">Grootte</string>
+    <string name="text_trustZoneDeviceNotice">Accepteert inkomende items automatisch als TrustZone is ingeschakeld</string>
     <string name="text_allowingToConnectNotice">Verbindingen van dit apparaat toestaan</string>
     <string name="butn_resetToDefault">Standaardwaarden herstellen</string>
-    <string name="ques_resetToDefault">Standaardwaarden herstellen?</string>
-    <string name="text_resetPreferencesToDefaultSummary">Dit herstelt de standaard instellingen</string>
+    <string name="preferences_reset">Standaardwaarden herstellen?</string>
+    <string name="preferences_reset_notice">Dit herstelt de standaard instellingen</string>
     <string name="text_workerService">Werkdienst</string>
     <string name="text_taskCompleted">Taak afgerond</string>
-    <string name="text_deletingFilesOngoing">Bezig met verwijderen van geselecteerde bestanden</string>
+    <string name="deleting_files_notice">Bezig met verwijderen van geselecteerde bestanden</string>
     <string name="text_networkServiceDiscovery">NSD inschakelen</string>
-    <string name="text_networkServiceDiscoverySummary">Network Service Discovery verbetert de vindbaarheid van je
-        apparaat
-    </string>
-    <string name="text_notificationChannelHigh">Belangrijke meldingen</string>
-    <string name="text_notificationChannelLow">Lage prioriteitsmeldingen</string>
-    <string name="text_receivedTransfer">%s ontvangen in %s</string>
-    <string name="text_yearCountShort">%d jaar</string>
-    <string name="text_monthCountShort">%d maand</string>
-    <string name="text_dayCountShort">%d dag</string>
-    <string name="text_hourCountShort">%d uur</string>
-    <string name="text_minuteCountShort">%d minuten</string>
-    <string name="text_secondCountShort">%d seconden</string>
-    <string name="butn_exit">Afsluiten</string>
+    <string name="text_networkServiceDiscoverySummary">Network Service Discovery verbetert de vindbaarheid van je apparaat</string>
+    <string name="high_priority_notifications">Belangrijke meldingen</string>
+    <string name="low_priority_notifications">Lage prioriteitsmeldingen</string>
+    <string name="receive_success_summary">%s ontvangen in %s</string>
+    <string name="count_years_short">%d jaar</string>
+    <string name="count_months_short">%d maand</string>
+    <string name="count_days_short">%d dag</string>
+    <string name="count_hours_short">%d uur</string>
+    <string name="count_minutes_short">%d minuten</string>
+    <string name="count_seconds_short">%d seconden</string>
+    <string name="exit">Afsluiten</string>
     <string name="butn_queueCounted">Wachtrij (%d)</string>
-    <string name="text_previewThenProceedNotice">Controleer je selecties door te drukken op de knop \"Wachtrij\" en ga
-        daarna door
-    </string>
-    <string name="mesg_updateDownloadComplete">Bijgewerkt bestand ontvangen en opgeslagen in je ontvangen bestanden
-    </string>
-    <string name="text_listEmptyFiles">Geen bestanden</string>
-    <string name="text_listEmptyImage">Geen foto\'s</string>
-    <string name="text_listEmptyApp">Geen apps</string>
-    <string name="text_listEmptyVideo">Geen video\'s</string>
+    <string name="text_previewThenProceedNotice">Controleer je selecties door te drukken op de knop \"Wachtrij\" en ga daarna door</string>
+    <string name="mesg_updateDownloadComplete">Bijgewerkt bestand ontvangen en opgeslagen in je ontvangen bestanden</string>
+    <string name="empty_files_list">Geen bestanden</string>
+    <string name="empty_photos_list">Geen foto\'s</string>
+    <string name="empty_apps_list">Geen apps</string>
+    <string name="empty_video_list">Geen video\'s</string>
     <string name="text_listEmptyPendingTransfer">Overdrachten in de wachtrij zullen hier verschijnen</string>
-    <string name="text_listEmptyTextStream">Teksten zullen hier verschijnen</string>
-    <string name="text_listEmptyMusic">Geen muziek</string>
-    <string name="text_internalStorage">Interne opslag</string>
+    <string name="empty_writings_list">Teksten zullen hier verschijnen</string>
+    <string name="empty_music_list">Geen muziek</string>
+    <string name="internal_storage">Interne opslag</string>
     <string name="text_restrictedAccessStorage">%s (beperkte toegang)</string>
-    <string name="text_emptySearchResult">Geen resultate gevonden voor \"%s\"</string>
+    <string name="empty_search_result_summary">Geen resultate gevonden voor \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">De lijst zal worden ververst zodra deze beschikbaar is</string>
-    <string name="mesg_errorReadFolder">Geen toegang tot \"%s\"</string>
+    <string name="access_failure_notice">Geen toegang tot \"%s\"</string>
     <string name="butn_mountDirectory">Map aankoppelen</string>
     <string name="mesg_mountDirectoryHelp">Kies de te verkennen map</string>
     <string name="butn_ejectDirectory">Map afkoppelen</string>
@@ -398,20 +338,20 @@
     <string name="mesg_wifiEnableRequired">Schakel Wi-Fi in om te kunnen verbinden</string>
     <string name="text_hotspotStartsTrustZone">De Hotspot schakelt tevens TrustZone in</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
-    <string name="text_qrCodeAvailableHelp">Scan deze code om te delen en apparaten te verbinden</string>
+    <string name="scan_qr_code_notice">Scan deze code om te delen en apparaten te verbinden</string>
     <string name="text_qrCodeHotspotDisabledHelp">Stel een hotspot in zodat anderen met je kunnen verbinden</string>
-    <string name="help_scanQRCode">Scan de QR-code op het scherm van de afzender</string>
+    <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de afzender</string>
     <string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
     <string name="butn_qrToggle">QR-code tonen/verbergen</string>
-    <string name="text_notificationSettingsSummary">Meldingsinstellingen openen</string>
-    <string name="text_notificationSettings">Meldingsinstellingen</string>
+    <string name="notification_settings_summary">Meldingsinstellingen openen</string>
+    <string name="notification_settings">Meldingsinstellingen</string>
     <string name="text_renameMultipleItems">Meerdere itemnamen wijzigen</string>
-    <string name="text_rename">Naam wijzigen</string>
+    <string name="rename">Naam wijzigen</string>
     <string name="butn_rename">Naam wijzigen</string>
-    <string name="butn_copyHere">Hierheen kopiëren</string>
+    <string name="copy_here">Hierheen kopiëren</string>
     <string name="text_qrAllowTrustZone">TrustZone voor QR-code</string>
     <string name="text_qrAllowTrustZoneSummary">TrustZone toestaan voor QR-codeverbindingen</string>
-    <string name="text_translateTrebleshot">Help mee met de vertaling</string>
+    <string name="help_translate">Help mee met de vertaling</string>
     <string name="text_contributors">Mogelijk gemaakt door</string>
     <string name="butn_gridSize">Rastergrootte</string>
     <string name="butn_singleRow">Enkele rij</string>
@@ -422,164 +362,139 @@
     <string name="text_groupByAlbum">Album</string>
     <string name="text_groupByArtist">Artiest</string>
     <string name="text_groupByFolder">Map</string>
-    <string name="text_home">Persoonlijk</string>
+    <string name="home">Persoonlijk</string>
     <string name="text_default">Standaard</string>
-    <string name="text_files">Bestanden</string>
+    <string name="files">Bestanden</string>
     <string name="mesg_noReceiverOrSender">Je moet eerst apparaten toevoegen</string>
     <string name="butn_addDevices">Apparaten toevoegen</string>
     <string name="text_connectDevices">Apparaten verbinden</string>
     <string name="text_network">Netwerk</string>
     <string name="text_connect">Verbinden</string>
-    <string name="butn_shareWithOtherApps">Delen met andere apps</string>
-    <string name="butn_startHotspot">Hotspot instellen</string>
-    <string name="butn_stopHotspot">Hotspot uitschakelen</string>
+    <string name="share_with_other_apps">Delen met andere apps</string>
+    <string name="start_hotspot">Hotspot instellen</string>
+    <string name="stop_hotspot">Hotspot uitschakelen</string>
     <string name="text_easyDiscoveryHelp">Scan dit als beide apparaten zich op hetzelfde netwerk bevinden</string>
     <string name="text_scanQRWifiRequired">Schakel Wi-Fi in om te verbinden met apparaten</string>
-    <string name="mesg_completing">Bezig met afronden</string>
+    <string name="completing">Bezig met afronden</string>
     <string name="mesg_errorNotSameNetwork">De apparaten bevinden zich niet op hetzelfde netwerk</string>
-    <string name="text_cameraPermissionRequired">Cameramachtiging vereist</string>
+    <string name="camera_permission_notice">Cameramachtiging vereist</string>
     <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
-    <string name="text_file">Bestand</string>
+    <string name="file">Bestand</string>
     <string name="text_noDeviceForTransfer">Geen apparaat toegevoegd voor deze overdracht</string>
-    <string name="text_thirdPartyLibraries">Bibliotheken van derde partijen</string>
+    <string name="third_party_libraries">Bibliotheken van derde partijen</string>
     <string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
     <string name="text_killServiceAfterLeaving">Dienst stoppen als app wordt afgesloten</string>
     <string name="butn_donate">Steun de ontwikkeling</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d van %2d</string>
-    <string name="text_donate">Steun de ontwikkeling</string>
-    <string name="mesg_donationSuccessful">Bedankt!</string>
+    <string name="donate">Steun de ontwikkeling</string>
+    <string name="donation_success">Bedankt!</string>
     <string name="msg">Doneren</string>
-    <string name="butn_open">Openen</string>
-    <string name="butn_pause">Pauzeren</string>
-    <string name="butn_retry">Opnieuw</string>
-    <string name="mesg_noPendingTransferObjectExists">Geen taken meer in de wachtrij. Gebruik de optie \'Opnieuw\' om
-        onderbroken bestanden te hervatten.
-    </string>
-    <string name="mesg_notSavingToChosenLocation">De voorkeursmap is ontoegankelijk; bestanden worden opgeslagen in de
-        standaardmap.
-        \n
-        \n %s
-    </string>
+    <string name="open">Openen</string>
+    <string name="pause">Pauzeren</string>
+    <string name="retry">Opnieuw</string>
+    <string name="interrupted_left_notice">Geen taken meer in de wachtrij. Gebruik de optie \'Opnieuw\' om onderbroken bestanden te hervatten.</string>
+    <string name="storage_path_unavailable_notice">De voorkeursmap is ontoegankelijk; bestanden worden opgeslagen in de standaardmap.
+\n 
+\n %s</string>
     <string name="butn_changelog">Wijzigingslog</string>
-    <string name="text_changelog">Wijzigingslog</string>
-    <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt. Wil je het wijzigingslog bekijken\?
-    </string>
-    <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie
-        \'Over\'
-    </string>
+    <string name="changelog">Wijzigingslog</string>
+    <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt. Wil je het wijzigingslog bekijken\?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie \'Over\'</string>
     <string name="mesg_noInternetConnection">Internetverbinding vereist</string>
     <string name="text_applyDarkTheme">Donker thema</string>
     <string name="text_applyDarkThemeSummary">Donker thema gebruiken</string>
-    <string name="butn_allow">Toestaan</string>
-    <string name="butn_telegram">Telegram-kanaal</string>
-    <string name="text_listEmptyTransfer">Alle overdrachten verschijnen hier</string>
-    <string name="text_transfers">Overdrachten</string>
+    <string name="allow">Toestaan</string>
+    <string name="butn_telegram_channel">Telegram-kanaal</string>
+    <string name="empty_transfers_list">Alle overdrachten verschijnen hier</string>
+    <string name="transfers">Overdrachten</string>
     <string name="butn_connectionDetails">Verbindingsgegevens</string>
     <string name="butn_useKnownDevice">Bekende apparaten gebruiken</string>
-    <string name="butn_scanQrCode">QR-code scannen</string>
+    <string name="scan_qr_code">QR-code scannen</string>
     <string name="butn_useExistingNetwork">Bestaande netwerken gebruiken</string>
     <string name="butn_feedbackContact">Feedback &amp; Contact</string>
-    <string name="mesg_sent">Verstuurd</string>
-    <string name="text_sendText">Tekst versturen</string>
-    <string name="butn_start">Starten</string>
-    <string name="text_addDeviceHelp">Door apparaten toe te voegen kun je dezelfde bestanden delen met meerdere
-        apparaten. Na afloop keer je terug naar het overdrachtsscherm.
-    </string>
-    <string name="text_downloads">Downloads</string>
-    <string name="text_documents">Documenten</string>
-    <string name="text_shortcuts">Snelkoppelingen</string>
-    <string name="text_recentFiles">Recente bestanden</string>
+    <string name="send_success">Verstuurd</string>
+    <string name="send_text">Tekst versturen</string>
+    <string name="start">Starten</string>
+    <string name="text_addDeviceHelp">Door apparaten toe te voegen kun je dezelfde bestanden delen met meerdere apparaten. Na afloop keer je terug naar het overdrachtsscherm.</string>
+    <string name="downloads">Downloads</string>
+    <string name="documents">Documenten</string>
+    <string name="shortcuts">Snelkoppelingen</string>
+    <string name="recent_files">Recente bestanden</string>
     <string name="butn_changeSavePath">Opslagpad wijzigen</string>
     <string name="mesg_fileReceiveFilesLeftError">Kan sommige bestanden niet ontvangen</string>
-    <string name="text_send">Versturen</string>
-    <string name="text_connectionHelp">Kies een optie om het andere apparaat te koppelen. Als het andere apparaat bijv.
-        een QR-code toont, kies dan de optie \'QR-code scannen\'.
-    </string>
+    <string name="sends">Versturen</string>
+    <string name="text_connectionHelp">Kies een optie om het andere apparaat te koppelen. Als het andere apparaat bijv. een QR-code toont, kies dan de optie \'QR-code scannen\'.</string>
     <string name="ques_needHelp">Hulp nodig\?</string>
     <string name="text_connectionWizard">Verbindingshulp</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Heb je alles net ingesteld op het andere apparaat\?</string>
     <string name="ques_connectionWizardIsThereQRCode">Zie je een QR-code (barcode) op het andere scherm\?</string>
-    <string name="ques_connectionWizardUseHotspot">Wil je het andere apparaat koppelen aan dit apparaat middels een
-        hotspot (tethering)\? Als je niet weet wat een hotspot is, druk dan op Ja.
-    </string>
-    <string name="ques_connectionWizardUseNetwork">Wil je je router of een Wi-Fi-netwerk gebruiken waar zowel jij als de
-        ander mee verbonden zijn\?
-    </string>
-    <string name="ques_connectionWizardUseKnownDevices">Wil je de lijst met eerder gekoppelde apparaten bekijken\?
-    </string>
-    <string name="butn_yes">Ja</string>
-    <string name="butn_no">Nee</string>
+    <string name="ques_connectionWizardUseHotspot">Wil je het andere apparaat koppelen aan dit apparaat middels een hotspot (tethering)\? Als je niet weet wat een hotspot is, druk dan op Ja.</string>
+    <string name="ques_connectionWizardUseNetwork">Wil je je router of een Wi-Fi-netwerk gebruiken waar zowel jij als de ander mee verbonden zijn\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">Wil je de lijst met eerder gekoppelde apparaten bekijken\?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nee</string>
     <string name="text_loadThumbnails">Miniatuurvoorbeelden laden</string>
     <string name="text_loadThumbnailsSummary">Miniatuurvoorbeelden van bestanden tonen</string>
     <string name="text_manageDevices">Apparaten beheren</string>
-    <string name="text_search">Zoeken</string>
-    <string name="mesg_wifiEnableFailed">Wi-Fi kan niet worden ingeschakeld.</string>
-    <string name="mesg_turningWiFiOn">Bezig met inschakelen van Wi-Fi</string>
-    <string name="mesg_locationPermissionRequiredAny">Schakel de locatiedienst in om door te gaan</string>
+    <string name="enable_wifi_failure">Wi-Fi kan niet worden ingeschakeld.</string>
+    <string name="turning_wifi_on_notice">Bezig met inschakelen van Wi-Fi</string>
+    <string name="location_permission_required_notice">Schakel de locatiedienst in om door te gaan</string>
     <string name="mesg_connectToWiFiNetworkHelp">Maak verbinding met een Wi-Fi-netwerk om door te gaan</string>
-    <string name="mesg_removing">Bezig met verwijderen... dit kan lang duren</string>
-    <string name="butn_help">Hulp</string>
-    <string name="butn_choose">Kiezen</string>
+    <string name="removing_notice">Bezig met verwijderen... dit kan lang duren</string>
+    <string name="help">Hulp</string>
+    <string name="choose">Kiezen</string>
     <string name="butn_fixConnection">Verbinding repararen</string>
-    <string name="butn_never">Nooit</string>
-    <string name="text_hotspotStartedExternallyNotice">De hotspot is via extern gestart. Om de QR-code te gebruiken,
-        moet je de hotspot hier starten.
-    </string>
+    <string name="never">Nooit</string>
+    <string name="externally_started_hotspot_notice">De hotspot is via extern gestart. Om de QR-code te gebruiken, moet je de hotspot hier starten.</string>
     <string name="text_shortcut">Snelkoppeling</string>
     <string name="butn_addShortcut">Snelkoppeling toevoegen</string>
     <string name="butn_removeShortcut">Snelkoppeling verwijderen</string>
-    <string name="mesg_removed">Verwijderd</string>
-    <string name="mesg_added">Toegevoegd</string>
+    <string name="removal_success">Verwijderd</string>
+    <string name="add_success">Toegevoegd</string>
     <string name="butn_change">Wijzigen</string>
-    <string name="text_welcome">Welkom</string>
-    <string name="text_introMakeItYours">Maak het eigen</string>
-    <string name="text_introSetUpPermissions">Stel de machtigingen in</string>
-    <string name="text_introAllSet">Ingesteld!</string>
-    <string name="text_introSetUpProfile">Stel je profiel in</string>
+    <string name="welcome">Welkom</string>
+    <string name="introduction_personalize">Maak het eigen</string>
+    <string name="introduction_set_up_permissions">Stel de machtigingen in</string>
+    <string name="introduction_finished">Ingesteld!</string>
+    <string name="introduction_set_up_profile">Stel je profiel in</string>
     <string name="mesg_openFailure">Kan \"%s\" niet bekijken</string>
     <string name="text_connectionTest">Verbindingstest - %s</string>
     <string name="butn_connectionTest">Verbindingstest</string>
-    <string name="text_textMillisecond">%d ms</string>
+    <string name="count_milliseconds_short">%d ms</string>
     <string name="butn_revokePin">Pincode intrekken</string>
-    <string name="const_text_useAppFonts">Aanbevolen lettertype toepassen</string>
-    <string name="const_text_useAppFontsSummary">Meegeleverd aangepast lettertype gebruiken</string>
-    <string name="mesg_waiting">Bezig met wachten...</string>
-    <string name="text_amoledOptimizedBlackTheme">Optimaliseren voor AMOLED-schermen</string>
-    <string name="text_amoledOptimizedBlackThemeSummary">Donkerder kleuren gebruiken</string>
-    <string name="mesg_errorNotTrusted">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende
-        apparaat.
-    </string>
+    <string name="use_recommended_fonts">Aanbevolen lettertype toepassen</string>
+    <string name="use_recommended_fonts_notice">Meegeleverd aangepast lettertype gebruiken</string>
+    <string name="waiting">Bezig met wachten...</string>
+    <string name="theme_optimize">Optimaliseren voor AMOLED-schermen</string>
+    <string name="theme_optimize_summary">Donkerder kleuren gebruiken</string>
+    <string name="mesg_errorNotTrustZoneDevice">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende apparaat.</string>
     <string name="butn_enterIpAddress">IP-adres invoeren</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
-    <string name="butn_webShare">Delen via browser</string>
-    <string name="text_webShare">@string/butn_webShare</string>
-    <string name="text_webShareNoContentNotice">Gebruik de optie \'Delen via browser\' om hier overdrachten te zien!
-    </string>
+    <string name="web_share">Delen via browser</string>
+    <string name="text_webShare">@string/web_share</string>
+    <string name="text_webShareNoContentNotice">Gebruik de optie \'Delen via browser\' om hier overdrachten te zien!</string>
     <string name="butn_shareOnBrowser">Delen via browser</string>
     <string name="butn_hideOnBrowser">Verbergen via browser</string>
     <string name="text_transferSharedOnBrowser">Gedeeld via browser</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">of</string>
-    <string name="text_visitWebShareAddress">Open deze link in je browser</string>
-    <string name="text_webShareInfo">Schakel delen via internet in voor individuele overdrachten en bezoek één van de
-        onderstaande links via een apparaat dat verbonden is met hetzelfde netwerk.
-    </string>
+    <string name="visit_using_browser_notice">Open deze link in je browser</string>
+    <string name="text_webShareInfo">Schakel delen via internet in voor individuele overdrachten en bezoek één van de onderstaande links via een apparaat dat verbonden is met hetzelfde netwerk.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot voor Android</string>
-    <string name="text_listEmptyConnection">Hier verschijnen netwerken waarmee je bent verbonden</string>
+    <string name="empty_connections_list">Hier verschijnen netwerken waarmee je bent verbonden</string>
     <string name="mesg_errorNotAnIpAddress">Geen IP-adres
-        \n(zoals 192.168.1.2)
-    </string>
+\n(zoals 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Wil je de APK delen of een link\?</string>
     <string name="butn_asApk">APK delen</string>
     <string name="butn_asLink">Link delen</string>
     <string name="text_linkTrebleshot">Deel bestanden via TrebleShot! Download de app: %s</string>
     <string name="butn_downloadAllAsZip">Alles downloaden als ZIP-bestand (één bestand, zonder compressie)</string>
-    <string name="text_interfaceVPN">VPN-server</string>
-    <string name="text_unrecognizedQrCode">Niet-herkende code</string>
-    <string name="mesg_textStreamSaved">Tekst opgeslagen</string>
+    <string name="vpn_interface">VPN-server</string>
+    <string name="unrecognized_qr_code_notice">Niet-herkende code</string>
+    <string name="save_text_success">Tekst opgeslagen</string>
     <string name="butn_changeMode">Modus wijzigen</string>
     <string name="mesg_qrScannerTextMode">QR-codes worden getoond als tekst</string>
     <string name="mesg_qrScannerDefaultMode">Terug naar standaardacties voor QR-codes</string>
-    <string name="butn_showAsQrCode">Tonen als QR-code</string>
+    <string name="show_as_qr_code">Tonen als QR-code</string>
 </resources>

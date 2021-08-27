@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:ellipsize="end"
-            android:hint="@string/text_typeText"
+            android:hint="@string/type_text_notice"
             android:inputType="textMultiLine"
             android:overScrollMode="never"
             android:padding="16dp" />

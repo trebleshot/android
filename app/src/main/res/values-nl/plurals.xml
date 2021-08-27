@@ -1,68 +1,51 @@
-<?xml version='1.0' encoding='UTF-8'?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <plurals name="ques_deleteFile">
-        <item quantity="one">Wil je dit bestand verwijderen?</item>
-        <item quantity="other">Wil je %d bestanden verwijderen?</item>
-    </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">Er is %d bestand ontvangen</item>
-        <item quantity="other">Er zijn %d bestanden ontvangen</item>
-    </plurals>
+    <plurals name="delete_files_question">
+	<item quantity="one">Wil je dit bestand verwijderen?</item>
+	<item quantity="other">Wil je %d bestanden verwijderen?</item>
+</plurals>
+    <plurals name="receive_files_success_summary">
+	<item quantity="one">Er is %d bestand ontvangen</item>
+	<item quantity="other">Er zijn %d bestanden ontvangen</item>
+</plurals>
     <plurals name="text_itemSelected">
-        <item quantity="one">Er is %d bestand geselecteerd</item>
-        <item quantity="other">Er zijn %d bestanden geselecteerd</item>
-    </plurals>
+	<item quantity="one">Er is %d bestand geselecteerd</item>
+	<item quantity="other">Er zijn %d bestanden geselecteerd</item>
+</plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="one">Deze overdracht in de wachtrij worden verwijderd</item>
-        <item quantity="other">%d overdrachten in de wachtrij worden verwijderd</item>
-    </plurals>
+	<item quantity="one">Deze overdracht in de wachtrij worden verwijderd</item>
+	<item quantity="other">%d overdrachten in de wachtrij worden verwijderd</item>
+</plurals>
     <plurals name="text_availableConnections">
-        <item quantity="one">%d verbinding</item>
-        <item quantity="other">%d verbindingen</item>
-    </plurals>
-    <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">Wil je dit bestand ontvangen?</item>
-        <item quantity="other">Wil je %d bestanden ontvangen?</item>
-    </plurals>
-    <plurals name="text_files">
-        <item quantity="one">%d bestand</item>
-        <item quantity="other">%d bestanden</item>
-    </plurals>
-    <plurals name="text_secondsAgo">
-        <item quantity="one">Eén seconde geleden</item>
-        <item quantity="other">%d seconden geleden</item>
-    </plurals>
-    <plurals name="text_minutesAgo">
-        <item quantity="one">Eén minuut geleden</item>
-        <item quantity="other">%d minuten geleden</item>
-    </plurals>
-    <plurals name="text_fileDeletionCompleted">
-        <item quantity="one">Er is %d bestand verwijderd</item>
-        <item quantity="other">Er zijn %d bestanden verwijderd</item>
-    </plurals>
-    <plurals name="text_gridRow">
-        <item quantity="one">Enkele rij</item>
-        <item quantity="other">%d rijen</item>
-    </plurals>
-    <plurals name="text_devicesShared">
-        <item quantity="one">Wordt gedeeld met 1 apparaat</item>
-        <item quantity="other">Wordt gedeeld met %d apparaten</item>
-    </plurals>
+	<item quantity="one">%d verbinding</item>
+	<item quantity="other">%d verbindingen</item>
+</plurals>
+    <plurals name="receive_files_question">
+	<item quantity="one">Wil je dit bestand ontvangen?</item>
+	<item quantity="other">Wil je %d bestanden ontvangen?</item>
+</plurals>
+<plurals name="files">
+	<item quantity="one">%d bestand</item>
+	<item quantity="other">%d bestanden</item>
+</plurals>
+    <plurals name="seconds_ago">
+	<item quantity="one">Eén seconde geleden</item>
+	<item quantity="other">%d seconden geleden</item>
+</plurals>
+    <plurals name="minutes_ago">
+	<item quantity="one">Eén minuut geleden</item>
+	<item quantity="other">%d minuten geleden</item>
+</plurals>
+<plurals name="text_fileDeletionCompleted">
+	<item quantity="one">Er is %d bestand verwijderd</item>
+	<item quantity="other">Er zijn %d bestanden verwijderd</item>
+</plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Enkele rij</item>
+	<item quantity="other">%d rijen</item>
+</plurals>
+<plurals name="text_devicesShared">
+	<item quantity="one">Wordt gedeeld met 1 apparaat</item>
+	<item quantity="other">Wordt gedeeld met %d apparaten</item>
+</plurals>
 </resources>

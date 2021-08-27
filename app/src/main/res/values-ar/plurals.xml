@@ -16,7 +16,7 @@
         <item quantity="many">تم حذف %d ملف</item>
         <item quantity="other">تم حذف %d ملف</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="zero">منذ دقيقة</item>
         <item quantity="one">منذ دقيقة واحدة</item>
         <item quantity="two">منذ دقيقتان</item>
@@ -24,7 +24,7 @@
         <item quantity="many">منذ %d دقيقة</item>
         <item quantity="other">منذ %d دقيقة</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="zero">منذ ثانية</item>
         <item quantity="one">منذ ثانية</item>
         <item quantity="two">منذ ثانيتان</item>
@@ -32,7 +32,7 @@
         <item quantity="many">منذ %d ثانية</item>
         <item quantity="other">منذ %d ثانية</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="zero">ملف واحد</item>
         <item quantity="one">ملف واحد</item>
         <item quantity="two">ملفين</item>
@@ -40,7 +40,7 @@
         <item quantity="many">%d ملف</item>
         <item quantity="other">%d ملف</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="zero">هل تتلقى هذا الملف؟</item>
         <item quantity="one">هل تريد تلقى هذا الملف؟</item>
         <item quantity="two">هل تريد تلقى هذا الملفين؟</item>
@@ -64,7 +64,7 @@
         <item quantity="many">ستتم إزالة %d مهمة معلقة</item>
         <item quantity="other">ستتم إزالة %d مهمة معلقة</item>
     </plurals>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="zero">هل تريد حذف هذا الملف؟</item>
         <item quantity="one">هل تريد حذف هذا الملف؟</item>
         <item quantity="two">هل تريد حذف هذا الملف؟</item>

@@ -12,19 +12,19 @@
         <item quantity="one">%d ഫയല്‍ നീക്കം ചെയ്തു</item>
         <item quantity="other">%d ഫയലുകള്‍ നീക്കം ചെയ്തു</item>
     </plurals>
-    <plurals name="text_minutesAgo">
+    <plurals name="minutes_ago">
         <item quantity="one">ഒരു മിനുട്ട് മുന്‍പ്</item>
         <item quantity="other">%d മിനുട്ടുകള്‍ക്ക് മുന്‍പ്</item>
     </plurals>
-    <plurals name="text_secondsAgo">
+    <plurals name="seconds_ago">
         <item quantity="one">ഒരു സെക്കന്‍ഡ് മുന്‍പ്</item>
         <item quantity="other">%d സെക്കന്‍ഡുകള്‍ക്ക് മുന്‍പ്</item>
     </plurals>
-    <plurals name="text_files">
+    <plurals name="files">
         <item quantity="one">%d ഫയല്‍</item>
         <item quantity="other">%d ഫയലുകള്‍</item>
     </plurals>
-    <plurals name="ques_receiveMultipleFiles">
+    <plurals name="receive_files_question">
         <item quantity="one">ഈ ഫയല്‍ സ്വീകരിക്കട്ടെ\?</item>
         <item quantity="other">%d ഫയലുകള്‍ സ്വീകരിക്കട്ടെ\?</item>
     </plurals>
@@ -40,11 +40,11 @@
         <item quantity="one">%d ഫയല്‍ തിരഞ്ഞെടുത്തു</item>
         <item quantity="other">%d ഫയലുകള്‍ തിരഞ്ഞെടുത്തു</item>
     </plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
+    <plurals name="receive_files_success_summary">
         <item quantity="one">%d ഫയല്‍ സ്വീകരിച്ചു</item>
         <item quantity="other">%d ഫയലുകള്‍ സ്വീകരിച്ചു</item>
     </plurals>
-    <plurals name="ques_deleteFile">
+    <plurals name="delete_files_question">
         <item quantity="one">നിങ്ങള്‍ക്ക് ഈ ഫയല്‍ നീക്കം ചെയ്യണോ\?</item>
         <item quantity="other">നിങ്ങള്‍ക്ക് %d ഫയലുകള്‍ നീക്കം ചെയ്യണോ\?</item>
     </plurals>

@@ -57,7 +57,7 @@ class PickClientFragment : Fragment(R.layout.layout_clients) {
         val emptyContentViewModel = EmptyContentViewModel()
 
         emptyView.viewModel = emptyContentViewModel
-        emptyView.emptyText.setText(R.string.text_noClientList)
+        emptyView.emptyText.setText(R.string.empty_clients_list)
         emptyView.emptyImage.setImageResource(R.drawable.ic_devices_white_24dp)
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter

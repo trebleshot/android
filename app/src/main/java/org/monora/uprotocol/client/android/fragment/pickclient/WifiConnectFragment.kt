@@ -75,7 +75,7 @@ class WifiConnectFragment : BottomSheetDialogFragment() {
 
                 if (clipboardManager != null) {
                     val clipData = ClipData(
-                        ClipDescription(getString(R.string.text_wifiPassword), arrayOf("text/plain")),
+                        ClipDescription(getString(R.string.wifi_password), arrayOf("text/plain")),
                         ClipData.Item(args.networkDescription.password)
                     )
                     clipboardManager.setPrimaryClip(clipData)

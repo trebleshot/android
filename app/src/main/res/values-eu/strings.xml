@@ -1,349 +1,308 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="text_navigationDrawerOpen">Ireki nabigazioaren tiradera</string>
-    <string name="text_navigationDrawerClose">Itxi nabigazioaren tiradera</string>
-    <string name="text_preferences">Hobespenak</string>
+    <string name="open_navigation_drawer">Ireki nabigazioaren tiradera</string>
+    <string name="close_navigation_drawer">Itxi nabigazioaren tiradera</string>
+    <string name="preferences">Hobespenak</string>
     <string name="mesg_connectionFailure">Konexioak huts egin du</string>
     <string name="text_notAvailable">Eskuraezina</string>
     <string name="text_deviceListEmpty">Gailurik ez</string>
     <string name="mesg_noNetwork">Ez dago Wi-Fi edo antzeko konexiorik inguruko gailuak aurkitzeko</string>
     <string name="mesg_scanningDevices">Inguruko gailuen bila</string>
-    <string name="ques_receiveFile">Jaso fitxategia?</string>
-    <string name="butn_accept">Onartu</string>
-    <string name="butn_reject">Ukatu</string>
-    <string name="butn_stop">Gelditu</string>
-    <string name="text_sending">Bidaltzen</string>
-    <string name="butn_cancelSending">Eten bidalketa</string>
-    <string name="text_receiving">Jasotzen</string>
-    <string name="butn_cancelReceiving">Ezeztatu jasotzea</string>
+    <string name="receive_file_question">Jaso fitxategia?</string>
+    <string name="accept">Onartu</string>
+    <string name="reject">Ukatu</string>
+    <string name="stop">Gelditu</string>
+    <string name="sending">Bidaltzen</string>
+    <string name="cancel_sending">Eten bidalketa</string>
+    <string name="receiving">Jasotzen</string>
+    <string name="cancel_receiving">Ezeztatu jasotzea</string>
     <string name="text_fileReceived">Fitxategia jaso da</string>
-    <string name="mesg_fileReceived">%s jaso da</string>
+    <string name="receive_file_success">%s jaso da</string>
     <string name="butn_scan">Eskaneatu</string>
-    <string name="text_listEmpty">Elementurik ez</string>
+    <string name="empty_list">Elementurik ez</string>
     <string name="text_developerMode">Garatzaile modua</string>
     <string name="text_developerModeSummary">Erabiltzailearen konfigurazioa desgaitzen du</string>
     <string name="text_deviceName">Gailuaren izena</string>
-    <string name="text_deviceNameSummary">Izen hau beste gailuetan erakutsiko da</string>
+    <string name="nickname_description">Izen hau beste gailuetan erakutsiko da</string>
     <string name="text_deviceNameTitle">Sartu izen bat gailuarentzat</string>
     <string name="mesg_formatNotSupported">Onartu gabeko formatua</string>
-    <string name="mesg_fileSendError">Fitxategia ezin izan da bidali. %s</string>
-    <string name="mesg_fileReceiveError">Ezin izan da jaso %s.</string>
-    <string name="text_multipleFileReceiveCompleted">Fitxategiak jasota</string>
+    <string name="send_file_failure">Fitxategia ezin izan da bidali. %s</string>
+    <string name="receive_file_failure">Ezin izan da jaso %s.</string>
+    <string name="receive_files_success">Fitxategiak jasota</string>
     <string name="text_deviceList">Gailuak</string>
     <string name="text_fileOpenAppChoose">Ireki honekin</string>
-    <string name="text_fileShareAppChoose">Hautatu aplikazioa partekatzeko</string>
-    <string name="ques_resetToDefault">Berrezarri lehenetsitakoa?</string>
-    <string name="text_receivedFiles">Jasotako fitxategiak</string>
-    <string name="butn_edit">Editatu</string>
-    <string name="butn_share">Partekatu</string>
-    <string name="butn_delete">Ezabatu</string>
-    <string name="text_deleteConfirm">Berretsi ezabatzea</string>
-    <string name="butn_cancel">Utzi</string>
+    <string name="choose_sharing_app">Hautatu aplikazioa partekatzeko</string>
+    <string name="preferences_reset">Berrezarri lehenetsitakoa?</string>
+    <string name="received_files">Jasotako fitxategiak</string>
+    <string name="edit">Editatu</string>
+    <string name="share">Partekatu</string>
+    <string name="delete">Ezabatu</string>
+    <string name="deletion_confirmation">Berretsi ezabatzea</string>
+    <string name="cancel">Utzi</string>
     <string name="text_refresh">Freskatu</string>
-    <string name="butn_refresh">Freskatu</string>
+    <string name="refresh">Freskatu</string>
     <string name="butn_shareTrebleshot">Partekatu aplikazio hau</string>
-    <string name="text_about">Honi buruz</string>
-    <string name="butn_close">Itxi</string>
+    <string name="about">Honi buruz</string>
+    <string name="close">Itxi</string>
     <string name="text_deviceModelInfo">Gailuaren izena</string>
     <string name="butn_clearQueue">Garbitu ilara</string>
     <string name="text_pendingTransfersOfDevice">Ilaran zain - %s</string>
     <string name="butn_pendingTransfers">Ilara</string>
     <string name="butn_shareWithTrebleshot">Partekatu TrebleShot erabiliz</string>
-    <string name="mesg_somethingWentWrong">Zerbait okertu da</string>
+    <string name="unknown_failure">Zerbait okertu da</string>
     <string name="text_findDevicesHint">Ez dago gailu ezagunik</string>
     <string name="text_autoScanDevices">Eskaneatu gailuak automatikoki</string>
     <string name="text_autoScanDevicesSummary">Eskaneatu gailuak behar denean</string>
     <string name="mesg_stillScanning">Oraindik eskaneatzen</string>
-    <string name="text_advanced">Aurreratua</string>
-    <string name="text_storagePath">Biltegiratze bidea</string>
+    <string name="advanced">Aurreratua</string>
+    <string name="storage_path">Biltegiratze bidea</string>
     <string name="text_storagePathSummary">Fitxategi berriak karpeta honetan gordeko dira</string>
-    <string name="mesg_pathUnavailable">%s orain eskuraezina</string>
+    <string name="path_unavailable_notice">%s orain eskuraezina</string>
     <string name="text_ipAddress">IP helbidea</string>
     <string name="text_allowToConnect">Baimendu konektatzea</string>
     <string name="text_connectionPermission">Konektatzeko baimena</string>
     <string name="ques_allowDeviceToConnect">Baimendu gailu honi konektatzea?</string>
-    <string name="mesg_stopping">Gelditzen</string>
-    <string name="text_notification">Jakinarazpena</string>
-    <string name="text_useSounds">Soinuak</string>
-    <string name="text_useSoundsSummary">Erabili soinuak</string>
-    <string name="text_useVibration">Bibrazioa eta abisuen jakinarazpenak</string>
-    <string name="text_useVibrationSummary">Erabili bibrazioa eta erakutsi abisuen jakinarazpenak</string>
-    <string name="text_useLights">Argiak</string>
-    <string name="text_useLightSummary">Erabili argiak</string>
+    <string name="stopping">Gelditzen</string>
+    <string name="notification">Jakinarazpena</string>
+    <string name="notifications_use_sounds">Soinuak</string>
+    <string name="notifications_use_sounds_summary">Erabili soinuak</string>
+    <string name="notifications_use_vibration">Bibrazioa eta abisuen jakinarazpenak</string>
+    <string name="notifications_use_vibration_summary">Erabili bibrazioa eta erakutsi abisuen jakinarazpenak</string>
+    <string name="notifications_use_lights">Argiak</string>
+    <string name="notifications_use_lights_summary">Erabili argiak</string>
     <string name="mesg_scanCompleted">Eskaneatzea burututa</string>
     <string name="text_autoStart">Hasi automatikoki</string>
     <string name="text_autoStartSummary">Gaitu komunikazioa konexioa antzematean</string>
-    <string name="text_application">Aplikazioa</string>
-    <string name="text_image">Irudia</string>
-    <string name="text_music">Musika</string>
-    <string name="text_video">Bideoa</string>
-    <string name="text_showSystemApps">Erakutsi sistemako aplikazioak</string>
-    <string name="text_showSystemAppsSummary">Erakutsi sistemako aplikazioak \"partekatu\" atalean</string>
+    <string name="app">Aplikazioa</string>
+    <string name="photo">Irudia</string>
+    <string name="music">Musika</string>
+    <string name="video">Bideoa</string>
+    <string name="show_system_apps">Erakutsi sistemako aplikazioak</string>
+    <string name="show_system_apps_summary">Erakutsi sistemako aplikazioak \"partekatu\" atalean</string>
     <string name="butn_showSystemApps">Erakutsi sistemako aplikazioak</string>
-    <string name="mesg_notAllowed">Ez duzu baimenik</string>
+    <string name="error_not_allowed">Ez duzu baimenik</string>
     <string name="mesg_connectionProblem">Konexio arazoa</string>
     <string name="text_communicationProblem">Komunikazio arazoa</string>
-    <string name="butn_multiSelect">Hautaketa anitza</string>
-    <string name="butn_receive">Jaso</string>
-    <string name="butn_block">Blokeatu</string>
+    <string name="multi_selection">Hautaketa anitza</string>
+    <string name="receive">Jaso</string>
+    <string name="block">Blokeatu</string>
     <string name="text_aboutSummary">Software hau Genonbeta Libre Software erakundeak garatu du</string>
-    <string name="butn_appLaunch">Abiatu</string>
-    <string name="ques_launchApplication">Aplikazio hau abiatu nahi duzu?</string>
-    <string name="mesg_launchApplicationError">Aplikazio hau ezin da abiatu</string>
-    <string name="text_enterText">Sartu testua hemen…</string>
-    <string name="mesg_textCopiedToClipboard">Testua arbelera kopiatuta</string>
-    <string name="ques_copyToClipboard">Kopiatu arbelera?</string>
-    <string name="text_textReceived">Testua jasota</string>
-    <string name="text_receivedTextSummary">Arbeleko testua jasota</string>
+    <string name="launch">Abiatu</string>
+    <string name="launch_question">Aplikazio hau abiatu nahi duzu?</string>
+    <string name="launch_app_failure">Aplikazio hau ezin da abiatu</string>
+    <string name="enter_text_notice">Sartu testua hemen…</string>
+    <string name="copy_text_to_clipboard_success">Testua arbelera kopiatuta</string>
+    <string name="copy_to_clipboard">Kopiatu arbelera?</string>
+    <string name="receive_text_success">Testua jasota</string>
+    <string name="receive_text_summary_success">Arbeleko testua jasota</string>
     <string name="butn_checkForUpdates">Egiaztatu bertsio berririk dagoen</string>
     <string name="butn_seeSourceCode">Ikusi iturburu kodea</string>
-    <string name="text_typeText">Idatzi zerbait bidaltzeko…</string>
-    <string name="text_textEditor">Testu editorea</string>
-    <string name="butn_done">Egina</string>
-    <string name="text_empty">(hutsik)</string>
+    <string name="type_text_notice">Idatzi zerbait bidaltzeko…</string>
+    <string name="text_editor">Testu editorea</string>
+    <string name="done">Egina</string>
+    <string name="empty_text">(hutsik)</string>
     <string name="text_textStream">Testu jarioa</string>
-    <string name="butn_wifiSettings">Wi-Fi</string>
+    <string name="wifi_settings">Wi-Fi</string>
     <string name="text_pendingTransfers">Transferentziak bukatzeke</string>
     <string name="text_stopping">Gelditzen!</string>
     <string name="text_cancellingTransfer">Lana ezeztatzen…</string>
     <string name="butn_killNow">Hil orain</string>
     <string name="mesg_groupOngoingNotice">%s bukatu dezan itxaroten fitxategi hau igorri aurretik</string>
-    <string name="butn_proceed">Jarraitu</string>
-    <string name="ques_removeTransfer">Kendu transferentzia?</string>
-    <string name="butn_remove">Kendu</string>
-    <string name="butn_removeAll">Kendu denak</string>
-    <string name="ques_removeDevice">Kendu gailu hau?</string>
-    <string name="text_removeDeviceNotice">Gailu bat kentzean, bere transferentziak ere kenduko dira</string>
-    <string name="text_removeTransferSummary">Honek %s ilaratik kenduko du</string>
-    <string name="ques_removeAll">Kendu dena?</string>
-    <string name="text_removeTransferGroupSummary">Honek hemen ikusten dituzun eta betetzeke dauden transferentzia
-        guztiak kenduko ditu
-    </string>
+    <string name="proceed">Jarraitu</string>
+    <string name="ques_removeQueue">Kendu transferentzia?</string>
+    <string name="remove">Kendu</string>
+    <string name="remove_all">Kendu denak</string>
+    <string name="remove_client_question">Kendu gailu hau?</string>
+    <string name="remove_client_notice">Gailu bat kentzean, bere transferentziak ere kenduko dira</string>
+    <string name="text_removePendingTransferSummary">Honek %s ilaratik kenduko du</string>
+    <string name="remove_all_question">Kendu dena?</string>
+    <string name="text_removeCertainPendingTransfersSummary">Honek hemen ikusten dituzun eta betetzeke dauden transferentzia guztiak kenduko ditu</string>
     <string name="text_availableNetworks">Hautatu sarea - %s</string>
     <string name="text_noNetworkAvailable">Ez dago sarerik eskuragarri</string>
     <string name="text_savedConnections">Gordetako konexioak</string>
     <string name="text_newVersionAvailable">Bertsio berria eskuragarri!</string>
     <string name="butn_goUp">Gora</string>
-    <string name="text_folder">Karpeta</string>
-    <string name="mesg_organizingFiles">Fitxategiak antolatzea</string>
+    <string name="folder">Karpeta</string>
+    <string name="organizing_files_notice">Fitxategiak antolatzea</string>
     <string name="mesg_communicating">Komunikatzea</string>
     <string name="text_communicationService">Komunikazio zerbitzua</string>
     <string name="text_chooserTargetService">Gailuaren aukeren hornitzailea</string>
     <string name="text_transactionViewer">Ikusi transakzioa</string>
-    <string name="text_error">Errorea</string>
+    <string name="error">Errorea</string>
     <string name="ques_why">Zergatik?</string>
-    <string name="text_notAllowedHelp">"Egiaztatu baimenik duzun hemen: %1$s
-        \n
-        \nGailuak &gt; %2$s &gt; Baimendu konektatzea? &gt; (markatu ezazu)"
-    </string>
-    <string name="butn_saveTo">Gorde hona</string>
-    <string name="mesg_secureExit">Sakatu berriro irtetzeko</string>
-    <string name="butn_create">Sortu</string>
-    <string name="text_createFolder">Sortu karpeta</string>
-    <string name="mesg_fileAlreadyExists">Fitxategia badago aurretik</string>
-    <string name="mesg_folderCreateError">Karpeta ezin izan da sortu</string>
-    <string name="text_requestPermissionStorageSummary">Baimen honek TrebleShot-ek zure gailuko biltegiratzean irakurri
-        eta idaztea ahalbidetzen du, fitxategiak jaso eta partekatzeko.
-    </string>
-    <string name="butn_settings">Ezarpenak</string>
+    <string name="text_notAllowedHelp">"Egiaztatu baimenik duzun hemen: %1$s 
+\n
+\nGailuak &gt; %2$s &gt;  Baimendu konektatzea? &gt; (markatu ezazu)"</string>
+    <string name="save_to">Gorde hona</string>
+    <string name="double_click_exit_notice">Sakatu berriro irtetzeko</string>
+    <string name="create">Sortu</string>
+    <string name="create_folder">Sortu karpeta</string>
+    <string name="error_file_already_exists">Fitxategia badago aurretik</string>
+    <string name="create_folder_failure">Karpeta ezin izan da sortu</string>
+    <string name="storage_permission_summary">Baimen honek TrebleShot-ek zure gailuko biltegiratzean irakurri eta idaztea ahalbidetzen du, fitxategiak jaso eta partekatzeko.</string>
+    <string name="settings">Ezarpenak</string>
     <string name="butn_selectThis">Hautatu hau</string>
-    <string name="butn_newFile">Fitxategi berria</string>
+    <string name="new_file">Fitxategi berria</string>
     <string name="mesg_currentPathUnavailable">Ezin da karpeta hau erabili</string>
-    <string name="text_defaultFolder">Lehenetsitako karpeta</string>
+    <string name="default_folder">Lehenetsitako karpeta</string>
     <string name="text_storage">Biltegiratzea</string>
     <string name="text_shareFiles">Partekatu fitxategiak</string>
-    <string name="mesg_pathSaved">Direktorioa gorde da</string>
-    <string name="butn_search">Bilatu</string>
+    <string name="change_storage_path_success">Direktorioa gorde da</string>
+    <string name="search">Bilatu</string>
     <string name="butn_changeConnection">Aldatu konexioa</string>
-    <string name="text_fileName">Fitxategiaren izena</string>
-    <string name="text_fileSize">Fitxategiaren tamaina</string>
-    <string name="text_fileMime">Fitxategi mota</string>
-    <string name="text_fileStatus">Fitxategiaren egoera</string>
-    <string name="butn_resume">Berrekin</string>
-    <string name="text_transactionDetails">Xehetasunak</string>
+    <string name="file_name">Fitxategiaren izena</string>
+    <string name="file_size">Fitxategiaren tamaina</string>
+    <string name="file_mime">Fitxategi mota</string>
+    <string name="file_status">Fitxategiaren egoera</string>
+    <string name="resume">Berrekin</string>
+    <string name="transfer_details">Xehetasunak</string>
     <string name="text_fileExplorer">Fitxategi arakatzailea</string>
     <string name="butn_createFolder">Sortu karpeta</string>
-    <string name="text_chooseFolder">Hautatu karpeta</string>
-    <string name="text_chooseFile">Hautatu fitxategia</string>
+    <string name="choose_folder">Hautatu karpeta</string>
+    <string name="choose_file">Hautatu fitxategia</string>
     <string name="mesg_pathSameError">Ezin duzu karpeta zaharra hautatu</string>
-    <string name="ques_checkOldFiles">"Lekuz aldatu fitxategiak?"</string>
-    <string name="text_checkOldFiles">Osaturik edo partzialki osaturik dauden erlazionatutako fitxategiak karpeta
-        honetara ekarri ditzakezu, honek denbora bat behar lezake beraien tamainaren arabera
-    </string>
+    <string name="ques_checkOldFiles">"Lekuz aldatu  fitxategiak?"</string>
+    <string name="text_checkOldFiles">Osaturik edo partzialki osaturik dauden erlazionatutako fitxategiak karpeta honetara ekarri ditzakezu, honek denbora bat behar lezake beraien tamainaren arabera</string>
     <string name="mesg_newFilesReceived">Fitxategi berriak jaso dira</string>
-    <string name="butn_show">Erakutsi</string>
-    <string name="text_preparingFiles">Fitxategiak prestatzen</string>
-    <string name="text_savingDetails">Xehetasunak gordetzen</string>
-    <string name="text_version">Bertsioa</string>
-    <string name="text_flagPending">Egiteke</string>
-    <string name="text_flagRunning">Abioan</string>
-    <string name="text_flagInterrupted">Etenda</string>
+    <string name="show">Erakutsi</string>
+    <string name="preparing_files">Fitxategiak prestatzen</string>
+    <string name="saving_details">Xehetasunak gordetzen</string>
+    <string name="version">Bertsioa</string>
+    <string name="pending">Egiteke</string>
+    <string name="running">Abioan</string>
+    <string name="interrupted">Etenda</string>
     <string name="text_flagResume">Berrekinda</string>
-    <string name="text_unknown">Ezezaguna</string>
-    <string name="text_longAgo">Aspaldi</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi zuzena</string>
-    <string name="text_interfaceWireless">Wi-Fi</string>
-    <string name="text_interfaceBluetooth">Bluetooth</string>
-    <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">Konexio ezezaguna</string>
+    <string name="unknown">Ezezaguna</string>
+    <string name="long_ago">Aspaldi</string>
+    <string name="wifi_direct">Wi-Fi zuzena</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="unknown_interface">Konexio ezezaguna</string>
     <string name="text_shareTextShort">Testua</string>
     <string name="butn_feelLucky">Ausaz</string>
     <string name="butn_connectionList">Konexioak</string>
-    <string name="text_automaticNetworkConnectionFailed">Ez du konexioetako bat bera ere funtzionatu gailu honentzat.
-        Agian helbiea aldatu da. Saiatu berriro konektatzen sarera TrebleShot irekita dagoela.
-    </string>
+    <string name="text_automaticNetworkConnectionFailed">Ez du konexioetako bat bera ere funtzionatu gailu honentzat. Agian helbiea aldatu da. Saiatu berriro konektatzen sarera TrebleShot irekita dagoela.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot-ek hartuko du erabakia zure izenean</string>
-    <string name="butn_retryReceiving">Saiatu berriro dena</string>
-    <string name="butn_ask">Galdetu</string>
+    <string name="retry_receiving">Saiatu berriro dena</string>
+    <string name="ask">Galdetu</string>
     <string name="text_permissionRequest">Baimen eskaera</string>
-    <string name="text_requestPermissionStorage">Biltegiratze baimena</string>
+    <string name="storage_permission">Biltegiratze baimena</string>
     <string name="text_requestPermissionReadPhoneState">Telefonoaren egoera irakurtzeko baimena</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot-ek zure telefonoaren serie zenbakia atzitu
-        behar du zure gailurako epe luzerako identitate zenbaki bat sortzeko, besteek zu ezagutzea errazteko
-    </string>
-    <string name="text_mediaDirectory">Multimediaren direktorioa</string>
-    <string name="text_emulatedMediaDirectory">Emulatuta (%s)</string>
-    <string name="mesg_notEnoughSpace">Ez dago leku nahikorik</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot-ek zure telefonoaren serie zenbakia atzitu behar du zure gailurako epe luzerako identitate zenbaki bat sortzeko, besteek zu ezagutzea errazteko</string>
+    <string name="media_directory">Multimediaren direktorioa</string>
+    <string name="emulated_media_directory">Emulatuta (%s)</string>
+    <string name="insufficient_space_notice">Ez dago leku nahikorik</string>
     <string name="text_totalIncomingSize">Jasotako fitxategien tamaina guztira</string>
     <string name="text_totalOutgoingSize">Bidalitako fitxategien tamaina guztira</string>
     <string name="text_availableDiskSpace">Disko-leku eskuragarria</string>
     <string name="text_savePath">Gordetzeko bidea</string>
     <string name="text_transactionGroupDetails">Transakzio taldearen xehetasunak</string>
     <string name="text_usedConnection">Erabilitako konexioa</string>
-    <string name="text_flagRemoved">Kenduta</string>
+    <string name="removed">Kenduta</string>
     <string name="butn_copyToClipboard">Kopiatu arbelera</string>
-    <string name="text_communicationServiceRunning">TrebleShot-ek fitxategiak partekatu ditzake orain</string>
+    <string name="service_running_notice">TrebleShot-ek fitxategiak partekatu ditzake orain</string>
     <string name="text_communicationServiceStop">Sakatu saioa amaitzeko</string>
-    <string name="text_remainingTime">Falta den denbora: %s</string>
-    <string name="butn_showFiles">Erakutsi fitxategiak</string>
-    <string name="butn_trustDevice">Ezarri area fidagarriko gailu gisa</string>
+    <string name="remaining_time">Falta den denbora: %s</string>
+    <string name="show_files">Erakutsi fitxategiak</string>
+    <string name="butn_trustZoneDevice">Ezarri area fidagarriko gailu gisa</string>
     <string name="butn_turnTrustZoneOn">Aktibatu area fidagarria</string>
     <string name="butn_turnTrustZoneOff">Desaktibatu area fidagarria</string>
     <string name="text_trustZoneEnabled">Area fidagarria</string>
     <string name="text_trustZoneEnabledSummary">Area fidagarria hasieran aktibatzen da</string>
     <string name="butn_typeNewEntry">Idatzi sarrera berria</string>
-    <string name="butn_download">Deskargatu</string>
-    <string name="mesg_clipboardUpdateNotice">Egiaztatu testua edo sakatu berriro irteteko</string>
-    <string name="mesg_textSaveNotice">Gorde testua edo sakatu berriro irteteko</string>
-    <string name="butn_update">Eguneratu</string>
-    <string name="butn_save">Gorde</string>
+    <string name="download">Deskargatu</string>
+    <string name="update_clipboard_notice">Egiaztatu testua edo sakatu berriro irteteko</string>
+    <string name="save_clipboard_notice">Gorde testua edo sakatu berriro irteteko</string>
+    <string name="update">Eguneratu</string>
+    <string name="save">Gorde</string>
     <string name="mesg_textShareLimit">Testu bakar bat partekatu daiteke aldiko</string>
-    <string name="text_timeJustNow">Oraintxe</string>
+    <string name="just_now">Oraintxe</string>
     <string name="mesg_providerNotAllowedError">Karpeta lehenetsia ezin dute beste aplikazioek atzitu</string>
-    <string name="mesg_errorHotspotPermission">TrebleShot-ek baimena behar du Wifigune bat ezartzeko</string>
+    <string name="error_hotspot_needs_permission">TrebleShot-ek baimena behar du Wifigune bat ezartzeko</string>
     <string name="text_trebleshotHotspot">TrebleShot Wifigunea</string>
-    <string name="butn_connect">Konektatu</string>
-    <string name="butn_disconnect">Deskonektatu</string>
-    <string name="text_trebleshotHotspotDescription">Fitxategiak zuzenean bidali ditzakezu TrebleShot gailuak sortutako
-        sare ireki honetatik.
-    </string>
+    <string name="connect">Konektatu</string>
+    <string name="disconnect">Deskonektatu</string>
+    <string name="text_trebleshotHotspotDescription">Fitxategiak zuzenean bidali ditzakezu TrebleShot gailuak sortutako sare ireki honetatik.</string>
     <string name="mesg_connectingToSelfHotspot">TrebleShot Wifigunera konektatzen</string>
-    <string name="mesg_warningHotspotMobileActive">Konektatutako gailuek zure sare mugikorra erabili lezakete. Agian
-        itzali nahi duzu.
-    </string>
-    <string name="butn_skip">Saltatu</string>
+    <string name="set_up_hotspot_mobile_data_notice">Konektatutako gailuek zure sare mugikorra erabili lezakete. Agian itzali nahi duzu.</string>
+    <string name="skip">Saltatu</string>
     <string name="mesg_scanningSelfHotspot">TrebleShot Wifigunea bilatzen</string>
     <string name="mesg_suggestSelfHotspot">Wifia aktibatu dezakezu Trebleshot Wifigunea bilatzeko</string>
-    <string name="butn_enable">Gaitu</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Baimendu TrebleShot-ek Wifigunea bilatu eta sortzea
-    </string>
-    <string name="butn_locationSettings">Kokalekua</string>
-    <string name="mesg_locationDisabledSelfHotspot">Gaitu kokaleku zerbitzua araketaren emaitzak ikusteko eta Wifigunea
-        sortzeko
-    </string>
+    <string name="enable">Gaitu</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Baimendu TrebleShot-ek Wifigunea bilatu eta sortzea</string>
+    <string name="location_settings">Kokalekua</string>
+    <string name="mesg_locationDisabledSelfHotspot">Gaitu kokaleku zerbitzua araketaren emaitzak ikusteko eta Wifigunea sortzeko</string>
     <string name="mesg_scanningDevicesSelfHotspot">Gailuen bila TrebleShot Wifigunearen bidez</string>
-    <string name="mesg_stoppingSelfHotspot">TrebleShot Wifigunea gelditzen</string>
-    <string name="mesg_startingSelfHotspot">TrebleShot Wifigunea abiatzen</string>
-    <string name="butn_check">Markatu denak</string>
-    <string name="butn_uncheck">Desegin dena</string>
+    <string name="starting_hotspot_notice">TrebleShot Wifigunea gelditzen</string>
+    <string name="stopping_hotspot_notice">TrebleShot Wifigunea abiatzen</string>
+    <string name="check">Markatu denak</string>
+    <string name="uncheck">Desegin dena</string>
     <string name="text_previewAndEditList">Aurreikusi eta editatu</string>
     <string name="text_uncheckedItemsNotice">Markatu gabeko elementuak saltatuko dira</string>
     <string name="text_fileRoot">Fitxategiaren erroa</string>
-    <string name="mesg_versionNotSupported">Eguneratu onartutako bertsio batera eta bilatu gailuak berriro.</string>
+    <string name="client_not_supported_notice">Eguneratu onartutako bertsio batera eta bilatu gailuak berriro.</string>
     <string name="mesg_connectionUpdated">\"%s\" konexioaren bidez komunikatzen</string>
     <string name="mesg_ongoingUpdateDownload">Bertsio berria deskargatzen</string>
     <string name="butn_gotIt">Ulertu dut</string>
     <string name="mesg_helpFolderSelection">Karpeta bat hautatzeko, sakatu bere ikonoa</string>
-    <string name="mesg_hotspotCreatedInfo">Konektatu \"%s\"-ra \"Wi-Fi ezarpenetan\" edo bidali fitxategiak \"%s\" bidez
-        TrebleShot barruan
-    </string>
-    <string name="butn_selectAll">Hautatu dena</string>
-    <string name="butn_selectNone">Ez hautatu bat ere</string>
-    <string name="butn_previewSelections">Aurreikusi hautatutakoak</string>
+    <string name="mesg_hotspotCreatedInfo">Konektatu \"%s\"-ra \"Wi-Fi ezarpenetan\" edo bidali fitxategiak \"%s\" bidez TrebleShot barruan</string>
+    <string name="select_all">Hautatu dena</string>
+    <string name="select_none">Ez hautatu bat ere</string>
+    <string name="preview_selections">Aurreikusi hautatutakoak</string>
     <string name="mesg_deviceConnectionError">Huts egin du \"%s\" konexioak \"%s\" bidez</string>
-    <string name="mesg_retryReceivingNotice">TrebleShot etendako transferentziak jasotzen saiatuko da berriro</string>
+    <string name="retry_receiving_notice">TrebleShot etendako transferentziak jasotzen saiatuko da berriro</string>
     <string name="mesg_transferConnectionNotSetUpFix">Aukeratu konexio metodoa aurretik</string>
-    <string name="butn_setUp">Konfiguratu</string>
-    <string name="text_location">Sasi-kokalekua</string>
+    <string name="set_up">Konfiguratu</string>
+    <string name="location">Sasi-kokalekua</string>
     <string name="butn_saveAnyway">Gorde halere</string>
-    <string name="text_receivedSize">Jasotako tamaina</string>
+    <string name="received_size">Jasotako tamaina</string>
     <string name="mesg_notValidTransfer">Transferentzia iraungituta</string>
     <string name="ques_saveAnyway">Gorde hala ere?</string>
-    <string name="text_saveAnywaySummary">Bidaltzaileak ez daki non dagoen fitxategia, baina gorde dezakezu hala ere
-    </string>
-    <string name="mesg_fileSaved">Fitxategia gordeta</string>
-    <string name="butn_sortBy">Ordenatu honela</string>
-    <string name="butn_sortOrder">Ordenatzeko irizpidea</string>
-    <string name="text_sortOrderAscending">Handiena lehenbizi ↑</string>
-    <string name="text_sortOrderDescending">Txikiena lehenbizi ↓</string>
-    <string name="text_sortByName">Izena</string>
-    <string name="text_sortByDate">Data</string>
-    <string name="text_sortBySize">Tamaina</string>
-    <string name="text_trustZoneDeviceNotice">Area fidagarria aktibatuta dagoenean datozen fitxategiak automatikoki
-        onartuko ditu
-    </string>
+    <string name="text_saveAnywaySummary">Bidaltzaileak ez daki non dagoen fitxategia, baina gorde dezakezu hala ere</string>
+    <string name="save_file_success">Fitxategia gordeta</string>
+    <string name="sort_by">Ordenatu honela</string>
+    <string name="sort_order">Ordenatzeko irizpidea</string>
+    <string name="ascending">Handiena lehenbizi ↑</string>
+    <string name="descending">Txikiena lehenbizi ↓</string>
+    <string name="name">Izena</string>
+    <string name="date">Data</string>
+    <string name="size">Tamaina</string>
+    <string name="text_trustZoneDeviceNotice">Area fidagarria aktibatuta dagoenean datozen fitxategiak automatikoki onartuko ditu</string>
     <string name="text_allowingToConnectNotice">Baimendu gailu honen konexioak</string>
     <string name="butn_resetToDefault">Berrezarri balio lehenetsiak</string>
-    <string name="text_resetPreferencesToDefaultSummary">Honek hasierako ezarpenak aplikatuko ditu</string>
+    <string name="preferences_reset_notice">Honek hasierako ezarpenak aplikatuko ditu</string>
     <string name="text_workerService">Zerbitzu langilea</string>
     <string name="text_taskCompleted">Zeregina burututa</string>
-    <string name="text_deletingFilesOngoing">Hautatutako fitxategiak ezabatzen</string>
-    <string name="text_taskOngoing">Martxan dagoen zeregina</string>
+    <string name="deleting_files_notice">Hautatutako fitxategiak ezabatzen</string>
+    <string name="ongoing_task">Martxan dagoen zeregina</string>
     <string name="text_networkServiceDiscovery">Gaitu NSD</string>
-    <string name="text_networkServiceDiscoverySummary">"Sareko zerbitzuen bilaketak aurkitzeko gaitasuna errazten du"
-    </string>
-    <string name="text_notificationChannelHigh">Jakinarazpen garrantzitsuak</string>
-    <string name="text_notificationChannelLow">Lehentasun baxuko jakinarazpenak</string>
-    <string name="text_receivedTransfer">%s jasota %s(e)tan</string>
-    <string name="text_yearCountShort">%d urte</string>
-    <string name="text_monthCountShort">%d hilabete</string>
-    <string name="text_dayCountShort">%d egun</string>
-    <string name="text_hourCountShort">%d ordu</string>
-    <string name="text_minuteCountShort">%d minutu</string>
-    <string name="text_secondCountShort">%d segundo</string>
-    <string name="butn_exit">Irten</string>
+    <string name="text_networkServiceDiscoverySummary">"Sareko zerbitzuen bilaketak aurkitzeko gaitasuna  errazten du"</string>
+    <string name="high_priority_notifications">Jakinarazpen garrantzitsuak</string>
+    <string name="low_priority_notifications">Lehentasun baxuko jakinarazpenak</string>
+    <string name="receive_success_summary">%s jasota %s(e)tan</string>
+    <string name="count_years_short">%d urte</string>
+    <string name="count_months_short">%d hilabete</string>
+    <string name="count_days_short">%d egun</string>
+    <string name="count_hours_short">%d ordu</string>
+    <string name="count_minutes_short">%d minutu</string>
+    <string name="count_seconds_short">%d segundo</string>
+    <string name="exit">Irten</string>
     <string name="butn_queueCounted">Ilara (%d)</string>
     <string name="text_previewThenProceedNotice">Markatu zure hautaketak \"Ilara\" sakatuz jarraitzeko</string>
     <string name="mesg_updateDownloadComplete">Eguneraketa jaso da eta zure jasotako fitxategietan gorde da</string>
-    <string name="text_listEmptyFiles">Ez dago fitxategirik hemen</string>
-    <string name="text_listEmptyImage">Ez dago argazkirik hemen</string>
-    <string name="text_listEmptyApp">Ez dago aplikaziorik hemen</string>
-    <string name="text_listEmptyVideo">Ez dago bideorik hemen</string>
+    <string name="empty_files_list">Ez dago fitxategirik hemen</string>
+    <string name="empty_photos_list">Ez dago argazkirik hemen</string>
+    <string name="empty_apps_list">Ez dago aplikaziorik hemen</string>
+    <string name="empty_video_list">Ez dago bideorik hemen</string>
     <string name="text_listEmptyPendingTransfer">Egiteke dauden transferentziak hemen agertuko dira</string>
-    <string name="text_listEmptyTextStream">Idazkiak hemen agertuko dira</string>
-    <string name="text_listEmptyMusic">Ez dago abestirik hemen</string>
-    <string name="text_internalStorage">Barne-biltegiratzea</string>
+    <string name="empty_writings_list">Idazkiak hemen agertuko dira</string>
+    <string name="empty_music_list">Ez dago abestirik hemen</string>
+    <string name="internal_storage">Barne-biltegiratzea</string>
     <string name="text_restrictedAccessStorage">%s (sarbide mugatua)</string>
-    <string name="text_emptySearchResult">Emaitzarik ez \"%s\" bilaketarako</string>
+    <string name="empty_search_result_summary">Emaitzarik ez \"%s\" bilaketarako</string>
     <string name="mesg_listRefreshSnoozed">Zerrenda berrituko da eskuragarri dagoenean</string>
-    <string name="mesg_errorReadFolder">Ezin da \"%s\" atzitu</string>
+    <string name="access_failure_notice">Ezin da \"%s\" atzitu</string>
     <string name="butn_mountDirectory">Muntatu karpeta</string>
     <string name="mesg_mountDirectoryHelp">Hautatu atzitu nahi duzun karpeta</string>
     <string name="butn_ejectDirectory">Desmuntatu karpeta</string>
@@ -351,20 +310,20 @@
     <string name="mesg_wifiEnableRequired">Gaitu Wi-Fia konektatzeko</string>
     <string name="text_hotspotStartsTrustZone">Wifiguneak area fidagarria aktibatzen du ere</string>
     <string name="text_hotspotStartsTrustZoneSummary">Area fidagarria ere abiatuko da ondorioz</string>
-    <string name="text_qrCodeAvailableHelp">Eskaneatu kode hau partekatzeko eta gailuak konektatzeko</string>
+    <string name="scan_qr_code_notice">Eskaneatu kode hau partekatzeko eta gailuak konektatzeko</string>
     <string name="text_qrCodeHotspotDisabledHelp">Ezarri Wifigunea besteek zurekin konektatu ahal izateko</string>
-    <string name="help_scanQRCode">Eskaneatu gailu ostalariaren pantailako QR kodea</string>
+    <string name="text_scanQRCodeHelp">Eskaneatu gailu ostalariaren pantailako QR kodea</string>
     <string name="butn_qrScanToSend">Eskaneatu QR kodea bidaltzeko</string>
     <string name="butn_qrToggle">Txandakatu QR kodearen ikusgaitasuna</string>
-    <string name="text_notificationSettingsSummary">Ireki jakinarazpenen ezarpenak</string>
-    <string name="text_notificationSettings">Jakinarazpenen ezarpenak</string>
+    <string name="notification_settings_summary">Ireki jakinarazpenen ezarpenak</string>
+    <string name="notification_settings">Jakinarazpenen ezarpenak</string>
     <string name="text_renameMultipleItems">Aldatu izena hainbat elementuei</string>
-    <string name="text_rename">Aldatu izena</string>
+    <string name="rename">Aldatu izena</string>
     <string name="butn_rename">Aldatu izena</string>
-    <string name="butn_copyHere">Kopiatu hemen</string>
+    <string name="copy_here">Kopiatu hemen</string>
     <string name="text_qrAllowTrustZone">Area fidagarriaren QR kodea</string>
     <string name="text_qrAllowTrustZoneSummary">Baimendu area fidagarria QR konexioentzat</string>
-    <string name="text_translateTrebleshot">Lagundu gaitzazu itzulpenarekin</string>
+    <string name="help_translate">Lagundu gaitzazu itzulpenarekin</string>
     <string name="text_contributors">Hauei esker lortu da</string>
     <string name="butn_gridSize">Saretaren tamaina</string>
     <string name="butn_singleRow">Errenkada bakarra</string>
@@ -375,162 +334,138 @@
     <string name="text_groupByAlbum">Albuma</string>
     <string name="text_groupByArtist">Artista</string>
     <string name="text_groupByFolder">Karpeta</string>
-    <string name="text_home">Hasiera</string>
+    <string name="home">Hasiera</string>
     <string name="text_default">Lehenetsia</string>
-    <string name="text_files">Fitxategiak</string>
+    <string name="files">Fitxategiak</string>
     <string name="mesg_noReceiverOrSender">Gailuak gehitu behar dituzu aurretik</string>
     <string name="butn_addDevices">Gehitu gailuak</string>
     <string name="text_connectDevices">Konektatu gailuak</string>
     <string name="text_network">Sarea</string>
     <string name="text_connect">Konektatu</string>
-    <string name="butn_shareWithOtherApps">Partekatu beste aplikazio batzuekin</string>
-    <string name="butn_startHotspot">Ezarri Wifigunea</string>
-    <string name="butn_stopHotspot">Gelditu Wifigunea</string>
+    <string name="share_with_other_apps">Partekatu beste aplikazio batzuekin</string>
+    <string name="start_hotspot">Ezarri Wifigunea</string>
+    <string name="stop_hotspot">Gelditu Wifigunea</string>
     <string name="text_easyDiscoveryHelp">Arakatu hau gailu biak sare berean badaude</string>
     <string name="text_scanQRWifiRequired">Gailuetara konektatzeko, Wi-Fia piztuta egon beharko luke</string>
-    <string name="mesg_completing">Osatzen</string>
+    <string name="completing">Osatzen</string>
     <string name="mesg_errorNotSameNetwork">Gailuak ez daude sare berean</string>
-    <string name="text_cameraPermissionRequired">Kamera baimena behar da</string>
+    <string name="camera_permission_notice">Kamera baimena behar da</string>
     <string name="text_addDevicesToTransfer">Gehitu gailuak transferitzeko</string>
-    <string name="text_file">Fitxategia</string>
+    <string name="file">Fitxategia</string>
     <string name="text_noDeviceForTransfer">Ez da gailurik gehitu transferentzia honetarako</string>
-    <string name="text_thirdPartyLibraries">Hirugarrengoen liburutegiak</string>
+    <string name="third_party_libraries">Hirugarrengoen liburutegiak</string>
     <string name="text_killServiceAfterLeavingSummary">Komunikazioa eteten du jarduerarik ez badago</string>
     <string name="text_killServiceAfterLeaving">Aplikaziotik irteteak zerbitzua eteten du</string>
     <string name="butn_donate">Lagundu garapena</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d / %2d</string>
-    <string name="text_donate">Lagundu garapena</string>
-    <string name="mesg_donationSuccessful">Eskerrik asko!</string>
+    <string name="donate">Lagundu garapena</string>
+    <string name="donation_success">Eskerrik asko!</string>
     <string name="msg">Dohaintza</string>
-    <string name="butn_open">Ireki</string>
-    <string name="butn_pause">Pausatu</string>
-    <string name="butn_retry">Saiatu berriro</string>
-    <string name="mesg_noPendingTransferObjectExists">Ez dago transferentziarik egiteke. Eten diren fitxategiak
-        osatzeko, erabili \'Berriro saiatu\' aukera.
-    </string>
-    <string name="mesg_notSavingToChosenLocation">Eskatu duzun karpeta ez dago eskuragarri. Fitxategiak lehenetsitako
-        karpetan gordeko dira.
-        \n
-        \n%s
-        \n
-    </string>
+    <string name="open">Ireki</string>
+    <string name="pause">Pausatu</string>
+    <string name="retry">Saiatu berriro</string>
+    <string name="interrupted_left_notice">Ez dago transferentziarik egiteke. Eten diren fitxategiak osatzeko, erabili \'Berriro saiatu\' aukera.</string>
+    <string name="storage_path_unavailable_notice">Eskatu duzun karpeta ez dago eskuragarri. Fitxategiak lehenetsitako karpetan gordeko dira.
+\n 
+\n%s 
+\n</string>
     <string name="butn_changelog">Aldaketa-egunkaria</string>
-    <string name="text_changelog">Aldaketa-egunkaria</string>
+    <string name="changelog">Aldaketa-egunkaria</string>
     <string name="mesg_versionUpdatedChangelog">TrebleShot eguneratu duzu, zer aldatu den ikusi nahi duzu\?</string>
-    <string name="mesg_versionUpdatedChangelogRejected">\'Aldaketa-egunkaria\' gero ere \'Honi buruz\' atalean aurkitu
-        dezakezu
-    </string>
+    <string name="mesg_versionUpdatedChangelogRejected">\'Aldaketa-egunkaria\' gero ere \'Honi buruz\' atalean aurkitu dezakezu</string>
     <string name="mesg_noInternetConnection">Honek Internetera konexioa behar du</string>
     <string name="text_applyDarkTheme">Modu iluna</string>
     <string name="text_applyDarkThemeSummary">Erabili gai iluna estiloa</string>
-    <string name="butn_allow">Baimendu</string>
-    <string name="butn_telegram">Telegram kanala</string>
-    <string name="text_listEmptyTransfer">Transferentzia guztiak hemen agertzen dira</string>
-    <string name="text_transfers">Transferentziak</string>
+    <string name="allow">Baimendu</string>
+    <string name="butn_telegram_channel">Telegram kanala</string>
+    <string name="empty_transfers_list">Transferentzia guztiak hemen agertzen dira</string>
+    <string name="transfers">Transferentziak</string>
     <string name="butn_connectionDetails">Konexioaren xehetasunak</string>
     <string name="butn_useKnownDevice">Erabili gailu ezagunak</string>
-    <string name="butn_scanQrCode">Eskaneatu QR kodea</string>
+    <string name="scan_qr_code">Eskaneatu QR kodea</string>
     <string name="butn_useExistingNetwork">Erabili dauden sareak</string>
     <string name="butn_feedbackContact">Iruzkinak eta kontaktua</string>
-    <string name="mesg_sent">Bidalita</string>
-    <string name="text_sendText">Bidali testua</string>
-    <string name="butn_start">Hasi</string>
-    <string name="text_addDeviceHelp">Gailuak gehitzean, fitxategi berberak partekatzen dituzu gailu gehiagorekin.
-        Transferentziara itzuliko zara behin hau eginda.
-    </string>
-    <string name="text_downloads">Deskargak</string>
-    <string name="text_documents">Dokumentuak</string>
-    <string name="text_shortcuts">Lasterbideak</string>
-    <string name="text_recentFiles">Azken fitxategiak</string>
+    <string name="send_success">Bidalita</string>
+    <string name="send_text">Bidali testua</string>
+    <string name="start">Hasi</string>
+    <string name="text_addDeviceHelp">Gailuak gehitzean, fitxategi berberak partekatzen dituzu gailu gehiagorekin. Transferentziara itzuliko zara behin hau eginda.</string>
+    <string name="downloads">Deskargak</string>
+    <string name="documents">Dokumentuak</string>
+    <string name="shortcuts">Lasterbideak</string>
+    <string name="recent_files">Azken fitxategiak</string>
     <string name="butn_changeSavePath">Aldatu gordetzeko bidea</string>
     <string name="mesg_fileReceiveFilesLeftError">Huts egin du fitxategi batzuk jasotzean</string>
-    <string name="text_send">Bidali</string>
-    <string name="text_connectionHelp">Hautatu beste gailura konektatzeko aukera bat. Adibidez, beste gailuak QR bat
-        badu agerian, erabili QR-a eskaneatzeko aukera.
-    </string>
+    <string name="sends">Bidali</string>
+    <string name="text_connectionHelp">Hautatu beste gailura konektatzeko aukera bat. Adibidez, beste gailuak QR bat badu agerian, erabili QR-a eskaneatzeko aukera.</string>
     <string name="ques_needHelp">Laguntza behar duzu\?</string>
     <string name="text_connectionWizard">Konexio aztia</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Beste gailuan ezarpenak egin dituzu\?</string>
     <string name="ques_connectionWizardIsThereQRCode">QR kode bat ikusten duzu bere pantailan\?</string>
-    <string name="ques_connectionWizardUseHotspot">Beste gailua gailu honetara wifigunea (tethering) bidez konektatzea
-        da nahi duzuna\? Ez badakizu wifigune bat zer den, sakatu Bai.
-    </string>
-    <string name="ques_connectionWizardUseNetwork">Zure bideratzailea (router-a) erabili nahi duzu, edo bai lagunak bai
-        zuk erabiltzen duzuen Wi-Fi sare baten bidez konektatu nahi duzu\?
-    </string>
+    <string name="ques_connectionWizardUseHotspot">Beste gailua gailu honetara wifigunea (tethering) bidez konektatzea da nahi duzuna\? Ez badakizu wifigune bat zer den, sakatu Bai.</string>
+    <string name="ques_connectionWizardUseNetwork">Zure bideratzailea (router-a) erabili nahi duzu, edo bai lagunak bai zuk erabiltzen duzuen Wi-Fi sare baten bidez konektatu nahi duzu\?</string>
     <string name="ques_connectionWizardUseKnownDevices">Aurretik kontaktatutako gailuak atzitu nahi dituzu\?</string>
-    <string name="butn_yes">Bai</string>
-    <string name="butn_no">Ez</string>
+    <string name="yes">Bai</string>
+    <string name="no">Ez</string>
     <string name="text_loadThumbnails">Kargatu iruditxoak</string>
     <string name="text_loadThumbnailsSummary">Erakutsi fitxategien iruditxoak</string>
     <string name="text_manageDevices">Kudeatu gailuak</string>
-    <string name="text_search">Bilatu</string>
-    <string name="mesg_wifiEnableFailed">Wi-Fia ez da pizten.</string>
-    <string name="mesg_turningWiFiOn">Wi-Fia piztea</string>
-    <string name="mesg_locationPermissionRequiredAny">Gaitu kokapen zerbitzua aurretik jarraitzeko</string>
+    <string name="enable_wifi_failure">Wi-Fia ez da pizten.</string>
+    <string name="turning_wifi_on_notice">Wi-Fia piztea</string>
+    <string name="location_permission_required_notice">Gaitu kokapen zerbitzua aurretik jarraitzeko</string>
     <string name="mesg_connectToWiFiNetworkHelp">Konektatu Wi-Fi sare batera jarraitzeko</string>
-    <string name="mesg_removing">Kentzen... luze hartu dezake</string>
-    <string name="butn_help">Laguntza</string>
-    <string name="butn_choose">Hautatu</string>
+    <string name="removing_notice">Kentzen... luze hartu dezake</string>
+    <string name="help">Laguntza</string>
+    <string name="choose">Hautatu</string>
     <string name="butn_fixConnection">Konpondu konexioa</string>
-    <string name="butn_never">Inoiz ez</string>
-    <string name="text_hotspotStartedExternallyNotice">Wifigunea kanpotik ezarri da. QR kodea erabiltzeko, hemen hasi
-        beharko zenuke.
-    </string>
+    <string name="never">Inoiz ez</string>
+    <string name="externally_started_hotspot_notice">Wifigunea kanpotik ezarri da. QR kodea erabiltzeko, hemen hasi beharko zenuke.</string>
     <string name="text_shortcut">Lasterbidea</string>
     <string name="butn_addShortcut">Gehitu lasterbidea</string>
     <string name="butn_removeShortcut">Kendu lasterbidea</string>
-    <string name="mesg_removed">Kenduta</string>
-    <string name="mesg_added">Gehituta</string>
+    <string name="removal_success">Kenduta</string>
+    <string name="add_success">Gehituta</string>
     <string name="butn_change">Aldatu</string>
-    <string name="text_welcome">Ongi etorri</string>
-    <string name="text_introMakeItYours">Egin zure</string>
-    <string name="text_introSetUpPermissions">Ezarri baimenak</string>
-    <string name="text_introAllSet">Dena ezarrita!</string>
-    <string name="text_introSetUpProfile">Ezarri zure profila</string>
+    <string name="welcome">Ongi etorri</string>
+    <string name="introduction_personalize">Egin zure</string>
+    <string name="introduction_set_up_permissions">Ezarri baimenak</string>
+    <string name="introduction_finished">Dena ezarrita!</string>
+    <string name="introduction_set_up_profile">Ezarri zure profila</string>
     <string name="mesg_openFailure">Ezin da \"%s\" gisa ikusi</string>
     <string name="text_connectionTest">Konexio proba - %s</string>
     <string name="butn_connectionTest">Konexio proba</string>
-    <string name="text_textMillisecond">%d ms</string>
+    <string name="count_milliseconds_short">%d ms</string>
     <string name="butn_revokePin">Indargabetu PINa</string>
-    <string name="const_text_useAppFonts">Aplikatu aholkatutako tipografia</string>
-    <string name="const_text_useAppFontsSummary">Erabili emandako tipografia pertsonalizatua</string>
-    <string name="mesg_waiting">Itxaroten</string>
-    <string name="text_amoledOptimizedBlackTheme">Optimizatu AMOLED pantailetarako</string>
-    <string name="text_amoledOptimizedBlackThemeSummary">Erabili kolore ilunagoak</string>
+    <string name="use_recommended_fonts">Aplikatu aholkatutako tipografia</string>
+    <string name="use_recommended_fonts_notice">Erabili emandako tipografia pertsonalizatua</string>
+    <string name="waiting">Itxaroten</string>
+    <string name="theme_optimize">Optimizatu AMOLED pantailetarako</string>
+    <string name="theme_optimize_summary">Erabili kolore ilunagoak</string>
     <string name="butn_enterIpAddress">Sartu IP helbidea</string>
-    <string name="butn_webShare">Partekatu nabigatzailearen bidez</string>
-    <string name="mesg_errorNotTrustZoneDevice">Gailu hau area fidagarri gisa ezarri behar da gailu jasotzailean
-        eragiketa hau egiteko.
-    </string>
-    <string name="text_webShareNoContentNotice">Erabili \'Partekatu nabigatzailean\' aukera hemen transferentziak
-        ikusteko!
-    </string>
+    <string name="web_share">Partekatu nabigatzailearen bidez</string>
+    <string name="mesg_errorNotTrustZoneDevice">Gailu hau area fidagarri gisa ezarri behar da gailu jasotzailean eragiketa hau egiteko.</string>
+    <string name="text_webShareNoContentNotice">Erabili \'Partekatu nabigatzailean\' aukera hemen transferentziak ikusteko!</string>
     <string name="butn_shareOnBrowser">Partekatu nabigatzailean</string>
     <string name="butn_hideOnBrowser">Ezkutatu nabigatzailean</string>
     <string name="text_transferSharedOnBrowser">Nabigatzailean partekatuta</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">edo</string>
-    <string name="text_visitWebShareAddress">Bisitatu esteka hau zure nabigatzailean</string>
-    <string name="text_webShareInfo">Gaitu web partekatzea transferentzia bakoitzeko eta joan erakutsitako estekara sare
-        berera konektatuta dagoen gailu batekin.
-    </string>
+    <string name="visit_using_browser_notice">Bisitatu esteka hau zure nabigatzailean</string>
+    <string name="text_webShareInfo">Gaitu web partekatzea transferentzia bakoitzeko eta joan erakutsitako estekara sare berera konektatuta dagoen gailu batekin.</string>
     <string name="text_dowloadTrebleshotAndroid">Deskargatu TrebleShot Android-erako</string>
-    <string name="text_listEmptyConnection">Konektatutako sareak hemen agertzen dira</string>
+    <string name="empty_connections_list">Konektatutako sareak hemen agertzen dira</string>
     <string name="mesg_errorNotAnIpAddress">Ez da IP helbide bat
-        \n(honen gisakoa 192.168.1.2)
-    </string>
+\n(honen gisakoa 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Partekatu APK ala esteka gisa\?</string>
     <string name="butn_asApk">APK gisa</string>
     <string name="butn_asLink">Esteka gisa</string>
     <string name="text_linkTrebleshot">Partekatu fitxategiak TrebleShot erabilita! Deskargatu hemen: %s</string>
     <string name="butn_downloadAllAsZip">Deskargatu denak ZIP batean (bakarra, konprimitu gabe)</string>
-    <string name="text_interfaceVPN">VPN zerbitzaria</string>
-    <string name="text_unrecognizedQrCode">Kode ezezaguna</string>
-    <string name="mesg_textStreamSaved">Testua gordeta</string>
+    <string name="vpn_interface">VPN zerbitzaria</string>
+    <string name="unrecognized_qr_code_notice">Kode ezezaguna</string>
+    <string name="save_text_success">Testua gordeta</string>
     <string name="butn_changeMode">Aldatu modua</string>
     <string name="mesg_qrScannerTextMode">QR kodeak testu gisa erakutsiko dira</string>
     <string name="mesg_qrScannerDefaultMode">Itzuli QR kodeen lehenetsitako ekintzetara</string>
-    <string name="butn_showAsQrCode">Erakutsi QR kode gisa</string>
+    <string name="show_as_qr_code">Erakutsi QR kode gisa</string>
 </resources>

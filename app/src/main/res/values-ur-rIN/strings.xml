@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_deviceNameTitle">آلے کا نام درج کریں</string>
-    <string name="text_deviceNameSummary">یے نام دسرے آلات مے ظاہر ہوگا</string>
+    <string name="nickname_description">یے نام دسرے آلات مے ظاہر ہوگا</string>
     <string name="text_deviceName">آپ کا نام</string>
     <string name="text_developerModeSummary">صارف کی تشکیلات کو غیر فعال کریں</string>
     <string name="text_developerMode">ڈویلپر وضع</string>
-    <string name="text_listEmpty">کوئ ڈیٹا نہیں</string>
+    <string name="empty_list">کوئ ڈیٹا نہیں</string>
     <string name="butn_scan">کھوجیں</string>
-    <string name="mesg_fileReceived">%s پہنچ گیا</string>
-    <string name="butn_cancelReceiving">وصول کرنا منسوخ کریں</string>
-    <string name="text_receiving">پہنچ رہا ہے</string>
-    <string name="butn_cancelSending">بھےنا منسوخ کریں</string>
-    <string name="text_sending">بھےج رہا ہوں</string>
-    <string name="butn_stop">بس</string>
-    <string name="butn_reject">مسترد</string>
-    <string name="butn_accept">قوبول ہے</string>
-    <string name="ques_receiveFile">فائل پہںچی؟</string>
+    <string name="receive_file_success">%s پہنچ گیا</string>
+    <string name="cancel_receiving">وصول کرنا منسوخ کریں</string>
+    <string name="receiving">پہنچ رہا ہے</string>
+    <string name="cancel_sending">بھےنا منسوخ کریں</string>
+    <string name="sending">بھےج رہا ہوں</string>
+    <string name="stop">بس</string>
+    <string name="reject">مسترد</string>
+    <string name="accept">قوبول ہے</string>
+    <string name="receive_file_question">فائل پہںچی؟</string>
     <string name="mesg_scanningDevices">قریبی موبا ئل ڈہونڈ رہے ہیں</string>
     <string name="mesg_noNetwork">قریبی موبائل پتہ لاگانے کے لےَ کوئ واسطا نہیں جیسے وائی فائی</string>
     <string name="mesg_connectionFailure">رابطا ٹوٹ گیا</string>
-    <string name="text_preferences">ترجیحات</string>
+    <string name="preferences">ترجیحات</string>
 </resources>

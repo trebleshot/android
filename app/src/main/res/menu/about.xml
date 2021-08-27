@@ -20,10 +20,10 @@
 
     <item
         android:id="@+id/licenses"
-        android:title="@string/text_thirdPartyLicenses" />
+        android:title="@string/third_party_libraries" />
 
     <item
         android:id="@+id/changelog"
-        android:title="@string/text_changelog" />
+        android:title="@string/changelog" />
 
 </menu>

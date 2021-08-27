@@ -10,3 +10,4 @@ signing.properties
 local.properties
 licenses.yml
 *.apk
+*.hprof
