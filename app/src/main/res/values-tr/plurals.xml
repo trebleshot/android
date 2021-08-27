@@ -1,11 +1,11 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="delete_files_question">
-	<item quantity="one">Bu dosyayı silmek istiyor musunuz?</item>
-	<item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
-</plurals>
+        <item quantity="one">Bu dosyayı silmek istiyor musunuz?</item>
+        <item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
+    </plurals>
     <plurals name="receive_files_success_summary">
-        <item quantity="one">%d dosya alındı</item>
+        <item quantity="one">Bir dosya alındı</item>
         <item quantity="other">%d dosya alındı</item>
     </plurals>
     <plurals name="text_itemSelected">
@@ -13,23 +13,23 @@
         <item quantity="other">%d dosya seçildi</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">Bekleyen bu aktarım kaldırılacak</item>
-	<item quantity="other">%d bekleyen aktarım kaldırılacak</item>
-</plurals>
+        <item quantity="one">Bekleyen bu aktarım kaldırılacak</item>
+        <item quantity="other">%d bekleyen aktarım kaldırılacak</item>
+    </plurals>
     <plurals name="text_availableConnections">
         <item quantity="one">%d bağlantı</item>
         <item quantity="other">%d bağlantı</item>
     </plurals>
     <plurals name="receive_files_question">
-        <item quantity="one">%d dosya alınsın mı?</item>
-        <item quantity="other">%d dosya alınsın mı?</item>
+        <item quantity="one">Bir dosya alınsın mı\?</item>
+        <item quantity="other">%d dosya alınsın mı\?</item>
     </plurals>
     <plurals name="files">
-        <item quantity="one">%d dosya</item>
+        <item quantity="one">Bir dosya</item>
         <item quantity="other">%d dosya</item>
     </plurals>
     <plurals name="seconds_ago">
-        <item quantity="one">%d saniye önce</item>
+        <item quantity="one">Bir saniye önce</item>
         <item quantity="other">%d saniye önce</item>
     </plurals>
     <plurals name="minutes_ago">
@@ -37,15 +37,31 @@
         <item quantity="other">%d dakika önce</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
-	<item quantity="one">%d dosya silindi</item>
-	<item quantity="other">%d dosya silindi</item>
-</plurals>
-<plurals name="text_gridRow">
-	<item quantity="one">Tek sütun</item>
-	<item quantity="other">%d sütun</item>
-</plurals>
+        <item quantity="one">%d dosya silindi</item>
+        <item quantity="other">%d dosya silindi</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Tek sütun</item>
+        <item quantity="other">%d sütun</item>
+    </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">Tekli paylaşım</item>
-	<item quantity="other">%d cihazla paylaşım</item>
-</plurals>
+        <item quantity="one">Tekli paylaşım</item>
+        <item quantity="other">%d cihazla paylaşım</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">Bir dosya seçildi</item>
+        <item quantity="other">%d dosya seçildi</item>
+    </plurals>
+    <plurals name="albums">
+        <item quantity="one">Tek albüm</item>
+        <item quantity="other">%d albüm</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">Tek işlem</item>
+        <item quantity="other">%d işlem</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">Tek nesne</item>
+        <item quantity="other">%d nesne</item>
+    </plurals>
 </resources>
