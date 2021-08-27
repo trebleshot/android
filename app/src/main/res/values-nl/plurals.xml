@@ -1,51 +1,67 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="delete_files_question">
-	<item quantity="one">Wil je dit bestand verwijderen?</item>
-	<item quantity="other">Wil je %d bestanden verwijderen?</item>
-</plurals>
+        <item quantity="one">Wil je dit bestand verwijderen?</item>
+        <item quantity="other">Wil je %d bestanden verwijderen?</item>
+    </plurals>
     <plurals name="receive_files_success_summary">
-	<item quantity="one">Er is %d bestand ontvangen</item>
-	<item quantity="other">Er zijn %d bestanden ontvangen</item>
-</plurals>
+        <item quantity="one">Er is %d bestand ontvangen</item>
+        <item quantity="other">Er zijn %d bestanden ontvangen</item>
+    </plurals>
     <plurals name="text_itemSelected">
-	<item quantity="one">Er is %d bestand geselecteerd</item>
-	<item quantity="other">Er zijn %d bestanden geselecteerd</item>
-</plurals>
+        <item quantity="one">Er is %d bestand geselecteerd</item>
+        <item quantity="other">Er zijn %d bestanden geselecteerd</item>
+    </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">Deze overdracht in de wachtrij worden verwijderd</item>
-	<item quantity="other">%d overdrachten in de wachtrij worden verwijderd</item>
-</plurals>
+        <item quantity="one">Deze overdracht in de wachtrij worden verwijderd</item>
+        <item quantity="other">%d overdrachten in de wachtrij worden verwijderd</item>
+    </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">%d verbinding</item>
-	<item quantity="other">%d verbindingen</item>
-</plurals>
+        <item quantity="one">%d verbinding</item>
+        <item quantity="other">%d verbindingen</item>
+    </plurals>
     <plurals name="receive_files_question">
-	<item quantity="one">Wil je dit bestand ontvangen?</item>
-	<item quantity="other">Wil je %d bestanden ontvangen?</item>
-</plurals>
-<plurals name="files">
-	<item quantity="one">%d bestand</item>
-	<item quantity="other">%d bestanden</item>
-</plurals>
+        <item quantity="one">Wil je dit bestand ontvangen?</item>
+        <item quantity="other">Wil je %d bestanden ontvangen?</item>
+    </plurals>
+    <plurals name="files">
+        <item quantity="one">%d bestand</item>
+        <item quantity="other">%d bestanden</item>
+    </plurals>
     <plurals name="seconds_ago">
-	<item quantity="one">Eén seconde geleden</item>
-	<item quantity="other">%d seconden geleden</item>
-</plurals>
+        <item quantity="one">Eén seconde geleden</item>
+        <item quantity="other">%d seconden geleden</item>
+    </plurals>
     <plurals name="minutes_ago">
-	<item quantity="one">Eén minuut geleden</item>
-	<item quantity="other">%d minuten geleden</item>
-</plurals>
-<plurals name="text_fileDeletionCompleted">
-	<item quantity="one">Er is %d bestand verwijderd</item>
-	<item quantity="other">Er zijn %d bestanden verwijderd</item>
-</plurals>
-<plurals name="text_gridRow">
-	<item quantity="one">Enkele rij</item>
-	<item quantity="other">%d rijen</item>
-</plurals>
-<plurals name="text_devicesShared">
-	<item quantity="one">Wordt gedeeld met 1 apparaat</item>
-	<item quantity="other">Wordt gedeeld met %d apparaten</item>
-</plurals>
+        <item quantity="one">Eén minuut geleden</item>
+        <item quantity="other">%d minuten geleden</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">Er is %d bestand verwijderd</item>
+        <item quantity="other">Er zijn %d bestanden verwijderd</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Enkele rij</item>
+        <item quantity="other">%d rijen</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">Wordt gedeeld met 1 apparaat</item>
+        <item quantity="other">Wordt gedeeld met %d apparaten</item>
+    </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d taak</item>
+        <item quantity="other">%d taken</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">%d bestand geselecteerd</item>
+        <item quantity="other">%d bestanden geselecteerd</item>
+    </plurals>
 </resources>
