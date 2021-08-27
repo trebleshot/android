@@ -1,2 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="albums">
+        <item quantity="one">%d albumas</item>
+        <item quantity="few">%d albumai</item>
+        <item quantity="other">%d albumų</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d užduotis</item>
+        <item quantity="few">%d užduotys</item>
+        <item quantity="other">%d užduočių</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d elementas</item>
+        <item quantity="few">%d elementai</item>
+        <item quantity="other">%d elementų</item>
+    </plurals>
+    <plurals name="minutes_ago">
+        <item quantity="one">Prieš minutę</item>
+        <item quantity="few">Prieš %d minutes</item>
+        <item quantity="other">Prieš %d minučių</item>
+    </plurals>
+    <plurals name="seconds_ago">
+        <item quantity="one">Prieš sekundę</item>
+        <item quantity="few">Prieš %d sekundes</item>
+        <item quantity="other">Prieš %d sekundžių</item>
+    </plurals>
+    <plurals name="files">
+        <item quantity="one">%d failas</item>
+        <item quantity="few">%d failai</item>
+        <item quantity="other">%d failų</item>
+    </plurals>
+    <plurals name="receive_files_question">
+        <item quantity="one">Gauti šį failą\?</item>
+        <item quantity="few">Gauti šiuos %d failus\?</item>
+        <item quantity="other">Gauti šiuos %d failų\?</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">Pasirinktas %d failas</item>
+        <item quantity="few">Pasirinkti %d failai</item>
+        <item quantity="other">Pasirinkta %d failų</item>
+    </plurals>
+    <plurals name="receive_files_success_summary">
+        <item quantity="one">Gautas %d failas</item>
+        <item quantity="few">Gauti %d failai</item>
+        <item quantity="other">Gauta %d failų</item>
+    </plurals>
+    <plurals name="delete_files_question">
+        <item quantity="one">Ar norite ištrinti šį failą\?</item>
+        <item quantity="few">Ar norite ištrinti šiuos %d failus\?</item>
+        <item quantity="other">Ar norite ištrinti šiuos %d failų\?</item>
+    </plurals>
+</resources>
