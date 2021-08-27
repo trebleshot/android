@@ -36,4 +36,16 @@
     <plurals name="text_availableConnections">
         <item quantity="other">%d kết nối</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="other">%d album</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="other">%d công việc</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="other">%d mục</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="other">%d tệp được chọn</item>
+    </plurals>
 </resources>
