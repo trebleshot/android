@@ -455,4 +455,6 @@
     <string name="mesg_qrScannerTextMode">QR-коды будут отображаться в виде текста</string>
     <string name="mesg_qrScannerDefaultMode">Вернуться к действиям по умолчанию для QR-кодов</string>
     <string name="show_as_qr_code">Показать как QR-код</string>
+    <string name="no_albums">Нет альбомов</string>
+    <string name="albums">Альбомы</string>
 </resources>
