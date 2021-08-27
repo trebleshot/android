@@ -672,7 +672,7 @@
     <string name="error_empty_field">Field should not be empty</string>
     <string name="folder_name">Folder Name</string>
     <string name="rejecting">Rejecting</string>
-    <string name="receiver_pending">Pick someone who is about to send something</string>
+    <string name="receiver_pending">Pick the sender to start receiving</string>
     <string name="sender_not_expecting">%s was not sending anything</string>
     <string name="sender_accepted">Sender accepted</string>
     <string name="sender_finishing">Finishing</string>
@@ -706,4 +706,6 @@
     <string name="package_install_failure_unknown">Installation failed due to an unknown reason</string>
     <string name="installing">Installing</string>
     <string name="status_icon">Status icon</string>
+    <string name="shared_by_other_apps">Shared by Other Apps</string>
+    <string name="pick_the_sender">Pick sender</string>
 </resources>

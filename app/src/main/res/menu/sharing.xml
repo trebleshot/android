@@ -24,7 +24,7 @@
     <item
         android:id="@+id/selections"
         android:title="@string/selections"
-        android:orderInCategory="0"
+        android:orderInCategory="1"
         android:enabled="false"
         app:showAsAction="always" />
 
@@ -32,7 +32,7 @@
         android:id="@+id/shareOnWeb"
         android:title="@string/share_on_web"
         android:icon="@drawable/ic_web_white_24dp"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:enabled="false"
         app:showAsAction="always" />
 
@@ -40,7 +40,7 @@
         android:id="@+id/share"
         android:title="@string/share"
         android:icon="@drawable/ic_round_send_24"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:enabled="false"
         app:showAsAction="always" />
 

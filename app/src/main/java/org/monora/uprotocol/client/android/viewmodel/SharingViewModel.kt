@@ -46,7 +46,7 @@ class SharingViewModel @Inject internal constructor(
 ) : ViewModel() {
     private var consumer: Job? = null
 
-    private val _state = MutableLiveData<SharingState>(SharingState.Initial())
+    private val _state = MutableLiveData<SharingState>()
 
     val state = liveData {
         emitSource(_state)
@@ -89,15 +89,6 @@ class SharingViewModel @Inject internal constructor(
 }
 
 sealed class SharingState {
-    class Initial : SharingState() {
-        private var consumed: Boolean = false
-
-        fun consume(): Boolean = if (consumed) false else {
-            consumed = true
-            true
-        }
-    }
-
     object Running : SharingState()
 
     class Success(val transfer: Transfer) : SharingState()

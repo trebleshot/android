@@ -19,12 +19,15 @@
 package org.monora.uprotocol.client.android.service.web.template
 
 import android.content.Context
+import android.net.Uri
+import com.genonbeta.android.framework.io.OpenableContent
 import com.genonbeta.android.framework.util.Files
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.model.FileModel
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -170,6 +173,7 @@ fun renderContents(templates: Templates, list: List<Any>): String {
     val songs = ArrayList<Song>(0)
     val images = ArrayList<Image>(0)
     val videos = ArrayList<Video>(0)
+    val sharedByThirdParty = ArrayList<UTransferItem>(0)
 
     list.forEach {
         when (it) {
@@ -178,6 +182,7 @@ fun renderContents(templates: Templates, list: List<Any>): String {
             is Song -> songs.add(it)
             is Image -> images.add(it)
             is Video -> videos.add(it)
+            is UTransferItem -> sharedByThirdParty.add(it)
         }
     }
 
@@ -275,6 +280,21 @@ fun renderContents(templates: Templates, list: List<Any>): String {
                     "id" to it.hashCode(),
                     "title" to it.title.escapeHtml(),
                     "name" to it.displayName.escapeHtml(),
+                    "size" to Files.formatLength(it.size),
+                )
+            }
+        )
+    }
+
+    if (sharedByThirdParty.isNotEmpty()) {
+        builder.append(
+            renderTitle(templates, templates.context.getString(R.string.shared_by_other_apps))
+        )
+        builder.append(
+            templates.render("web/template/list/openable.html", sharedByThirdParty) {
+                mapOf(
+                    "id" to it.hashCode(),
+                    "name" to it.name.escapeHtml(),
                     "size" to Files.formatLength(it.size),
                 )
             }

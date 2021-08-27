@@ -40,6 +40,7 @@ import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.service.web.di.WebEntryPoint
 import org.monora.uprotocol.client.android.service.web.response.FileZipBody
@@ -201,6 +202,7 @@ private fun getUri(content: Any): Uri {
         is Song -> content.uri
         is Image -> content.uri
         is Video -> content.uri
+        is UTransferItem -> Uri.parse(content.location)
         else -> throw IllegalStateException("An unknown item is provided by the repository.")
     }
 }

@@ -164,6 +164,7 @@
                 android:layout_margin="8dp"
                 android:onClick="@{clickListener}"
                 android:text="@string/butn_enterAddress"
+                app:icon="@drawable/ic_ip_white_24dp"
                 app:layout_constraintEnd_toStartOf="@id/guideEnd"
                 app:layout_constraintStart_toEndOf="@id/guideStart"
                 app:layout_constraintTop_toBottomOf="@id/textView4" />

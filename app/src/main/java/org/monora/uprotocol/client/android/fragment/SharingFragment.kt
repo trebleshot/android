@@ -19,20 +19,25 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutSharingBinding
 import org.monora.uprotocol.client.android.databinding.ListSharingItemBinding
@@ -42,6 +47,7 @@ import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingState
 import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferItemContentViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SharingFragment : Fragment(R.layout.layout_sharing) {
@@ -49,31 +55,37 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 
     private val sharingViewModel: SharingViewModel by viewModels()
 
+    private val sharingSelectionsViewModel: SharingSelectionsViewModel by viewModels()
+
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharingSelectionsViewModel.serve(args.contents.toList())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = LayoutSharingBinding.bind(view)
         val adapter = SharingContentAdapter()
 
-        binding.recyclerView.adapter = adapter
-
-        binding.fab.setOnClickListener {
+        binding.shareOnWeb.setOnClickListener {
+            findNavController().navigate(SharingFragmentDirections.actionSharingFragmentToWebShareLauncherFragment2())
+        }
+        binding.sendButton.setOnClickListener {
             findNavController().navigate(SharingFragmentDirections.pickClient())
         }
+
+        binding.recyclerView.adapter = adapter
 
         adapter.submitList(args.contents.toList())
 
         clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
-            Log.d("SendFragment", "Reached")
             sharingViewModel.consume(bridge, args.groupId, args.contents.toList())
         }
 
         sharingViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is SharingState.Initial -> if (it.consume()) findNavController().navigate(
-                    SharingFragmentDirections.pickClient()
-                )
                 is SharingState.Running -> {
 
                 }
@@ -86,10 +98,15 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
                 }
                 is SharingState.Error -> {
                     val msg = CommonErrors.messageOf(requireContext(), it.exception)
-                    Snackbar.make(binding.fab, msg, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.listParent, msg, Snackbar.LENGTH_INDEFINITE).show()
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sharingSelectionsViewModel.dropAll()
     }
 }
 
@@ -111,5 +128,18 @@ class SharingViewHolder(private val binding: ListSharingItemBinding) : RecyclerV
     fun bind(transferItem: UTransferItem) {
         binding.viewModel = TransferItemContentViewModel(transferItem)
         binding.executePendingBindings()
+    }
+}
+
+@HiltViewModel
+class SharingSelectionsViewModel @Inject internal constructor(
+    private val selectionRepository: SelectionRepository,
+) : ViewModel() {
+    fun serve(list: List<Any>) {
+        selectionRepository.addAll(list)
+    }
+
+    fun dropAll() {
+        selectionRepository.clearSelections()
     }
 }

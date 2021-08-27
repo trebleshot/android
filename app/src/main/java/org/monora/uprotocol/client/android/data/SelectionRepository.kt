@@ -33,6 +33,12 @@ class SelectionRepository @Inject constructor() {
         emitSource(_selectionState)
     }
 
+    fun addAll(list: List<Any>) {
+        synchronized(selections) {
+            selections.addAll(list)
+        }
+    }
+
     fun clearSelections() {
         selections.clear()
     }

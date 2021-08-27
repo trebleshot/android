@@ -19,27 +19,83 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/listParent"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/listParent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            android:layout_marginStart="@dimen/short_content_width_padding_between"
-            android:layout_marginEnd="@dimen/short_content_width_padding_between"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonsDivider"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fitsSystemWindows="true"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shareOnWeb"
+            style="?borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/share_on_web"
+            app:icon="@drawable/ic_web_white_24dp"
+            app:iconGravity="textStart"
+            app:layout_constraintTop_toBottomOf="@id/buttonsTopBarrier"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/sendButton"
+            app:layout_constraintStart_toEndOf="@id/guidelineStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sendButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/butn_send"
+            app:icon="@drawable/ic_arrow_right_white_24dp"
+            app:iconGravity="end"
+            app:layout_constraintTop_toBottomOf="@id/buttonsTopBarrier"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
+            app:layout_constraintStart_toEndOf="@id/shareOnWeb" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="@dimen/fab_margin"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-            app:srcCompat="@drawable/ic_round_send_24" />
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/short_content_width_padding" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="@dimen/short_content_width_padding" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/buttonsTopBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="top"
+            app:constraint_referenced_ids="sendButton,shareOnWeb" />
+
+        <View
+            android:id="@+id/buttonsDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?dividerHorizontal"
+            app:layout_constraintBottom_toTopOf="@id/buttonsTopBarrier" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -42,6 +42,10 @@ class OpenableContent private constructor(
     val size: Long = 0,
     val file: File? = null,
 ) {
+    override fun hashCode(): Int {
+        return uri.hashCode()
+    }
+
     @Throws(FileNotFoundException::class)
     fun openOutputStream(context: Context): OutputStream = if (file == null) {
         context.contentResolver.openOutputStream(uri, "wa") ?: throw IOException()

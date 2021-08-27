@@ -52,9 +52,6 @@ class SendFragment : Fragment(R.layout.layout_send) {
 
         sharingViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is SharingState.Initial -> if (it.consume()) findNavController().navigate(
-                    SendFragmentDirections.pickClient()
-                )
                 is SharingState.Running -> {
                     binding.retryViewsGroup.visibility = View.GONE
                     binding.progressBar.visibility = View.VISIBLE
