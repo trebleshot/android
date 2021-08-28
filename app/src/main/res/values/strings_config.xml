@@ -17,8 +17,8 @@
   -->
 
 <resources>
-    <string name="conf_packageName" translatable="false">org.monora.uprotocol.client.android</string>
-    <string name="conf_licence" formatted="false" translatable="false">
+    <string name="package_name" translatable="false">com.genonbeta.TrebleShot</string>
+    <string name="license_text" formatted="false" translatable="false">
         © 2016-2021 Veli Tasalı\n\nThis program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
         the Free Software Foundation, either version 2 of the License, or
@@ -29,7 +29,7 @@
         License
         along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.
     </string>
-    <string name="text_org" translatable="false">monora</string>
+    <string name="organization" translatable="false">monora</string>
     <string name="web_share_address" translatable="false">http://%s:%d/</string>
     <string name="file_provider" translatable="false">org.monora.uprotocol.client.android.fileprovider</string>
 </resources>

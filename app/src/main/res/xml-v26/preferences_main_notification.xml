@@ -24,7 +24,7 @@
             <intent android:action="android.settings.APP_NOTIFICATION_SETTINGS">
                 <extra
                     android:name="android.provider.extra.APP_PACKAGE"
-                    android:value="@string/conf_packageName" />
+                    android:value="@string/package_name" />
             </intent>
         </PreferenceScreen>
     </PreferenceCategory>

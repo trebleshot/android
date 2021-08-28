@@ -17,7 +17,7 @@
   -->
 
 <resources>ing>
-    <string name="text_prefaceDonation" translatable="false">
+    <string name="preface_donation" translatable="false">
         You can support TrebleShot by donating any amount that you can choose below.;
         Not donating will not affect your experience.;
         However, we will be less motivated to fix bugs and to introduce new features and will work

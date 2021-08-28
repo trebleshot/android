@@ -129,7 +129,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/text_org"
+                android:text="@string/organization"
                 app:icon="@drawable/ic_home_white_24dp"
                 app:iconGravity="top"
                 app:layout_constraintEnd_toStartOf="@+id/localizeButton"
@@ -197,7 +197,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@string/conf_licence" />
+            android:text="@string/license_text" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.core.widget.NestedScrollView>

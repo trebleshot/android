@@ -145,8 +145,8 @@
     <string name="skip">Skip</string>
     <string name="enable">Enable</string>
     <string name="location_settings">Location</string>
-    <string name="starting_hotspot_notice">Stopping Hotspot</string>
-    <string name="stopping_hotspot_notice">Starting Hotspot</string>
+    <string name="starting_hotspot_notice">Stopping hotspot</string>
+    <string name="stopping_hotspot_notice">Starting hotspot</string>
     <string name="check">Check</string>
     <string name="uncheck">Uncheck</string>
     <string name="client_not_supported_notice">This client uses a version that is no longer supported!</string>
@@ -169,7 +169,7 @@
     <string name="deleting_files_notice">Deleting files</string>
     <string name="ongoing_task">Ongoing Task</string>
     <string name="high_priority_notifications">Important Notifications</string>
-    <string name="low_priority_notifications">Low priority Notifications</string>
+    <string name="low_priority_notifications">Low Priority Notifications</string>
     <string name="receive_success_summary">Received %s in %s</string>
     <string name="count_years_short">%d yr</string>
     <string name="count_months_short">%d mth</string>
