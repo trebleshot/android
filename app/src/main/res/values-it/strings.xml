@@ -233,7 +233,7 @@
     <string name="check">Seleziona</string>
     <string name="uncheck">Deseleziona</string>
     <string name="text_uncheckedItemsNotice">Deselezionare gli elementi per rimuoverli</string>
-    <string name="preferences_reset">Ripristinare le impostazioni predefinite\?</string>
+    <string name="preferences_reset_question">Ripristinare le impostazioni predefinite\?</string>
     <string name="text_connectionPermission">Autorizzazione di connessione</string>
     <string name="butn_typeNewEntry">Inserisci nuova voce</string>
     <string name="text_fileRoot">Root</string>
@@ -258,7 +258,7 @@
     <string name="size">Dimensione</string>
     <string name="text_trustZoneDeviceNotice">Accetta automaticamente gli elementi in arrivo quando TrustZone è attiva</string>
     <string name="text_allowingToConnectNotice">Consenti connessioni da questo dispositivo</string>
-    <string name="butn_resetToDefault">Ripristina Impostazioni Predefinite</string>
+    <string name="preferences_reset">Ripristina Impostazioni Predefinite</string>
     <string name="preferences_reset_notice">Verranno applicate le impostazioni iniziali</string>
     <string name="text_taskCompleted">Attività completata</string>
     <string name="deleting_files_notice">Eliminazione dei file selezionati</string>

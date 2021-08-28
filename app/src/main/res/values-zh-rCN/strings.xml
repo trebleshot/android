@@ -163,7 +163,7 @@
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
     <string name="ques_checkOldFiles">移动文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
-    <string name="preferences_reset">重置为默认值？</string>
+    <string name="preferences_reset_question">重置为默认值？</string>
     <string name="refresh">刷新</string>
     <string name="butn_showSystemApps">显示系统应用</string>
     <string name="transfer_details">详细信息</string>
@@ -251,7 +251,7 @@
     <string name="size">大小</string>
     <string name="text_trustZoneDeviceNotice">当信任域开启时自动接收传入的文件</string>
     <string name="text_allowingToConnectNotice">允许来自该设备的连接</string>
-    <string name="butn_resetToDefault">重置回默认值</string>
+    <string name="preferences_reset">重置回默认值</string>
     <string name="preferences_reset_notice">这将会应用初始设置</string>
     <string name="text_taskCompleted">任务已完成</string>
     <string name="deleting_files_notice">正在删除已选中的文件</string>

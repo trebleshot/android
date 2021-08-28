@@ -119,7 +119,7 @@
     <string name="text_taskCompleted">ಕಾರ್ಯ ಪೂರ್ಣಗೊಂಡಿದೆ</string>
     <string name="text_workerService">ಕಾರ್ಮಿಕರ ಸೇವೆ</string>
     <string name="preferences_reset_notice">ಇದು ಆರಂಭಿಕ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಅನ್ವಯಿಸುತ್ತದೆ</string>
-    <string name="butn_resetToDefault">ಮೊದಲಿನಂತೆ ಮರುಹೊಂದಿಸಿ</string>
+    <string name="preferences_reset">ಮೊದಲಿನಂತೆ ಮರುಹೊಂದಿಸಿ</string>
     <string name="text_allowingToConnectNotice">ಈ ಸಾಧನದಿಂದ ಸಂಪರ್ಕಗಳನ್ನು ಅನುಮತಿಸಿ</string>
     <string name="text_trustZoneDeviceNotice">ವಿಶ್ವಾಸವಲಯ ಆನ್ ಆಗಿರುವಾಗ ಒಳಬರುವ ವಸ್ತುಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸ್ವೀಕರಿಸುತ್ತದೆ</string>
     <string name="size">ಗಾತ್ರ</string>
@@ -347,7 +347,7 @@
     <string name="share">ಹಂಚು</string>
     <string name="edit">ತಿದ್ದು</string>
     <string name="received_files">ಸ್ವೀಕರಿಸಿದ ಕಡತಗಳು</string>
-    <string name="preferences_reset">ಮೊದಲಿನಂತೆ ಮರುಹೊಂದಿಸುವುದೇ\?</string>
+    <string name="preferences_reset_question">ಮೊದಲಿನಂತೆ ಮರುಹೊಂದಿಸುವುದೇ\?</string>
     <string name="choose_sharing_app">ಹಂಚಿಕೊಳ್ಳಲು ಅಪ್ಲಿಕೇಶನ್ ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="text_fileOpenAppChoose">ಇದರೊಂದಿಗೆ ತೆರೆಯಿರಿ</string>
     <string name="text_deviceList">ಸಾಧನಗಳು</string>

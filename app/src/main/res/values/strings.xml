@@ -35,7 +35,8 @@
     <string name="send_file_failure">Could not send \'%s\'</string>
     <string name="receive_file_failure">Could not receive \'%s\'</string>
     <string name="receive_files_success">Files received</string>
-    <string name="preferences_reset">Reset to default?</string>
+    <string name="preferences_reset">Reset to Default</string>
+    <string name="preferences_reset_question">Reset to default?</string>
     <string name="choose_sharing_app">Choose an app to share with</string>
     <string name="received_files">Received Files</string>
     <string name="edit">Edit</string>

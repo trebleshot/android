@@ -29,7 +29,7 @@
     <string name="text_deviceList">آلات</string>
     <string name="text_fileOpenAppChoose">کھولنے کا ذریعہ</string>
     <string name="choose_sharing_app">بانٹنے کے لیے ایک ایپ منتخب کریں</string>
-    <string name="preferences_reset">پہلے سے طے شدہ ترتیبات پر مرتب کیا جائے؟</string>
+    <string name="preferences_reset_question">پہلے سے طے شدہ ترتیبات پر مرتب کیا جائے؟</string>
     <string name="received_files">مووصوول کی گئی فائلیں</string>
     <string name="edit">ترمیم کریں</string>
     <string name="share">بانٹیں</string>

@@ -272,8 +272,8 @@
     <string name="name">Navn</string>
     <string name="date">Dato</string>
     <string name="size">Størrelse</string>
-    <string name="butn_resetToDefault">Tilbakestill til forvalg</string>
-    <string name="preferences_reset">Tilbakestill til forvalg?</string>
+    <string name="preferences_reset">Tilbakestill til forvalg</string>
+    <string name="preferences_reset_question">Tilbakestill til forvalg?</string>
     <string name="preferences_reset_notice">Dette vil gjenopprette forvalgte innstillinger</string>
     <string name="text_taskCompleted">Oppgave fullført</string>
     <string name="deleting_files_notice">Sletter valgte filer</string>

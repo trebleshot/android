@@ -32,7 +32,7 @@
     <string name="text_deviceList">دستگاه‌ها</string>
     <string name="text_fileOpenAppChoose">باز کردن با</string>
     <string name="choose_sharing_app">برنامه‌ای را برای اشتراک انتخاب کنید</string>
-    <string name="preferences_reset">بازگشت به پیش‌فرض؟</string>
+    <string name="preferences_reset_question">بازگشت به پیش‌فرض؟</string>
     <string name="received_files">فایل‌های دریافت‌شده</string>
     <string name="edit">ویرایش</string>
     <string name="share">اشتراک</string>
@@ -235,7 +235,7 @@
     <string name="size">حجم</string>
     <string name="text_trustZoneDeviceNotice">در زمان روشن بودن منطقه امن، بصورت خودکار موارد دریافتی را بپذیر</string>
     <string name="text_allowingToConnectNotice">اجازه اتصال از این دستگاه را بده</string>
-    <string name="butn_resetToDefault">بازنشانی به تنظیمات پیش‌فرض</string>
+    <string name="preferences_reset">بازنشانی به تنظیمات پیش‌فرض</string>
     <string name="preferences_reset_notice">این کار، تنظیمات اولیه را برخواهند گرداند</string>
     <string name="text_taskCompleted">وظیفه تکمیل شد</string>
     <string name="deleting_files_notice">پاک کردن پرونده‌های انتخاب‌شده</string>

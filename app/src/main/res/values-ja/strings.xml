@@ -197,7 +197,7 @@
     <string name="text_flagResume">再開</string>
     <string name="unknown">不明</string>
     <string name="text_importantNotice">重要なお知らせ</string>
-    <string name="preferences_reset">設定を初期化しますか\?</string>
+    <string name="preferences_reset_question">設定を初期化しますか\?</string>
     <string name="long_ago">ずっと前</string>
     <string name="wifi_direct">Wi-Fi ダイレクト</string>
     <string name="wifi">Wi-Fi</string>

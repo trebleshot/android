@@ -72,7 +72,7 @@
     <string name="count_months_short">%d μην</string>
     <string name="count_years_short">%d χρ</string>
     <string name="deleting_files_notice">Διαγραφή επιλεγμένων αρχείων</string>
-    <string name="butn_resetToDefault">Επαναφορά στο προεπιλεγμένο</string>
+    <string name="preferences_reset">Επαναφορά στο προεπιλεγμένο</string>
     <string name="size">Μέγεθος</string>
     <string name="date">Ημερομηνία</string>
     <string name="name">Όνομα</string>
@@ -394,7 +394,7 @@
     <string name="butn_clearQueue">Καθαρισμός ουράς</string>
     <string name="butn_shareTrebleshot">Μοιράσου την εφαρμογή</string>
     <string name="received_files">Ληφθέντα αρχεία</string>
-    <string name="preferences_reset">Επαναφορά προεπιλογών;</string>
+    <string name="preferences_reset_question">Επαναφορά προεπιλογών;</string>
     <string name="choose_sharing_app">Επιλέξτε εφαρμογή για κοινοποίηση</string>
     <string name="receive_files_success">Ολοκληρώθηκε η λήψη των αρχείων</string>
     <string name="receive_file_failure">Δεν ήταν δυνατή η λήψη τού %s.</string>

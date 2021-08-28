@@ -50,7 +50,7 @@
     <string name="edit">Redaguoti</string>
     <string name="received_files">Gauti failai</string>
     <string name="choose_sharing_app">Pasirinkite programėlę, su kuria norite bendrinti</string>
-    <string name="preferences_reset">Atstatyti į numatytuosius\?</string>
+    <string name="preferences_reset_question">Atstatyti į numatytuosius\?</string>
     <string name="receive_files_success">Gauti failai</string>
     <string name="receive_file_failure">Nepavyko gauti „%s“</string>
     <string name="send_file_failure">Nepavyko išsiųsti „%s“</string>

@@ -32,7 +32,7 @@
     <string name="text_deviceList">Urządzenia</string>
     <string name="text_fileOpenAppChoose">Otwórz z</string>
     <string name="choose_sharing_app">Wybierz aplikację, której chcesz udostępnić</string>
-    <string name="preferences_reset">Przywróć ustawienia domyślne\?</string>
+    <string name="preferences_reset_question">Przywróć ustawienia domyślne\?</string>
     <string name="received_files">Otrzymane pliki</string>
     <string name="edit">Edycja</string>
     <string name="share">Udostępnij</string>
@@ -270,7 +270,7 @@
     <string name="size">Rozmiar</string>
     <string name="text_trustZoneDeviceNotice">Automatycznie przyjmuje przychodzące elementy, gdy TrustZone jest włączony</string>
     <string name="text_allowingToConnectNotice">Zezwalaj na połączenia z tego urządzenia</string>
-    <string name="butn_resetToDefault">Przywróć ustawienia domyślne</string>
+    <string name="preferences_reset">Przywróć ustawienia domyślne</string>
     <string name="preferences_reset_notice">Spowoduje to zastosowanie ustawień domyślnych</string>
     <string name="text_workerService">Pracownik serwisu</string>
     <string name="text_taskCompleted">Zadanie ukończone</string>

@@ -298,8 +298,8 @@
     <string name="size">Grootte</string>
     <string name="text_trustZoneDeviceNotice">Accepteert inkomende items automatisch als TrustZone is ingeschakeld</string>
     <string name="text_allowingToConnectNotice">Verbindingen van dit apparaat toestaan</string>
-    <string name="butn_resetToDefault">Standaardwaarden herstellen</string>
-    <string name="preferences_reset">Standaardwaarden herstellen?</string>
+    <string name="preferences_reset">Standaardwaarden herstellen</string>
+    <string name="preferences_reset_question">Standaardwaarden herstellen?</string>
     <string name="preferences_reset_notice">Dit herstelt de standaard instellingen</string>
     <string name="text_workerService">Werkdienst</string>
     <string name="text_taskCompleted">Taak afgerond</string>

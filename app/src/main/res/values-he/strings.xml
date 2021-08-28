@@ -32,7 +32,7 @@
     <string name="text_deviceList">מכשירים</string>
     <string name="text_fileOpenAppChoose">פתיחה עם</string>
     <string name="choose_sharing_app">בחירת יישומון לשיתוף מולו</string>
-    <string name="preferences_reset">לאפס לבררת מחדל\?</string>
+    <string name="preferences_reset_question">לאפס לבררת מחדל\?</string>
     <string name="received_files">קבצים שהתקבלו</string>
     <string name="edit">עריכה</string>
     <string name="share">שיתוף</string>
@@ -270,7 +270,7 @@
     <string name="size">גודל</string>
     <string name="text_trustZoneDeviceNotice">מקבל פריטים נכנסים אוטומטית כאשר האיזור המהימן פעיל</string>
     <string name="text_allowingToConnectNotice">לאפשר חיבורים ממכשיר זה</string>
-    <string name="butn_resetToDefault">איפוס לבררת מחדל</string>
+    <string name="preferences_reset">איפוס לבררת מחדל</string>
     <string name="preferences_reset_notice">פעולה זו תחיל את ההגדרות הראשוניות</string>
     <string name="text_workerService">שירות מנגנון</string>
     <string name="text_taskCompleted">המשימה הושלמה</string>

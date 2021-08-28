@@ -29,7 +29,7 @@
     <string name="text_deviceList">Dispositius</string>
     <string name="text_fileOpenAppChoose">Obre amb</string>
     <string name="choose_sharing_app">Trieu una aplicació per compartir</string>
-    <string name="preferences_reset">Voleu restaurar als valors per defecte\?</string>
+    <string name="preferences_reset_question">Voleu restaurar als valors per defecte\?</string>
     <string name="received_files">Fitxers rebuts</string>
     <string name="edit">Edita</string>
     <string name="share">Comparteix</string>

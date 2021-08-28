@@ -53,7 +53,7 @@
     <string name="share">പങ്കുവയ്ക്കുക</string>
     <string name="edit">തിരുത്തുക</string>
     <string name="received_files">സ്വീകരിച്ച ഫയലുകള്‍</string>
-    <string name="preferences_reset">സ്വതവേയുള്ള അവസ്ഥയിലേക്ക് മടങ്ങട്ടെ\?</string>
+    <string name="preferences_reset_question">സ്വതവേയുള്ള അവസ്ഥയിലേക്ക് മടങ്ങട്ടെ\?</string>
     <string name="choose_sharing_app">പങ്കുവയ്ക്കാന്‍ ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</string>
     <string name="text_fileOpenAppChoose">ഒപ്പം തുറക്കുക</string>
     <string name="receive_file_failure">%s സ്വീകരിച്ചില്ല.</string>

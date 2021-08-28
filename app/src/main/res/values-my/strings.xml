@@ -184,7 +184,7 @@
     <string name="share">ဝေမျှမည်</string>
     <string name="edit">ပြင်မည်</string>
     <string name="received_files">ရရှိပြီး ဖိုင်များ</string>
-    <string name="preferences_reset">မူလအတိုင်း ပြန်ထားမည်လား\?</string>
+    <string name="preferences_reset_question">မူလအတိုင်း ပြန်ထားမည်လား\?</string>
     <string name="choose_sharing_app">မျှဝေမည့် app ရွေးချယ်ပါ</string>
     <string name="text_fileOpenAppChoose">ဖွင့်ရန် ရွေးချယ်ပါ</string>
     <string name="text_deviceList">စက်များ</string>

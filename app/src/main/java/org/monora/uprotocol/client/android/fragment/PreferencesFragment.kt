@@ -63,7 +63,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 class ResetPreferencesFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(requireActivity())
-            .setTitle(R.string.preferences_reset)
+            .setTitle(R.string.preferences_reset_question)
             .setMessage(R.string.preferences_reset_notice)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->

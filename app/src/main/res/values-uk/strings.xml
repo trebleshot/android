@@ -29,7 +29,7 @@
     <string name="text_deviceList">Пристрої</string>
     <string name="text_fileOpenAppChoose">Відкрити за допомогою</string>
     <string name="choose_sharing_app">Поділитися за допомогою</string>
-    <string name="preferences_reset">Відновити за замовчуванням\?</string>
+    <string name="preferences_reset_question">Відновити за замовчуванням\?</string>
     <string name="received_files">Отримані файли</string>
     <string name="edit">Редагувати</string>
     <string name="share">Поділитися</string>

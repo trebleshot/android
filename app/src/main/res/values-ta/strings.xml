@@ -31,7 +31,7 @@
     <string name="text_deviceList">சாதனங்கள்</string>
     <string name="text_fileOpenAppChoose">இதன் மூலம் திறக்க</string>
     <string name="choose_sharing_app">பகிர பயன்பாட்டைத் தேர்வுசெய்யவும்</string>
-    <string name="preferences_reset">இயல்புநிலைக்கு மீட்டமைக்கவா\?</string>
+    <string name="preferences_reset_question">இயல்புநிலைக்கு மீட்டமைக்கவா\?</string>
     <string name="received_files">பெறப்பட்ட கோப்புகள்</string>
     <string name="edit">திருத்து</string>
     <string name="share">பகிர்</string>
@@ -115,7 +115,7 @@
     <string name="name">பெயர்</string>
     <string name="date">தேதி</string>
     <string name="size">அளவு</string>
-    <string name="butn_resetToDefault">இயல்புநிலைக்கு மீட்டமை</string>
+    <string name="preferences_reset">இயல்புநிலைக்கு மீட்டமை</string>
     <string name="files">கோப்புகள்</string>
     <string name="ques_allowDeviceToConnect">இந்த சாதனம் இணைக்க வேண்டுமா\?</string>
     <string name="notifications_use_lights">விளக்குகள்</string>

@@ -32,7 +32,7 @@
     <string name="text_deviceList">裝置</string>
     <string name="text_fileOpenAppChoose">以 ... 開啟</string>
     <string name="choose_sharing_app">選擇想要分享的 app</string>
-    <string name="preferences_reset">重置為預設\?</string>
+    <string name="preferences_reset_question">重置為預設\?</string>
     <string name="received_files">接收的檔案</string>
     <string name="edit">編輯</string>
     <string name="share">分享</string>
@@ -268,7 +268,7 @@
     <string name="size">大小</string>
     <string name="text_trustZoneDeviceNotice">當開啟 TrustZone 時自動接收傳入的檔案</string>
     <string name="text_allowingToConnectNotice">允許從此裝置的連線</string>
-    <string name="butn_resetToDefault">回復預設值</string>
+    <string name="preferences_reset">回復預設值</string>
     <string name="preferences_reset_notice">這將會套用初始設定</string>
     <string name="wifi">Wi-Fi</string>
     <string name="text_trustZoneEnabled">TrustZone</string>

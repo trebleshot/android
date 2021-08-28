@@ -68,7 +68,7 @@
     <string name="share">सांझा करें</string>
     <string name="edit">संपादित करें</string>
     <string name="received_files">प्राप्त की हुई फाइलें</string>
-    <string name="preferences_reset">वापिस डिफ़ॉल्ट में करें\?</string>
+    <string name="preferences_reset_question">वापिस डिफ़ॉल्ट में करें\?</string>
     <string name="choose_sharing_app">सांझा करने के लिए एप चुने</string>
     <string name="text_fileOpenAppChoose">अन्य एप के साथ खोलें</string>
     <string name="text_deviceList">यंत्र</string>

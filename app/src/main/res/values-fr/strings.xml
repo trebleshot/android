@@ -32,7 +32,7 @@
     <string name="text_deviceList">Appareils</string>
     <string name="text_fileOpenAppChoose">Ouvrir avec</string>
     <string name="choose_sharing_app">Choisissez une application avec laquelle vous souhaitez partager</string>
-    <string name="preferences_reset">Réinitialiser aux valeurs par défaut ?</string>
+    <string name="preferences_reset_question">Réinitialiser aux valeurs par défaut ?</string>
     <string name="received_files">Fichiers reçus</string>
     <string name="edit">Modifier</string>
     <string name="share">Partager</string>
@@ -232,7 +232,7 @@
     <string name="size">Taille</string>
     <string name="text_trustZoneDeviceNotice">Accepter automatiquement les éléments entrants lorsque TrustZone est activé</string>
     <string name="text_allowingToConnectNotice">Autoriser les connexions venant de cet appareil</string>
-    <string name="butn_resetToDefault">Rétablir les paramètres par défaut</string>
+    <string name="preferences_reset">Rétablir les paramètres par défaut</string>
     <string name="preferences_reset_notice">Ceci appliquera les réglages initiaux</string>
     <string name="text_taskCompleted">Tâche terminée</string>
     <string name="text_networkServiceDiscovery">Activer NSD</string>

@@ -56,7 +56,7 @@
     <string name="receive_files_success">Файлы получены</string>
     <string name="text_fileOpenAppChoose">Открыть с помощью</string>
     <string name="choose_sharing_app">Поделиться с помощью</string>
-    <string name="preferences_reset">Сбросить к стандартным настройкам\?</string>
+    <string name="preferences_reset_question">Сбросить к стандартным настройкам\?</string>
     <string name="received_files">Полученные файлы</string>
     <string name="edit">Изменить</string>
     <string name="deletion_confirmation">Подтверждение удаления</string>
@@ -185,7 +185,7 @@
     <string name="size">Размер</string>
     <string name="text_trustZoneDeviceNotice">Автоматически принимать входящие файлы, если включена TrustZone</string>
     <string name="text_allowingToConnectNotice">Разрешить соединения от этого устройства</string>
-    <string name="butn_resetToDefault">Сброс значений по умолчанию</string>
+    <string name="preferences_reset">Сброс значений по умолчанию</string>
     <string name="text_networkServiceDiscovery">Включить сервис поиска сетевых ресурсов</string>
     <string name="exit">Выход</string>
     <string name="butn_queueCounted">Очередь (%d)</string>

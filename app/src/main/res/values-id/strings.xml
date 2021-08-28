@@ -29,7 +29,7 @@
     <string name="text_deviceList">Perangkat</string>
     <string name="text_fileOpenAppChoose">Buka dengan</string>
     <string name="choose_sharing_app">Pilih aplikasi untuk membagikan</string>
-    <string name="preferences_reset">Reset ke awalan\?</string>
+    <string name="preferences_reset_question">Reset ke awalan\?</string>
     <string name="received_files">Berkas yang diterima</string>
     <string name="edit">Edit</string>
     <string name="share">Bagikan</string>
@@ -260,7 +260,7 @@
     <string name="text_taskCompleted">Tugas selesai</string>
     <string name="text_workerService">Layanan pekerja</string>
     <string name="preferences_reset_notice">Ini akan menerapkan pengaturan awalan</string>
-    <string name="butn_resetToDefault">Reset ke awalan</string>
+    <string name="preferences_reset">Reset ke awalan</string>
     <string name="text_allowingToConnectNotice">Izinkan koneksi dari perangkat ini</string>
     <string name="text_trustZoneDeviceNotice">Terima item yang masuk secara otomatis saat ZonaDipercaya menyala</string>
     <string name="size">Besar</string>

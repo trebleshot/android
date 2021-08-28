@@ -230,8 +230,8 @@
     <string name="size">Boyut</string>
     <string name="text_trustZoneDeviceNotice">GüvenliBölge etkinken gelen nesneleri kendiliğinden kabul eder</string>
     <string name="text_allowingToConnectNotice">Bu cihazdan gelen bağlantılara izin ver</string>
-    <string name="butn_resetToDefault">Varsayılana sıfırla</string>
-    <string name="preferences_reset">Varsayılana sıfırlansın mı?</string>
+    <string name="preferences_reset">Varsayılana Sıfırla</string>
+    <string name="preferences_reset_question">Varsayılana sıfırlansın mı?</string>
     <string name="preferences_reset_notice">Bu varsayılan ayarları uygulayacak</string>
     <string name="text_workerService">Arkaplan işleyicisi</string>
     <string name="text_taskCompleted">İşlem tamamlandı</string>
@@ -568,7 +568,7 @@
     <string name="delete_empty_text_question">Boş metni silmek ister misiniz\?</string>
     <string name="split_apk">Ayrık APK</string>
     <string name="battery_saver_theme">Güç Tasarrufu karar verir</string>
-    <string name="follow_system_theme">Sistem Temasını takip eder</string>
+    <string name="follow_system_theme">Sistem Tema\'sını takip eder</string>
     <string name="light_theme">Açık</string>
     <string name="dark_theme">Karanlık</string>
     <string name="ui_theme">Tema</string>

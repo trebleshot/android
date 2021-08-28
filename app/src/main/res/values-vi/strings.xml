@@ -223,7 +223,7 @@
     <string name="text_taskCompleted">Tác vụ hoàn thành</string>
     <string name="mesg_scanningSelfHotspot">Đang tìm hotspot TrebleShot</string>
     <string name="exit">Thoát</string>
-    <string name="preferences_reset">Đặt lại về mặc định\?</string>
+    <string name="preferences_reset_question">Đặt lại về mặc định\?</string>
     <string name="mesg_providerNotAllowedError">Các app khác không thể dùng thư mục mặc định</string>
     <string name="mesg_scanningDevicesSelfHotspot">Đang tìm thiết bị qua hotspot TrebleShot</string>
     <string name="cancel_receiving">Huỷ nhận</string>
@@ -339,7 +339,7 @@
     <string name="ques_connectionWizardIsThereQRCode">Bạn thấy có mã QR (mã vạch) trên màn hình bên kia không\?</string>
     <string name="notifications_use_lights">Đèn</string>
     <string name="stopping">Đang dừng</string>
-    <string name="butn_resetToDefault">Quay về mặc định</string>
+    <string name="preferences_reset">Quay về mặc định</string>
     <string name="text_renameMultipleItems">Đổi tên nhiều mục</string>
     <string name="type_text_notice">Viết gì đó để gửi…</string>
     <string name="butn_asApk">Bằng APK</string>

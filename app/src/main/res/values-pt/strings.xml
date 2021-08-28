@@ -29,7 +29,7 @@
     <string name="text_deviceList">Aparelhos</string>
     <string name="text_fileOpenAppChoose">Abrir com</string>
     <string name="choose_sharing_app">Escolha uma app para partilhar</string>
-    <string name="preferences_reset">Repor valores padrão\?</string>
+    <string name="preferences_reset_question">Repor valores padrão\?</string>
     <string name="received_files">Ficheiros recebidos</string>
     <string name="edit">Editar</string>
     <string name="share">Partilhar</string>
@@ -257,7 +257,7 @@
     <string name="size">Tamanho</string>
     <string name="text_trustZoneDeviceNotice">Aceita itens a receber automaticamente quando o TrustZone está ativado</string>
     <string name="text_allowingToConnectNotice">Permitir conexões deste aparelho</string>
-    <string name="butn_resetToDefault">Repor valores padrão</string>
+    <string name="preferences_reset">Repor valores padrão</string>
     <string name="preferences_reset_notice">Isto irá aplicar as configurações originais</string>
     <string name="text_workerService">Serviço de tarefas</string>
     <string name="text_taskCompleted">Tarefa concluída</string>

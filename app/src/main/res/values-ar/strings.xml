@@ -28,7 +28,7 @@
     <string name="text_deviceList">قائمة الأجهزة</string>
     <string name="text_fileOpenAppChoose">فتح بإستخدام</string>
     <string name="choose_sharing_app">مشاركة بواسطة</string>
-    <string name="preferences_reset">إعادة تعيين إلى الافتراضي؟</string>
+    <string name="preferences_reset_question">إعادة تعيين إلى الافتراضي؟</string>
     <string name="received_files">الملفات المستلمة</string>
     <string name="edit">تعديل</string>
     <string name="share">مشاركة</string>
@@ -271,7 +271,7 @@
     <string name="size">الحجم</string>
     <string name="text_trustZoneDeviceNotice">تفعيل هذا سيمكن هذا الجهاز لإرسال الملفات دون عرض مطالبة عند تشغيل المنطقة الموثوقة</string>
     <string name="text_allowingToConnectNotice">عند تحديد هذا سوف تسمح للاجهزة الاخرى بلاتصال بجهازك</string>
-    <string name="butn_resetToDefault">إعادة التعيين إلى الافتراضي</string>
+    <string name="preferences_reset">إعادة التعيين إلى الافتراضي</string>
     <string name="preferences_reset_notice">هذا سيعيد تطبيق الإعدادات الافتراضية</string>
     <string name="text_workerService">الخدمة تعمل</string>
     <string name="text_taskCompleted">إكتمال المهمة</string>

@@ -32,7 +32,7 @@
     <string name="text_deviceList">Geräte</string>
     <string name="text_fileOpenAppChoose">Öffnen mit</string>
     <string name="choose_sharing_app">App zum Teilen wählen</string>
-    <string name="preferences_reset">Auf Standard zurücksetzen?</string>
+    <string name="preferences_reset_question">Auf Standard zurücksetzen?</string>
     <string name="received_files">Empfangene Dateien</string>
     <string name="edit">Bearbeiten</string>
     <string name="share">Teilen</string>
@@ -272,7 +272,7 @@
     <string name="size">Größe</string>
     <string name="text_trustZoneDeviceNotice">Akzeptiert automatisch eingehende Artikel, wenn TrustZone eingeschaltet ist</string>
     <string name="text_allowingToConnectNotice">Verbindungen von diesem Gerät aus zulassen</string>
-    <string name="butn_resetToDefault">Auf Standard zurücksetzen</string>
+    <string name="preferences_reset">Auf Standard zurücksetzen</string>
     <string name="preferences_reset_notice">Dies wird die Standardeinstellungen wiederherstellen</string>
     <string name="text_workerService">Hintergrunddienst</string>
     <string name="text_taskCompleted">Aufgabe abgeschlossen</string>

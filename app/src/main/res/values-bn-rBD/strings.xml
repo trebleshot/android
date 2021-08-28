@@ -26,7 +26,7 @@
     <string name="share">শেয়ার করুন</string>
     <string name="edit">সম্পাদন করুন</string>
     <string name="received_files">প্রাপ্ত ফাইলস</string>
-    <string name="preferences_reset">ডিফল্ট এ পুনরায় সেট করবেন\?</string>
+    <string name="preferences_reset_question">ডিফল্ট এ পুনরায় সেট করবেন\?</string>
     <string name="choose_sharing_app">শেয়ার করার জন্য অ্যাপ্লিকেশন নির্বাচন করুন</string>
     <string name="text_fileOpenAppChoose">সঙ্গে খুলুন</string>
     <string name="text_deviceList">ডিভাইসগুলো</string>
