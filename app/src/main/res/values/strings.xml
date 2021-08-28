@@ -311,7 +311,7 @@
     <string name="all_clients">All Clients</string>
     <string name="connect_to_wifi">Connect to Wi-Fi</string>
     <string name="wifi_connection_notice">1- Open Wi-Fi settings.
-        \n\n2- Wait until \'%s\' appears on the Wi-Fi list.
+        \n\n2- Wait until \"%s\" appears on the Wi-Fi list.
         \n\n3- Pick it (%s) and paste the password (%s).
         \n\n4- Return here after connecting.
     </string>
