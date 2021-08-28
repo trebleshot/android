@@ -20,7 +20,7 @@
     <string name="ongoing_task">Lopende taak</string>
     <string name="stop">Afbreken</string>
     <string name="sending">Bezig met versturen</string>
-    <string name="cancel_sending">Versturen annuleren</string>
+    <string name="cancel_sending">Verzending annuleren</string>
     <string name="receiving">Bezig met ontvangen</string>
     <string name="cancel_receiving">Ontvangen annuleren</string>
     <string name="text_fileReceived">Het bestand is ontvangen</string>
@@ -29,7 +29,7 @@
     <string name="text_developerMode">Ontwikkelaarsmodus</string>
     <string name="text_developerModeSummary">Schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
-    <string name="nickname_description">Deze naam wordt getoond op andere apparaten</string>
+    <string name="nickname_description">De naam die op andere apparaten wordt getoond</string>
     <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
     <string name="mesg_formatNotSupported">Niet-ondersteund formaat</string>
     <string name="send_file_failure">‘%s’ kan niet worden verstuurd</string>
@@ -98,7 +98,7 @@
     <string name="error_not_allowed">Je bent niet bevoegd (ben je geblokkeerd\?)</string>
     <string name="mesg_connectionProblem">Verbindingsprobleem</string>
     <string name="text_communicationProblem">Communicatieprobleem</string>
-    <string name="multi_selection">Meerdere selecteren</string>
+    <string name="multi_selection">Meervoudig selecteren</string>
     <string name="receive">Ontvangen</string>
     <string name="block">Blokkeren</string>
     <string name="text_aboutSummary">Deze software is ontwikkeld door de Genonbeta Libre Software Org</string>
@@ -139,7 +139,7 @@
     <string name="text_newVersionAvailable">Nieuwe versie beschikbaar!</string>
     <string name="butn_goUp">Ga omhoog</string>
     <string name="folder">Map</string>
-    <string name="organizing_files_notice">Bezig met organiseren van je bestanden</string>
+    <string name="organizing_files_notice">Bezig met organiseren van je bestanden…</string>
     <string name="mesg_communicating">Bezig met communiceren</string>
     <string name="text_clientService">Cliëntdienst</string>
     <string name="text_serverService">Serverdienst</string>
@@ -260,8 +260,8 @@
     <string name="location_settings">Locatie</string>
     <string name="mesg_locationDisabledSelfHotspot">Schakel de locatiedienst in om scanresultaten te zien en een hotspot te creëren</string>
     <string name="mesg_scanningDevicesSelfHotspot">Bezig met zoeken naar apparaten via TrebleShot-hotspot</string>
-    <string name="starting_hotspot_notice">Bezig met uitschakelen van TrebleShot-hotspot…</string>
-    <string name="stopping_hotspot_notice">Bezig met inschakelen van TrebleShot-hotspot…</string>
+    <string name="starting_hotspot_notice">Bezig met uitschakelen van hotspot…</string>
+    <string name="stopping_hotspot_notice">Bezig met inschakelen van hotspot…</string>
     <string name="text_shareWithTrebleshot">@string/butn_shareWithTrebleshot</string>
     <string name="check">Alles controleren</string>
     <string name="uncheck">Alles ongedaan maken</string>
@@ -276,7 +276,7 @@
     <string name="mesg_helpFolderSelection">Druk op een mappictogram om deze te selecteren</string>
     <string name="mesg_hotspotCreatedInfo">Maak verbinding met \"%s\" in de \"Wi-Fi-instellingen\" of verstuur bestanden via \"%s\" binnen TrebleShot</string>
     <string name="select_all">Alles selecteren</string>
-    <string name="select_none">Niks selecteren</string>
+    <string name="select_none">Niets selecteren</string>
     <string name="preview_selections">Selectievoorbeeld</string>
     <string name="mesg_deviceConnectionError">De verbinding met \"%s\" via \"%s\" is mislukt</string>
     <string name="retry_receiving_notice">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
@@ -446,7 +446,7 @@
     <string name="choose">Kiezen</string>
     <string name="butn_fixConnection">Verbinding repararen</string>
     <string name="never">Nooit</string>
-    <string name="externally_started_hotspot_notice">De hotspot is via extern gestart. Om de QR-code te gebruiken, moet je de hotspot hier starten.</string>
+    <string name="externally_started_hotspot_notice">Extern opgezette hotspots kunnen hier niet worden beheerd</string>
     <string name="text_shortcut">Snelkoppeling</string>
     <string name="butn_addShortcut">Snelkoppeling toevoegen</string>
     <string name="butn_removeShortcut">Snelkoppeling verwijderen</string>
@@ -558,4 +558,100 @@
     <string name="scanner_qr_code_notice">QR-codescanner binnen vak plaatsen</string>
     <string name="trust">Vertrouwen</string>
     <string name="remove_transfer_question">Overdracht verwijderen\?</string>
+    <string name="about_uprotocol_content"><b>uprotocol</b> is een vrij protocol voor inhoudsdeling waarmee allerlei soorten software kan communiceren en inhoud kan uitwisselen. Het is van nature veilig en wordt geleverd met een consistente reeks api\'s.
+\n
+\nAls ontwikkelaar is het eenvoudig om deze functionaliteit toe te voegen aan je app! </string>
+    <string name="wifi_connection_notice">1- Open de wifi-instellingen;
+\n
+\n2- Wacht tot ‘%s’ verschijnt op de lijst;
+\n
+\n3- Kies ‘%s’ en plak het wachtwoord (%s);
+\n
+\n4- Keer terug naar hier zodra je verbonden bent.</string>
+    <string name="pick_the_sender">Kies een afzender</string>
+    <string name="shared_by_other_apps">Gedeeld door andere apps</string>
+    <string name="status_icon">Statuspictogram</string>
+    <string name="installing">Bezig met installeren…</string>
+    <string name="package_install_failure_unknown">De installatie is om onbekende reden mislukt</string>
+    <string name="package_install_failure_storage">De installatie is mislukt omdat er onvoldoende vrij ruimte is</string>
+    <string name="package_install_invalid">Het pakket is ongeldig of de ondertekening komt niet overeen</string>
+    <string name="package_install_incompatible">Het pakket is incompatibel</string>
+    <string name="package_install_conflicted">Er is een conflict met een ander pakket</string>
+    <string name="package_install_blocked">De pakketinstallatie is mislukt omdat de app geblokkeerd is</string>
+    <string name="package_install_aborted">De pakketinstallatie is afgebroken</string>
+    <string name="package_install_failure">Het pakket kan niet worden geïnstalleerd</string>
+    <string name="package_install_success">Het pakket is geïnstalleerd</string>
+    <string name="app_icon">App-pictogram</string>
+    <string name="install_package">Pakket installeren</string>
+    <string name="image_bucket_thumbnail">Miniatuurafbeelding</string>
+    <string name="no_artists">Er zijn hier nog geen artiesten</string>
+    <string name="no_albums">Er zijn hier nog geen albums</string>
+    <string name="artist_picture">Artiestfoto</string>
+    <string name="album_art">Albumhoes</string>
+    <string name="artists">Artiesten</string>
+    <string name="albums">Albums</string>
+    <string name="all_songs">Alle muziek</string>
+    <string name="about_uprotocol">Over uprotocol</string>
+    <string name="powered_by_uprotocol" formatted="false">Aangedreven door <b>uprotocol</b></string>
+    <string name="sender_wait_for_receiver_notice">Hier kunnen ontvangers jou kiezen</string>
+    <string name="starting">Bezig met starten…</string>
+    <string name="sender_finishing">Bezig met afronden…</string>
+    <string name="receiver_pending">Kies de afzender waarvan je items wilt ontvangen</string>
+    <string name="sender_accepted">De afzender is goedgekeurd</string>
+    <string name="sender_not_expecting">%s heeft niks verstuurd</string>
+    <string name="rejecting">Bezig met afwijzen…</string>
+    <string name="folder_name">Mapnaam</string>
+    <string name="error_empty_field">Dit veld mag niet blanco zijn</string>
+    <string name="folder_not_writable">De map is schrijfbeveiligd</string>
+    <string name="storage_folder_notice">De map waarin items moeten worden opgeslagen</string>
+    <string name="change_storage_folder">Opslagmap wijzigen</string>
+    <string name="storage_folder">Opslagmap</string>
+    <string name="clear_storage_list">Opslagruimtelijst wissen</string>
+    <string name="add_storage_access">Opslagruimte toevoegen…</string>
+    <string name="root_folder">Hoofdmap</string>
+    <string name="nickname">Bijnaam</string>
+    <string name="error_communication_security">Er is een beveiligingsfout opgetreden</string>
+    <string name="deny">Weigeren</string>
+    <string name="invalidate">Ongeldig verklaren</string>
+    <string name="error_communication_security_credentials">De inloggegevens komen niet overeen - koppelen benodigd</string>
+    <string name="author">Maker</string>
+    <string name="authors">Makers</string>
+    <string name="using_qr_code">Middels QR-code</string>
+    <string name="scan">Scannen</string>
+    <string name="generate">Genereren</string>
+    <string name="apps">Apps</string>
+    <string name="manage_clients">Clients beheren</string>
+    <string name="error_no_activity_to_view">Je hebt geen app waarmee dit kan worden geopend</string>
+    <string name="granted">Toegekend</string>
+    <string name="grant">Toekennen</string>
+    <string name="change_picture">Afbeelding wijzigen</string>
+    <string name="remove_picture">Afbeelding verwijderen</string>
+    <string name="edit_profile">Profiel bewerken</string>
+    <string name="received_using_web_share">Ontvangen via webclient</string>
+    <string name="receiving_using_web_web_share">Ontvangen via webclient</string>
+    <string name="web_share_empty_notice">Er wordt nog niks gedeeld. Deel iets in de app en kijk nogmaals hier!</string>
+    <string name="folders">Mappen</string>
+    <string name="images">Afbeeldingen</string>
+    <string name="videos">Video\'s</string>
+    <string name="songs">Muziek</string>
+    <string name="sharing_on_web">Delen via webclient</string>
+    <string name="share_on_web">Delen via webclient</string>
+    <string name="web_share_description">Een webomgeving voor het delen van bestanden via webbrowsers</string>
+    <string name="preparing">Bezig met voorbereiden…</string>
+    <string name="selections">Selecties</string>
+    <string name="run_in_background">Uitvoeren op achtergrond</string>
+    <string name="completed">Voltooid</string>
+    <string name="error_protocol_unknown">Er is een onbekende protocolfout opgetreden</string>
+    <string name="error_client_no_address">De client heeft geen adres - probeer handmatig te verbinden</string>
+    <string name="error_communication_unknown">Er is een onbekende communicatiefout opgetreden</string>
+    <string name="outgoing">Uitgaand</string>
+    <string name="incoming">Inkomend</string>
+    <string name="waiting_receiver_approval_notice">Bezig met wachten op goedkeuring…</string>
+    <string name="client_model">Model</string>
+    <string name="client_details">Clientinformatie</string>
+    <string name="verify_client">Client goedkeuren</string>
+    <string name="matching_client_question">Is dit de client die je bedoelde\?</string>
+    <string name="client_offline_notice">De externe client is niet beschikbaar</string>
+    <string name="connecting_to_client">Bezig met verbinden met client…</string>
+    <string name="write_system_settings_permission_required_notice">Niet bevoegd om de systeeminstellingen aan te passen</string>
 </resources>
