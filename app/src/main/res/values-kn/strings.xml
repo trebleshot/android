@@ -189,7 +189,7 @@
     <string name="remaining_time">ETA %s</string>
     <string name="text_communicationServiceStop">ಸೆಷನ್ ಅನ್ನು ಅಂತ್ಯಗೊಳಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</string>
     <string name="service_running_notice">TrebleShot ಈಗ ಕಡತಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಬಹುದು</string>
-    <string name="butn_copyToClipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿ</string>
+    <string name="copy_to_clipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿ</string>
     <string name="removed">ತೆಗೆದುಹಾಕಿದ</string>
     <string name="text_usedConnection">ಬಳಸಿದ ಸಂಪರ್ಕ</string>
     <string name="text_transactionGroupDetails">ವಹಿವಾಟು ಗುಂಪಿನ ವಿವರಗಳು</string>
@@ -232,7 +232,7 @@
     <string name="text_fileExplorer">ಕಡತಗಳನ್ನು ಇಲ್ಲಿ ಹುಡುಕಿ</string>
     <string name="transfer_details">ವಿವರಗಳು</string>
     <string name="resume">ಮುಂದುವರಿಸಿ</string>
-    <string name="file_status">ಕಡತದ ಸ್ಥಿತಿ</string>
+    <string name="status">ಕಡತದ ಸ್ಥಿತಿ</string>
     <string name="file_mime">ಕಡತದ ಪ್ರಕಾರ</string>
     <string name="file_size">ಕಡತ ಗಾತ್ರ</string>
     <string name="file_name">ಕಡತದ ಹೆಸರು</string>
@@ -291,7 +291,7 @@
     <string name="butn_checkForUpdates">ಹೊಸ ಆವೃತ್ತಿಗಾಗಿ ಪರಿಶೀಲಿಸಿ</string>
     <string name="receive_text_summary_success">ಕ್ಲಿಪ್ಬೋರ್ಡ್ ಪಠ್ಯವನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</string>
     <string name="receive_text_success">ಪಠ್ಯ ಸ್ವೀಕರಿಸಲಾಗಿದೆ</string>
-    <string name="copy_to_clipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸುವುದೇ\?</string>
+    <string name="copy_to_clipboard_question">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸುವುದೇ\?</string>
     <string name="copy_text_to_clipboard_success">ಪಠ್ಯವನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</string>
     <string name="enter_text_notice">ಪಠ್ಯವನ್ನು ಇಲ್ಲಿ ನಮೂದಿಸಿ…</string>
     <string name="launch_app_failure">ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುವುದಿಲ್ಲ</string>

@@ -109,7 +109,7 @@
     <string name="launch_app_failure">このアプリは起動できません</string>
     <string name="enter_text_notice">ここにテキストを入力…</string>
     <string name="copy_text_to_clipboard_success">テキストをクリップボードにコピーしました</string>
-    <string name="copy_to_clipboard">クリップボードにコピーしますか?</string>
+    <string name="copy_to_clipboard_question">クリップボードにコピーしますか?</string>
     <string name="receive_text_success">受信したテキスト</string>
     <string name="receive_text_summary_success">受信したクリップボードのテキスト</string>
     <string name="butn_checkForUpdates">新しいバージョンのチェック</string>
@@ -176,7 +176,7 @@
     <string name="file_name">ファイル名</string>
     <string name="file_size">ファイルサイズ</string>
     <string name="file_mime">ファイルの種類</string>
-    <string name="file_status">ファイルの状態</string>
+    <string name="status">ファイルの状態</string>
     <string name="resume">再開</string>
     <string name="transfer_details">詳細</string>
     <string name="text_fileExplorer">ファイルエクスプローラー</string>

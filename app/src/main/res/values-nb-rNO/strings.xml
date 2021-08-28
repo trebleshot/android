@@ -108,7 +108,7 @@
     <string name="launch_app_failure">Programmet kan ikke kjøres</string>
     <string name="enter_text_notice">Skriv inn tekst her…</string>
     <string name="copy_text_to_clipboard_success">Tekst kopiert til utklippstavle</string>
-    <string name="copy_to_clipboard">Kopier til utklippstavle?</string>
+    <string name="copy_to_clipboard_question">Kopier til utklippstavle?</string>
     <string name="receive_text_success">Tekst mottatt</string>
     <string name="receive_text_summary_success">Mottok tekst fra utklippstavle</string>
     <string name="butn_checkForUpdates">Se etter ny versjon</string>
@@ -176,7 +176,7 @@
     <string name="file_name">Filnavn</string>
     <string name="file_size">Filstørrelse</string>
     <string name="file_mime">Filtype</string>
-    <string name="file_status">Filstatus</string>
+    <string name="status">Filstatus</string>
     <string name="resume">Gjenoppta</string>
     <string name="transfer_details">Detaljer</string>
     <string name="text_fileExplorer">Filutforsker</string>
@@ -225,7 +225,7 @@
     <string name="text_transactionGroupDetails">Gruppedetaljer for overføring</string>
     <string name="text_usedConnection">Brukt tilkobling</string>
     <string name="removed">Fjernet</string>
-    <string name="butn_copyToClipboard">Kopier til utklippstavle</string>
+    <string name="copy_to_clipboard">Kopier til utklippstavle</string>
     <string name="service_running_notice">TrebleShot kan dele filer nå</string>
     <string name="text_communicationServiceStop">Trykk for å sluttføre økt</string>
     <string name="show_files">Vis filer</string>

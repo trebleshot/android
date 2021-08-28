@@ -89,7 +89,7 @@
     <string name="launch_app_failure">این برنامه را نمی‌توان راه اندازی کرد</string>
     <string name="enter_text_notice">متن را اینجا وارد کنید…</string>
     <string name="copy_text_to_clipboard_success">متن در کلیپ‌بورد کپی شد</string>
-    <string name="copy_to_clipboard">در کلیپ بورد کپی شود؟</string>
+    <string name="copy_to_clipboard_question">در کلیپ بورد کپی شود؟</string>
     <string name="receive_text_success">متن دریافت شد</string>
     <string name="receive_text_summary_success">متن‌های دریافت شده کلیپ‌بورد</string>
     <string name="butn_checkForUpdates">بررسی برای نسخه جدید</string>
@@ -145,7 +145,7 @@
     <string name="file_name">نام فایل</string>
     <string name="file_size">اندازه فایل</string>
     <string name="file_mime">نوع فایل</string>
-    <string name="file_status">وضعیت فایل</string>
+    <string name="status">وضعیت فایل</string>
     <string name="resume">خلاصه</string>
     <string name="transfer_details">جزئیات</string>
     <string name="text_fileExplorer">مرورگر فایل</string>
@@ -190,7 +190,7 @@
     <string name="text_savePath">ذخیره مسیر</string>
     <string name="text_usedConnection">اتصال مورد استفاده</string>
     <string name="removed">حذف شده</string>
-    <string name="butn_copyToClipboard">کپی در حافظه نهان</string>
+    <string name="copy_to_clipboard">کپی در حافظه نهان</string>
     <string name="service_running_notice">اکنون TrebleShot می‌تواند پرونده‌ها را هم‌رسانی کند</string>
     <string name="text_communicationServiceStop">برای اتمام جلسه، لمس کنید</string>
     <string name="show_files">نمایش پرونده‌ها</string>

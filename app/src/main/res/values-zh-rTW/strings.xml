@@ -91,7 +91,7 @@
     <string name="launch_app_failure">這個 app 無法被啟動</string>
     <string name="enter_text_notice">在這裡輸入文字…</string>
     <string name="copy_text_to_clipboard_success">文字已複製到剪貼板</string>
-    <string name="copy_to_clipboard">複製到剪貼板\?</string>
+    <string name="copy_to_clipboard_question">複製到剪貼板\?</string>
     <string name="receive_text_success">已接收文字</string>
     <string name="receive_text_summary_success">已接收的剪切板文字</string>
     <string name="butn_checkForUpdates">檢查新版本</string>
@@ -152,7 +152,7 @@
     <string name="file_name">檔案名稱</string>
     <string name="file_size">檔案大小</string>
     <string name="file_mime">檔案類型</string>
-    <string name="file_status">檔案狀態</string>
+    <string name="status">檔案狀態</string>
     <string name="resume">繼續</string>
     <string name="transfer_details">詳細資訊</string>
     <string name="text_fileExplorer">檔案瀏覽器</string>
@@ -198,7 +198,7 @@
     <string name="text_transactionGroupDetails">傳輸群組資料</string>
     <string name="text_usedConnection">使用的連線</string>
     <string name="removed">已移除</string>
-    <string name="butn_copyToClipboard">複製到剪貼板</string>
+    <string name="copy_to_clipboard">複製到剪貼板</string>
     <string name="service_running_notice">TrebleShot 現在可以分享檔案了</string>
     <string name="text_communicationServiceStop">點擊來終止任務</string>
     <string name="remaining_time">預計時間 %s</string>

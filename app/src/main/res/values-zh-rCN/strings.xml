@@ -88,7 +88,7 @@
     <string name="launch_app_failure">这个应用不能运行</string>
     <string name="enter_text_notice">在这里输入文本…</string>
     <string name="copy_text_to_clipboard_success">文本已复制到剪贴板</string>
-    <string name="copy_to_clipboard">复制到剪贴板吗？</string>
+    <string name="copy_to_clipboard_question">复制到剪贴板吗？</string>
     <string name="receive_text_success">文本已收到</string>
     <string name="receive_text_summary_success">收到剪贴板文本</string>
     <string name="butn_checkForUpdates">检查新版本</string>
@@ -126,7 +126,7 @@
     <string name="default_folder">默认文件夹</string>
     <string name="text_storage">存储</string>
     <string name="text_shareFiles">分享文件</string>
-    <string name="file_status">文件状态</string>
+    <string name="status">文件状态</string>
     <string name="open_navigation_drawer">打开导航抽屉</string>
     <string name="close_navigation_drawer">关闭导航抽屉</string>
     <string name="receive_file_success">%s 已接收</string>
@@ -211,7 +211,7 @@
     <string name="ask">请求权限</string>
     <string name="text_usedConnection">使用过的连接</string>
     <string name="removed">已移除</string>
-    <string name="butn_copyToClipboard">复制到剪贴板</string>
+    <string name="copy_to_clipboard">复制到剪贴板</string>
     <string name="service_running_notice">TrebleShot可以分享文件了</string>
     <string name="text_communicationServiceStop">轻触以停止</string>
     <string name="remaining_time">剩余时间 %s</string>

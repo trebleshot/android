@@ -93,7 +93,7 @@
     <string name="launch_app_failure">Diese App kann nicht gestartet werden</string>
     <string name="enter_text_notice">Hier Text eingeben …</string>
     <string name="copy_text_to_clipboard_success">Text in Zwischenablage kopiert</string>
-    <string name="copy_to_clipboard">In Zwischenablage kopieren?</string>
+    <string name="copy_to_clipboard_question">In Zwischenablage kopieren?</string>
     <string name="receive_text_success">Text empfangen</string>
     <string name="receive_text_summary_success">Zwischenablagentext empfangen</string>
     <string name="butn_checkForUpdates">Nach neuer Version suchen</string>
@@ -155,7 +155,7 @@
     <string name="file_name">Dateiname</string>
     <string name="file_size">Dateigröße</string>
     <string name="file_mime">Dateityp</string>
-    <string name="file_status">Dateistatus</string>
+    <string name="status">Dateistatus</string>
     <string name="resume">Wiederaufnehmen</string>
     <string name="transfer_details">Details</string>
     <string name="text_fileExplorer">Dateiverwaltung</string>
@@ -202,7 +202,7 @@
     <string name="text_transactionGroupDetails">Details der Transaktionsgruppe</string>
     <string name="text_usedConnection">Benutzte Verbindung</string>
     <string name="removed">Entfernt</string>
-    <string name="butn_copyToClipboard">In Zwischenablage speichern</string>
+    <string name="copy_to_clipboard">In Zwischenablage speichern</string>
     <string name="service_running_notice">TrebleShot kann jetzt Dateien teilen</string>
     <string name="text_communicationServiceStop">Tippen zum Beenden der Sitzung</string>
     <string name="remaining_time">%s bleiben</string>

@@ -97,7 +97,7 @@
     <string name="launch_app_failure">Questa applicazione non può essere avviata</string>
     <string name="enter_text_notice">Inserisci testo…</string>
     <string name="copy_text_to_clipboard_success">Testo copiato negli appunti</string>
-    <string name="copy_to_clipboard">Copiare negli appunti\?</string>
+    <string name="copy_to_clipboard_question">Copiare negli appunti\?</string>
     <string name="receive_text_success">Testo ricevuto</string>
     <string name="receive_text_summary_success">Testo ricevuto negli appunti</string>
     <string name="butn_checkForUpdates">Controlla Aggiornamenti</string>
@@ -156,7 +156,7 @@
     <string name="file_name">Nome File</string>
     <string name="file_size">Dimensione File</string>
     <string name="file_mime">Tipo File</string>
-    <string name="file_status">Stato File</string>
+    <string name="status">Stato File</string>
     <string name="resume">Riprendi</string>
     <string name="transfer_details">Dettagli</string>
     <string name="text_fileExplorer">Esplora File</string>
@@ -199,7 +199,7 @@
     <string name="text_savePath">Salva Percorso</string>
     <string name="text_usedConnection">Connessione Utilizzata</string>
     <string name="removed">Rimosso</string>
-    <string name="butn_copyToClipboard">Copia negli appunti</string>
+    <string name="copy_to_clipboard">Copia negli appunti</string>
     <string name="service_running_notice">TrebleShot può condividere file</string>
     <string name="text_communicationServiceStop">Premi per terminare la sessione</string>
     <string name="show_files">Mostra File</string>

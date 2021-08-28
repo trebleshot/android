@@ -13,7 +13,7 @@
     <string name="type_text_notice">Įveskite ką nors siuntimui…</string>
     <string name="receive_text_summary_success">Gautas iškarpinės tekstas</string>
     <string name="receive_text_success">Gautas tekstas</string>
-    <string name="copy_to_clipboard">Kopijuoti į iškarpinę\?</string>
+    <string name="copy_to_clipboard_question">Kopijuoti į iškarpinę\?</string>
     <string name="copy_text_to_clipboard_success">Tekstas nukopijuotas į iškarpinę</string>
     <string name="enter_text_notice">Įveskite tekstą čia…</string>
     <string name="launch_app_failure">Ši programėlė negali būti paleista</string>

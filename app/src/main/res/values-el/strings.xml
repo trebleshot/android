@@ -93,7 +93,7 @@
     <string name="save_clipboard_notice">Αποθηκεύστε το κείμενο ή πατήστε ξανά για έξοδο</string>
     <string name="download">Λήψη</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="butn_copyToClipboard">Αντιγραφή στο πρόχειρο</string>
+    <string name="copy_to_clipboard">Αντιγραφή στο πρόχειρο</string>
     <string name="removed">Αφαιρέθηκε</string>
     <string name="storage_permission">Άδεια αποθήκευσης</string>
     <string name="ask">Ρωτήστε</string>
@@ -143,7 +143,7 @@
     <string name="text_editor">Επεξεργαστής κειμένου</string>
     <string name="butn_seeSourceCode">Δείτε τον πηγαίου κώδικα</string>
     <string name="butn_checkForUpdates">Έλεγχος για νέα έκδοση</string>
-    <string name="copy_to_clipboard">Αντιγραφή στο πρόχειρο;</string>
+    <string name="copy_to_clipboard_question">Αντιγραφή στο πρόχειρο;</string>
     <string name="copy_text_to_clipboard_success">Το κείμενο αντιγράφηκε στο πρόχειρο</string>
     <string name="receive">Λάβετε</string>
     <string name="mesg_connectionProblem">Πρόβλημα σύνδεσης</string>
@@ -342,7 +342,7 @@
     <string name="mesg_pathSameError">Δεν μπορείτε να επιλέξετε τον παλιό φάκελο</string>
     <string name="text_fileExplorer">Περιηγητής αρχείων</string>
     <string name="resume">Συνέχεια</string>
-    <string name="file_status">Κατάσταση αρχείου</string>
+    <string name="status">Κατάσταση αρχείου</string>
     <string name="butn_changeConnection">Αλλαγή σύνδεσης</string>
     <string name="change_storage_path_success">Ο φάκελος αποθηκεύτηκε</string>
     <string name="text_shareFiles">Κοινοποίηση αρχείων</string>

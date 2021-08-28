@@ -92,7 +92,7 @@
     <string name="launch_app_failure">Aplikazio hau ezin da abiatu</string>
     <string name="enter_text_notice">Sartu testua hemen…</string>
     <string name="copy_text_to_clipboard_success">Testua arbelera kopiatuta</string>
-    <string name="copy_to_clipboard">Kopiatu arbelera?</string>
+    <string name="copy_to_clipboard_question">Kopiatu arbelera?</string>
     <string name="receive_text_success">Testua jasota</string>
     <string name="receive_text_summary_success">Arbeleko testua jasota</string>
     <string name="butn_checkForUpdates">Egiaztatu bertsio berririk dagoen</string>
@@ -153,7 +153,7 @@
     <string name="file_name">Fitxategiaren izena</string>
     <string name="file_size">Fitxategiaren tamaina</string>
     <string name="file_mime">Fitxategi mota</string>
-    <string name="file_status">Fitxategiaren egoera</string>
+    <string name="status">Fitxategiaren egoera</string>
     <string name="resume">Berrekin</string>
     <string name="transfer_details">Xehetasunak</string>
     <string name="text_fileExplorer">Fitxategi arakatzailea</string>
@@ -200,7 +200,7 @@
     <string name="text_transactionGroupDetails">Transakzio taldearen xehetasunak</string>
     <string name="text_usedConnection">Erabilitako konexioa</string>
     <string name="removed">Kenduta</string>
-    <string name="butn_copyToClipboard">Kopiatu arbelera</string>
+    <string name="copy_to_clipboard">Kopiatu arbelera</string>
     <string name="service_running_notice">TrebleShot-ek fitxategiak partekatu ditzake orain</string>
     <string name="text_communicationServiceStop">Sakatu saioa amaitzeko</string>
     <string name="remaining_time">Falta den denbora: %s</string>

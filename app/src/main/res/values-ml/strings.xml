@@ -87,7 +87,7 @@
     <string name="butn_checkForUpdates">പുതിയ പതിപ്പിനായി പരിശോധിക്കുക</string>
     <string name="receive_text_summary_success">ക്ലിപ്പ്ബോര്‍ഡിലെ എഴുത്ത് ലഭിച്ചു</string>
     <string name="receive_text_success">എഴുത്ത് ലഭിച്ചു</string>
-    <string name="copy_to_clipboard">ക്ലിപ്പ്ബോര്‍ഡിലേക്ക് പകര്‍ത്തട്ടെ\?</string>
+    <string name="copy_to_clipboard_question">ക്ലിപ്പ്ബോര്‍ഡിലേക്ക് പകര്‍ത്തട്ടെ\?</string>
     <string name="copy_text_to_clipboard_success">എഴുത്ത് ക്ലിപ്പ്ബോര്‍ഡിലേക്ക് പകര്‍ത്തി</string>
     <string name="enter_text_notice">ഇവിടെ എഴുതുക…</string>
     <string name="launch_app_failure">ഈ ആപ്പ് തുറക്കാന്‍ കഴിയുന്നില്ല</string>

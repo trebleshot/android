@@ -85,7 +85,7 @@
     <string name="launch_app_failure">Esta app não pode ser iniciada</string>
     <string name="enter_text_notice">Introduza o texto aqui…</string>
     <string name="copy_text_to_clipboard_success">Texto copiado para a área de transferência</string>
-    <string name="copy_to_clipboard">Copiar para a área de transferência\?</string>
+    <string name="copy_to_clipboard_question">Copiar para a área de transferência\?</string>
     <string name="receive_text_success">Texto recebido</string>
     <string name="receive_text_summary_success">Texto recebido da área de transferência</string>
     <string name="butn_checkForUpdates">Verificar se há uma nova versão</string>
@@ -144,7 +144,7 @@
     <string name="file_name">Nome do ficheiro</string>
     <string name="file_size">Tamanho do ficheiro</string>
     <string name="file_mime">Tipo de ficheiro</string>
-    <string name="file_status">Estado do ficheiro</string>
+    <string name="status">Estado do ficheiro</string>
     <string name="resume">Continuar</string>
     <string name="transfer_details">Detalhes</string>
     <string name="text_fileExplorer">Explorador de ficheiros</string>
@@ -187,7 +187,7 @@
     <string name="text_transactionGroupDetails">Detalhes do grupo de transação</string>
     <string name="text_usedConnection">Conexão utilizada</string>
     <string name="removed">Removido</string>
-    <string name="butn_copyToClipboard">Copiar para área de transferência</string>
+    <string name="copy_to_clipboard">Copiar para área de transferência</string>
     <string name="service_running_notice">O TrebleShot pode enviar ficheiros agora</string>
     <string name="text_communicationServiceStop">Toque para terminar a sessão</string>
     <string name="remaining_time">Tempo restante estimado %s</string>

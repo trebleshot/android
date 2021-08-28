@@ -12,7 +12,7 @@
     <string name="butn_checkForUpdates">नए संस्करण के लिए जांच करें</string>
     <string name="receive_text_summary_success">क्लिपबोर्ड का टेक्स्ट प्राप्त हुआ</string>
     <string name="receive_text_success">टेक्स्ट प्राप्त हुआ</string>
-    <string name="copy_to_clipboard">क्लिपबोर्ड में कॉपी करें\?</string>
+    <string name="copy_to_clipboard_question">क्लिपबोर्ड में कॉपी करें\?</string>
     <string name="copy_text_to_clipboard_success">टेक्स्ट को क्लिपबोर्ड में कॉपी कर लिया गया है</string>
     <string name="enter_text_notice">यहाँ पर लिखें…</string>
     <string name="launch_app_failure">यह एप नहीं खोली जा सकती</string>
@@ -103,7 +103,7 @@
     <string name="text_fileExplorer">फाइल एक्स्प्लोरर</string>
     <string name="transfer_details">विवरण</string>
     <string name="resume">फिर शुरू करें</string>
-    <string name="file_status">फ़ाइल की स्थिति</string>
+    <string name="status">फ़ाइल की स्थिति</string>
     <string name="file_mime">फाइल का प्रकार</string>
     <string name="file_size">फ़ाइल का साइज़</string>
     <string name="file_name">फ़ाइल का नाम</string>

@@ -91,7 +91,7 @@
     <string name="launch_app_failure">Appen går inte att starta</string>
     <string name="enter_text_notice">Ange text här…</string>
     <string name="copy_text_to_clipboard_success">Text kopierad till urklippet</string>
-    <string name="copy_to_clipboard">Kopiera till urklippet\?</string>
+    <string name="copy_to_clipboard_question">Kopiera till urklippet\?</string>
     <string name="receive_text_success">Text mottagen</string>
     <string name="receive_text_summary_success">Mottagit urklippstext</string>
     <string name="butn_checkForUpdates">Se om det finns en ny version</string>
@@ -147,7 +147,7 @@
     <string name="file_name">Filnamn</string>
     <string name="file_size">Filstorlek</string>
     <string name="file_mime">Filtyp</string>
-    <string name="file_status">Filstatus</string>
+    <string name="status">Filstatus</string>
     <string name="resume">Återuppta</string>
     <string name="transfer_details">Detaljer</string>
     <string name="text_fileExplorer">Filhanterare</string>
@@ -191,7 +191,7 @@
     <string name="text_availableDiskSpace">Tillgängligt diskutrymme</string>
     <string name="text_usedConnection">Använd anslutning</string>
     <string name="removed">Borttagen</string>
-    <string name="butn_copyToClipboard">Kopiera till urklippet</string>
+    <string name="copy_to_clipboard">Kopiera till urklippet</string>
     <string name="service_running_notice">TrebleShot kan dela filer nu</string>
     <string name="text_communicationServiceStop">Tryck för att avsluta sessionen</string>
     <string name="remaining_time">Beräknad sluttid %s</string>

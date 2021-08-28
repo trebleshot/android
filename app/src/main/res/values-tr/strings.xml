@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="open_navigation_drawer">Gezinti çekmecesini aç</string>
-    <string name="close_navigation_drawer">Gezinti çekmecesini kapat</string>
+    <string name="open_navigation_drawer">Gezinti Çekmecesini Aç</string>
+    <string name="close_navigation_drawer">Gezinti Çekmecesini Kapat</string>
     <string name="preferences">Ayarlar</string>
     <string name="receive_file_question">Dosya alınsın mı?</string>
     <string name="accept">Kabul Et</string>
     <string name="reject">Reddet</string>
-    <string name="ongoing_task">Devam ediyor</string>
+    <string name="ongoing_task">Aktif Görevler</string>
     <string name="stop">Sonlandır</string>
     <string name="sending">Gönderiliyor</string>
     <string name="cancel_sending">Gönderimi İptal Et</string>
     <string name="receiving">Alınıyor</string>
     <string name="cancel_receiving">Alımı İptal Et</string>
     <string name="empty_list">Liste boş</string>
-    <string name="nickname_description">Bu isim diğer cihazlarda gösterilecek</string>
+    <string name="nickname_description">Diğer istemcilerde gözükecek isim</string>
     <string name="send_file_failure">\'%s\' gönderilirken birşeyler ters gitti</string>
     <string name="receive_file_success">\'%s\' dosyası alındı</string>
     <string name="receive_file_failure">\'%s\' dosyası alınırken birşeyler ters gitti</string>
@@ -57,7 +57,7 @@
     <string name="launch_app_failure">Bu uygulama başlatılamaz</string>
     <string name="enter_text_notice">Buraya metin girin…</string>
     <string name="copy_text_to_clipboard_success">Metin panoya kopyalandı</string>
-    <string name="copy_to_clipboard">Panoya kopyalansın mı?</string>
+    <string name="copy_to_clipboard_question">Panoya kopyalansın mı?</string>
     <string name="receive_text_success">Metin alındı</string>
     <string name="receive_text_summary_success">Pano metni alındı</string>
     <string name="butn_checkForUpdates">Güncellemeleri denetle</string>
@@ -134,7 +134,7 @@
     <string name="file_name">Dosya adı</string>
     <string name="file_size">Dosya boyutu</string>
     <string name="file_mime">Dosya tipi</string>
-    <string name="file_status">Dosya durumu</string>
+    <string name="status">Durumu</string>
     <string name="resume">Devam Ettir</string>
     <string name="long_ago">Uzun zaman önce</string>
     <string name="wifi_direct">Doğrudan Wi-Fi</string>
@@ -159,7 +159,7 @@
     <string name="text_transactionGroupDetails">Aktarım grubu detayları</string>
     <string name="text_usedConnection">Kullanılan bağlantı</string>
     <string name="removed">Kaldırıldı</string>
-    <string name="butn_copyToClipboard">Panoya kopyala</string>
+    <string name="copy_to_clipboard">Panoya Kopyala</string>
     <string name="service_running_notice">TrebleShot dosya paylaşabilir</string>
     <string name="text_communicationServiceStop">Sona erdirmek için dokunun</string>
     <string name="remaining_time">Kalan %s</string>
@@ -557,7 +557,7 @@
     <string name="host_address_invalid_notice">Lütfen bir internet adresi girin!</string>
     <string name="set_up_network_notice">Hotspot kurun veya kablosuz ağa bağlanın</string>
     <string name="qr_code_image_notice">QR Kodu burada gözükecek!</string>
-    <string name="nothing_worked_question">Hiçbir şey çalışmadı mı\?</string>
+    <string name="nothing_worked_rhetorical">Başka Bir Yöntem\?</string>
     <string name="generate_qr_code">QR Kodu Oluştur</string>
     <string name="add_new_client">Yeni İstemci Ekle</string>
     <string name="online_clients">Çevrimiçi İstemciler</string>
@@ -568,7 +568,7 @@
     <string name="delete_empty_text_question">Boş metni silmek ister misiniz\?</string>
     <string name="split_apk">Ayrık APK</string>
     <string name="battery_saver_theme">Güç Tasarrufu karar verir</string>
-    <string name="follow_system_theme">Sistem temasını kullan</string>
+    <string name="follow_system_theme">Sistem Temasını takip eder</string>
     <string name="light_theme">Açık</string>
     <string name="dark_theme">Karanlık</string>
     <string name="ui_theme">Tema</string>

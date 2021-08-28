@@ -24,7 +24,7 @@
     <string name="remaining_time">ကျန်ရှိချိန် %s</string>
     <string name="text_communicationServiceStop">session အဆုံးသတ်ရန် ထိပါ</string>
     <string name="service_running_notice">TrebleShot ဖြင့် ဖိုင်များ မျှဝေနိုင်ပါပြီ</string>
-    <string name="butn_copyToClipboard">clipboard သို့ ကူးမည်</string>
+    <string name="copy_to_clipboard">clipboard သို့ ကူးမည်</string>
     <string name="removed">ဖယ်ထုတ်ပြီး</string>
     <string name="text_usedConnection">အသုံးပြုထားသော ချိတ်ဆက်မှု</string>
     <string name="text_transactionGroupDetails">ငွေပေးချေမှုအုပ်စု အသေးစိတ်</string>
@@ -71,7 +71,7 @@
     <string name="text_fileExplorer">ဖိုင်များ</string>
     <string name="transfer_details">အသေးစိတ်</string>
     <string name="resume">ဆက်ကူးမည်</string>
-    <string name="file_status">ဖိုင်အခြေအနေ</string>
+    <string name="status">ဖိုင်အခြေအနေ</string>
     <string name="file_mime">ဖိုင်အမျိုးအစား</string>
     <string name="file_size">ဖိုင်အရွယ်အစား</string>
     <string name="file_name">ဖိုင်အမည်</string>
@@ -128,7 +128,7 @@
     <string name="butn_checkForUpdates">ဗားရှင်းအသစ် စစ်ဆေးမည်</string>
     <string name="receive_text_summary_success">ရရှိသော clipboard စာ</string>
     <string name="receive_text_success">စာ ရရှိပါသည်</string>
-    <string name="copy_to_clipboard">clipboard သို့ ကူးလိုပါသလား\?</string>
+    <string name="copy_to_clipboard_question">clipboard သို့ ကူးလိုပါသလား\?</string>
     <string name="copy_text_to_clipboard_success">စာကို clipboard သို့ ကူးပြီးပါပြီ</string>
     <string name="enter_text_notice">ဤနေရာတွင် စာရေးပါ …</string>
     <string name="launch_app_failure">ယခု app ကို ဖွင့်မရပါ</string>

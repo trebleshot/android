@@ -92,7 +92,7 @@
     <string name="launch_app_failure">לא ניתן להפעיל יישומון זה</string>
     <string name="enter_text_notice">נא להכניס כאן טקסט…</string>
     <string name="copy_text_to_clipboard_success">הטקסט הועתק ללוח הגזירים</string>
-    <string name="copy_to_clipboard">להעתיק ללוח הגזירים\?</string>
+    <string name="copy_to_clipboard_question">להעתיק ללוח הגזירים\?</string>
     <string name="receive_text_success">התקבל טקסט</string>
     <string name="receive_text_summary_success">התקבל טקסט ללוח הגזירים</string>
     <string name="butn_checkForUpdates">בדיקה לאיתור גרסה חדשה</string>
@@ -153,7 +153,7 @@
     <string name="file_name">שם קובץ</string>
     <string name="file_size">גודל קובץ</string>
     <string name="file_mime">סוג קובץ</string>
-    <string name="file_status">מצב קובץ</string>
+    <string name="status">מצב קובץ</string>
     <string name="resume">להמשיך</string>
     <string name="transfer_details">פרטים</string>
     <string name="text_fileExplorer">סייר קבצים</string>
@@ -200,7 +200,7 @@
     <string name="text_transactionGroupDetails">פרטי קבוצת העברה</string>
     <string name="text_usedConnection">חיבור בשימוש</string>
     <string name="removed">הוסר</string>
-    <string name="butn_copyToClipboard">העתקה ללוח הגזירים</string>
+    <string name="copy_to_clipboard">העתקה ללוח הגזירים</string>
     <string name="service_running_notice">ל־TrebleShot יש כעת אפשרות לשתף קבצים</string>
     <string name="text_communicationServiceStop">יש לגעת כדי לסיים הפעלה</string>
     <string name="remaining_time">זמן סיום משוער %s</string>

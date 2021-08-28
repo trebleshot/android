@@ -85,7 +85,7 @@
     <string name="launch_app_failure">Aplikasi tidak dapat dijalankan</string>
     <string name="enter_text_notice">Masukkan teks disini…</string>
     <string name="copy_text_to_clipboard_success">Teks disalin ke klipboard</string>
-    <string name="copy_to_clipboard">Salin ke klipboard\?</string>
+    <string name="copy_to_clipboard_question">Salin ke klipboard\?</string>
     <string name="receive_text_success">Teks diterima</string>
     <string name="receive_text_summary_success">Teks clipboard yang diterima</string>
     <string name="butn_checkForUpdates">Periksa versi baru</string>
@@ -141,7 +141,7 @@
     <string name="file_name">Nama Berkas</string>
     <string name="file_size">Besar Berkas</string>
     <string name="file_mime">Tipe Berkas</string>
-    <string name="file_status">Status Berkas</string>
+    <string name="status">Status Berkas</string>
     <string name="resume">Lanjutkan</string>
     <string name="transfer_details">Detail</string>
     <string name="text_fileExplorer">Penjelajah berkas</string>
@@ -441,7 +441,7 @@
     <string name="butn_turnTrustZoneOn">Nyalakan ZonaDipercaya</string>
     <string name="butn_trustZoneDevice">Atur sebagai perangkat ZonaDipercaya</string>
     <string name="service_running_notice">TrebleShot bisa membagi berkas sekarang</string>
-    <string name="butn_copyToClipboard">Salin ke papan klip</string>
+    <string name="copy_to_clipboard">Salin ke papan klip</string>
     <string name="removed">Dihapus</string>
     <string name="text_usedConnection">Koneksi dipakai</string>
     <string name="text_transactionGroupDetails">Detail kelompok transaksi</string>

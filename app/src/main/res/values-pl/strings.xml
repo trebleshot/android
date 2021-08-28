@@ -92,7 +92,7 @@
     <string name="launch_app_failure">Ta aplikacja nie może zostać uruchomiona</string>
     <string name="enter_text_notice">Wprowadź tekst tutaj…</string>
     <string name="copy_text_to_clipboard_success">Tekst skopiowany do schowka</string>
-    <string name="copy_to_clipboard">Skopiuj do schowka\?</string>
+    <string name="copy_to_clipboard_question">Skopiuj do schowka\?</string>
     <string name="receive_text_success">Odebrano tekst</string>
     <string name="receive_text_summary_success">Odebrano tekst schowka</string>
     <string name="butn_checkForUpdates">Sprawdź nową wersję</string>
@@ -153,7 +153,7 @@
     <string name="file_name">Nazwa pliku</string>
     <string name="file_size">Rozmiar pliku</string>
     <string name="file_mime">Typ pliku</string>
-    <string name="file_status">Status pliku</string>
+    <string name="status">Status pliku</string>
     <string name="resume">Wznów</string>
     <string name="transfer_details">Szczegóły</string>
     <string name="text_fileExplorer">Przeglądarka plików</string>
@@ -200,7 +200,7 @@
     <string name="text_transactionGroupDetails">Szczegóły grupy transakcji</string>
     <string name="text_usedConnection">Używane połączenie</string>
     <string name="removed">Usunięte</string>
-    <string name="butn_copyToClipboard">Skopiuj do schowka</string>
+    <string name="copy_to_clipboard">Skopiuj do schowka</string>
     <string name="service_running_notice">TrebleShot może teraz udostępniać pliki</string>
     <string name="text_communicationServiceStop">Stuknij, aby zakończyć sesję</string>
     <string name="remaining_time">ETA %s</string>

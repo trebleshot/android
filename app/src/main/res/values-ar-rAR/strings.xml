@@ -91,7 +91,7 @@
     <string name="launch_app_failure">لا يمكن تشغيل هذا التطبيق</string>
     <string name="enter_text_notice">أدخل النص هنا…</string>
     <string name="copy_text_to_clipboard_success">تم نسخ النص إلى الحافظة</string>
-    <string name="copy_to_clipboard">نسخ إلى الحافظة؟</string>
+    <string name="copy_to_clipboard_question">نسخ إلى الحافظة؟</string>
     <string name="receive_text_success">تم استقبال نص</string>
     <string name="receive_text_summary_success">تم استلام نص حافظة</string>
     <string name="butn_checkForUpdates">التحقق من الإصدار الجديد</string>
@@ -156,7 +156,7 @@
     <string name="file_name">اسم الملف</string>
     <string name="file_size">حجم الملف</string>
     <string name="file_mime">نوع الملف</string>
-    <string name="file_status">حالة الملف</string>
+    <string name="status">حالة الملف</string>
     <string name="resume">استئناف</string>
     <string name="transfer_details">التفاصيل</string>
     <string name="text_fileExplorer">مستكشف الملفات</string>
@@ -203,7 +203,7 @@
     <string name="text_transactionGroupDetails">تفاصيل مجموع النقل</string>
     <string name="text_usedConnection">الاتصالات المستخدمة</string>
     <string name="removed">محذوف</string>
-    <string name="butn_copyToClipboard">نسخ إلى الحافظة</string>
+    <string name="copy_to_clipboard">نسخ إلى الحافظة</string>
     <string name="service_running_notice">يستطيع تريبليشوت مشاركة واستقبال الملفات الآن</string>
     <string name="text_communicationServiceStop">انقر لإنهاء جلسة العمل</string>
     <string name="remaining_time">الوقت المتبقي %s</string>

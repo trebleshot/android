@@ -85,7 +85,7 @@
     <string name="launch_app_failure">Неможливо запустити цю програму</string>
     <string name="enter_text_notice">Введіть тут текст…</string>
     <string name="copy_text_to_clipboard_success">Текст скопійований в буфер обміну</string>
-    <string name="copy_to_clipboard">Скопіювати в буфер обміну\?</string>
+    <string name="copy_to_clipboard_question">Скопіювати в буфер обміну\?</string>
     <string name="receive_text_success">Текст отримано</string>
     <string name="receive_text_summary_success">Отриманий текст з буфера обміну</string>
     <string name="butn_checkForUpdates">Перевірити оновлення</string>

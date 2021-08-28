@@ -107,7 +107,7 @@
     <string name="launch_app_failure">Deze app kan niet worden gestart</string>
     <string name="enter_text_notice">Voer een tekst in…</string>
     <string name="copy_text_to_clipboard_success">De tekst is gekopieerd naar het klembord</string>
-    <string name="copy_to_clipboard">Kopiëren naar klembord?</string>
+    <string name="copy_to_clipboard_question">Kopiëren naar klembord?</string>
     <string name="receive_text_success">Tekst ontvangen</string>
     <string name="receive_text_summary_success">Klembordtekst ontvangen</string>
     <string name="butn_checkForUpdates">Controleren op updates</string>
@@ -176,7 +176,7 @@
     <string name="file_name">Bestandsnaam</string>
     <string name="file_size">Bestandsgrootte</string>
     <string name="file_mime">Bestandssoort</string>
-    <string name="file_status">Bestandsstatus</string>
+    <string name="status">Bestandsstatus</string>
     <string name="resume">Hervatten</string>
     <string name="transfer_details">Details</string>
     <string name="text_fileExplorer">Bestandsverkenner</string>
@@ -225,7 +225,7 @@
     <string name="text_usedConnection">Gebruikte verbinding</string>
     <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot heeft toegang nodig tot het serienummer van je apparaat, zodat er een langetermijnsnummer kan worden gecreëerd. Dit helpt andere apparaten om jouw apparaat te herkennen.</string>
     <string name="removed">Verwijderd</string>
-    <string name="butn_copyToClipboard">Kopiëren naar klembord</string>
+    <string name="copy_to_clipboard">Kopiëren naar klembord</string>
     <string name="service_running_notice">TrebleShot kan nu bestanden delen</string>
     <string name="text_communicationServiceStop">Raak aan om sessie te beëindigen</string>
     <string name="text_reaminingTime">Verwacht over %s</string>
@@ -529,7 +529,7 @@
     <string name="credentials_mismatch">Inloggegevens komen niet overeen</string>
     <string name="host_address_invalid_notice">Voer een webadres in.</string>
     <string name="set_up_network_notice">Zet een hotspot op of maak verbinding met wifi</string>
-    <string name="nothing_worked_question">Werkt het niet\?</string>
+    <string name="nothing_worked_rhetorical">Werkt het niet\?</string>
     <string name="generate_qr_code">QR-code genereren</string>
     <string name="add_new_client">Client toevoegen</string>
     <string name="online_clients">Online-clients</string>

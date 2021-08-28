@@ -82,7 +82,7 @@
     <string name="launch_app_failure">Cette application ne peut pas être lancée</string>
     <string name="enter_text_notice">Saisissez du texte ici…</string>
     <string name="copy_text_to_clipboard_success">Texte copié dans le presse-papiers</string>
-    <string name="copy_to_clipboard">Copier vers le presse-papier ?</string>
+    <string name="copy_to_clipboard_question">Copier vers le presse-papier ?</string>
     <string name="receive_text_success">Texte reçu</string>
     <string name="butn_checkForUpdates">Vérifier la présence d\'une nouvelle version</string>
     <string name="butn_seeSourceCode">Voir le code source</string>
@@ -130,7 +130,7 @@
     <string name="file_name">Nom du fichier</string>
     <string name="file_size">Taille du fichier</string>
     <string name="file_mime">Type de fichier</string>
-    <string name="file_status">État du fichier</string>
+    <string name="status">État du fichier</string>
     <string name="resume">Reprendre</string>
     <string name="transfer_details">Détails</string>
     <string name="text_fileExplorer">Explorateur de fichiers</string>
@@ -170,7 +170,7 @@
     <string name="text_savePath">Enregistrer le chemin</string>
     <string name="text_usedConnection">Connexion utilisée</string>
     <string name="removed">Supprimé</string>
-    <string name="butn_copyToClipboard">Copier vers le presse-papiers</string>
+    <string name="copy_to_clipboard">Copier vers le presse-papiers</string>
     <string name="service_running_notice">TrebleShot peut maintenant partager des fichiers</string>
     <string name="text_communicationServiceStop">Appuyez pour mettre fin à la session</string>
     <string name="remaining_time">ETA %s</string>

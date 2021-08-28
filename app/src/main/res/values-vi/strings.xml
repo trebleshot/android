@@ -10,7 +10,7 @@
     <string name="butn_connectionTest">Kiểm tra kết nối</string>
     <string name="emulated_media_directory">Giả lập (%s)</string>
     <string name="name">Tên</string>
-    <string name="file_status">Trạng thái tệp</string>
+    <string name="status">Trạng thái tệp</string>
     <string name="interrupted_left_notice">Không còn lượt chuyển đang chờ nào. Để tiếp tục các tệp bị gián đoan, hãy sử dụng tuỳ chọn \'Thử nhận lại\'.</string>
     <string name="mesg_hotspotCreatedInfo">Kết nối với \"%s\" trong \"Cài đặt Wi-Fi\" hoặc gửi tệp qua \"%s\" trong TrebleShot</string>
     <string name="choose_folder">Chọn thư mục</string>
@@ -216,7 +216,7 @@
     <string name="choose_file">Chọn tệp</string>
     <string name="count_milliseconds_short">%d ms</string>
     <string name="notifications_use_lights_summary">Bật đèn</string>
-    <string name="copy_to_clipboard">Sao chép vào bộ nhớ tạm\?</string>
+    <string name="copy_to_clipboard_question">Sao chép vào bộ nhớ tạm\?</string>
     <string name="location">Vị trí</string>
     <string name="update_clipboard_notice">Chỉnh sửa văn bản hoặc nhấn lần nữa để thoát</string>
     <string name="text_trebleshotHotspot">Hotspot TrebleShot</string>
@@ -241,7 +241,7 @@
     <string name="text_previewAndEditList">Xem trước &amp; chỉnh sửa</string>
     <string name="text_deviceNameTitle">Nhập tên thiết bị</string>
     <string name="donation_success">Cảm ơn!</string>
-    <string name="butn_copyToClipboard">Chép vào clipboard</string>
+    <string name="copy_to_clipboard">Chép vào clipboard</string>
     <string name="rename">Đổi tên</string>
     <string name="changelog">Có gì mới</string>
     <string name="notifications_use_sounds_summary">Phát âm thanh</string>
@@ -582,7 +582,7 @@
     <string name="host_address_invalid_notice">Vui lòng nhập địa chỉ internet!</string>
     <string name="set_up_network_notice">Thiết lập điểm phát sóng hoặc kết nối đến Wi-Fi</string>
     <string name="qr_code_image_notice">Mã QR sẽ hiện lên ở đây!</string>
-    <string name="nothing_worked_question">Không có gì làm được cả\?</string>
+    <string name="nothing_worked_rhetorical">Không có gì làm được cả\?</string>
     <string name="generate_qr_code">Tạo mã QR</string>
     <string name="add_new_client">Thêm máy khách mới</string>
     <string name="online_clients">Máy khách trực tuyến</string>

@@ -24,7 +24,7 @@
     <string name="music">Музыка</string>
     <string name="video">Видео</string>
     <string name="launch">Запустить</string>
-    <string name="copy_to_clipboard">Копировать в буфер обмена?</string>
+    <string name="copy_to_clipboard_question">Копировать в буфер обмена?</string>
     <string name="done">Готово</string>
     <string name="wifi_settings">Wi-Fi</string>
     <string name="proceed">Продолжить</string>
@@ -110,7 +110,7 @@
     <string name="file_name">Имя файла</string>
     <string name="file_size">Размер файла</string>
     <string name="file_mime">Тип файла</string>
-    <string name="file_status">Состояние файла</string>
+    <string name="status">Состояние файла</string>
     <string name="resume">Возобновить</string>
     <string name="transfer_details">Подробности</string>
     <string name="text_fileExplorer">Файловый менеджер</string>
@@ -145,7 +145,7 @@
     <string name="storage_permission">Разрешение хранилища</string>
     <string name="text_requestPermissionReadPhoneState">Разрешение на чтение состояния телефона</string>
     <string name="insufficient_space_notice">Недостаточно свободного места</string>
-    <string name="butn_copyToClipboard">Копировать в буфер обмена</string>
+    <string name="copy_to_clipboard">Копировать в буфер обмена</string>
     <string name="service_running_notice">TrebleShot сейчас может обмениваться файлами</string>
     <string name="text_communicationServiceStop">Нажмите, чтобы закончить сессию</string>
     <string name="show_files">Показать файлы</string>

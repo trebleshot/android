@@ -74,7 +74,7 @@
     <string name="file_name">கோப்பு நிலை</string>
     <string name="file_size">கோப்பின் அளவு</string>
     <string name="file_mime">கோப்பு வகை</string>
-    <string name="file_status">கோப்பு நிலை</string>
+    <string name="status">கோப்பு நிலை</string>
     <string name="resume">மீண்டும் தொடர்</string>
     <string name="transfer_details">விவரங்கள்</string>
     <string name="butn_createFolder">கோப்புறையை உருவாக்கு</string>
@@ -95,7 +95,7 @@
     <string name="storage_permission">சேமிப்பு அனுமதி</string>
     <string name="text_requestPermissionReadPhoneState">தொலைபேசி நிலையை படிக்க அனுமதி</string>
     <string name="insufficient_space_notice">போதுமான இடவசதி இல்லை</string>
-    <string name="butn_copyToClipboard">கிளிப்போர்டுக்கு நகலெடுக்கவும்</string>
+    <string name="copy_to_clipboard">கிளிப்போர்டுக்கு நகலெடுக்கவும்</string>
     <string name="show_files">கோப்புகளை காட்டு</string>
     <string name="download">பதிவிறக்க</string>
     <string name="update">புதுப்பிக்க</string>
@@ -181,7 +181,7 @@
     <string name="butn_showSystemApps">System செயலிகளை காண்பிக்கவும்</string>
     <string name="multi_selection">பல்வேறு தேர்வுகள்</string>
     <string name="copy_text_to_clipboard_success">வாக்கியம் Copy செய்யப்பட்டது</string>
-    <string name="copy_to_clipboard">Clipboard-ற்க்கு Copy செய்யலாமா\?</string>
+    <string name="copy_to_clipboard_question">Clipboard-ற்க்கு Copy செய்யலாமா\?</string>
     <string name="receive_text_success">Text வந்து சேர்ந்தது</string>
     <string name="receive_text_summary_success">Clipboard Text வந்து சேர்ந்தது</string>
     <string name="butn_checkForUpdates">புதிய Versionக்கு Check செய்யவும்</string>

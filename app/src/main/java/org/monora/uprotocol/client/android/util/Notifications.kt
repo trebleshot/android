@@ -205,12 +205,12 @@ class Notifications(val backend: NotificationBackend) {
 
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle(context.getString(R.string.copy_to_clipboard))
+            .setContentTitle(context.getString(R.string.copy_to_clipboard_question))
             .setContentText(context.getString(R.string.receive_text_success))
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(item.text)
-                    .setBigContentTitle(context.getString(R.string.copy_to_clipboard))
+                    .setBigContentTitle(context.getString(R.string.copy_to_clipboard_question))
             )
             .setContentInfo(client.clientNickname)
             .setContentIntent(
