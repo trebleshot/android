@@ -25,19 +25,19 @@
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
     <string name="stop">Stop</string>
-    <string name="sending">Sending</string>
+    <string name="sending">Sending…</string>
     <string name="cancel_sending">Cancel Sending</string>
     <string name="receiving">Receiving</string>
-    <string name="cancel_receiving">Cancel Receiving</string>
+    <string name="cancel_receiving">Cancel Reception</string>
     <string name="receive_file_success">%s has been received</string>
-    <string name="empty_list">List is empty</string>
+    <string name="empty_list">The list is empty</string>
     <string name="nickname_description">The name that will appear on other clients</string>
     <string name="send_file_failure">Could not send \'%s\'</string>
     <string name="receive_file_failure">Could not receive \'%s\'</string>
     <string name="receive_files_success">Files received</string>
-    <string name="preferences_reset">Reset to Default</string>
-    <string name="preferences_reset_question">Reset to default?</string>
-    <string name="choose_sharing_app">Choose an app to share with</string>
+    <string name="preferences_reset">Resetting settings</string>
+    <string name="preferences_reset_question">Reset all settings?</string>
+    <string name="choose_sharing_app">Share with…</string>
     <string name="received_files">Received Files</string>
     <string name="edit">Edit</string>
     <string name="share">Share</string>
@@ -121,7 +121,7 @@
     <string name="ethernet">Ethernet</string>
     <string name="unknown_interface">Unknown Connection</string>
     <string name="retry_receiving">Retry Receiving</string>
-    <string name="ask">Ask</string>
+    <string name="ask">Request</string>
     <string name="storage_permission">Storage Permission</string>
     <string name="media_directory">Media Directory</string>
     <string name="insufficient_space_notice">Not enough space</string>
@@ -249,11 +249,11 @@
     <string name="introduction_finished">All Set!</string>
     <string name="introduction_set_up_profile">Set Up Your Profile</string>
     <string name="count_milliseconds_short">%d ms</string>
-    <string name="use_recommended_fonts">Apply the Recommended Font</string>
+    <string name="use_recommended_fonts">Recommended Font</string>
     <string name="use_recommended_fonts_notice">Use the supplied custom font</string>
     <string name="waiting">Waiting…</string>
-    <string name="theme_optimize">AMOLED Optimization</string>
-    <string name="theme_optimize_summary">Use less power with darker colors</string>
+    <string name="theme_optimize">AMOLED</string>
+    <string name="theme_optimize_summary">Uses less power</string>
     <string name="error_not_trusted_notice">You need to be trusted by the client</string>
     <string name="web_share">Web Share</string>
     <string name="visit_using_browser_notice">Visit this link with your web browser</string>
@@ -262,7 +262,7 @@
     <string name="unrecognized_qr_code_notice">Unrecognized code</string>
     <string name="save_text_success">Text saved</string>
     <string name="show_as_qr_code">Show as QR code</string>
-    <string name="delete_received_files_question">Also delete received files from disk</string>
+    <string name="delete_received_files_question">Delete received files from disk too</string>
     <string name="clients">Clients</string>
     <string name="crash_report">Crash Report</string>
     <string name="crash_report_notice">TrebleShot crashed previously.</string>
@@ -389,8 +389,8 @@
     <string name="sender_wait_for_receiver_notice">Receivers can pick you here</string>
     <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
     <string name="about_uprotocol">About uprotocol</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> is an open content sharing protocol that enables different
-        types of software to communicate and share content with each other. It is secure by default and comes with
+    <string name="about_uprotocol_content"><b>uprotocol</b> is an open content sharing protocol letting different
+        types of software to communicate and share content. It is secure by default and comes with
         a consistent set of APIs.\n\nAs a developer, you can set it up easily and add content-sharing functionality
         to your app!
     </string>
