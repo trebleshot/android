@@ -166,7 +166,7 @@
     <string name="name">Name</string>
     <string name="date">Date</string>
     <string name="size">Size</string>
-    <string name="preferences_reset_notice">This will apply initial settings</string>
+    <string name="preferences_reset_notice">Applies initial settings</string>
     <string name="deleting_files_notice">Deleting files</string>
     <string name="ongoing_task">Ongoing Task</string>
     <string name="high_priority_notifications">Important Notifications</string>
@@ -189,12 +189,12 @@
     <string name="empty_search_result_summary">No result for \"%s\"</string>
     <string name="access_failure_notice">Cannot access \"%s\"</string>
     <string name="scan_qr_code_notice">Scan this code to share on the other client</string>
-    <string name="scanner_qr_code_notice">Align the QR Code scanner with the box</string>
+    <string name="scanner_qr_code_notice">Align the QR code scanner with the box</string>
     <string name="notification_settings">Notification Settings</string>
     <string name="notification_settings_summary">Open notification settings</string>
     <string name="rename">Rename</string>
     <string name="copy_here">Copy Here</string>
-    <string name="help_translate">Help Us Translate</string>
+    <string name="help_translate">Help translate the app</string>
     <string name="photo">Photo</string>
     <string name="home">Home</string>
     <string name="files">Files</string>
@@ -205,14 +205,14 @@
     <string name="completing">Completing</string>
     <string name="camera_permission_notice">Camera permission required</string>
     <string name="file">File</string>
-    <string name="third_party_libraries">Third Party Libraries</string>
+    <string name="third_party_libraries">Third-Party Libraries</string>
     <string name="donate">Support Us</string>
     <string name="donation_success">Thank you for your donation!</string>
     <string name="open">Open</string>
     <string name="pause">Pause</string>
     <string name="retry">Retry</string>
-    <string name="storage_path_unavailable_notice">Your desired folder is not accessible. Files will be saved to the
-        default folder.
+    <string name="storage_path_unavailable_notice">Saving files to the default folder since the desired one
+        is not accessible.
         \n
         \n%s
     </string>
@@ -251,13 +251,13 @@
     <string name="count_milliseconds_short">%d ms</string>
     <string name="use_recommended_fonts">Apply the Recommended Font</string>
     <string name="use_recommended_fonts_notice">Use the supplied custom font</string>
-    <string name="waiting">Waiting</string>
-    <string name="theme_optimize">Optimize for AMOLED Screens</string>
-    <string name="theme_optimize_summary">Use darker colors</string>
+    <string name="waiting">Waiting…</string>
+    <string name="theme_optimize">AMOLED Optimization</string>
+    <string name="theme_optimize_summary">Use less power with darker colors</string>
     <string name="error_not_trusted_notice">You need to be trusted by the client</string>
     <string name="web_share">Web Share</string>
-    <string name="visit_using_browser_notice">Visit this link with your browser</string>
-    <string name="empty_connections_list">Networks you connect appear here</string>
+    <string name="visit_using_browser_notice">Visit this link with your web browser</string>
+    <string name="empty_connections_list">Networks you connect to appear here</string>
     <string name="vpn_interface">VPN Server</string>
     <string name="unrecognized_qr_code_notice">Unrecognized code</string>
     <string name="save_text_success">Text saved</string>
@@ -265,15 +265,15 @@
     <string name="delete_received_files_question">Also delete received files from disk</string>
     <string name="clients">Clients</string>
     <string name="crash_report">Crash Report</string>
-    <string name="crash_report_notice">TrebleShot experienced a crash in a previous session.</string>
-    <string name="error_unknown_host">Could not resolve this host address!</string>
+    <string name="crash_report_notice">TrebleShot crashed previously.</string>
+    <string name="error_unknown_host">Could not resolve this host address.</string>
     <string name="ui_theme">Theme</string>
     <string name="dark_theme">Dark</string>
     <string name="light_theme">Light</string>
-    <string name="follow_system_theme">Follows System Theme</string>
+    <string name="follow_system_theme">Follow system</string>
     <string name="battery_saver_theme">Decided by Battery Saver</string>
     <string name="split_apk">Split APK</string>
-    <string name="delete_empty_text_question">Would you like to delete the empty text?</string>
+    <string name="delete_empty_text_question">Delete the empty text?</string>
     <string name="compose">Compose</string>
     <string name="transfer_history">Transfer History</string>
     <string name="choose_client">Choose Client</string>
@@ -281,19 +281,19 @@
     <string name="online_clients">Online Clients</string>
     <string name="add_new_client">Add New Client</string>
     <string name="generate_qr_code">Generate QR Code</string>
-    <string name="nothing_worked_rhetorical">Nothing Worked?</string>
-    <string name="qr_code_image_notice">QR Code will appear here!</string>
+    <string name="nothing_worked_rhetorical">Nothing worked?</string>
+    <string name="qr_code_image_notice">A QR code will appear here.</string>
     <string name="set_up_network_notice">Set up a hotspot or connect to Wi-Fi</string>
-    <string name="host_address_invalid_notice">Please enter an internet address!</string>
+    <string name="host_address_invalid_notice">Please enter a URL.</string>
     <string name="credentials_mismatch">Credentials Mismatch</string>
     <string name="credentials_mismatch_notice">\'%s\' needs invalidation of credentials to communicate.</string>
     <string name="error_different_client">The connected client was different</string>
-    <string name="error_unknown">An unknown error occurred</string>
-    <string name="error_unrecognized">The error %s occurred</string>
-    <string name="error_socket_connection">Failed to connect to the service</string>
-    <string name="error_no_route_to_host">This address is unreachable</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_unrecognized">%s error</string>
+    <string name="error_socket_connection">Could not connect to the service</string>
+    <string name="error_no_route_to_host">Unreachable address</string>
     <string name="empty_online_clients_list">Online clients appear here</string>
-    <string name="error_content_not_accessible">Content not accessible</string>
+    <string name="error_content_not_accessible">Inaccessible content</string>
     <string name="error_content_already_exists">Content already exists</string>
     <string name="error_content_not_found">Content not found</string>
     <string name="tap_to_launch_notice">Tap to launch</string>
@@ -304,55 +304,55 @@
     <string name="shared_texts">Shared Texts</string>
     <string name="github" translatable="false">GitHub</string>
     <string name="join_us">Join Us</string>
-    <string name="visit_license_url">Visit License URL</string>
-    <string name="visit_web_page">Visit Web Page</string>
+    <string name="visit_license_url">Go to License URL</string>
+    <string name="visit_web_page">Visit Website</string>
     <string name="background_service">Background Service</string>
     <string name="empty_clients_list">Clients appear here</string>
     <string name="all_clients">All Clients</string>
     <string name="connect_to_wifi">Connect to Wi-Fi</string>
-    <string name="wifi_connection_notice">1- Open Wi-Fi settings
-        \n\n2- Wait until \'%s\' appears on the Wi-Fi list
-        \n\n3- Pick it (%s) and paste the password (%s)
-        \n\n4- Return here after successful connection
+    <string name="wifi_connection_notice">1- Open Wi-Fi settings.
+        \n\n2- Wait until \'%s\' appears on the Wi-Fi list.
+        \n\n3- Pick it (%s) and paste the password (%s).
+        \n\n4- Return here after connecting.
     </string>
-    <string name="copy_password_and_open_settings"><![CDATA[Copy Password & Open Settings]]></string>
+    <string name="copy_password_and_open_settings"><![CDATA[Copy Password adn Open Settings]]></string>
     <string name="wifi_password">Wi-Fi Password</string>
     <string name="notifications_instructive">Instructive Notifications</string>
     <string name="connect_to_wifi_notice">Connect to \"%s\"</string>
     <string name="enter_wifi_password_notice">Paste the password \"%s\"</string>
     <string name="not_connected_yet_notice">Not connected yet</string>
-    <string name="location_service_disabled_notice">Location Service is disabled</string>
-    <string name="wifi_disabled_notice">Wi-Fi is disabled</string>
+    <string name="location_service_disabled_notice">Location service off</string>
+    <string name="wifi_disabled_notice">Wi-Fi off</string>
     <string name="write_system_settings_permission_required_notice">Needs permission to modify system settings</string>
-    <string name="connecting_to_client">Connecting to Client</string>
+    <string name="connecting_to_client">Connecting to Client…</string>
     <string name="client_offline_notice">The remote is unavailable</string>
     <string name="matching_client_question">Is this the client you are looking for?</string>
     <string name="verify_client">Verify Client</string>
     <string name="client_details">Client Details</string>
     <string name="client_model">Model</string>
     <string name="percent_sign" translatable="false">%</string>
-    <string name="waiting_receiver_approval_notice">Waiting for the approval of receiver</string>
+    <string name="waiting_receiver_approval_notice">Awaiting recipient approval</string>
     <string name="incoming">Incoming</string>
     <string name="outgoing">Outgoing</string>
-    <string name="error_communication_unknown">An unknown communication error occurred</string>
-    <string name="error_client_no_address">The client has no address (try manually connecting)</string>
-    <string name="error_protocol_unknown">An unknown protocol error occurred</string>
+    <string name="error_communication_unknown">Unknown communication error</string>
+    <string name="error_client_no_address">The client has no address (try connecting manually)</string>
+    <string name="error_protocol_unknown">Unknown protocol error</string>
     <string name="completed">Completed</string>
-    <string name="run_in_background">Run in Background</string>
+    <string name="run_in_background">Run in Background…</string>
     <string name="selections">Selections</string>
-    <string name="preparing">Preparing</string>
-    <string name="web_share_description">An interface for file-sharing via browsers</string>
+    <string name="preparing">Preparing…</string>
+    <string name="web_share_description">An interface for file-sharing via web browsers</string>
     <string name="share_on_web">Share on Web</string>
     <string name="sharing_on_web">Sharing on Web</string>
     <string name="songs">Songs</string>
     <string name="videos">Videos</string>
     <string name="images">Images</string>
     <string name="folders">Folders</string>
-    <string name="web_share_empty_notice">Nothing is being shared yet. Share something on the app and come back here!</string>
-    <string name="send_using_web_share_success_notice">Successfully sent \'%s\'</string>
+    <string name="web_share_empty_notice">Share something from the app first.</string>
+    <string name="send_using_web_share_success_notice">Sent \'%s\'</string>
     <string name="receiving_using_web_web_share">Receiving using Web Share</string>
     <string name="received_using_web_share">Received using Web Share</string>
-    <string name="warning_permissions_not_accepted">You haven\'t set up the permissions yet!</string>
+    <string name="warning_permissions_not_accepted">Set up the permissions first.</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="remove_picture">Remove Picture</string>
     <string name="change_picture">Change Picture</string>
@@ -361,31 +361,31 @@
     <string name="error_no_activity_to_view">Could not find an app to open the content with</string>
     <string name="manage_clients">Manage Clients</string>
     <string name="apps">Apps</string>
-    <string name="generate">Generate</string>
-    <string name="scan">Scan</string>
+    <string name="generate">Generate…</string>
+    <string name="scan">Scan…</string>
     <string name="using_qr_code">Using QR Code</string>
     <string name="authors">Authors</string>
     <string name="author">Author</string>
-    <string name="error_communication_security_credentials">Credentials mismatch (needs pairing)</string>
+    <string name="error_communication_security_credentials">Mismatching credentials (needs pairing)</string>
     <string name="invalidate">Invalidate</string>
     <string name="deny">Deny</string>
     <string name="error_communication_security">A security error occurred</string>
     <string name="nickname">Nickname</string>
     <string name="root_folder">Root</string>
     <string name="add_storage_access">Add Storage Access…</string>
-    <string name="clear_storage_list">Clear Storage List</string>
+    <string name="clear_storage_list">Clear Storage List…</string>
     <string name="storage_folder">Storage Folder</string>
     <string name="change_storage_folder">Change Storage Folder</string>
-    <string name="storage_folder_notice">The folder to save contents in</string>
+    <string name="storage_folder_notice">The folder content is saved in</string>
     <string name="folder_not_writable">The folder is write-protected</string>
-    <string name="error_empty_field">Field should not be empty</string>
+    <string name="error_empty_field">The field should not be empty</string>
     <string name="folder_name">Folder Name</string>
-    <string name="rejecting">Rejecting</string>
+    <string name="rejecting">Rejecting…</string>
     <string name="receiver_pending">Pick the sender to start receiving</string>
     <string name="sender_not_expecting">%s was not sending anything</string>
     <string name="sender_accepted">Sender accepted</string>
-    <string name="sender_finishing">Finishing</string>
-    <string name="starting">Starting</string>
+    <string name="sender_finishing">Finishing…</string>
+    <string name="starting">Starting…</string>
     <string name="sender_wait_for_receiver_notice">Receivers can pick you here</string>
     <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
     <string name="about_uprotocol">About uprotocol</string>
@@ -404,8 +404,8 @@
     <string name="image_bucket_thumbnail">Image bucket thumbnail</string>
     <string name="install_package">Install Package</string>
     <string name="app_icon">App icon</string>
-    <string name="package_install_success">Package installed successfully</string>
-    <string name="package_install_failure">Failed to install the package</string>
+    <string name="package_install_success">Package installed</string>
+    <string name="package_install_failure">Could not install the package</string>
     <string name="package_install_aborted">Aborted package installation</string>
     <string name="package_install_blocked">Package installation failed due to the app being blocked</string>
     <string name="package_install_conflicted">The package conflicted with another package</string>
