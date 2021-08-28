@@ -23,7 +23,7 @@
     <string name="text_developerMode">Entwicklermodus</string>
     <string name="text_developerModeSummary">Deaktiviert die Benutzerkonfiguration</string>
     <string name="text_deviceName">Gerätename</string>
-    <string name="nickname_description">Dieser Name wird auf anderen Geräten gezeigt</string>
+    <string name="nickname_description">Der Name, der auf anderen Clients angezeigt wird</string>
     <string name="text_deviceNameTitle">Gerätenamen eingeben</string>
     <string name="mesg_formatNotSupported">Nicht unterstütztes Format</string>
     <string name="send_file_failure">Konnte Datei nicht senden. %s</string>
@@ -67,7 +67,7 @@
     <string name="notification">Benachrichtigung</string>
     <string name="notifications_use_sounds">Klänge</string>
     <string name="notifications_use_sounds_summary">Klänge verwenden</string>
-    <string name="notifications_use_vibration">Vibration und Benachrichtigungen</string>
+    <string name="notifications_use_vibration">Vibration &amp; Benachrichtigungen</string>
     <string name="notifications_use_vibration_summary">Vibration und Benachrichtigungen verwenden</string>
     <string name="notifications_use_lights">Lichter</string>
     <string name="notifications_use_lights_summary">Lichter verwenden</string>
@@ -186,7 +186,7 @@
     <string name="butn_connectionList">Verbindungen</string>
     <string name="text_automaticNetworkConnectionFailed">Keine der Verbindungen zum Gerät hat funktioniert. Die Adresse könnte sich geändert haben. Bitte mit dem Netzwerk verbinden während TrebleShot geöffnet ist.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot wird entscheiden</string>
-    <string name="retry_receiving">Alle erneut versuchen</string>
+    <string name="retry_receiving">Empfang erneut versuchen</string>
     <string name="ask">Fragen</string>
     <string name="text_permissionRequest">Berechtigungsanfrage</string>
     <string name="storage_permission">Speicherberechtigung</string>
@@ -236,8 +236,8 @@
     <string name="location_settings">Standort</string>
     <string name="mesg_locationDisabledSelfHotspot">Standortdienst aktivieren, um Scanergebnisse zu sehen und einen Hotspot zu erstellen</string>
     <string name="mesg_scanningDevicesSelfHotspot">Nach anderen Geräten über einen TrebleShot-Hotspot suchen</string>
-    <string name="starting_hotspot_notice">TrebleShot-Hotspot beenden</string>
-    <string name="stopping_hotspot_notice">TrebleShot-Hotspot starten</string>
+    <string name="starting_hotspot_notice">Hotspot beenden</string>
+    <string name="stopping_hotspot_notice">Hotspot starten</string>
     <string name="check">Alle prüfen</string>
     <string name="uncheck">Alles rückgängig machen</string>
     <string name="text_previewAndEditList">Vorschau und Bearbeiten</string>
@@ -468,4 +468,8 @@
     <string name="mesg_qrScannerDefaultMode">Zurück zu den Standardaktionen für QR-Codes</string>
     <string name="show_as_qr_code">Als QR-Code anzeigen</string>
     <string name="unrecognized_qr_code_notice">unbekannter Code</string>
+    <string name="crash_report">Fehlerbericht</string>
+    <string name="clients"></string>
+    <string name="error_not_trusted_notice">Der Client muss Ihnen vertrauen</string>
+    <string name="trust">Vertrauen</string>
 </resources>
