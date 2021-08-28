@@ -32,10 +32,10 @@
     <string name="receive_file_success">%s has been received</string>
     <string name="empty_list">The list is empty</string>
     <string name="nickname_description">The name that will appear on other clients</string>
-    <string name="send_file_failure">Could not send \'%s\'</string>
-    <string name="receive_file_failure">Could not receive \'%s\'</string>
+    <string name="send_file_failure">Could not send \"%s\"</string>
+    <string name="receive_file_failure">Could not receive \"%s\"</string>
     <string name="receive_files_success">Files received</string>
-    <string name="preferences_reset">Resetting settings</string>
+    <string name="preferences_reset">Reset Settings</string>
     <string name="preferences_reset_question">Reset all settings?</string>
     <string name="choose_sharing_app">Share with…</string>
     <string name="received_files">Received Files</string>
@@ -166,7 +166,7 @@
     <string name="name">Name</string>
     <string name="date">Date</string>
     <string name="size">Size</string>
-    <string name="preferences_reset_notice">Applies initial settings</string>
+    <string name="preferences_reset_notice">This will restore default settings</string>
     <string name="deleting_files_notice">Deleting files</string>
     <string name="ongoing_task">Ongoing Task</string>
     <string name="high_priority_notifications">Important Notifications</string>
@@ -284,9 +284,9 @@
     <string name="nothing_worked_rhetorical">Nothing worked?</string>
     <string name="qr_code_image_notice">A QR code will appear here.</string>
     <string name="set_up_network_notice">Set up a hotspot or connect to Wi-Fi</string>
-    <string name="host_address_invalid_notice">Please enter a URL.</string>
+    <string name="host_address_invalid_notice">Please enter an internet address here.</string>
     <string name="credentials_mismatch">Credentials Mismatch</string>
-    <string name="credentials_mismatch_notice">\'%s\' needs invalidation of credentials to communicate.</string>
+    <string name="credentials_mismatch_notice">\"%s\" needs invalidation of credentials to communicate.</string>
     <string name="error_different_client">The connected client was different</string>
     <string name="error_unknown">Unknown error</string>
     <string name="error_unrecognized">%s error</string>
@@ -315,7 +315,7 @@
         \n\n3- Pick it (%s) and paste the password (%s).
         \n\n4- Return here after connecting.
     </string>
-    <string name="copy_password_and_open_settings"><![CDATA[Copy Password adn Open Settings]]></string>
+    <string name="copy_password_and_open_settings"><![CDATA[Copy Password and Open Settings]]></string>
     <string name="wifi_password">Wi-Fi Password</string>
     <string name="notifications_instructive">Instructive Notifications</string>
     <string name="connect_to_wifi_notice">Connect to \"%s\"</string>
@@ -331,7 +331,7 @@
     <string name="client_details">Client Details</string>
     <string name="client_model">Model</string>
     <string name="percent_sign" translatable="false">%</string>
-    <string name="waiting_receiver_approval_notice">Awaiting recipient approval</string>
+    <string name="waiting_receiver_approval_notice">Awaiting approval from recipient…</string>
     <string name="incoming">Incoming</string>
     <string name="outgoing">Outgoing</string>
     <string name="error_communication_unknown">Unknown communication error</string>
@@ -349,7 +349,7 @@
     <string name="images">Images</string>
     <string name="folders">Folders</string>
     <string name="web_share_empty_notice">Share something from the app first.</string>
-    <string name="send_using_web_share_success_notice">Sent \'%s\'</string>
+    <string name="send_using_web_share_success_notice">Sent \"%s\"</string>
     <string name="receiving_using_web_web_share">Receiving using Web Share</string>
     <string name="received_using_web_share">Received using Web Share</string>
     <string name="warning_permissions_not_accepted">Set up the permissions first.</string>
@@ -376,7 +376,7 @@
     <string name="clear_storage_list">Clear Storage List…</string>
     <string name="storage_folder">Storage Folder</string>
     <string name="change_storage_folder">Change Storage Folder</string>
-    <string name="storage_folder_notice">The folder content is saved in</string>
+    <string name="storage_folder_notice">Save in…</string>
     <string name="folder_not_writable">The folder is write-protected</string>
     <string name="error_empty_field">The field should not be empty</string>
     <string name="folder_name">Folder Name</string>
