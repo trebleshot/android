@@ -386,7 +386,7 @@
     <string name="sender_accepted">Sender accepted</string>
     <string name="sender_finishing">Finishing…</string>
     <string name="starting">Starting…</string>
-    <string name="sender_wait_for_receiver_notice">Receivers can pick you here</string>
+    <string name="sender_wait_for_receiver_notice">Recipients can pick you here</string>
     <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
     <string name="about_uprotocol">About uprotocol</string>
     <string name="about_uprotocol_content"><b>uprotocol</b> is an open content sharing protocol letting different
