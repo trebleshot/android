@@ -34,45 +34,29 @@
         <action
             android:id="@+id/action_contentBrowserFragment_to_selectionsFragment"
             app:destination="@id/selectionsFragment" />
-    </fragment>
-    <dialog
-        android:id="@+id/prepareIndexFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment"
-        android:label="@string/preparing">
         <action
-            android:id="@+id/action_prepareIndexFragment_to_sendFragment"
-            app:destination="@id/sendFragment"
-            app:popUpTo="@id/prepareIndexFragment"
-            app:popUpToInclusive="true" />
-    </dialog>
-    <fragment
-        android:id="@+id/sendFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.content.transfer.SendFragment"
-        android:label="@string/connecting_to_client">
-        <argument
-            android:name="groupId"
-            app:argType="long" />
-        <argument
-            android:name="items"
-            app:argType="org.monora.uprotocol.client.android.database.model.UTransferItem[]" />
-        <action
-            android:id="@+id/pick_client"
-            app:destination="@id/nav_pick_client">
-            <argument
-                android:name="direction"
-                app:argType="org.monora.uprotocol.core.protocol.Direction"
-                android:defaultValue="Outgoing" />
-        </action>
-        <action
-            android:id="@+id/action_sendFragment_to_nav_transfer_details"
+            android:id="@+id/action_contentBrowserFragment_to_nav_transfer_details"
             app:destination="@id/nav_transfer_details"
-            app:popUpTo="@id/sendFragment"
+            app:popUpTo="@id/contentBrowserFragment"
             app:popUpToInclusive="true">
             <argument
                 android:name="transfer"
                 app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
         </action>
     </fragment>
+    <dialog
+        android:id="@+id/prepareIndexFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment"
+        android:label="@string/preparing">
+        <action
+            android:id="@+id/action_prepareIndexFragment_to_nav_pick_client"
+            app:destination="@id/nav_pick_client">
+            <argument
+                android:name="direction"
+                app:argType="org.monora.uprotocol.core.protocol.Direction"
+                android:defaultValue="Outgoing" />
+        </action>
+    </dialog>
     <include app:graph="@navigation/nav_transfer_details" />
     <include app:graph="@navigation/nav_pick_client" />
     <dialog

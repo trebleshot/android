@@ -32,5 +32,5 @@
     <dialog
         android:id="@+id/resetPreferencesFragment"
         android:name="org.monora.uprotocol.client.android.fragment.ResetPreferencesFragment"
-        android:label="@string/preferences_reset_question" />
+        android:label="@string/preferences_reset" />
 </navigation>

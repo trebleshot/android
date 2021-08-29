@@ -20,9 +20,6 @@ package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -68,6 +65,7 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
         super.onViewCreated(view, savedInstanceState)
         val binding = LayoutSharingBinding.bind(view)
         val adapter = SharingContentAdapter()
+        val snackbar = Snackbar.make(binding.listParent, R.string.sending, Snackbar.LENGTH_INDEFINITE)
 
         binding.shareOnWeb.setOnClickListener {
             findNavController().navigate(SharingFragmentDirections.actionSharingFragmentToWebShareLauncherFragment2())
@@ -86,20 +84,11 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
 
         sharingViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is SharingState.Running -> {
-
-                }
-                is SharingState.Success -> {
-                    findNavController().navigate(
-                        SharingFragmentDirections.actionSharingFragmentToNavTransferDetails(
-                            it.transfer
-                        )
-                    )
-                }
-                is SharingState.Error -> {
-                    val msg = CommonErrors.messageOf(requireContext(), it.exception)
-                    Snackbar.make(binding.listParent, msg, Snackbar.LENGTH_INDEFINITE).show()
-                }
+                is SharingState.Running -> snackbar.setText(R.string.sending).show()
+                is SharingState.Success -> findNavController().navigate(
+                    SharingFragmentDirections.actionSharingFragmentToNavTransferDetails(it.transfer)
+                )
+                is SharingState.Error -> snackbar.setText(CommonErrors.messageOf(view.context, it.exception)).show()
             }
         }
     }

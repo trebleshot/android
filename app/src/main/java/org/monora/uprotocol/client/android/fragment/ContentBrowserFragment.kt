@@ -29,14 +29,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutContentBrowserBinding
 import org.monora.uprotocol.client.android.fragment.ContentFragmentStateAdapter.PageItem
 import org.monora.uprotocol.client.android.fragment.content.AppBrowserFragment
@@ -44,11 +49,22 @@ import org.monora.uprotocol.client.android.fragment.content.AudioBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.FileBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.ImageBrowserFragment
 import org.monora.uprotocol.client.android.fragment.content.VideoBrowserFragment
+import org.monora.uprotocol.client.android.util.CommonErrors
+import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharingSelectionViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharingState
+import org.monora.uprotocol.client.android.viewmodel.SharingViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
     private val selectionViewModel: SharingSelectionViewModel by activityViewModels()
+
+    private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
+
+    private val sharingViewModel: SharingViewModel by viewModels()
+
+    private val contentBrowserViewModel: ContentBrowserViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +76,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
 
         val binding = LayoutContentBrowserBinding.bind(view)
         val pagerAdapter = ContentFragmentStateAdapter(requireContext(), childFragmentManager, lifecycle)
+        val snackbar = Snackbar.make(view, R.string.sending, Snackbar.LENGTH_INDEFINITE)
 
         pagerAdapter.add(PageItem(getString(R.string.app), AppBrowserFragment::class.java.name))
         pagerAdapter.add(PageItem(getString(R.string.files), FileBrowserFragment::class.java.name))
@@ -73,6 +90,23 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = pagerAdapter.getItem(position).title
         }.attach()
+
+        sharingViewModel.state.observe(viewLifecycleOwner) {
+            when (it) {
+                is SharingState.Running -> snackbar.setText(R.string.sending).show()
+                is SharingState.Error -> snackbar.setText(CommonErrors.messageOf(view.context, it.exception)).show()
+                is SharingState.Success -> {
+                    findNavController().navigate(
+                        ContentBrowserFragmentDirections.actionContentBrowserFragmentToNavTransferDetails(it.transfer)
+                    )
+                }
+            }
+        }
+
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
+            val (groupId, items) = contentBrowserViewModel.items ?: return@observe
+            sharingViewModel.consume(bridge, groupId, items)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -143,4 +177,9 @@ class ContentFragmentStateAdapter(
         @IgnoredOnParcel
         var fragment: Fragment? = null
     }
+}
+
+@HiltViewModel
+class ContentBrowserViewModel @Inject internal constructor() : ViewModel() {
+    var items: Pair<Long, List<UTransferItem>>? = null
 }

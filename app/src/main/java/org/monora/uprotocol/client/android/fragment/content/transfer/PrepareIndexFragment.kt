@@ -25,6 +25,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,6 +46,7 @@ import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.fragment.ContentBrowserViewModel
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.util.Progress
 import org.monora.uprotocol.client.android.util.Transfers
@@ -54,9 +56,10 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 @AndroidEntryPoint
-class PrepareIndexFragment : BottomSheetDialogFragment(
-) {
+class PrepareIndexFragment : BottomSheetDialogFragment() {
     private val viewModel: PrepareIndexViewModel by viewModels()
+
+    private val contentBrowserViewModel: ContentBrowserViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.layout_prepare_index, container, false)
@@ -68,11 +71,12 @@ class PrepareIndexFragment : BottomSheetDialogFragment(
             when (it) {
                 is PreparationState.Preparing -> {
                 }
-                is PreparationState.Ready -> findNavController().navigate(
-                    PrepareIndexFragmentDirections.actionPrepareIndexFragmentToSendFragment(
-                        it.groupId, it.list.toTypedArray()
+                is PreparationState.Ready -> {
+                    contentBrowserViewModel.items = it.groupId to it.list
+                    findNavController().navigate(
+                        PrepareIndexFragmentDirections.actionPrepareIndexFragmentToNavPickClient()
                     )
-                )
+                }
             }
         }
     }
@@ -125,7 +129,7 @@ class PrepareIndexViewModel @Inject internal constructor(
                         )
                     )
 
-                    if (hasSplit) {
+                    if (Build.VERSION.SDK_INT >= 21 && hasSplit) {
                         it.info.splitSourceDirs?.forEach { splitPath ->
                             progress.index += 1
 

@@ -91,10 +91,14 @@ class MainTransportSeat @Inject constructor(
                     )
 
                     bridge.use {
-                        if (transfer.direction.isIncoming) {
-                            Transfers.receive(it, operation, transfer.id)
-                        } else {
-                            Transfers.send(it, operation, transfer.id)
+                        try {
+                            if (transfer.direction.isIncoming) {
+                                Transfers.receive(it, operation, transfer.id)
+                            } else {
+                                Transfers.send(it, operation, transfer.id)
+                            }
+                        } catch (e: Exception) {
+                            state.postValue(Task.State.Error(e))
                         }
                     }
                 }
