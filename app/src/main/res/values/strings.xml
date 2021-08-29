@@ -338,7 +338,7 @@
     <string name="error_client_no_address">The client has no address (try connecting manually)</string>
     <string name="error_protocol_unknown">Unknown protocol error</string>
     <string name="completed">Completed</string>
-    <string name="run_in_background">Run in Background…</string>
+    <string name="run_in_background">Run in Background</string>
     <string name="selections">Selections</string>
     <string name="preparing">Preparing…</string>
     <string name="web_share_description">An interface for file-sharing via web browsers</string>
@@ -373,7 +373,7 @@
     <string name="nickname">Nickname</string>
     <string name="root_folder">Root</string>
     <string name="add_storage_access">Add Storage Access…</string>
-    <string name="clear_storage_list">Clear Storage List…</string>
+    <string name="clear_storage_list">Clear Storage List</string>
     <string name="storage_folder">Storage Folder</string>
     <string name="change_storage_folder">Change Storage Folder</string>
     <string name="storage_folder_notice">Save in…</string>
