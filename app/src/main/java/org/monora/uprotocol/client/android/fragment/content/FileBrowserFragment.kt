@@ -195,7 +195,7 @@ class PathContentViewModel(fileModel: FileModel) {
 
     val isFirst = fileModel.file.parent == null
 
-    val title = fileModel.name()
+    val title = fileModel.file.getName()
 
     companion object {
         val ROOT_URI: Uri = Uri.fromFile(File("/"))
@@ -231,7 +231,7 @@ class PathAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position).id()
+        return getItem(position).listId
     }
 
     override fun getItemViewType(position: Int): Int {

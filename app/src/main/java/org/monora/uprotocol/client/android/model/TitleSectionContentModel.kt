@@ -18,64 +18,6 @@
 
 package org.monora.uprotocol.client.android.model
 
-import org.monora.uprotocol.client.android.backend.Destination
-import org.monora.uprotocol.client.android.backend.OperationBackend
-import org.monora.uprotocol.client.android.backend.SharingBackend
-
-class TitleSectionContentModel(val title: String) : ContentModel {
-    override fun canCopy(): Boolean = false
-
-    override fun canMove(): Boolean = false
-
-    override fun canShare(): Boolean = false
-
-    override fun canRemove(): Boolean = false
-
-    override fun canRename(): Boolean = false
-
-    override fun copy(operationBackend: OperationBackend, destination: Destination): Boolean {
-        throw UnsupportedOperationException()
-    }
-
-    override fun dateCreated(): Long {
-        throw UnsupportedOperationException()
-    }
-
-    override fun dateModified(): Long {
-        throw UnsupportedOperationException()
-    }
-
-    override fun dateSupported(): Boolean = false
-
-    override fun filter(charSequence: CharSequence): Boolean = false
-
-    override fun id(): Long = title.hashCode().toLong()
-
-    override fun length(): Long {
-        throw UnsupportedOperationException()
-    }
-
-    override fun lengthSupported(): Boolean = false
-
-    override fun move(operationBackend: OperationBackend, destination: Destination): Boolean {
-        throw UnsupportedOperationException()
-    }
-
-    override fun remove(operationBackend: OperationBackend): Boolean {
-        throw UnsupportedOperationException()
-    }
-
-    override fun share(operationBackend: OperationBackend, sharingBackend: SharingBackend): Boolean {
-        throw UnsupportedOperationException()
-    }
-
-    override fun canSelect(): Boolean = false
-
-    override fun selected(): Boolean = false
-
-    override fun select(selected: Boolean) {
-        throw UnsupportedOperationException()
-    }
-
-    override fun name(): String = title
+data class TitleSectionContentModel(val title: String): ListItem {
+    override val listId: Long = title.hashCode().toLong() + javaClass.hashCode()
 }

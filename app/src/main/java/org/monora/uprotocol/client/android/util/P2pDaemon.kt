@@ -223,7 +223,6 @@ class P2pDaemon(val persistenceProvider: PersistenceProvider, val connections: C
                 } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                     == android.content.pm.PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: 2/18/21 Request fine location permission for wifi direct
                     wifiP2pManager.requestPeers(channel, peerListener)
                 }
             }

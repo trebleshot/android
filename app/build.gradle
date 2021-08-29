@@ -176,8 +176,8 @@ dependencies {
     implementation 'org.apache.maven:maven-artifact:3.8.1'
     implementation 'com.google.code.gson:gson:2.8.7'
     implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation 'com.yanzhenjie.andserver:api:2.1.9'
-    kapt 'com.yanzhenjie.andserver:processor:2.1.9'
+    implementation 'com.yanzhenjie.andserver:api:2.1.10'
+    kapt 'com.yanzhenjie.andserver:processor:2.1.10'
     kapt 'androidx.annotation:annotation:1.2.0'
     kapt "com.github.bumptech.glide:compiler:$glide_version"
     implementation "com.github.bumptech.glide:okhttp3-integration:$glide_version"

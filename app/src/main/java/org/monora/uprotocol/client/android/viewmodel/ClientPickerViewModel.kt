@@ -24,7 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.monora.uprotocol.client.android.backend.AcquaintanceCallback
 import org.monora.uprotocol.client.android.backend.TransferRequestCallback
 import org.monora.uprotocol.client.android.backend.TransportRegistry
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
+import org.monora.uprotocol.client.android.lifecycle.SingleLiveEvent
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.protocol.Direction
 import javax.inject.Inject

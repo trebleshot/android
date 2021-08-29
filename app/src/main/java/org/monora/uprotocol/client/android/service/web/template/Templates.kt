@@ -211,7 +211,7 @@ fun renderContents(templates: Templates, list: List<Any>): String {
             templates.render("web/template/list/folder.html", folders) {
                 mapOf(
                     "id" to it.hashCode(),
-                    "name" to it.name().escapeHtml(),
+                    "name" to it.file.getName().escapeHtml(),
                     "filesCount" to templates.context.resources.getQuantityString(
                         R.plurals.files, it.indexCount, it.indexCount
                     ),
@@ -228,8 +228,8 @@ fun renderContents(templates: Templates, list: List<Any>): String {
             templates.render("web/template/list/file.html", files) {
                 mapOf(
                     "id" to it.hashCode(),
-                    "name" to it.name().escapeHtml(),
-                    "size" to Files.formatLength(it.length()),
+                    "name" to it.file.getName().escapeHtml(),
+                    "size" to Files.formatLength(it.file.getLength()),
                 )
             }
         )

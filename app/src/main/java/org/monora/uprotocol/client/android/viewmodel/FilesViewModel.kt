@@ -36,8 +36,8 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.database.model.SafFolder
-import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.FileModel
+import org.monora.uprotocol.client.android.model.ListItem
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import java.lang.ref.WeakReference
 import java.text.Collator
@@ -56,7 +56,7 @@ class FilesViewModel @Inject internal constructor(
 
     private val textFile = context.getString(R.string.file)
 
-    private val _files = MutableLiveData<List<ContentModel>>()
+    private val _files = MutableLiveData<List<ListItem>>()
 
     val files = Transformations.map(
         liveData {
@@ -110,7 +110,7 @@ class FilesViewModel @Inject internal constructor(
         return false
     }
 
-    private fun createOrderedFileList(file: DocumentFile): List<ContentModel> {
+    private fun createOrderedFileList(file: DocumentFile): List<ListItem> {
         val pathTree = mutableListOf<FileModel>()
 
         var pathChild = file
@@ -129,10 +129,10 @@ class FilesViewModel @Inject internal constructor(
         collator.strength = Collator.TERTIARY
 
         val sortedList = list.sortedWith(compareBy(collator) {
-            it.name()
+            it.file.getName()
         })
 
-        val contents = ArrayList<ContentModel>(0)
+        val contents = ArrayList<ListItem>(0)
         val files = ArrayList<FileModel>(0)
 
         sortedList.forEach {

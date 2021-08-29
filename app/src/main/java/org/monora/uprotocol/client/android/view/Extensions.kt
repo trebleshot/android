@@ -20,9 +20,6 @@ package org.monora.uprotocol.client.android.view
 import android.app.Activity
 import android.content.ContextWrapper
 import android.view.View
-import androidx.preference.PreferenceManager
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.model.ContentModel
 import java.lang.IllegalStateException
 
 fun View.findActivity(): Activity {

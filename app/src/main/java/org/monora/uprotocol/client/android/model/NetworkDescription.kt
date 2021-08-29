@@ -38,15 +38,4 @@ class NetworkDescription(var ssid: String, var bssid: String?, var password: Str
     override fun hashCode(): Int {
         return ObjectsCompat.hash(ssid, bssid, password)
     }
-
-    @RequiresApi(29)
-    fun toNetworkSuggestion(): WifiNetworkSuggestion {
-        val builder: WifiNetworkSuggestion.Builder = WifiNetworkSuggestion.Builder()
-            .setSsid(ssid)
-            .setIsAppInteractionRequired(true)
-        password?.let { builder.setWpa2Passphrase(it) }
-        bssid?.let { builder.setBssid(MacAddress.fromString(it)) }
-
-        return builder.build()
-    }
 }

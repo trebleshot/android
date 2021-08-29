@@ -68,7 +68,7 @@
 
         <TextView
             android:id="@+id/statusText"
-            android:textAppearance="?textAppearanceSubtitle1"
+            android:textAppearance="?textAppearanceBody1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

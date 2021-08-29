@@ -211,7 +211,7 @@
 
         <TextView
             android:id="@+id/waitingApprovalText"
-            style="@style/TextAppearance.Primary"
+            android:textAppearance="?textAppearanceCaption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"

@@ -32,7 +32,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.genonbeta.android.framework.io.DocumentFile
 import com.genonbeta.android.framework.util.Files
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -40,19 +39,15 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.databinding.LayoutTransferItemBinding
-import org.monora.uprotocol.client.android.databinding.ListSectionTitleBinding
 import org.monora.uprotocol.client.android.databinding.ListTransferItemBinding
-import org.monora.uprotocol.client.android.model.TitleSectionContentModel
 import org.monora.uprotocol.client.android.protocol.isIncoming
 import org.monora.uprotocol.client.android.util.Activities
-import org.monora.uprotocol.client.android.viewholder.TitleSectionViewHolder
 import org.monora.uprotocol.client.android.viewmodel.EmptyContentViewModel
 import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem
@@ -123,9 +118,15 @@ class ItemViewModel @AssistedInject internal constructor(
 
     fun recover(item: UTransferItem) {
         if (item.state == TransferItem.State.InvalidatedTemporarily) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
+                val originalState = item.state
+
                 item.state = TransferItem.State.Pending
                 transferRepository.update(item)
+
+                // The list will not be refreshed if the DiffUtil finds the values are the same, so we give the
+                // original value back (it will be refreshed anyway).
+                item.state = originalState
             }
         }
     }
@@ -156,7 +157,8 @@ class ItemContentViewModel(val transferItem: UTransferItem, context: Context) {
 
     val mimeType = transferItem.mimeType
 
-    val shouldRecover = transferItem.direction.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
+    val shouldRecover =
+        transferItem.direction.isIncoming && transferItem.state == TransferItem.State.InvalidatedTemporarily
 
     val state = context.getString(
         when (transferItem.state) {
@@ -184,45 +186,36 @@ class ItemViewHolder(
     }
 }
 
-class ItemCallback : DiffUtil.ItemCallback<Any>() {
-    override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
+class ItemCallback : DiffUtil.ItemCallback<UTransferItem>() {
+    override fun areItemsTheSame(oldItem: UTransferItem, newItem: UTransferItem): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
-        return oldItem == newItem
+    override fun areContentsTheSame(oldItem: UTransferItem, newItem: UTransferItem): Boolean {
+        return oldItem.dateModified == newItem.dateModified && oldItem.state == newItem.state
     }
 }
 
 class ItemAdapter(
     private val clickListener: (item: UTransferItem, clickType: ClickType) -> Unit,
-) : ListAdapter<Any, ViewHolder>(ItemCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
-        VIEW_TYPE_TRANSFER_ITEM -> ItemViewHolder(
+) : ListAdapter<UTransferItem, ItemViewHolder>(ItemCallback()) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        return ItemViewHolder(
             clickListener,
             ListTransferItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
-        VIEW_TYPE_SECTION -> TitleSectionViewHolder(
-            ListSectionTitleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
-        else -> throw UnsupportedOperationException()
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        when (val item = getItem(position)) {
-            is UTransferItem -> if (holder is ItemViewHolder) holder.bind(item)
-            is TitleSectionContentModel -> if (holder is TitleSectionViewHolder) holder.bind(item)
-        }
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
-    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
-        is UTransferItem -> VIEW_TYPE_TRANSFER_ITEM
-        is TitleSectionContentModel -> VIEW_TYPE_SECTION
-        else -> throw UnsupportedOperationException()
+    override fun getItemViewType(position: Int): Int {
+        return VIEW_TYPE_TRANSFER_ITEM
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position).hashCode().toLong()
+        return getItem(position).let { it.id + it.groupId }
     }
 
     enum class ClickType {
@@ -231,8 +224,6 @@ class ItemAdapter(
     }
 
     companion object {
-        const val VIEW_TYPE_SECTION = 0
-
-        const val VIEW_TYPE_TRANSFER_ITEM = 1
+        const val VIEW_TYPE_TRANSFER_ITEM = 0
     }
 }

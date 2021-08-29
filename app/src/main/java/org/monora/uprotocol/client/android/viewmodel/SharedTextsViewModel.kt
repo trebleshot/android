@@ -26,8 +26,8 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.monora.uprotocol.client.android.data.SharedTextRepository
-import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.DateSectionContentModel
+import org.monora.uprotocol.client.android.model.ListItem
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +36,7 @@ class SharedTextsViewModel @Inject internal constructor(
     sharedTextRepository: SharedTextRepository,
 ) : ViewModel() {
     val sharedTexts = Transformations.switchMap(sharedTextRepository.getSharedTexts()) { list ->
-        val newList = ArrayList<ContentModel>()
+        val newList = ArrayList<ListItem>()
         var previous: DateSectionContentModel? = null
 
         list.forEach {

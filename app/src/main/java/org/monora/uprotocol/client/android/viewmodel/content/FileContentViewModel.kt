@@ -29,7 +29,7 @@ import org.monora.uprotocol.client.android.util.MimeIcons
 import org.monora.uprotocol.core.transfer.TransferItem
 
 class FileContentViewModel(fileModel: FileModel) {
-    val name = fileModel.name()
+    val name = fileModel.file.getName()
 
     val count = fileModel.indexCount
 
@@ -42,7 +42,7 @@ class FileContentViewModel(fileModel: FileModel) {
     val indexCount = fileModel.indexCount
 
     val sizeText by lazy {
-        Files.formatLength(fileModel.length(), false)
+        Files.formatLength(fileModel.file.getLength(), false)
     }
 
     val uri = fileModel.file.getUri()

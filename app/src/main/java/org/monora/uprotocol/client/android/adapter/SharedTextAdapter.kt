@@ -19,14 +19,14 @@ package org.monora.uprotocol.client.android.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.ListSectionDateBinding
 import org.monora.uprotocol.client.android.databinding.ListSharedTextBinding
-import org.monora.uprotocol.client.android.itemcallback.ContentModelItemCallback
-import org.monora.uprotocol.client.android.model.ContentModel
 import org.monora.uprotocol.client.android.model.DateSectionContentModel
+import org.monora.uprotocol.client.android.model.ListItem
 import org.monora.uprotocol.client.android.viewholder.DateSectionViewHolder
 import org.monora.uprotocol.client.android.viewholder.SharedTextViewHolder
 
@@ -34,7 +34,7 @@ import org.monora.uprotocol.client.android.viewholder.SharedTextViewHolder
  * created by: Veli
  * date: 30.12.2017 13:25
  */
-class SharedTextAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItemCallback()) {
+class SharedTextAdapter : ListAdapter<ListItem, ViewHolder>(SharedTextItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = when (viewType) {
         VIEW_TYPE_SHARED_TEXT -> SharedTextViewHolder(
             ListSharedTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -59,12 +59,22 @@ class SharedTextAdapter : ListAdapter<ContentModel, ViewHolder>(ContentModelItem
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position).id()
+        return getItem(position).listId
     }
 
     companion object {
         const val VIEW_TYPE_SECTION = 0
 
         const val VIEW_TYPE_SHARED_TEXT = 1
+    }
+}
+
+class SharedTextItemCallback : DiffUtil.ItemCallback<ListItem>() {
+    override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
+        return oldItem.javaClass == newItem.javaClass && oldItem.listId == newItem.listId
+    }
+
+    override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
+        return oldItem !is SharedText || newItem !is SharedText || oldItem.text == newItem.text
     }
 }

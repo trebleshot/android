@@ -26,7 +26,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.concurrent.SingleLiveEvent
 import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
