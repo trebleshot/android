@@ -62,17 +62,17 @@ class TransferTaskRepository @Inject constructor(
             applicationScope.launch(Dispatchers.IO) {
                 val addresses = clientRepository.getInetAddresses(params.client.clientUid)
 
-                CommunicationBridge.Builder(connectionFactory, persistenceProvider, addresses).apply {
-                    setClearBlockedStatus(true)
-                    setClientUid(params.client.clientUid)
-                }.connect().use {
-                    try {
+                try {
+                    CommunicationBridge.Builder(connectionFactory, persistenceProvider, addresses).apply {
+                        setClearBlockedStatus(true)
+                        setClientUid(params.client.clientUid)
+                    }.connect().use {
                         if (it.requestNotifyTransferRejection(params.transfer.id)) {
                             transferRepository.delete(params.transfer)
                         }
-                    } catch (e: Exception) {
-                        state.postValue(Task.State.Error(e))
                     }
+                } catch (e: Exception) {
+                    state.postValue(Task.State.Error(e))
                 }
             }
         }

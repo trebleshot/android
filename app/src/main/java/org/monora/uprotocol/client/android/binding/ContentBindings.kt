@@ -29,6 +29,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.util.MimeIcons
 import org.monora.uprotocol.client.android.viewmodel.content.FileContentViewModel
+import org.monora.uprotocol.client.android.viewmodel.content.WebTransferContentViewModel
 import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem.State.Done
 
@@ -65,6 +66,15 @@ fun loadThumbnailOf(imageView: ImageView, item: UTransferItem) {
 
 @BindingAdapter("thumbnailOf")
 fun loadThumbnailOf(imageView: ImageView, viewModel: FileContentViewModel) {
+    if (viewModel.mimeType.startsWith("image/") || viewModel.mimeType.startsWith("video/")) {
+        load(imageView, viewModel.uri, circle = true)
+    } else {
+        imageView.setImageDrawable(null)
+    }
+}
+
+@BindingAdapter("thumbnailOf")
+fun loadThumbnailOf(imageView: ImageView, viewModel: WebTransferContentViewModel) {
     if (viewModel.mimeType.startsWith("image/") || viewModel.mimeType.startsWith("video/")) {
         load(imageView, viewModel.uri, circle = true)
     } else {

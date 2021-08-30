@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Veli Tasalı
+ * Copyright (C) 2021 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,17 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.monora.uprotocol.client.android.activity
 
-import android.os.Bundle
-import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.app.Activity
-import dagger.hilt.android.AndroidEntryPoint
+package org.monora.uprotocol.client.android.viewmodel.content
 
-@AndroidEntryPoint
-class SharedTextActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shared_text)
-    }
+import com.genonbeta.android.framework.util.Files
+import org.monora.uprotocol.client.android.database.model.WebTransfer
+import org.monora.uprotocol.client.android.util.MimeIcons
+
+class WebTransferContentViewModel(transfer: WebTransfer) {
+    val name = transfer.name
+
+    val icon = MimeIcons.loadMimeIcon(transfer.mimeType)
+
+    val mimeType = transfer.mimeType
+
+    val size = Files.formatLength(transfer.size)
+
+    val uri = transfer.uri
 }

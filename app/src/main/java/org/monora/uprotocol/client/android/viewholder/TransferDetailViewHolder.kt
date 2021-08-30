@@ -25,7 +25,6 @@ import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import org.monora.uprotocol.client.android.database.model.TransferDetail
 import org.monora.uprotocol.client.android.databinding.ListTransferBinding
-import org.monora.uprotocol.client.android.fragment.TransferHistoryAdapter.ClickType
 import org.monora.uprotocol.client.android.viewmodel.content.TransferDetailContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferStateContentViewModel
 import org.monora.uprotocol.client.android.viewmodel.content.TransferStateFeederViewModel
@@ -78,5 +77,11 @@ class TransferDetailViewHolder(
 
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
+    }
+
+    enum class ClickType {
+        Default,
+        ToggleTask,
+        Reject,
     }
 }

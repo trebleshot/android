@@ -17,52 +17,16 @@
  */
 package org.monora.uprotocol.client.android.activity
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
-import org.monora.uprotocol.client.android.fragment.PreparationViewModel
-import java.util.*
 
 @AndroidEntryPoint
 class SharingActivity : Activity() {
-    private val preparationViewModel: PreparationViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val action: String? = intent?.action
-        var list: List<Uri>? = null
-
-        when (action) {
-            Intent.ACTION_SEND -> if (intent.hasExtra(Intent.EXTRA_TEXT)) {
-                startActivity(
-                    Intent(this@SharingActivity, TextEditorActivity::class.java)
-                        .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-                        .putExtra(
-                            TextEditorActivity.EXTRA_TEXT,
-                            intent.getStringExtra(Intent.EXTRA_TEXT)
-                        )
-                )
-            } else {
-                val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
-                if (uri != null) list = Collections.singletonList(uri)
-            }
-            Intent.ACTION_SEND_MULTIPLE -> {
-                list = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
-            }
-        }
-
-        if (list.isNullOrEmpty()) {
-            finish()
-            return
-        }
-
-        preparationViewModel.consume(list)
 
         setContentView(R.layout.activity_sharing)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

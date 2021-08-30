@@ -30,6 +30,22 @@
             app:destination="@id/sharingFragment"
             app:popUpTo="@id/prepareSharingFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_prepareSharingFragment_to_nav_text_editor"
+            app:destination="@id/nav_text_editor"
+            app:popUpTo="@id/prepareSharingFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="sharedText"
+                app:argType="org.monora.uprotocol.client.android.database.model.SharedText"
+                app:nullable="true"
+                android:defaultValue="@null" />
+            <argument
+                android:name="text"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
     </fragment>
 
     <fragment
@@ -74,5 +90,6 @@
         android:id="@+id/webShareLauncherFragment2"
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.WebShareLauncherFragment"
         android:label="@string/web_share" />
+    <include app:graph="@navigation/nav_text_editor" />
 
 </navigation>

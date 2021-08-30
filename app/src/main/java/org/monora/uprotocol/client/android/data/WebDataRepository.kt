@@ -18,6 +18,8 @@
 
 package org.monora.uprotocol.client.android.data
 
+import android.net.Uri
+import androidx.lifecycle.LiveData
 import org.monora.uprotocol.client.android.database.WebTransferDao
 import org.monora.uprotocol.client.android.database.model.WebTransfer
 import org.monora.uprotocol.client.android.util.Networks
@@ -41,9 +43,17 @@ class WebDataRepository @Inject constructor(
 
     fun getList() = sharedContents.toList()
 
+    fun getReceivedContent(id: Int): LiveData<WebTransfer> = webTransferDao.get(id)
+
+    fun getReceivedContents() = webTransferDao.getAll()
+
     suspend fun insert(webTransfer: WebTransfer) = webTransferDao.insert(webTransfer)
 
     fun getNetworkInterfaces() = Networks.getInterfaces()
+
+    suspend fun remove(transfer: WebTransfer) {
+        webTransferDao.remove(transfer)
+    }
 
     fun serve(list: List<Any>) {
         synchronized(sharedContents) {

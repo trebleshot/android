@@ -111,7 +111,7 @@ class MainTransportSeat @Inject constructor(
             "Expected the UClient implementation"
         }
 
-        val sharedText = SharedText(0, content)
+        val sharedText = SharedText(0, client.clientUid, content)
 
         runBlocking {
             sharedTextRepository.insert(sharedText)

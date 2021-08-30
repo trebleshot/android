@@ -39,8 +39,8 @@
         android:background="?rectSelector"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -64,8 +64,10 @@
                 android:id="@+id/progressBar"
                 android:layout_width="@dimen/icon_size_list_normal"
                 android:layout_height="@dimen/icon_size_list_normal"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:visibility="@{viewModel.finished ? View.INVISIBLE : View.VISIBLE}"
                 android:max="@{feederModel.state.running ? feederModel.state.total : 100 }"
                 android:progress="@{feederModel.state.running ? feederModel.state.progress : viewModel.progress }"

@@ -37,9 +37,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.coroutineScope
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -54,21 +55,21 @@ import kotlinx.coroutines.launch
 import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.TextEditorActivity
-import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharedTextsViewModel
 import org.monora.uprotocol.core.protocol.ClipboardType
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacementProvider {
-    @Inject
-    lateinit var sharedTextRepository: SharedTextRepository
+    private val viewModel: SharedTextsViewModel by viewModels()
+
+    private val args: TextEditorFragmentArgs by navArgs()
 
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
 
     private var sharedText: SharedText? = null
+        get() = field ?: args.sharedText
 
     private val text
         get() = requireView().findViewById<EditText>(R.id.editText).text.toString()
@@ -84,17 +85,7 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
         super.onViewCreated(view, savedInstanceState)
 
         val editText = view.findViewById<EditText>(R.id.editText)
-        val text = requireActivity().intent?.let {
-            if (it.hasExtra(TextEditorActivity.EXTRA_TEXT_MODEL)) {
-                sharedText = it.getParcelableExtra(TextEditorActivity.EXTRA_TEXT_MODEL)
-                return@let sharedText?.text
-            } else if (it.hasExtra(TextEditorActivity.EXTRA_TEXT)) {
-                return@let it.getStringExtra(TextEditorActivity.EXTRA_TEXT)
-            }
-
-            null
-        }
-
+        val text = args.text ?: args.sharedText?.text
         val backPressedDispatcher = requireActivity().onBackPressedDispatcher
         val backPressedCallback = object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
@@ -237,10 +228,8 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
 
     private fun removeText() {
         sharedText?.let {
-            lifecycle.coroutineScope.launch {
-                sharedTextRepository.delete(it)
-                sharedText = null
-            }
+            viewModel.remove(it)
+            sharedText = null
         }
     }
 
@@ -265,16 +254,14 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
     private fun saveText() {
         val date = System.currentTimeMillis()
         var update = false
-        val item = this.sharedText?.also {
+        val item = sharedText?.also {
             it.modified = date
             it.text = text
             update = true
-        } ?: SharedText(0, text, date).also {
+        } ?: SharedText(0, null, text, date).also {
             this.sharedText = it
         }
 
-        lifecycleScope.launch {
-            if (update) sharedTextRepository.update(item) else sharedTextRepository.insert(item)
-        }
+        viewModel.save(item, update)
     }
 }

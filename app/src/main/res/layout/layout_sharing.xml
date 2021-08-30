@@ -38,6 +38,8 @@
                 android:fitsSystemWindows="true"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
+                android:layout_marginLeft="@dimen/short_content_width_padding_between"
+                android:layout_marginRight="@dimen/short_content_width_padding_between"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

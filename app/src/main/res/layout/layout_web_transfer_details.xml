@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Veli Tasalı
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.monora.uprotocol.client.android.viewmodel.content.WebTransferContentViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_list_normal"
+            android:layout_height="@dimen/icon_size_list_normal"
+            app:imageResource="@{viewModel.icon}"
+            app:layout_constraintStart_toStartOf="@id/image"
+            app:layout_constraintEnd_toEndOf="@id/image"
+            app:layout_constraintTop_toTopOf="@id/image"
+            app:layout_constraintBottom_toBottomOf="@id/image"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <ImageView
+            android:id="@+id/image"
+            thumbnailOf="@{viewModel}"
+            android:layout_width="@dimen/icon_size_list_giant"
+            android:layout_height="@dimen/icon_size_list_giant"
+            app:layout_constraintEnd_toStartOf="@+id/text1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/text1"
+            style="@style/TextAppearance.Primary.Big.SingleLine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@{viewModel.name}"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/textView13"
+            app:layout_constraintEnd_toStartOf="@+id/sizeText"
+            app:layout_constraintStart_toEndOf="@+id/image"
+            app:layout_constraintTop_toTopOf="@+id/image"
+            tools:text="@tools:sample/cities" />
+
+        <TextView
+            android:id="@+id/textView13"
+            style="@style/TextAppearance.Secondary.SingleLine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/received_using_web_share"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
+            app:layout_constraintEnd_toEndOf="@+id/text1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/text1"
+            app:layout_constraintTop_toBottomOf="@+id/text1"
+            tools:text="@tools:sample/lorem" />
+
+        <TextView
+            android:id="@+id/sizeText"
+            style="@style/TextAppearance.Secondary.SingleLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.size}"
+            app:layout_constraintStart_toEndOf="@id/text1"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintTop_toTopOf="@+id/image"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
+            tools:text="@tools:sample/lorem" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/profileBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="24dp"
+            app:constraint_referenced_ids="image, textView13"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="32dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?colorDivider"
+            app:layout_constraintBottom_toBottomOf="@id/profileBarrier" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeButton"
+            style="?borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/remove"
+            app:icon="@drawable/ic_remove_circle_white_24dp"
+            app:iconGravity="textStart"
+            app:layout_constraintBottom_toBottomOf="@+id/openButton"
+            app:layout_constraintEnd_toStartOf="@+id/openButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+            app:layout_constraintTop_toTopOf="@+id/openButton" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/openButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/open"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+            app:layout_constraintStart_toEndOf="@+id/removeButton"
+            app:layout_constraintTop_toBottomOf="@id/profileBarrier" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="24dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="24dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

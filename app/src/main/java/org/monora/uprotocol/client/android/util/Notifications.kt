@@ -30,7 +30,6 @@ import com.genonbeta.android.framework.io.DocumentFile
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.activity.ContentBrowserActivity
 import org.monora.uprotocol.client.android.activity.HomeActivity
-import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.database.model.Transfer
 import org.monora.uprotocol.client.android.database.model.UClient
@@ -198,10 +197,8 @@ class Notifications(val backend: NotificationBackend) {
         val negativeIntent = PendingIntent.getBroadcast(
             context, item.id + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val activityIntent = Intent(context, TextEditorActivity::class.java)
-            .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-            .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, item)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        // TODO: 8/30/21 Show text
+        val activityIntent = Intent(context, HomeActivity::class.java)
 
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)

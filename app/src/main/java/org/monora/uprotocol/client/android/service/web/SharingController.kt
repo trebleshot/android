@@ -34,6 +34,7 @@ import com.yanzhenjie.andserver.framework.body.StreamBody
 import com.yanzhenjie.andserver.http.multipart.MultipartFile
 import com.yanzhenjie.andserver.util.MediaType
 import dagger.hilt.EntryPoints
+import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.content.App
@@ -41,6 +42,7 @@ import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
 import org.monora.uprotocol.client.android.database.model.UTransferItem
+import org.monora.uprotocol.client.android.database.model.WebTransfer
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.service.web.di.WebEntryPoint
 import org.monora.uprotocol.client.android.service.web.response.FileZipBody
@@ -131,6 +133,7 @@ class SharingController {
         val webEntryPoint = EntryPoints.get(context, WebEntryPoint::class.java)
         val services = webEntryPoint.services()
         val fileRepository = webEntryPoint.fileRepository()
+        val webDataRepository = webEntryPoint.webDataRepository()
         val fileName = content.filename ?: throw IllegalStateException("File name cannot be empty")
         val type = content.contentType.type
         val savePath = fileRepository.appDirectory
@@ -151,6 +154,14 @@ class SharingController {
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(context.getString(R.string.received_using_web_share))
             notification.show()
+
+            file.sync(context)
+
+            runBlocking {
+                webDataRepository.insert(
+                    WebTransfer(0, file.getUri(), file.getName(), file.getType(), file.getLength())
+                )
+            }
         } catch (e: Exception) {
             file.delete(context)
         }

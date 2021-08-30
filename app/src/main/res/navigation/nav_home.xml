@@ -18,12 +18,12 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_home"
     app:startDestination="@id/transferHistoryFragment">
 
-    <action android:id="@+id/action_global_profileEditorFragment"
-        app:destination="@id/profileEditorFragment"/>
+    <action
+        android:id="@+id/action_global_profileEditorFragment"
+        app:destination="@id/profileEditorFragment" />
 
     <fragment
         android:id="@+id/transferHistoryFragment"
@@ -39,6 +39,23 @@
         <action
             android:id="@+id/action_transferHistoryFragment_to_nav_receive"
             app:destination="@id/nav_receive" />
+        <action
+            android:id="@+id/action_transferHistoryFragment_to_nav_text_editor"
+            app:destination="@id/nav_text_editor">
+            <argument
+                android:name="sharedText"
+                app:argType="org.monora.uprotocol.client.android.database.model.SharedText"
+                app:nullable="true"
+                android:defaultValue="@null" />
+            <argument
+                android:name="text"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
+        <action
+            android:id="@+id/action_transferHistoryFragment_to_webTransferDetailsFragment"
+            app:destination="@id/webTransferDetailsFragment" />
     </fragment>
 
     <dialog
@@ -81,4 +98,13 @@
     <action
         android:id="@+id/action_global_aboutUprotocolFragment"
         app:destination="@id/aboutUprotocolFragment" />
+    <include app:graph="@navigation/nav_text_editor" />
+    <dialog
+        android:id="@+id/webTransferDetailsFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.WebTransferDetailsFragment"
+        android:label="@string/transfer_details">
+        <argument
+            android:name="transfer"
+            app:argType="org.monora.uprotocol.client.android.database.model.WebTransfer" />
+    </dialog>
 </navigation>

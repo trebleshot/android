@@ -100,30 +100,10 @@
         </activity>
 
         <activity
-            android:name="org.monora.uprotocol.client.android.activity.SharedTextActivity"
-            android:label="@string/shared_texts"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
             android:name="org.monora.uprotocol.client.android.activity.ContentBrowserActivity"
             android:label="@string/sends"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar"
-            android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
-            tools:targetApi="jelly_bean">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.monora.uprotocol.client.android.activity.HomeActivity" />
-        </activity>
-
-        <activity
-            android:name="org.monora.uprotocol.client.android.activity.TextEditorActivity"
-            android:label="@string/text_editor"
             android:parentActivityName="org.monora.uprotocol.client.android.activity.HomeActivity"
             tools:targetApi="jelly_bean">
             <meta-data

@@ -61,9 +61,7 @@ import kotlinx.coroutines.launch
 import org.monora.android.codescanner.CodeScanner
 import org.monora.uprotocol.client.android.NavPickClientDirections
 import org.monora.uprotocol.client.android.R
-import org.monora.uprotocol.client.android.activity.TextEditorActivity
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.data.SharedTextRepository
 import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
 import org.monora.uprotocol.client.android.model.NetworkDescription
@@ -71,6 +69,7 @@ import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.Connections
 import org.monora.uprotocol.client.android.util.InetAddresses
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
+import org.monora.uprotocol.client.android.viewmodel.SharedTextsViewModel
 import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
@@ -80,10 +79,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
-    @Inject
-    lateinit var sharedTextRepository: SharedTextRepository
-
     private val clientPickerViewModel: ClientPickerViewModel by activityViewModels()
+
+    private val sharedTextsViewModel: SharedTextsViewModel by viewModels()
 
     private val viewModel: BarcodeScannerViewModel by viewModels()
 
@@ -311,22 +309,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 .setTitle(R.string.unrecognized_qr_code_notice)
                 .setMessage(code)
                 .setNegativeButton(R.string.close, null)
-                .setPositiveButton(R.string.show) { _: DialogInterface?, _: Int ->
-                    val sharedText = SharedText(0, code)
-
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        sharedTextRepository.insert(sharedText)
-                    }
-
-                    snackbarPlacementProvider.createSnackbar(R.string.save_text_success)?.show()
-
-                    startActivity(
-                        Intent(context, TextEditorActivity::class.java)
-                            .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-                            .putExtra(TextEditorActivity.EXTRA_TEXT_MODEL, sharedText)
-                    )
-                }
-                .setNeutralButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(android.R.string.copy) { _: DialogInterface?, _: Int ->
                     (context?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?)?.let {
                         it.setPrimaryClip(ClipData.newPlainText("copiedText", code))
                         snackbarPlacementProvider.createSnackbar(R.string.copy_text_to_clipboard_success)?.show()

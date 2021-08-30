@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -42,12 +43,49 @@ import org.monora.uprotocol.client.android.databinding.LayoutPrepareSharingBindi
 import org.monora.uprotocol.core.protocol.Direction
 import java.lang.ref.WeakReference
 import java.text.Collator
+import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 
 @AndroidEntryPoint
 class PrepareSharingFragment : Fragment(R.layout.layout_prepare_sharing) {
     private val preparationViewModel: PreparationViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val activity = activity
+        val intent = activity?.intent
+
+        if (activity != null && intent != null) {
+            if (Intent.ACTION_SEND == intent.action && intent.hasExtra(Intent.EXTRA_TEXT)) {
+                findNavController().navigate(
+                    PrepareSharingFragmentDirections.actionPrepareSharingFragmentToNavTextEditor(
+                        text = intent.getStringExtra(Intent.EXTRA_TEXT)
+                    )
+                )
+            } else {
+                val list: List<Uri>? = try {
+                    when (intent.action) {
+                        Intent.ACTION_SEND -> (intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri?)?.let {
+                            Collections.singletonList(it)
+                        }
+                        Intent.ACTION_SEND_MULTIPLE -> intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
+                        else -> null
+                    }
+                } catch (e: Throwable) {
+                    null
+                }
+
+                if (list.isNullOrEmpty()) {
+                    activity.finish()
+                    return
+                }
+
+                preparationViewModel.consume(list)
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

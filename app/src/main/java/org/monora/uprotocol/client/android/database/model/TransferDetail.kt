@@ -19,6 +19,7 @@
 package org.monora.uprotocol.client.android.database.model
 
 import androidx.room.DatabaseView
+import org.monora.uprotocol.client.android.model.ListItem
 import org.monora.uprotocol.core.protocol.Direction
 import org.monora.uprotocol.core.transfer.TransferItem.State.Constants.DONE
 
@@ -43,4 +44,7 @@ data class TransferDetail(
     val itemsCount: Int,
     val itemsDoneCount: Int,
     val dateCreated: Long,
-)
+) : ListItem {
+    override val listId: Long
+        get() = id + javaClass.hashCode()
+}
