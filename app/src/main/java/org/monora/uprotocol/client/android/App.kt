@@ -52,19 +52,12 @@ class App : MultiDexApplication(), Thread.UncaughtExceptionHandler {
 
     private fun initializeSettings() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val hasNsdSet = preferences.contains("nsd_enabled")
         val hasReferralVersion = preferences.contains("referral_version")
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false)
 
         if (!hasReferralVersion) preferences.edit {
             putInt("referral_version", BuildConfig.VERSION_CODE)
-        }
-
-        // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
-        // So we will disable it for them, and it will still remain as an option for the user.
-        if (!hasNsdSet) preferences.edit {
-            putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
         }
 
         val migratedVersion = preferences.getInt("migrated_version", MIGRATION_NONE)

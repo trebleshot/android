@@ -26,7 +26,6 @@ import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +37,6 @@ import org.monora.uprotocol.core.ClientLoader
 import org.monora.uprotocol.core.persistence.PersistenceProvider
 import org.monora.uprotocol.core.protocol.ConnectionFactory
 import org.monora.uprotocol.core.protocol.communication.CredentialsException
-import org.monora.uprotocol.core.protocol.communication.SecurityException
 import org.monora.uprotocol.core.spec.v1.Config
 import java.net.NetworkInterface
 import javax.inject.Inject
@@ -61,29 +59,14 @@ class NsdDaemon @Inject constructor(
 
     val onlineClients: LiveData<List<ClientRoute>> = _onlineClients
 
-    private val nsdManager: NsdManager by lazy {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            throw UnsupportedOperationException("This field shouldn't have been invoked on this version of OS");
-        }
-
-        context.getSystemService(Context.NSD_SERVICE) as NsdManager
-    }
-
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
     private var discoveryListener: NsdManager.DiscoveryListener? = null
 
     private var registrationListener: NsdManager.RegistrationListener? = null
 
-    val discovering: Boolean
-        get() = discoveryListener != null
-
-    // TODO: 8/24/21 Why are we still disabling nsd?
-    val enabled: Boolean
-        get() = preferences.getBoolean("nsd_enabled", false)
-
     fun registerService() {
-        if (!enabled || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN || registrationListener != null) {
+        if (registrationListener != null) {
             return
         }
 
@@ -102,7 +85,7 @@ class NsdDaemon @Inject constructor(
     }
 
     fun startDiscovering() {
-        if (!enabled || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN || discoveryListener != null) {
+        if (discoveryListener != null) {
             return
         }
 
@@ -114,7 +97,7 @@ class NsdDaemon @Inject constructor(
     }
 
     fun stopDiscovering() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN || discoveryListener == null) {
+        if (discoveryListener == null) {
             return
         }
 
@@ -127,7 +110,7 @@ class NsdDaemon @Inject constructor(
     }
 
     fun unregisterService() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN || registrationListener == null) {
+        if (registrationListener == null) {
             return
         }
 
