@@ -45,6 +45,9 @@
                 android:name="transfer"
                 app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
         </action>
+        <action
+            android:id="@+id/action_receiveFragment_to_webShareLauncherFragment3"
+            app:destination="@id/webShareLauncherFragment3" />
     </fragment>
     <include app:graph="@navigation/nav_pick_client" />
     <fragment
@@ -57,5 +60,9 @@
             android:defaultValue="Folder" />
     </fragment>
     <include app:graph="@navigation/nav_transfer_details" />
+    <dialog
+        android:id="@+id/webShareLauncherFragment3"
+        android:name="org.monora.uprotocol.client.android.fragment.content.transfer.WebShareLauncherFragment"
+        android:label="@string/web_share" />
 
 </navigation>

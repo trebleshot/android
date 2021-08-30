@@ -19,6 +19,9 @@
 package org.monora.uprotocol.client.android.fragment
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -56,6 +59,11 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
 
     private val receiverViewModel: ReceiverViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = LayoutReceiveBinding.bind(view)
@@ -65,6 +73,9 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
         }
         binding.changeStorageButton.setOnClickListener {
             findNavController().navigate(ReceiveFragmentDirections.actionReceiveFragmentToFilePickerFragment())
+        }
+        binding.webShareButton.setOnClickListener {
+            findNavController().navigate(ReceiveFragmentDirections.actionReceiveFragmentToWebShareLauncherFragment3())
         }
         binding.storageFolderText.text = filesViewModel.appDirectory.getName()
 
