@@ -19,6 +19,7 @@ package org.monora.uprotocol.client.android.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
@@ -35,6 +36,9 @@ import org.monora.uprotocol.client.android.BuildConfig
 import org.monora.uprotocol.client.android.NavHomeDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.app.Activity
+import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.database.model.Transfer
+import org.monora.uprotocol.client.android.database.model.WebTransfer
 import org.monora.uprotocol.client.android.databinding.LayoutUserProfileBinding
 import org.monora.uprotocol.client.android.viewmodel.ChangelogViewModel
 import org.monora.uprotocol.client.android.viewmodel.CrashLogViewModel
@@ -110,6 +114,32 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        when (intent?.action) {
+            ACTION_OPEN_TRANSFER_DETAILS -> if (intent.hasExtra(EXTRA_TRANSFER)) {
+                val transfer = intent.getParcelableExtra<Transfer>(EXTRA_TRANSFER)
+                if (transfer != null) {
+                    navController.navigate(NavHomeDirections.actionGlobalNavTransferDetails(transfer))
+                }
+            }
+            ACTION_OPEN_SHARED_TEXT -> if (intent.hasExtra(EXTRA_SHARED_TEXT)) {
+                val sharedText = intent.getParcelableExtra<SharedText>(EXTRA_SHARED_TEXT)
+                if (sharedText != null) {
+                    navController.navigate(NavHomeDirections.actionGlobalNavTextEditor(sharedText = sharedText))
+                }
+            }
+            ACTION_OPEN_WEB_TRANSFER -> if (intent.hasExtra(EXTRA_WEB_TRANSFER)) {
+                val webTransfer = intent.getParcelableExtra<WebTransfer>(EXTRA_WEB_TRANSFER)
+                if (webTransfer != null) {
+                    Log.d("HomeActivity", "onNewIntent: $webTransfer")
+                    navController.navigate(NavHomeDirections.actionGlobalWebTransferDetailsFragment(webTransfer))
+                }
+            }
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         openItem(item.itemId)
         return true
@@ -152,5 +182,19 @@ class HomeActivity : Activity(), NavigationView.OnNavigationItemSelectedListener
     private fun openItem(@IdRes id: Int) {
         pendingMenuItemId = id
         drawerLayout.close()
+    }
+
+    companion object {
+        const val ACTION_OPEN_TRANSFER_DETAILS = "org.monora.uprotocol.client.android.action.OPEN_TRANSFER_DETAILS"
+
+        const val ACTION_OPEN_WEB_TRANSFER = "org.monora.uprotocol.client.android.action.OPEN_WEB_TRANSFER"
+
+        const val ACTION_OPEN_SHARED_TEXT = "org.monora.uprotocol.client.android.action.OPEN_SHARED_TEXT"
+
+        const val EXTRA_TRANSFER = "extraTransfer"
+
+        const val EXTRA_WEB_TRANSFER = "extraWebTransfer"
+
+        const val EXTRA_SHARED_TEXT = "extraSharedText"
     }
 }

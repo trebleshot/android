@@ -18,7 +18,9 @@
 
 package org.monora.uprotocol.client.android.service.web
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -37,6 +39,7 @@ import dagger.hilt.EntryPoints
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
+import org.monora.uprotocol.client.android.activity.HomeActivity
 import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
@@ -51,6 +54,7 @@ import org.monora.uprotocol.client.android.service.web.template.Templates
 import org.monora.uprotocol.client.android.service.web.template.renderContents
 import org.monora.uprotocol.client.android.service.web.template.renderHome
 import org.monora.uprotocol.client.android.util.NotificationBackend
+import org.monora.uprotocol.client.android.util.Notifications
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -149,19 +153,38 @@ class SharingController {
                 inputStream.copyTo(it)
             }
 
+            runBlocking {
+                try {
+                    file.sync(context)
+
+                    // We need to get the ID in order to use it in the UI, so this doesn't use the in!
+                    webDataRepository.insert(
+                        WebTransfer(0, file.getUri(), file.getName(), file.getType(), file.getLength())
+                    )
+                    webDataRepository.getReceivedContent(file.getUri())?.let { transfer ->
+                        val transferDetail: Intent = Intent(context, HomeActivity::class.java)
+                            .setAction(HomeActivity.ACTION_OPEN_WEB_TRANSFER)
+                            .putExtra(HomeActivity.EXTRA_WEB_TRANSFER, transfer)
+
+                        notification.setContentIntent(
+                            PendingIntent.getActivity(
+                                context,
+                                transfer.listId.hashCode() + Notifications.REQUEST_CODE_NEUTRAL,
+                                transferDetail,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                            )
+                        )
+                    }
+                } catch (ignored: Throwable) {
+                }
+            }
+
             notification.setAutoCancel(true)
                 .setChannelId(NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(context.getString(R.string.received_using_web_share))
+
             notification.show()
-
-            file.sync(context)
-
-            runBlocking {
-                webDataRepository.insert(
-                    WebTransfer(0, file.getUri(), file.getName(), file.getType(), file.getLength())
-                )
-            }
         } catch (e: Exception) {
             file.delete(context)
         }

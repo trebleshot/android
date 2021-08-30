@@ -96,6 +96,7 @@ class ContentBrowserFragment : Fragment(R.layout.layout_content_browser) {
                 is SharingState.Running -> snackbar.setText(R.string.sending).show()
                 is SharingState.Error -> snackbar.setText(CommonErrors.messageOf(view.context, it.exception)).show()
                 is SharingState.Success -> {
+                    snackbar.dismiss()
                     findNavController().navigate(
                         ContentBrowserFragmentDirections.actionContentBrowserFragmentToNavTransferDetails(it.transfer)
                     )

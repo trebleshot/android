@@ -85,9 +85,12 @@ class SharingFragment : Fragment(R.layout.layout_sharing) {
         sharingViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
                 is SharingState.Running -> snackbar.setText(R.string.sending).show()
-                is SharingState.Success -> findNavController().navigate(
-                    SharingFragmentDirections.actionSharingFragmentToNavTransferDetails(it.transfer)
-                )
+                is SharingState.Success -> {
+                    snackbar.dismiss()
+                    findNavController().navigate(
+                        SharingFragmentDirections.actionSharingFragmentToNavTransferDetails(it.transfer)
+                    )
+                }
                 is SharingState.Error -> snackbar.setText(CommonErrors.messageOf(view.context, it.exception)).show()
             }
         }

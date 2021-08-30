@@ -95,14 +95,13 @@ class BgBroadcastReceiver : BroadcastReceiver() {
                     persistenceProvider.approveInvalidationOfCredentials(client)
                 }
             }
-            ACTION_CLIPBOARD -> {
+            ACTION_CLIPBOARD_COPY -> {
                 val notificationId = intent.getIntExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, -1)
-                val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_TEXT_MODEL)
-                val accepted = intent.getBooleanExtra(EXTRA_ACCEPTED, false)
+                val sharedText: SharedText? = intent.getParcelableExtra(EXTRA_SHARED_TEXT)
 
                 backend.services.notifications.backend.cancel(notificationId)
 
-                if (accepted && sharedText != null) {
+                if (sharedText != null) {
                     val cbManager = context.applicationContext.getSystemService(
                         LifecycleService.CLIPBOARD_SERVICE
                     ) as ClipboardManager
@@ -115,7 +114,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACTION_CLIPBOARD = "org.monora.uprotocol.client.android.action.CLIPBOARD"
+        const val ACTION_CLIPBOARD_COPY = "org.monora.uprotocol.client.android.action.CLIPBOARD_COPY"
 
         const val ACTION_DEVICE_KEY_CHANGE_APPROVAL = "org.monora.uprotocol.client.android.action.DEVICE_APPROVAL"
 
@@ -125,7 +124,7 @@ class BgBroadcastReceiver : BroadcastReceiver() {
 
         const val ACTION_STOP_ALL_TASKS = "org.monora.uprotocol.client.android.transaction.action.STOP_ALL_TASKS"
 
-        const val EXTRA_TEXT_MODEL = "extraText"
+        const val EXTRA_SHARED_TEXT = "extraText"
 
         const val EXTRA_CLIENT = "extraClient"
 

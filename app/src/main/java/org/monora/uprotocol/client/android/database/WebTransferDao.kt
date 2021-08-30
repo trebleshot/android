@@ -31,6 +31,9 @@ interface WebTransferDao {
     @Query("SELECT * FROM webTransfer WHERE id = :id")
     fun get(id: Int): LiveData<WebTransfer>
 
+    @Query("SELECT * FROM webTransfer WHERE uri = :uri")
+    suspend fun get(uri: Uri): WebTransfer?
+
     @Query("SELECT * FROM webTransfer ORDER BY dateCreated DESC")
     fun getAll(): LiveData<List<WebTransfer>>
 

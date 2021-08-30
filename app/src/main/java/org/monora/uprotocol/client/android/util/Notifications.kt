@@ -152,8 +152,9 @@ class Notifications(val backend: NotificationBackend) {
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
         val rejectIntent = Intent(acceptIntent)
             .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
-        // TODO: 7/16/21 This should also have the 'transfer' extra.
         val transferDetail: Intent = Intent(context, HomeActivity::class.java)
+            .setAction(HomeActivity.ACTION_OPEN_TRANSFER_DETAILS)
+            .putExtra(HomeActivity.EXTRA_TRANSFER, transfer)
         val message = if (itemsSize > 1) {
             context.resources.getQuantityString(R.plurals.receive_files_question, itemsSize, itemsSize)
         } else {
@@ -184,30 +185,27 @@ class Notifications(val backend: NotificationBackend) {
 
     fun notifyClipboardRequest(client: UClient, item: SharedText) {
         val notification = backend.buildDynamicNotification(item.id, NotificationBackend.NOTIFICATION_CHANNEL_HIGH)
-        val acceptIntent = Intent(context, BgBroadcastReceiver::class.java)
-            .setAction(BgBroadcastReceiver.ACTION_CLIPBOARD)
-            .putExtra(BgBroadcastReceiver.EXTRA_TEXT_MODEL, item)
+        val copyIntent = Intent(context, BgBroadcastReceiver::class.java)
+            .setAction(BgBroadcastReceiver.ACTION_CLIPBOARD_COPY)
+            .putExtra(BgBroadcastReceiver.EXTRA_SHARED_TEXT, item)
             .putExtra(NotificationBackend.EXTRA_NOTIFICATION_ID, notification.notificationId)
-            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, true)
-        val rejectIntent = Intent(acceptIntent)
-            .putExtra(BgBroadcastReceiver.EXTRA_ACCEPTED, false)
-        val positiveIntent = PendingIntent.getBroadcast(
-            context, item.id + REQUEST_CODE_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val negativeIntent = PendingIntent.getBroadcast(
-            context, item.id + REQUEST_CODE_REJECT, rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        // TODO: 8/30/21 Show text
         val activityIntent = Intent(context, HomeActivity::class.java)
+            .setAction(HomeActivity.ACTION_OPEN_SHARED_TEXT)
+            .putExtra(HomeActivity.EXTRA_SHARED_TEXT, item)
+        val copyIcon = if (Build.VERSION.SDK_INT >= 21) {
+            R.drawable.ic_content_copy_white_24dp
+        } else {
+            R.drawable.ic_check_white_24dp_static
+        }
 
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle(context.getString(R.string.copy_to_clipboard_question))
-            .setContentText(context.getString(R.string.receive_text_success))
+            .setContentTitle(context.getString(R.string.receive_text_success))
+            .setContentText(item.text)
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(item.text)
-                    .setBigContentTitle(context.getString(R.string.copy_to_clipboard_question))
+                    .setBigContentTitle(context.getString(R.string.receive_text_success))
             )
             .setContentInfo(client.clientNickname)
             .setContentIntent(
@@ -219,11 +217,15 @@ class Notifications(val backend: NotificationBackend) {
                 )
             )
             .setDefaults(backend.notificationSettings)
-            .setDeleteIntent(negativeIntent)
-            .addAction(R.drawable.ic_check_white_24dp_static, context.getString(R.string.yes), positiveIntent)
-            .addAction(R.drawable.ic_close_white_24dp_static, context.getString(R.string.no), negativeIntent)
-            .setTicker(context.getString(R.string.receive_text_summary_success)).priority =
-            NotificationCompat.PRIORITY_HIGH
+            .addAction(
+                copyIcon,
+                context.getString(R.string.copy_to_clipboard),
+                PendingIntent.getBroadcast(
+                    context, item.id + REQUEST_CODE_ACCEPT, copyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            .setTicker(context.getString(R.string.receive_text_summary_success))
+            .priority = NotificationCompat.PRIORITY_HIGH
         notification.show()
     }
 
@@ -261,13 +263,6 @@ class Notifications(val backend: NotificationBackend) {
         val notificationLocal = notification ?: backend.buildDynamicNotification(
             ID_BG_SERVICE, NotificationBackend.NOTIFICATION_CHANNEL_LOW
         ).also {
-            val transfersString = context.getString(R.string.transfers)
-            val transfersIntent: PendingIntent = PendingIntent.getActivity(
-                context,
-                ID_BG_SERVICE + 1,
-                Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
             val stopAllTasksAction = NotificationCompat.Action(
                 R.drawable.ic_close_white_24dp_static, context.getString(R.string.stop_all),
                 PendingIntent.getBroadcast(
@@ -289,7 +284,6 @@ class Notifications(val backend: NotificationBackend) {
                 .setContentIntent(homeIntent)
                 .setOngoing(true)
                 .addAction(stopAllTasksAction)
-                .addAction(R.drawable.ic_swap_vert_white_24dp_static, transfersString, transfersIntent)
         }
 
         val msg = SpannableStringBuilder()
@@ -347,7 +341,7 @@ class Notifications(val backend: NotificationBackend) {
         val homeIntent = PendingIntent.getActivity(
             context,
             ID_BG_SERVICE + 1,
-            Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            Intent(context, HomeActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         notification

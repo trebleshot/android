@@ -38,7 +38,10 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.genonbeta.android.framework.ui.callback.SnackbarPlacementProvider
@@ -50,19 +53,25 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.monora.android.codescanner.BarcodeEncoder
 import org.monora.uprotocol.client.android.GlideApp
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.database.model.SharedText
+import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.ClientPickerViewModel
 import org.monora.uprotocol.client.android.viewmodel.SharedTextsViewModel
+import org.monora.uprotocol.core.CommunicationBridge
 import org.monora.uprotocol.core.protocol.ClipboardType
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacementProvider {
     private val viewModel: SharedTextsViewModel by viewModels()
+
+    private val textEditorViewModel: TextEditorViewModel by viewModels()
 
     private val args: TextEditorFragmentArgs by navArgs()
 
@@ -87,7 +96,8 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
         val editText = view.findViewById<EditText>(R.id.editText)
         val text = args.text ?: args.sharedText?.text
         val backPressedDispatcher = requireActivity().onBackPressedDispatcher
-        val backPressedCallback = object : OnBackPressedCallback(false) {
+        val snackbar = createSnackbar(R.string.sending)
+        val backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 // Capture back press events when there is unsaved changes that should be handled first.
 
@@ -145,21 +155,16 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
             }
         }
 
-        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
-            createSnackbar(R.string.sending).show()
-            lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    bridge.use {
-                        if (it.requestClipboard(this@TextEditorFragment.text, ClipboardType.Text)) {
-                            lifecycleScope.launch {
-                                createSnackbar(R.string.send_success).show()
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+        textEditorViewModel.state.observe(viewLifecycleOwner) {
+            when (it) {
+                is SendTextState.Sending -> snackbar.setText(R.string.sending).show()
+                is SendTextState.Success -> snackbar.setText(R.string.send_success).show()
+                is SendTextState.Error -> snackbar.setText(CommonErrors.messageOf(view.context, it.exception)).show()
             }
+        }
+
+        clientPickerViewModel.bridge.observe(viewLifecycleOwner) { bridge ->
+            textEditorViewModel.consume(bridge, this@TextEditorFragment.text)
         }
     }
 
@@ -264,4 +269,37 @@ class TextEditorFragment : Fragment(R.layout.layout_text_editor), SnackbarPlacem
 
         viewModel.save(item, update)
     }
+}
+
+@HiltViewModel
+class TextEditorViewModel @Inject internal constructor() : ViewModel() {
+    private val _state = MutableLiveData<SendTextState>()
+
+    val state = liveData {
+        emitSource(_state)
+    }
+
+    fun consume(bridge: CommunicationBridge, text: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.postValue(SendTextState.Sending)
+
+            try {
+                bridge.use {
+                    if (it.requestClipboard(text, ClipboardType.Text)) {
+                        _state.postValue(SendTextState.Success)
+                    }
+                }
+            } catch (e: Exception) {
+                _state.postValue(SendTextState.Error(e))
+            }
+        }
+    }
+}
+
+sealed class SendTextState {
+    object Sending : SendTextState()
+
+    object Success : SendTextState()
+
+    class Error(val exception: Exception) : SendTextState()
 }

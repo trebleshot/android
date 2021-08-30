@@ -45,6 +45,8 @@ class WebDataRepository @Inject constructor(
 
     fun getReceivedContent(id: Int): LiveData<WebTransfer> = webTransferDao.get(id)
 
+    suspend fun getReceivedContent(uri: Uri): WebTransfer? = webTransferDao.get(uri)
+
     fun getReceivedContents() = webTransferDao.getAll()
 
     suspend fun insert(webTransfer: WebTransfer) = webTransferDao.insert(webTransfer)
