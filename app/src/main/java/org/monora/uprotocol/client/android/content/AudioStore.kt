@@ -34,130 +34,156 @@ class AudioStore @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     fun getAlbums(): List<Album> {
-        return loadAlbums(
-            context.contentResolver.query(
-                Albums.EXTERNAL_CONTENT_URI,
-                arrayOf(
-                    Albums._ID,
-                    Albums.ARTIST,
-                    Albums.LAST_YEAR,
-                    Albums.ALBUM,
-                ),
-                null,
-                null,
-                Albums.ALBUM
+        return try {
+            loadAlbums(
+                context.contentResolver.query(
+                    Albums.EXTERNAL_CONTENT_URI,
+                    arrayOf(
+                        Albums._ID,
+                        Albums.ARTIST,
+                        Albums.LAST_YEAR,
+                        Albums.ALBUM,
+                    ),
+                    null,
+                    null,
+                    Albums.ALBUM
+                )
             )
-        )
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            emptyList()
+        }
     }
 
     fun getAlbums(artist: Artist): List<Album> {
-        return loadAlbums(
-            context.contentResolver.query(
-                Artists.Albums.getContentUri(MediaStore.VOLUME_EXTERNAL, artist.id),
-                arrayOf(
-                    Albums._ID,
-                    Albums.ARTIST,
-                    Albums.LAST_YEAR,
-                    Albums.ALBUM,
-                ),
-                null,
-                null,
-                Albums.ALBUM
+        return try {
+            loadAlbums(
+                context.contentResolver.query(
+                    Artists.Albums.getContentUri(MediaStore.VOLUME_EXTERNAL, artist.id),
+                    arrayOf(
+                        Albums._ID,
+                        Albums.ARTIST,
+                        Albums.LAST_YEAR,
+                        Albums.ALBUM,
+                    ),
+                    null,
+                    null,
+                    Albums.ALBUM
+                )
             )
-        )
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            emptyList()
+        }
     }
 
     fun getArtists(): List<Artist> {
-        context.contentResolver.query(
-            Artists.EXTERNAL_CONTENT_URI,
-            arrayOf(
-                Artists._ID,
-                Artists.ARTIST,
-                Artists.NUMBER_OF_ALBUMS,
-            ),
-            null,
-            null,
-            Albums.ARTIST
-        )?.use {
-            if (it.moveToFirst()) {
-                val idIndex: Int = it.getColumnIndex(Artists._ID)
-                val artistIndex: Int = it.getColumnIndex(Artists.ARTIST)
-                val numberOfAlbumsIndex: Int = it.getColumnIndex(Artists.NUMBER_OF_ALBUMS)
+        try {
+            context.contentResolver.query(
+                Artists.EXTERNAL_CONTENT_URI,
+                arrayOf(
+                    Artists._ID,
+                    Artists.ARTIST,
+                    Artists.NUMBER_OF_ALBUMS,
+                ),
+                null,
+                null,
+                Albums.ARTIST
+            )?.use {
+                if (it.moveToFirst()) {
+                    val idIndex: Int = it.getColumnIndex(Artists._ID)
+                    val artistIndex: Int = it.getColumnIndex(Artists.ARTIST)
+                    val numberOfAlbumsIndex: Int = it.getColumnIndex(Artists.NUMBER_OF_ALBUMS)
 
-                val result = ArrayList<Artist>(it.count)
+                    val result = ArrayList<Artist>(it.count)
 
-                do {
-                    val id = it.getLong(idIndex)
+                    do {
+                        try {
+                            val id = it.getLong(idIndex)
 
-                    result.add(
-                        Artist(
-                            id,
-                            it.getString(artistIndex),
-                            it.getInt(numberOfAlbumsIndex),
-                            ContentUris.withAppendedId(Artists.EXTERNAL_CONTENT_URI, id),
-                        )
-                    )
-                } while (it.moveToNext())
+                            result.add(
+                                Artist(
+                                    id,
+                                    it.getString(artistIndex),
+                                    it.getInt(numberOfAlbumsIndex),
+                                    ContentUris.withAppendedId(Artists.EXTERNAL_CONTENT_URI, id),
+                                )
+                            )
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        }
+                    } while (it.moveToNext())
 
-                return result
+                    return result
+                }
             }
+        } catch (e: Throwable) {
+            e.printStackTrace()
         }
 
         return emptyList()
     }
 
     fun getSongs(selection: String, selectionArgs: Array<String>): List<Song> {
-        context.contentResolver.query(
-            Media.EXTERNAL_CONTENT_URI,
-            arrayOf(
-                Media._ID,
-                Media.ARTIST,
-                Media.ALBUM,
-                Media.ALBUM_ID,
-                Media.TITLE,
-                Media.DISPLAY_NAME,
-                Media.MIME_TYPE,
-                Media.SIZE,
-                Media.DATE_MODIFIED
-            ),
-            selection,
-            selectionArgs,
-            Media.TITLE
-        )?.use {
-            if (it.moveToFirst()) {
-                val idIndex: Int = it.getColumnIndex(Media._ID)
-                val artistIndex: Int = it.getColumnIndex(Media.ARTIST)
-                val albumIndex: Int = it.getColumnIndex(Media.ALBUM)
-                val albumIdIndex = it.getColumnIndex(Media.ALBUM_ID)
-                val titleIndex: Int = it.getColumnIndex(Media.TITLE)
-                val displayNameIndex: Int = it.getColumnIndex(Media.DISPLAY_NAME)
-                val mimeTypeIndex: Int = it.getColumnIndex(Media.MIME_TYPE)
-                val sizeIndex: Int = it.getColumnIndex(Media.SIZE)
-                val dateModifiedIndex: Int = it.getColumnIndex(Media.DATE_MODIFIED)
+        try {
+            context.contentResolver.query(
+                Media.EXTERNAL_CONTENT_URI,
+                arrayOf(
+                    Media._ID,
+                    Media.ARTIST,
+                    Media.ALBUM,
+                    Media.ALBUM_ID,
+                    Media.TITLE,
+                    Media.DISPLAY_NAME,
+                    Media.MIME_TYPE,
+                    Media.SIZE,
+                    Media.DATE_MODIFIED
+                ),
+                selection,
+                selectionArgs,
+                Media.TITLE
+            )?.use {
+                if (it.moveToFirst()) {
+                    val idIndex: Int = it.getColumnIndex(Media._ID)
+                    val artistIndex: Int = it.getColumnIndex(Media.ARTIST)
+                    val albumIndex: Int = it.getColumnIndex(Media.ALBUM)
+                    val albumIdIndex = it.getColumnIndex(Media.ALBUM_ID)
+                    val titleIndex: Int = it.getColumnIndex(Media.TITLE)
+                    val displayNameIndex: Int = it.getColumnIndex(Media.DISPLAY_NAME)
+                    val mimeTypeIndex: Int = it.getColumnIndex(Media.MIME_TYPE)
+                    val sizeIndex: Int = it.getColumnIndex(Media.SIZE)
+                    val dateModifiedIndex: Int = it.getColumnIndex(Media.DATE_MODIFIED)
 
-                val result = ArrayList<Song>(it.count)
+                    val result = ArrayList<Song>(it.count)
 
-                do {
-                    val id = it.getLong(idIndex)
+                    do {
+                        try {
+                            val id = it.getLong(idIndex)
 
-                    result.add(
-                        Song(
-                            id,
-                            it.getString(artistIndex),
-                            it.getString(albumIndex),
-                            it.getString(titleIndex),
-                            it.getString(displayNameIndex),
-                            it.getString(mimeTypeIndex),
-                            it.getLong(sizeIndex),
-                            it.getLong(dateModifiedIndex),
-                            ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id),
-                            ContentUris.withAppendedId(Albums.EXTERNAL_CONTENT_URI, it.getLong(albumIdIndex))
-                        )
-                    )
-                } while (it.moveToNext())
+                            result.add(
+                                Song(
+                                    id,
+                                    it.getString(artistIndex),
+                                    it.getString(albumIndex),
+                                    it.getString(titleIndex),
+                                    it.getString(displayNameIndex),
+                                    it.getString(mimeTypeIndex),
+                                    it.getLong(sizeIndex),
+                                    it.getLong(dateModifiedIndex),
+                                    ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id),
+                                    ContentUris.withAppendedId(Albums.EXTERNAL_CONTENT_URI, it.getLong(albumIdIndex))
+                                )
+                            )
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        }
+                    } while (it.moveToNext())
 
-                return result
+                    return result
+                }
             }
+        } catch (e: Throwable) {
+            e.printStackTrace()
         }
 
         return emptyList()
@@ -173,17 +199,21 @@ class AudioStore @Inject constructor(
             val result = ArrayList<Album>(cursor.count)
 
             do {
-                val id = cursor.getLong(idIndex)
+                try {
+                    val id = cursor.getLong(idIndex)
 
-                result.add(
-                    Album(
-                        id,
-                        cursor.getString(artistIndex),
-                        cursor.getString(albumIndex),
-                        cursor.getInt(lastYearIndex),
-                        ContentUris.withAppendedId(Albums.EXTERNAL_CONTENT_URI, id),
+                    result.add(
+                        Album(
+                            id,
+                            cursor.getString(artistIndex),
+                            cursor.getString(albumIndex),
+                            cursor.getInt(lastYearIndex),
+                            ContentUris.withAppendedId(Albums.EXTERNAL_CONTENT_URI, id),
+                        )
                     )
-                )
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
             } while (cursor.moveToNext())
 
             return result
