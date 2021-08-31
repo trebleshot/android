@@ -69,6 +69,7 @@
         <TextView
             android:id="@+id/statusText"
             android:textAppearance="?textAppearanceBody1"
+            android:textColor="?android:textColorSecondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -77,18 +78,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text"
-            app:layout_constraintBottom_toTopOf="@id/storageFolderContainer"
+            app:layout_constraintBottom_toTopOf="@id/warningIcon"
             tools:text="@tools:sample/date/ddmmyy" />
 
-        <ProgressBar
+        <ImageView
+            android:id="@+id/warningIcon"
+            android:layout_width="@dimen/icon_size_list_big"
+            android:layout_height="@dimen/icon_size_list_big"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusText"
+            app:layout_constraintBottom_toTopOf="@id/storageFolderContainer"
+            app:srcCompat="@drawable/ic_error_outline_white_24dp"
+            tools:text="@tools:sample/date/ddmmyy" />
+
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="@dimen/icon_size_list_big"
+            android:layout_height="@dimen/icon_size_list_big"
             android:indeterminate="true"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/storageFolderContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/statusText" />
 
         <com.google.android.material.card.MaterialCardView
@@ -122,7 +137,6 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="TS Debug"
                     android:textAppearance="?textAppearanceBody1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/changeStorageButton"

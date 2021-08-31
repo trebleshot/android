@@ -23,6 +23,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -32,6 +33,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
 import com.genonbeta.android.framework.io.DocumentFile
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -118,11 +120,17 @@ class ReceiveFragment : Fragment(R.layout.layout_receive) {
                 }
             }
 
+            if (it.isInProgress) {
+                binding.progressBar.show()
+            } else {
+                binding.progressBar.hide()
+            }
+
             val isError = it is GuidanceRequestState.Error
             val alpha = if (isError) 0.5f else 1.0f
             binding.image.alpha = alpha
             binding.text.isEnabled = !isError
-            binding.progressBar.visibility = if (it.isInProgress) View.VISIBLE else View.GONE
+            binding.warningIcon.visibility = if(isError) View.VISIBLE else View.GONE
             binding.button.isEnabled = !it.isInProgress
             binding.viewModel = SenderClientContentViewModel(it.client)
 

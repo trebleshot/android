@@ -136,7 +136,7 @@ class Notifications(val backend: NotificationBackend) {
     }
 
     fun notifyTransferError() {
-
+        // TODO: 8/31/21 Show transfer errors when the user is showing a related section.
     }
 
     fun notifyTransferRequest(client: UClient, transfer: Transfer, items: List<UTransferItem>) {
@@ -233,12 +233,23 @@ class Notifications(val backend: NotificationBackend) {
         val notification = backend.buildDynamicNotification(
             transferParams.transfer.id.toInt(), NotificationBackend.NOTIFICATION_CHANNEL_HIGH
         )
+        val transferDetail: Intent = Intent(context, HomeActivity::class.java)
+            .setAction(HomeActivity.ACTION_OPEN_TRANSFER_DETAILS)
+            .putExtra(HomeActivity.EXTRA_TRANSFER, transferParams.transfer)
         notification
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setContentInfo(transferParams.client.clientNickname)
             .setAutoCancel(true)
             .setDefaults(backend.notificationSettings)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    transferParams.transfer.id.toInt() + REQUEST_CODE_NEUTRAL,
+                    transferDetail,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
             .setContentText(
                 context.getString(
                     R.string.receive_success_summary,
