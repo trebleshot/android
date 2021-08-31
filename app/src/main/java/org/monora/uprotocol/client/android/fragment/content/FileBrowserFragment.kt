@@ -29,6 +29,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.PopupMenu
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.MenuCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -36,6 +37,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.adapter.FileAdapter
@@ -85,6 +87,7 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyView = LayoutEmptyContentBinding.bind(view.findViewById(R.id.emptyView))
+        val floatingViewsContainer = view.findViewById<CoordinatorLayout>(R.id.floatingViewsContainer)
         val adapter = FileAdapter { fileModel, clickType ->
             when (clickType) {
                 FileAdapter.ClickType.Default -> {
@@ -105,6 +108,7 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
         val pathAdapter = PathAdapter {
             viewModel.requestPath(it.file)
         }
+        val safAddedSnackbar = Snackbar.make(floatingViewsContainer, R.string.add_success, Snackbar.LENGTH_LONG)
 
         pathsPopupMenu = PopupMenu(requireContext(), pathSelectorButton).apply {
             MenuCompat.setGroupDividerEnabled(menu, true)
@@ -176,6 +180,11 @@ class FileBrowserFragment : Fragment(R.layout.layout_file_browser) {
 
         selectionViewModel.externalState.observe(viewLifecycleOwner) {
             adapter.notifyDataSetChanged()
+        }
+
+        viewModel.safAdded.observe(viewLifecycleOwner) {
+            viewModel.requestPath(it)
+            safAddedSnackbar.show()
         }
     }
 

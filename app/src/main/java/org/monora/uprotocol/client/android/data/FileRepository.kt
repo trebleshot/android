@@ -64,7 +64,7 @@ class FileRepository @Inject constructor(
         }
         set(value) {
             preferences.edit {
-                putString(KEY_STORAGE_PATH, value.originalUri.toString())
+                putString(KEY_STORAGE_PATH, value.getUri().toString())
             }
         }
 

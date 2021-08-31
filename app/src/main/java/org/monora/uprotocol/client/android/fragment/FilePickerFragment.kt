@@ -137,6 +137,7 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
         val pathsPopupMenu = PopupMenu(requireContext(), pathSelectorButton).apply {
             MenuCompat.setGroupDividerEnabled(menu, true)
         }
+        val safAddedSnackbar = Snackbar.make(floatingViewsContainer, R.string.add_success, Snackbar.LENGTH_LONG)
 
         approveFolderButton.visibility = if (args.selectionType == SelectionType.Folder) View.VISIBLE else View.GONE
 
@@ -236,6 +237,11 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
                 }
             }
         )
+
+        viewModel.safAdded.observe(viewLifecycleOwner) {
+            viewModel.requestPath(it)
+            safAddedSnackbar.show()
+        }
     }
 
     override fun onDestroy() {

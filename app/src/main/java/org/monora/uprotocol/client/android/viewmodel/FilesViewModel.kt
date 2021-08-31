@@ -21,6 +21,7 @@ package org.monora.uprotocol.client.android.viewmodel
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -36,6 +37,7 @@ import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.data.FileRepository
 import org.monora.uprotocol.client.android.data.SelectionRepository
 import org.monora.uprotocol.client.android.database.model.SafFolder
+import org.monora.uprotocol.client.android.lifecycle.SingleLiveEvent
 import org.monora.uprotocol.client.android.model.FileModel
 import org.monora.uprotocol.client.android.model.ListItem
 import org.monora.uprotocol.client.android.model.TitleSectionContentModel
@@ -84,6 +86,8 @@ class FilesViewModel @Inject internal constructor(
     val pathTree = liveData {
         emitSource(_pathTree)
     }
+
+    val safAdded = SingleLiveEvent<SafFolder>()
 
     val safFolders = fileRepository.getSafFolders()
 
@@ -187,7 +191,13 @@ class FilesViewModel @Inject internal constructor(
                 val document = DocumentFile.fromUri(context, uri, true)
                 val safFolder = SafFolder(uri, document.getName())
 
-                fileRepository.insertFolder(safFolder)
+                try {
+                    fileRepository.insertFolder(safFolder)
+                } catch (ignored: SQLiteConstraintException) {
+                    // The selected path may already exist!
+                }
+
+                safAdded.postValue(safFolder)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
